@@ -1,0 +1,23 @@
+{
+  "name": "1000_validators",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "lint:fix": "./node_modules/.bin/eslint src/**/*.js --fix",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@polkadot/api": "^1.0.1",
+    "@polkadot/keyring": "^2.0.1",
+    "koa": "^2.11.0",
+    "nedb": "^1.8.0",
+    "reconnecting-websocket": "^4.2.0",
+    "ws": "^7.2.1"
+  },
+  "devDependencies": {
+    "eslint": "^6.8.0"
+  }
+}

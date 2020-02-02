@@ -1,0 +1,23 @@
+{
+    "nominate": {
+        "nominationPeriod": "86400000",
+        "pollFrequency": "5000",
+        "nominators": [
+            {
+                "seed": "0xbc1ede780f784bb6991a585e4f6e61522c14e1cae6ad0895fb57b9a205a8f938",
+                "maxNominations": 2,
+                "maxAmount": 100
+            }
+        ],
+        "wsEndpoint": "ws://localhost:9944"
+    },
+    "logLevel": "Debug",
+    "serverPort": "3300",
+    "storageFile": "validator.db",
+    "subscribe": {
+        "chains": [
+            "Local Testnet"
+        ]
+    },
+    "telemetryHost": "ws://localhost:8000/feed"
+}

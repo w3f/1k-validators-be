@@ -87,7 +87,7 @@ class Client {
     return messages;
   }
 
-  _handle(message, currentTimestamp) {
+  async _handle(message, currentTimestamp) {
     const { action, payload } = message;
 
     switch(action) {
@@ -106,7 +106,15 @@ class Client {
         // console.log(node)
         this.nodes[nodeID] = nodeName;
 
-        this.storage.updateNode(nodeID, nodeDetails, connectedAt, 0);
+        if (await this.storage.hasNode(nodeID)) {
+          await this.storage.reportOnline(nodeID, nodeDetails, connectedAt, 0);
+        }
+        await this.storage.updateNode(
+          nodeID,
+          nodeDetails,
+          connectedAt,
+          0,
+        );
 
         this.logger.info(`New node ${nodeName} (${nodeID})`);
       }
@@ -119,7 +127,7 @@ class Client {
 
         delete this.nodes[nodeID];
 
-        this.storage.reportOffline(nodeID);
+        await this.storage.reportOffline(nodeID);
 
         this.logger.info(`Node '${nodeName}' departed`);
       }

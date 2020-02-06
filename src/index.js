@@ -41,12 +41,14 @@ const start = async (cfg) => {
 
   const client = new Client(cfg, storage, logger);
   client.start();
-	
+  
   let nominators = [];
-  for (const nomCfg of cfg.nominate.nominators) {
-    const nominator = await Nominator.create(cfg, storage, logger, nomCfg);
-    setTimeout(() => nominator.start(), 3000);
-    nominators.push(nominator);
+  if (cfg.nominate.start) {
+    for (const nomCfg of cfg.nominate.nominators) {
+      const nominator = await Nominator.create(cfg, storage, logger, nomCfg);
+      setTimeout(() => nominator.start(), 3000);
+      nominators.push(nominator);
+    }
   }
 
   setRoutes(storage);

@@ -44,6 +44,24 @@ class Storage {
     return true;
   }
 
+  async reportOnline(nodeId) {
+    const now = new Date().getTime();
+    const oldData = (await this.getNode(nodeId))[0];
+    const timeOffline = now - Number(oldData.offlineSince);
+    console.log(timeOffline);
+    const accu = oldData.offlineAccumulated ? Number(oldData.offlineAccumulated) : 0;
+    const newData = Object.assign(oldData, {
+      offlineSince: 0,
+      offlineAccumulated: accu + timeOffline,
+    });
+    try {
+      await this._update({ id: nodeId }, newData);
+    } catch (err) {
+      console.error(err);
+    }
+    return true;
+  }
+
   async updateNode(nodeId, nodeDetails, connectedAt, nominatedAt, goodSince = 1, offlineSince = 0, rank = 0) {
     const newData = {
       id: nodeId,
@@ -56,7 +74,10 @@ class Storage {
     };
 
     if (await this.hasNode(nodeId)) {
-      newData.rank = (await this.getNode(nodeId)).rank;
+      const { rank, offlineAccumulated } = (await this.getNode(nodeId))[0];
+      newData.rank = rank;
+      newData.offlineAccumulated = offlineAccumulated;
+      console.log(newData);
       await this._update({ id: nodeId }, newData);
       return true;
     }

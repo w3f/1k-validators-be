@@ -30,15 +30,17 @@ class Storage {
 		return false;
 	}
 
-	async updateNode(nodeId, nodeDetails, connectedAt, nominatedAt) {
+	async updateNode(nodeId, nodeDetails, connectedAt, nominatedAt, rank = 0) {
 		const newData = {
 			id: nodeId,
 			nodeDetails,
 			connectedAt,
 			nominatedAt,
+			rank,
 		};
 
 		if (await this.hasNode(nodeId)) {
+			newData.rank = (await this.getNode(nodeId)).rank;
 			await this._update({ id: nodeId }, newData);
 			return true;
 		}
@@ -47,9 +49,23 @@ class Storage {
 		return true;
 	}
 
+	async removeNode(nodeId) {
+		await this._remove({ id: nodeId });
+		return true;
+	}
+
 	async getNodes() {
 		return new Promise((resolve, reject) => {
 			this._db.find({ id: { $gte: 0 } }, (err, docs) => {
+				if (err) reject();
+				resolve(docs);
+			});
+		});
+	}
+
+	async getNode(id) {
+		return new Promise((resolve, reject) => {
+			this._db.find({ id }, (err, docs) => {
 				if (err) reject();
 				resolve(docs);
 			});

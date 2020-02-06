@@ -6,6 +6,11 @@ class Nominator {
     this.cfg = cfg;
     this.storage = storage;
     this.logger = logger;
+    this.candidates = {};
+
+    cfg.nominate.candidates.forEach((candidate) => {
+      this.candidates[candidate.name] = candidate.stash;
+    });
   }
 
   static async create(cfg, storage, logger, nomCfg) {
@@ -40,8 +45,10 @@ class Nominator {
     const now = new Date().getTime();
     const lastNominated = await this.storage.lastNominatedAt(this.address);
 
-    if (lastNominated + this.cfg.nominate.nominationPeriod > now) {
-      this.logger.debug(`Skipping nominations | Last nominated at ${lastNominated} | Current time: ${now}`);
+    const nextNominationAt = Number(lastNominated) + Number(this.cfg.nominate.nominationPeriod);
+
+    if (nextNominationAt > now) {
+      this.logger.debug(`Skipping nominations | Last nominated at ${lastNominated} | Current time: ${now} | Will nominate at ${nextNominationAt}`);
       return;
     }
 
@@ -58,10 +65,15 @@ class Nominator {
       return a.nominatedAt - b.nominatedAt;
     });
 
+    // console.log(nodes);
+
     const toNominate = nodes.splice(0, this.maxNominations);
-    const tx = this.api.tx.staking.nominate(toNominate);
+    // console.log('toNominate', toNominate);
+    const candidates = toNominate.map((node) => this.candidates[node.nodeDetails[0]]);
+    // console.log(candidates)
+    const tx = this.api.tx.staking.nominate(candidates);
     this.logger.info(
-      `Sending extrinsic Staking::nominate from ${this.address} to nominate ${toNominate}`
+      `Sending extrinsic Staking::nominate from ${this.address} to nominate ${candidates}`
     );
     const unsub = await tx.signAndSend(this.signer, (result) => {
       const { status } = result;
@@ -71,6 +83,9 @@ class Nominator {
         this.logger.info(
           `Extrinsic included in block with hash ${status.asFinalized}`
         );
+        toNominate.forEach((node) => {
+          this.storage.updateNode(node.id, node.nodeDetails, node.connectedAt, now);
+        });
         unsub();
       }
     });

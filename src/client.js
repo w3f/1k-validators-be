@@ -100,14 +100,15 @@ class Client {
 
 		case Actions.AddedNode:
 			{
-				const [id, nodeDetails, nodeStats, nodeIO, nodeHardware, blockDetails, location, connectedAt] = message.payload;
+				const [nodeID, nodeDetails, nodeStats, nodeIO, nodeHardware, blockDetails, location, connectedAt] = payload;
 				const [ nodeName, nodeImpl, nodeVersion, nodeAddress, nodeNetworkId ] = nodeDetails;
 
-				this.nodes[id] = nodeName;
+				// console.log(node)
+				this.nodes[nodeID] = nodeName;
 
-				this.storage.updateNode(id, nodeDetails, connectedAt, 0);
+				this.storage.updateNode(nodeID, nodeDetails, connectedAt, 0);
 
-				this.logger.info(`New node ${nodeName} (${id})`);
+				this.logger.info(`New node ${nodeName} (${nodeID})`);
 			}
 			break;
 
@@ -117,6 +118,8 @@ class Client {
 				const nodeName = this.nodes[nodeID];
 
 				delete this.nodes[nodeID];
+
+				this.storage.removeNode(nodeID);
 
 				this.logger.info(`Node '${nodeName}' departed`);
 			}

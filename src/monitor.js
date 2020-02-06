@@ -1,6 +1,8 @@
 const { Octokit } = require('@octokit/rest');
 const semver = require('semver');
 
+const { HOUR } = require('./constants');
+
 class NodeMonitor {
   constructor(storage) {
     this.storage = storage;
@@ -37,7 +39,7 @@ class NodeMonitor {
 
       if (!isUpgraded) {
         // TODO change this constant to a config value.
-        if (now > this.latestVersion.publishedAt + 1200) {
+        if (now > this.latestVersion.publishedAt + 16*HOUR) {
           /// The node is out of date.
           this.storage.updateNode(
             node.id,

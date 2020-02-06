@@ -1,6 +1,6 @@
 {
     "nominate": {
-        "start": false,
+        "start": true,
         "candidates": [
             {
                 "name": "Alice",

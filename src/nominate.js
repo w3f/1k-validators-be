@@ -1,6 +1,8 @@
 const { ApiPromise, WsProvider } = require('@polkadot/api');
 const { Keyring } = require('@polkadot/keyring');
 
+const { WEEK } = require('./constants');
+
 class Nominator {
   constructor(cfg, storage, logger) {
     this.cfg = cfg;
@@ -57,6 +59,8 @@ class Nominator {
     const nodes = await this.storage.getNodes();
     // Remove any offline ones.
     nodes.filter((node) => node.offlineSince === 0);
+    // Ensure nodes have at least 98% uptime (for one week that's 3.35 hours down).
+    nodes.filter((node) => node.offlineAccumulated / WEEK <= 0.02);
     // Sort by connection time.
     nodes.sort((a, b) => {
       return a.connectedAt - b.connectedAt;
@@ -67,15 +71,18 @@ class Nominator {
       return a.nominatedAt - b.nominatedAt;
     });
 
-    // console.log(nodes);
+    const candidates = nodes.map((node) => this.candidates[node.nodeDetails[0]]);
+    /// Ensure they have 10% or less commission set.
+    const filteredCandidates = candidates.filter(async (candidate) => {
+      const prefs = await this.api.query.staking.validators(candidate);
+      const { commission } = prefs.toJSON()[0];
+      return Number(commission) <= 10000000;
+    });
 
-    const toNominate = nodes.splice(0, this.maxNominations);
-    // console.log('toNominate', toNominate);
-    const candidates = toNominate.map((node) => this.candidates[node.nodeDetails[0]]);
-    // console.log(candidates)
-    const tx = this.api.tx.staking.nominate(candidates);
+    const toNominate = filteredCandidates.splice(0, this.maxNominations);
+    const tx = this.api.tx.staking.nominate(toNominate);
     this.logger.info(
-      `Sending extrinsic Staking::nominate from ${this.address} to nominate ${candidates}`
+      `Sending extrinsic Staking::nominate from ${this.address} to nominate ${toNominate}`
     );
     const unsub = await tx.signAndSend(this.signer, (result) => {
       const { status } = result;
@@ -91,6 +98,12 @@ class Nominator {
         unsub();
       }
     });
+  }
+
+  endRound() {
+    // At the end of round it needs to settle the points.
+    const priorNominatedSet = ''; //TODO
+
   }
 
   shutdown() {

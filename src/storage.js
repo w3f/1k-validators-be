@@ -48,7 +48,7 @@ class Storage {
     const now = new Date().getTime();
     const oldData = (await this.getNode(nodeId))[0];
     const timeOffline = now - Number(oldData.offlineSince);
-    console.log(timeOffline);
+    // console.log(timeOffline);
     const accu = oldData.offlineAccumulated ? Number(oldData.offlineAccumulated) : 0;
     const newData = Object.assign(oldData, {
       offlineSince: 0,
@@ -62,7 +62,7 @@ class Storage {
     return true;
   }
 
-  async updateNode(nodeId, nodeDetails, connectedAt, nominatedAt, goodSince = 1, offlineSince = 0, rank = 0) {
+  async updateNode(nodeId, nodeDetails, connectedAt, nominatedAt, goodSince = 1, offlineSince = 0, rank = 0, offlineAccumulated = 0) {
     const newData = {
       id: nodeId,
       nodeDetails,
@@ -71,13 +71,14 @@ class Storage {
       goodSince,
       offlineSince,
       rank,
+      offlineAccumulated,
     };
 
     if (await this.hasNode(nodeId)) {
       const { rank, offlineAccumulated } = (await this.getNode(nodeId))[0];
       newData.rank = rank;
       newData.offlineAccumulated = offlineAccumulated;
-      console.log(newData);
+      // console.log(newData);
       await this._update({ id: nodeId }, newData);
       return true;
     }
@@ -135,7 +136,7 @@ class Storage {
 
   async hasNominator(nominator) {
     const queryResult = await this._query({ nominator });
-    console.log(queryResult);
+    // console.log(queryResult);
     if (typeof queryResult !== 'undefined') {
       return true;
     }

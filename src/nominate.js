@@ -73,12 +73,16 @@ class Nominator {
 
     const candidates = nodes.map((node) => this.candidates[node.nodeDetails[0]]);
     /// Ensure they have 10% or less commission set.
+    /// Ensure they have over 50 KSM.
     const filteredCandidates = candidates.filter(async (candidate) => {
       const prefs = await this.api.query.staking.validators(candidate);
       const { commission } = prefs.toJSON()[0];
-      return Number(commission) <= 10000000;
+      const exposure = await this.api.query.staking.stakers(candidate);
+      const ownStake = exposure.toJSON().own;
+      return Number(commission) <= 10000000 && ownStake >= 50*10**12 ;
     });
 
+    this.logger.debug(`Filtered candidates: ${filteredCandidates}`);
     const toNominate = filteredCandidates.splice(0, this.maxNominations);
     const tx = this.api.tx.staking.nominate(toNominate);
     this.logger.info(

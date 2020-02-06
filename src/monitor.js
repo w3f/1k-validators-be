@@ -42,10 +42,10 @@ class NodeMonitor {
           this.storage.updateNode(
             node.id,
             node.nodeDetails,
+            node.connectedAt,
+            node.nominatedAt,
             0,
-            0,
-            0,
-            0,
+            node.rank,
           );
         }
       } else {
@@ -54,10 +54,10 @@ class NodeMonitor {
           this.storage.updateNode(
             node.id,
             node.nodeDetails,
-            0,
-            0,
+            node.connectedAt,
+            node.nominatedAt,
             now,
-            0
+            node.rank
           );
         }
       }

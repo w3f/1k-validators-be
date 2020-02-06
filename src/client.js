@@ -119,7 +119,7 @@ class Client {
 
         delete this.nodes[nodeID];
 
-        this.storage.removeNode(nodeID);
+        this.storage.reportOffline(nodeID);
 
         this.logger.info(`Node '${nodeName}' departed`);
       }

@@ -55,6 +55,8 @@ class Nominator {
     await this.storage.updateLastNominated(this.address);
 
     const nodes = await this.storage.getNodes();
+    // Remove any offline ones.
+    nodes.filter((node) => node.offlineSince === 0);
     // Sort by connection time.
     nodes.sort((a, b) => {
       return a.connectedAt - b.connectedAt;

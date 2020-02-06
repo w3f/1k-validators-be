@@ -30,12 +30,28 @@ class Storage {
     return false;
   }
 
-  async updateNode(nodeId, nodeDetails, connectedAt, nominatedAt, rank = 0) {
+  async reportOffline(nodeId) {
+    const now = new Date().getTime();
+    const oldData = (await this.getNode(nodeId))[0];
+    // console.log(oldData);
+    const newData = Object.assign(oldData, {
+      offlineSince: now,
+    });
+    // console.log('NEW DATA', newData);
+    try {
+      await this._update({ id: nodeId }, newData);
+    } catch (err) { console.error(err); }
+    return true;
+  }
+
+  async updateNode(nodeId, nodeDetails, connectedAt, nominatedAt, goodSince = 1, offlineSince = 0, rank = 0) {
     const newData = {
       id: nodeId,
       nodeDetails,
       connectedAt,
       nominatedAt,
+      goodSince,
+      offlineSince,
       rank,
     };
 

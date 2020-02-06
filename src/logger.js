@@ -1,14 +1,14 @@
 class Logger {
   constructor(level) {
     switch (level.toLowerCase()) {
-      case 'debug':
-        this.level = 1;
-        break;
-      case 'info':
-        this.level = 2;
-        break;
-      default:
-        this.level = 2;
+    case 'debug':
+      this.level = 1;
+      break;
+    case 'info':
+      this.level = 2;
+      break;
+    default:
+      this.level = 2;
     } 
   }
 

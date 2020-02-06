@@ -4,8 +4,8 @@ const HOUR = 60 * MINUTE;
 const DAY = 24 * HOUR;
 
 module.exports = {
-	DAY,
-	HOUR,
-	MINUTE,
-	SECOND,
+  DAY,
+  HOUR,
+  MINUTE,
+  SECOND,
 };

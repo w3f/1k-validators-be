@@ -14,11 +14,21 @@ export default class Database {
     console.log(`Adding candidate ${name}`);
 
     const oldData = await this._queryOne({ name });
-    console.log('olddata', oldData);
+    // console.log('olddata', oldData);
     const newData = Object.assign(oldData, {
       stash,
     });
     return this._update({ name }, newData);
+  }
+
+  async setNominatedAt(stash: Stash, now: number) {
+    console.log('setting nominated at', now);
+
+    const oldData = await this._queryOne({ stash });
+    const newData = Object.assign(oldData, {
+      nominatedAt: now,
+    });
+    return this._update({ stash }, newData);
   }
 
   /// Entry point for reporting a new node is online.

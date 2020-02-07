@@ -3,6 +3,8 @@ import Keyring from '@polkadot/keyring';
 import { KeyringPair } from "@polkadot/keyring/types";
 import { CronJob } from 'cron';
 
+import Database from './db';
+
 type Nomconfig = {
   seed: string,
   maxNominations: number,
@@ -23,10 +25,12 @@ class Nominator {
   public maxNominations: number;
 
   private api: ApiPromise;
+  private db: Database;
   private signer: KeyringPair;
 
-  constructor(api: ApiPromise, seed: string, maxNominations: number) {
+  constructor(api: ApiPromise, db: Database, seed: string, maxNominations: number) {
     this.api = api;
+    this.db = db;
     this.maxNominations = maxNominations;
 
     const keyring = new Keyring({
@@ -38,16 +42,23 @@ class Nominator {
   }
 
   async nominate(targets: Array<Stash>) {
+    const now = new Date().getTime();
+
     const tx = this.api.tx.staking.nominate(targets);
     console.log(
-      `Sending extrinsic Staking::nominate from ${this.address} to targets ${targets}`
+      `Sending extrinsic Staking::nominate from ${this.address} to targets ${targets} at ${now}`
     );
     const unsub = await tx.signAndSend(this.signer, (result: any) => {
       const { status } = result;
 
       console.log(`Status now: ${status.type}`);
-      if (status.finalized) {
+      // console.log(status.isFinalized);
+      if (status.isFinalized) {
         console.log(`Included in block ${status.asFinalized}`);
+        this.currentlyNominating = targets;
+        for (const stash of targets) {
+          this.db.setNominatedAt(stash, now);
+        }
         unsub();
       }
     });
@@ -72,7 +83,7 @@ export default class ScoreKeeper {
   /// Spawns a new nominator.
   async spawn(seed: string, maxNominations: number = 1) {
     this.nominators.push(
-      new Nominator(this.api, seed, maxNominations)
+      new Nominator(this.api, this.db, seed, maxNominations)
     );
   }
 
@@ -81,11 +92,15 @@ export default class ScoreKeeper {
       throw new Error('No nominators spawned! Cannot begin.');
     }
 
+    // TMP - start immediately
+    await this.startRound();
+
     new CronJob(frequency, async () => {
       if (!this.currentSet) {
         await this.startRound();
       } else {
         await this.endRound();
+        await this.startRound();
       }
     }).start(); 
   }
@@ -97,7 +112,7 @@ export default class ScoreKeeper {
 
     const set = await this._getSet();
     this.currentSet = set;
-    console.log(set);
+    // console.log('set', set);
 
     for (const nominator of this.nominators) {
       const maxNominations = nominator.maxNominations;
@@ -109,6 +124,9 @@ export default class ScoreKeeper {
         );
       }
 
+      toNominate = toNominate.map((node: any) => node.stash);
+
+      // console.log('toNominate', toNominate);
       await nominator.nominate(toNominate);
     }
   }
@@ -147,32 +165,35 @@ export default class ScoreKeeper {
   
   /// Handles the ending of a round.
   async endRound() {
-    const lastNominatedSet = this.currentSet;
-    delete this.currentSet;
+    console.log('Ending round');
 
-    for (const stash of lastNominatedSet) {
-      /// Ensure the commission wasn't raised.
-      const preferences = await this.api.query.staking.validators(stash);
-      //@ts-ignore
-      const { commission } = preferences.toJSON()[0];
-      if (commission > TEN_PERCENT) {
-        await this.dockPoints(stash);
-        continue;
-      }
-      /// Ensure the 50 KSM minimum was not removed.
-      const exposure = await this.api.query.staking.stakers(stash);
-      //@ts-ignore
-      const { own } = exposure.toJSON();
-      if (own < FIFTY_KSM) {
-        await this.dockPoints(stash);
-        continue;
-      }
+    for (const nominator of this.nominators) {
+      const { currentlyNominating } = nominator;
+      delete nominator.currentlyNominating;
 
-      /// TODO check against slashes in this era.
-      //then if everything is all right...
-      await this.addPoint(stash);
+      for (const stash of currentlyNominating) {
+        /// Ensure the commission wasn't raised.
+        const preferences = await this.api.query.staking.validators(stash);
+        //@ts-ignore
+        const { commission } = preferences.toJSON()[0];
+        if (commission > TEN_PERCENT) {
+          await this.dockPoints(stash);
+          continue;
+        }
+        /// Ensure the 50 KSM minimum was not removed.
+        const exposure = await this.api.query.staking.stakers(stash);
+        //@ts-ignore
+        const { own } = exposure.toJSON();
+        if (own < FIFTY_KSM) {
+          await this.dockPoints(stash);
+          continue;
+        }
+
+        /// TODO check against slashes in this era.
+        //then if everything is all right...
+        await this.addPoint(stash);
+      }
     }
-    /// And start a new round.
   }
 
   /// Handles the docking of points from bad behaving validators.

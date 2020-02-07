@@ -4,6 +4,7 @@ import Database from './db';
 
 const API: any = {
   GetValidators: '/validators',
+  GetNodes: '/nodes',
   GetNominators: '/nominators',
 };
 
@@ -21,6 +22,12 @@ export default class Server {
           {
             const allValidators = await this.db.allValidators();
             // ctx.body = allValidators.join('\n');
+          }
+          break;
+        case API.GetNodes:
+          {
+            const allNodes: Array<any> = await this.db.allNodes();
+            ctx.body = allNodes.map((node: any) => JSON.stringify(node)).join('\n');
           }
           break;
         case API.GetNominators:

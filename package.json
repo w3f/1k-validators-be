@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "lint:fix": "./node_modules/.bin/eslint src/**/*.js --fix",
-    "start": "rm validator.db; node src/index",
+    "start": "rm validator.db; ts-node src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -16,11 +16,13 @@
     "@polkadot/keyring": "^2.0.1",
     "@types/koa": "^2.11.0",
     "@types/nedb": "^1.8.9",
+    "@types/ws": "^7.2.1",
     "koa": "^2.11.0",
     "nedb": "^1.8.0",
     "reconnecting-websocket": "^4.2.0",
     "semver": "^7.1.2",
     "ts-node": "^8.6.2",
+    "typescript": "^3.7.5",
     "ws": "^7.2.1"
   },
   "devDependencies": {

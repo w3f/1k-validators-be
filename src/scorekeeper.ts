@@ -66,6 +66,14 @@ export default class ScoreKeeper {
     );
   }
 
+  async begin() {
+    if (!this.nominators) {
+      throw new Error('No nominators spawned! Cannot begin.');
+    }
+
+      
+  }
+
   /// Handles the beginning of a new round.
   async startRound(set: Array<Stash>) {
     this.currentSet = set;

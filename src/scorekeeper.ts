@@ -119,9 +119,14 @@ export default class ScoreKeeper {
 
       let toNominate = [];
       for (let i = 0; i < maxNominations; i++) {
-        toNominate.push(
-          set.shift(),
-        );
+        if (set.length > 0) {
+          toNominate.push(
+            set.shift(),
+          );
+        } else {
+          console.log('ran to the end of candidates');
+          return;
+        }
       }
 
       toNominate = toNominate.map((node: any) => node.stash);
@@ -139,14 +144,6 @@ export default class ScoreKeeper {
     nodes = nodes.filter((node: any) => node.offlineSince === 0);
     // Ensure nodes have 98% uptime (3.35 hours for one week).
     nodes = nodes.filter((node: any) => node.offlineAccumulated / WEEK <= 0.02);
-    // Sort by earliest connected on top.
-    nodes.sort((a: any, b: any) => {
-      return a.connectedAt - b.connectedAt;
-    });
-    // Sort so that the most recent nominations are at the bottom.
-    nodes.sort((a: any, b: any) => {
-      return a.nominatedAt - b.nominatedAt;
-    });
     // Ensure they meet the requirements of:
     //  - Less than 10% commission.
     //  - More than 50 KSM.
@@ -159,7 +156,16 @@ export default class ScoreKeeper {
       const { own } = exposure.toJSON();
       return Number(commission) <= TEN_PERCENT && own >= FIFTY_KSM;
     });
+    // Sort by earliest connected on top.
+    nodes.sort((a: any, b: any) => {
+      return a.connectedAt - b.connectedAt;
+    });
+    // Sort so that the most recent nominations are at the bottom.
+    nodes.sort((a: any, b: any) => {
+      return a.nominatedAt - b.nominatedAt;
+    });
 
+    // console.log('nodes', nodes);
     return nodes;
   }
   
@@ -170,6 +176,9 @@ export default class ScoreKeeper {
     for (const nominator of this.nominators) {
       const { currentlyNominating } = nominator;
       delete nominator.currentlyNominating;
+
+      // If not nominating any... then return.
+      if (!currentlyNominating) return;
 
       for (const stash of currentlyNominating) {
         /// Ensure the commission wasn't raised.
@@ -189,6 +198,13 @@ export default class ScoreKeeper {
           continue;
         }
 
+        /// Ensure the validator is still online.
+        const node = await this.db.getValidator(stash);
+        if (Number(node.offlineSince) !== 0) {
+          await this.dockPoints(stash);
+          continue;
+        }
+
         /// TODO check against slashes in this era.
         //then if everything is all right...
         await this.addPoint(stash);
@@ -198,6 +214,8 @@ export default class ScoreKeeper {
 
   /// Handles the docking of points from bad behaving validators.
   async dockPoints(stash: Stash) {
+    console.log(`Stash ${stash} did BAD, docking points`);
+
     const oldData = await this.db.getValidator(stash);
     /// This logic adds one to misbehaviors and reduces rank by half. 
     const newData = Object.assign(oldData, {
@@ -209,6 +227,8 @@ export default class ScoreKeeper {
 
   /// Handles the adding of points to successful validators.
   async addPoint(stash: Stash) {
+    console.log(`Stash ${stash} did GOOD, adding points`);
+
     const oldData = await this.db.getValidator(stash);
     const newData = Object.assign(oldData, {
       rank: oldData.rank + 1,

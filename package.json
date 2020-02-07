@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "lint:fix": "./node_modules/.bin/eslint src/**/*.js --fix",
-    "start": "rm validator.db; ts-node src/index.ts",
+    "start": "ts-node src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

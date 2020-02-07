@@ -6,7 +6,7 @@
             {
                 "name": "Alice",
                 "stash": "5GNJqTPyNqANBkUVMN1LPPrxXnFouWXoe2wNSmmEoLctxiZY"
-            },
+            },z
             {
                 "name": "Bob",
                 "stash": "5HpG9w8EBLe5XCrbczpwq5TSXvedjrBGCwqxK1iQ7qUsSWFc"
@@ -19,7 +19,9 @@
                 "seed": "0xbc1ede780f784bb6991a585e4f6e61522c14e1cae6ad0895fb57b9a205a8f938",
                 "maxNominations": 1,
                 "maxAmount": 100
-            },
+            }
+        ],
+        "something": [
             {
                 "seed": "0x786ad0e2df456fe43dd1f91ebca22e235bc162e0bb8d53c633e8c85b2af68b7a",
                 "maxNominations": 1

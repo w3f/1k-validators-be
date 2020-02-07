@@ -3,3 +3,4 @@ validator.db
 node_modules
 yarn-error.log
 scratch
+src/js

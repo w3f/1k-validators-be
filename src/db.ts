@@ -9,8 +9,26 @@ export default class Database {
     this._db = new Datastore({ filename, autoload });
   }
 
+  /// Entry point for adding a new candidate.
+  async addCandidate(name: string, stash: string) {
+    console.log(`Adding candidate ${name}`);
+
+    const oldData = await this._queryOne({ name });
+    console.log('olddata', oldData);
+    const newData = Object.assign(oldData, {
+      stash,
+    });
+    return this._update({ name }, newData);
+  }
+
   /// Entry point for reporting a new node is online.
   async reportOnline(id: number, details: Array<any>) {
+
+    const name = details[0];
+
+    //@ts-ignore
+    console.log(`Reporting ${name} online.`)
+
     const now = new Date().getTime();
     const oldData = await this._queryOne({ id });
 
@@ -18,6 +36,7 @@ export default class Database {
       /// First time we're seeing the node.
       const data = {
         id,
+        name,
         details,
         connectedAt: now,
         nominatedAt: 0,
@@ -25,6 +44,7 @@ export default class Database {
         offlineSince: 0,
         offlineAccumulated: 0,
         rank: 0,
+        stash: null,
       };
       return this._insert(data); 
     }

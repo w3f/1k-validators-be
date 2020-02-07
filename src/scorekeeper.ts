@@ -1,6 +1,7 @@
 import { ApiPromise } from "@polkadot/api";
 import Keyring from '@polkadot/keyring';
 import { KeyringPair } from "@polkadot/keyring/types";
+import { CronJob } from 'cron';
 
 type Nomconfig = {
   seed: string,
@@ -75,12 +76,18 @@ export default class ScoreKeeper {
     );
   }
 
-  async begin() {
+  async begin(frequency: string) {
     if (!this.nominators) {
       throw new Error('No nominators spawned! Cannot begin.');
     }
 
-      
+    new CronJob(frequency, async () => {
+      if (!this.currentSet) {
+        await this.startRound();
+      } else {
+        await this.endRound();
+      }
+    }).start(); 
   }
 
   /// Handles the beginning of a new round.
@@ -89,6 +96,8 @@ export default class ScoreKeeper {
     console.log(`New round starting at ${now}`);
 
     const set = await this._getSet();
+    this.currentSet = set;
+    console.log(set);
 
     for (const nominator of this.nominators) {
       const maxNominations = nominator.maxNominations;

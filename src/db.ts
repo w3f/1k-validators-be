@@ -50,6 +50,24 @@ export default class Database {
     return this._update({ id }, newData);
   }
 
+  async nodeGood(id: number, now: number) {
+    const oldData = await this._queryOne({ id });
+    const newData = Object.assign(oldData, {
+      goodSince: now,
+    });
+
+    return this._update({ id }, newData);
+  }
+
+  async nodeNotGood(id: number) {
+    const oldData = await this._queryOne({ id });
+    const newData = Object.assign(oldData, {
+      goodSince: 0,
+    });
+
+    return this._update({ id }, newData);
+  }
+
   async allNodes(): Promise<any[]> {
     return new Promise((resolve: any, reject: any) => {
       this._db.find({ id: { $gte: 0 } }, (err: any, docs: any) => {

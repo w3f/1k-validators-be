@@ -16,6 +16,7 @@
     "@polkadot/keyring": "^2.0.1",
     "@types/koa": "^2.11.0",
     "@types/nedb": "^1.8.9",
+    "@types/semver": "^7.1.0",
     "@types/ws": "^7.2.1",
     "koa": "^2.11.0",
     "nedb": "^1.8.0",

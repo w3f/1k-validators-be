@@ -14,10 +14,13 @@
     "@octokit/rest": "^16.43.1",
     "@polkadot/api": "^1.0.1",
     "@polkadot/keyring": "^2.0.1",
+    "@types/koa": "^2.11.0",
+    "@types/nedb": "^1.8.9",
     "koa": "^2.11.0",
     "nedb": "^1.8.0",
     "reconnecting-websocket": "^4.2.0",
     "semver": "^7.1.2",
+    "ts-node": "^8.6.2",
     "ws": "^7.2.1"
   },
   "devDependencies": {

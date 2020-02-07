@@ -104,10 +104,26 @@ class Nominator {
     });
   }
 
-  endRound() {
+  async endRound() {
     // At the end of round it needs to settle the points.
     const priorNominatedSet = ''; //TODO
-
+    for (const stash of priorNominatedSet) {
+      // Check that the commission wasn't raised.
+      const prefs = await this.api.query.staking.validators(stash);
+      const { commission } = prefs.toJSON()[0];
+      if (commission > 10000000) {
+        return this.dockPoints(stash);
+      }
+      // Check that KSM wasn't removed.
+      const exposure = await this.api.query.staking.stakers(stash);
+      const ownStake = exposure.toJSON().own;
+      if (ownStake < 50*10**12) {
+        return this.dockPoints(stash);
+      }
+      // TODO check against a saved list of slashes.
+      //then
+      return this.addPoint(stash);
+    }
   }
 
   shutdown() {

@@ -23,7 +23,7 @@ try {
       
       /// The monitoring service that keeps our nodes on their feet.
       const monitor = new Monitor(db, 16 * 60 * 60 * 1000);
-      new CronJob('5 * * * *', async () => {
+      new CronJob('0-59/2 * * * *', async () => {
         console.log('Monitor cronjob started. Running every five minutes.');
         await monitor.getLatestTaggedRelease();
         await monitor.ensureUpgrades();

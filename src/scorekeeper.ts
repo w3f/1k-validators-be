@@ -14,18 +14,26 @@ const TEN_PERCENT: number = 10000000;
 /// 50 KSM with decimals.
 const FIFTY_KSM: number = 50 * 10**12;
 
+/// It's been ONE WEEK since you looked at me...
+const WEEK = 7 * 24 * 60 * 60 * 1000;
+
 class Nominator {
+  public currentlyNominating: Stash[] = [];
+  public maxNominations: number;
+
   private api: ApiPromise;
   private signer: KeyringPair;
 
-  constructor(api: ApiPromise, seed: string) {
+  constructor(api: ApiPromise, seed: string, maxNominations: number) {
     this.api = api;
+    this.maxNominations = maxNominations;
 
     const keyring = new Keyring({
       type: 'sr25519',
     });
 
     this.signer = keyring.createFromUri(seed);
+    console.log(`Nominator spawned: ${this.address}`);
   }
 
   async nominate(targets: Array<Stash>) {
@@ -50,6 +58,7 @@ class Nominator {
 
 export default class ScoreKeeper {
   public api: ApiPromise;
+  public currentEra: number = 0;
   public currentSet: Array<Stash> = [];
   public db: any;
   private nominators: Array<Nominator> = [];
@@ -60,9 +69,9 @@ export default class ScoreKeeper {
   }
 
   /// Spawns a new nominator.
-  async spawn(seed: string) {
+  async spawn(seed: string, maxNominations: number = 1) {
     this.nominators.push(
-      new Nominator(this.api, seed)
+      new Nominator(this.api, seed, maxNominations)
     );
   }
 
@@ -75,8 +84,56 @@ export default class ScoreKeeper {
   }
 
   /// Handles the beginning of a new round.
-  async startRound(set: Array<Stash>) {
-    this.currentSet = set;
+  async startRound() {
+    const now = new Date().getTime();
+    console.log(`New round starting at ${now}`);
+
+    const set = await this._getSet();
+
+    for (const nominator of this.nominators) {
+      const maxNominations = nominator.maxNominations;
+
+      let toNominate = [];
+      for (let i = 0; i < maxNominations; i++) {
+        toNominate.push(
+          set.shift(),
+        );
+      }
+
+      await nominator.nominate(toNominate);
+    }
+  }
+
+  async _getSet(): Promise<any[]> {
+    let nodes = await this.db.allNodes();
+    // Only take nodes that have a stash attached.
+    nodes = nodes.filter((node: any) => node.stash !== null);
+    // Only take nodes that are online.
+    nodes = nodes.filter((node: any) => node.offlineSince === 0);
+    // Ensure nodes have 98% uptime (3.35 hours for one week).
+    nodes = nodes.filter((node: any) => node.offlineAccumulated / WEEK <= 0.02);
+    // Sort by earliest connected on top.
+    nodes.sort((a: any, b: any) => {
+      return a.connectedAt - b.connectedAt;
+    });
+    // Sort so that the most recent nominations are at the bottom.
+    nodes.sort((a: any, b: any) => {
+      return a.nominatedAt - b.nominatedAt;
+    });
+    // Ensure they meet the requirements of:
+    //  - Less than 10% commission.
+    //  - More than 50 KSM.
+    nodes = nodes.filter(async (node: any) => {
+      const preferences = await this.api.query.staking.validators(node.stash);
+      //@ts-ignore
+      const { commission } = preferences.toJSON()[0];
+      const exposure = await this.api.query.staking.stakers(node.stash);
+      //@ts-ignore
+      const { own } = exposure.toJSON();
+      return Number(commission) <= TEN_PERCENT && own >= FIFTY_KSM;
+    });
+
+    return nodes;
   }
   
   /// Handles the ending of a round.

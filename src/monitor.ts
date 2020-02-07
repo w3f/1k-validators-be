@@ -23,23 +23,34 @@ export default class Monitor {
   }
 
   public async getLatestTaggedRelease() {
+    console.log('Fetching latest release...');
+    
     const tags = await this.ghApi.repos.listTags({
       owner: 'paritytech',
       repo: 'polkadot',
     });
+
+    const tagName = tags.data[0].name;
+
+    if (this.latestTaggedRelease && tagName === this.latestTaggedRelease!.name) {
+      console.log('No new release found.');
+      return;
+    }
     
     const release = await this.ghApi.repos.getReleaseByTag({
       owner: 'paritytech',
       repo: 'polkadot',
-      tag: tags.data[0].name,
+      tag: tagName,
     });
 
     const publishedAt = new Date(release.data.published_at).getTime();
 
     this.latestTaggedRelease = {
-      name: tags.data[0].name,
+      name: tagName,
       publishedAt,
     };
+
+    console.log(`Latest release updated: ${tagName} | Published at: ${publishedAt}`);
   }
 
   /// Ensures that nodes have upgraded within a `grace` period.

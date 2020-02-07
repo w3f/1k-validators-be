@@ -6,6 +6,7 @@ const API: any = {
   GetValidators: '/validators',
   GetNodes: '/nodes',
   GetNominators: '/nominators',
+  GetRounds: '/rounds',
 };
 
 export default class Server {
@@ -34,6 +35,11 @@ export default class Server {
           {
             const allNominators = await this.db.allNominators();
             // ctx.body = allNominators.join('\n');
+          }
+          break;
+        case API.GetRounds:
+          {
+            // TODO
           }
           break;
         default:

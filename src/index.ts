@@ -18,11 +18,11 @@ try {
   (
     async () => {
       const api = await ApiPromise.create({
-        provider: new WsProvider(Config.nominate.wsEndpoint),
+        provider: new WsProvider(Config.global.wsEndpoint),
       });
 
-      const db = new Database(Config.storageFile);
-      const server = new Server(db, Config.serverPort);
+      const db = new Database(Config.db.storageFile);
+      const server = new Server(db, Config.server.port);
 
       const telemetry = new TelemetryClient(Config, db);
       telemetry.start();
@@ -32,7 +32,7 @@ try {
       
       /// The monitoring service that keeps our nodes on their feet.
       const monitor = new Monitor(db, 16 * 60 * 60 * 1000);
-      const monitorFrequency = Config.test? '0 0-59/1 * * * *' : '0 0-59/5 * * * *';
+      const monitorFrequency = Config.global.test? '0 0-59/1 * * * *' : '0 0-59/5 * * * *';
 
       new CronJob(monitorFrequency, async () => {
         console.log('Monitor cronjob started. Running every five minutes.');
@@ -42,16 +42,16 @@ try {
 
       /// Time to start the nominators.
       const scorekeeper = new Scorekeeper(api, db);
-      for (const nominator of Config.nominate.nominators) {
+      for (const nominator of Config.scorekeeper.nominators) {
         await scorekeeper.spawn(nominator.seed);
       }
 
       /// And add the candidates.
-      for (const candidate of Config.nominate.candidates) {
+      for (const candidate of Config.scorekeeper.candidates) {
         await db.addCandidate(candidate.name, candidate.stash);
       }
 
-      const scorekeeperFrequency = Config.test? '0 0-59/3 * * * *' : '0 0 0 * * *';
+      const scorekeeperFrequency = Config.global.test? '0 0-59/3 * * * *' : '0 0 0 * * *';
 
       scorekeeper.begin(scorekeeperFrequency);
     }

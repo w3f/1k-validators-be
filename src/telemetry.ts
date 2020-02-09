@@ -21,7 +21,7 @@ export default class TelemetryClient {
   constructor(config: any, db: Database) {
     this.config = config;
     this.db = db;
-    this.host = this.config.telemetryHost || DEFAULT_HOST;
+    this.host = this.config.telemetry.host || DEFAULT_HOST;
 
     const options = {
       WebSocket: WS,
@@ -38,7 +38,7 @@ export default class TelemetryClient {
         console.log(
           `Connected to substrate-telemetry on host ${this.host}`
         );
-        for (const chain of this.config.subscribe.chains) {
+        for (const chain of this.config.telemetry.chains) {
           this._subscribe(chain);
         }
         resolve();
@@ -102,7 +102,7 @@ export default class TelemetryClient {
   }
 
   private async _subscribe(chain: string, finality: boolean = false) {
-    if (this.config.subscribe.chains.includes(chain)) {
+    if (this.config.telemetry.chains.includes(chain)) {
       this.socket.send(`subscribe:${chain}`);
       console.log(`Subscribed to ${chain}`);
 

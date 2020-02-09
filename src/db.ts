@@ -57,9 +57,8 @@ export default class Database {
         stash: null,
       };
       return this._insert(data); 
-    }
-
-    if (oldData.offlineSince) {
+    } else {
+      /// We've seen the node before, take stock of any offline time.
       const timeOffline = now - Number(oldData.offlineSince);
       const accumulated = Number(oldData.offlineAccumulated) + timeOffline;
       const newData = Object.assign(oldData, {

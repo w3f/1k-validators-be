@@ -13,7 +13,7 @@ export default class Server {
   public app: Koa;
   private db: Database;
 
-  constructor(db: Database, port: string) {
+  constructor(db: Database, port: number) {
     this.app = new Koa();
     this.db = db;
 

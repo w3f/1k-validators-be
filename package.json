@@ -6,7 +6,7 @@
   "scripts": {
     "lint:fix": "./node_modules/.bin/eslint src/**/*.js --fix",
     "start": "ts-node src/index.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "ava"
   },
   "author": "",
   "license": "ISC",
@@ -29,6 +29,18 @@
     "ws": "^7.2.1"
   },
   "devDependencies": {
+    "@ava/typescript": "^1.1.0",
+    "ava": "^3.2.0",
     "eslint": "^6.8.0"
-  }
+  },
+  "ava": {
+    "failFast": false,
+    "verbose": true,
+		"extensions": [
+			"ts"
+		],
+		"require": [
+			"ts-node/register"
+		]
+	}
 }

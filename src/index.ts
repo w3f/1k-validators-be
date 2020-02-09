@@ -41,7 +41,7 @@ try {
       }).start();
 
       /// Time to start the nominators.
-      const scorekeeper = new Scorekeeper(api, db);
+      const scorekeeper = new Scorekeeper(api, db, Config);
       for (const nominator of Config.scorekeeper.nominators) {
         await scorekeeper.spawn(nominator.seed);
       }

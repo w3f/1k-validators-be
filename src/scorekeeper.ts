@@ -70,14 +70,16 @@ class Nominator {
 
 export default class ScoreKeeper {
   public api: ApiPromise;
+  public config: any;
   public currentEra: number = 0;
   public currentSet: Array<Stash> = [];
   public db: any;
   private nominators: Array<Nominator> = [];
 
-  constructor(api: ApiPromise, db: any) {
+  constructor(api: ApiPromise, db: any, config: any) {
     this.api = api;
     this.db = db;
+    this.config = config;
   }
 
   /// Spawns a new nominator.
@@ -142,20 +144,34 @@ export default class ScoreKeeper {
     nodes = nodes.filter((node: any) => node.stash !== null);
     // Only take nodes that are online.
     nodes = nodes.filter((node: any) => node.offlineSince === 0);
+    // Only take nodes that have `goodSince` over one week.
+    if (!this.config.global.test) {
+      nodes = nodes.filter((node: any) => {
+        const now = new Date().getTime();
+        return now - Number(node.goodSince) >= WEEK;
+      });
+    }
     // Ensure nodes have 98% uptime (3.35 hours for one week).
     nodes = nodes.filter((node: any) => node.offlineAccumulated / WEEK <= 0.02);
     // Ensure they meet the requirements of:
     //  - Less than 10% commission.
     //  - More than 50 KSM.
-    nodes = nodes.filter(async (node: any) => {
+    let tmpNodes = [];
+    for (const node of nodes) {
+      // console.log('node', node)
       const preferences = await this.api.query.staking.validators(node.stash);
       //@ts-ignore
       const { commission } = preferences.toJSON()[0];
       const exposure = await this.api.query.staking.stakers(node.stash);
       //@ts-ignore
       const { own } = exposure.toJSON();
-      return Number(commission) <= TEN_PERCENT && own >= FIFTY_KSM;
-    });
+      if (Number(commission) <= TEN_PERCENT && own >= FIFTY_KSM) {
+        const index = nodes.indexOf(node);
+        tmpNodes.push(nodes[index]);
+      }
+    }
+    nodes = tmpNodes;
+
     // Sort by earliest connected on top.
     nodes.sort((a: any, b: any) => {
       return a.connectedAt - b.connectedAt;

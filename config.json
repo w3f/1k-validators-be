@@ -1,7 +1,7 @@
 {
     "global": {
         "test": true,
-        "wsEndpoint": "ws://localhost:9944"
+        "wsEndpoint": "ws://localhost:9946"
     },
     "db": {
         "storageFile": "validator.db"
@@ -26,7 +26,9 @@
                 "seed": "0x786ad0e2df456fe43dd1f91ebca22e235bc162e0bb8d53c633e8c85b2af68b7a",
                 "maxNominations": 1
             }
-        ]
+        ],
+        "forceRound": true,
+        "nominating": true
     },
     "server": {
         "port": 3300

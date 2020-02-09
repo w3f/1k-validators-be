@@ -14,6 +14,10 @@ export default class Database {
     console.log(`Adding candidate ${name}`);
 
     const oldData = await this._queryOne({ name });
+    if (!oldData) {
+      console.log(`Could not find candidate node ${name} - skipping`);
+      return;
+    }
     // console.log('olddata', oldData);
     const newData = Object.assign(oldData, {
       stash,

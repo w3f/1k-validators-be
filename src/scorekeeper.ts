@@ -94,10 +94,17 @@ export default class ScoreKeeper {
       throw new Error('No nominators spawned! Cannot begin.');
     }
 
-    // TMP - start immediately
-    await this.startRound();
+    // If `forceRound` is on - start immediately.
+    if (this.config.scorekeeper.forceRound) {
+      await this.startRound();
+    }
 
     new CronJob(frequency, async () => {
+      if (!this.config.scorekeeper.nominating) {
+        console.log('Not nominating - skipping this round');
+        return;
+      }
+
       if (!this.currentSet) {
         await this.startRound();
       } else {
@@ -158,7 +165,6 @@ export default class ScoreKeeper {
     //  - More than 50 KSM.
     let tmpNodes = [];
     for (const node of nodes) {
-      // console.log('node', node)
       const preferences = await this.api.query.staking.validators(node.stash);
       //@ts-ignore
       const { commission } = preferences.toJSON()[0];

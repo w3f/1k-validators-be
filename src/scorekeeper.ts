@@ -65,7 +65,6 @@ class Nominator {
   }
 
   get address() { return this.signer.address; }
-
 }
 
 export default class ScoreKeeper {
@@ -74,6 +73,9 @@ export default class ScoreKeeper {
   public currentEra: number = 0;
   public currentSet: Array<Stash> = [];
   public db: any;
+  // Keeps track of a starting era for a round.
+  public startEra: number = 0;
+
   private nominators: Array<Nominator> = [];
 
   constructor(api: ApiPromise, db: any, config: any) {
@@ -117,11 +119,14 @@ export default class ScoreKeeper {
   /// Handles the beginning of a new round.
   async startRound() {
     const now = new Date().getTime();
-    console.log(`New round starting at ${now}`);
+
+    // The nominations sent now won't be active until the next era. 
+    this.currentEra = await this._getCurrentEra()+1;
+
+    console.log(`New round starting at ${now} for next Era ${this.currentEra}`);
 
     const set = await this._getSet();
     this.currentSet = set;
-    // console.log('set', set);
 
     for (const nominator of this.nominators) {
       const maxNominations = nominator.maxNominations;
@@ -140,7 +145,6 @@ export default class ScoreKeeper {
 
       toNominate = toNominate.map((node: any) => node.stash);
 
-      // console.log('toNominate', toNominate);
       await nominator.nominate(toNominate);
     }
   }
@@ -190,7 +194,11 @@ export default class ScoreKeeper {
     // console.log('nodes', nodes);
     return nodes;
   }
-  
+
+  async _getCurrentEra(): Promise<number> {
+    return (await this.api.query.staking.currentEra()).toNumber();
+  }
+
   /// Handles the ending of a round.
   async endRound() {
     console.log('Ending round');
@@ -227,9 +235,31 @@ export default class ScoreKeeper {
           continue;
         }
 
-        /// TODO check against slashes in this era.
+        /// Check slashes in this era and the previous eras.
+        // TODO: Test this:
+        const currentEra: number = await this._getCurrentEra();
+        const startEra = this.startEra;
+        const unsub = await this.api.query.staking.currentEra(async (era: any) => {
+          era = era.toNumber();
+          // When this era ends then check for slashes.
+          if (era == currentEra+1) {
+            while (era != startEra) {
+              const slashes = await this.api.query.staking.validatorSlashInEra(era, stash);
+              // console.log(slashes);
+              if (!slashes.isNone) {
+                this.dockPoints(stash);
+                unsub();
+                return;
+              }
+              era--;
+            }
+            // Should only reach here if no slashes were found.
+            this.addPoint(stash);
+            unsub();
+          }
+        })
         //then if everything is all right...
-        await this.addPoint(stash);
+        // await this.addPoint(stash);
       }
     }
   }

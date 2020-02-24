@@ -1,4 +1,4 @@
-# Thousand Validator Program
+# [Thousand Validator Program][thousand]
 
 **To apply to the Thousand Validator Program - sign up [here][form]**
 
@@ -12,13 +12,18 @@ Requirements for prospective validators:
  - Connection to the private telemetry.
  - Seven days of online sentry and validator infrastructure.
 
-Once the validators have met the following requirements, this application will
-automatically monitor and rotate the alloted nominations between the prospective
-validators and push them into the active set. The validators will stay nominated
-in the active set for 24 hours (4 eras on Kusama) and then successful validators
-will be awarded with one point. Nominations will rotate again to include eligible
-validators that have not yet been included when possible. If validators get slashed
-or are otherwise found to be unresponsive through the period of their nomination
-they will be docked one point.
+Please see the [blog post][thousand] for more information and requirements for
+entering the program.
 
-form: https://example.com
+## What is this repository?
+
+The `1k-validator-be` repository houses the backend code for the services that
+run the nomination process of the programme. It handles the configuration of
+adding new validators to the program, and keeping track that they perform their
+duties correctly. It performs the nomination of the validators on the basis of
+a CronJob that is run every 24 hours. It is also planned to contain a Matrix
+notification service that will bubble up the issues that it finds with different
+validators and will explain the reason why they were skipped from nomination.
+
+[thousand]: https://polkadot.network/join-kusamas-thousand-validators-programme/
+[form]: https://docs.google.com/forms/d/e/1FAIpQLSewhltQOcmkIlE7Wftn0NTVuyEs6Wk8Qpx6ssCAo2BO4oQH0w/viewform

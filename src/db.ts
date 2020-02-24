@@ -173,7 +173,12 @@ export default class Database {
   }
 
   async allNominators() {
-    return null;
+    return new Promise((resolve: any, reject: any) => {
+    this._db.find({ nominator: /.*/ }, (err: any, docs: any) => {
+        if (err) reject(err);
+        resolve(docs);
+      });
+    });
   }
 
   /// Insert new item in the datastore.

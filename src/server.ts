@@ -38,7 +38,7 @@ export default class Server {
           {
             const allNominators = await this.db.allNominators();
             //@ts-ignore
-            ctx.body = allNominators.join('\n');
+            ctx.body = allNominators.map((nom: any) => JSON.stringify(nom)).join('\n');
           }
           break;
         case API.GetRounds:

@@ -7,7 +7,7 @@
     "lint:fix": "./node_modules/.bin/eslint src/**/*.ts --fix",
     "clean": "rm validator.db",
     "start": "ts-node src/index.ts",
-    "test": "ava"
+    "test": "ava test/**/*.spec.ts"
   },
   "author": "",
   "license": "ISC",

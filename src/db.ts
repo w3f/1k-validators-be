@@ -19,7 +19,6 @@ export default class Database {
       console.log(`Could not find candidate node ${name} - skipping`);
       return;
     }
-    // console.log('olddata', oldData);
     const newData = Object.assign(oldData, {
       stash,
     });
@@ -105,6 +104,7 @@ export default class Database {
         offlineSince: 0,
         offlineAccumulated: 0,
         rank: 0,
+        misbehaviors: 0,
         stash: null,
       };
       return this._insert(data); 

@@ -216,6 +216,8 @@ export default class ScoreKeeper {
     const newData = Object.assign(oldData, {
       rank: Math.floor(oldData.rank / 2),
       misbehaviors: oldData.misbehaviors + 1,
+      // Reset `goodSince` effectively making them take a timeout for a week.
+      goodSince: new Date().getTime(),
     });
     return this.db.setValidator(stash, newData);
   }

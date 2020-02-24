@@ -1,117 +1,34 @@
 import test from 'ava';
+import Database from '../src/db';
 import Scorekeeper from '../src/scorekeeper';
 
-const MockApi = {
-	query: {
-		staking: {
-			stakers: (stash: any) => {
-				return {
-					toJSON: () => {
-						return {
-							own: 50*10**12,
-						};
-					}
-				}
-			},
-			validators: (stash: any) => {
-				switch (stash) {
-					case '5GNJqTPyNqANBkUVMN1LPPrxXnFouWXoe2wNSmmEoLctxiZY':
-						{
-							return {
-								toJSON: () => [
-									{
-										commission: '10000000'
-									}
-								]
-							}
-						}
-						break;
-					case '5HpG9w8EBLe5XCrbczpwq5TSXvedjrBGCwqxK1iQ7qUsSWFc':
-						{
-							return {
-								toJSON: () => [
-									{
-										commission: '10000000'
-									}
-								]
-							}
-						}
-						break;
-					default:
-						{
-							return {
-								toJSON: () => [
-									{
-										commission: '20000000'
-									}
-								]
-							}
-						}
-				}
-			}
-		}
-	}
-}
+import * as fs from 'fs';
 
-const MockDb = {
-	allNodes: () => {
-		return [
-			{
-				name: 'Alice',
-				stash: '5GNJqTPyNqANBkUVMN1LPPrxXnFouWXoe2wNSmmEoLctxiZY',
-				offlineSince: 0,
-				goodSince: new Date().getTime() - 8 * 24 * 60 * 60 * 1000,
-				offlineAccumulated: 0,
-				connectedAt: 0,
-				nominatedAt: 1,
-			},
-			{
-				name: 'Bob',
-				stash: '5HpG9w8EBLe5XCrbczpwq5TSXvedjrBGCwqxK1iQ7qUsSWFc',
-				offlineSince: 0,
-				goodSince: new Date().getTime() - 8 * 24 * 60 * 60 * 1000,
-				offlineAccumulated: 0,
-				connectedAt: 1,
-				nominatedAt: 0,
-			},
-			{
-				name: 'Charlie',
-				stash: null,	// Filters because no stash.
-			},
-			{
-				name: 'Dave',
-				stash: '5HpG9w8EBLe5XCrbczpwq5TSXvedjrBGCwqxK1iQ7qUsSWFc',
-				offlineSince: 100,	// filter because offlineSince > 0
-			},
-			{
-				name: 'Eve',
-				stash: '5HpG9w8EBLe5XCrbczpwq5TSXvedjrBGCwqxK1iQ7qUsSWFc',
-				offlineSince: 0,
-				goodSince: new Date().getTime(), // filtered because not good for a week
-			},
-			{
-				name: 'Ferdie',
-				stash: '5HpG9w8EBLe5XCrbczpwq5TSXvedjrBGCwqxK1iQ7qUsSWFc',
-				offlineSince: 0,
-				goodSince: new Date().getTime() - 8 * 24 * 60 * 60 * 1000,
-				offlineAccumulated: 0.021 * 7*24*60*60*1000, // filtered due to too much
-			},
-			{
-				name: 'George',
-				stash: '4HpG9w8EBLe5XCrbczpwq5TSXvedjrBGCwqxK1iQ7qUsSWFc', // doesn't have commission set right
-				offlineSince: 0,
-				goodSince: new Date().getTime() - 8 * 24 * 60 * 60 * 1000,
-				offlineAccumulated: 0,
-			},
-		]
-	}
-}
+import {
+	MockApi,
+	MockConfig,
+	MockDb,
+} from './mock';
 
-const MockConfig = {
-	global: {
-		test: false,
-	},
-};
+test.before(async (t: any) => {
+	const db = new Database('test.db');
+
+	await db.reportOnline(0, ['nodeZero']);
+	await db.addCandidate('nodeZero', 'stash0');
+
+	await db.reportOnline(1, ['nodeOne']);
+	await db.addCandidate('nodeOne', 'stash1');
+
+	//@ts-ignore
+	t.context.sk = new Scorekeeper(MockApi, db, MockConfig);
+	t.context.db = db;
+});
+
+test.after((t: any) => {
+	if (fs.existsSync('test.db')) {
+		fs.unlinkSync('test.db');
+	}
+});
 
 test('Creates a new Scorekeeper', (t: any) => {
 	//@ts-ignore
@@ -129,4 +46,25 @@ test('_getSet() returns the expected nodes', async (t: any) => {
 	t.is(set[0].name, MockDb.allNodes()[1].name);
 	t.is(set[1].name, MockDb.allNodes()[0].name);
 	t.is(set.length, 2);
+});
+
+test('addPoint() and dockPoints() works', async (t: any) => {
+	//@ts-ignore
+	const { db, sk } = t.context;
+
+	const four = 4;
+	for (let i = 0; i < four; i++) {
+		await sk.addPoint('stash0');
+	}
+	const data = await db.getValidator('stash0');
+	t.is(data.rank, 4);
+	t.is(data.misbehaviors, 0);
+
+	const before = new Date().getTime();
+	await sk.dockPoints('stash0');
+
+	const dataAgain = await db.getValidator('stash0');
+	t.is(dataAgain.rank, 2);
+	t.is(dataAgain.misbehaviors, 1);
+	t.true(before <= dataAgain.goodSince);
 });

@@ -10,7 +10,14 @@ import {
 	MockDb,
 } from './mock';
 
+const wipe = (file: string) => {
+	if (fs.existsSync(file)) {
+		fs.unlinkSync(file);
+	}
+}
+
 test.before(async (t: any) => {
+	wipe('test.db')
 	const db = new Database('test.db');
 
 	await db.reportOnline(0, ['nodeZero']);
@@ -25,9 +32,7 @@ test.before(async (t: any) => {
 });
 
 test.after((t: any) => {
-	if (fs.existsSync('test.db')) {
-		fs.unlinkSync('test.db');
-	}
+	wipe('test.db');
 });
 
 test('Creates a new Scorekeeper', (t: any) => {
@@ -46,6 +51,17 @@ test('_getSet() returns the expected nodes', async (t: any) => {
 	t.is(set[0].name, MockDb.allNodes()[1].name);
 	t.is(set[1].name, MockDb.allNodes()[0].name);
 	t.is(set.length, 2);
+});
+
+test('Can spawn() nominators and fake begin()', async (t: any) => {
+	const seed = '0x' + '00'.repeat(32);
+	const { db, sk } = t.context;
+
+	await sk.spawn(seed);
+	const nominators = await db.allNominators();
+	t.is(sk.nominators[0].address, nominators[0].nominator);
+
+	t.pass(await sk.begin('* * * * * *'));
 });
 
 test('addPoint() and dockPoints() works', async (t: any) => {

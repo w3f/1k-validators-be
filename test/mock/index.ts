@@ -53,7 +53,11 @@ export const MockApi = {
 export const MockConfig = {
 	global: {
 		test: false,
-	},
+  },
+  scorekeeper: {
+    forceRound: false,
+    nominating: false,
+  }
 };
 
 export const MockDb = {

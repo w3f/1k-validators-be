@@ -19,7 +19,7 @@ export default class ScoreKeeper {
   // Keeps track of a starting era for a round.
   public startEra: number = 0;
 
-  private nominators: Array<Nominator> = [];
+  public nominators: Array<Nominator> = [];
 
   constructor(api: ApiPromise, db: any, config: any) {
     this.api = api;
@@ -29,9 +29,9 @@ export default class ScoreKeeper {
 
   /// Spawns a new nominator.
   async spawn(seed: string, maxNominations: number = 1) {
-    this.nominators.push(
-      new Nominator(this.api, this.db, { seed, maxNominations })
-    );
+    const nominator = new Nominator(this.api, this.db, { seed, maxNominations })
+    await this.db.addNominator(nominator.address);
+    this.nominators.push(nominator);
   }
 
   async begin(frequency: string) {

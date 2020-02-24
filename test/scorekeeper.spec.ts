@@ -61,7 +61,7 @@ test('Can spawn() nominators and fake begin()', async (t: any) => {
 	const nominators = await db.allNominators();
 	t.is(sk.nominators[0].address, nominators[0].nominator);
 
-	t.pass(await sk.begin('* * * * * *'));
+	await t.notThrowsAsync(sk.begin('* * * * * *'));
 });
 
 test('addPoint() and dockPoints() works', async (t: any) => {
@@ -83,4 +83,12 @@ test('addPoint() and dockPoints() works', async (t: any) => {
 	t.is(dataAgain.rank, 2);
 	t.is(dataAgain.misbehaviors, 1);
 	t.true(before <= dataAgain.goodSince);
+});
+
+test('startRound() adds an empty round in db and makes nominations', async (t: any) => {
+	t.pass();
+});
+
+test('endRound() completes the round', async (t: any) => {
+	t.pass();
 });

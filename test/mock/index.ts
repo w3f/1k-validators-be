@@ -1,6 +1,14 @@
 export const MockApi = {
+  mock: {
+    staking: {
+      era: 0,
+    }
+  },
 	query: {
 		staking: {
+      currentEra: () => {
+        return MockApi.mock.staking.era;
+      },
 			stakers: (stash: any) => {
 				return {
 					toJSON: () => {

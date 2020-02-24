@@ -93,6 +93,7 @@ export default class ScoreKeeper {
       toNominate = toNominate.map((node: any) => node.stash);
 
       await nominator.nominate(toNominate);
+      this.db.newTargets(nominator.address, nominator.currentlyNominating);
     }
   }
 
@@ -151,13 +152,14 @@ export default class ScoreKeeper {
     console.log('Ending round');
 
     for (const nominator of this.nominators) {
-      const { currentlyNominating } = nominator;
-      delete nominator.currentlyNominating;
+      const current = await this.db.getCurrentTargets(nominator.address);
+      // Wipe targets.
+      await this.db.newTargets(nominator.address, []);
 
       // If not nominating any... then return.
-      if (!currentlyNominating) return;
+      if (!current) return;
 
-      for (const stash of currentlyNominating) {
+      for (const stash of current) {
         /// Ensure the commission wasn't raised.
         const preferences = await this.api.query.staking.validators(stash);
         //@ts-ignore
@@ -204,9 +206,7 @@ export default class ScoreKeeper {
             this.addPoint(stash);
             unsub();
           }
-        })
-        //then if everything is all right...
-        // await this.addPoint(stash);
+        });
       }
     }
   }

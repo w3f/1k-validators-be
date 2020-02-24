@@ -29,6 +29,7 @@ export default class Nominator {
     });
 
     this.signer = keyring.createFromUri(cfg.seed);
+    this.db.addNominator(this.address);
     console.log(`Nominator spawned: ${this.address}`);
   }
 

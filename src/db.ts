@@ -1,5 +1,6 @@
 import Datastore from 'nedb';
 
+type Address = string;
 type Stash = string;
 
 export default class Database {
@@ -23,6 +24,52 @@ export default class Database {
       stash,
     });
     return this._update({ name }, newData);
+  }
+
+  async addNominator(address: Address): Promise<boolean> {
+    console.log(`Adding nominator ${address}`);
+    const now = new Date().getTime();
+
+    const oldData = await this._queryOne({ nominator: address });
+    if (!oldData) {
+      console.log(`${address} seen for the first time`);
+      const data = {
+        nominator: address,
+        current: [],
+        nominatedAt: null,
+        firstSeen: now,
+        lastSeen: now,
+      };
+
+      return this._insert(data);
+    }
+
+    const newData = Object.assign(oldData, {
+      lastSeen: now,
+    });
+
+    return this._update({ nominator: address }, newData);
+  }
+
+  async newTargets(address: Address, targets: Stash[]): Promise<boolean> {
+    console.log(`Adding new targets for ${address}`);
+    const now = new Date().getTime();
+
+    const oldData = await this._queryOne({ nominator: address });
+    const newData = Object.assign(oldData, {
+      current: targets,
+      nominatedAt: now,
+      lastSeen: now,
+    });
+
+    return this._update({ nominator: address }, newData);
+  }
+
+  async getCurrentTargets(address: Address): Promise<Stash[]> {
+    console.log(`DB::getCurrentTargets for ${address}`);
+    
+    //@ts-ignore
+    return (await this._queryOne({ nominator: address}).current);
   }
 
   async setNominatedAt(stash: Stash, now: number) {

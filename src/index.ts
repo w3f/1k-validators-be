@@ -23,6 +23,7 @@ try {
 
       const db = new Database(Config.db.storageFile);
       const server = new Server(db, Config.server.port);
+      server.start();
 
       const telemetry = new TelemetryClient(Config, db);
       telemetry.start();

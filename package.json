@@ -1,10 +1,10 @@
 {
-  "name": "1000_validators",
+  "name": "1k-validators-be",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "lint:fix": "./node_modules/.bin/eslint src/**/*.js --fix",
+    "lint:fix": "./node_modules/.bin/eslint src/**/*.ts --fix",
     "start": "ts-node src/index.ts",
     "test": "ava"
   },
@@ -15,7 +15,7 @@
     "@polkadot/api": "^1.0.1",
     "@polkadot/keyring": "^2.0.1",
     "@types/cron": "^1.7.1",
-    "@types/koa": "^2.11.0",
+    "@types/koa": "^2.11.1",
     "@types/nedb": "^1.8.9",
     "@types/semver": "^7.1.0",
     "@types/ws": "^7.2.1",
@@ -30,17 +30,19 @@
   },
   "devDependencies": {
     "@ava/typescript": "^1.1.0",
+    "@typescript-eslint/eslint-plugin": "^2.20.0",
+    "@typescript-eslint/parser": "^2.20.0",
     "ava": "^3.2.0",
     "eslint": "^6.8.0"
   },
   "ava": {
     "failFast": false,
     "verbose": true,
-		"extensions": [
-			"ts"
-		],
-		"require": [
-			"ts-node/register"
-		]
-	}
+    "extensions": [
+      "ts"
+    ],
+    "require": [
+      "ts-node/register"
+    ]
+  }
 }

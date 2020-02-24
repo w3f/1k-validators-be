@@ -2,17 +2,13 @@ import { ApiPromise } from "@polkadot/api";
 import { CronJob } from 'cron';
 
 import Nominator from './nominator';
+import {
+  FIFTY_KSM,
+  TEN_PERCENT,
+  WEEK,
+} from './constants';
 
 type Stash = string;
-
-/// 10% in per billion type.
-const TEN_PERCENT: number = 10000000;
-
-/// 50 KSM with decimals.
-const FIFTY_KSM: number = 50 * 10**12;
-
-/// It's been ONE WEEK since you looked at me...
-const WEEK = 7 * 24 * 60 * 60 * 1000;
 
 export default class ScoreKeeper {
   public api: ApiPromise;

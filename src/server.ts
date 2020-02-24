@@ -12,17 +12,20 @@ const API: any = {
 export default class Server {
   public app: Koa;
   private db: Database;
+  private port: number;
 
   constructor(db: Database, port: number) {
     this.app = new Koa();
     this.db = db;
+    this.port = port;
 
     this.app.use(async (ctx: any) => {
       switch (ctx.url.toLowerCase()) {
         case API.GetValidators:
           {
             const allValidators = await this.db.allValidators();
-            // ctx.body = allValidators.join('\n');
+            //@ts-ignore
+            ctx.body = allValidators.join('\n');
           }
           break;
         case API.GetNodes:
@@ -34,7 +37,8 @@ export default class Server {
         case API.GetNominators:
           {
             const allNominators = await this.db.allNominators();
-            // ctx.body = allNominators.join('\n');
+            //@ts-ignore
+            ctx.body = allNominators.join('\n');
           }
           break;
         case API.GetRounds:
@@ -46,8 +50,10 @@ export default class Server {
           ctx.body = 'Invalid api endpoint.'
       }
     });
+  }
 
-    console.log(`Now listening on ${port}`);
-    this.app.listen(port);
+  start() {
+    console.log(`Now listening on ${this.port}`);
+    this.app.listen(this.port);
   }
 }

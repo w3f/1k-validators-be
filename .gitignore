@@ -5,3 +5,4 @@ yarn-error.log
 scratch
 src/js
 monitor.js
+package-lock.json

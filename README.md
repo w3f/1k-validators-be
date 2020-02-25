@@ -25,5 +25,21 @@ a CronJob that is run every 24 hours. It is also planned to contain a Matrix
 notification service that will bubble up the issues that it finds with different
 validators and will explain the reason why they were skipped from nomination.
 
+### Components
+
+- **Database** - A simple persistence layer that can store information across restarts
+  of the service.
+- **Monitor** - Routinely checks the latest release that is tagged on GitHub and 
+  ensures that all connected validators have updated. If they have not, it marks
+  them as not good until they upgrade.
+- **Nominator** - A wrapper class over the nominating logic.
+- **Scorekeeper** - The orchestrator of the other components that spawns nominators
+  and has the ability to _start_ and _end_ nomination rounds, incrementing or
+  decreasing the scores of validators in the programme.
+- **Server** - Exposes a REST API for getting stats about the validators and
+  nominators in the programme.
+- **Telemetry** - Logic for connecting to the telemetry backend and handling
+  new connections.
+
 [thousand]: https://polkadot.network/join-kusamas-thousand-validators-programme/
 [form]: https://docs.google.com/forms/d/e/1FAIpQLSewhltQOcmkIlE7Wftn0NTVuyEs6Wk8Qpx6ssCAo2BO4oQH0w/viewform

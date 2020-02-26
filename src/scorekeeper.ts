@@ -37,7 +37,7 @@ export default class ScoreKeeper {
 
   /// Spawns a new nominator.
   async spawn(seed: string, maxNominations: number = 1) {
-    const nominator = new Nominator(this.api, this.db, { seed, maxNominations })
+    const nominator = new Nominator(this.api, this.db, { seed, maxNominations }, this.botLog.bind(this))
     await this.db.addNominator(nominator.address);
     this.nominators.push(nominator);
   }
@@ -75,7 +75,7 @@ export default class ScoreKeeper {
     this.currentEra = await this._getCurrentEra()+1;
 
     console.log(`New round starting at ${now} for next Era ${this.currentEra}`);
-    await this.botLog(
+    this.botLog(
       `New round is starting! The next era ${this.currentEra} will begin new nominations.`
     );
 
@@ -106,24 +106,40 @@ export default class ScoreKeeper {
 
   async _getSet(): Promise<any[]> {
     let nodes = await this.db.allNodes();
-    // Only take nodes that have a stash attached.
-    nodes = nodes.filter((node: any) => node.stash !== null);
-    // Only take nodes that are online.
-    nodes = nodes.filter((node: any) => node.offlineSince === 0);
-    // Only take nodes that have `goodSince` over one week.
-    if (!this.config.global.test) {
-      nodes = nodes.filter((node: any) => {
-        const now = new Date().getTime();
-        return now - Number(node.goodSince) >= WEEK;
-      });
-    }
-    // Ensure nodes have 98% uptime (3.35 hours for one week).
-    nodes = nodes.filter((node: any) => node.offlineAccumulated / WEEK <= 0.02);
+
     // Ensure they meet the requirements of:
     //  - Less than 10% commission.
     //  - More than 50 KSM.
     let tmpNodes = [];
     for (const node of nodes) {
+      // Only take nodes that have a stash attached.
+      if (node.stash === null) {
+        this.botLog(`${node.name} doesn't have a stash address attached. Skipping.`);
+        continue;
+      }
+
+      // Only take nodes that are online.
+      if (node.offlineSince !== 0) {
+        this.botLog(`${node.name} is offline! Skipping.`);
+        continue;
+      }
+
+      // Only take nodes that have goodSince over one week.
+      if (!this.config.global.test) {
+        const now = new Date().getTime();
+        if (now - Number(node.goodSince) < WEEK) {
+          this.botLog(`${node.name} hasn't been monitored for the required minimum length of a week yet. Skipping.`);
+          continue;
+        }
+      }
+
+      // Ensure node have 98% uptime (3.35 hours for one week).
+      const totalOffline = node.offlineAccumulated / WEEK;
+      if (totalOffline > 0.02) {
+        this.botLog(`${node.name} has been offline ${node.offlineAccumulated / 1000 /60} minutes this week, longer than the maximum allowed of 3 hours. Skipping!`);
+        continue;
+      }
+
       const preferences = await this.api.query.staking.validators(node.stash);
       //@ts-ignore
       const { commission } = preferences.toJSON()[0];
@@ -230,6 +246,11 @@ export default class ScoreKeeper {
       // Reset `goodSince` effectively making them take a timeout for a week.
       goodSince: new Date().getTime(),
     });
+
+    this.botLog(
+      `${newData.name} docked points. New rank: ${newData.rank}`
+    );
+
     return this.db.setValidator(stash, newData);
   }
 
@@ -241,6 +262,10 @@ export default class ScoreKeeper {
     const newData = Object.assign(oldData, {
       rank: oldData.rank + 1,
     });
+
+    this.botLog(
+      `${newData.name} did GOOD! Adding a point. New rank: ${newData.rank}`
+    );
     return this.db.setValidator(stash, newData);
   }
 }

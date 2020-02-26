@@ -1,0 +1,53 @@
+version: '3'
+services:
+    node_alice:
+        image: chevdor/polkadot:latest
+        ports:
+            - "30333:30333"
+            - "9933:9933"
+            - "9944:9944"
+        volumes:
+            - "polkadot-data-alice:/alice"
+        command: polkadot --chain=local --telemetry-url ws://172.28.1.3:8000/feed --validator --unsafe-ws-external --ws-port 9944 --rpc-cors all --pruning archive --base-path /alice --alice --node-key aa788920201122290fc7d3faf00698d9a8e061d7173424da2a31a8130a882a5f
+        networks:
+            testing_net:
+                ipv4_address: 172.28.1.1
+
+    node_bob:
+        image: chevdor/polkadot:latest
+        ports:
+            - "30334:30334"
+        volumes:
+            - "polkadot-data-bob:/bob"
+        links:
+            - "node_alice:alice"
+        command: polkadot --chain=local --telemetry-url ws://172.28.1.3:8000/feed --validator --pruning archive --validator --base-path ./bob --bob --bootnodes /ip4/172.28.1.1/tcp/30333/p2p/QmT5MYjkTDpoREKZTS7qHLSKPCJubTwYqfr6YQmhfcFYro --port 30334
+        networks:
+            testing_net:
+                ipv4_address: 172.28.1.2
+
+    telemetry:
+        image: web3f/substrate-telemetry
+        ports:
+            - "8000:8000"
+        networks:
+            testing_net:
+                ipv4_address: 172.28.1.3
+
+    1kv:
+        build: .
+        ports:
+            - "3300:3300"
+            - "8000:8000"
+            - "9946:9946"
+
+volumes:
+    polkadot-data-alice:
+    polkadot-data-bob:
+
+networks:
+    testing_net:
+        ipam:
+            driver: default
+            config:
+                - subnet: 172.28.0.0/16

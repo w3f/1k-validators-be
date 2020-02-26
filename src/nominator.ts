@@ -16,13 +16,15 @@ export default class Nominator {
   public maxNominations: number;
 
   private api: ApiPromise;
+  private botLog: any;
   private db: Database;
   private signer: KeyringPair;
 
-  constructor(api: ApiPromise, db: Database, cfg: NominatorConfig) {
+  constructor(api: ApiPromise, db: Database, cfg: NominatorConfig, botLog: any) {
     this.api = api;
     this.db = db;
     this.maxNominations = cfg.maxNominations;
+    this.botLog = botLog;
 
     const keyring = new Keyring({
       type: 'sr25519',
@@ -45,7 +47,7 @@ export default class Nominator {
     // const accountData = await this.api.query.system.account(this.signer.address);
     // console.log(accountData);
 
-    const unsub = await tx.signAndSend(this.signer, (result: any) => {
+    const unsub = await tx.signAndSend(this.signer, async (result: any) => {
       const { status } = result;
 
       console.log(`Status now: ${status.type}`);
@@ -53,7 +55,10 @@ export default class Nominator {
         console.log(`Included in block ${status.asFinalized}`);
         this.currentlyNominating = targets;
         for (const stash of targets) {
-          this.db.setNominatedAt(stash, now);
+          await this.botLog(
+            `Nominator ${this.address} has nominated ${stash}.`
+          );
+          await this.db.setNominatedAt(stash, now);
         }
         unsub();
       }

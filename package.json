@@ -22,6 +22,7 @@
     "@types/ws": "^7.2.1",
     "cron": "^1.8.2",
     "koa": "^2.11.0",
+    "matrix-js-sdk": "^5.0.1",
     "nedb": "^1.8.0",
     "reconnecting-websocket": "^4.2.0",
     "semver": "^7.1.2",

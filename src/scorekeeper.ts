@@ -12,6 +12,7 @@ type Stash = string;
 
 export default class ScoreKeeper {
   public api: ApiPromise;
+  public bot: any;
   public config: any;
   public currentEra: number = 0;
   public currentSet: Array<Stash> = [];
@@ -21,10 +22,17 @@ export default class ScoreKeeper {
 
   public nominators: Array<Nominator> = [];
 
-  constructor(api: ApiPromise, db: any, config: any) {
+  constructor(api: ApiPromise, db: any, config: any, bot: any = false) {
     this.api = api;
     this.db = db;
     this.config = config;
+    this.bot = bot;
+  }
+
+  async botLog(msg: string) {
+    if (this.bot) {
+      await this.bot.sendMessage(msg);
+    }
   }
 
   /// Spawns a new nominator.
@@ -67,6 +75,9 @@ export default class ScoreKeeper {
     this.currentEra = await this._getCurrentEra()+1;
 
     console.log(`New round starting at ${now} for next Era ${this.currentEra}`);
+    await this.botLog(
+      `New round is starting! The next era ${this.currentEra} will begin new nominations.`
+    );
 
     const set = await this._getSet();
     this.currentSet = set;

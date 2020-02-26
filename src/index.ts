@@ -3,6 +3,7 @@ import { CronJob } from 'cron';
 
 import Config from '../config.json';
 import Database from './db';
+import MatrixBot from './matrix';
 import Monitor from './monitor';
 import Scorekeeper from './scorekeeper';
 import Server from './server';
@@ -28,6 +29,11 @@ try {
       const telemetry = new TelemetryClient(Config, db);
       telemetry.start();
 
+      const { accessToken, baseUrl, userId } = Config.matrix;
+      const bot = new MatrixBot(baseUrl, accessToken, userId);
+      bot.start();
+      bot.sendMessage('Started!');
+
       // Give it some time to set up.
       await sleep(3000);
       
@@ -42,7 +48,7 @@ try {
       }).start();
 
       /// Time to start the nominators.
-      const scorekeeper = new Scorekeeper(api, db, Config);
+      const scorekeeper = new Scorekeeper(api, db, Config, bot);
       for (const nominator of Config.scorekeeper.nominators) {
         await scorekeeper.spawn(nominator.seed);
       }

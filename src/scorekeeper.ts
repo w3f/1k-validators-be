@@ -100,7 +100,6 @@ export default class ScoreKeeper {
       toNominate = toNominate.map((node: any) => node.stash);
 
       await nominator.nominate(toNominate);
-      this.db.newTargets(nominator.address, toNominate);
     }
   }
 

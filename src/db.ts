@@ -81,6 +81,19 @@ export default class Database {
     return this._update({ stash }, newData);
   }
 
+  async setTarget(nominator: Address, stash: Stash, now: number) {
+    console.log('setting target');
+
+    const oldData = await this._queryOne({ nominator });
+    const newData = Object.assign(oldData, {
+      current: oldData.current.push(stash),
+      nominatedAt: now,
+      lastSeen: now,
+    });
+
+    return this._update({ nominator }, newData);
+  }
+
   /// Entry point for reporting a new node is online.
   async reportOnline(id: number, details: Array<any>) {
 

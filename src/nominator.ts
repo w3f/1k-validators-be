@@ -36,7 +36,7 @@ export default class Nominator {
 
   public get address() { return this.signer.address; }
 
-  public async nominate(targets: Stash[]): Promise<void> {
+  public async nominate(targets: Stash[]): Promise<boolean> {
     const now = new Date().getTime();
 
     const tx = this.api.tx.staking.nominate(targets);
@@ -52,13 +52,13 @@ export default class Nominator {
         console.log(`Included in block ${status.asFinalized}`);
         this.currentlyNominating = targets;
         for (const stash of targets) {
-          // await this.botLog(
-          //   `Nominator ${this.address} has nominated ${stash}.`
-          // );
+          await this.db.setTarget(this.address, stash, now);
           await this.db.setNominatedAt(stash, now);
         }
         unsub();
       }
     });
+
+    return true;
   }
 }

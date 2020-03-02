@@ -1,5 +1,5 @@
 FROM node:latest
 WORKDIR /code
 COPY . .
+RUN ["yarn"]
 CMD ["yarn", "start"]
-EXPOSE 3300 8000 9946

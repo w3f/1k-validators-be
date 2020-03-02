@@ -1,32 +1,6 @@
 import * as sdk from 'matrix-js-sdk';
 
-//@ts-ignore
-// const matrixClient = sdk.createClient({
-//   baseUrl: "https://matrix.org",
-//   accessToken,
-//   userId,
-// });
-
-// matrixClient.on('RoomMember.membership', async (event: any, member: any) => {
-//   if (member.membership === 'invite' && member.userId === userId) {
-//     await matrixClient.joinRoom(member.roomId);
-//     console.log(`Auto-joined ${member.roomId}`);
-//   }
-// });
-
-// matrixClient.on('Room.timeline', async (event: any, room: any, toStartOfTimeline: any) => {
-//   if (toStartOfTimeline) {
-//     return; // don't print any results.
-//   }
-//   if (event.getType() !== 'm.room.message') {
-//     return; // only print messages
-//   }
-//   console.log(`(${room.name}) ${event.getSender()} :: ${event.getContent().body}`);
-// });
-
-// matrixClient.startClient();
-
-const ROOM = "!mdugGIKqSTweIOpTlA:web3.foundation";
+import Config from '../config.json';
 
 export default class MatrixBot  {
   public client: any;
@@ -53,7 +27,7 @@ export default class MatrixBot  {
     this.client.on('Room.timeline', async (event: any, room: any, toStartOfTimeline: any) => {
       if (toStartOfTimeline) return;
       if (event.getType() !== 'm.room.message') return;
-      if (room.roomId !== ROOM) return;
+      if (room.roomId !== Config.matrix.room) return;
       const { body } = event.getContent();
       console.log(body);
       if (body.startsWith('1kv-stats')) {
@@ -85,7 +59,7 @@ export default class MatrixBot  {
     };
 
     return new Promise((resolve: any, reject: any) => {
-      this.client.sendEvent(ROOM, 'm.room.message', content, '', (err: any, res: any) => {
+      this.client.sendEvent(Config.matrix.room, 'm.room.message', content, '', (err: any, res: any) => {
         if (err) reject(err);
         resolve(true);
       });

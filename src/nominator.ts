@@ -44,9 +44,6 @@ export default class Nominator {
       `Sending extrinsic Staking::nominate from ${this.address} to targets ${targets} at ${now}`,
     );
 
-    // const accountData = await this.api.query.system.account(this.signer.address);
-    // console.log(accountData);
-
     const unsub = await tx.signAndSend(this.signer, async (result: any) => {
       const { status } = result;
 

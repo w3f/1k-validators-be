@@ -68,7 +68,7 @@ export default class Database {
     console.log(`DB::getCurrentTargets for ${address}`);
     
     //@ts-ignore
-    return (await this._queryOne({ nominator: address }).current);
+    return (await this._queryOne({ nominator: address })).current;
   }
 
   async setNominatedAt(stash: Stash, now: number) {

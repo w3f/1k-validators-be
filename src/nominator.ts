@@ -52,9 +52,9 @@ export default class Nominator {
         console.log(`Included in block ${status.asFinalized}`);
         this.currentlyNominating = targets;
         for (const stash of targets) {
-          await this.botLog(
-            `Nominator ${this.address} has nominated ${stash}.`
-          );
+          // await this.botLog(
+          //   `Nominator ${this.address} has nominated ${stash}.`
+          // );
           await this.db.setNominatedAt(stash, now);
         }
         unsub();

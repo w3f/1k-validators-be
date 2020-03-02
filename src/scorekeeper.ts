@@ -176,6 +176,7 @@ export default class ScoreKeeper {
 
     for (const nominator of this.nominators) {
       const current = await this.db.getCurrentTargets(nominator.address);
+      console.log(current);
       // Wipe targets.
       await this.db.newTargets(nominator.address, []);
 

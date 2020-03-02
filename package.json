@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "lint:fix": "./node_modules/.bin/eslint src/**/*.ts --fix",
+    "docker": "docker-compose build --no-cache;docker-compose up",
     "clean": "rm validator.db",
+    "lint:fix": "./node_modules/.bin/eslint src/**/*.ts --fix",
     "start": "ts-node src/index.ts",
     "test": "ava test/**/*.spec.ts"
   },
@@ -20,6 +21,7 @@
     "@types/nedb": "^1.8.9",
     "@types/semver": "^7.1.0",
     "@types/ws": "^7.2.1",
+    "commander": "^4.1.1",
     "cron": "^1.8.2",
     "koa": "^2.11.0",
     "matrix-js-sdk": "^5.0.1",

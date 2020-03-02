@@ -18,6 +18,7 @@ const sleep = (ms: number) => (
 try {
   (
     async () => {
+      console.log('starting');
       const api = await ApiPromise.create({
         provider: new WsProvider(Config.global.wsEndpoint),
       });

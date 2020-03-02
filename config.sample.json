@@ -1,16 +1,17 @@
 {
     "global": {
         "test": true,
-        "wsEndpoint": "ws://127.0.0.1:9946"
+        "wsEndpoint": "ws://172.28.1.1:9944"
     },
     "db": {
         "storageFile": "validator.db"
     },
     "matrix": {
         "enabled": false,
-        "accessToken": "",
-        "baseUrl": "",
-        "userId": ""
+        "accessToken": "xxxxx",
+        "baseUrl": "https://matrix.org",
+        "room": "!xxxxx:web3.foundation",
+        "userId": "@1kv-stats:matrix.org"
     },
     "scorekeeper": {
         "candidates": [
@@ -43,6 +44,6 @@
         "chains": [
             "Local Testnet"
         ],
-        "host": "ws://127.0.0.1:8000/feed"
+        "host": "ws://172.28.1.3:8000/feed"
     }
 }

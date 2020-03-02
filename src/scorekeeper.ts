@@ -76,7 +76,7 @@ export default class ScoreKeeper {
 
     console.log(`New round starting at ${now} for next Era ${this.currentEra}`);
     this.botLog(
-      `New round is starting! The next era ${this.currentEra} will begin new nominations.`
+      `New round is starting! Era ${this.currentEra} will begin new nominations.`
     );
 
     const set = await this._getSet();

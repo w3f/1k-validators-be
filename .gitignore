@@ -1,13 +1,6 @@
-test_nominator
-validator.db
 node_modules
 yarn-error.log
-scratch
-src/js
-monitor.js
 package-lock.json
-alice
-bob
-zero
-scripts
 config.json
+archive
+*.db

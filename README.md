@@ -41,5 +41,23 @@ validators and will explain the reason why they were skipped from nomination.
 - **Telemetry** - Logic for connecting to the telemetry backend and handling
   new connections.
 
+## Tests
+
+The tests are run using `yarn` and the testing framework AVA. After installing
+the dependencies, run `yarn test` to run the unit tests.
+
+### Docker
+
+The entire system can be spun up using a custom "fast" build of Polkadot
+that starts a new Era every 6 minutes. Move the `config.sample.json` to `config.json`
+and start the proccesses using `yarn docker`.
+
+### Matrix Bot
+
+To enable the matrix bot you will need to create an account on Riot.im or a similar
+service and acquire an access token. Enter the access token in the configuration
+file and specify the room that the bot should send the messages in. Make sure you
+invite the bot to the room before you start the services.
+
 [thousand]: https://polkadot.network/join-kusamas-thousand-validators-programme/
 [form]: https://docs.google.com/forms/d/e/1FAIpQLSewhltQOcmkIlE7Wftn0NTVuyEs6Wk8Qpx6ssCAo2BO4oQH0w/viewform

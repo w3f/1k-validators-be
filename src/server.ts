@@ -1,6 +1,7 @@
 import Koa from 'koa';
 
 import Database from './db';
+import logger from './logger';
 
 const API: any = {
   GetValidators: '/validators',
@@ -53,7 +54,7 @@ export default class Server {
   }
 
   start() {
-    console.log(`Now listening on ${this.port}`);
+    logger.info(`Now listening on ${this.port}`);
     this.app.listen(this.port);
   }
 }

@@ -3,6 +3,7 @@ import Keyring from '@polkadot/keyring';
 import { KeyringPair } from "@polkadot/keyring/types";
 
 import Database from './db';
+import logger from './logger';
 
 type NominatorConfig = {
   seed: string,
@@ -31,7 +32,7 @@ export default class Nominator {
     });
 
     this.signer = keyring.createFromUri(cfg.seed);
-    console.log(`Nominator spawned: ${this.address}`);
+    logger.info(`(Nominator::constructor) Nominator spawned: ${this.address}`);
   }
 
   public get address() { return this.signer.address; }
@@ -40,16 +41,16 @@ export default class Nominator {
     const now = new Date().getTime();
 
     const tx = this.api.tx.staking.nominate(targets);
-    console.log(
-      `Sending extrinsic Staking::nominate from ${this.address} to targets ${targets} at ${now}`,
+    logger.info(
+      `(Nominator::nominate) Sending extrinsic Staking::nominate from ${this.address} to targets ${targets} at ${now}`,
     );
 
     const unsub = await tx.signAndSend(this.signer, async (result: any) => {
       const { status } = result;
 
-      console.log(`Status now: ${status.type}`);
+      logger.info(`(Nominator::nominate) Status now: ${status.type}`);
       if (status.isFinalized) {
-        console.log(`Included in block ${status.asFinalized}`);
+        logger.info(`(Nominator::nominate) Included in block ${status.asFinalized}`);
         this.currentlyNominating = targets;
         for (const stash of targets) {
           await this.db.setTarget(this.address, stash, now);

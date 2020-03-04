@@ -8,7 +8,8 @@ import {
   WEEK,
 } from './constants';
 
-type Stash = string;
+import logger from './logger';
+import {Stash} from './types';
 
 export default class ScoreKeeper {
   public api: ApiPromise;
@@ -54,7 +55,7 @@ export default class ScoreKeeper {
 
     new CronJob(frequency, async () => {
       if (!this.config.scorekeeper.nominating) {
-        console.log('Not nominating - skipping this round');
+        logger.info('Not nominating - skipping this round');
         return;
       }
 
@@ -74,7 +75,7 @@ export default class ScoreKeeper {
     // The nominations sent now won't be active until the next era. 
     this.currentEra = await this._getCurrentEra()+1;
 
-    console.log(`New round starting at ${now} for next Era ${this.currentEra}`);
+    logger.info(`New round starting at ${now} for next Era ${this.currentEra}`);
     this.botLog(
       `New round is starting! Era ${this.currentEra} will begin new nominations.`
     );
@@ -92,7 +93,7 @@ export default class ScoreKeeper {
             set.shift(),
           );
         } else {
-          console.log('ran to the end of candidates');
+          logger.info('ran to the end of candidates');
           return;
         }
       }
@@ -161,7 +162,6 @@ export default class ScoreKeeper {
       return a.nominatedAt - b.nominatedAt;
     });
 
-    // console.log('nodes', nodes);
     return nodes;
   }
 
@@ -171,11 +171,10 @@ export default class ScoreKeeper {
 
   /// Handles the ending of a round.
   async endRound() {
-    console.log('Ending round');
+    logger.info('Ending round');
 
     for (const nominator of this.nominators) {
       const current = await this.db.getCurrentTargets(nominator.address);
-      console.log(current);
       // Wipe targets.
       await this.db.newTargets(nominator.address, []);
 
@@ -217,7 +216,6 @@ export default class ScoreKeeper {
           if (era == currentEra+1) {
             while (era != startEra) {
               const slashes = await this.api.query.staking.validatorSlashInEra(era, stash);
-              // console.log(slashes);
               if (!slashes.isNone) {
                 this.dockPoints(stash);
                 unsub();
@@ -236,9 +234,10 @@ export default class ScoreKeeper {
 
   /// Handles the docking of points from bad behaving validators.
   async dockPoints(stash: Stash) {
-    console.log(`Stash ${stash} did BAD, docking points`);
+    logger.info(`Stash ${stash} did BAD, docking points`);
 
     const oldData = await this.db.getValidator(stash);
+
     /// This logic adds one to misbehaviors and reduces rank by half. 
     const newData = Object.assign(oldData, {
       rank: Math.floor(oldData.rank / 2),
@@ -256,7 +255,7 @@ export default class ScoreKeeper {
 
   /// Handles the adding of points to successful validators.
   async addPoint(stash: Stash) {
-    console.log(`Stash ${stash} did GOOD, adding points`);
+    logger.info(`Stash ${stash} did GOOD, adding points`);
 
     const oldData = await this.db.getValidator(stash);
     const newData = Object.assign(oldData, {

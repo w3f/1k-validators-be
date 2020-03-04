@@ -1,7 +1,7 @@
 import Datastore from 'nedb';
 
-type Address = string;
-type Stash = string;
+import logger from './logger';
+import {Address, Stash} from './types';
 
 export default class Database {
   private _db: any;
@@ -12,11 +12,11 @@ export default class Database {
 
   /// Entry point for adding a new candidate.
   async addCandidate(name: string, stash: string) {
-    console.log(`Adding candidate ${name}`);
+    logger.info(`(DB::addCandidate) Adding candidate ${name}`);
 
     const oldData = await this._queryOne({ name });
     if (!oldData) {
-      console.log(`Could not find candidate node ${name} - skipping`);
+      logger.info(`(DB::addCandidate) Could not find candidate node ${name} - skipping`);
       return;
     }
     const newData = Object.assign(oldData, {
@@ -26,12 +26,12 @@ export default class Database {
   }
 
   async addNominator(address: Address): Promise<boolean> {
-    console.log(`Adding nominator ${address}`);
+    logger.info(`(DB::addNominator) Adding nominator ${address}`);
     const now = new Date().getTime();
 
     const oldData = await this._queryOne({ nominator: address });
     if (!oldData) {
-      console.log(`${address} seen for the first time`);
+      logger.info(`(DB::addNominator) ${address} seen for the first time`);
       const data = {
         nominator: address,
         current: [],
@@ -51,7 +51,7 @@ export default class Database {
   }
 
   async newTargets(address: Address, targets: Stash[]): Promise<boolean> {
-    console.log(`Adding new targets for ${address}`);
+    logger.info(`(DB::newTargets) Adding new targets for ${address}`);
     const now = new Date().getTime();
 
     const oldData = await this._queryOne({ nominator: address });
@@ -65,14 +65,14 @@ export default class Database {
   }
 
   async getCurrentTargets(address: Address): Promise<Stash[]> {
-    console.log(`DB::getCurrentTargets for ${address}`);
+    logger.info(`(DB::getCurrentTargets) Getting targets for ${address}`);
     
     //@ts-ignore
     return (await this._queryOne({ nominator: address })).current;
   }
 
   async setNominatedAt(stash: Stash, now: number) {
-    console.log('setting nominated at', now);
+    logger.info(`(DB::setNominatedAt) Setting nominated at ${now}`);
 
     const oldData = await this._queryOne({ stash });
     const newData = Object.assign(oldData, {
@@ -82,7 +82,7 @@ export default class Database {
   }
 
   async setTarget(nominator: Address, stash: Stash, now: number) {
-    console.log('setting target');
+    logger.info(`(DB::setTarget) Setting target `);
 
     const oldData = await this._queryOne({ nominator });
     const newData = Object.assign(oldData, {
@@ -96,11 +96,9 @@ export default class Database {
 
   /// Entry point for reporting a new node is online.
   async reportOnline(id: number, details: Array<any>) {
-
     const name = details[0];
 
-    //@ts-ignore
-    console.log(`Reporting ${name} online.`)
+    logger.info(`(DB::reportOnline) Reporting ${name} online.`)
 
     const now = new Date().getTime();
     const oldData = await this._queryOne({ id });

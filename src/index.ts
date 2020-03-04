@@ -9,6 +9,8 @@ import Scorekeeper from './scorekeeper';
 import Server from './server';
 import TelemetryClient from './telemetry';
 
+import logger from './logger';
+
 const sleep = (ms: number) => (
   new Promise((resolve: any) => {
     setTimeout(() => resolve(), ms);
@@ -18,7 +20,7 @@ const sleep = (ms: number) => (
 try {
   (
     async () => {
-      console.log('starting');
+      logger.info('Starting the backend services');
       const api = await ApiPromise.create({
         provider: new WsProvider(Config.global.wsEndpoint),
       });
@@ -46,7 +48,7 @@ try {
       const monitorFrequency = Config.global.test? '0 0-59/1 * * * *' : '0 0-59/5 * * * *';
 
       new CronJob(monitorFrequency, async () => {
-        console.log('Monitor cronjob started. Running every five minutes.');
+        logger.info(`Monitoring the node version by polling GitHub releases every ${Config.global.test? 'one' : 'five'} minutes`);
         await monitor.getLatestTaggedRelease();
         await monitor.ensureUpgrades();
       }).start();

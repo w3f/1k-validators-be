@@ -1,6 +1,8 @@
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import WS from 'ws';
+
 import Database from './db';
+import logger from './logger';
 
 enum TelemetryMessage {
   FeedVersion   = 0x00,
@@ -35,7 +37,7 @@ export default class TelemetryClient {
   async start(): Promise<null> {
     return new Promise((resolve: any, reject: any) => {
       this.socket.onopen = () => {
-        console.log(
+        logger.info(
           `Connected to substrate-telemetry on host ${this.host}`
         );
         for (const chain of this.config.telemetry.chains) {
@@ -45,14 +47,14 @@ export default class TelemetryClient {
       }
 
       this.socket.onclose = () => {
-        console.log(
+        logger.info(
           `Connection to substrate-telemetry on host ${this.host} closed`
         );
         reject();
       }
 
       this.socket.onerror = (err: any) => {
-        console.log(
+        logger.info(
           `Could not connect to substrate-telemetry on host ${this.host}: ${err}`
         );
         reject();
@@ -104,11 +106,11 @@ export default class TelemetryClient {
   private async _subscribe(chain: string, finality: boolean = false) {
     if (this.config.telemetry.chains.includes(chain)) {
       this.socket.send(`subscribe:${chain}`);
-      console.log(`Subscribed to ${chain}`);
+      logger.info(`Subscribed to ${chain}`);
 
       if (finality) {
         this.socket.send(`send-finality:${chain}`);
-        console.log('Request finality data');
+        logger.info('Request finality data');
       }
     }
   }

@@ -29,10 +29,8 @@ export default class MatrixBot  {
       if (event.getType() !== 'm.room.message') return;
       if (room.roomId !== Config.matrix.room) return;
       const { body } = event.getContent();
-      console.log(body);
       if (body.startsWith('1kv-stats')) {
         const command = body.split(' ')[1];
-        console.log('CMD', command);
         if (command == 'nominators') {
           const allNominators = await this.db.allNominators();
           const msg = allNominators.map((nom: any) => `${nom.nominator} | ${nom.current}`).join('\n');
@@ -42,7 +40,6 @@ export default class MatrixBot  {
           const allNominators = await this.db.allNominators();
           const msg = (await Promise.all(allNominators.map(async (nom: any) => {
             const targets =  await this.db.getCurrentTargets(nom.nominator);
-            console.log(targets);
             const whos = targets.join(', ');
             return `${nom.nominator} is nominating ${whos}`;
           }))).join('\n');

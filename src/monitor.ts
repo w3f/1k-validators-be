@@ -2,6 +2,7 @@ import { Octokit } from '@octokit/rest';
 import semver from 'semver';
 
 import Database from './db';
+import logger from './logger';
 
 type TaggedRelease = {
   name: string,
@@ -23,7 +24,7 @@ export default class Monitor {
   }
 
   public async getLatestTaggedRelease() {
-    console.log('Fetching latest release...');
+    logger.info('(Monitor::getLatestTaggedRelease) Fetching latest release');
     
     const tags = await this.ghApi.repos.listTags({
       owner: 'paritytech',
@@ -33,7 +34,7 @@ export default class Monitor {
     const tagName = tags.data[0].name;
 
     if (this.latestTaggedRelease && tagName === this.latestTaggedRelease!.name) {
-      console.log('No new release found.');
+      logger.info('(Monitor::getLatestTaggedRelease) No new release found');
       return;
     }
     
@@ -50,7 +51,7 @@ export default class Monitor {
       publishedAt,
     };
 
-    console.log(`Latest release updated: ${tagName} | Published at: ${publishedAt}`);
+    logger.info(`Latest release updated: ${tagName} | Published at: ${publishedAt}`);
   }
 
   /// Ensures that nodes have upgraded within a `grace` period.

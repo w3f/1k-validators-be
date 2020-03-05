@@ -7,7 +7,7 @@ source /scripts/bootstrap-helm.sh
 run_tests() {
     echo Running tests...
 
-    wait_pod_ready otv-backend
+    wait_pod_ready otv-backend otv
 }
 
 teardown() {
@@ -15,7 +15,7 @@ teardown() {
 }
 
 main(){
-    if [ -z "$KEEP_W3F_1K_VALIDATORS_BE" ]; then
+    if [ -z "$KEEP_W3F_OTV_BACKEND" ]; then
         trap teardown EXIT
     fi
 

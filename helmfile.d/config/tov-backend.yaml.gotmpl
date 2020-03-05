@@ -1,6 +1,12 @@
-image:
+environment: {{ .Environment.Name }}
+
 {{ if eq .Environment.Name "production" }}
+image:
   tag: {{ env "CIRCLE_TAG" }}
 {{ else }}
+image:
   tag: {{ env "CIRCLE_SHA1" }}
+
+certificate:
+  enabled: false
 {{ end }}

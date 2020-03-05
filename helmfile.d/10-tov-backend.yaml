@@ -7,11 +7,11 @@ repositories:
   url: https://w3f.github.io/helm-charts/
 
 releases:
-- name: 1k-validators-be
+- name: tov-backend
 {{ if eq .Environment.Name "production" }}
-  chart: w3f/1k-validators-be
+  chart: w3f/tov-backend
 {{ else }}
-  chart: ../charts/1k-validators-be
+  chart: ../charts/tov-backend
 {{ end }}
   values:
-  - ./config/1k-validators-be.yaml.gotmpl
+  - ./config/tov-backend.yaml.gotmpl

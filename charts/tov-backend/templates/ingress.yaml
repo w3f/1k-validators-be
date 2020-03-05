@@ -8,10 +8,10 @@ metadata:
 spec:
   tls:
   - hosts:
-      - {{ include "1k-validators-be.backend-domain" . }}
-    secretName: {{ include "1k-validators-be.tls-secret-name" . }}
+      - {{ include "tov-backend.backend-domain" . }}
+    secretName: {{ include "tov-backend.tls-secret-name" . }}
   rules:
-  - host: {{ include "1k-validators-be.backend-domain" . }}
+  - host: {{ include "tov-backend.backend-domain" . }}
     http:
       paths:
       - path: /

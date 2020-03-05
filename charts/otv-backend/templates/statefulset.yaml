@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: {{ .Release.Name }}
+  namespace: {{ .Values.namespace }}
   labels:
     app: {{ .Release.Name }}
 spec:
@@ -35,7 +36,7 @@ spec:
         - name: data
           mountPath: /data
         - name: config
-          mountPath: /app
+          mountPath: /code
           readOnly: true
       {{- if ne .Values.environment "ci" }}
         resources:

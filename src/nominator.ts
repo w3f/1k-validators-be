@@ -5,12 +5,7 @@ import { KeyringPair } from "@polkadot/keyring/types";
 import Database from './db';
 import logger from './logger';
 
-type NominatorConfig = {
-  seed: string,
-  maxNominations: number,
-};
-
-type Stash = string;
+import { NominatorConfig, Stash } from './types';
 
 export default class Nominator {
   public currentlyNominating: Stash[] = [];

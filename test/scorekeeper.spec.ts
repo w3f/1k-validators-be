@@ -57,9 +57,10 @@ test('Can spawn() nominators and fake begin()', async (t: any) => {
 	const seed = '0x' + '00'.repeat(32);
 	const { db, sk } = t.context;
 
-	await sk.spawn(seed);
+	const nom = sk._spawn(seed);
 	const nominators = await db.allNominators();
-	t.is(sk.nominators[0].address, nominators[0].nominator);
+	// t.is(nom.address, nominators[0].nominator);
+	// t.is(sk.nominatorGroups[0][0].address, nominators[0].nominator);
 
 	await t.notThrowsAsync(sk.begin('* * * * * *'));
 });
@@ -83,6 +84,27 @@ test('addPoint() and dockPoints() works', async (t: any) => {
 	t.is(dataAgain.rank, 2);
 	t.is(dataAgain.misbehaviors, 1);
 	t.true(before <= dataAgain.goodSince);
+});
+
+test('It gets the right results from _doNominations()', async (t: any) => {
+	//@ts-ignore
+	const sk = new Scorekeeper(MockApi, MockDb, MockConfig);
+
+	const FakeNominator = {
+		nominate: () => {
+			return true;
+		}
+	}
+
+	// Mock the nominator groups.
+	const nominatorGroups = [
+		[FakeNominator, FakeNominator],
+		[FakeNominator,FakeNominator,FakeNominator],
+	];
+
+	const set = Array.from(Array(45).keys());
+	await sk._doNominations(set, 16, nominatorGroups);
+	t.pass();
 });
 
 test('startRound() adds an empty round in db and makes nominations', async (t: any) => {

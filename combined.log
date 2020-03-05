@@ -1,0 +1,100 @@
+{"message":"(DB::reportOnline) Reporting nodeZero online.","level":"info"}
+{"message":"(DB::addCandidate) Adding candidate nodeZero","level":"info"}
+{"message":"(DB::reportOnline) Reporting nodeOne online.","level":"info"}
+{"message":"(DB::addCandidate) Adding candidate nodeOne","level":"info"}
+{"message":"Stash stash0 did GOOD, adding points","level":"info"}
+{"message":"Stash stash0 did GOOD, adding points","level":"info"}
+{"message":"Stash stash0 did GOOD, adding points","level":"info"}
+{"message":"Stash stash0 did GOOD, adding points","level":"info"}
+{"message":"Stash stash0 did BAD, docking points","level":"info"}
+{"message":"(DB::reportOnline) Reporting nodeZero online.","level":"info"}
+{"message":"(DB::addCandidate) Adding candidate nodeZero","level":"info"}
+{"message":"(DB::reportOnline) Reporting nodeOne online.","level":"info"}
+{"message":"(DB::addCandidate) Adding candidate nodeOne","level":"info"}
+{"message":"(Nominator::constructor) Nominator spawned: 5H728gLgx4yuCSVEwGCAfLo3RtzTau9F6cTNqNJtrqqjACWq","level":"info"}
+{"message":"Stash stash0 did GOOD, adding points","level":"info"}
+{"message":"Stash stash0 did GOOD, adding points","level":"info"}
+{"message":"Stash stash0 did GOOD, adding points","level":"info"}
+{"message":"Stash stash0 did GOOD, adding points","level":"info"}
+{"message":"Stash stash0 did BAD, docking points","level":"info"}
+{"message":"(DB::reportOnline) Reporting nodeZero online.","level":"info"}
+{"message":"(DB::addCandidate) Adding candidate nodeZero","level":"info"}
+{"message":"(DB::reportOnline) Reporting nodeOne online.","level":"info"}
+{"message":"(DB::addCandidate) Adding candidate nodeOne","level":"info"}
+{"message":"(Nominator::constructor) Nominator spawned: 5H728gLgx4yuCSVEwGCAfLo3RtzTau9F6cTNqNJtrqqjACWq","level":"info"}
+{"message":"Stash stash0 did GOOD, adding points","level":"info"}
+{"message":"Stash stash0 did GOOD, adding points","level":"info"}
+{"message":"Stash stash0 did GOOD, adding points","level":"info"}
+{"message":"Stash stash0 did GOOD, adding points","level":"info"}
+{"message":"Stash stash0 did BAD, docking points","level":"info"}
+{"message":"(DB::reportOnline) Reporting nodeZero online.","level":"info"}
+{"message":"(DB::addCandidate) Adding candidate nodeZero","level":"info"}
+{"message":"(DB::reportOnline) Reporting nodeOne online.","level":"info"}
+{"message":"(DB::addCandidate) Adding candidate nodeOne","level":"info"}
+{"message":"(Nominator::constructor) Nominator spawned: 5H728gLgx4yuCSVEwGCAfLo3RtzTau9F6cTNqNJtrqqjACWq","level":"info"}
+{"message":"Stash stash0 did GOOD, adding points","level":"info"}
+{"message":"Stash stash0 did GOOD, adding points","level":"info"}
+{"message":"Stash stash0 did GOOD, adding points","level":"info"}
+{"message":"Stash stash0 did GOOD, adding points","level":"info"}
+{"message":"Stash stash0 did BAD, docking points","level":"info"}
+{"message":"(DB::reportOnline) Reporting nodeZero online.","level":"info"}
+{"message":"(DB::addCandidate) Adding candidate nodeZero","level":"info"}
+{"message":"(DB::reportOnline) Reporting nodeOne online.","level":"info"}
+{"message":"(DB::addCandidate) Adding candidate nodeOne","level":"info"}
+{"message":"(Nominator::constructor) Nominator spawned: 5H728gLgx4yuCSVEwGCAfLo3RtzTau9F6cTNqNJtrqqjACWq","level":"info"}
+{"message":"Stash stash0 did GOOD, adding points","level":"info"}
+{"message":"Stash stash0 did GOOD, adding points","level":"info"}
+{"message":"Stash stash0 did GOOD, adding points","level":"info"}
+{"message":"Stash stash0 did GOOD, adding points","level":"info"}
+{"message":"Stash stash0 did BAD, docking points","level":"info"}
+{"message":"(DB::reportOnline) Reporting nodeZero online.","level":"info"}
+{"message":"(DB::addCandidate) Adding candidate nodeZero","level":"info"}
+{"message":"(DB::reportOnline) Reporting nodeOne online.","level":"info"}
+{"message":"(DB::addCandidate) Adding candidate nodeOne","level":"info"}
+{"message":"(Nominator::constructor) Nominator spawned: 5H728gLgx4yuCSVEwGCAfLo3RtzTau9F6cTNqNJtrqqjACWq","level":"info"}
+{"message":"Stash stash0 did GOOD, adding points","level":"info"}
+{"message":"Stash stash0 did GOOD, adding points","level":"info"}
+{"message":"Stash stash0 did GOOD, adding points","level":"info"}
+{"message":"Stash stash0 did GOOD, adding points","level":"info"}
+{"message":"Stash stash0 did BAD, docking points","level":"info"}
+{"message":"(DB::reportOnline) Reporting nodeZero online.","level":"info"}
+{"message":"(DB::addCandidate) Adding candidate nodeZero","level":"info"}
+{"message":"(DB::reportOnline) Reporting nodeOne online.","level":"info"}
+{"message":"(DB::addCandidate) Adding candidate nodeOne","level":"info"}
+{"message":"(Nominator::constructor) Nominator spawned: 5H728gLgx4yuCSVEwGCAfLo3RtzTau9F6cTNqNJtrqqjACWq","level":"info"}
+{"message":"Stash stash0 did GOOD, adding points","level":"info"}
+{"message":"Stash stash0 did GOOD, adding points","level":"info"}
+{"message":"Stash stash0 did GOOD, adding points","level":"info"}
+{"message":"Stash stash0 did GOOD, adding points","level":"info"}
+{"message":"Not nominating - skipping this round","level":"info"}
+{"message":"Stash stash0 did BAD, docking points","level":"info"}
+{"message":"(DB::reportOnline) Reporting nodeZero online.","level":"info"}
+{"message":"(DB::addCandidate) Adding candidate nodeZero","level":"info"}
+{"message":"(DB::reportOnline) Reporting nodeOne online.","level":"info"}
+{"message":"(DB::addCandidate) Adding candidate nodeOne","level":"info"}
+{"message":"(Nominator::constructor) Nominator spawned: 5H728gLgx4yuCSVEwGCAfLo3RtzTau9F6cTNqNJtrqqjACWq","level":"info"}
+{"message":"Stash stash0 did GOOD, adding points","level":"info"}
+{"message":"Stash stash0 did GOOD, adding points","level":"info"}
+{"message":"Stash stash0 did GOOD, adding points","level":"info"}
+{"message":"Stash stash0 did GOOD, adding points","level":"info"}
+{"message":"Stash stash0 did BAD, docking points","level":"info"}
+{"message":"(DB::reportOnline) Reporting nodeZero online.","level":"info"}
+{"message":"(DB::addCandidate) Adding candidate nodeZero","level":"info"}
+{"message":"(DB::reportOnline) Reporting nodeOne online.","level":"info"}
+{"message":"(DB::addCandidate) Adding candidate nodeOne","level":"info"}
+{"message":"(Nominator::constructor) Nominator spawned: 5H728gLgx4yuCSVEwGCAfLo3RtzTau9F6cTNqNJtrqqjACWq","level":"info"}
+{"message":"Stash stash0 did GOOD, adding points","level":"info"}
+{"message":"Stash stash0 did GOOD, adding points","level":"info"}
+{"message":"Stash stash0 did GOOD, adding points","level":"info"}
+{"message":"Stash stash0 did GOOD, adding points","level":"info"}
+{"message":"Stash stash0 did BAD, docking points","level":"info"}
+{"message":"(DB::reportOnline) Reporting nodeZero online.","level":"info"}
+{"message":"(DB::addCandidate) Adding candidate nodeZero","level":"info"}
+{"message":"(DB::reportOnline) Reporting nodeOne online.","level":"info"}
+{"message":"(DB::addCandidate) Adding candidate nodeOne","level":"info"}
+{"message":"(Nominator::constructor) Nominator spawned: 5H728gLgx4yuCSVEwGCAfLo3RtzTau9F6cTNqNJtrqqjACWq","level":"info"}
+{"message":"Stash stash0 did GOOD, adding points","level":"info"}
+{"message":"Stash stash0 did GOOD, adding points","level":"info"}
+{"message":"Stash stash0 did GOOD, adding points","level":"info"}
+{"message":"Stash stash0 did GOOD, adding points","level":"info"}
+{"message":"Stash stash0 did BAD, docking points","level":"info"}

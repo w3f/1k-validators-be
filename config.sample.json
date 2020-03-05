@@ -25,14 +25,18 @@
             }
         ],
         "nominators": [
-            {
-                "seed": "0xbc1ede780f784bb6991a585e4f6e61522c14e1cae6ad0895fb57b9a205a8f938",
-                "maxNominations": 1
-            },
-            {
-                "seed": "0x868020ae0687dda7d57565093a69090211449845a7e11453612800b663307246",
-                "maxNominations": 1
-            }
+            [
+                {
+                    "seed": "0xbc1ede780f784bb6991a585e4f6e61522c14e1cae6ad0895fb57b9a205a8f938",
+                    "maxNominations": 1
+                }
+            ],
+            [
+                {
+                    "seed": "0x868020ae0687dda7d57565093a69090211449845a7e11453612800b663307246",
+                    "maxNominations": 1
+                }
+            ]
         ],
         "forceRound": true,
         "nominating": true

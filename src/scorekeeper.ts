@@ -11,6 +11,8 @@ import {
 import logger from './logger';
 import {Stash} from './types';
 
+type NominatorGroup = any[];
+
 export default class ScoreKeeper {
   public api: ApiPromise;
   public bot: any;
@@ -21,7 +23,7 @@ export default class ScoreKeeper {
   // Keeps track of a starting era for a round.
   public startEra: number = 0;
 
-  public nominators: Array<Nominator> = [];
+  public nominatorGroups: Array<NominatorGroup> = [];
 
   constructor(api: ApiPromise, db: any, config: any, bot: any = false) {
     this.api = api;
@@ -37,14 +39,22 @@ export default class ScoreKeeper {
   }
 
   /// Spawns a new nominator.
-  async spawn(seed: string, maxNominations: number = 1) {
-    const nominator = new Nominator(this.api, this.db, { seed, maxNominations }, this.botLog.bind(this))
-    await this.db.addNominator(nominator.address);
-    this.nominators.push(nominator);
+  _spawn(seed: string, maxNominations: number = 1) {
+    return new Nominator(this.api, this.db, { seed, maxNominations }, this.botLog.bind(this))
+  }
+
+  async addNominatorGroup(nominatorGroup: NominatorGroup) {
+    let group = [];
+    for (const nominator of nominatorGroup) {
+      const nom = this._spawn(nominator.seed);
+      await this.db.addNominator(nom.address);
+      group.push(nom);
+    }
+    this.nominatorGroups.push(group);
   }
 
   async begin(frequency: string) {
-    if (!this.nominators) {
+    if (!this.nominatorGroups) {
       throw new Error('No nominators spawned! Cannot begin.');
     }
 
@@ -83,24 +93,31 @@ export default class ScoreKeeper {
     const set = await this._getSet();
     this.currentSet = set;
 
-    for (const nominator of this.nominators) {
-      const maxNominations = nominator.maxNominations;
+    await this._doNominations(set, 16, this.nominatorGroups);
+  }
 
-      let toNominate = [];
-      for (let i = 0; i < maxNominations; i++) {
-        if (set.length > 0) {
-          toNominate.push(
-            set.shift(),
-          );
-        } else {
-          logger.info('ran to the end of candidates');
-          return;
+  async _doNominations(set: any[], setSize: number, nominatorGroups: NominatorGroup[] = []) {
+    // A "subset" is a group of 16 validators since this is the max that can
+    // be nominated by a single account.
+    let subsets = [];
+    for (let i = 0; i < set.length; i += setSize) {
+      subsets.push(set.slice(i, i + setSize));
+    }
+
+    let count = 0;
+    for (const nodes of subsets) {
+      const targets = nodes.map((node: any) => node.stash);
+
+      for (const nomGroup of nominatorGroups) {
+        const curNominator = nomGroup[count];
+        if (curNominator === undefined) {
+          logger.info('More targets than nominators!');
+          continue;
         }
+        logger.info(`(SK::_doNominations) targets = ${JSON.stringify(targets)}`);
+        await curNominator.nominate(targets);
       }
-
-      toNominate = toNominate.map((node: any) => node.stash);
-
-      await nominator.nominate(toNominate);
+      count++;
     }
   }
 
@@ -173,61 +190,64 @@ export default class ScoreKeeper {
   async endRound() {
     logger.info('Ending round');
 
-    for (const nominator of this.nominators) {
-      const current = await this.db.getCurrentTargets(nominator.address);
-      // Wipe targets.
-      await this.db.newTargets(nominator.address, []);
+    for (const nomGroup of this.nominatorGroups) {
+      for (const nominator of nomGroup) {
+        const current = await this.db.getCurrentTargets(nominator.address);
 
-      // If not nominating any... then return.
-      if (!current) return;
+        // If not nominating any... then return.
+        if (!current) return;
 
-      for (const stash of current) {
-        /// Ensure the commission wasn't raised.
-        const preferences = await this.api.query.staking.validators(stash);
-        //@ts-ignore
-        const { commission } = preferences.toJSON()[0];
-        if (commission > TEN_PERCENT) {
-          await this.dockPoints(stash);
-          continue;
-        }
-        /// Ensure the 50 KSM minimum was not removed.
-        const exposure = await this.api.query.staking.stakers(stash);
-        //@ts-ignore
-        const { own } = exposure.toJSON();
-        if (own < FIFTY_KSM) {
-          await this.dockPoints(stash);
-          continue;
-        }
+        // Wipe targets.
+        await this.db.newTargets(nominator.address, []);
 
-        /// Ensure the validator is still online.
-        const node = await this.db.getValidator(stash);
-        if (Number(node.offlineSince) !== 0) {
-          await this.dockPoints(stash);
-          continue;
-        }
-
-        /// Check slashes in this era and the previous eras.
-        // TODO: Test this:
-        const currentEra: number = await this._getCurrentEra();
-        const startEra = this.startEra;
-        const unsub = await this.api.query.staking.currentEra(async (era: any) => {
-          era = era.toNumber();
-          // When this era ends then check for slashes.
-          if (era == currentEra+1) {
-            while (era != startEra) {
-              const slashes = await this.api.query.staking.validatorSlashInEra(era, stash);
-              if (!slashes.isNone) {
-                this.dockPoints(stash);
-                unsub();
-                return;
-              }
-              era--;
-            }
-            // Should only reach here if no slashes were found.
-            this.addPoint(stash);
-            unsub();
+        for (const stash of current) {
+          /// Ensure the commission wasn't raised.
+          const preferences = await this.api.query.staking.validators(stash);
+          //@ts-ignore
+          const { commission } = preferences.toJSON()[0];
+          if (commission > TEN_PERCENT) {
+            await this.dockPoints(stash);
+            continue;
           }
-        });
+          /// Ensure the 50 KSM minimum was not removed.
+          const exposure = await this.api.query.staking.stakers(stash);
+          //@ts-ignore
+          const { own } = exposure.toJSON();
+          if (own < FIFTY_KSM) {
+            await this.dockPoints(stash);
+            continue;
+          }
+
+          /// Ensure the validator is still online.
+          const node = await this.db.getValidator(stash);
+          if (Number(node.offlineSince) !== 0) {
+            await this.dockPoints(stash);
+            continue;
+          }
+
+          /// Check slashes in this era and the previous eras.
+          // TODO: Test this:
+          const currentEra: number = await this._getCurrentEra();
+          const startEra = this.startEra;
+          const unsub = await this.api.query.staking.currentEra(async (era: any) => {
+            era = era.toNumber();
+            // When this era ends then check for slashes.
+            if (era == currentEra+1) {
+              while (era != startEra) {
+                const slashes = await this.api.query.staking.validatorSlashInEra(era, stash);
+                if (!slashes.isNone) {
+                  this.dockPoints(stash);
+                  unsub();
+                  return;
+                }
+                era--;
+              }
+              // Should only reach here if no slashes were found.
+              this.addPoint(stash);
+              unsub();
+            }
+          });
+        }
       }
     }
   }

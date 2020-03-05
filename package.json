@@ -7,7 +7,7 @@
     "docker": "docker-compose rm -f; docker-compose build --no-cache; docker-compose up",
     "clean": "rm validator.db",
     "lint:fix": "./node_modules/.bin/eslint src/**/*.ts --fix",
-    "start": "ts-node src/index.ts",
+    "start": "ts-node src/index.ts --unhandled-rejections=strict",
     "test": "ava test/**/*.spec.ts"
   },
   "author": "",

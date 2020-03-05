@@ -55,8 +55,8 @@ try {
 
       /// Time to start the nominators.
       const scorekeeper = new Scorekeeper(api, db, Config, bot);
-      for (const nominator of Config.scorekeeper.nominators) {
-        await scorekeeper.spawn(nominator.seed);
+      for (const nominatorGroup of Config.scorekeeper.nominators) {
+        await scorekeeper.addNominatorGroup(nominatorGroup);
       }
 
       /// And add the candidates.
@@ -69,4 +69,4 @@ try {
       scorekeeper.begin(scorekeeperFrequency);
     }
   )();
-} catch (err) { console.error(err); }
+} catch (err) { console.error(err); process.exit(1); }

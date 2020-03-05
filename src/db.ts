@@ -51,7 +51,7 @@ export default class Database {
   }
 
   async newTargets(address: Address, targets: Stash[]): Promise<boolean> {
-    logger.info(`(DB::newTargets) Adding new targets for ${address}`);
+    logger.info(`(DB::newTargets) Adding new targets for ${address} | targets: ${JSON.stringify(targets)}`);
     const now = new Date().getTime();
 
     const oldData = await this._queryOne({ nominator: address });
@@ -82,15 +82,16 @@ export default class Database {
   }
 
   async setTarget(nominator: Address, stash: Stash, now: number) {
-    logger.info(`(DB::setTarget) Setting target `);
+    logger.info(`(DB::setTarget) Setting target for nominator ${nominator} | stash = ${stash}`);
 
     const oldData = await this._queryOne({ nominator });
     const newData = Object.assign(oldData, {
-      current: oldData.current.push(stash),
+      current: [...oldData.current, stash],
       nominatedAt: now,
-      lastSeen: now,
+      lastSeen: now, 
     });
 
+    logger.info(`(DB::setTarget) OLDDATA ${JSON.stringify(oldData)} | NEWDATA ${JSON.stringify(newData)} | nominator ${nominator} | stash = ${stash}`);
     return this._update({ nominator }, newData);
   }
 

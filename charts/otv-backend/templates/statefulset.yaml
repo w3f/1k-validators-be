@@ -36,7 +36,8 @@ spec:
         - name: data
           mountPath: /data
         - name: config
-          mountPath: /code
+          mountPath: /code/config.json
+          subPath: config.json
           readOnly: true
       {{- if ne .Values.environment "ci" }}
         resources:
@@ -51,9 +52,6 @@ spec:
       - name: config
         secret:
           secretName: {{ .Release.Name }}
-          items:
-          - key: config.json
-            path: config.json
       {{ if eq .Values.environment "ci" }}
       - name: data
         emptyDir: {}

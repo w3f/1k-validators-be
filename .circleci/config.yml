@@ -9,7 +9,7 @@ jobs:
       - setup_remote_docker
       - run:
           command: |
-            /scripts/build-image.sh web3f/1k-validators-be .
+            /scripts/build-image.sh web3f/otv-backend .
 
   integrationTests:
     docker:
@@ -30,7 +30,7 @@ jobs:
       - setup_remote_docker
       - run:
           command: |
-            /scripts/publish-image.sh web3f/1k-validators-be
+            /scripts/publish-image.sh web3f/otv-backend
 
   publishChart:
     docker:

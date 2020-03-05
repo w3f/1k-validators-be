@@ -7,11 +7,11 @@ source /scripts/bootstrap-helm.sh
 run_tests() {
     echo Running tests...
 
-    wait_pod_ready tov-backend
+    wait_pod_ready otv-backend
 }
 
 teardown() {
-    helm delete --purge tov-backend
+    helm delete --purge otv-backend
 }
 
 main(){

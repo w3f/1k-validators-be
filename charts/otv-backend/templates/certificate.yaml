@@ -5,15 +5,15 @@ metadata:
   name: {{ .Release.Name }}
   namespace: {{ .Values.namespace }}
 spec:
-  secretName: {{ include "tov-backend.tls-secret-name" . }}
+  secretName: {{ include "otv-backend.tls-secret-name" . }}
   issuerRef:
     name: letsencrypt
   dnsNames:
-  - {{ include "tov-backend.backend-domain" . }}
+  - {{ include "otv-backend.backend-domain" . }}
   acme:
     config:
     - dns01:
         provider: prod-dns
       domains:
-      - {{ include "tov-backend.backend-domain" . }}
+      - {{ include "otv-backend.backend-domain" . }}
 {{ end }}

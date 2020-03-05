@@ -8,10 +8,10 @@ metadata:
 spec:
   tls:
   - hosts:
-      - {{ include "tov-backend.backend-domain" . }}
-    secretName: {{ include "tov-backend.tls-secret-name" . }}
+      - {{ include "otv-backend.backend-domain" . }}
+    secretName: {{ include "otv-backend.tls-secret-name" . }}
   rules:
-  - host: {{ include "tov-backend.backend-domain" . }}
+  - host: {{ include "otv-backend.backend-domain" . }}
     http:
       paths:
       - path: /

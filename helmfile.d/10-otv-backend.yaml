@@ -7,11 +7,11 @@ repositories:
   url: https://w3f.github.io/helm-charts/
 
 releases:
-- name: tov-backend
+- name: otv-backend
 {{ if eq .Environment.Name "production" }}
-  chart: w3f/tov-backend
+  chart: w3f/otv-backend
 {{ else }}
-  chart: ../charts/tov-backend
+  chart: ../charts/otv-backend
 {{ end }}
   values:
-  - ./config/tov-backend.yaml.gotmpl
+  - ./config/otv-backend.yaml.gotmpl

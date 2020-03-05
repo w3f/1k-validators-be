@@ -8,7 +8,7 @@ namespace: otv
 backendPort: 6400
 
 image:
-  repo: web3f/tov-backend
+  repo: web3f/otv-backend
   tag: latest
 
 certificate:

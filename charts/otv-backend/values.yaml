@@ -18,7 +18,7 @@ config: |
   {
     "global": {
         "test": true,
-        "wsEndpoint": "ws://172.28.1.1:9944"
+        "wsEndpoint": "wss://kusama-rpc.polkadot.io/"
     },
     "db": {
         "storageFile": "/data/validator.db"

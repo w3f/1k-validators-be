@@ -5,7 +5,7 @@ dataPath: "/data"
 
 namespace: otv
 
-backendPort: 6400
+backendPort: 3300
 
 image:
   repo: web3f/otv-backend

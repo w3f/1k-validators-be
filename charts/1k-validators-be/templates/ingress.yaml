@@ -1,0 +1,20 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ .Release.Name }}
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/limit-rps: "10"
+spec:
+  tls:
+  - hosts:
+      - {{ include "1k-validators-be.backend-domain" . }}
+    secretName: {{ include "1k-validators-be.tls-secret-name" . }}
+  rules:
+  - host: {{ include "1k-validators-be.backend-domain" . }}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: {{ .Release.Name }}
+          servicePort: {{ .Values.backendPort }}

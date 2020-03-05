@@ -1,0 +1,15 @@
+environment: production
+
+domain: w3f.community
+dataPath: "/data"
+
+namespace: otv
+
+backendPort: 6400
+
+image:
+  repo: web3f/1k-validators-be
+  tag: latest
+
+certificate:
+  enabled: true

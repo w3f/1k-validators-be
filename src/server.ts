@@ -1,4 +1,5 @@
 import Koa from 'koa';
+import bodyparser from 'koa-bodyparser';
 
 import Database from './db';
 import logger from './logger';
@@ -20,26 +21,26 @@ export default class Server {
     this.db = db;
     this.port = port;
 
+    this.app.use(bodyparser());
+
     this.app.use(async (ctx: any) => {
       switch (ctx.url.toLowerCase()) {
         case API.GetValidators:
           {
             const allValidators = await this.db.allValidators();
-            //@ts-ignore
-            ctx.body = allValidators.join('\n');
+            ctx.body = allValidators;
           }
           break;
         case API.GetNodes:
           {
             const allNodes: Array<any> = await this.db.allNodes();
-            ctx.body = allNodes.map((node: any) => JSON.stringify(node)).join('\n');
+            ctx.body = allNodes;
           }
           break;
         case API.GetNominators:
           {
             const allNominators = await this.db.allNominators();
-            //@ts-ignore
-            ctx.body = allNominators.map((nom: any) => JSON.stringify(nom)).join('\n');
+            ctx.body = allNominators;
           }
           break;
         case API.GetRounds:

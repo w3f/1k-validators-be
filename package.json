@@ -26,6 +26,7 @@
     "cron": "^1.8.2",
     "koa": "^2.11.0",
     "koa-bodyparser": "^4.2.1",
+    "koa2-cors": "^2.0.6",
     "matrix-js-sdk": "^5.0.1",
     "nedb": "^1.8.0",
     "reconnecting-websocket": "^4.2.0",

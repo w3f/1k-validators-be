@@ -1,5 +1,7 @@
 import Koa from 'koa';
 import bodyparser from 'koa-bodyparser';
+//@ts-ignore
+import cors from 'koa2-cors';
 
 import Database from './db';
 import logger from './logger';
@@ -21,6 +23,7 @@ export default class Server {
     this.db = db;
     this.port = port;
 
+    this.app.use(cors());
     this.app.use(bodyparser());
 
     this.app.use(async (ctx: any) => {

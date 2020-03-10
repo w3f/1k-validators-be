@@ -32,6 +32,7 @@ test.before(async (t: any) => {
 
 test.after(() => {
 	wipe('test.db');
+	wipe('combined.log');
 });
 
 test('Creates a new Scorekeeper', (t: any) => {
@@ -109,13 +110,13 @@ test('It gets the right results from _doNominations()', async (t: any) => {
 });
 
 test('It survives across restarts', async (t: any) => {
-	t.pass();
+	t.pass(); // TODO
 });
 
 test('startRound() adds an empty round in db and makes nominations', async (t: any) => {
-	t.pass();
+	t.pass(); // TODO
 });
 
 test('endRound() completes the round', async (t: any) => {
-	t.pass();
+	t.pass(); // TODO
 });

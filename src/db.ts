@@ -237,6 +237,17 @@ export default class Database {
     });
   }
 
+  async clearAccumulations(): Promise<boolean> {
+    const nodes = await this.allNodes();
+    for (const node of nodes) {
+      const newData = Object.assign(node, {
+        offlineAccumulated: 0,
+      });
+      this._update({ id: node.id }, newData);
+    }
+    return true;
+  }
+
   /**
    * PRIVATE METHODS
    */

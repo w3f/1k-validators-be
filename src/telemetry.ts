@@ -89,15 +89,17 @@ export default class TelemetryClient {
       case TelemetryMessage.AddedNode:
         {
           const [ id, details ] = payload;
+          const now = new Date().getTime();
 
-          await this.db.reportOnline(id, details);
+          await this.db.reportOnline(id, details, now);
         }
         break;
       case TelemetryMessage.RemovedNode:
         {
           const id = payload;
+          const now = new Date().getTime();
 
-          await this.db.reportOffline(id);
+          await this.db.reportOffline(id, now);
         }
         break;
     }

@@ -17,10 +17,12 @@ test.before(async (t: any) => {
 	wipe('test.db')
 	const db = new Database('test.db');
 
-	await db.reportOnline(0, ['nodeZero']);
+	const now = new Date().getTime();
+
+	await db.reportOnline(0, ['nodeZero'], now);
 	await db.addCandidate('nodeZero', 'stash0');
 
-	await db.reportOnline(1, ['nodeOne']);
+	await db.reportOnline(1, ['nodeOne'], now);
 	await db.addCandidate('nodeOne', 'stash1');
 
 	//@ts-ignore

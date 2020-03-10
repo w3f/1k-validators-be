@@ -8,7 +8,7 @@
     "clean": "rm validator.db",
     "lint:fix": "./node_modules/.bin/eslint src/**/*.ts --fix",
     "start": "ts-node src/index.ts --unhandled-rejections=strict",
-    "test": "ava test/**/*.spec.ts"
+    "test": "ava test/db.spec.ts"
   },
   "author": "",
   "license": "ISC",

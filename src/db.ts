@@ -17,7 +17,14 @@ export default class Database {
     const oldData = await this._queryOne({ name });
     if (!oldData) {
       logger.info(`(DB::addCandidate) Could not find candidate node ${name} - skipping`);
-      return;
+      
+      const data = {
+        id: null,
+        name,
+        stash,
+      };
+
+      return this._insert(data);
     }
     const newData = Object.assign(oldData, {
       stash,
@@ -96,12 +103,12 @@ export default class Database {
   }
 
   /// Entry point for reporting a new node is online.
-  async reportOnline(id: number, details: Array<any>) {
+  async reportOnline(id: number, details: Array<any>, now: number) {
     const name = details[0];
 
     logger.info(`(DB::reportOnline) Reporting ${name} online.`)
 
-    const now = new Date().getTime();
+    // const now = new Date().getTime();
     const oldData = await this._queryOne({ id });
 
     if (!oldData) {
@@ -119,6 +126,7 @@ export default class Database {
         misbehaviors: 0,
         stash: null,
       };
+
       return this._insert(data); 
     } else {
       /// We've seen the node before, take stock of any offline time.
@@ -127,16 +135,18 @@ export default class Database {
       const newData = Object.assign(oldData, {
         offlineSince: 0,
         offlineAccumulated: accumulated,
+        goodSince: now,
       });
       return this._update({ id }, newData);
     }
   }
 
-  async reportOffline(id: number) {
-    const now = new Date().getTime();
+  async reportOffline(id: number, now: number) {
+    // const now = new Date().getTime();
     const oldData = await this._queryOne({ id });
     const newData = Object.assign(oldData, {
       offlineSince: now,
+      goodSince: 0,
     });
 
     return this._update({ id }, newData);
@@ -160,11 +170,30 @@ export default class Database {
     return this._update({ id }, newData);
   }
 
+  async getNode(id: number): Promise<any> {
+    const allNodes = await this.allNodes();
+    const found = allNodes.find((node: any) => {
+      return node.id === id;
+    });
+    return found;
+  }
+
+  /// Nodes are connected to Telemetry, but not necessarily candidates.
   async allNodes(): Promise<any[]> {
     return new Promise((resolve: any, reject: any) => {
       this._db.find({ id: { $gte: 0 } }, (err: any, docs: any) => {
         if (err) reject(err);
         resolve(docs);
+      });
+    });
+  }
+
+  /// Candidates are ones who can be nominated. 
+  async allCandidates(): Promise<any[]> {
+    return new Promise((resolve: any, reject: any) => {
+      this._db.find({ stash: /.*/ }, (err: any, docs: any) => {
+        if (err) reject(err);
+        else resolve(docs);
       });
     });
   }

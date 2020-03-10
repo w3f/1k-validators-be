@@ -39,7 +39,7 @@ export default class ScoreKeeper {
   }
 
   /// Spawns a new nominator.
-  _spawn(seed: string, maxNominations: number = 1) {
+  _spawn(seed: string, maxNominations: number = 1): Nominator {
     return new Nominator(this.api, this.db, { seed, maxNominations }, this.botLog.bind(this))
   }
 

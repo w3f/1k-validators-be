@@ -10,12 +10,7 @@ import Server from './server';
 import TelemetryClient from './telemetry';
 
 import logger from './logger';
-
-const sleep = (ms: number) => (
-  new Promise((resolve: any) => {
-    setTimeout(() => resolve(), ms);
-  })
-);
+import { sleep } from './util';
 
 try {
   (

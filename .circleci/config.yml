@@ -1,0 +1,123 @@
+version: 2
+
+jobs:
+  unitTests:
+    docker:
+      - image: node:slim
+    steps:
+      - checkout
+      - run:
+          command: |
+            yarn && yarn test
+
+  helmLint:
+    docker:
+      - image: web3f/ci-commons:v1.8.1
+    steps:
+      - checkout
+      - run:
+          command: |
+            helm lint ./charts/otv-backend
+
+  buildImage:
+    docker:
+      - image: web3f/ci-commons:v1.8.1
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          command: |
+            /scripts/build-image.sh web3f/otv-backend .
+
+  integrationTests:
+    docker:
+      - image: web3f/ci-commons:v1.8.1
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          description: run integration tests
+          command: |
+            /scripts/integration-tests.sh
+
+  publishImage:
+    docker:
+      - image: web3f/ci-commons:v1.8.1
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          command: |
+            /scripts/publish-image.sh web3f/otv-backend
+
+  publishChart:
+    docker:
+      - image: web3f/ci-commons:v1.8.1
+    steps:
+      - checkout
+      - run:
+          command: |
+            /scripts/publish-chart.sh
+
+  deploy:
+    docker:
+      - image: web3f/ci-commons:v1.8.1
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          environment:
+            HELM_ENV: production
+          command: |
+            /scripts/deploy.sh -c community
+
+workflows:
+  version: 2
+  test_and_deploy:
+    jobs:
+      - unitTests:
+          filters:
+            tags:
+              only: /.*/
+      - helmLint:
+          filters:
+            tags:
+              only: /.*/
+      - buildImage:
+          filters:
+            tags:
+              only: /.*/
+          requires:
+            - unitTests
+      - integrationTests:
+          filters:
+            tags:
+              only: /.*/
+          requires:
+            - helmLint
+            - buildImage
+      - publishImage:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*/
+          requires:
+            - integrationTests
+      - publishChart:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*/
+          requires:
+            - integrationTests
+      - deploy:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*/
+          requires:
+            - publishImage
+            - publishChart

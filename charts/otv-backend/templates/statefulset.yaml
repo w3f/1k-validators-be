@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Release.Name }}
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  serviceName: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: {{ .Release.Name }}
+        image: {{ .Values.image.repo }}:{{ .Values.image.tag }}
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: backend
+          containerPort: {{ .Values.backendPort }}
+        readinessProbe:
+          httpGet:
+            path: /healthcheck
+            port: {{ .Values.backendPort }}
+          initialDelaySeconds: 30
+          timeoutSeconds: 3
+        volumeMounts:
+        - name: data
+          mountPath: /data
+        - name: config
+          mountPath: /code/config.json
+          subPath: config.json
+          readOnly: true
+      {{- if ne .Values.environment "ci" }}
+        resources:
+          limits:
+            cpu: 30m
+            memory: 300Mi
+          requests:
+            cpu: 30m
+            memory: 300Mi
+      {{- end }}
+      volumes:
+      - name: config
+        secret:
+          secretName: {{ .Release.Name }}
+      {{ if eq .Values.environment "ci" }}
+      - name: data
+        emptyDir: {}
+      {{ else }}
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi
+      {{ end }}

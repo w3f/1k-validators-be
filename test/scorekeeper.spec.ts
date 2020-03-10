@@ -3,8 +3,6 @@ import Database from '../src/db';
 import Scorekeeper from '../src/scorekeeper';
 import { sleep } from '../src/util';
 
-import * as fs from 'fs';
-
 import {
 	MockApi,
 	MockConfig,
@@ -32,7 +30,7 @@ test.before(async (t: any) => {
 	await sleep(1200);
 });
 
-test.after((t: any) => {
+test.after(() => {
 	wipe('test.db');
 });
 

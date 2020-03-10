@@ -2,8 +2,6 @@ import test from 'ava';
 import Database from '../src/db';
 import { getNow } from '../src/util';
 
-import * as fs from 'fs';
-
 import { wipe } from './helpers';
 
 test.before((t:any) => {
@@ -115,4 +113,49 @@ test.serial('addNominator() adds a new nominator to the db', async (t: any) => {
   t.is(nominator.firstSeen, now);
   t.is(nominator.lastSeen, now);
   t.deepEqual(nominator.current, []);
+});
+
+test.serial('newTargets() adds targets for the nominator', async (t: any) => {
+  const { db } = t.context;
+
+  const nomBefore = await db.getNominator('nominator_one');
+  t.deepEqual(nomBefore.current, []);
+  t.is(nomBefore.nominatedAt, null);
+
+  const now = getNow();
+  await db.newTargets('nominator_one', ['stashOne', 'stashTwo'], now);
+
+  const nomAfter = await db.getNominator('nominator_one');
+  t.is(nomAfter.nominatedAt, now);
+  t.is(nomAfter.lastSeen, now);
+  t.deepEqual(nomAfter.current, ['stashOne', 'stashTwo']);
+});
+
+test.serial('getCurrentTargets() returns the expected values', async (t: any) => {
+  const { db } = t.context;
+
+  const currentTargets = await db.getCurrentTargets('nominator_one');
+  t.deepEqual(currentTargets, ['stashOne', 'stashTwo']);
+});
+
+test.serial('setNominatedAt() sets nominatedAt for node', async (t: any) => {
+  const { db } = t.context;
+
+  const now = getNow();
+  await db.setNominatedAt('stashOne', now);
+
+  // TODO
+  t.pass();
+});
+
+test.serial('setTarget() sets a single target', async (t: any) => {
+  const { db } = t.context;
+
+  const now = getNow();
+
+  await db.setTarget('nominator_one', 'stashThree', now);
+  const data = await db.getNominator('nominator_one');
+  t.deepEqual(data.current, ['stashOne', 'stashTwo', 'stashThree']);
+  t.is(data.nominatedAt, now);
+  t.is(data.lastSeen, now);
 });

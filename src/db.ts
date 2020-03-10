@@ -57,9 +57,8 @@ export default class Database {
     return this._update({ nominator: address }, newData);
   }
 
-  async newTargets(address: Address, targets: Stash[]): Promise<boolean> {
+  async newTargets(address: Address, targets: Stash[], now: number): Promise<boolean> {
     logger.info(`(DB::newTargets) Adding new targets for ${address} | targets: ${JSON.stringify(targets)}`);
-    const now = new Date().getTime();
 
     const oldData = await this._queryOne({ nominator: address });
     const newData = Object.assign(oldData, {
@@ -82,6 +81,10 @@ export default class Database {
     logger.info(`(DB::setNominatedAt) Setting nominated at ${now}`);
 
     const oldData = await this._queryOne({ stash });
+    if (!oldData) {
+      throw new Error('Expected an old data entry; qed');
+    }
+
     const newData = Object.assign(oldData, {
       nominatedAt: now,
     });

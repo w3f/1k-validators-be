@@ -1,5 +1,6 @@
 import test from 'ava';
 import Database from '../src/db';
+import { getNow } from '../src/util';
 
 import * as fs from 'fs';
 
@@ -46,7 +47,7 @@ test.serial('reportOnline() reports a node online', async (t: any) => {
   const oldNodes = await db.allNodes();
   t.deepEqual(oldNodes, []); // no node reported online
 
-  const now = new Date().getTime();
+  const now = getNow();
   await db.reportOnline(1, nodeDetails, now);
 
   const newNodes = await db.allNodes();
@@ -75,7 +76,7 @@ test.serial('reportOffline() reports a node offline', async (t: any) => {
   t.is(nodeOneBefore.offlineAccumulated, 0);
   t.true(nodeOneBefore.goodSince > 1);
 
-  const now = new Date().getTime();
+  const now = getNow();
   await db.reportOffline(1, now);
 
   const nodeOneAfter = await db.getNode(1);
@@ -90,11 +91,28 @@ test.serial('reportOnline() records the accumulated time', async (t: any) => {
   t.true(nodeOneOffline.offlineSince > 0);
   t.is(nodeOneOffline.goodSince, 0);
 
-  const now = new Date().getTime();
+  const now = getNow();
   await db.reportOnline(1, [], now);
 
   const nodeOneOnline = await db.getNode(1);
   t.is(nodeOneOnline.offlineSince, 0);
   t.is(nodeOneOnline.offlineAccumulated, now - nodeOneOffline.offlineSince);
   t.is(nodeOneOnline.goodSince, now);
+});
+
+test.serial('addNominator() adds a new nominator to the db', async (t: any) => {
+  const { db } = t.context;
+
+  const nominators = await db.allNominators();
+  t.deepEqual(nominators, []);
+
+  const now = getNow();
+  await db.addNominator('nominator_one', now);
+
+  const nominator = await db.getNominator('nominator_one');
+
+  t.is(nominator.nominatedAt, null);
+  t.is(nominator.firstSeen, now);
+  t.is(nominator.lastSeen, now);
+  t.deepEqual(nominator.current, []);
 });

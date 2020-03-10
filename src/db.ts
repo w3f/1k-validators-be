@@ -32,9 +32,9 @@ export default class Database {
     return this._update({ name }, newData);
   }
 
-  async addNominator(address: Address): Promise<boolean> {
+  /// Entry point for entering a new nominator to the db.
+  async addNominator(address: Address, now: number): Promise<boolean> {
     logger.info(`(DB::addNominator) Adding nominator ${address}`);
-    const now = new Date().getTime();
 
     const oldData = await this._queryOne({ nominator: address });
     if (!oldData) {
@@ -170,6 +170,10 @@ export default class Database {
     return this._update({ id }, newData);
   }
 
+  /**
+   * GETTERS / ACCESSORS
+   */
+
   async getNode(id: number): Promise<any> {
     const allNodes = await this.allNodes();
     const found = allNodes.find((node: any) => {
@@ -213,7 +217,15 @@ export default class Database {
     return null;
   }
 
-  async allNominators() {
+  async getNominator(address: string): Promise<any> {
+    const nominators = await this.allNominators();
+    const found = nominators.find((nominator: any) => {
+      return nominator.nominator === address;
+    });
+    return found;
+  }
+
+  async allNominators(): Promise<any[]> {
     return new Promise((resolve: any, reject: any) => {
     this._db.find({ nominator: /.*/ }, (err: any, docs: any) => {
         if (err) reject(err);
@@ -221,6 +233,10 @@ export default class Database {
       });
     });
   }
+
+  /**
+   * PRIVATE METHODS
+   */
 
   /// Insert new item in the datastore.
   private _insert(item: object): Promise<boolean> {

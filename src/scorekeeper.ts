@@ -10,6 +10,7 @@ import {
 
 import logger from './logger';
 import {Stash} from './types';
+import { getNow } from './util';
 
 type NominatorGroup = any[];
 
@@ -39,7 +40,7 @@ export default class ScoreKeeper {
   }
 
   /// Spawns a new nominator.
-  _spawn(seed: string, maxNominations: number = 1) {
+  _spawn(seed: string, maxNominations: number = 1): Nominator {
     return new Nominator(this.api, this.db, { seed, maxNominations }, this.botLog.bind(this))
   }
 
@@ -189,6 +190,7 @@ export default class ScoreKeeper {
   /// Handles the ending of a round.
   async endRound() {
     logger.info('Ending round');
+    const now = getNow();
 
     for (const nomGroup of this.nominatorGroups) {
       for (const nominator of nomGroup) {
@@ -198,7 +200,7 @@ export default class ScoreKeeper {
         if (!current) return;
 
         // Wipe targets.
-        await this.db.newTargets(nominator.address, []);
+        await this.db.newTargets(nominator.address, [], now);
 
         for (const stash of current) {
           /// Ensure the commission wasn't raised.

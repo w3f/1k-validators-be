@@ -48,6 +48,12 @@ try {
         await monitor.ensureUpgrades();
       }).start();
 
+      // Every week
+      const resetFrequency = '* * * * * 0';
+      new CronJob(resetFrequency, () => {
+        db.clearAccumulations();
+      });
+
       /// Time to start the nominators.
       const scorekeeper = new Scorekeeper(api, db, Config, bot);
       for (const nominatorGroup of Config.scorekeeper.nominators) {

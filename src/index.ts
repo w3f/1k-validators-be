@@ -49,7 +49,7 @@ try {
       }).start();
 
       // Every week
-      const resetFrequency = '0 0 0 0 0 * *';
+      const resetFrequency = '* * * * * 0';
       new CronJob(resetFrequency, () => {
         db.clearAccumulations();
       });

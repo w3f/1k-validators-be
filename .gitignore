@@ -5,3 +5,4 @@ config.json
 archive
 *.db
 combined.log
+prod.json

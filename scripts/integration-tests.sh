@@ -11,7 +11,7 @@ run_tests() {
 }
 
 teardown() {
-    helm delete --purge otv-backend
+    helmfile delete --purge
 }
 
 main(){

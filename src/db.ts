@@ -111,26 +111,45 @@ export default class Database {
 
     logger.info(`(DB::reportOnline) Reporting ${name} online.`)
 
-    // const now = new Date().getTime();
+    // Try to get the node by ID first if it's been seen before.
     const oldData = await this._queryOne({ id });
 
     if (!oldData) {
-      /// First time we're seeing the node.
-      const data = {
-        id,
-        name,
-        details,
-        connectedAt: now,
-        nominatedAt: 0,
-        goodSince: now,
-        offlineSince: 0,
-        offlineAccumulated: 0,
-        rank: 0,
-        misbehaviors: 0,
-        stash: null,
-      };
+      // If we haven't seen the node before, maybe we've registered it
+      // by name already...
+      const nameData = await this._queryOne({ name });
+      if (!nameData) {
+        // Truly a new node.
+        const data = {
+          id,
+          name,
+          details,
+          connectedAt: now,
+          nominatedAt: 0,
+          goodSince: now,
+          offlineSince: 0,
+          offlineAccumulated: 0,
+          rank: 0,
+          misbehaviors: 0,
+          stash: null,
+        };
 
-      return this._insert(data); 
+        return this._insert(data); 
+      } else {
+        // Already a candidate, record the node data now.
+        const data = Object.assign(nameData, {
+          id,
+          details,
+          connectedAt: now,
+          nominatedAt: 0,
+          goodSince: now,
+          offlineSince: 0,
+          offlineAccumulated: 0,
+          rank: 0,
+          misbehaviors: 0,
+        });
+        return this._update({ name: nameData.name }, data);
+      }
     } else {
       /// We've seen the node before, take stock of any offline time.
       const timeOffline = now - Number(oldData.offlineSince);
@@ -242,6 +261,17 @@ export default class Database {
     for (const node of nodes) {
       const newData = Object.assign(node, {
         offlineAccumulated: 0,
+      });
+      this._update({ id: node.id }, newData);
+    }
+    return true;
+  }
+
+  async clearCandidates(): Promise<boolean> {
+    const nodes = await this.allNodes();
+    for (const node of nodes) {
+      const newData = Object.assign(node, {
+        stash: null
       });
       this._update({ id: node.id }, newData);
     }

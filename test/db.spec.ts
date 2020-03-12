@@ -19,7 +19,7 @@ test.serial('Created a new Database', async (t: any) => {
   t.truthy(t.context.db);
 });
 
-test.serial('addCandidate() adds a new candidate', async (t: any) => {
+test.serial('addCandidate() adds a new candidate before node online', async (t: any) => {
   const { db } = t.context;
 
   const candidates = await db.allCandidates();
@@ -62,7 +62,7 @@ test.serial('reportOnline() reports a node online', async (t: any) => {
   t.is(thisNode.offlineAccumulated, 0);
   t.is(thisNode.rank, 0);
   t.is(thisNode.misbehaviors, 0);
-  t.is(thisNode.stash, null);
+  t.is(thisNode.stash, 'stashOne'); // Registered already.
 });
 
 test.serial('reportOffline() reports a node offline', async (t: any) => {
@@ -96,6 +96,25 @@ test.serial('reportOnline() records the accumulated time', async (t: any) => {
   t.is(nodeOneOnline.offlineSince, 0);
   t.is(nodeOneOnline.offlineAccumulated, now - nodeOneOffline.offlineSince);
   t.is(nodeOneOnline.goodSince, now);
+});
+
+test.serial('addCandidate() adds candidate after node is online', async (t: any) => {
+  const { db } = t.context;
+
+  const nodeTwo = await db.getNode(2);
+  t.is(nodeTwo, undefined); // not around yet
+
+  const now = getNow();
+  await db.reportOnline(2, ['nodeTwo'], now);
+
+  const nodeTwoAfter = await db.getNode(2);
+  t.is(nodeTwoAfter.goodSince, now);
+  t.is(nodeTwoAfter.stash, null);
+
+  await db.addCandidate('nodeTwo', 'stashTwo');
+  
+  const nodeTwoLatest = await db.getNode(2);
+  t.is(nodeTwoLatest.stash, 'stashTwo');
 });
 
 test.serial('addNominator() adds a new nominator to the db', async (t: any) => {
@@ -158,4 +177,26 @@ test.serial('setTarget() sets a single target', async (t: any) => {
   t.deepEqual(data.current, ['stashOne', 'stashTwo', 'stashThree']);
   t.is(data.nominatedAt, now);
   t.is(data.lastSeen, now);
+});
+
+
+test.serial('Clears all the candidates (used at beginning of restarts)', async (t: any) => {
+  const { db } = t.context;
+
+  const nodesBefore = await db.allNodes();
+  for (const node of nodesBefore) {
+    if (node.name === 'One') {
+      t.is(node.stash, 'stashOne');
+    }
+    if (node.name === 'nodeTwo') {
+      t.is(node.stash, 'stashTwo');
+    }
+  }
+
+  await db.clearCandidates();
+
+  const nodesAfter = await db.allNodes();
+  for (const node of nodesAfter) {
+    t.is(node.stash, null);
+  }
 });

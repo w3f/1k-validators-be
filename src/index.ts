@@ -60,7 +60,10 @@ try {
         await scorekeeper.addNominatorGroup(nominatorGroup);
       }
 
-      /// And add the candidates.
+      /// Wipe any old candidate stash accounts...
+      await db.clearCandidates();
+      
+      /// ...and add the candidates.
       for (const candidate of Config.scorekeeper.candidates) {
         await db.addCandidate(candidate.name, candidate.stash);
       }

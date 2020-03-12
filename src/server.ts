@@ -11,6 +11,7 @@ const API: any = {
   GetNodes: '/nodes',
   GetNominators: '/nominators',
   GetRounds: '/rounds',
+  Health: '/healthcheck',
 };
 
 export default class Server {
@@ -49,6 +50,12 @@ export default class Server {
         case API.GetRounds:
           {
             // TODO
+          }
+          break;
+        case API.Health:
+          {
+            ctx.body = true;
+            ctx.status = 200;
           }
           break;
         default:

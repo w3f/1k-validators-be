@@ -7,7 +7,7 @@ jobs:
     steps:
       - checkout
       - run:
-          command: /
+          command: |
             yarn audit
           
   unitTests:

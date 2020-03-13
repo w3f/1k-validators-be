@@ -2,7 +2,6 @@ import { ApiPromise } from "@polkadot/api";
 import { CronJob } from 'cron';
 
 import ChainData from './chaindata';
-import Config from '../config.json';
 import Nominator from './nominator';
 import {
   FIFTY_KSM,
@@ -166,17 +165,17 @@ export default class ScoreKeeper {
       const [commission, err] = await this.chaindata.getCommission(activeEraIndex, node.stash);
       const [own, err2] = await this.chaindata.getOwnExposure(activeEraIndex, node.stash);
 
-      if (err && !Config.global.test) {
+      if (err && !this.config.global.test) {
         logger.info(err);
         continue;
       }
       
-      if (err2 && !Config.global.test) {
+      if (err2 && !this.config.global.test) {
         logger.info(err2);
         continue;
       }
 
-      if ((commission! <= TEN_PERCENT && own! >= FIFTY_KSM) || Config.global.test) {
+      if ((commission! <= TEN_PERCENT && own! >= FIFTY_KSM) || this.config.global.test) {
         const index = nodes.indexOf(node);
         tmpNodes.push(nodes[index]);
       }
@@ -219,12 +218,12 @@ export default class ScoreKeeper {
           /// Ensure the commission wasn't raised.
           const [commission, err] = await this.chaindata.getCommission(activeEraIndex, stash);
           // If error, something went wrong, don't reward nor dock points.
-          if (err && !Config.global.test) {
+          if (err && !this.config.global.test) {
             logger.info(err);
             continue;
           }
 
-          if (commission! > TEN_PERCENT && !Config.global.test) {
+          if (commission! > TEN_PERCENT && !this.config.global.test) {
             await this.dockPoints(stash);
             continue;
           }
@@ -232,12 +231,12 @@ export default class ScoreKeeper {
           /// Ensure the 50 KSM minimum was not removed.
           const [own, err2] = await this.chaindata.getOwnExposure(activeEraIndex, stash);
 
-          if (err2 && !Config.global.test) {
+          if (err2 && !this.config.global.test) {
             logger.info(err2);
             continue;
           }
 
-          if (own! < FIFTY_KSM && !Config.global.test) {
+          if (own! < FIFTY_KSM && !this.config.global.test) {
             await this.dockPoints(stash);
             continue;
           }
@@ -250,7 +249,7 @@ export default class ScoreKeeper {
           }
 
           /// Check slashes in this era and the previous eras.
-          if (!Config.global.test) {
+          if (!this.config.global.test) {
             const [hasSlashes, err3] = await this.chaindata.hasUnappliedSlashes(this.startEra, activeEraIndex, stash);
             if (err3) {
               logger.info(err3);

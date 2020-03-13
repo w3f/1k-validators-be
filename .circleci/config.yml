@@ -1,6 +1,14 @@
 version: 2
 
 jobs:
+  checkDependencies:
+    docker:
+      - image: node:slim
+    steps:
+      - checkout
+      - run:
+        command: /
+          yarn audit
   unitTests:
     docker:
       - image: node:slim

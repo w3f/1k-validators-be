@@ -7,8 +7,9 @@ jobs:
     steps:
       - checkout
       - run:
-        command: /
-          yarn audit
+          command: /
+            yarn audit
+          
   unitTests:
     docker:
       - image: node:slim

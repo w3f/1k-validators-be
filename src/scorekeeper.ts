@@ -127,6 +127,7 @@ export default class ScoreKeeper {
 
   async _getSet(): Promise<any[]> {
     let nodes = await this.db.allNodes();
+    const activeEraIndex = await this.chaindata.getActiveEraIndex();
 
     // Ensure they meet the requirements of:
     //  - Less than 10% commission.
@@ -161,14 +162,20 @@ export default class ScoreKeeper {
         continue;
       }
 
-      const preferences = await this.api.query.staking.validators(node.stash);
-      //@ts-ignore
-      const { commission } = preferences.toJSON()[0];
-      const currentEra = await this._getCurrentEra();
-      const exposure = await this.api.query.staking.eraStakers(currentEra, node.stash);
-      //@ts-ignore
-      const { own } = exposure.toJSON();
-      if (Number(commission) <= TEN_PERCENT && own >= FIFTY_KSM) {
+      const [commission, err] = await this.chaindata.getCommission(activeEraIndex, node.stash);
+      const [own, err2] = await this.chaindata.getOwnExposure(activeEraIndex, node.stash);
+
+      if (err) {
+        logger.info(err);
+        continue;
+      }
+      
+      if (err2) {
+        logger.info(err2);
+        continue;
+      }
+
+      if (commission! <= TEN_PERCENT && own! >= FIFTY_KSM) {
         const index = nodes.indexOf(node);
         tmpNodes.push(nodes[index]);
       }

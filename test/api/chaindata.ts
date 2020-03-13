@@ -1,0 +1,40 @@
+import ChainData from '../../src/chaindata';
+import { ApiPromise, WsProvider } from '@polkadot/api';
+
+const createApi = (): Promise<ApiPromise> => {
+  return ApiPromise.create({
+    provider: new WsProvider('wss://kusama-rpc.polkadot.io/'),
+  });
+}
+
+(async () => {
+  const api = await createApi();
+  const chaindata = new ChainData(api);
+
+  const activeEra = await chaindata.getActiveEraIndex();
+
+  const entries = await api.query.staking.erasStakers.entries(activeEra);
+  const validators = entries.map(([key]) => key.args[1]);
+  // for (const validator of validators) {
+    // console.log(validator.toString());
+  // }
+
+  const testValidator = validators[1].toString();
+  
+  let [commisssion, err] = await chaindata.getCommission(activeEra, testValidator);
+  if (err) {
+    throw new Error(err);
+  }
+
+  let [ownExposure, err2] = await chaindata.getOwnExposure(activeEra, testValidator);
+  if (err2) {
+    throw new Error(err2);
+  }
+
+  let [hasThem, err3] = await chaindata.hasUnappliedSlashes(activeEra-6, activeEra, testValidator);
+  if (err3) {
+    throw new Error(err3);
+  }
+
+  process.exit(0);
+})();

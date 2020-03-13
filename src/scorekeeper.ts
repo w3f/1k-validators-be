@@ -1,6 +1,7 @@
 import { ApiPromise } from "@polkadot/api";
 import { CronJob } from 'cron';
 
+import ChainData from './chaindata';
 import Nominator from './nominator';
 import {
   FIFTY_KSM,
@@ -17,6 +18,7 @@ type NominatorGroup = any[];
 export default class ScoreKeeper {
   public api: ApiPromise;
   public bot: any;
+  public chaindata: ChainData;
   public config: any;
   public currentEra: number = 0;
   public currentSet: Array<Stash> = [];
@@ -31,6 +33,7 @@ export default class ScoreKeeper {
     this.db = db;
     this.config = config;
     this.bot = bot;
+    this.chaindata = new ChainData(this.api);
   }
 
   async botLog(msg: string) {
@@ -161,7 +164,8 @@ export default class ScoreKeeper {
       const preferences = await this.api.query.staking.validators(node.stash);
       //@ts-ignore
       const { commission } = preferences.toJSON()[0];
-      const exposure = await this.api.query.staking.stakers(node.stash);
+      const currentEra = await this._getCurrentEra();
+      const exposure = await this.api.query.staking.eraStakers(currentEra, node.stash);
       //@ts-ignore
       const { own } = exposure.toJSON();
       if (Number(commission) <= TEN_PERCENT && own >= FIFTY_KSM) {
@@ -184,13 +188,14 @@ export default class ScoreKeeper {
   }
 
   async _getCurrentEra(): Promise<number> {
-    return (await this.api.query.staking.currentEra()).toNumber();
+    return this.chaindata.getActiveEraIndex();
   }
 
   /// Handles the ending of a round.
   async endRound() {
     logger.info('Ending round');
     const now = getNow();
+    const activeEraIndex = await this.chaindata.getActiveEraIndex();
 
     for (const nomGroup of this.nominatorGroups) {
       for (const nominator of nomGroup) {
@@ -204,18 +209,27 @@ export default class ScoreKeeper {
 
         for (const stash of current) {
           /// Ensure the commission wasn't raised.
-          const preferences = await this.api.query.staking.validators(stash);
-          //@ts-ignore
-          const { commission } = preferences.toJSON()[0];
-          if (commission > TEN_PERCENT) {
+          const [commission, err] = await this.chaindata.getCommission(activeEraIndex, stash);
+          // If error, something went wrong, don't reward nor dock points.
+          if (err) {
+            logger.info(err);
+            continue;
+          }
+
+          if (commission! > TEN_PERCENT) {
             await this.dockPoints(stash);
             continue;
           }
+
           /// Ensure the 50 KSM minimum was not removed.
-          const exposure = await this.api.query.staking.stakers(stash);
-          //@ts-ignore
-          const { own } = exposure.toJSON();
-          if (own < FIFTY_KSM) {
+          const [own, err2] = await this.chaindata.getOwnExposure(activeEraIndex, stash);
+
+          if (err2) {
+            logger.info(err2);
+            continue;
+          }
+
+          if (own! < FIFTY_KSM) {
             await this.dockPoints(stash);
             continue;
           }
@@ -228,27 +242,16 @@ export default class ScoreKeeper {
           }
 
           /// Check slashes in this era and the previous eras.
-          // TODO: Test this:
-          const currentEra: number = await this._getCurrentEra();
-          const startEra = this.startEra;
-          const unsub = await this.api.query.staking.currentEra(async (era: any) => {
-            era = era.toNumber();
-            // When this era ends then check for slashes.
-            if (era == currentEra+1) {
-              while (era != startEra) {
-                const slashes = await this.api.query.staking.validatorSlashInEra(era, stash);
-                if (!slashes.isNone) {
-                  this.dockPoints(stash);
-                  unsub();
-                  return;
-                }
-                era--;
-              }
-              // Should only reach here if no slashes were found.
-              this.addPoint(stash);
-              unsub();
-            }
-          });
+          const [hasSlashes, err3] = await this.chaindata.hasUnappliedSlashes(this.startEra, activeEraIndex, stash);
+          if (err3) {
+            logger.info(err3);
+            continue;
+          }
+          if (hasSlashes) {
+            this.dockPoints(stash);
+          } else {
+            this.addPoint(stash);
+          }
         }
       }
     }

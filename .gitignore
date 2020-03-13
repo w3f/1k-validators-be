@@ -6,3 +6,8 @@ archive
 *.db
 combined.log
 prod.json
+test.json
+scripts/test
+alice
+bob
+config.json*

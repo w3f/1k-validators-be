@@ -8,14 +8,15 @@
     "clean": "rm validator.db",
     "lint:fix": "./node_modules/.bin/eslint src/**/*.ts --fix",
     "start": "ts-node src/index.ts --unhandled-rejections=strict",
-    "test": "ava test/**/*.spec.ts"
+    "test": "ava test/**/*.spec.ts",
+    "test:api": "ts-node test/api/chaindata.spec.ts"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@octokit/rest": "^16.43.1",
-    "@polkadot/api": "^1.4.0-beta.40",
-    "@polkadot/keyring": "^2.0.1",
+    "@polkadot/api": "^1.6.2",
+    "@polkadot/keyring": "^2.6.2",
     "@types/cron": "^1.7.1",
     "@types/koa": "^2.11.1",
     "@types/koa-bodyparser": "^4.3.0",

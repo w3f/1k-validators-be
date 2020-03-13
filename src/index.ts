@@ -68,7 +68,7 @@ try {
         await db.addCandidate(candidate.name, candidate.stash);
       }
 
-      const scorekeeperFrequency = Config.global.test? '0 0-59/3 * * * *' : '0 0 0 * * *';
+      const scorekeeperFrequency = Config.global.test? '30 0-59/2 * * * *' : '0 0 0 * * *';
 
       scorekeeper.begin(scorekeeperFrequency);
     }

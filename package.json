@@ -6,6 +6,7 @@
   "scripts": {
     "docker": "docker-compose rm -f; docker-compose build --no-cache; docker-compose up",
     "clean": "rm validator.db",
+    "lint": "./node_modules/.bin/eslint src/**/*.ts",
     "lint:fix": "./node_modules/.bin/eslint src/**/*.ts --fix",
     "start": "ts-node src/index.ts --unhandled-rejections=strict",
     "test": "ava test/**/*.spec.ts",
@@ -42,7 +43,8 @@
     "@typescript-eslint/eslint-plugin": "^2.20.0",
     "@typescript-eslint/parser": "^2.20.0",
     "ava": "^3.2.0",
-    "eslint": "^6.8.0"
+    "eslint": "^6.8.0",
+    "eslint-plugin-security": "^1.4.0"
   },
   "ava": {
     "failFast": false,

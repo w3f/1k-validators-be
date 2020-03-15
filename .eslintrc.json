@@ -5,7 +5,8 @@
     },
     "extends": [
         "eslint:recommended",
-        "plugin:@typescript-eslint/eslint-recommended"
+        "plugin:@typescript-eslint/eslint-recommended",
+        "plugin:security/recommended"
     ],
     "globals": {
         "Atomics": "readonly",
@@ -17,7 +18,8 @@
         "sourceType": "module"
     },
     "plugins": [
-        "@typescript-eslint"
+        "@typescript-eslint",
+        "security"
     ],
     "rules": {
         "no-unused-vars": "off"

@@ -10,10 +10,4 @@ spec:
     name: letsencrypt
   dnsNames:
   - {{ include "otv-backend.backend-domain" . }}
-  acme:
-    config:
-    - dns01:
-        provider: prod-dns
-      domains:
-      - {{ include "otv-backend.backend-domain" . }}
 {{ end }}

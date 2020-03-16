@@ -6,8 +6,8 @@
   "scripts": {
     "docker": "docker-compose rm -f; docker-compose build --no-cache; docker-compose up",
     "clean": "rm validator.db",
-    "lint": "./node_modules/.bin/eslint src/**/*.ts",
-    "lint:fix": "./node_modules/.bin/eslint src/**/*.ts --fix",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix",
     "start": "ts-node src/index.ts --unhandled-rejections=strict",
     "test": "ava test/**/*.spec.ts",
     "test:api": "ts-node test/api/chaindata.spec.ts"

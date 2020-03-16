@@ -1,12 +1,11 @@
 import * as sdk from 'matrix-js-sdk';
 
-import Config from '../config.json';
-
 export default class MatrixBot  {
   public client: any;
+  public conf: any;
   public db: any;
 
-  constructor(baseUrl: string, accessToken: string, userId: string, db: any) {
+  constructor(baseUrl: string, accessToken: string, userId: string, db: any, config: any) {
     //@ts-ignore
     this.client = sdk.createClient({
       baseUrl,
@@ -14,6 +13,7 @@ export default class MatrixBot  {
       userId,
     });
     this.db = db;
+    this.conf = config;
 
     console.log('Bot initiated');
   }
@@ -27,7 +27,7 @@ export default class MatrixBot  {
     this.client.on('Room.timeline', async (event: any, room: any, toStartOfTimeline: any) => {
       if (toStartOfTimeline) return;
       if (event.getType() !== 'm.room.message') return;
-      if (room.roomId !== Config.matrix.room) return;
+      if (room.roomId !== this.conf.matrix.room) return;
       const { body } = event.getContent();
       if (body.startsWith('1kv-stats')) {
         const command = body.split(' ')[1];
@@ -56,7 +56,7 @@ export default class MatrixBot  {
     };
 
     return new Promise((resolve: any, reject: any) => {
-      this.client.sendEvent(Config.matrix.room, 'm.room.message', content, '', (err: any, res: any) => {
+      this.client.sendEvent(this.conf.matrix.room, 'm.room.message', content, '', (err: any, res: any) => {
         if (err) reject(err);
         resolve(true);
       });

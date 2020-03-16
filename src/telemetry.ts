@@ -55,7 +55,7 @@ export default class TelemetryClient {
 
       this.socket.onerror = (err: any) => {
         logger.info(
-          `Could not connect to substrate-telemetry on host ${this.host}: ${err}`
+          `Could not connect to substrate-telemetry on host ${this.host}: ${err.toString()}`
         );
         reject();
       }

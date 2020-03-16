@@ -1,7 +1,7 @@
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import { CronJob } from 'cron';
+import * as fs from 'fs';
 
-import Config from '../config.json';
 import Database from './db';
 import MatrixBot from './matrix';
 import Monitor from './monitor';
@@ -12,9 +12,19 @@ import TelemetryClient from './telemetry';
 import logger from './logger';
 import { sleep } from './util';
 
+const loadConfig = (configPath: string) => {
+  let conf = fs.readFileSync(configPath, { encoding: 'utf-8' });
+  if (conf.startsWith("'")) {
+    conf = conf.slice(1).slice(0,-1);
+  }
+  return JSON.parse(conf);
+}
+
 try {
   (
     async () => {
+      let Config = loadConfig('./config.json');
+
       logger.info('Starting the backend services');
       const api = await ApiPromise.create({
         provider: new WsProvider(Config.global.wsEndpoint),
@@ -30,7 +40,7 @@ try {
       let bot: any = false;
       if (Config.matrix.enabled) {
         const { accessToken, baseUrl, userId } = Config.matrix;
-        bot = new MatrixBot(baseUrl, accessToken, userId, db);
+        bot = new MatrixBot(baseUrl, accessToken, userId, db, Config);
         bot.start();
         bot.sendMessage('Started!');
       }

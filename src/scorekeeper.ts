@@ -113,6 +113,7 @@ export default class ScoreKeeper {
       const targets = nodes.map((node: any) => node.stash);
 
       for (const nomGroup of nominatorGroups) {
+        // eslint-disable-next-line security/detect-object-injection
         const curNominator = nomGroup[count];
         if (curNominator === undefined) {
           logger.info('More targets than nominators!');
@@ -177,7 +178,7 @@ export default class ScoreKeeper {
 
       if ((commission! <= TEN_PERCENT && own! >= FIFTY_KSM) || this.config.global.test) {
         const index = nodes.indexOf(node);
-        tmpNodes.push(nodes[index]);
+        tmpNodes.push(nodes[parseInt(index)]);
       }
     }
     nodes = tmpNodes;

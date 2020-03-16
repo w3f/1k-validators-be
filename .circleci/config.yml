@@ -10,6 +10,15 @@ jobs:
           command: |
             yarn audit
           
+  checkESLint:
+    docker:
+      - image: node:slim
+    steps:
+      - checkout
+      - run:
+          command: |
+            yarn lint
+
   unitTests:
     docker:
       - image: node:slim
@@ -85,6 +94,10 @@ workflows:
   test_and_deploy:
     jobs:
       - checkDependencies:
+          filters:
+            tags:
+              only: /.*/
+      - checkESLint:
           filters:
             tags:
               only: /.*/

@@ -76,6 +76,7 @@ export default class TelemetryClient {
 
     for (const index of messages.keys()) {
       const [ action, payload ] = data.slice(index * 2);
+      // eslint-disable-next-line security/detect-object-injection
       messages[index] = { action, payload };
     }
 

@@ -75,6 +75,7 @@ try {
       
       /// ...and add the candidates.
       for (const candidate of Config.scorekeeper.candidates) {
+        //@ts-ignore
         await db.addCandidate(candidate.name, candidate.stash);
       }
 

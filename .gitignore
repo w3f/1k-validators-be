@@ -11,3 +11,4 @@ scripts/test
 alice
 bob
 config.json*
+prod2.json

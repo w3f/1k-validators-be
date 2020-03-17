@@ -4,11 +4,13 @@
   "description": "Services for running the Thousand Validator Program.",
   "main": "index.js",
   "scripts": {
+    "build": "tsc",
     "docker": "docker-compose rm -f; docker-compose build --no-cache; docker-compose up",
     "clean": "rm validator.db",
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint src/**/*.ts --fix",
     "start": "ts-node src/index.ts start",
+    "js:start": "node srx/index.js start",
     "test": "ava test/**/*.spec.ts",
     "test:api": "ts-node test/api/chaindata.spec.ts"
   },

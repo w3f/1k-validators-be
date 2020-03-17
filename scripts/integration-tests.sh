@@ -7,7 +7,7 @@ source /scripts/bootstrap-helm.sh
 run_tests() {
     echo Running tests...
 
-    wait_pod_ready otv-backend otv
+    wait_pod_ready otv-backend
 }
 
 teardown() {

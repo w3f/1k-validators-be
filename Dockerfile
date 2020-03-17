@@ -2,4 +2,5 @@ FROM node:slim
 WORKDIR /code
 COPY . .
 RUN ["yarn"]
-CMD ["yarn", "start"]
+RUN ["yarn", "build"]
+CMD ["yarn", "js:start"]

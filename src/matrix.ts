@@ -1,3 +1,4 @@
+//@ts-ignore
 import * as sdk from 'matrix-js-sdk';
 
 export default class MatrixBot  {

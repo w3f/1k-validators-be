@@ -7,3 +7,4 @@ zero
 *.db
 charts
 helmfile.d
+build

@@ -82,8 +82,11 @@ const start = async (cmd: Command) => {
   await db.clearCandidates();
   if (config.scorekeeper.candidates.length) {
     for (const candidate of config.scorekeeper.candidates) {
-      //@ts-ignore
-      await db.addCandidate(candidate.name, candidate.stash);
+      if (candidate === null) { continue; }
+      else {
+        //@ts-ignore
+        await db.addCandidate(candidate.name, candidate.stash);
+      }
     }
   }
 
@@ -99,5 +102,5 @@ program
   .action((cmd: Command) => start(cmd));
 
 
-program.version('0.1.0');
+program.version('0.1.1');
 program.parse(process.argv);

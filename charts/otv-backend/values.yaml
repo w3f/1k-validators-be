@@ -3,7 +3,7 @@ environment: production
 domain: w3f.community
 dataPath: "/data"
 
-namespace: otv
+namespace: default
 
 backendPort: 3300
 

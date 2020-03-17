@@ -1,7 +1,7 @@
 {
     "global": {
         "test": true,
-        "wsEndpoint": "ws://172.28.1.1:9944"
+        "wsEndpoint": "ws://172.28.1.1:9945"
     },
     "db": {
         "storageFile": "validator.db"

@@ -1,7 +1,7 @@
 import Datastore from 'nedb';
 
 import logger from './logger';
-import {Address, Stash} from './types';
+import {Address, Stash, CandidateData} from './types';
 
 export default class Database {
   private _db: any;
@@ -18,9 +18,16 @@ export default class Database {
     if (!oldData) {
       logger.info(`(DB::addCandidate) Could not find candidate node ${name} - skipping`);
       
-      const data = {
+      const data: CandidateData = {
         id: null,
         name,
+        details: [],
+        connectedAt: 0,
+        nominatedAt: 0,
+        offlineSince: 0,
+        offlineAccumulated: 0,
+        rank: 0,
+        misbehaviors: 0,
         stash,
       };
 

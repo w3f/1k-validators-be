@@ -8,6 +8,7 @@ import logger from './logger';
 
 const API: any = {
   GetValidators: '/validators',
+  GetCandidates: '/candidates',
   GetNodes: '/nodes',
   GetNominators: '/nominators',
   GetRounds: '/rounds',
@@ -35,6 +36,13 @@ export default class Server {
             ctx.body = allValidators;
           }
           break;
+
+        case API.GetCandidates:
+          {
+            const allCandidates = await this.db.allCandidates();
+            ctx.body = allCandidates;
+          }
+          break;
         case API.GetNodes:
           {
             const allNodes: Array<any> = await this.db.allNodes();
@@ -60,6 +68,7 @@ export default class Server {
           break;
         default:
           ctx.body = 'Invalid api endpoint.'
+          ctx.status = 404;
       }
     });
   }

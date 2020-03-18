@@ -108,5 +108,5 @@ program
   .action((cmd: Command) => start(cmd));
 
 
-program.version('0.1.3');
+program.version('0.1.4');
 program.parse(process.argv);

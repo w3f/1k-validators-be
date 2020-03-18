@@ -18,10 +18,10 @@ test.before(async (t: any) => {
 	const now = new Date().getTime();
 
 	await db.reportOnline(0, ['nodeZero'], now);
-	await db.addCandidate('nodeZero', 'stash0');
+	await db.addCandidate('nodeZero', 'stash0', 'sentry0');
 
 	await db.reportOnline(1, ['nodeOne'], now);
-	await db.addCandidate('nodeOne', 'stash1');
+	await db.addCandidate('nodeOne', 'stash1', 'sentry1');
 
 	//@ts-ignore
 	t.context.sk = new Scorekeeper(MockApi, db, MockConfig);

@@ -1,7 +1,7 @@
 import Datastore from 'nedb';
 
 import logger from './logger';
-import {Address, Stash} from './types';
+import {Address, Stash, CandidateData} from './types';
 
 export default class Database {
   private _db: any;
@@ -11,23 +11,34 @@ export default class Database {
   }
 
   /// Entry point for adding a new candidate.
-  async addCandidate(name: string, stash: string) {
+  async addCandidate(name: string, stash: string, sentryId: string) {
     logger.info(`(DB::addCandidate) Adding candidate ${name}`);
 
     const oldData = await this._queryOne({ name });
     if (!oldData) {
       logger.info(`(DB::addCandidate) Could not find candidate node ${name} - skipping`);
       
-      const data = {
+      const data: CandidateData = {
         id: null,
         name,
+        details: [],
+        connectedAt: 0,
+        nominatedAt: 0,
+        offlineSince: 0,
+        offlineAccumulated: 0,
+        rank: 0,
+        misbehaviors: 0,
         stash,
+        sentryId,
+        sentryOfflineSince: 0,
+        sentryOnlineSince: 0,
       };
 
       return this._insert(data);
     }
     const newData = Object.assign(oldData, {
       stash,
+      sentryId,
     });
     return this._update({ name }, newData);
   }
@@ -132,6 +143,8 @@ export default class Database {
           rank: 0,
           misbehaviors: 0,
           stash: null,
+          sentryOfflineSince: 0,
+          sentryOnlineSince: 0,
         };
 
         return this._insert(data); 
@@ -172,6 +185,48 @@ export default class Database {
     });
 
     return this._update({ id }, newData);
+  }
+
+  async reportSentryOnline(name: string, now: number) {
+    logger.info(`(DB::reportSentryOnline) Reporting sentry for ${name} online.`);
+
+    const candidateData = await this._queryOne({ name });
+    if (candidateData.sentryOnlineSince === 0 || !candidateData.sentryOnlineSince) {
+      const newData = Object.assign(candidateData, {
+        sentryOnlineSince: now,
+        sentryOfflineSince: 0,
+      });
+      return this._update({ name }, newData);
+    }
+  }
+
+  async reportSentryOffline(name: string, now: number) {
+    logger.info(`(DB::reportSentryOffline) Reporting sentry for ${name} offline.`);
+
+    const candidateData = await this._queryOne({ name });
+     if (candidateData.sentryOfflineSince === 0 || !candidateData.sentryOfflineSince) {
+      const newData = Object.assign(candidateData, {
+        sentryOnlineSince: 0,
+        sentryOfflineSince: now,
+      });
+      return this._update({ name }, newData);
+    }
+  }
+
+  async findSentry(sentryId: string): Promise<[boolean, string]> {
+    logger.info(`(DB::findSentry) Looking for the sentry node ${sentryId}`);
+    const allNodes = await this.allNodes();
+    const found = allNodes.find((node) => {
+      return node.details[4] === sentryId;
+    });
+
+    if (found) {
+      logger.info(`(DB::findSentry) Found sentry node ${sentryId}.`);
+      return [found.offlineSince === 0, found.name];
+    }
+
+    logger.info(`(DB::findSentry) Did not find sentry node ${sentryId}.`);
+    return [false, 'not found'];
   }
 
   async nodeGood(id: number, now: number) {

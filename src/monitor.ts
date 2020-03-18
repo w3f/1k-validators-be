@@ -85,4 +85,18 @@ export default class Monitor {
       }
     }
   }
+
+  public async ensureSentryOnline() {
+    const candidates = await this.db.allCandidates();
+    const now = new Date().getTime();
+
+    for (const candidate of candidates) {
+      const [found] = await this.db.findSentry(candidate.sentryId);
+      if (found) {
+        await this.db.reportSentryOnline(candidate.name, now);
+      } else {
+        await this.db.reportSentryOffline(candidate.name, now);
+      }
+    }
+  }
 }

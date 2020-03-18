@@ -7,6 +7,7 @@ import Database from './db';
 import logger from './logger';
 
 const API: any = {
+  FindSentries: '/sentries',
   GetValidators: '/validators',
   GetCandidates: '/candidates',
   GetNodes: '/nodes',
@@ -30,6 +31,18 @@ export default class Server {
 
     this.app.use(async (ctx: any) => {
       switch (ctx.url.toLowerCase()) {
+        case API.FindSentries:
+          {
+            const allCandidates = await this.db.allCandidates();
+            let list = [];
+            for (const candidate of allCandidates) {
+              const [found, sentryName] = await this.db.findSentry(candidate.sentryId);
+              list.push([candidate.name, found, sentryName]);
+            }
+
+            ctx.body = list.map((entry) => JSON.stringify(entry)).join('\n\n');
+          } 
+          break;
         case API.GetValidators:
           {
             const allValidators = await this.db.allValidators();

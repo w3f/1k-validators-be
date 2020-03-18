@@ -62,6 +62,7 @@ const start = async (cmd: Command) => {
     logger.info(`Monitoring the node version by polling latst GitHub releases every ${config.global.test? 'three' : 'fifteen'} minutes.`);
     await monitor.getLatestTaggedRelease();
     await monitor.ensureUpgrades();
+    await monitor.ensureSentryOnline();
   });
   monitorCron.start();
 
@@ -84,11 +85,16 @@ const start = async (cmd: Command) => {
     for (const candidate of config.scorekeeper.candidates) {
       if (candidate === null) { continue; }
       else {
-        //@ts-ignore
-        await db.addCandidate(candidate.name, candidate.stash);
+        //@ts-ignoreb
+        const { name, stash, sentryId } = candidate;
+        await db.addCandidate(name, stash, sentryId);
       }
     }
   }
+
+  /// Runs right after adding candidates.
+  sleep(3000);
+  await monitor.ensureSentryOnline();
 
   const scorekeeperFrequency = config.global.test
     ? '0 0-59/3 * * * *'  // Do nominations every three minutes.

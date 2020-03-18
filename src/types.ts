@@ -25,4 +25,9 @@ export type CandidateData = {
   /// This will only be null for nodes that are connected to 
   /// the telemetry and not registered as a candidate.
   stash: string|null,
+  /// The sentry node ID will only be filled in for registered
+  /// candidates.
+  sentryId: string|null,
+  sentryOnlineSince: number,
+  sentryOfflineSince: number,
 };

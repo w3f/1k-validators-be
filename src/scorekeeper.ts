@@ -108,9 +108,11 @@ export default class ScoreKeeper {
       subsets.push(set.slice(i, i + setSize));
     }
 
+    let totalTargets = [];
     let count = 0;
     for (const nodes of subsets) {
       const targets = nodes.map((node: any) => node.stash);
+      totalTargets.push(...nodes.map((node) => node.name));
 
       for (const nomGroup of nominatorGroups) {
         // eslint-disable-next-line security/detect-object-injection
@@ -124,6 +126,8 @@ export default class ScoreKeeper {
       }
       count++;
     }
+
+    this.botLog(`Next targets: \n${totalTargets.map((target) => `- ${target}\n`)}`);
   }
 
   async _getSet(): Promise<any[]> {
@@ -205,6 +209,9 @@ export default class ScoreKeeper {
     const now = getNow();
     const activeEraIndex = await this.chaindata.getActiveEraIndex();
 
+    /// The targets that have already been processed for this round.
+    let processed = new Set();
+
     for (const nomGroup of this.nominatorGroups) {
       for (const nominator of nomGroup) {
         const current = await this.db.getCurrentTargets(nominator.address);
@@ -216,6 +223,12 @@ export default class ScoreKeeper {
         await this.db.newTargets(nominator.address, [], now);
 
         for (const stash of current) {
+          // If already processed, then skip to next stash.
+          if (processed.has(stash)) continue;
+          // Setting this here is probably fine, although it's not truly processed
+          // until the end of this block.
+          processed.add(stash);
+
           /// Ensure the commission wasn't raised.
           const [commission, err] = await this.chaindata.getCommission(activeEraIndex, stash);
           // If error, something went wrong, don't reward nor dock points.

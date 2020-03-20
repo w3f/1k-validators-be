@@ -164,6 +164,10 @@ export default class Database {
         return this._update({ name: nameData.name }, data);
       }
     } else {
+      /// This is a server restart ...
+      if (Number(oldData.offlineSince) === 0) {
+        return;
+      }
       /// We've seen the node before, take stock of any offline time.
       const timeOffline = now - Number(oldData.offlineSince);
       const accumulated = Number(oldData.offlineAccumulated) + timeOffline;

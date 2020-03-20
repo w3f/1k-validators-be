@@ -14,8 +14,7 @@ export default class Monitor {
   public latestTaggedRelease: TaggedRelease|null = null;
   
   private db: Database;
-  private ghApi: Octokit;
-  
+  private ghApi: any;
 
   constructor(db: Database, grace: number) {
     this.db = db;

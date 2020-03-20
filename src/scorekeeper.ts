@@ -127,7 +127,7 @@ export default class ScoreKeeper {
       count++;
     }
 
-    this.botLog(`Next targets: \n${totalTargets.map((target) => `- ${target}\n`)}`);
+    this.botLog(`Next targets: \n${totalTargets.map((target) => `- ${target}`).join('\n')}`);
   }
 
   async _getSet(): Promise<any[]> {

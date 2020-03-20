@@ -85,7 +85,7 @@ const start = async (cmd: Command) => {
     for (const candidate of config.scorekeeper.candidates) {
       if (candidate === null) { continue; }
       else {
-        //@ts-ignoreb
+        //@ts-ignore
         const { name, stash, sentryId } = candidate;
         await db.addCandidate(name, stash, sentryId);
       }

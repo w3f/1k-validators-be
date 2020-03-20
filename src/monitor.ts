@@ -14,8 +14,7 @@ export default class Monitor {
   public latestTaggedRelease: TaggedRelease|null = null;
   
   private db: Database;
-  private ghApi: Octokit;
-  
+  private ghApi: any;
 
   constructor(db: Database, grace: number) {
     this.db = db;
@@ -91,11 +90,31 @@ export default class Monitor {
     const now = new Date().getTime();
 
     for (const candidate of candidates) {
-      const [found] = await this.db.findSentry(candidate.sentryId);
-      if (found) {
-        await this.db.reportSentryOnline(candidate.name, now);
+      const { name, sentryId } = candidate;
+      // Sometimes the sentries are in an array if more than one exists.
+      // The programme only requires a single to be running.
+      if (Array.isArray(sentryId)) {
+        let oneOnline = false;
+        for (const sId of sentryId) {
+          const [foundAndOnline] = await this.db.findSentry(sId);
+          if (foundAndOnline) {
+            oneOnline = true;
+            break;
+          }
+        }
+        if (oneOnline) {
+          await this.db.reportSentryOnline(name, now);
+        } else {
+          await this.db.reportSentryOffline(name, now);
+        }
       } else {
-        await this.db.reportSentryOffline(candidate.name, now);
+        // Just a single sentry to look for.
+        const [foundAndOnline] = await this.db.findSentry(sentryId);
+        if (foundAndOnline) {
+          await this.db.reportSentryOnline(name, now);
+        } else {
+          await this.db.reportSentryOffline(name, now);
+        }
       }
     }
   }

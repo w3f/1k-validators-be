@@ -1,6 +1,6 @@
 {
   "name": "1k-validators-be",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "Services for running the Thousand Validator Program.",
   "main": "index.js",
   "scripts": {
@@ -12,7 +12,7 @@
     "start": "ts-node src/index.ts start",
     "js:start": "node build/index.js start",
     "test": "ava test/**/*.spec.ts",
-    "test:api": "ts-node test/api/chaindata.spec.ts"
+    "test:api": "ts-node test/api/chaindata.ts"
   },
   "author": "",
   "license": "ISC",

@@ -62,9 +62,13 @@ const start = async (cmd: Command) => {
     logger.info(`Monitoring the node version by polling latst GitHub releases every ${config.global.test? 'three' : 'fifteen'} minutes.`);
     await monitor.getLatestTaggedRelease();
     await monitor.ensureUpgrades();
-    await monitor.ensureSentryOnline();
   });
   monitorCron.start();
+
+  const sentryMonitor = new CronJob('30 * * * * *', async () => {
+    await monitor.ensureSentryOnline();
+  });
+  sentryMonitor.start();
 
   /// Once a week reset the offline accumulations of nodes.
   const clearFrequency = '* * * * * 0';

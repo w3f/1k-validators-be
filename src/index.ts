@@ -112,5 +112,5 @@ program
   .action((cmd: Command) => start(cmd));
 
 
-program.version('0.1.6');
+program.version('0.1.7');
 program.parse(process.argv);

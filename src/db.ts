@@ -21,6 +21,7 @@ export default class Database {
       const data: CandidateData = {
         id: null,
         name,
+        networkId: null,
         details: [],
         connectedAt: 0,
         nominatedAt: 0,
@@ -119,11 +120,12 @@ export default class Database {
   /// Entry point for reporting a new node is online.
   async reportOnline(id: number, details: Array<any>, now: number) {
     const name = details[0];
+    const networkId = details[4];
 
     logger.info(`(DB::reportOnline) Reporting ${name} online.`)
 
-    // Try to get the node by ID first if it's been seen before.
-    const oldData = await this._queryOne({ id });
+    // Get the node by networkId.
+    const oldData = await this._queryOne({ networkId });
 
     if (!oldData) {
       // If we haven't seen the node before, maybe we've registered it
@@ -133,6 +135,7 @@ export default class Database {
         // Truly a new node.
         const data = {
           id,
+          networkId,
           name,
           details,
           connectedAt: now,
@@ -152,6 +155,7 @@ export default class Database {
         // Already a candidate, record the node data now.
         const data = Object.assign(nameData, {
           id,
+          networkId,
           details,
           connectedAt: now,
           nominatedAt: 0,
@@ -178,7 +182,7 @@ export default class Database {
         offlineAccumulated: accumulated,
         goodSince: now,
       });
-      return this._update({ id }, newData);
+      return this._update({ networkId }, newData);
     }
   }
 
@@ -234,32 +238,32 @@ export default class Database {
     return [false, 'not found'];
   }
 
-  async nodeGood(id: number, now: number) {
-    const oldData = await this._queryOne({ id });
+  async nodeGood(networkId: string, now: number) {
+    const oldData = await this._queryOne({ networkId });
     const newData = Object.assign(oldData, {
       goodSince: now,
     });
 
-    return this._update({ id }, newData);
+    return this._update({ networkId }, newData);
   }
 
-  async nodeNotGood(id: number) {
-    const oldData = await this._queryOne({ id });
+  async nodeNotGood(networkId: string) {
+    const oldData = await this._queryOne({ networkId });
     const newData = Object.assign(oldData, {
       goodSince: 0,
     });
 
-    return this._update({ id }, newData);
+    return this._update({ networkId }, newData);
   }
 
   /**
    * GETTERS / ACCESSORS
    */
 
-  async getNode(id: number): Promise<any> {
+  async getNode(networkId: string): Promise<any> {
     const allNodes = await this.allNodes();
     const found = allNodes.find((node: any) => {
-      return node.id === id;
+      return node.networkId === networkId;
     });
     return found;
   }
@@ -267,7 +271,7 @@ export default class Database {
   /// Nodes are connected to Telemetry, but not necessarily candidates.
   async allNodes(): Promise<any[]> {
     return new Promise((resolve: any, reject: any) => {
-      this._db.find({ id: { $gte: 0 } }, (err: any, docs: any) => {
+    this._db.find({ networkId: /.*/ }, (err: any, docs: any) => {
         if (err) reject(err);
         resolve(docs);
       });

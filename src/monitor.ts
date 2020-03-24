@@ -73,13 +73,13 @@ export default class Monitor {
         // The node is doing good. We reset the `goodSince` if it's been
         // previously set to 0.
         if (Number(node.goodSince) === 0) {
-          await this.db.nodeGood(node.id, now);
+          await this.db.nodeGood(node.networkId, now);
         }
       } else {
         // The node is doing bad. Let's check it against the grace period
         // and set its `goodSince` to 0 if it's overdue.
         if (now > this.latestTaggedRelease!.publishedAt + this.grace) {
-          await this.db.nodeNotGood(node.id);
+          await this.db.nodeNotGood(node.networkId);
         }
       }
     }

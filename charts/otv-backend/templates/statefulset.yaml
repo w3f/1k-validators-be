@@ -42,11 +42,11 @@ spec:
       {{- if ne .Values.environment "ci" }}
         resources:
           limits:
-            cpu: 400m
-            memory: 1.2Gi
+            cpu: 900m
+            memory: 4000Mi
           requests:
-            cpu: 300m
-            memory: 600Mi
+            cpu: 600m
+            memory: 3800Mi
       {{- end }}
       volumes:
       - name: config

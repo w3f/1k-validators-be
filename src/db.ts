@@ -260,10 +260,10 @@ export default class Database {
    * GETTERS / ACCESSORS
    */
 
-  async getNode(id: number): Promise<any> {
+  async getNode(networkId: string): Promise<any> {
     const allNodes = await this.allNodes();
     const found = allNodes.find((node: any) => {
-      return node.id === id;
+      return node.networkId === networkId;
     });
     return found;
   }
@@ -271,7 +271,7 @@ export default class Database {
   /// Nodes are connected to Telemetry, but not necessarily candidates.
   async allNodes(): Promise<any[]> {
     return new Promise((resolve: any, reject: any) => {
-      this._db.find({ id: { $gte: 0 } }, (err: any, docs: any) => {
+    this._db.find({ networkId: /.*/ }, (err: any, docs: any) => {
         if (err) reject(err);
         resolve(docs);
       });

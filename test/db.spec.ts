@@ -40,7 +40,7 @@ test.serial('addCandidate() adds a new candidate before node online', async (t: 
 test.serial('reportOnline() reports a node online', async (t: any) => {
   const { db } = t.context;
 
-  const nodeDetails = ['One'];
+  const nodeDetails = ['One', '', '', '', '1'];
 
   const oldNodes = await db.allNodes();
   t.deepEqual(oldNodes, []); // no node reported online
@@ -54,6 +54,7 @@ test.serial('reportOnline() reports a node online', async (t: any) => {
   t.truthy(thisNode);
 
   t.is(thisNode.id, 1);
+  t.is(thisNode.networkId, '1');
   t.is(thisNode.name, 'One');
   t.is(thisNode.connectedAt, now);
   t.is(thisNode.nominatedAt, 0);
@@ -68,8 +69,8 @@ test.serial('reportOnline() reports a node online', async (t: any) => {
 test.serial('reportOffline() reports a node offline', async (t: any) => {
   const { db } = t.context;
 
-  const nodeOneBefore = await db.getNode(1);
-  t.is(nodeOneBefore.id, 1);
+  const nodeOneBefore = await db.getNode('1');
+  t.is(nodeOneBefore.networkId, '1');
   t.is(nodeOneBefore.offlineSince, 0);
   t.is(nodeOneBefore.offlineAccumulated, 0);
   t.true(nodeOneBefore.goodSince > 1);
@@ -77,7 +78,7 @@ test.serial('reportOffline() reports a node offline', async (t: any) => {
   const now = getNow();
   await db.reportOffline(1, now);
 
-  const nodeOneAfter = await db.getNode(1);
+  const nodeOneAfter = await db.getNode('1');
   t.is(nodeOneAfter.offlineSince, now);
   t.is(nodeOneAfter.goodSince, 0);
 });
@@ -85,14 +86,14 @@ test.serial('reportOffline() reports a node offline', async (t: any) => {
 test.serial('reportOnline() records the accumulated time', async (t: any) => {
   const { db } = t.context;
 
-  const nodeOneOffline = await db.getNode(1);
+  const nodeOneOffline = await db.getNode('1');
   t.true(nodeOneOffline.offlineSince > 0);
   t.is(nodeOneOffline.goodSince, 0);
 
   const now = getNow();
-  await db.reportOnline(1, [], now);
+  await db.reportOnline(1, ['','','','','1'], now);
 
-  const nodeOneOnline = await db.getNode(1);
+  const nodeOneOnline = await db.getNode('1');
   t.is(nodeOneOnline.offlineSince, 0);
   t.is(nodeOneOnline.offlineAccumulated, now - nodeOneOffline.offlineSince);
   t.is(nodeOneOnline.goodSince, now);
@@ -101,19 +102,19 @@ test.serial('reportOnline() records the accumulated time', async (t: any) => {
 test.serial('addCandidate() adds candidate after node is online', async (t: any) => {
   const { db } = t.context;
 
-  const nodeTwo = await db.getNode(2);
+  const nodeTwo = await db.getNode('2');
   t.is(nodeTwo, undefined); // not around yet
 
   const now = getNow();
-  await db.reportOnline(2, ['nodeTwo'], now);
+  await db.reportOnline(2, ['nodeTwo', '', '', '', '2'], now);
 
-  const nodeTwoAfter = await db.getNode(2);
+  const nodeTwoAfter = await db.getNode('2');
   t.is(nodeTwoAfter.goodSince, now);
   t.is(nodeTwoAfter.stash, null);
 
   await db.addCandidate('nodeTwo', 'stashTwo');
   
-  const nodeTwoLatest = await db.getNode(2);
+  const nodeTwoLatest = await db.getNode('2');
   t.is(nodeTwoLatest.stash, 'stashTwo');
 });
 

@@ -172,6 +172,8 @@ export default class Database {
       const timeOffline = now - Number(oldData.offlineSince);
       const accumulated = Number(oldData.offlineAccumulated) + timeOffline;
       const newData = Object.assign(oldData, {
+        // Need to update details to see if it's updated it's node.
+        details,
         offlineSince: 0,
         offlineAccumulated: accumulated,
         goodSince: now,
@@ -181,7 +183,6 @@ export default class Database {
   }
 
   async reportOffline(id: number, now: number) {
-    // const now = new Date().getTime();
     const oldData = await this._queryOne({ id });
     const newData = Object.assign(oldData, {
       offlineSince: now,
@@ -289,6 +290,7 @@ export default class Database {
 
   async setValidator(stash: Stash, data: object) {
     if (!(await this._queryOne({ stash }))) {
+      logger.info(`Could not find validator ${stash}`);
       return this._insert({ data });
     }
     return this._update({ stash }, data);
@@ -328,11 +330,13 @@ export default class Database {
 
   async clearCandidates(): Promise<boolean> {
     const nodes = await this.allNodes();
+    logger.info(`nodes length: ${nodes.length}`);
     for (const node of nodes) {
       const newData = Object.assign(node, {
         stash: null
       });
-      this._update({ id: node.id }, newData);
+      logger.info(`\nIn clearCandidates mem usage ${JSON.stringify(process.memoryUsage())}`);
+      await this._update({ id: node.id }, newData);
     }
     return true;
   }

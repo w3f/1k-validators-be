@@ -15,9 +15,6 @@ const createApi = (): Promise<ApiPromise> => {
 
   const entries = await api.query.staking.erasStakers.entries(activeEra);
   const validators = entries.map(([key]) => key.args[1]);
-  // for (const validator of validators) {
-    // console.log(validator.toString());
-  // }
 
   const testValidator = validators[1].toString();
   

@@ -32,7 +32,7 @@ const start = async (cmd: Command) => {
   const config = loadConfig(cmd.config);
 
   logger.info(`Starting the backend services.`);
-  console.log(`\nStart up mem usage ${JSON.stringify(process.memoryUsage())}\n`);
+  logger.info(`\nStart-up mem usage ${JSON.stringify(process.memoryUsage())}\n`);
   const api = await createApi(config.global.wsEndpoint);
   const db = new Database(config.db.storageFile);
   const server = new Server(db, config.server.port);
@@ -41,7 +41,7 @@ const start = async (cmd: Command) => {
   const telemetry = new TelemetryClient(config, db);
   telemetry.start();
 
-  console.log(`\nBefore bot mem usage ${JSON.stringify(process.memoryUsage())}\n`);
+  logger.info(`\nBefore bot mem usage ${JSON.stringify(process.memoryUsage())}\n`);
   let maybeBot: any = false;
   if (config.matrix.enabled) {
     const { accessToken, baseUrl, userId } = config.matrix;
@@ -53,7 +53,7 @@ const start = async (cmd: Command) => {
   /// Buffer some time for set up.
   await sleep(1500);
 
-  console.log(`\nBefore monitor mem usage ${JSON.stringify(process.memoryUsage())}\n`);
+  logger.info(`\nBefore monitor mem usage ${JSON.stringify(process.memoryUsage())}\n`);
 
   /// Monitors the latest GitHub releases and ensures nodes have upgraded
   /// within a timely period.
@@ -70,7 +70,7 @@ const start = async (cmd: Command) => {
   monitorCron.start();
 
   const sentryMonitor = new CronJob('30 * * * * *', async () => {
-    console.log(`\nsentryMonitor memory usafe ${JSON.stringify(process.memoryUsage())}\n`);
+    logger.info(`\nsentryMonitor mem usage ${JSON.stringify(process.memoryUsage())}\n`);
     await monitor.ensureSentryOnline();
   });
   sentryMonitor.start();
@@ -105,7 +105,7 @@ const start = async (cmd: Command) => {
   sleep(3000);
   await monitor.ensureSentryOnline();
 
-  console.log(`\nBefore sk mem usage ${JSON.stringify(process.memoryUsage())}\n`);
+  logger.info(`\nBefore sk mem usage ${JSON.stringify(process.memoryUsage())}\n`);
 
   const scorekeeperFrequency = config.global.test
     ? '0 0-59/3 * * * *'  // Do nominations every three minutes.
@@ -119,5 +119,5 @@ program
   .action((cmd: Command) => start(cmd));
 
 
-program.version('0.1.11');
+program.version('0.1.12');
 program.parse(process.argv);

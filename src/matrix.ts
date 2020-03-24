@@ -15,8 +15,6 @@ export default class MatrixBot  {
     });
     this.db = db;
     this.conf = config;
-
-    console.log('Bot initiated');
   }
 
   start() {

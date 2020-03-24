@@ -329,14 +329,14 @@ export default class Database {
   }
 
   async clearCandidates(): Promise<boolean> {
-    const nodes = await this.allNodes();
-    logger.info(`nodes length: ${nodes.length}`);
-    for (const node of nodes) {
+    const candidates = await this.allCandidates();
+    logger.info(`candidates length: ${candidates.length}`);
+    for (const node of candidates) {
       const newData = Object.assign(node, {
         stash: null
       });
       logger.info(`\nIn clearCandidates mem usage ${JSON.stringify(process.memoryUsage())}`);
-      await this._update({ id: node.id }, newData);
+      await this._update({ name: node.name }, newData);
     }
     return true;
   }

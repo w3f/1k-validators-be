@@ -1,6 +1,6 @@
 {
   "name": "1k-validators-be",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "description": "Services for running the Thousand Validator Program.",
   "main": "index.js",
   "scripts": {
@@ -9,8 +9,8 @@
     "clean": "rm validator.db",
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint src/**/*.ts --fix",
-    "start": "ts-node src/index.ts start",
-    "js:start": "node build/index.js start",
+    "start": "NODE_OPTIONS='--max-old-space-size=4096' ts-node src/index.ts start",
+    "js:start": "NODE_OPTIONS='--max-old-space-size=4096' node build/index.js start",
     "test": "ava test/**/*.spec.ts",
     "test:api": "ts-node test/api/chaindata.ts"
   },

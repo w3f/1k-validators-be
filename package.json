@@ -17,7 +17,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@octokit/rest": "^17.1.0",
+    "@octokit/rest": "^17.1.2",
     "@polkadot/api": "^1.6.2",
     "@polkadot/keyring": "^2.6.2",
     "@types/cron": "^1.7.1",

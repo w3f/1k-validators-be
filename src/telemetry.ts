@@ -14,6 +14,8 @@ enum TelemetryMessage {
 
 const DEFAULT_HOST = 'ws://localhost:8000/feed';
 
+const MemNodes = {};
+
 export default class TelemetryClient {
   private config: any;
   private db: Database;
@@ -92,6 +94,8 @@ export default class TelemetryClient {
           const [ id, details ] = payload;
           const now = new Date().getTime();
 
+          MemNodes[parseInt(id)] = details;
+
           await this.db.reportOnline(id, details, now);
         }
         break;
@@ -100,7 +104,16 @@ export default class TelemetryClient {
           const id = payload;
           const now = new Date().getTime();
 
-          await this.db.reportOffline(id, now);
+          const details = MemNodes[parseInt(id)];
+
+          if (!details) {
+            logger.info(`Unknown node with ${id} reported offline.`);
+          }
+
+          const networkId = details[4];
+
+          logger.info(`(TELEMETRY) Reporting ${details[0]} OFFLINE`);
+          await this.db.reportOffline(id, networkId, now);
         }
         break;
     }

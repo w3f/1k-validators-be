@@ -117,7 +117,7 @@ export default class Database {
     return this._update({ nominator }, newData);
   }
 
-  /// Entry point for reporting a new node is online.
+  /// Entry point for reporting a node is online.
   async reportOnline(id: number, details: Array<any>, now: number) {
     const name = details[0];
     const networkId = details[4];
@@ -176,6 +176,10 @@ export default class Database {
       const timeOffline = now - Number(oldData.offlineSince);
       const accumulated = Number(oldData.offlineAccumulated) + timeOffline;
       const newData = Object.assign(oldData, {
+        // Should be the same in most scenarios but add it here just in case.
+        id,
+        // In case a new name is being used for the same network id.
+        name,
         // Need to update details to see if it's updated it's node.
         details,
         offlineSince: 0,
@@ -186,14 +190,19 @@ export default class Database {
     }
   }
 
-  async reportOffline(id: number, now: number) {
-    const oldData = await this._queryOne({ id });
+  async reportOffline(id: number, networkId: string, now: number) {
+    logger.info(`(DB::reportOffline) Reporting node with network id ${networkId} offline.`);
+    // Query by network id because this should be safer than using id.
+    const oldData = await this._queryOne({ networkId });
+    if (id !== oldData.id) {
+      logger.info(`Id mismatch for ${networkId}... still reporting offline.`);
+    }
     const newData = Object.assign(oldData, {
       offlineSince: now,
       goodSince: 0,
     });
 
-    return this._update({ id }, newData);
+    return this._update({ networkId }, newData);
   }
 
   async reportSentryOnline(name: string, now: number) {

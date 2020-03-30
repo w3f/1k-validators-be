@@ -9,12 +9,20 @@ import {
 	MockDb,
 } from './mock';
 
-import { wipe } from './helpers';
+
+import { MongoMemoryServer } from 'mongodb-memory-server';
+
+const mongod = new MongoMemoryServer();
+
 
 test.before(async (t: any) => {
-	wipe('test.db')
-	const db = new Database('test.db');
-
+	const uri = await mongod.getUri();
+  const db = await Database.makeDB({
+    uri,
+    dbName: 'test',
+    collection: 'test',
+	});
+	
 	const now = new Date().getTime();
 
 	await db.reportOnline(0, ['nodeZero'], now);
@@ -28,11 +36,6 @@ test.before(async (t: any) => {
 	t.context.db = db;
 	
 	await sleep(1200);
-});
-
-test.after(() => {
-	wipe('test.db');
-	wipe('combined.log');
 });
 
 test('Creates a new Scorekeeper', (t: any) => {

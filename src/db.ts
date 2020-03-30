@@ -1,10 +1,13 @@
-import Datastore from 'nedb';
 import MongoClient from 'mongodb';
 
 import logger from './logger';
 import {Address, Stash, CandidateData} from './types';
 
-const MongoURI = 'mongodb://localhost:27017';
+export type DbConf = {
+  uri: string,
+  dbName: string
+  collection: string,
+}
 
 export default class Database {
   private _db: any;
@@ -13,10 +16,10 @@ export default class Database {
     this._db = collection;
   }
 
-  static makeDB = async (mongoUri: String = MongoURI): Promise<Database> => {
-    const mongo = await MongoClient.connect(mongoUri);
-    const db = await mongo.db('otv2');
-    const collection = db.collection('otv');
+  static makeDB = async (dbConf: DbConf): Promise<Database> => {
+    const mongo = await MongoClient.connect(dbConf.uri);
+    const db = await mongo.db(dbConf.dbName);
+    const collection = db.collection(dbConf.collection);
     return new Database(collection);
   }
 

@@ -4,7 +4,9 @@ import { getNow } from '../src/util';
 
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
-test.before(async (t:any) => {
+test.serial.before(async (t: any) => {
+  t.timeout(10000);
+
   t.context.mongod = new MongoMemoryServer();
   const uri = await t.context.mongod.getUri();
   t.context.db = await Database.makeDB({
@@ -14,8 +16,8 @@ test.before(async (t:any) => {
   });
 });
 
-test.after(async (t:any) => {
-  t.context.mongod.stop();
+test.serial.after(async (t:any) => {
+  await t.context.mongod.stop();
 });
 
 test.serial('Created a new Database', async (t: any) => {

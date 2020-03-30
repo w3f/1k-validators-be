@@ -12,7 +12,9 @@ import {
 
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
-test.before(async (t: any) => {
+test.serial.before(async (t: any) => {
+	t.timeout(10000);
+
 	t.context.mongod = new MongoMemoryServer();
 	const uri = await t.context.mongod.getUri();
   const db = await Database.makeDB({
@@ -36,8 +38,8 @@ test.before(async (t: any) => {
 	await sleep(1200);
 });
 
-test.after(async (t: any) => {
-	t.context.mongod.stop();
+test.serial.after(async (t: any) => {
+	await t.context.mongod.stop();
 });
 
 test('Creates a new Scorekeeper', (t: any) => {

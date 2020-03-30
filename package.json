@@ -14,8 +14,8 @@
     "test": "ava test/**/*.spec.ts --timeout=10m",
     "test:api": "ts-node test/api/chaindata.ts"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Web3 Foundation <teched@web3.foundation>",
+  "license": "GPL-3.0",
   "dependencies": {
     "@octokit/rest": "^17.1.4",
     "@polkadot/api": "^1.6.2",

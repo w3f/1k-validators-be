@@ -15,7 +15,7 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 test.serial.before(async (t: any) => {
 	t.timeout(6000000);
 
-	t.context.mongod = new MongoMemoryServer();
+	t.context.mongod = await MongoMemoryServer.create();
 	const uri = await t.context.mongod.getUri();
   const db = await Database.makeDB({
     uri,

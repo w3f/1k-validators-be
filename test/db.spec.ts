@@ -5,7 +5,7 @@ import { getNow } from '../src/util';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
 test.serial.before(async (t: any) => {
-  t.timeout(10000);
+  t.timeout(600000);
 
   t.context.mongod = new MongoMemoryServer();
   const uri = await t.context.mongod.getUri();

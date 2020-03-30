@@ -7,7 +7,16 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 test.serial.before(async (t: any) => {
   t.timeout(600000);
 
-  t.context.mongod = await MongoMemoryServer.create();
+  if (process.env.CI) {
+    console.log('in ci')
+    t.context.mongod = await MongoMemoryServer.create({
+      binary: {
+        version: '4.2.3'
+      }
+    });
+  } else {
+    t.context.mongod = await MongoMemoryServer.create();
+  }
   const uri = await t.context.mongod.getUri();
   t.context.db = await Database.makeDB({
     uri,

@@ -89,6 +89,11 @@ export default class Monitor {
     const candidates = await this.db.allCandidates();
     const now = new Date().getTime();
 
+    if (!candidates.length) {
+      logger.info('(Monitor::ensureSentryOnline) No candidates in DB.');
+      return;
+    }
+
     for (const candidate of candidates) {
       const { name, sentryId } = candidate;
       // Sometimes the sentries are in an array if more than one exists.

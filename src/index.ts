@@ -34,7 +34,7 @@ const start = async (cmd: Command) => {
   logger.info(`Starting the backend services.`);
   logger.info(`\nStart-up mem usage ${JSON.stringify(process.memoryUsage())}\n`);
   const api = await createApi(config.global.wsEndpoint);
-  const db = new Database(config.db.storageFile);
+  const db = await Database.makeDB();
   const server = new Server(db, config.server.port);
   server.start();
 

@@ -33,6 +33,7 @@
     "koa-bodyparser": "^4.3.0",
     "koa2-cors": "^2.0.6",
     "matrix-js-sdk": "^5.0.1",
+    "mongodb": "^3.5.5",
     "nedb": "lasalvavida/nedb",
     "reconnecting-websocket": "^4.4.0",
     "semver": "^7.1.2",

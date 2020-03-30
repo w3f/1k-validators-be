@@ -1,13 +1,23 @@
 import Datastore from 'nedb';
+import MongoClient from 'mongodb';
 
 import logger from './logger';
 import {Address, Stash, CandidateData} from './types';
 
+const MongoURI = 'mongodb://localhost:27017';
+
 export default class Database {
   private _db: any;
 
-  constructor(filename: string, autoload: boolean = true) {
-    this._db = new Datastore({ filename, autoload });
+  constructor(collection) {
+    this._db = collection;
+  }
+
+  static makeDB = async (mongoUri: String = MongoURI): Promise<Database> => {
+    const mongo = await MongoClient.connect(mongoUri);
+    const db = await mongo.db('otv2');
+    const collection = db.collection('otv');
+    return new Database(collection);
   }
 
   /// Entry point for adding a new candidate.
@@ -16,7 +26,7 @@ export default class Database {
 
     const oldData = await this._queryOne({ name });
     if (!oldData) {
-      logger.info(`(DB::addCandidate) Could not find candidate node ${name} - skipping`);
+      logger.info(`(DB::addCandidate) Could not find candidate node ${name} - inserting`);
       
       const data: CandidateData = {
         id: null,
@@ -280,7 +290,7 @@ export default class Database {
   /// Nodes are connected to Telemetry, but not necessarily candidates.
   async allNodes(): Promise<any[]> {
     return new Promise((resolve: any, reject: any) => {
-    this._db.find({ networkId: /.*/ }, (err: any, docs: any) => {
+    this._db.find({ networkId: /.*/ }).toArray((err: any, docs: any) => {
         if (err) reject(err);
         resolve(docs);
       });
@@ -290,7 +300,7 @@ export default class Database {
   /// Candidates are ones who can be nominated. 
   async allCandidates(): Promise<any[]> {
     return new Promise((resolve: any, reject: any) => {
-      this._db.find({ stash: /.*/ }, (err: any, docs: any) => {
+      this._db.find({ stash: /.*/ }).toArray((err: any, docs: any) => {
         if (err) reject(err);
         else resolve(docs);
       });
@@ -323,7 +333,7 @@ export default class Database {
 
   async allNominators(): Promise<any[]> {
     return new Promise((resolve: any, reject: any) => {
-    this._db.find({ nominator: /.*/ }, (err: any, docs: any) => {
+    this._db.find({ nominator: /.*/ }).toArray((err: any, docs: any) => {
         if (err) reject(err);
         resolve(docs);
       });
@@ -344,6 +354,10 @@ export default class Database {
   async clearCandidates(): Promise<boolean> {
     const candidates = await this.allCandidates();
     logger.info(`candidates length: ${candidates.length}`);
+    if (!candidates.length) {
+      logger.info('(DB::clearCandidates) No candidates to clear.')
+      return;
+    }
     for (const node of candidates) {
       const newData = Object.assign(node, {
         stash: null
@@ -361,7 +375,7 @@ export default class Database {
   /// Insert new item in the datastore.
   private _insert(item: object): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      this._db.insert(item, (err: any) => {
+      this._db.insertOne(item, (err: any) => {
         if (err) reject(err);
         resolve(true);
       });
@@ -369,9 +383,12 @@ export default class Database {
   }
 
   /// Update an item in the datastore.
-  private _update(item: object, data: object): Promise<boolean> {
+  private _update(item: object, data: any): Promise<boolean> {
+    // To satisfy mongo.
+    if (data._id) delete data._id;
+
     return new Promise((resolve, reject) => {
-      this._db.update(item, data, (err: any) => {
+      this._db.updateOne(item, { $set: data }, (err: any) => {
         if (err) reject(err);
         resolve(true);
       });
@@ -381,7 +398,7 @@ export default class Database {
   /// Get an item from the datastore.
   private _queryOne(item: object): Promise<any> {
     return new Promise((resolve, reject) => {
-      this._db.find(item, (err: any, docs: any) => {
+      this._db.find(item).toArray((err: any, docs: any) => {
         if (err) reject(err);
         resolve(docs[0]);
       });

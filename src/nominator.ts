@@ -32,7 +32,7 @@ export default class Nominator {
 
   public get address() { return this.signer.address; }
 
-  public async nominate(targets: Stash[]): Promise<boolean> {
+  public async nominate(targets: Stash[], dryRun: boolean = false): Promise<boolean> {
     const now = new Date().getTime();
 
     const tx = this.api.tx.staking.nominate(targets);
@@ -40,20 +40,29 @@ export default class Nominator {
       `(Nominator::nominate) Sending extrinsic Staking::nominate from ${this.address} to targets ${targets} at ${now}`,
     );
 
-    const unsub = await tx.signAndSend(this.signer, async (result: any) => {
-      const { status } = result;
-
-      logger.info(`(Nominator::nominate) Status now: ${status.type}`);
-      if (status.isFinalized) {
-        logger.info(`(Nominator::nominate) Included in block ${status.asFinalized}`);
-        this.currentlyNominating = targets;
-        for (const stash of targets) {
-          await this.db.setTarget(this.address, stash, now);
-          await this.db.setNominatedAt(stash, now);
-        }
-        unsub();
+    if (dryRun) {
+      logger.info(`DRY RUN - STUBBING TRANSACTIONS`);
+      for (const stash of targets) {
+        await this.db.setTarget(this.address, stash, now);
+        await this.db.setNominatedAt(stash, now);
       }
-    });
+    } else {
+
+      const unsub = await tx.signAndSend(this.signer, async (result: any) => {
+        const { status } = result;
+
+        logger.info(`(Nominator::nominate) Status now: ${status.type}`);
+        if (status.isFinalized) {
+          logger.info(`(Nominator::nominate) Included in block ${status.asFinalized}`);
+          this.currentlyNominating = targets;
+          for (const stash of targets) {
+            await this.db.setTarget(this.address, stash, now);
+            await this.db.setNominatedAt(stash, now);
+          }
+          unsub();
+        }
+      });
+    }
 
     return true;
   }

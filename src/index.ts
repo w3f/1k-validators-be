@@ -107,9 +107,11 @@ const start = async (cmd: Command) => {
 
   logger.info(`\nBefore sk mem usage ${JSON.stringify(process.memoryUsage())}\n`);
 
-  const scorekeeperFrequency = config.global.test
-    ? '0 0-59/3 * * * *'  // Do nominations every three minutes.
-    : '0 0 0 * * *';      // Do nominations every day at midnight.
+
+  const scorekeeperFrequency
+    =  (config.global.test && '0 0-59/3 * * * *')   // 3 mins
+    || (config.global.dryRun && '0 0-59/5 * * * *') // 5 mins
+    || '0 0 0 * * *';                               // 24 hours
 
   scorekeeper.begin(scorekeeperFrequency);
 }
@@ -119,5 +121,5 @@ program
   .action((cmd: Command) => start(cmd));
 
 
-program.version('0.1.14');
+program.version('0.1.15');
 program.parse(process.argv);

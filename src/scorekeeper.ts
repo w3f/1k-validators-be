@@ -122,7 +122,7 @@ export default class ScoreKeeper {
           continue;
         }
         logger.info(`(SK::_doNominations) targets = ${JSON.stringify(targets)}`);
-        await curNominator.nominate(targets);
+        await curNominator.nominate(targets, this.config.global.dryRun);
       }
       count++;
     }
@@ -152,7 +152,7 @@ export default class ScoreKeeper {
       }
 
       // Only take nodes that have goodSince over one week.
-      if (!this.config.global.test) {
+      if (!this.config.global.test && !this.config.global.dryRun) {
         const now = new Date().getTime();
         if (now - Number(node.goodSince) < WEEK) {
           this.botLog(`${node.name} hasn't been monitored for the required minimum length of a week yet. Skipping.`);

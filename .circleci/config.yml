@@ -26,7 +26,8 @@ jobs:
       - checkout
       - run:
           command: |
-            sudo apt-get install libcurl; yarn; yarn test
+            yarn
+            # yarn; yarn test
 
   helmLint:
     docker:

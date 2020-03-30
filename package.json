@@ -1,6 +1,6 @@
 {
   "name": "1k-validators-be",
-  "version": "0.1.15",
+  "version": "0.1.16",
   "description": "Services for running the Thousand Validator Program.",
   "main": "index.js",
   "scripts": {
@@ -33,7 +33,7 @@
     "koa-bodyparser": "^4.3.0",
     "koa2-cors": "^2.0.6",
     "matrix-js-sdk": "^5.0.1",
-    "nedb": "^1.8.0",
+    "nedb": "lasalvavida/nedb",
     "reconnecting-websocket": "^4.4.0",
     "semver": "^7.1.2",
     "ts-node": "^8.6.2",

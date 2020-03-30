@@ -6,7 +6,6 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 
 const mongod = new MongoMemoryServer();
 
-
 test.before(async (t:any) => {
   const uri = await mongod.getUri();
   t.context.db = await Database.makeDB({

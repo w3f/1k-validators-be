@@ -2,17 +2,18 @@ import test from 'ava';
 import Database from '../src/db';
 import { getNow } from '../src/util';
 
-import { wipe } from './helpers';
+import { MongoMemoryServer } from 'mongodb-memory-server';
 
-test.before((t:any) => {
-  wipe('test.db');
-  wipe('combined.log');
-  t.context.db = new Database('test.db');
-});
+const mongod = new MongoMemoryServer();
 
-test.after((t: any) => {
-  wipe('test.db');
-  wipe('combined.log');
+
+test.before(async (t:any) => {
+  const uri = await mongod.getUri();
+  t.context.db = await Database.makeDB({
+    uri,
+    dbName: 'test',
+    collection: 'test',
+  });
 });
 
 test.serial('Created a new Database', async (t: any) => {

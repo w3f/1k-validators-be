@@ -2842,10 +2842,9 @@ natural-compare@^1.4.0:
   resolved "https://registry.yarnpkg.com/natural-compare/-/natural-compare-1.4.0.tgz#4abebfeed7541f2c27acfb29bdbbd15c8d5ba4f7"
   integrity sha1-Sr6/7tdUHywnrPspvbvRXI1bpPc=
 
-nedb@^1.8.0:
+nedb@lasalvavida/nedb:
   version "1.8.0"
-  resolved "https://registry.yarnpkg.com/nedb/-/nedb-1.8.0.tgz#0e3502cd82c004d5355a43c9e55577bd7bd91d88"
-  integrity sha1-DjUCzYLABNU1WkPJ5VV3vXvZHYg=
+  resolved "https://codeload.github.com/lasalvavida/nedb/tar.gz/397c6821ca4e011aa4f8483e0ded3d24c882d9f8"
   dependencies:
     async "0.2.10"
     binary-search-tree "0.2.5"

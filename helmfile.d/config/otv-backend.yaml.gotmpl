@@ -5,6 +5,7 @@ image:
   tag: {{ env "CIRCLE_TAG" }}
 
 config: {{ env "OTV_BACKEND_CONFIG" | default "{}" }}
+
 {{ else }}
 image:
   tag: {{ env "CIRCLE_SHA1" }}
@@ -12,3 +13,6 @@ image:
 certificate:
   enabled: false
 {{ end }}
+
+mongodb:
+  url: mongodb://mongodb-replicaset-0.mongodb-replicaset,mongodb-replicaset-1.mongodb-replicaset:27017/otv?replicaSet=otv-replicaset

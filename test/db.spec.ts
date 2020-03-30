@@ -11,8 +11,8 @@ test.serial.before(async (t: any) => {
     console.log('in ci')
     t.context.mongod = await MongoMemoryServer.create({
       binary: {
-        version: '4.2.3'
-      }
+        version: 'latest'
+      },
     });
   } else {
     t.context.mongod = await MongoMemoryServer.create();

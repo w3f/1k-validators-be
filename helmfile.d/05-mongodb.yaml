@@ -11,4 +11,4 @@ releases:
   chart: stable/mongodb-replicaset
   version: 3.14.1
   values:
-  - ./config/mongodb-replicaset-values.yaml.gotmpl
+  - ./config/mongodb-replicaset.yaml.gotmpl

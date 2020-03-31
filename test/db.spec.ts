@@ -2,17 +2,31 @@ import test from 'ava';
 import Database from '../src/db';
 import { getNow } from '../src/util';
 
-import { wipe } from './helpers';
+import { MongoMemoryServer } from 'mongodb-memory-server';
 
-test.before((t:any) => {
-  wipe('test.db');
-  wipe('combined.log');
-  t.context.db = new Database('test.db');
+test.serial.before(async (t: any) => {
+  t.timeout(600000);
+
+  if (process.env.CI) {
+    console.log('in ci')
+    t.context.mongod = await MongoMemoryServer.create({
+      binary: {
+        version: 'latest'
+      },
+    });
+  } else {
+    t.context.mongod = await MongoMemoryServer.create();
+  }
+  const uri = await t.context.mongod.getUri();
+  t.context.db = await Database.makeDB({
+    uri,
+    dbName: 'test',
+    collection: 'test',
+  });
 });
 
-test.after((t: any) => {
-  wipe('test.db');
-  wipe('combined.log');
+test.serial.after(async (t:any) => {
+  await t.context.mongod.stop();
 });
 
 test.serial('Created a new Database', async (t: any) => {

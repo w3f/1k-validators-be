@@ -9,12 +9,29 @@ import {
 	MockDb,
 } from './mock';
 
-import { wipe } from './helpers';
 
-test.before(async (t: any) => {
-	wipe('test.db')
-	const db = new Database('test.db');
+import { MongoMemoryServer } from 'mongodb-memory-server';
 
+test.serial.before(async (t: any) => {
+	t.timeout(6000000);
+
+  if (process.env.CI) {
+		console.log('in ci')
+    t.context.mongod = await MongoMemoryServer.create({
+      binary: {
+        version: 'latest'
+      }
+    });
+  } else {
+    t.context.mongod = await MongoMemoryServer.create();
+  }
+	const uri = await t.context.mongod.getUri();
+  const db = await Database.makeDB({
+    uri,
+    dbName: 'test',
+    collection: 'test',
+	});
+	
 	const now = new Date().getTime();
 
 	await db.reportOnline(0, ['nodeZero'], now);
@@ -30,9 +47,8 @@ test.before(async (t: any) => {
 	await sleep(1200);
 });
 
-test.after(() => {
-	wipe('test.db');
-	wipe('combined.log');
+test.serial.after(async (t: any) => {
+	await t.context.mongod.stop();
 });
 
 test('Creates a new Scorekeeper', (t: any) => {

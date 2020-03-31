@@ -11,6 +11,7 @@ import Server from './server';
 import TelemetryClient from './telemetry';
 
 import logger from './logger';
+import { migrate } from './migrate';
 import { sleep } from './util';
 import { SIXTEEN_HOURS } from './constants';
 
@@ -31,10 +32,17 @@ const createApi = (wsEndpoint: string): Promise<ApiPromise> => {
 const start = async (cmd: Command) => {
   const config = loadConfig(cmd.config);
 
+  /// Runs the migration from nedb to mongodb.
+  if (config.db.migrate) {
+    logger.info('MIGRATING DATABASE FROM NEDB TO MONGODB');
+    await migrate(config.db.storageFile, config.db.mongo);
+    logger.info('Migration complete.');
+  }
+
   logger.info(`Starting the backend services.`);
   logger.info(`\nStart-up mem usage ${JSON.stringify(process.memoryUsage())}\n`);
   const api = await createApi(config.global.wsEndpoint);
-  const db = new Database(config.db.storageFile);
+  const db = await Database.makeDB(config.db.mongo);
   const server = new Server(db, config.server.port);
   server.start();
 
@@ -121,5 +129,5 @@ program
   .action((cmd: Command) => start(cmd));
 
 
-program.version('0.1.19');
+program.version('0.2.0');
 program.parse(process.argv);

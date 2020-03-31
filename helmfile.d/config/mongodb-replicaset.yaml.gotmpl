@@ -1,0 +1,18 @@
+replicaSetName: otv
+replicas: 2
+{{ if eq .Environment.Name "production" }}
+resources:
+  limits:
+    cpu: 500m
+    memory: 3Gi
+  requests:
+    cpu: 100m
+    memory: 2Gi
+metrics:
+  enabled: true
+{{ else }}
+persistentVolume:
+  enabled: false
+metrics:
+  enabled: false
+{{ end }}

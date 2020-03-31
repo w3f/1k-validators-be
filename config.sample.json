@@ -1,9 +1,16 @@
 {
     "global": {
         "test": true,
+        "dryRun": false,
         "wsEndpoint": "ws://172.28.1.1:9945"
     },
     "db": {
+        "migrate": false,
+        "mongo": {
+            "uri": "mongodb://localhost:27017",
+            "dbName": "otv",
+            "collection": "otv"
+        },
         "storageFile": "validator.db"
     },
     "matrix": {

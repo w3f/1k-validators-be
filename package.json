@@ -1,6 +1,6 @@
 {
   "name": "1k-validators-be",
-  "version": "0.1.16",
+  "version": "0.2.0",
   "description": "Services for running the Thousand Validator Program.",
   "main": "index.js",
   "scripts": {
@@ -35,7 +35,7 @@
     "matrix-js-sdk": "^5.0.1",
     "mongodb": "^3.5.5",
     "mongodb-memory-server": "^6.5.0",
-    "nedb": "lasalvavida/nedb",
+    "nedb": "lasalvavida/nedb#stream-large-files",
     "reconnecting-websocket": "^4.4.0",
     "semver": "^7.1.2",
     "ts-node": "^8.6.2",

@@ -92,7 +92,10 @@ export const MockApi = {
 export const MockConfig = {
 	global: {
 		test: false,
-  },
+	},
+	constraints: {
+		skipConnection: true,
+	},
   scorekeeper: {
     forceRound: false,
     nominating: false,

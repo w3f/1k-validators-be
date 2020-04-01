@@ -20,6 +20,9 @@ config: |
         "test": true,
         "wsEndpoint": "wss://kusama-rpc.polkadot.io/"
     },
+    "constraints": {
+        "skipConnections": false
+    },
     "db": {
         "migrate": false,
         "mongo": {

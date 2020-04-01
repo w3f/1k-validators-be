@@ -21,6 +21,7 @@ export type CandidateData = {
   name: string,
   details: any[],
   connectedAt: number,
+  goodSince: number,
   nominatedAt: number,
   offlineSince: number,
   offlineAccumulated: number,

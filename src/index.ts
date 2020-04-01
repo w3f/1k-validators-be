@@ -29,10 +29,10 @@ const createApi = (wsEndpoint: string): Promise<ApiPromise> => {
   });
 }
 
-const catchAndQuit = (fn: any) => {
+const catchAndQuit = async (fn: any) => {
   try {
-    fn();
-  } catch (e) { console.error(e); process.exit(1); }
+    await fn;
+  } catch (e) { console.error(e.toString()); process.exit(1); }
 }
 
 const start = async (cmd: Command) => {

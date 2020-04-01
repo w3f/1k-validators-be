@@ -21,7 +21,13 @@ config: |
         "wsEndpoint": "wss://kusama-rpc.polkadot.io/"
     },
     "db": {
-        "storageFile": "/data/validator.db"
+        "migrate": false,
+        "mongo": {
+            "uri": "mongodb://mongodb-replicaset-0.mongodb-replicaset.default.svc.cluster.local,mongodb-replicaset-1.mongodb-replicaset.default.svc.cluster.local:27017/otv?replicaSet=otv",
+            "dbName": "otv",
+            "collection": "otv"
+        },
+        "storageFile": "data/validator_one.db"
     },
     "matrix": {
         "enabled": false,
@@ -41,16 +47,7 @@ config: |
                 "stash": "5HpG9w8EBLe5XCrbczpwq5TSXvedjrBGCwqxK1iQ7qUsSWFc"
             }
         ],
-        "nominators": [
-            [{
-                "seed": "0xbc1ede780f784bb6991a585e4f6e61522c14e1cae6ad0895fb57b9a205a8f938",
-                "maxNominations": 1
-            }],
-            [{
-                "seed": "0x868020ae0687dda7d57565093a69090211449845a7e11453612800b663307246",
-                "maxNominations": 1
-            }]
-        ],
+        "nominators": [],
         "forceRound": true,
         "nominating": true
     },

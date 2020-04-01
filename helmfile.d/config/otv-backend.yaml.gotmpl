@@ -1,10 +1,10 @@
 environment: {{ .Environment.Name }}
 
-config: {{ env "OTV_BACKEND_CONFIG" | default "{}" }}
-
 {{ if eq .Environment.Name "production" }}
 image:
   tag: {{ env "CIRCLE_TAG" }}
+
+config: {{ env "OTV_BACKEND_CONFIG" | default "{}" }}
 
 {{ else }}
 image:

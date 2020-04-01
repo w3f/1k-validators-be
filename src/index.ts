@@ -29,6 +29,12 @@ const createApi = (wsEndpoint: string): Promise<ApiPromise> => {
   });
 }
 
+const catchAndQuit = async (fn: any) => {
+  try {
+    await fn;
+  } catch (e) { console.error(e.toString()); process.exit(1); }
+}
+
 const start = async (cmd: Command) => {
   const config = loadConfig(cmd.config);
 
@@ -126,8 +132,8 @@ const start = async (cmd: Command) => {
 
 program
   .option('--config <file>', 'The path to the config file.', 'config.json')
-  .action((cmd: Command) => start(cmd));
+  .action((cmd: Command) => catchAndQuit(start(cmd)));
 
 
-program.version('0.2.0');
+program.version('0.2.1');
 program.parse(process.argv);

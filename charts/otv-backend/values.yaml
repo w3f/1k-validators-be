@@ -21,7 +21,7 @@ config: |
         "wsEndpoint": "wss://kusama-rpc.polkadot.io/"
     },
     "db": {
-        "migrate": true,
+        "migrate": false,
         "mongo": {
             "uri": "mongodb://mongodb-replicaset-0.mongodb-replicaset.default.svc.cluster.local,mongodb-replicaset-1.mongodb-replicaset.default.svc.cluster.local:27017/otv?replicaSet=otv",
             "dbName": "otv",

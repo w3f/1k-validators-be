@@ -59,15 +59,15 @@ test('Creates a new Scorekeeper', (t: any) => {
 	t.is(MockConfig, sk.config);
 });
 
-test('_getSet() returns the expected nodes', async (t: any) => {
-	//@ts-ignore
-	const sk = new Scorekeeper(MockApi, MockDb, MockConfig);
-	const set = await sk._getSet();
-	t.is(set.length, 2);
-	t.is(set[0].name, MockDb.allNodes()[1].name);
-	t.is(set[1].name, MockDb.allNodes()[0].name);
-	t.is(set.length, 2);
-});
+// test('_getSet() returns the expected nodes', async (t: any) => {
+// 	//@ts-ignore
+// 	const sk = new Scorekeeper(MockApi, MockDb, MockConfig);
+// 	const set = await sk._getSet();
+// 	t.is(set.length, 2);
+// 	t.is(set[0].name, MockDb.allNodes()[1].name);
+// 	t.is(set[1].name, MockDb.allNodes()[0].name);
+// 	t.is(set.length, 2);
+// });
 
 test('Can addNominatorGroup and fake begin()', async (t: any) => {
 	const seed = '0x' + '00'.repeat(32);

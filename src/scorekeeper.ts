@@ -6,11 +6,11 @@ import Nominator from './nominator';
 import {
   FIFTY_KSM,
   TEN_PERCENT,
-  WEEK,
 } from './constants';
+import { Constraints, OTV } from './constraints';
 
 import logger from './logger';
-import {Stash} from './types';
+import { CandidateData, Stash } from './types';
 import { getNow } from './util';
 
 type NominatorGroup = any[];
@@ -20,8 +20,9 @@ export default class ScoreKeeper {
   public bot: any;
   public chaindata: ChainData;
   public config: any;
+  private constraints: Constraints;
   public currentEra: number = 0;
-  public currentSet: Array<Stash> = [];
+  public currentTargets: string[];
   public db: any;
   // Keeps track of a starting era for a round.
   public startEra: number = 0;
@@ -34,6 +35,7 @@ export default class ScoreKeeper {
     this.config = config;
     this.bot = bot;
     this.chaindata = new ChainData(this.api);
+    this.constraints = new OTV(this.api, this.config.constraints.skipConnection);
   }
 
   async botLog(msg: string) {
@@ -58,22 +60,23 @@ export default class ScoreKeeper {
   }
 
   async begin(frequency: string) {
-    if (!this.nominatorGroups) {
-      throw new Error('No nominators spawned! Cannot begin.');
-    }
-
     // If `forceRound` is on - start immediately.
     if (this.config.scorekeeper.forceRound) {
       await this.startRound();
     }
 
     new CronJob(frequency, async () => {
-      if (!this.config.scorekeeper.nominating) {
-        logger.info('Not nominating - skipping this round');
+      if (!this.nominatorGroups) {
+        logger.info('No nominators spawned. Skipping round.');
         return;
       }
 
-      if (!this.currentSet) {
+      if (!this.config.scorekeeper.nominating) {
+        logger.info('Nominating is disabled in the settings. Skipping round.');
+        return;
+      }
+
+      if (!this.currentTargets) {
         await this.startRound();
       } else {
         await this.endRound();
@@ -94,25 +97,25 @@ export default class ScoreKeeper {
       `New round is starting! Era ${this.currentEra} will begin new nominations.`
     );
 
-    const set = await this._getSet();
-    this.currentSet = set;
+    const allCandidates = await this.db.allCandidates();
+    const validCandidates = await this.constraints.getValidCandidates(allCandidates);
 
-    await this._doNominations(set, 16, this.nominatorGroups);
+    await this._doNominations(validCandidates, 16, this.nominatorGroups);
   }
 
-  async _doNominations(set: any[], setSize: number, nominatorGroups: NominatorGroup[] = []) {
+  async _doNominations(candidates: CandidateData[], setSize: number, nominatorGroups: NominatorGroup[] = []) {
     // A "subset" is a group of 16 validators since this is the max that can
     // be nominated by a single account.
     let subsets = [];
-    for (let i = 0; i < set.length; i += setSize) {
-      subsets.push(set.slice(i, i + setSize));
+    for (let i = 0; i < candidates.length; i += setSize) {
+      subsets.push(candidates.slice(i, i + setSize));
     }
 
     let totalTargets = [];
     let count = 0;
-    for (const nodes of subsets) {
-      const targets = nodes.map((node: any) => node.stash);
-      totalTargets.push(...nodes.map((node) => node.name));
+    for (const subset of subsets) {
+      const targets = subset.map((candidate) => candidate.stash);
+      totalTargets.push(...subset.map((candidate) => candidate.name));
 
       for (const nomGroup of nominatorGroups) {
         // eslint-disable-next-line security/detect-object-injection
@@ -127,76 +130,8 @@ export default class ScoreKeeper {
       count++;
     }
 
+    this.currentTargets = totalTargets;
     this.botLog(`Next targets: \n${totalTargets.map((target) => `- ${target}`).join('\n')}`);
-  }
-
-  async _getSet(): Promise<any[]> {
-    let nodes = await this.db.allNodes();
-    const activeEraIndex = await this.chaindata.getActiveEraIndex();
-
-    // Ensure they meet the requirements of:
-    //  - Less than 10% commission.
-    //  - More than 50 KSM.
-    let tmpNodes = [];
-    for (const node of nodes) {
-      // Only take nodes that have a stash attached.
-      if (node.stash === null) {
-        this.botLog(`${node.name} doesn't have a stash address attached. Skipping.`);
-        continue;
-      }
-
-      // Only take nodes that are online.
-      if (node.offlineSince !== 0) {
-        this.botLog(`${node.name} is offline! Skipping.`);
-        continue;
-      }
-
-      // Only take nodes that have goodSince over one week.
-      if (!this.config.global.test && !this.config.global.dryRun) {
-        const now = new Date().getTime();
-        if (now - Number(node.goodSince) < WEEK) {
-          this.botLog(`${node.name} hasn't been monitored for the required minimum length of a week yet. Skipping.`);
-          continue;
-        }
-      }
-
-      // Ensure node have 98% uptime (3.35 hours for one week).
-      const totalOffline = node.offlineAccumulated / WEEK;
-      if (totalOffline > 0.02) {
-        this.botLog(`${node.name} has been offline ${node.offlineAccumulated / 1000 /60} minutes this week, longer than the maximum allowed of 3 hours. Skipping!`);
-        continue;
-      }
-
-      const [commission, err] = await this.chaindata.getCommission(activeEraIndex, node.stash);
-      const [own, err2] = await this.chaindata.getOwnExposure(activeEraIndex, node.stash);
-
-      if (err && !this.config.global.test) {
-        logger.info(err);
-        continue;
-      }
-      
-      if (err2 && !this.config.global.test) {
-        logger.info(err2);
-        continue;
-      }
-
-      if ((commission! <= TEN_PERCENT && own! >= FIFTY_KSM) || this.config.global.test) {
-        const index = nodes.indexOf(node);
-        tmpNodes.push(nodes[parseInt(index)]);
-      }
-    }
-    nodes = tmpNodes;
-
-    // Sort by earliest connected on top.
-    nodes.sort((a: any, b: any) => {
-      return a.connectedAt - b.connectedAt;
-    });
-    // Sort so that the most recent nominations are at the bottom.
-    nodes.sort((a: any, b: any) => {
-      return a.nominatedAt - b.nominatedAt;
-    });
-
-    return nodes;
   }
 
   async _getCurrentEra(): Promise<number> {
@@ -207,78 +142,44 @@ export default class ScoreKeeper {
   async endRound() {
     logger.info('Ending round');
     const now = getNow();
-    const activeEraIndex = await this.chaindata.getActiveEraIndex();
 
     /// The targets that have already been processed for this round.
-    let processed = new Set();
+    let toProcess: Map<Stash, CandidateData> = new Map();
 
     for (const nomGroup of this.nominatorGroups) {
       for (const nominator of nomGroup) {
         const current = await this.db.getCurrentTargets(nominator.address);
 
         // If not nominating any... then return.
-        if (!current) return;
+        if (!current) {
+          logger.info(`${nominator.address} is not nominating any targets.`);
+        }
 
         // Wipe targets.
         await this.db.newTargets(nominator.address, [], now);
 
         for (const stash of current) {
+          const candidate = await this.db.getValidator(stash);
+
           // If already processed, then skip to next stash.
-          if (processed.has(stash)) continue;
+          if (toProcess.has(stash)) continue;
           // Setting this here is probably fine, although it's not truly processed
           // until the end of this block.
-          processed.add(stash);
-
-          /// Ensure the commission wasn't raised.
-          const [commission, err] = await this.chaindata.getCommission(activeEraIndex, stash);
-          // If error, something went wrong, don't reward nor dock points.
-          if (err && !this.config.global.test) {
-            logger.info(err);
-            continue;
-          }
-
-          if (commission! > TEN_PERCENT && !this.config.global.test) {
-            await this.dockPoints(stash);
-            continue;
-          }
-
-          /// Ensure the 50 KSM minimum was not removed.
-          const [own, err2] = await this.chaindata.getOwnExposure(activeEraIndex, stash);
-
-          if (err2 && !this.config.global.test) {
-            logger.info(err2);
-            continue;
-          }
-
-          if (own! < FIFTY_KSM && !this.config.global.test) {
-            await this.dockPoints(stash);
-            continue;
-          }
-
-          /// Ensure the validator is still online.
-          const node = await this.db.getValidator(stash);
-          if (Number(node.offlineSince) !== 0) {
-            await this.dockPoints(stash);
-            continue;
-          }
-
-          /// Check slashes in this era and the previous eras.
-          if (!this.config.global.test) {
-            const [hasSlashes, err3] = await this.chaindata.hasUnappliedSlashes(this.startEra, activeEraIndex, stash);
-            if (err3) {
-              logger.info(err3);
-              continue;
-            }
-            if (hasSlashes) {
-              this.dockPoints(stash);
-            } else {
-              this.addPoint(stash);
-            }
-          } else {
-            this.addPoint(stash);
-          }
+          toProcess.set(stash, candidate);
         }
       }
+    }
+
+    const [good, bad] = await this.constraints.processCandidates(new Set(toProcess.values()));
+
+    for (const goodOne of good.values()) {
+      const { stash } = goodOne;
+      await this.addPoint(stash);
+    }
+
+    for (const badOne of bad.values()) {
+      const { stash } = badOne;
+      await this.addPoint(stash);
     }
   }
 

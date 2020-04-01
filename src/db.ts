@@ -37,6 +37,7 @@ export default class Database {
         networkId: null,
         details: [],
         connectedAt: 0,
+        goodSince: 0,
         nominatedAt: 0,
         offlineSince: 0,
         offlineAccumulated: 0,

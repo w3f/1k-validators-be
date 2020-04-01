@@ -1,5 +1,5 @@
 import { ApiPromise, WsProvider } from '@polkadot/api';
-import { CronJob, CronTime } from 'cron';
+import { CronJob } from 'cron';
 import * as fs from 'fs';
 import program, { Command } from 'commander';
 
@@ -11,7 +11,6 @@ import Server from './server';
 import TelemetryClient from './telemetry';
 
 import logger from './logger';
-import { migrate } from './migrate';
 import { sleep } from './util';
 import { SIXTEEN_HOURS } from './constants';
 
@@ -37,13 +36,6 @@ const catchAndQuit = async (fn: any) => {
 
 const start = async (cmd: Command) => {
   const config = loadConfig(cmd.config);
-
-  /// Runs the migration from nedb to mongodb.
-  if (config.db.migrate) {
-    logger.info('MIGRATING DATABASE FROM NEDB TO MONGODB');
-    await migrate(config.db.storageFile, config.db.mongo);
-    logger.info('Migration complete.');
-  }
 
   logger.info(`Starting the backend services.`);
   logger.info(`\nStart-up mem usage ${JSON.stringify(process.memoryUsage())}\n`);

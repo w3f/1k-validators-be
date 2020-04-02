@@ -10,9 +10,13 @@ class ChainData {
     this.api = api;
   }
 
-  getActiveEraIndex = async (): Promise<number> => {
+  getActiveEraIndex = async (): Promise<NumberResult> => {
     const activeEra = await this.api.query.staking.activeEra();
-    return activeEra.unwrap().index.toNumber();
+    if (activeEra.isNone) {
+      logger.info(`NO ACTIVE ERA: ${activeEra.toString()}`);
+      return [null, `Acitve era not found, this chain is might be using an older staking pallet.`];
+    }
+    return [activeEra.unwrap().index.toNumber(), null];
   }
 
   getCommission = async (validator: string): Promise<NumberResult> => {
@@ -47,6 +51,7 @@ class ChainData {
     if (ledger.isNone) {
       return [null, `Ledger is empty.`];
     }
+    console.log('ledger', ledger.toString());
 
     //@ts-ignore
     return [ledger.toJSON().active, null]
@@ -62,7 +67,11 @@ class ChainData {
   }
 
   hasUnappliedSlashes = async (startEraIndex: number, endEraIndex: number, validator: string): Promise<BooleanResult> => {
-    const earliestEraIndex = await (await this.api.query.staking.earliestUnappliedSlash()).unwrap().toNumber();
+    const earliestUnapplied = await this.api.query.staking.earliestUnappliedSlash();
+    if (earliestUnapplied.isNone) {
+      return [null, 'Earliest unapplied is none.'];
+    }
+    const earliestEraIndex = await (earliestUnapplied).unwrap().toNumber();
     if (startEraIndex < earliestEraIndex) {
       return [null, `Start era is too early to query unapplied slashes.`];
     }

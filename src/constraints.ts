@@ -13,14 +13,15 @@ export interface Constraints {
 export class OTV implements Constraints {
   private chaindata: ChainData;
   private skipConnectionTime: boolean;
+  private skipSentry: boolean;
 
-  constructor(api: ApiPromise, skipConnectionTime: boolean = false) {
+  constructor(api: ApiPromise, skipConnectionTime: boolean = false, skipSentry: boolean = false) {
     this.chaindata = new ChainData(api);
     this.skipConnectionTime = skipConnectionTime;
+    this.skipSentry = skipSentry;
   }
 
   async getValidCandidates(candidates: CandidateData[]): Promise<CandidateData[]> {
-    const activeEraIndex = await this.chaindata.getActiveEraIndex();
 
     let validCandidates = [];
     for (const candidate of candidates) {
@@ -38,7 +39,7 @@ export class OTV implements Constraints {
       }
 
       // Ensure the sentry is online.
-      if (sentryOfflineSince !== 0) {
+      if (sentryOfflineSince !== 0 && !this.skipSentry) {
         logger.info(`${name} sentry is offline. Offline since ${sentryOfflineSince}.`);
         continue;
       }
@@ -100,7 +101,10 @@ export class OTV implements Constraints {
   /// candidates that did good from the ones that did badly.
   async processCandidates(candidates: Set<CandidateData>): Promise<[Set<CandidateData>, Set<CandidateData>]> {
     
-    const activeEraIndex = await this.chaindata.getActiveEraIndex();
+    const [activeEraIndex, eraErr] = await this.chaindata.getActiveEraIndex();
+    if (eraErr) {
+      throw eraErr;
+    }
 
     const good: Set<CandidateData> = new Set();
     const bad: Set<CandidateData> = new Set();

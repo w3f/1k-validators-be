@@ -35,7 +35,7 @@ export default class ScoreKeeper {
     this.config = config;
     this.bot = bot;
     this.chaindata = new ChainData(this.api);
-    this.constraints = new OTV(this.api, this.config.constraints.skipConnection);
+    this.constraints = new OTV(this.api, this.config.constraints.skipConnectionTime, this.config.constraints.skipSentries);
   }
 
   async botLog(msg: string) {
@@ -135,7 +135,11 @@ export default class ScoreKeeper {
   }
 
   async _getCurrentEra(): Promise<number> {
-    return this.chaindata.getActiveEraIndex();
+    const [eraIndex, eraErr] = await this.chaindata.getActiveEraIndex();
+    if (eraErr) {
+      throw eraErr;
+    }
+    return eraIndex;
   }
 
   /// Handles the ending of a round.

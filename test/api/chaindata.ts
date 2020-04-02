@@ -11,7 +11,10 @@ const createApi = (): Promise<ApiPromise> => {
   const api = await createApi();
   const chaindata = new ChainData(api);
 
-  const activeEra = await chaindata.getActiveEraIndex();
+  const [activeEra, eraErr] = await chaindata.getActiveEraIndex();
+  if (eraErr) {
+    throw eraErr;
+  }
 
   const entries = await api.query.staking.erasStakers.entries(activeEra);
   const validators = entries.map(([key]) => key.args[1]);

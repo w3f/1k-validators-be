@@ -65,8 +65,8 @@ const start = async (cmd: Command) => {
   /// within a timely period.
   const monitor = new Monitor(db, SIXTEEN_HOURS);
   const monitorFrequency = config.global.test
-    ? '0 0-59/3 * * * *'    // Every 3 minutes.
-    : '0 0-59/15 * * * *';  // Every 15 minutes.
+    ? '0 */15 * * * *'    // Every 15 minutes.
+    : '0 */15 * * * *';  // Every 15 minutes.
 
   const monitorCron = new CronJob(monitorFrequency, async () => {
     logger.info(`Monitoring the node version by polling latst GitHub releases every ${config.global.test? 'three' : 'fifteen'} minutes.`);
@@ -115,9 +115,9 @@ const start = async (cmd: Command) => {
 
 
   const scorekeeperFrequency
-    =  (config.global.test && '0 0-59/3 * * * *')   // 3 mins
-    || (config.global.dryRun && '0 0-59/5 * * * *') // 5 mins
-    || '0 0 0 * * *';                               // 24 hours
+    =  (config.global.test && '0 */15 * * * *')    // 15 mins
+    || (config.global.dryRun && '0 */5 * * * *')   // 5 mins
+    || '0 0 0 * * *';                              // 24 hours
 
   scorekeeper.begin(scorekeeperFrequency);
 }
@@ -127,5 +127,5 @@ program
   .action((cmd: Command) => catchAndQuit(start(cmd)));
 
 
-program.version('0.2.3');
+program.version('0.2.4');
 program.parse(process.argv);

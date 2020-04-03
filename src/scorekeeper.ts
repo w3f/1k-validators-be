@@ -125,6 +125,13 @@ export default class ScoreKeeper {
           continue;
         }
         logger.info(`(SK::_doNominations) targets = ${JSON.stringify(targets)}`);
+
+        const current = await this.db.getCurrentTargets(curNominator.address);
+        if (current.length) {
+          logger.info('Wiping the old targets before making new nominations.')
+          await this.db.newTargets(curNominator.address, [], new Date().getTime());
+        }
+
         await curNominator.nominate(targets, this.config.global.dryRun);
       }
       count++;

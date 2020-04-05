@@ -30,7 +30,11 @@ const loadConfigDir = (configDir: string) => {
   const mainPath = path.join(configDir, 'main.json');
   const mainConf = loadConfig(mainPath);
 
-  return Object.assign(mainConf, secretConf);
+  // FIXME: Object.assign overwrites existing properties
+  mainConf.matrix.accessToken = secretConf.matrix.accessToken;
+  mainConf.scorekeeper.nominators = secretConf.scorekeeper.nominators;
+
+  return mainConf;
 }
 
 const createApi = (wsEndpoint: string): Promise<ApiPromise> => {

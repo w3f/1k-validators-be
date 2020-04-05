@@ -1,6 +1,7 @@
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import { CronJob } from 'cron';
 import * as fs from 'fs';
+import path from 'path';
 import program, { Command } from 'commander';
 
 import Database from './db';

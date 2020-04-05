@@ -22,6 +22,16 @@ const loadConfig = (configPath: string) => {
   return JSON.parse(conf);
 }
 
+const loadConfigDir = (configDir: string) => {
+  const secretPath = path.join(configDir, 'secret.json');
+  const secretConf = loadConfig(secretPath);
+
+  const mainPath = path.join(configDir, 'main.json');
+  const mainConf = loadConfig(mainPath);
+
+  return Object.assign(mainConf, secretConf);
+}
+
 const createApi = (wsEndpoint: string): Promise<ApiPromise> => {
   return ApiPromise.create({
     provider: new WsProvider(wsEndpoint),
@@ -35,7 +45,7 @@ const catchAndQuit = async (fn: any) => {
 }
 
 const start = async (cmd: Command) => {
-  const config = loadConfig(cmd.config);
+  const config = loadConfigDir(cmd.config);
 
   logger.info(`Starting the backend services.`);
   logger.info(`\nStart-up mem usage ${JSON.stringify(process.memoryUsage())}\n`);
@@ -123,7 +133,7 @@ const start = async (cmd: Command) => {
 }
 
 program
-  .option('--config <file>', 'The path to the config file.', 'config.json')
+  .option('--config <directory>', 'The path to the config directory.', 'config')
   .action((cmd: Command) => catchAndQuit(start(cmd)));
 
 

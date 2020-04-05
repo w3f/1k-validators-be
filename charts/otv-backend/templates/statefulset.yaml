@@ -39,6 +39,10 @@ spec:
           mountPath: /code/config/secret.json
           subPath: secret.json
           readOnly: true
+        - name: main-config
+          mountPath: /code/config/main.json
+          subPath: main.json
+          readOnly: true
       {{- if ne .Values.environment "ci" }}
         resources:
           limits:

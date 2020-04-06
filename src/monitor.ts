@@ -70,14 +70,10 @@ export default class Monitor {
       const isUpgraded = semver.gte(nodeVersion!, latestVersion!);
 
       if (isUpgraded) {
-        // The node is doing good. We reset the `goodSince` if it's been
-        // previously set to 0.
-        if (Number(node.goodSince) === 0) {
+        if (!node.updated) {
           await this.db.nodeGood(node.networkId, now);
         }
       } else {
-        // The node is doing bad. Let's check it against the grace period
-        // and set its `goodSince` to 0 if it's overdue.
         if (now > this.latestTaggedRelease!.publishedAt + this.grace) {
           await this.db.nodeNotGood(node.networkId);
         }

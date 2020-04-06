@@ -3,10 +3,6 @@ import { CronJob } from 'cron';
 
 import ChainData from './chaindata';
 import Nominator from './nominator';
-import {
-  FIFTY_KSM,
-  TEN_PERCENT,
-} from './constants';
 import { Constraints, OTV } from './constraints';
 
 import logger from './logger';
@@ -162,8 +158,9 @@ export default class ScoreKeeper {
         const current = await this.db.getCurrentTargets(nominator.address);
 
         // If not nominating any... then return.
-        if (!current) {
+        if (!current.length) {
           logger.info(`${nominator.address} is not nominating any targets.`);
+          continue;
         }
 
         // Wipe targets.
@@ -203,9 +200,7 @@ export default class ScoreKeeper {
     /// This logic adds one to misbehaviors and reduces rank by half. 
     const newData = Object.assign(oldData, {
       rank: Math.floor(oldData.rank / 2),
-      misbehaviors: oldData.misbehaviors + 1,
-      // Reset `goodSince` effectively making them take a timeout for a week.
-      goodSince: new Date().getTime(),
+      misbehaviors: oldData.misbehaviors + 1
     });
 
     this.botLog(

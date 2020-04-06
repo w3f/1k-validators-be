@@ -26,8 +26,7 @@ jobs:
       - checkout
       - run:
           command: |
-            yarn
-            # yarn; yarn test
+            yarn; yarn test
 
   helmLint:
     docker:

@@ -3040,10 +3040,10 @@ moment-timezone@^0.5.x:
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.24.0.tgz#0d055d53f5052aa653c9f6eb68bb5d12bf5c2b5b"
   integrity sha512-bV7f+6l2QigeBBZSM/6yTNq4P2fNpSWj/0e7jQcy87A8e7o2nAfP/34/2ky5Vw4B9S446EtIhodAzkFCcR4dQg==
 
-mongodb-memory-server-core@6.5.1:
-  version "6.5.1"
-  resolved "https://registry.yarnpkg.com/mongodb-memory-server-core/-/mongodb-memory-server-core-6.5.1.tgz#8eefbcbee64c167031d1b491ffdd39c0e222f79d"
-  integrity sha512-GgzvGmRzSfIYOCKzy9wUI0i0eM5r88aTWn7MQJwFRy4F4gnQBNI68aHiWWCsYX3HbQXi0gc49T7lo4hALWtlpQ==
+mongodb-memory-server-core@6.5.2:
+  version "6.5.2"
+  resolved "https://registry.yarnpkg.com/mongodb-memory-server-core/-/mongodb-memory-server-core-6.5.2.tgz#21c96b6e3104b999905ecb232f83d2432467a0f5"
+  integrity sha512-Cs1wB+GrL2KconDD2emk6ptU1OqdYia11I7fw5sOqnEWc8stTQ4rtptbRcLmHyTcTgRYC/fsQQvzbbd7DBf4DQ==
   dependencies:
     "@types/cross-spawn" "^6.0.1"
     "@types/debug" "^4.1.5"
@@ -3074,12 +3074,12 @@ mongodb-memory-server-core@6.5.1:
   optionalDependencies:
     mongodb "^3.5.4"
 
-mongodb-memory-server@^6.5.1:
-  version "6.5.1"
-  resolved "https://registry.yarnpkg.com/mongodb-memory-server/-/mongodb-memory-server-6.5.1.tgz#94e7db246159e20ee8909e66a40add1df23ca2a2"
-  integrity sha512-qbL2XzPX9CdEpVlG+hwFkxevb3LuPBWWo4+FapMrToeYaJLZRRD3FJ+BORlgwU+EwWxdtanityNSyR0tkmZ6ew==
+mongodb-memory-server@^6.5.2:
+  version "6.5.2"
+  resolved "https://registry.yarnpkg.com/mongodb-memory-server/-/mongodb-memory-server-6.5.2.tgz#47f4c19ab830f63ee6119629072eee2df7d8957a"
+  integrity sha512-PUCiWcHGwyqQiZF3J4iCy1DXqPjoNtehV2qMFJ26rhNBFzmc5SW+9/FUQwGNLge5/Lm1dEwcraJD5PUe8m9Kdg==
   dependencies:
-    mongodb-memory-server-core "6.5.1"
+    mongodb-memory-server-core "6.5.2"
 
 mongodb@^3.5.4, mongodb@^3.5.5:
   version "3.5.5"

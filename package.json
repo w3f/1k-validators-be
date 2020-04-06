@@ -34,7 +34,7 @@
     "koa2-cors": "^2.0.6",
     "matrix-js-sdk": "^5.0.1",
     "mongodb": "^3.5.5",
-    "mongodb-memory-server": "^6.5.1",
+    "mongodb-memory-server": "^6.5.2",
     "nedb": "lasalvavida/nedb#stream-large-files",
     "reconnecting-websocket": "^4.4.0",
     "semver": "^7.1.2",

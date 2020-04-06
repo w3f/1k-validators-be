@@ -55,6 +55,7 @@ export default class Database {
     const newData = Object.assign(oldData, {
       stash,
       sentryId,
+      rank: 2, // FIXME: TEMP patch 1.0.1 - remove this next release
     });
     return this._replaceOne({ name }, newData);
   }
@@ -205,6 +206,10 @@ export default class Database {
 
     // Query by network id because this should be safer than using id.
     let oldData = await this._queryOne({ $or: [ { networkId }, { id } ] });
+    if (!oldData) {
+      logger.info(`No data for node ${networkId} with telemetry id ${id}, cannot report offline.`);
+      return;
+    }
     if (id !== oldData.id) {
       logger.info(`Id mismatch for ${networkId}... still reporting offline.`);
     }

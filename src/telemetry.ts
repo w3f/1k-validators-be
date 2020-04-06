@@ -110,10 +110,10 @@ export default class TelemetryClient {
             logger.info(`Unknown node with ${id} reported offline.`);
           }
 
-          const networkId = details[4];
+          const name = details[0];
 
           logger.info(`(TELEMETRY) Reporting ${details[0]} OFFLINE`);
-          await this.db.reportOffline(id, networkId, now);
+          await this.db.reportOffline(id, name, now);
         }
         break;
     }

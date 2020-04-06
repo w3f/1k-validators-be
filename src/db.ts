@@ -222,7 +222,7 @@ export default class Database {
   }
 
   async reportSentryOnline(name: string, now: number) {
-    logger.info(`(DB::reportSentryOnline) Reporting sentry for ${name} online.`);
+    // logger.info(`(DB::reportSentryOnline) Reporting sentry for ${name} online.`);
 
     const candidateData = await this._queryOne({ name });
     if (candidateData.sentryOnlineSince === 0 || !candidateData.sentryOnlineSince) {
@@ -235,7 +235,7 @@ export default class Database {
   }
 
   async reportSentryOffline(name: string, now: number) {
-    logger.info(`(DB::reportSentryOffline) Reporting sentry for ${name} offline.`);
+    // logger.info(`(DB::reportSentryOffline) Reporting sentry for ${name} offline.`);
 
     const candidateData = await this._queryOne({ name });
      if (candidateData.sentryOfflineSince === 0 || !candidateData.sentryOfflineSince) {
@@ -248,7 +248,7 @@ export default class Database {
   }
 
   async findSentry(sentryId: string): Promise<[boolean, string]> {
-    logger.info(`(DB::findSentry) Looking for the sentry node ${sentryId}`);
+    // logger.info(`(DB::findSentry) Looking for the sentry node ${sentryId}`);
     const allNodes = await this.allNodes();
     const found = allNodes.find((node) => {
       return node.details[4] === sentryId;

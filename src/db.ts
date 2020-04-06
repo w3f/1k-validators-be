@@ -55,7 +55,6 @@ export default class Database {
     const newData = Object.assign(oldData, {
       stash,
       sentryId,
-      rank: 2, // FIXME: TEMP patch 1.0.1 - remove this next release
     });
     return this._replaceOne({ name }, newData);
   }

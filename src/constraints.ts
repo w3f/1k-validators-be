@@ -27,11 +27,6 @@ export class OTV implements Constraints {
     for (const candidate of candidates) {
       const { connectedAt, updated, name, offlineAccumulated, offlineSince, sentryOfflineSince, stash } = candidate;
 
-      // if (connectedAt === 0) {
-      //   logger.info(`${name} has not connected.`);
-      //   continue;
-      // }
-
       // Ensure the candidate is online.
       if (offlineSince !== 0) {
         logger.info(`${name} offline. Offline since ${offlineSince}.`);

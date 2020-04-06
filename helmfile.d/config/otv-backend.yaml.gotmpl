@@ -4,7 +4,7 @@ environment: {{ .Environment.Name }}
 image:
   tag: {{ env "CIRCLE_TAG" }}
 
-config: {{ env "OTV_BACKEND_CONFIG" | default "{}" }}
+secret: {{ env "OTV_BACKEND_SECRET" | default "{}" }}
 
 {{ else }}
 image:

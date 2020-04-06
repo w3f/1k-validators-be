@@ -1,7 +1,8 @@
 node_modules
 yarn-error.log
 package-lock.json
-config.json
+config/main.json
+config/secret.json
 archive
 *.db
 combined.log

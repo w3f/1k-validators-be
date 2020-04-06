@@ -35,9 +35,13 @@ spec:
         volumeMounts:
         - name: data
           mountPath: /data
-        - name: config
-          mountPath: /code/config.json
-          subPath: config.json
+        - name: secret-config
+          mountPath: /code/config/secret.json
+          subPath: secret.json
+          readOnly: true
+        - name: main-config
+          mountPath: /code/config/main.json
+          subPath: main.json
           readOnly: true
       {{- if ne .Values.environment "ci" }}
         resources:
@@ -49,9 +53,12 @@ spec:
             memory: 200Mi
       {{- end }}
       volumes:
-      - name: config
+      - name: secret-config
         secret:
           secretName: {{ .Release.Name }}
+      - name: main-config
+        configMap:
+          name: {{ .Release.Name }}
       {{ if eq .Values.environment "ci" }}
       - name: data
         emptyDir: {}

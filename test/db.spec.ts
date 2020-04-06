@@ -91,7 +91,7 @@ test.serial('reportOffline() reports a node offline', async (t: any) => {
   t.true(nodeOneBefore.onlineSince > 1);
 
   const now = getNow();
-  await db.reportOffline(1, '1', now);
+  await db.reportOffline(1, 'One', now);
 
   const nodeOneAfter = await db.getNode('1');
   t.is(nodeOneAfter.offlineSince, now);

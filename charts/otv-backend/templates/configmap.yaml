@@ -127,7 +127,7 @@ data:
                 "sentryId": "QmQVH9XE6nfzeWvNLy4kFRAvxYwmvtpn92ScFmJUoJbHno"
             }
         ],
-        "forceRound": true,
+        "forceRound": false,
         "nominating": true
       },
       "server": {

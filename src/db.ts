@@ -55,7 +55,7 @@ export default class Database {
     const newData = Object.assign(oldData, {
       stash,
       sentryId,
-      rank: 2, // FIXME: TEMP patch 1.0.1 - remove this next release
+      rank: oldData.rank < 2 ? 2 : oldData.rank,
     });
     return this._replaceOne({ name }, newData);
   }
@@ -201,24 +201,24 @@ export default class Database {
     return this._replaceOne({ networkId }, newData);
   }
 
-  async reportOffline(id: number, networkId: string, now: number) {
-    logger.info(`(DB::reportOffline) Reporting node with network id ${networkId} offline.`);
+  async reportOffline(id: number, name: string, now: number) {
+    logger.info(`(DB::reportOffline) Reporting node with network id ${name} offline.`);
 
     // Query by network id because this should be safer than using id.
-    let oldData = await this._queryOne({ $or: [ { networkId }, { id } ] });
+    let oldData = await this._queryOne({ $or: [ { name } ] });
     if (!oldData) {
-      logger.info(`No data for node ${networkId} with telemetry id ${id}, cannot report offline.`);
+      logger.info(`No data for node ${name} with telemetry id ${id}, cannot report offline.`);
       return;
     }
     if (id !== oldData.id) {
-      logger.info(`Id mismatch for ${networkId}... still reporting offline.`);
+      logger.info(`Id mismatch for ${name}... still reporting offline.`);
     }
     const newData = Object.assign(oldData, {
       offlineSince: now,
       onlineSince: 0,
     });
 
-    return this._replaceOne({ networkId }, newData);
+    return this._replaceOne({ name }, newData);
   }
 
   async reportSentryOnline(name: string, now: number) {

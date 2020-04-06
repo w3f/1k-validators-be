@@ -1,0 +1,142 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Values.Namespace }}
+data:
+  main.json: |
+    {
+      "global": {
+        "test": false,
+        "dryRun": false,
+        "wsEndpoint": "wss://kusama-rpc.polkadot.io/"
+      },
+      "constraints": {
+        "skipConnectionTime": true,
+        "skipSentries": false
+      },
+      "db": {
+        "mongo": {
+            "uri": "mongodb://mongodb-replicaset-0.mongodb-replicaset.default.svc.cluster.local,mongodb-replicaset-1.mongodb-replicaset.default.svc.cluster.local:27017/otv?replicaSet=otv",
+            "dbName": "otv",
+            "collection": "otv"
+        }
+      },
+      "matrix": {
+        "enabled": true,
+        "baseUrl": "https://matrix.org",
+        "room": "!mdugGIKqSTweIOpTlA:web3.foundation",
+        "userId": "@1kv-stats:matrix.org"
+      },
+      "scorekeeper": {
+        "candidates": [
+            {
+                "name": "LetzBake!",
+                "stash": "Cp4U5UYg2FaVUpyEtQgfBm9aqge6EEPkJxEFVZFYy7L1AZF",
+                "riotHandle": "@marc1104:matrix.org",
+                "sentryId": "QmdpRp4GZuNhWYKmCHmejrjGJzscgKkGB9KVecoPmPPaKj"
+            },
+            {
+                "name": "🎠 Forbole GP01 🇭🇰",
+                "stash": "D9rwRxuG8xm8TZf5tgkbPxhhTJK5frCJU9wvp59VRjcMkUf",
+                "riotHandle": "@kwunyeung:matrix.org",
+                "sentryId": "QmaqXZfUWezxCSPjCxgwYdqPxknGCrk4fkhquG11ghfxyX"
+            },
+            {
+                "name": "🔱-Masternode24-🔱",
+                "stash": "FyRaMYvPqpNGq6PFGCcUWcJJWKgEz29ZFbdsnoNAczC2wJZ",
+                "riotHandle": "@alexkidd:matrix.org",
+                "sentryId": "QmWKyEyTp8XFJT6rS5hdfUTsJHGV5X66LeXYhbXi6PL5xy"
+            },
+            {
+                "name": "Anonstake",
+                "stash": "J4hAvZoHCviZSoPHoSwLida8cEkZR1NXJcGrcfx9saHTk7D",
+                "riotHandle": "@anon2020:matrix.org",
+                "sentryId": ["QmPr2sykAydTitadF71Td62MZzNnhUC9Cy6JBCk9tNzsVL", "QmQ8dcwPhZ3SA1JhLav9enhQnhJF96CBt8qLsFJLTej8hd"]
+            },
+                {
+                "name": "Anson&Fabio-sv-public-1",
+                "stash": "CmD9vaMYoiKe7HiFnfkftwvhKbxN9bhyjcDrfFRGbifJEG8",
+                "riotHandle": ["@anson:web3.foundation", "@fabio:web3.foundation"],
+                "sentryId": ["Qmf1BCcgXn7gwDoajWJ98hSPv98UbnCzBTvvtcAYoq2Ngo", "QmT4vBTsnqYsV4YxaYzXXuXM7jwdSdM5s9gRcapkJpwwjA"]
+            },
+                {
+                "name": "Cat",
+                "stash": "ErhkFXudde5xXFVMGUtNpiPLvZ9zcvqM3ueRLukDdpjszys",
+                "riotHandle": "@niuniu:matrix.org",
+                "sentryId": "QmQNrdUUfXtX1WERx5yREb5zhcixdeTU2ATygGXJTWeXji"
+            },
+            {
+                "name": "crs",
+                "stash": "Ff65mvwgfQJeCxjq59YZMUzg9HAR4mFVMapvYF4oFMzFP9j",
+                "riotHandle": "crs@crsCR:matrix.org",
+                "sentryId": "QmTjPifFGVY2rRra9Qf1s1Zh9pENT5hiUtr9cmDRqDMYgE"
+            },
+            {
+                "name": "Indigo One",
+                "stash": "EPhtbjecJ9P2SQEGEJ4XmFS4xN7JioBFarSrbqjhj8BuJ2v",
+                "riotHandle": "@shadewolf:matrix.org",
+                "sentryId": "QmSou1yxqBg1dMs1pzvReLjxSHqAWG12KFiryV7rVHaxhB"
+            },
+            {
+                "name": "KIRA Staking",
+                "stash": "HhcrzHdB5iBx823XNfBUukjj4TUGzS9oXS8brwLm4ovMuVp",
+                "riotHandle": "@asmodat:matrix.org",
+                "sentryId": "QmcNbk246iNHeDXFbKz4nNfTfb5od9wTJNo4m3VYFCWVvo"
+            },
+            {
+                "name": "moonlime",
+                "stash": "GCNHHRBtpDcgADCaRPMNNk52JiitGrcv3DMQxwE6owXAfbt",
+                "riotHandle": "@y3v63n:matrix.org",
+                "sentryId": "QmfVcLbfK8mPGb62FNNGXfk1fFiatcofoWeVPucFrGsDnE"
+            },
+            {
+                "name": "Staker_Space-sv-validator-0",
+                "stash": "Eksma7JmWh8DenpNKi2uCavwaKJ9QrJJbtcnmwJr3hbHSmC",
+                "riotHandle": "@gnossienli:matrix.org",
+                "sentryId": "QmVvGZQhxcFjiibG3M1ATLjdaSz5tPwzuvKxUJKySvPcVd"
+            },
+            {
+                "name": "Genesis Lab",
+                "stash": "DuRV4MSm54UoX3MpFe3P7rxjBFLfnKRThxG66s4n3yF8qbJ",
+                "riotHandle": "@i7495:matrix.org",
+                "sentryId": "QmfFnn3WSsHbgBQkfitPvtYoqLfV3are5s45182d6SD1UU"
+            },
+            {
+                "name": "MES-2",
+                "stash": "HZvvFHgPdhDr6DHN43xT1sP5fDyzLDFv5t5xwmXBrm6dusm",
+                "riotHandle": "@aaronschwarz:matrix.org",
+                "sentryId": "Qmc68W2ZMYB6LNbcq5JbABqNTRqqDHK3omMwY7dBrQe5vX"
+            },
+            {
+                "name": "Rick_Sanchez_C137",
+                "stash": "Feu9bCUFaYSbkeqSY485kJjUoizp9CG4z3iSnGMwTqWSLeH",
+                "riotHandle": "@thomas_:matrix.org",
+                "sentryId": "QmRACxebxM9SMv4aq4PzDwhhoweUGCo5kCz8uGnMFC3YfD"
+            },
+            {
+                "name": "WolfEdge-Capital",
+                "stash": "FtcERzFaCxB2ZR17PVeNxjAntfQ8a9KwS5i1bTYGWq15Yab",
+                "riotHandle": "@mohakagr:matrix.org",
+                "sentryId": "QmYTbqqcn6gVuwGhv65nF6o9TX3SoPLKRjcYomnAJL2QZQ"
+            },
+            {
+                "name": "🐑 Hodl_dot_farm 🐑",
+                "stash": "D3bm5eAeiRezwZp4tWTX4sZN3u8nXy2Fo21U59smznYHu3F",
+                "riotHandle": "@hodl_farm:matrix.org",
+                "sentryId": "QmQVH9XE6nfzeWvNLy4kFRAvxYwmvtpn92ScFmJUoJbHno"
+            }
+        ],
+        "forceRound": true,
+        "nominating": true
+      },
+      "server": {
+        "port": 3300
+      },
+      "telemetry": {
+        "chains": [
+            "Kusama"
+        ],
+        "host": "wss://telemetry-backend.w3f.community/feed"
+      }
+    }

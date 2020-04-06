@@ -14,53 +14,12 @@ image:
 certificate:
   enabled: true
 
-config: |
+secret: |
   {
-    "global": {
-        "test": true,
-        "wsEndpoint": "wss://kusama-rpc.polkadot.io/"
-    },
-    "constraints": {
-        "skipConnections": false
-    },
-    "db": {
-        "migrate": false,
-        "mongo": {
-            "uri": "mongodb://mongodb-replicaset-0.mongodb-replicaset.default.svc.cluster.local,mongodb-replicaset-1.mongodb-replicaset.default.svc.cluster.local:27017/otv?replicaSet=otv",
-            "dbName": "otv",
-            "collection": "otv"
-        },
-        "storageFile": "data/validator_one.db"
-    },
     "matrix": {
-        "enabled": false,
-        "accessToken": "xxxxx",
-        "baseUrl": "https://matrix.org",
-        "room": "!xxxxx:web3.foundation",
-        "userId": "@1kv-stats:matrix.org"
+        "accessToken": "xxxxx"
     },
     "scorekeeper": {
-        "candidates": [
-            {
-                "name": "Alice",
-                "stash": "5GNJqTPyNqANBkUVMN1LPPrxXnFouWXoe2wNSmmEoLctxiZY"
-            },
-            {
-                "name": "Bob",
-                "stash": "5HpG9w8EBLe5XCrbczpwq5TSXvedjrBGCwqxK1iQ7qUsSWFc"
-            }
-        ],
-        "nominators": [],
-        "forceRound": true,
-        "nominating": true
-    },
-    "server": {
-        "port": 3300
-    },
-    "telemetry": {
-        "chains": [
-            "Local Testnet"
-        ],
-        "host": "ws://172.28.1.3:8000/feed"
+        "nominators": []
     }
   }

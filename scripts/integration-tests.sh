@@ -15,9 +15,9 @@ teardown() {
 }
 
 main(){
-    if [ -z "$KEEP_W3F_OTV_BACKEND" ]; then
-        trap teardown EXIT
-    fi
+    #if [ -z "$KEEP_W3F_OTV_BACKEND" ]; then
+    #    trap teardown EXIT
+    #fi
 
     /scripts/build-helmfile.sh
 

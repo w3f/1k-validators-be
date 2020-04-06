@@ -1,6 +1,7 @@
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import { CronJob } from 'cron';
 import * as fs from 'fs';
+import path from 'path';
 import program, { Command } from 'commander';
 
 import Database from './db';
@@ -22,6 +23,20 @@ const loadConfig = (configPath: string) => {
   return JSON.parse(conf);
 }
 
+const loadConfigDir = (configDir: string) => {
+  const secretPath = path.join(configDir, 'secret.json');
+  const secretConf = loadConfig(secretPath);
+
+  const mainPath = path.join(configDir, 'main.json');
+  const mainConf = loadConfig(mainPath);
+
+  // FIXME: Object.assign overwrites existing properties
+  mainConf.matrix.accessToken = secretConf.matrix.accessToken;
+  mainConf.scorekeeper.nominators = secretConf.scorekeeper.nominators;
+
+  return mainConf;
+}
+
 const createApi = (wsEndpoint: string): Promise<ApiPromise> => {
   return ApiPromise.create({
     provider: new WsProvider(wsEndpoint),
@@ -35,7 +50,7 @@ const catchAndQuit = async (fn: any) => {
 }
 
 const start = async (cmd: Command) => {
-  const config = loadConfig(cmd.config);
+  const config = loadConfigDir(cmd.config);
 
   logger.info(`Starting the backend services.`);
   logger.info(`\nStart-up mem usage ${JSON.stringify(process.memoryUsage())}\n`);
@@ -123,7 +138,7 @@ const start = async (cmd: Command) => {
 }
 
 program
-  .option('--config <file>', 'The path to the config file.', 'config.json')
+  .option('--config <directory>', 'The path to the config directory.', 'config')
   .action((cmd: Command) => catchAndQuit(start(cmd)));
 
 

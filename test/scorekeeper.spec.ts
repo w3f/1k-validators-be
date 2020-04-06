@@ -101,7 +101,6 @@ test('addPoint() and dockPoints() works', async (t: any) => {
 	const dataAgain = await db.getValidator('stash0');
 	t.is(dataAgain.rank, 2);
 	t.is(dataAgain.misbehaviors, 1);
-	t.true(before <= dataAgain.goodSince);
 });
 
 test('It gets the right results from _doNominations()', async (t: any) => {

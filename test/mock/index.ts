@@ -109,7 +109,7 @@ export const MockDb = {
 				name: 'Alice',
 				stash: '5GNJqTPyNqANBkUVMN1LPPrxXnFouWXoe2wNSmmEoLctxiZY',
 				offlineSince: 0,
-				goodSince: new Date().getTime() - 8 * 24 * 60 * 60 * 1000,
+				onlineSince: new Date().getTime() - 8 * 24 * 60 * 60 * 1000,
 				offlineAccumulated: 0,
 				connectedAt: 0,
 				nominatedAt: 1,
@@ -118,7 +118,7 @@ export const MockDb = {
 				name: 'Bob',
 				stash: '5HpG9w8EBLe5XCrbczpwq5TSXvedjrBGCwqxK1iQ7qUsSWFc',
 				offlineSince: 0,
-				goodSince: new Date().getTime() - 8 * 24 * 60 * 60 * 1000,
+				onlineSince: new Date().getTime() - 8 * 24 * 60 * 60 * 1000,
 				offlineAccumulated: 0,
 				connectedAt: 1,
 				nominatedAt: 0,
@@ -136,22 +136,23 @@ export const MockDb = {
 				name: 'Eve',
 				stash: '5HpG9w8EBLe5XCrbczpwq5TSXvedjrBGCwqxK1iQ7qUsSWFc',
 				offlineSince: 0,
-				goodSince: new Date().getTime(), // filtered because not good for a week
+				onlineSince: new Date().getTime(), // filtered because not good for a week
 			},
 			{
 				name: 'Ferdie',
 				stash: '5HpG9w8EBLe5XCrbczpwq5TSXvedjrBGCwqxK1iQ7qUsSWFc',
 				offlineSince: 0,
-				goodSince: new Date().getTime() - 8 * 24 * 60 * 60 * 1000,
+				onlineSince: new Date().getTime() - 8 * 24 * 60 * 60 * 1000,
 				offlineAccumulated: 0.021 * 7*24*60*60*1000, // filtered due to too much
 			},
 			{
 				name: 'George',
 				stash: '4HpG9w8EBLe5XCrbczpwq5TSXvedjrBGCwqxK1iQ7qUsSWFc', // doesn't have commission set right
 				offlineSince: 0,
-				goodSince: new Date().getTime() - 8 * 24 * 60 * 60 * 1000,
+				onlineSince: new Date().getTime() - 8 * 24 * 60 * 60 * 1000,
 				offlineAccumulated: 0,
 			},
 		]
-  },
+	},
+	getCurrentTargets: () => [],
 }

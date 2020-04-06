@@ -25,12 +25,7 @@ export class OTV implements Constraints {
 
     let validCandidates = [];
     for (const candidate of candidates) {
-      const { connectedAt, goodSince, name, offlineAccumulated, offlineSince, sentryOfflineSince, stash } = candidate;
-
-      // if (connectedAt === 0) {
-      //   logger.info(`${name} has not connected.`);
-      //   continue;
-      // }
+      const { connectedAt, updated, name, offlineAccumulated, offlineSince, sentryOfflineSince, stash } = candidate;
 
       // Ensure the candidate is online.
       if (offlineSince !== 0) {
@@ -45,9 +40,14 @@ export class OTV implements Constraints {
       }
 
       // Only take nodes that have been upgraded to latest versions.
+      if (!updated) {
+        logger.info(`${name} is not running the latest client code.`);
+        continue;
+      }
+
       if (!this.skipConnectionTime) {
         const now = new Date().getTime();
-        if (now - goodSince < WEEK) {
+        if (now - connectedAt < WEEK) {
           logger.info(`${name} hasn't been connected for minimum length.`);
           continue;
         }

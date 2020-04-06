@@ -37,10 +37,11 @@ export default class Database {
         networkId: null,
         details: [],
         connectedAt: 0,
-        goodSince: 0,
         nominatedAt: 0,
         offlineSince: 0,
         offlineAccumulated: 0,
+        onlineSince: 0,
+        updated: false,
         rank: 0,
         misbehaviors: 0,
         stash,
@@ -55,7 +56,7 @@ export default class Database {
       stash,
       sentryId,
     });
-    return this._update({ name }, newData);
+    return this._replaceOne({ name }, newData);
   }
 
   /// Entry point for entering a new nominator to the db.
@@ -80,7 +81,7 @@ export default class Database {
       lastSeen: now,
     });
 
-    return this._update({ nominator: address }, newData);
+    return this._replaceOne({ nominator: address }, newData);
   }
 
   async newTargets(address: Address, targets: Stash[], now: number): Promise<boolean> {
@@ -93,7 +94,7 @@ export default class Database {
       lastSeen: now,
     });
 
-    return this._update({ nominator: address }, newData);
+    return this._replaceOne({ nominator: address }, newData);
   }
 
   async getCurrentTargets(address: Address): Promise<Stash[]> {
@@ -114,7 +115,7 @@ export default class Database {
     const newData = Object.assign(oldData, {
       nominatedAt: now,
     });
-    return this._update({ stash }, newData);
+    return this._replaceOne({ stash }, newData);
   }
 
   async setTarget(nominator: Address, stash: Stash, now: number) {
@@ -128,7 +129,7 @@ export default class Database {
     });
 
     logger.info(`(DB::setTarget) OLDDATA ${JSON.stringify(oldData)} | NEWDATA ${JSON.stringify(newData)} | nominator ${nominator} | stash = ${stash}`);
-    return this._update({ nominator }, newData);
+    return this._replaceOne({ nominator }, newData);
   }
 
   /// Entry point for reporting a node is online.
@@ -139,84 +140,80 @@ export default class Database {
     logger.info(`(DB::reportOnline) Reporting ${name} online.`)
 
     // Get the node by networkId.
-    const oldData = await this._queryOne({ networkId });
+    const oldData: CandidateData = await this._queryOne({ $or : [ { networkId }, { name } ] } );
 
     if (!oldData) {
-      // If we haven't seen the node before, maybe we've registered it
-      // by name already...
-      const nameData = await this._queryOne({ name });
-      if (!nameData) {
-        // Truly a new node.
-        const data = {
-          id,
-          networkId,
-          name,
-          details,
-          connectedAt: now,
-          nominatedAt: 0,
-          goodSince: now,
-          offlineSince: 0,
-          offlineAccumulated: 0,
-          rank: 0,
-          misbehaviors: 0,
-          stash: null,
-          sentryOfflineSince: 0,
-          sentryOnlineSince: 0,
-        };
+      // A new node, not a candidate.
+      const data: CandidateData = {
+        id,
+        networkId,
+        name,
+        details,
+        connectedAt: now,
+        nominatedAt: 0,
+        offlineSince: 0,
+        offlineAccumulated: 0,
+        onlineSince: now,
+        updated: false,
+        rank: 0,
+        misbehaviors: 0,
+        stash: null,
+        sentryId: null,
+        sentryOfflineSince: 0,
+        sentryOnlineSince: 0,
+      }
 
-        return this._insert(data); 
-      } else {
-        // Already a candidate, record the node data now.
-        const data = Object.assign(nameData, {
-          id,
-          networkId,
-          details,
-          connectedAt: now,
-          nominatedAt: 0,
-          goodSince: now,
-          offlineSince: 0,
-          offlineAccumulated: 0,
-          rank: 0,
-          misbehaviors: 0,
-        });
-        return this._update({ name: nameData.name }, data);
-      }
-    } else {
-      /// This is a server restart ...
-      if (Number(oldData.offlineSince) === 0) {
-        return;
-      }
-      /// We've seen the node before, take stock of any offline time.
+      return this._insert(data);
+    }
+
+    if (!oldData.networkId) {
+      // It's a candidate that hasn't been registered on the network before.
+      const data = Object.assign(oldData, {
+        id,
+        networkId,
+        details,
+        connectedAt: now,
+        onlineSince: now,
+      });
+      return this._replaceOne({ name }, data);
+    }
+
+    // Copies the object.
+    let newData = JSON.parse(JSON.stringify(oldData));
+    if (oldData.offlineSince !== 0) {
+      // Report a previously offline node online again.
       const timeOffline = now - Number(oldData.offlineSince);
       const accumulated = Number(oldData.offlineAccumulated) + timeOffline;
-      const newData = Object.assign(oldData, {
-        // Should be the same in most scenarios but add it here just in case.
-        id,
-        // In case a new name is being used for the same network id.
-        name,
-        // Need to update details to see if it's updated it's node.
-        details,
-        offlineSince: 0,
-        offlineAccumulated: accumulated,
-        goodSince: now,
-      });
-      return this._update({ networkId }, newData);
+
+      newData.offlineSince = 0;
+      newData.offlineAccumulated = accumulated;
+      newData.onlineSince = now;
     }
+    if (oldData.networkId !== networkId) {
+      // It changed its networkID too.
+      newData.networkId = networkId;
+      newData.details = details;
+      newData.id = id;
+      return this._replaceOne({ name }, newData);
+    }
+
+    return this._replaceOne({ networkId }, newData);
   }
 
   async reportOffline(id: number, networkId: string, now: number) {
     logger.info(`(DB::reportOffline) Reporting node with network id ${networkId} offline.`);
+
     // Query by network id because this should be safer than using id.
-    const oldData = await this._queryOne({ networkId });
+    let oldData = await this._queryOne({ $or: [ { networkId }, { id } ] });
     if (id !== oldData.id) {
       logger.info(`Id mismatch for ${networkId}... still reporting offline.`);
     }
     const newData = Object.assign(oldData, {
       offlineSince: now,
-      goodSince: 0,
+      onlineSince: 0,
     });
 
-    return this._update({ networkId }, newData);
+    return this._replaceOne({ networkId }, newData);
   }
 
   async reportSentryOnline(name: string, now: number) {
@@ -228,7 +225,7 @@ export default class Database {
         sentryOnlineSince: now,
         sentryOfflineSince: 0,
       });
-      return this._update({ name }, newData);
+      return this._replaceOne({ name }, newData);
     }
   }
 
@@ -241,7 +238,7 @@ export default class Database {
         sentryOnlineSince: 0,
         sentryOfflineSince: now,
       });
-      return this._update({ name }, newData);
+      return this._replaceOne({ name }, newData);
     }
   }
 
@@ -264,19 +261,19 @@ export default class Database {
   async nodeGood(networkId: string, now: number) {
     const oldData = await this._queryOne({ networkId });
     const newData = Object.assign(oldData, {
-      goodSince: now,
+      updated: true,
     });
 
-    return this._update({ networkId }, newData);
+    return this._replaceOne({ networkId }, newData);
   }
 
   async nodeNotGood(networkId: string) {
     const oldData = await this._queryOne({ networkId });
     const newData = Object.assign(oldData, {
-      goodSince: 0,
+      updated: false,
     });
 
-    return this._update({ networkId }, newData);
+    return this._replaceOne({ networkId }, newData);
   }
 
   /**
@@ -320,7 +317,7 @@ export default class Database {
       logger.info(`Could not find validator ${stash}`);
       return this._insert({ data });
     }
-    return this._update({ stash }, data);
+    return this._replaceOne({ stash }, data);
   }
 
   async allValidators() {
@@ -350,7 +347,7 @@ export default class Database {
       const newData = Object.assign(node, {
         offlineAccumulated: 0,
       });
-      this._update({ id: node.id }, newData);
+      this._replaceOne({ id: node.id }, newData);
     }
     return true;
   }
@@ -367,7 +364,7 @@ export default class Database {
         stash: null
       });
       logger.info(`\nIn clearCandidates mem usage ${JSON.stringify(process.memoryUsage())}`);
-      await this._update({ name: node.name }, newData);
+      await this._replaceOne({ name: node.name }, newData);
     }
     return true;
   }
@@ -386,25 +383,22 @@ export default class Database {
     });
   }
 
-  /// Update an item in the datastore.
-  private _update(item: object, data: any): Promise<boolean> {
-    // To satisfy mongo.
-    if (data._id) delete data._id;
-
+  /// Get an item from the datastore.
+  private _queryOne(query: object): Promise<any> {
     return new Promise((resolve, reject) => {
-      this._db.updateOne(item, { $set: data }, (err: any) => {
+      this._db.findOne(query, (err: any, doc: any) => {
         if (err) reject(err);
-        resolve(true);
+        resolve(doc);
       });
     });
   }
 
-  /// Get an item from the datastore.
-  private _queryOne(item: object): Promise<any> {
+  private _replaceOne(filter: any, replacement: any): Promise<any> {
+    if (replacement._id) delete replacement._id;
     return new Promise((resolve, reject) => {
-      this._db.find(item).toArray((err: any, docs: any) => {
+      this._db.replaceOne(filter, replacement, (err, doc) => {
         if (err) reject(err);
-        resolve(docs[0]);
+        resolve(doc);
       });
     });
   }

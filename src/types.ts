@@ -21,10 +21,13 @@ export type CandidateData = {
   name: string,
   details: any[],
   connectedAt: number,
-  goodSince: number,
   nominatedAt: number,
   offlineSince: number,
   offlineAccumulated: number,
+  // Records when a node came online.
+  onlineSince: number,
+  // Records if a node is running the latest code.
+  updated: boolean,
   rank: number,
   misbehaviors: number,
   /// This will only be null for nodes that are connected to 

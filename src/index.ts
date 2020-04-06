@@ -89,6 +89,8 @@ const start = async (cmd: Command) => {
     await monitor.ensureUpgrades();
   });
   monitorCron.start();
+  await monitor.getLatestTaggedRelease();
+  await monitor.ensureUpgrades();
 
   const sentryMonitor = new CronJob('30 * * * * *', async () => {
     logger.info(`\nsentryMonitor mem usage ${JSON.stringify(process.memoryUsage())}\n`);
@@ -142,5 +144,5 @@ program
   .action((cmd: Command) => catchAndQuit(start(cmd)));
 
 
-program.version('0.2.5');
+program.version('1.0.0');
 program.parse(process.argv);

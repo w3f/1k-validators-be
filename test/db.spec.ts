@@ -72,7 +72,8 @@ test.serial('reportOnline() reports a node online', async (t: any) => {
   t.is(thisNode.name, 'One');
   t.is(thisNode.connectedAt, now);
   t.is(thisNode.nominatedAt, 0);
-  t.is(thisNode.goodSince, now);
+  t.is(thisNode.onlineSince, now);
+  t.false(thisNode.updated);
   t.is(thisNode.offlineSince, 0);
   t.is(thisNode.offlineAccumulated, 0);
   t.is(thisNode.rank, 0);
@@ -87,14 +88,14 @@ test.serial('reportOffline() reports a node offline', async (t: any) => {
   t.is(nodeOneBefore.networkId, '1');
   t.is(nodeOneBefore.offlineSince, 0);
   t.is(nodeOneBefore.offlineAccumulated, 0);
-  t.true(nodeOneBefore.goodSince > 1);
+  t.true(nodeOneBefore.onlineSince > 1);
 
   const now = getNow();
   await db.reportOffline(1, '1', now);
 
   const nodeOneAfter = await db.getNode('1');
   t.is(nodeOneAfter.offlineSince, now);
-  t.is(nodeOneAfter.goodSince, 0);
+  t.is(nodeOneAfter.onlineSince, 0);
 });
 
 test.serial('reportOnline() records the accumulated time', async (t: any) => {
@@ -102,7 +103,7 @@ test.serial('reportOnline() records the accumulated time', async (t: any) => {
 
   const nodeOneOffline = await db.getNode('1');
   t.true(nodeOneOffline.offlineSince > 0);
-  t.is(nodeOneOffline.goodSince, 0);
+  t.is(nodeOneOffline.onlineSince, 0);
 
   const now = getNow();
   await db.reportOnline(1, ['','','','','1'], now);
@@ -110,7 +111,7 @@ test.serial('reportOnline() records the accumulated time', async (t: any) => {
   const nodeOneOnline = await db.getNode('1');
   t.is(nodeOneOnline.offlineSince, 0);
   t.is(nodeOneOnline.offlineAccumulated, now - nodeOneOffline.offlineSince);
-  t.is(nodeOneOnline.goodSince, now);
+  t.is(nodeOneOnline.onlineSince, now);
 });
 
 test.serial('addCandidate() adds candidate after node is online', async (t: any) => {
@@ -123,7 +124,7 @@ test.serial('addCandidate() adds candidate after node is online', async (t: any)
   await db.reportOnline(2, ['nodeTwo', '', '', '', '2'], now);
 
   const nodeTwoAfter = await db.getNode('2');
-  t.is(nodeTwoAfter.goodSince, now);
+  t.is(nodeTwoAfter.onlineSince, now);
   t.is(nodeTwoAfter.stash, null);
 
   await db.addCandidate('nodeTwo', 'stashTwo');
@@ -131,6 +132,13 @@ test.serial('addCandidate() adds candidate after node is online', async (t: any)
   const nodeTwoLatest = await db.getNode('2');
   t.is(nodeTwoLatest.stash, 'stashTwo');
 });
+
+test.serial('getValidator() gets a candidate by using stash', async (t: any) => {
+  const { db } = t.context;
+
+  const candidate = await db.getValidator('stashTwo');
+  t.is(candidate.name, 'nodeTwo');
+})
 
 test.serial('addNominator() adds a new nominator to the db', async (t: any) => {
   const { db } = t.context;

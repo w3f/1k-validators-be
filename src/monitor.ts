@@ -73,18 +73,25 @@ export default class Monitor {
 
       const nodeVersion = semver.coerce(version);
       const latestVersion = semver.clean(this.latestTaggedRelease.name);
+      logger.info(`${name} | version: ${nodeVersion} latest: ${latestVersion}`);
 
       const isUpgraded = semver.gte(nodeVersion, latestVersion);
 
-      if (isUpgraded) {
-        if (!node.updated) {
+      if (isUpgraded && !node.updated) {
+        await this.db.reportUpdated(name, now);
+        continue;
+      }
+
+      if (now < this.latestTaggedRelease.publishedAt + this.grace) {
+        // Still in grace, but check if the node is only one patch version away.
+        const incremented = semver.inc(nodeVersion, "patch");
+        if (semver.gte(incremented, latestVersion)) {
           await this.db.reportUpdated(name, now);
-        }
-      } else {
-        if (now > this.latestTaggedRelease!.publishedAt + this.grace) {
-          await this.db.reportNotUpdated(name);
+          continue;
         }
       }
+
+      await this.db.reportNotUpdated(name);
     }
   }
 

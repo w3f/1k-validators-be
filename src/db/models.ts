@@ -12,37 +12,37 @@ const CandidateSchema = new Schema({
   // Stores the version string directly.
   version: String,
   // The origin of the node's connection time (timestamp in ms).
-  discoveredAt: Number,
+  discoveredAt: { type: Number, default: 0 },
   // The last timestamp the node was nominated (if ever).
-  nominatedAt: Number,
+  nominatedAt: { type: Number, default: 0 },
   // The timestamp for when the node went offline (if ever).
-  offlineSince: Number,
+  offlineSince: { type: Number, default: 0 },
   // The cumulative duration of offline time (in ms).
-  offlineAccumulated: Number,
+  offlineAccumulated: { type: Number, default: 0 },
   // The timestamp for the most recent time the node has come online.
-  onlineSince: Number,
+  onlineSince: { type: Number, default: 0 },
   // Whether it is running the latest client code.
-  updated: Boolean,
+  updated: { type: Boolean, default: false },
   // The number of nomination rounds the node has done well.
-  rank: Number,
+  rank: { type: Number, default: 0 },
   // The number of times that the node has been found to have done something
   // wrong during a nomination round.
-  faults: Number,
+  faults: { type: Number, default: 0 },
   // The stash account of the candidate. May be empty if no stash is registered.
   stash: String,
   // The network identifier for the sentry node attached to this node.
   sentryId: [],
   // Timestamp for when the sentry was found online (zero if currently offline).
-  sentryOnlineSince: Number,
+  sentryOnlineSince: { type: Number, default: 0 },
   // Timestamp for when the sentry was found offline (zero if currently online).
-  sentryOfflineSince: Number,
+  sentryOfflineSince: { type: Number, default: 0 },
 });
 
 const NominatorSchema = new Schema({
   address: String,
   current: [],
-  lastNomination: Number,
-  createdAt: Number,
+  lastNomination: { type: Number, default: 0 },
+  createdAt: { type: Number, default: 0 },
 });
 
 export { CandidateSchema, NominatorSchema };

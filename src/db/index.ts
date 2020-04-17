@@ -234,14 +234,43 @@ export default class Db {
   }
 
   async findSentry(sentryId: string): Promise<[boolean, string]> {
-    return [true, ""];
+    const nodes = await this.allNodes();
+    const found = nodes.find((node) => {
+      return node.networkId === sentryId;
+    });
+
+    if (found) {
+      const { offlineSince, name } = found;
+      return [offlineSince === 0, name];
+    }
+    return [false, "Did not find sentry in all nodes recorded."];
   }
 
   async reportUpdated(name: string, now: number): Promise<boolean> {
+    await this.candidateModel
+      .findOneAndUpdate(
+        {
+          name,
+        },
+        {
+          updated: true,
+        }
+      )
+      .exec();
     return true;
   }
 
   async reportNotUpdated(name: string): Promise<boolean> {
+    await this.candidateModel
+      .findOneAndUpdate(
+        {
+          name,
+        },
+        {
+          updated: false,
+        }
+      )
+      .exec();
     return true;
   }
 

@@ -1,18 +1,18 @@
-import { Octokit } from '@octokit/rest';
-import semver from 'semver';
+import { Octokit } from "@octokit/rest";
+import semver from "semver";
 
-import Database from './db';
-import logger from './logger';
+import Database from "./db";
+import logger from "./logger";
 
 type TaggedRelease = {
-  name: string,
-  publishedAt: number,
-}
+  name: string;
+  publishedAt: number;
+};
 
 export default class Monitor {
   public grace: number;
-  public latestTaggedRelease: TaggedRelease|null = null;
-  
+  public latestTaggedRelease: TaggedRelease | null = null;
+
   private db: Database;
   private ghApi: any;
 
@@ -23,23 +23,26 @@ export default class Monitor {
   }
 
   public async getLatestTaggedRelease() {
-    logger.info('(Monitor::getLatestTaggedRelease) Fetching latest release');
-    
+    logger.info("(Monitor::getLatestTaggedRelease) Fetching latest release");
+
     const tags = await this.ghApi.repos.listTags({
-      owner: 'paritytech',
-      repo: 'polkadot',
+      owner: "paritytech",
+      repo: "polkadot",
     });
 
     const tagName = tags.data[0].name;
 
-    if (this.latestTaggedRelease && tagName === this.latestTaggedRelease!.name) {
-      logger.info('(Monitor::getLatestTaggedRelease) No new release found');
+    if (
+      this.latestTaggedRelease &&
+      tagName === this.latestTaggedRelease!.name
+    ) {
+      logger.info("(Monitor::getLatestTaggedRelease) No new release found");
       return;
     }
-    
+
     const release = await this.ghApi.repos.getReleaseByTag({
-      owner: 'paritytech',
-      repo: 'polkadot',
+      owner: "paritytech",
+      repo: "polkadot",
       tag: tagName,
     });
 
@@ -50,7 +53,9 @@ export default class Monitor {
       publishedAt,
     };
 
-    logger.info(`Latest release updated: ${tagName} | Published at: ${publishedAt}`);
+    logger.info(
+      `Latest release updated: ${tagName} | Published at: ${publishedAt}`
+    );
   }
 
   /// Ensures that nodes have upgraded within a `grace` period.
@@ -86,7 +91,7 @@ export default class Monitor {
     const now = new Date().getTime();
 
     if (!candidates.length) {
-      logger.info('(Monitor::ensureSentryOnline) No candidates in DB.');
+      logger.info("(Monitor::ensureSentryOnline) No candidates in DB.");
       return;
     }
 

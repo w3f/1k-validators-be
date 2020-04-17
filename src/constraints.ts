@@ -1,13 +1,15 @@
-import { WEEK, TEN_PERCENT, FIFTY_KSM } from './constants';
-import logger from './logger';
-import { CandidateData } from './types';
-import { valid } from 'semver';
-import ChainData from './chaindata';
-import { ApiPromise } from '@polkadot/api';
+import { WEEK, TEN_PERCENT, FIFTY_KSM } from "./constants";
+import logger from "./logger";
+import { CandidateData } from "./types";
+import { valid } from "semver";
+import ChainData from "./chaindata";
+import { ApiPromise } from "@polkadot/api";
 
 export interface Constraints {
   getValidCandidates(candidates: any[]): Promise<any[]>;
-  processCandidates(candidates: Set<CandidateData>): Promise<[Set<any>,Set<any>]>;
+  processCandidates(
+    candidates: Set<CandidateData>
+  ): Promise<[Set<any>, Set<any>]>;
 }
 
 export class OTV implements Constraints {
@@ -15,17 +17,26 @@ export class OTV implements Constraints {
   private skipConnectionTime: boolean;
   private skipSentry: boolean;
 
-  constructor(api: ApiPromise, skipConnectionTime: boolean = false, skipSentry: boolean = false) {
+  constructor(api: ApiPromise, skipConnectionTime = false, skipSentry = false) {
     this.chaindata = new ChainData(api);
     this.skipConnectionTime = skipConnectionTime;
     this.skipSentry = skipSentry;
   }
 
-  async getValidCandidates(candidates: CandidateData[]): Promise<CandidateData[]> {
-
+  async getValidCandidates(
+    candidates: CandidateData[]
+  ): Promise<CandidateData[]> {
     let validCandidates = [];
     for (const candidate of candidates) {
-      const { connectedAt, updated, name, offlineAccumulated, offlineSince, sentryOfflineSince, stash } = candidate;
+      const {
+        connectedAt,
+        updated,
+        name,
+        offlineAccumulated,
+        offlineSince,
+        sentryOfflineSince,
+        stash,
+      } = candidate;
 
       // Ensure the candidate is online.
       if (offlineSince !== 0) {
@@ -35,7 +46,9 @@ export class OTV implements Constraints {
 
       // Ensure the sentry is online.
       if (sentryOfflineSince !== 0 && !this.skipSentry) {
-        logger.info(`${name} sentry is offline. Offline since ${sentryOfflineSince}.`);
+        logger.info(
+          `${name} sentry is offline. Offline since ${sentryOfflineSince}.`
+        );
         continue;
       }
 
@@ -56,7 +69,11 @@ export class OTV implements Constraints {
       // Ensures node has 98% up time.
       const totalOffline = offlineAccumulated / WEEK;
       if (totalOffline > 0.02) {
-        logger.info(`${name} has been offline ${offlineAccumulated / 1000 / 60} minutes this week.`);
+        logger.info(
+          `${name} has been offline ${
+            offlineAccumulated / 1000 / 60
+          } minutes this week.`
+        );
       }
 
       const [commission, err] = await this.chaindata.getCommission(stash);
@@ -65,7 +82,9 @@ export class OTV implements Constraints {
         continue;
       }
       if (commission > TEN_PERCENT) {
-        logger.info(`${name} commission is set higher than ten percent: ${commission}`);
+        logger.info(
+          `${name} commission is set higher than ten percent: ${commission}`
+        );
         continue;
       }
 
@@ -75,7 +94,11 @@ export class OTV implements Constraints {
         continue;
       }
       if (bondedAmt < FIFTY_KSM) {
-        logger.info(`${name} has less then fifty KSM bonded: ${bondedAmt / 10**12} KSM is bonded.`);
+        logger.info(
+          `${name} has less then fifty KSM bonded: ${
+            bondedAmt / 10 ** 12
+          } KSM is bonded.`
+        );
         continue;
       }
 
@@ -85,22 +108,27 @@ export class OTV implements Constraints {
     // When valid candidates are collected, now it sorts them in priority.
 
     // Sort by earliest connected.
-    validCandidates = validCandidates.sort((a: CandidateData, b: CandidateData) => {
-      return a.connectedAt - b.connectedAt;
-    });
+    validCandidates = validCandidates.sort(
+      (a: CandidateData, b: CandidateData) => {
+        return a.connectedAt - b.connectedAt;
+      }
+    );
 
     // Sort so the ones who nominated most recently are less prioritized.
-    validCandidates = validCandidates.sort((a: CandidateData, b: CandidateData) => {
-      return a.nominatedAt - b.nominatedAt;
-    });
+    validCandidates = validCandidates.sort(
+      (a: CandidateData, b: CandidateData) => {
+        return a.nominatedAt - b.nominatedAt;
+      }
+    );
 
     return validCandidates;
   }
 
   /// At the end of a nomination round this is the logic that separates the
   /// candidates that did good from the ones that did badly.
-  async processCandidates(candidates: Set<CandidateData>): Promise<[Set<CandidateData>, Set<CandidateData>]> {
-    
+  async processCandidates(
+    candidates: Set<CandidateData>
+  ): Promise<[Set<CandidateData>, Set<CandidateData>]> {
     const [activeEraIndex, eraErr] = await this.chaindata.getActiveEraIndex();
     if (eraErr) {
       throw eraErr;
@@ -108,7 +136,7 @@ export class OTV implements Constraints {
 
     const good: Set<CandidateData> = new Set();
     const bad: Set<CandidateData> = new Set();
-    
+
     for (const candidate of candidates) {
       const { name, offlineSince, stash } = candidate;
       /// Ensure the commission wasn't raised/
@@ -121,7 +149,9 @@ export class OTV implements Constraints {
       }
 
       if (commission > TEN_PERCENT) {
-        logger.info(`${name} found commission higher than ten percent: ${commission}`);
+        logger.info(
+          `${name} found commission higher than ten percent: ${commission}`
+        );
         bad.add(candidate);
         continue;
       }
@@ -143,7 +173,11 @@ export class OTV implements Constraints {
         continue;
       }
 
-      const [hasSlashes, err3] = await this.chaindata.hasUnappliedSlashes(activeEraIndex-2, activeEraIndex, stash);
+      const [hasSlashes, err3] = await this.chaindata.hasUnappliedSlashes(
+        activeEraIndex - 2,
+        activeEraIndex,
+        stash
+      );
       if (err3) {
         logger.info(`${name} ${err3}`);
         bad.add(candidate);

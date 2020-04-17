@@ -1,13 +1,13 @@
 import { ApiPromise } from "@polkadot/api";
-import { CronJob } from 'cron';
+import { CronJob } from "cron";
 
-import ChainData from './chaindata';
-import Nominator from './nominator';
-import { Constraints, OTV } from './constraints';
+import ChainData from "./chaindata";
+import Nominator from "./nominator";
+import { Constraints, OTV } from "./constraints";
 
-import logger from './logger';
-import { CandidateData, Stash } from './types';
-import { getNow } from './util';
+import logger from "./logger";
+import { CandidateData, Stash } from "./types";
+import { getNow } from "./util";
 
 type NominatorGroup = any[];
 
@@ -17,11 +17,11 @@ export default class ScoreKeeper {
   public chaindata: ChainData;
   public config: any;
   private constraints: Constraints;
-  public currentEra: number = 0;
+  public currentEra = 0;
   public currentTargets: string[];
   public db: any;
   // Keeps track of a starting era for a round.
-  public startEra: number = 0;
+  public startEra = 0;
 
   public nominatorGroups: Array<NominatorGroup> = [];
 
@@ -31,7 +31,11 @@ export default class ScoreKeeper {
     this.config = config;
     this.bot = bot;
     this.chaindata = new ChainData(this.api);
-    this.constraints = new OTV(this.api, this.config.constraints.skipConnectionTime, this.config.constraints.skipSentries);
+    this.constraints = new OTV(
+      this.api,
+      this.config.constraints.skipConnectionTime,
+      this.config.constraints.skipSentries
+    );
   }
 
   async botLog(msg: string) {
@@ -41,12 +45,17 @@ export default class ScoreKeeper {
   }
 
   /// Spawns a new nominator.
-  _spawn(seed: string, maxNominations: number = 1): Nominator {
-    return new Nominator(this.api, this.db, { seed, maxNominations }, this.botLog.bind(this))
+  _spawn(seed: string, maxNominations = 1): Nominator {
+    return new Nominator(
+      this.api,
+      this.db,
+      { seed, maxNominations },
+      this.botLog.bind(this)
+    );
   }
 
   async addNominatorGroup(nominatorGroup: NominatorGroup) {
-    let group = [];
+    const group = [];
     for (const nominator of nominatorGroup) {
       const nom = this._spawn(nominator.seed);
       await this.db.addNominator(nom.address);
@@ -63,12 +72,12 @@ export default class ScoreKeeper {
 
     new CronJob(frequency, async () => {
       if (!this.nominatorGroups) {
-        logger.info('No nominators spawned. Skipping round.');
+        logger.info("No nominators spawned. Skipping round.");
         return;
       }
 
       if (!this.config.scorekeeper.nominating) {
-        logger.info('Nominating is disabled in the settings. Skipping round.');
+        logger.info("Nominating is disabled in the settings. Skipping round.");
         return;
       }
 
@@ -78,15 +87,15 @@ export default class ScoreKeeper {
         await this.endRound();
         await this.startRound();
       }
-    }).start(); 
+    }).start();
   }
 
   /// Handles the beginning of a new round.
   async startRound() {
     const now = new Date().getTime();
 
-    // The nominations sent now won't be active until the next era. 
-    this.currentEra = await this._getCurrentEra()+1;
+    // The nominations sent now won't be active until the next era.
+    this.currentEra = (await this._getCurrentEra()) + 1;
 
     logger.info(`New round starting at ${now} for next Era ${this.currentEra}`);
     this.botLog(
@@ -94,20 +103,26 @@ export default class ScoreKeeper {
     );
 
     const allCandidates = await this.db.allCandidates();
-    const validCandidates = await this.constraints.getValidCandidates(allCandidates);
+    const validCandidates = await this.constraints.getValidCandidates(
+      allCandidates
+    );
 
     await this._doNominations(validCandidates, 16, this.nominatorGroups);
   }
 
-  async _doNominations(candidates: CandidateData[], setSize: number, nominatorGroups: NominatorGroup[] = []) {
+  async _doNominations(
+    candidates: CandidateData[],
+    setSize: number,
+    nominatorGroups: NominatorGroup[] = []
+  ) {
     // A "subset" is a group of 16 validators since this is the max that can
     // be nominated by a single account.
-    let subsets = [];
+    const subsets = [];
     for (let i = 0; i < candidates.length; i += setSize) {
       subsets.push(candidates.slice(i, i + setSize));
     }
 
-    let totalTargets = [];
+    const totalTargets = [];
     let count = 0;
     for (const subset of subsets) {
       const targets = subset.map((candidate) => candidate.stash);
@@ -117,15 +132,21 @@ export default class ScoreKeeper {
         // eslint-disable-next-line security/detect-object-injection
         const curNominator = nomGroup[count];
         if (curNominator === undefined) {
-          logger.info('More targets than nominators!');
+          logger.info("More targets than nominators!");
           continue;
         }
-        logger.info(`(SK::_doNominations) targets = ${JSON.stringify(targets)}`);
+        logger.info(
+          `(SK::_doNominations) targets = ${JSON.stringify(targets)}`
+        );
 
         const current = await this.db.getCurrentTargets(curNominator.address);
         if (current.length) {
-          logger.info('Wiping the old targets before making new nominations.')
-          await this.db.newTargets(curNominator.address, [], new Date().getTime());
+          logger.info("Wiping the old targets before making new nominations.");
+          await this.db.newTargets(
+            curNominator.address,
+            [],
+            new Date().getTime()
+          );
         }
 
         await curNominator.nominate(targets, this.config.global.dryRun);
@@ -134,7 +155,11 @@ export default class ScoreKeeper {
     }
 
     this.currentTargets = totalTargets;
-    this.botLog(`Next targets: \n${totalTargets.map((target) => `- ${target}`).join('\n')}`);
+    this.botLog(
+      `Next targets: \n${totalTargets
+        .map((target) => `- ${target}`)
+        .join("\n")}`
+    );
   }
 
   async _getCurrentEra(): Promise<number> {
@@ -147,11 +172,11 @@ export default class ScoreKeeper {
 
   /// Handles the ending of a round.
   async endRound() {
-    logger.info('Ending round');
+    logger.info("Ending round");
     const now = getNow();
 
     /// The targets that have already been processed for this round.
-    let toProcess: Map<Stash, CandidateData> = new Map();
+    const toProcess: Map<Stash, CandidateData> = new Map();
 
     for (const nomGroup of this.nominatorGroups) {
       for (const nominator of nomGroup) {
@@ -178,7 +203,9 @@ export default class ScoreKeeper {
       }
     }
 
-    const [good, bad] = await this.constraints.processCandidates(new Set(toProcess.values()));
+    const [good, bad] = await this.constraints.processCandidates(
+      new Set(toProcess.values())
+    );
 
     for (const goodOne of good.values()) {
       const { stash } = goodOne;
@@ -197,15 +224,13 @@ export default class ScoreKeeper {
 
     const oldData = await this.db.getValidator(stash);
 
-    /// This logic adds one to misbehaviors and reduces rank by half. 
+    /// This logic adds one to misbehaviors and reduces rank by half.
     const newData = Object.assign(oldData, {
       rank: Math.floor(oldData.rank / 2),
-      misbehaviors: oldData.misbehaviors + 1
+      misbehaviors: oldData.misbehaviors + 1,
     });
 
-    this.botLog(
-      `${newData.name} docked points. New rank: ${newData.rank}`
-    );
+    this.botLog(`${newData.name} docked points. New rank: ${newData.rank}`);
 
     return this.db.setValidator(stash, newData);
   }

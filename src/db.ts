@@ -1,13 +1,13 @@
-import MongoClient from 'mongodb';
+import MongoClient from "mongodb";
 
-import logger from './logger';
-import {Address, Stash, CandidateData} from './types';
+import logger from "./logger";
+import { Address, Stash, CandidateData } from "./types";
 
 export type DbConf = {
-  uri: string,
-  dbName: string
-  collection: string,
-}
+  uri: string;
+  dbName: string;
+  collection: string;
+};
 
 export default class Database {
   private _db: any;
@@ -21,7 +21,7 @@ export default class Database {
     const db = await mongo.db(dbConf.dbName);
     const collection = db.collection(dbConf.collection);
     return new Database(collection);
-  }
+  };
 
   /// Entry point for adding a new candidate.
   async addCandidate(name: string, stash: string, sentryId: string) {
@@ -29,8 +29,10 @@ export default class Database {
 
     const oldData = await this._queryOne({ name });
     if (!oldData) {
-      logger.info(`(DB::addCandidate) Could not find candidate node ${name} - inserting`);
-      
+      logger.info(
+        `(DB::addCandidate) Could not find candidate node ${name} - inserting`
+      );
+
       const data: CandidateData = {
         id: null,
         name,
@@ -85,8 +87,16 @@ export default class Database {
     return this._replaceOne({ nominator: address }, newData);
   }
 
-  async newTargets(address: Address, targets: Stash[], now: number): Promise<boolean> {
-    logger.info(`(DB::newTargets) Adding new targets for ${address} | targets: ${JSON.stringify(targets)}`);
+  async newTargets(
+    address: Address,
+    targets: Stash[],
+    now: number
+  ): Promise<boolean> {
+    logger.info(
+      `(DB::newTargets) Adding new targets for ${address} | targets: ${JSON.stringify(
+        targets
+      )}`
+    );
 
     const oldData = await this._queryOne({ nominator: address });
     const newData = Object.assign(oldData, {
@@ -100,8 +110,7 @@ export default class Database {
 
   async getCurrentTargets(address: Address): Promise<Stash[]> {
     logger.info(`(DB::getCurrentTargets) Getting targets for ${address}`);
-    
-    //@ts-ignore
+
     return (await this._queryOne({ nominator: address })).current;
   }
 
@@ -110,7 +119,7 @@ export default class Database {
 
     const oldData = await this._queryOne({ stash });
     if (!oldData) {
-      throw new Error('Expected an old data entry; qed');
+      throw new Error("Expected an old data entry; qed");
     }
 
     const newData = Object.assign(oldData, {
@@ -120,16 +129,24 @@ export default class Database {
   }
 
   async setTarget(nominator: Address, stash: Stash, now: number) {
-    logger.info(`(DB::setTarget) Setting target for nominator ${nominator} | stash = ${stash}`);
+    logger.info(
+      `(DB::setTarget) Setting target for nominator ${nominator} | stash = ${stash}`
+    );
 
     const oldData = await this._queryOne({ nominator });
     const newData = Object.assign(oldData, {
       current: [...oldData.current, stash],
       nominatedAt: now,
-      lastSeen: now, 
+      lastSeen: now,
     });
 
-    logger.info(`(DB::setTarget) OLDDATA ${JSON.stringify(oldData)} | NEWDATA ${JSON.stringify(newData)} | nominator ${nominator} | stash = ${stash}`);
+    logger.info(
+      `(DB::setTarget) OLDDATA ${JSON.stringify(
+        oldData
+      )} | NEWDATA ${JSON.stringify(
+        newData
+      )} | nominator ${nominator} | stash = ${stash}`
+    );
     return this._replaceOne({ nominator }, newData);
   }
 
@@ -138,10 +155,12 @@ export default class Database {
     const name = details[0];
     const networkId = details[4];
 
-    logger.info(`(DB::reportOnline) Reporting ${name} online.`)
+    logger.info(`(DB::reportOnline) Reporting ${name} online.`);
 
     // Get the node by networkId.
-    const oldData: CandidateData = await this._queryOne({ $or : [ { networkId }, { name } ] } );
+    const oldData: CandidateData = await this._queryOne({
+      $or: [{ networkId }, { name }],
+    });
 
     if (!oldData) {
       // A new node, not a candidate.
@@ -162,7 +181,7 @@ export default class Database {
         sentryId: null,
         sentryOfflineSince: 0,
         sentryOnlineSince: 0,
-      }
+      };
 
       return this._insert(data);
     }
@@ -180,7 +199,7 @@ export default class Database {
     }
 
     // Copies the object.
-    let newData = JSON.parse(JSON.stringify(oldData));
+    const newData = JSON.parse(JSON.stringify(oldData));
     if (oldData.offlineSince !== 0) {
       // Report a previously offline node online again.
       const timeOffline = now - Number(oldData.offlineSince);
@@ -202,12 +221,16 @@ export default class Database {
   }
 
   async reportOffline(id: number, name: string, now: number) {
-    logger.info(`(DB::reportOffline) Reporting node with network id ${name} offline.`);
+    logger.info(
+      `(DB::reportOffline) Reporting node with network id ${name} offline.`
+    );
 
     // Query by network id because this should be safer than using id.
-    let oldData = await this._queryOne({ $or: [ { name } ] });
+    const oldData = await this._queryOne({ $or: [{ name }] });
     if (!oldData) {
-      logger.info(`No data for node ${name} with telemetry id ${id}, cannot report offline.`);
+      logger.info(
+        `No data for node ${name} with telemetry id ${id}, cannot report offline.`
+      );
       return;
     }
     if (id !== oldData.id) {
@@ -225,7 +248,10 @@ export default class Database {
     // logger.info(`(DB::reportSentryOnline) Reporting sentry for ${name} online.`);
 
     const candidateData = await this._queryOne({ name });
-    if (candidateData.sentryOnlineSince === 0 || !candidateData.sentryOnlineSince) {
+    if (
+      candidateData.sentryOnlineSince === 0 ||
+      !candidateData.sentryOnlineSince
+    ) {
       const newData = Object.assign(candidateData, {
         sentryOnlineSince: now,
         sentryOfflineSince: 0,
@@ -238,7 +264,10 @@ export default class Database {
     // logger.info(`(DB::reportSentryOffline) Reporting sentry for ${name} offline.`);
 
     const candidateData = await this._queryOne({ name });
-     if (candidateData.sentryOfflineSince === 0 || !candidateData.sentryOfflineSince) {
+    if (
+      candidateData.sentryOfflineSince === 0 ||
+      !candidateData.sentryOfflineSince
+    ) {
       const newData = Object.assign(candidateData, {
         sentryOnlineSince: 0,
         sentryOfflineSince: now,
@@ -260,7 +289,7 @@ export default class Database {
     }
 
     logger.info(`(DB::findSentry) Did not find sentry node ${sentryId}.`);
-    return [false, 'not found'];
+    return [false, "not found"];
   }
 
   async nodeGood(networkId: string, now: number) {
@@ -296,14 +325,14 @@ export default class Database {
   /// Nodes are connected to Telemetry, but not necessarily candidates.
   async allNodes(): Promise<any[]> {
     return new Promise((resolve: any, reject: any) => {
-    this._db.find({ networkId: /.*/ }).toArray((err: any, docs: any) => {
+      this._db.find({ networkId: /.*/ }).toArray((err: any, docs: any) => {
         if (err) reject(err);
         resolve(docs);
       });
     });
   }
 
-  /// Candidates are ones who can be nominated. 
+  /// Candidates are ones who can be nominated.
   async allCandidates(): Promise<any[]> {
     return new Promise((resolve: any, reject: any) => {
       this._db.find({ stash: /.*/ }).toArray((err: any, docs: any) => {
@@ -339,7 +368,7 @@ export default class Database {
 
   async allNominators(): Promise<any[]> {
     return new Promise((resolve: any, reject: any) => {
-    this._db.find({ nominator: /.*/ }).toArray((err: any, docs: any) => {
+      this._db.find({ nominator: /.*/ }).toArray((err: any, docs: any) => {
         if (err) reject(err);
         resolve(docs);
       });
@@ -361,14 +390,18 @@ export default class Database {
     const candidates = await this.allCandidates();
     logger.info(`candidates length: ${candidates.length}`);
     if (!candidates.length) {
-      logger.info('(DB::clearCandidates) No candidates to clear.')
+      logger.info("(DB::clearCandidates) No candidates to clear.");
       return;
     }
     for (const node of candidates) {
       const newData = Object.assign(node, {
-        stash: null
+        stash: null,
       });
-      logger.info(`\nIn clearCandidates mem usage ${JSON.stringify(process.memoryUsage())}`);
+      logger.info(
+        `\nIn clearCandidates mem usage ${JSON.stringify(
+          process.memoryUsage()
+        )}`
+      );
       await this._replaceOne({ name: node.name }, newData);
     }
     return true;

@@ -1,19 +1,18 @@
-import Koa from 'koa';
-import bodyparser from 'koa-bodyparser';
-//@ts-ignore
-import cors from 'koa2-cors';
+import Koa from "koa";
+import bodyparser from "koa-bodyparser";
+import cors from "koa2-cors";
 
-import Database from './db';
-import logger from './logger';
+import Database from "./db";
+import logger from "./logger";
 
 const API: any = {
-  FindSentries: '/sentries',
-  GetValidators: '/validators',
-  GetCandidates: '/candidates',
-  GetNodes: '/nodes',
-  GetNominators: '/nominators',
-  GetRounds: '/rounds',
-  Health: '/healthcheck',
+  FindSentries: "/sentries",
+  GetValidators: "/validators",
+  GetCandidates: "/candidates",
+  GetNodes: "/nodes",
+  GetNominators: "/nominators",
+  GetRounds: "/rounds",
+  Health: "/healthcheck",
 };
 
 export default class Server {
@@ -34,14 +33,16 @@ export default class Server {
         case API.FindSentries:
           {
             const allCandidates = await this.db.allCandidates();
-            let list = [];
+            const list = [];
             for (const candidate of allCandidates) {
-              const [found, sentryName] = await this.db.findSentry(candidate.sentryId);
+              const [found, sentryName] = await this.db.findSentry(
+                candidate.sentryId
+              );
               list.push([candidate.name, found, sentryName]);
             }
 
-            ctx.body = list.map((entry) => JSON.stringify(entry)).join('\n\n');
-          } 
+            ctx.body = list.map((entry) => JSON.stringify(entry)).join("\n\n");
+          }
           break;
         case API.GetValidators:
           {
@@ -80,7 +81,7 @@ export default class Server {
           }
           break;
         default:
-          ctx.body = 'Invalid api endpoint.'
+          ctx.body = "Invalid api endpoint.";
           ctx.status = 404;
       }
     });

@@ -2,7 +2,9 @@ import mongoose from "mongoose";
 
 import { CandidateSchema, NominatorSchema } from "./models";
 import logger from "../logger";
-import { add } from "winston";
+
+// Sets a global configuration to silence mongoose deprecation warnings.
+mongoose.set("useFindAndModify", false);
 
 export default class Db {
   private candidateModel: any;
@@ -35,7 +37,7 @@ export default class Db {
   async addCandidate(
     name: string,
     stash: string,
-    sentryId: string
+    sentryId: string[]
   ): Promise<boolean> {
     logger.info(
       `(Db::addCandidate) name: ${name} stash: ${stash} sentryId: ${sentryId}`
@@ -127,9 +129,10 @@ export default class Db {
     }
 
     if (data.offlineSince && data.offlineSince !== 0) {
+      logger.debug(`Offline since: ${data.offlineSince}`);
       // The node was previously offline.
       const timeOffline = now - data.offlineSince;
-      const accumulated = data.offlineAccumulated + timeOffline;
+      const accumulated = (data.offlineAccumulated || 0) + timeOffline;
 
       if (data.networkId !== networkId) {
         // It changed its network id too.
@@ -309,14 +312,36 @@ export default class Db {
     );
 
     const data = await this.nominatorModel.findOne({ address });
-    return this.nominatorModel.findOneAndUpdate(
-      {
-        address,
-      },
-      {
-        current: data.current.push(target),
-      }
-    );
+
+    await this.nominatorModel
+      .findOneAndUpdate(
+        {
+          address,
+        },
+        {
+          current: data.current.push(target),
+        }
+      )
+      .exec();
+
+    return true;
+  }
+
+  async clearCurrent(address: string, now: number): Promise<boolean> {
+    logger.info(`(Db::clearCurrent) Clearing current for ${address}.`);
+
+    await this.nominatorModel
+      .findOneAndUpdate(
+        {
+          address,
+        },
+        {
+          current: [],
+        }
+      )
+      .exec();
+
+    return true;
   }
 
   async setLastNomination(address: string, now: number): Promise<boolean> {
@@ -334,6 +359,49 @@ export default class Db {
         }
       )
       .exec();
+  }
+
+  async getCurrentTargets(address: string): Promise<string[]> {
+    return (await this.nominatorModel.findOne({ address })).current;
+  }
+
+  /** Adding and removing points */
+
+  async addPoint(stash: string): Promise<boolean> {
+    logger.info(`Adding a point to ${stash}.`);
+
+    const data = await this.candidateModel.findOne({ stash });
+    await this.candidateModel
+      .findOneAndUpdate(
+        {
+          stash,
+        },
+        {
+          rank: data.rank + 1,
+        }
+      )
+      .exec();
+
+    return true;
+  }
+
+  async dockPoints(stash: string): Promise<boolean> {
+    logger.info(`Docking points for ${stash}.`);
+
+    const data = await this.candidateModel.findOne({ stash });
+    await this.candidateModel
+      .findOneAndUpdate(
+        {
+          stash,
+        },
+        {
+          rank: Math.floor(data.rank / 2),
+          faults: data.faults + 1,
+        }
+      )
+      .exec();
+
+    return true;
   }
 
   /** Storage GETTERS and SETTERS */
@@ -399,5 +467,9 @@ export default class Db {
 
   async allNominators(): Promise<any[]> {
     return this.nominatorModel.find({ address: /.*/ }).exec();
+  }
+
+  async getCandidate(stash: string): Promise<any> {
+    return this.candidateModel.findOne({ stash }).exec();
   }
 }

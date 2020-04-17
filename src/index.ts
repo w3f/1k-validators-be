@@ -135,7 +135,12 @@ const start = async (cmd: Command) => {
       if (candidate === null) {
         continue;
       } else {
-        const { name, stash, sentryId } = candidate;
+        const { name, stash } = candidate;
+        let { sentryId } = candidate;
+        if (!Array.isArray(sentryId)) {
+          sentryId = [sentryId];
+        }
+
         await db.addCandidate(name, stash, sentryId);
       }
     }

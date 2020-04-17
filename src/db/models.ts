@@ -31,7 +31,7 @@ const CandidateSchema = new Schema({
   // The stash account of the candidate. May be empty if no stash is registered.
   stash: String,
   // The network identifier for the sentry node attached to this node.
-  sentryId: String,
+  sentryId: [],
   // Timestamp for when the sentry was found online (zero if currently offline).
   sentryOnlineSince: Number,
   // Timestamp for when the sentry was found offline (zero if currently online).

@@ -2,6 +2,7 @@ import { ApiPromise } from "@polkadot/api";
 import { CronJob } from "cron";
 
 import ChainData from "./chaindata";
+import Db from "./db";
 import Nominator from "./nominator";
 import { Constraints, OTV } from "./constraints";
 
@@ -19,7 +20,7 @@ export default class ScoreKeeper {
   private constraints: Constraints;
   public currentEra = 0;
   public currentTargets: string[];
-  public db: any;
+  public db: Db;
   // Keeps track of a starting era for a round.
   public startEra = 0;
 
@@ -56,9 +57,10 @@ export default class ScoreKeeper {
 
   async addNominatorGroup(nominatorGroup: NominatorGroup) {
     const group = [];
+    const now = getNow();
     for (const nominator of nominatorGroup) {
       const nom = this._spawn(nominator.seed);
-      await this.db.addNominator(nom.address);
+      await this.db.addNominator(nom.address, now);
       group.push(nom);
     }
     this.nominatorGroups.push(group);
@@ -142,9 +144,8 @@ export default class ScoreKeeper {
         const current = await this.db.getCurrentTargets(curNominator.address);
         if (current.length) {
           logger.info("Wiping the old targets before making new nominations.");
-          await this.db.newTargets(
+          await this.db.clearCurrent(
             curNominator.address,
-            [],
             new Date().getTime()
           );
         }
@@ -189,10 +190,10 @@ export default class ScoreKeeper {
         }
 
         // Wipe targets.
-        await this.db.newTargets(nominator.address, [], now);
+        await this.db.clearCurrent(nominator.address, now);
 
         for (const stash of current) {
-          const candidate = await this.db.getValidator(stash);
+          const candidate = await this.db.getCandidate(stash);
 
           // If already processed, then skip to next stash.
           if (toProcess.has(stash)) continue;
@@ -219,34 +220,30 @@ export default class ScoreKeeper {
   }
 
   /// Handles the docking of points from bad behaving validators.
-  async dockPoints(stash: Stash) {
+  async dockPoints(stash: Stash): Promise<boolean> {
     logger.info(`Stash ${stash} did BAD, docking points`);
 
-    const oldData = await this.db.getValidator(stash);
+    // TODO: Do something with this return value.
+    await this.db.dockPoints(stash);
 
-    /// This logic adds one to misbehaviors and reduces rank by half.
-    const newData = Object.assign(oldData, {
-      rank: Math.floor(oldData.rank / 2),
-      misbehaviors: oldData.misbehaviors + 1,
-    });
+    const candidate = await this.db.getCandidate(stash);
+    this.botLog(`${candidate.name} docked points. New rank: ${candidate.rank}`);
 
-    this.botLog(`${newData.name} docked points. New rank: ${newData.rank}`);
-
-    return this.db.setValidator(stash, newData);
+    return true;
   }
 
   /// Handles the adding of points to successful validators.
   async addPoint(stash: Stash) {
     logger.info(`Stash ${stash} did GOOD, adding points`);
 
-    const oldData = await this.db.getValidator(stash);
-    const newData = Object.assign(oldData, {
-      rank: oldData.rank + 1,
-    });
+    // TODO: Do something with this return value.
+    await this.db.addPoint(stash);
 
+    const candidate = await this.db.getCandidate(stash);
     this.botLog(
-      `${newData.name} did GOOD! Adding a point. New rank: ${newData.rank}`
+      `${candidate.name} did GOOD! Adding a point. New rank: ${candidate.rank}`
     );
-    return this.db.setValidator(stash, newData);
+
+    return true;
   }
 }

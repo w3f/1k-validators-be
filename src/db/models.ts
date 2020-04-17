@@ -9,6 +9,8 @@ const CandidateSchema = new Schema({
   name: String,
   // The inherited telemetry details.
   telemetryDetails: [],
+  // Stores the version string directly.
+  version: String,
   // The origin of the node's connection time (timestamp in ms).
   discoveredAt: Number,
   // The last timestamp the node was nominated (if ever).

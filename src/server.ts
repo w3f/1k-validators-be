@@ -7,11 +7,9 @@ import logger from "./logger";
 
 const API: any = {
   FindSentries: "/sentries",
-  GetValidators: "/validators",
   GetCandidates: "/candidates",
   GetNodes: "/nodes",
   GetNominators: "/nominators",
-  GetRounds: "/rounds",
   Health: "/healthcheck",
 };
 
@@ -44,13 +42,6 @@ export default class Server {
             ctx.body = list.map((entry) => JSON.stringify(entry)).join("\n\n");
           }
           break;
-        case API.GetValidators:
-          {
-            const allValidators = await this.db.allValidators();
-            ctx.body = allValidators;
-          }
-          break;
-
         case API.GetCandidates:
           {
             const allCandidates = await this.db.allCandidates();
@@ -67,11 +58,6 @@ export default class Server {
           {
             const allNominators = await this.db.allNominators();
             ctx.body = allNominators;
-          }
-          break;
-        case API.GetRounds:
-          {
-            // TODO
           }
           break;
         case API.Health:

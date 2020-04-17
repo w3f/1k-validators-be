@@ -60,7 +60,7 @@ const start = async (cmd: Command) => {
     `\nStart-up mem usage ${JSON.stringify(process.memoryUsage())}\n`
   );
   const api = await createApi(config.global.wsEndpoint);
-  const db = await Database.makeDB(config.db.mongo);
+  const db = await Database.create(config.db.mongo.uri);
   const server = new Server(db, config.server.port);
   server.start();
 
@@ -116,7 +116,7 @@ const start = async (cmd: Command) => {
   /// Once a week reset the offline accumulations of nodes.
   const clearFrequency = "* * * * * 0";
   const clearCron = new CronJob(clearFrequency, () => {
-    db.clearAccumulations();
+    db.clearAccumulated();
   });
   clearCron.start();
 

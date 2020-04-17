@@ -69,18 +69,20 @@ export default class Monitor {
     const nodes = await this.db.allNodes();
 
     for (const node of nodes) {
-      const nodeVersion = semver.coerce(node.details[2]);
-      const latestVersion = semver.clean(this.latestTaggedRelease!.name);
+      const { name, version } = node;
 
-      const isUpgraded = semver.gte(nodeVersion!, latestVersion!);
+      const nodeVersion = semver.coerce(version);
+      const latestVersion = semver.clean(this.latestTaggedRelease.name);
+
+      const isUpgraded = semver.gte(nodeVersion, latestVersion);
 
       if (isUpgraded) {
         if (!node.updated) {
-          await this.db.nodeGood(node.networkId, now);
+          await this.db.reportUpdated(name, now);
         }
       } else {
         if (now > this.latestTaggedRelease!.publishedAt + this.grace) {
-          await this.db.nodeNotGood(node.networkId);
+          await this.db.reportNotUpdated(name);
         }
       }
     }

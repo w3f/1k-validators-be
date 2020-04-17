@@ -51,7 +51,7 @@ export default class Nominator {
       logger.info(`DRY RUN - STUBBING TRANSACTIONS`);
       for (const stash of targets) {
         await this.db.setTarget(this.address, stash, now);
-        await this.db.setNominatedAt(stash, now);
+        await this.db.setLastNomination(stash, now);
       }
     } else {
       const unsub = await tx.signAndSend(this.signer, async (result: any) => {
@@ -65,7 +65,7 @@ export default class Nominator {
           this.currentlyNominating = targets;
           for (const stash of targets) {
             await this.db.setTarget(this.address, stash, now);
-            await this.db.setNominatedAt(stash, now);
+            await this.db.setLastNomination(stash, now);
           }
           unsub();
         }

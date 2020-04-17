@@ -58,7 +58,7 @@ export default class Db {
 
     // If already has the node data by name, just store the candidate specific
     // stuff.
-    return this.candidateModel.updateOne(
+    return this.candidateModel.findOneAndUpdate(
       {
         name,
       },
@@ -75,7 +75,7 @@ export default class Db {
     details: any[],
     now: number
   ): Promise<boolean> {
-    const [name, , , , networkId] = details;
+    const [name, , version, , networkId] = details;
 
     logger.info(
       `(Db::reportOnline) Reporting ${name} with network ID ${networkId} ONLINE.`
@@ -88,6 +88,7 @@ export default class Db {
         telemetryId,
         networkId,
         name,
+        version,
         discoveredAt: now,
         onlineSince: now,
       });
@@ -96,17 +97,33 @@ export default class Db {
 
     if (!data.networkId) {
       // A candidate that haven't had their node registered on the network yet.
-      return this.candidateModel.updateOne(
-        {
-          name,
-        },
-        {
-          telemetryId,
-          networkId,
-          discoveredAt: now,
-          onlineSince: now,
-        }
-      );
+      return this.candidateModel
+        .findOneAndUpdate(
+          {
+            name,
+          },
+          {
+            telemetryId,
+            networkId,
+            version,
+            discoveredAt: now,
+            onlineSince: now,
+          }
+        )
+        .exec();
+    }
+
+    if (data.version !== version) {
+      await this.candidateModel
+        .findOneAndUpdate(
+          {
+            name,
+          },
+          {
+            version,
+          }
+        )
+        .exec();
     }
 
     if (data.offlineSince && data.offlineSince !== 0) {
@@ -116,27 +133,31 @@ export default class Db {
 
       if (data.networkId !== networkId) {
         // It changed its network id too.
-        await this.candidateModel.updateOne(
+        await this.candidateModel
+          .findOneAndUpdate(
+            {
+              name,
+            },
+            {
+              telemetryId,
+              networkId,
+            }
+          )
+          .exec();
+      }
+
+      return this.candidateModel
+        .findOneAndUpdate(
           {
             name,
           },
           {
-            telemetryId,
-            networkId,
+            offlineSince: 0,
+            offlineAccumulated: accumulated,
+            onlineSince: now,
           }
-        );
-      }
-
-      return this.candidateModel.updateOne(
-        {
-          name,
-        },
-        {
-          offlineSince: 0,
-          offlineAccumulated: accumulated,
-          onlineSince: now,
-        }
-      );
+        )
+        .exec();
     }
   }
 
@@ -163,7 +184,7 @@ export default class Db {
       return false;
     }
 
-    return this.candidateModel.updateOne(
+    return this.candidateModel.findOneAndUpdate(
       {
         name,
       },
@@ -174,16 +195,54 @@ export default class Db {
     );
   }
 
-  reportSentryOnline(name: string, now: number): Promise<boolean> {}
+  async reportSentryOnline(name: string, now: number): Promise<boolean> {
+    const data = await this.candidateModel.findOne({ name });
+    const { sentryOnlineSince } = data;
+    if (!sentryOnlineSince || sentryOnlineSince === 0) {
+      await this.candidateModel
+        .findOneAndUpdate(
+          {
+            name,
+          },
+          {
+            sentryOnlineSince: now,
+            sentryOfflineSince: 0,
+          }
+        )
+        .exec();
+    }
 
-  reportSentryOffline(name: string, now: number): Promise<boolean> {}
-
-  reportUpdated(name: string,. now: number): Promise<boolean> {
-
+    return true;
   }
 
-  reportNotUpdated(name: string): Promise<boolean> {
+  async reportSentryOffline(name: string, now: number): Promise<boolean> {
+    const data = await this.candidateModel.findOne({ name });
+    const { sentryOfflineSince } = data;
+    if (!sentryOfflineSince || sentryOfflineSince === 0) {
+      await this.candidateModel
+        .findOneAndUpdate(
+          { name },
+          {
+            sentryOfflineSince: now,
+            sentryOnlineSince: 0,
+          }
+        )
+        .exec();
+    }
 
+    return true;
+  }
+
+  async findSentry(sentryId: string): Promise<[boolean, string]> {
+    return [true, ""];
+  }
+
+  async reportUpdated(name: string, now: number): Promise<boolean> {
+    return true;
+  }
+
+  async reportNotUpdated(name: string): Promise<boolean> {
+    return true;
   }
 
   /** Nominator accessor functions */
@@ -201,27 +260,115 @@ export default class Db {
       return nominator.save();
     }
 
-    return this.nominatorModel.updateOne(
+    return this.nominatorModel.findOneAndUpdate(
       {
         address,
       },
       {
         createdAt: now,
-      },
+      }
     );
   }
 
-  async setTarget(address: string, target: string, now: number): Promise<boolean> {
-    logger.info(`(Db::setTarget) Setting ${address} with new target ${target}.`);
+  async setTarget(
+    address: string,
+    target: string,
+    now: number
+  ): Promise<boolean> {
+    logger.info(
+      `(Db::setTarget) Setting ${address} with new target ${target}.`
+    );
 
     const data = await this.nominatorModel.findOne({ address });
-    return this.nominatorModel.updateOne(
+    return this.nominatorModel.findOneAndUpdate(
       {
         address,
       },
       {
         current: data.current.push(target),
-      },
+      }
     );
+  }
+
+  async setLastNomination(address: string, now: number): Promise<boolean> {
+    logger.info(
+      `(Db::setLastNomination) Setting ${address} last nomination to ${now}.`
+    );
+
+    return this.nominatorModel
+      .findOneAndUpdate(
+        {
+          address,
+        },
+        {
+          lastNomination: now,
+        }
+      )
+      .exec();
+  }
+
+  /** Storage GETTERS and SETTERS */
+
+  async clearAccumulated(): Promise<boolean> {
+    logger.info(`(Db::clearAccumulated) Clearing offline accumulated time.`);
+
+    const candidates = await this.allCandidates();
+    if (!candidates.length) {
+      // nothing to do
+      return true;
+    }
+
+    for (const candidate of candidates) {
+      const { name, offlineAccumulated } = candidate;
+      if (offlineAccumulated > 0) {
+        await this.candidateModel.findOneAndUpdate(
+          {
+            name,
+          },
+          {
+            offlineAccumulated: 0,
+          }
+        );
+      }
+    }
+    return true;
+  }
+
+  async clearCandidates(): Promise<boolean> {
+    logger.info(`(Db::clearCandidates) Clearing stale candidate data.`);
+
+    const candidates = await this.allCandidates();
+    if (!candidates.length) {
+      // nothing to do
+      return true;
+    }
+
+    for (const candidate of candidates) {
+      const { name } = candidate;
+      await this.candidateModel
+        .findOneAndUpdate(
+          {
+            name,
+          },
+          {
+            stash: "",
+          }
+        )
+        .exec();
+    }
+
+    return true;
+  }
+
+  async allCandidates(): Promise<any[]> {
+    return this.candidateModel.find({ stash: /.*/ }).exec();
+  }
+
+  async allNodes(): Promise<any[]> {
+    return this.candidateModel.find({ networkId: /.*/ }).exec();
+  }
+
+  async allNominators(): Promise<any[]> {
+    return this.nominatorModel.find({ address: /.*/ }).exec();
   }
 }

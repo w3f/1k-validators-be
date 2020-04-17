@@ -1,7 +1,6 @@
 import { WEEK, TEN_PERCENT, FIFTY_KSM } from "./constants";
 import logger from "./logger";
 import { CandidateData } from "./types";
-import { valid } from "semver";
 import ChainData from "./chaindata";
 import { ApiPromise } from "@polkadot/api";
 

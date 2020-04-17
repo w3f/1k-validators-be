@@ -1,6 +1,6 @@
 import { Schema } from "mongoose";
 
-const Candidate = new Schema({
+const CandidateSchema = new Schema({
   // The inherited telemetry ID.
   telemetryId: Number,
   // The network identifier derived from the networking key.
@@ -36,4 +36,11 @@ const Candidate = new Schema({
   sentryOfflineSince: Number,
 });
 
-export { Candidate };
+const NominatorSchema = new Schema({
+  address: String,
+  current: [],
+  lastNomination: Number,
+  createdAt: Number,
+});
+
+export { CandidateSchema, NominatorSchema };

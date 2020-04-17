@@ -144,5 +144,5 @@ program
   .action((cmd: Command) => catchAndQuit(start(cmd)));
 
 
-program.version('1.0.3');
+program.version('1.0.4');
 program.parse(process.argv);

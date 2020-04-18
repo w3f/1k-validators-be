@@ -116,7 +116,7 @@ export default class ScoreKeeper {
     candidates: CandidateData[],
     setSize: number,
     nominatorGroups: NominatorGroup[] = []
-  ) {
+  ): Promise<void> {
     // A "subset" is a group of 16 validators since this is the max that can
     // be nominated by a single account.
     const subsets = [];

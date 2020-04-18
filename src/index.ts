@@ -64,20 +64,8 @@ const start = async (cmd: Command) => {
   const api = await createApi(config.global.wsEndpoint);
   const db = await Database.create(config.db.mongo.uri);
 
-  // const migration = await Migration.create(config.db.mongo, db);
-  const server = new Server(db, config.server.port);
+  const server = new Server(db, config, api);
   server.start();
-
-  // const migrated = false;
-  // await new Promise((resolve) => {
-  //   const interval = setInterval(async () => {
-  //     const res = await migration.doMigration();
-  //     if (res) {
-  //       clearInterval(interval);
-  //       resolve();
-  //     }
-  //   }, 20 * 1000);
-  // });
 
   const telemetry = new TelemetryClient(config, db);
   telemetry.start();
@@ -181,5 +169,5 @@ program
   .option("--config <directory>", "The path to the config directory.", "config")
   .action((cmd: Command) => catchAndQuit(start(cmd)));
 
-program.version("1.1.1");
+program.version("1.1.2");
 program.parse(process.argv);

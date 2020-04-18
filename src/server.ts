@@ -4,13 +4,14 @@ import cors from "koa2-cors";
 
 import Database from "./db";
 import logger from "./logger";
-import Migration from "./db/migrate";
+import { OTV } from "./constraints";
 
 const API: any = {
   FindSentries: "/sentries",
   GetCandidates: "/candidates",
   GetNodes: "/nodes",
   GetNominators: "/nominators",
+  ValidCandidates: "/valid",
   Health: "/healthcheck",
 };
 
@@ -19,20 +20,25 @@ export default class Server {
   private db: Database;
   private port: number;
 
-  constructor(db: Database, port: number) {
+  constructor(db: Database, config: any, api: any) {
     this.app = new Koa();
     this.db = db;
-    this.port = port;
+    this.port = config.server.port;
 
     this.app.use(cors());
     this.app.use(bodyparser());
 
     this.app.use(async (ctx: any) => {
       switch (ctx.url.toLowerCase()) {
-        case "/confirm":
+        case API.ValidCandidates:
           {
-            // migration.confirmMigration();
-            ctx.body = "OK";
+            const allCandidates = await this.db.allCandidates();
+            const valid = await new OTV(
+              api,
+              config.constraints.skipConnectionTime,
+              config.constraints.skipSentries
+            ).getValidCandidates(allCandidates);
+            ctx.body = valid;
           }
           break;
         case API.FindSentries:

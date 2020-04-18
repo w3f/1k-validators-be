@@ -4,7 +4,7 @@
   "files": [
     "src/chaindata.ts",
     "src/constants.ts",
-    "src/_db.ts",
+    "src/db/index.ts",
     "src/index.ts",
     "src/logger.ts",
     "src/matrix.ts",

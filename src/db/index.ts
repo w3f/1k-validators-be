@@ -319,7 +319,7 @@ export default class Db {
           address,
         },
         {
-          current: data.current.push(target),
+          $push: { current: target },
         }
       )
       .exec();
@@ -355,7 +355,7 @@ export default class Db {
           address,
         },
         {
-          lastNomination: now,
+          $set: { lastNomination: now },
         }
       )
       .exec();

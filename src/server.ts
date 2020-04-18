@@ -19,7 +19,7 @@ export default class Server {
   private db: Database;
   private port: number;
 
-  constructor(db: Database, port: number, migration: Migration) {
+  constructor(db: Database, port: number) {
     this.app = new Koa();
     this.db = db;
     this.port = port;
@@ -31,7 +31,7 @@ export default class Server {
       switch (ctx.url.toLowerCase()) {
         case "/confirm":
           {
-            migration.confirmMigration();
+            // migration.confirmMigration();
             ctx.body = "OK";
           }
           break;

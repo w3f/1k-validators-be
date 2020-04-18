@@ -69,7 +69,7 @@ export default class Monitor {
     const nodes = await this.db.allNodes();
 
     for (const node of nodes) {
-      const { name, version } = node;
+      const { name, version, updated } = node;
 
       const nodeVersion = semver.coerce(version);
       const latestVersion = semver.clean(this.latestTaggedRelease.name);
@@ -77,8 +77,10 @@ export default class Monitor {
 
       const isUpgraded = semver.gte(nodeVersion, latestVersion);
 
-      if (isUpgraded && !node.updated) {
-        await this.db.reportUpdated(name, now);
+      if (isUpgraded) {
+        if (!updated) {
+          await this.db.reportUpdated(name, now);
+        }
         continue;
       }
 

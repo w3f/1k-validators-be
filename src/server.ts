@@ -4,6 +4,7 @@ import cors from "koa2-cors";
 
 import Database from "./db";
 import logger from "./logger";
+import Migration from "./db/migrate";
 
 const API: any = {
   FindSentries: "/sentries",
@@ -18,7 +19,7 @@ export default class Server {
   private db: Database;
   private port: number;
 
-  constructor(db: Database, port: number) {
+  constructor(db: Database, port: number, migration: Migration) {
     this.app = new Koa();
     this.db = db;
     this.port = port;
@@ -28,6 +29,12 @@ export default class Server {
 
     this.app.use(async (ctx: any) => {
       switch (ctx.url.toLowerCase()) {
+        case "/confirm":
+          {
+            migration.confirmMigration();
+            ctx.body = "OK";
+          }
+          break;
         case API.FindSentries:
           {
             const allCandidates = await this.db.allCandidates();

@@ -33,6 +33,22 @@ export default class Db {
     });
   }
 
+  /// TMP
+  async migrateCandidate(
+    name: string,
+    discoveredAt: number,
+    rank: number
+  ): Promise<any> {
+    const candidate = new this.candidateModel({
+      name,
+      discoveredAt,
+      rank,
+    });
+
+    return candidate.save();
+  }
+  /// END TMP
+
   // Adds a new candidate from the configuration file data.
   async addCandidate(
     name: string,
@@ -108,7 +124,7 @@ export default class Db {
             telemetryId,
             networkId,
             version,
-            discoveredAt: now,
+            discoveredAt: data.discoveredAt || now,
             onlineSince: now,
           }
         )

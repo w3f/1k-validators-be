@@ -15,6 +15,8 @@ import logger from "./logger";
 import { sleep } from "./util";
 import { SIXTEEN_HOURS } from "./constants";
 
+import Migration from "./db/migrate";
+
 const loadConfig = (configPath: string) => {
   let conf = fs.readFileSync(configPath, { encoding: "utf-8" });
   if (conf.startsWith("'")) {
@@ -61,8 +63,21 @@ const start = async (cmd: Command) => {
   );
   const api = await createApi(config.global.wsEndpoint);
   const db = await Database.create(config.db.mongo.uri);
-  const server = new Server(db, config.server.port);
+
+  const migration = await Migration.create(config.db.mongo, db);
+  const server = new Server(db, config.server.port, migration);
   server.start();
+
+  const migrated = false;
+  await new Promise((resolve) => {
+    const interval = setInterval(async () => {
+      const res = await migration.doMigration();
+      if (res) {
+        clearInterval(interval);
+        resolve();
+      }
+    }, 20 * 1000);
+  });
 
   const telemetry = new TelemetryClient(config, db);
   telemetry.start();

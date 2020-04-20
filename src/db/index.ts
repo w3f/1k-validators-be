@@ -334,7 +334,16 @@ export default class Db {
       `(Db::setTarget) Setting ${address} with new target ${target}.`
     );
 
-    const data = await this.nominatorModel.findOne({ address });
+    await this.candidateModel
+      .findOneAndUpdate(
+        {
+          stash: target,
+        },
+        {
+          nominatedAt: now,
+        }
+      )
+      .exec();
 
     await this.nominatorModel
       .findOneAndUpdate(

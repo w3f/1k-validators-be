@@ -254,13 +254,20 @@ export default class Db {
 
   async findSentry(sentryId: string): Promise<[boolean, string]> {
     const nodes = await this.allNodes();
-    const found = nodes.find((node) => {
+    const found = nodes.filter((node) => {
       return node.networkId === sentryId;
     });
 
-    if (found) {
-      const { offlineSince, name } = found;
-      return [offlineSince === 0, name];
+    logger.info(`FOUND: ${JSON.stringify(found)}`);
+
+    if (found.length > 0) {
+      for (const node of found) {
+        const { offlineSince, name } = node;
+        if (offlineSince === 0) {
+          return [offlineSince === 0, name];
+        }
+      }
+      return [false, "All sentries are offline."];
     }
     return [false, "Did not find sentry in all nodes recorded."];
   }

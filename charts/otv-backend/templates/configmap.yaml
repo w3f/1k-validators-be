@@ -67,12 +67,6 @@ data:
                 "sentryId": "QmQNrdUUfXtX1WERx5yREb5zhcixdeTU2ATygGXJTWeXji"
             },
             {
-                "name": "crs",
-                "stash": "Ff65mvwgfQJeCxjq59YZMUzg9HAR4mFVMapvYF4oFMzFP9j",
-                "riotHandle": "crs@crsCR:matrix.org",
-                "sentryId": "QmTjPifFGVY2rRra9Qf1s1Zh9pENT5hiUtr9cmDRqDMYgE"
-            },
-            {
                 "name": "Indigo One",
                 "stash": "EPhtbjecJ9P2SQEGEJ4XmFS4xN7JioBFarSrbqjhj8BuJ2v",
                 "riotHandle": "@shadewolf:matrix.org",
@@ -125,6 +119,102 @@ data:
                 "stash": "D3bm5eAeiRezwZp4tWTX4sZN3u8nXy2Fo21U59smznYHu3F",
                 "riotHandle": "@hodl_farm:matrix.org",
                 "sentryId": "QmQVH9XE6nfzeWvNLy4kFRAvxYwmvtpn92ScFmJUoJbHno"
+            },
+                {
+                "name": "🅉🅄🄶🄲🄰🄿🄸🅃🄰🄻 🅅🄰🄻🄸🄳🄰🅃🄾🅁 00",
+                "stash": "CzugcapJWD8CEHBYHDeFpVcxfzFBCg57ic72y4ryJfXUnk7",
+                "riotHandle": "@retotrinkler:matrix.org",
+                "sentryId": ["QmdGL4kTCbU368VBwMTeJ4SpH4krmBHD7RsRkXet2SS39d", "QmWqbzk8ok6nqqft5RS69EimAqCuCDMsmYJJKM1gvGzvfp", "QmcQ8rzvdYfxQ7HT9a6uwvqBT8pjVHnygpDYzLHTXzQyQZ", "QmPzCJJZgZRqMGf9XHxpJC8Att25Ravo79XvDBNBVRYhYM", "QmRzMjPbiJWVpM8z26g86eevSuzuaX63NN4w1SWezTFmqR"]
+            },
+            {
+                "name": "Simply Staking",
+                "stash": "DNDBcYD8zzqAoZEtgNzouVp2sVxsvqzD4UdB5WrAUwjqpL8",
+                "riotHandle": "@daniel-svc:matrix.org",
+                "sentryId": "QmakY3KstRE3dGJZLg348UXpxjHji8oTTd8byfd4mWKfti"
+            },
+            {
+                "name": "Valtrusama",
+                "stash": "GJFCVN8eVH5x5GJtxscKUt7BX4zoCuDqBKYsPBu1w3Yiq3n",
+                "riotHandle": "@tom_tom:matrix.org",
+                "sentryId": "QmSpw7RzBLWHC1jNCsv3ennSyuneafGBiqYGQqDRsheXpr"
+            },
+            {
+                "name": "newton",
+                "stash": "DxErsWqBducKTqxq7dwXKk2kevAzWEWaYJjwtwzqCu2r3F4",
+                "riotHandle": "@gauth8z:matrix.org",
+                "sentryId": "QmaQXorthqT3kqZGUSsSNJWBZdiLysysZpsNowstvdBe7D"
+            },
+            {
+                "name": "🥩 Staking4All 🥩",
+                "stash": "GTUi6r2LEsf71zEQDnBvBvKskQcWvK66KRqcRbdmcczaadr",
+                "riotHandle": "@staking4all:matrix.org",
+                "sentryId": "QmZaEbzxjyo8ZPHqwPp4VAmUNYAjBtRSXMmBt6TsMK3c4C"
+            },
+            {
+                "name": "◎◉ finalbits",
+                "stash": "DmTzGAndAch8kXngopH69bcQCjYTukbp5Vh9SpJyiGfouwp",
+                "riotHandle": "@arifk:matrix.org",
+                "sentryId": "QmNWU4aP2VUS1eTzPcXSrT7Xc6Z3f2SZoVuYVJQ9PkGggm"
+            },
+            {
+                "name": "ryabinav1",
+                "stash": "D5Xo7N2jginhYchuMNud2dYtby899koFcaRo2YWNmUquo5H",
+                "riotHandle": "@ryabina:matrix.org",
+                "sentryId": "QmPtmvVg8NyVcsSnR95dwwTZ4tx3WenVVMjp7rujEe1EWq"
+            },
+            {
+                "name": "🚀 PolkaStats",
+                "stash": "GTzRQPzkcuynHgkEHhsPBFpKdh4sAacVRsnd8vYfPpTMeEY",
+                "riotHandle": "@mariopino:matrix.org",
+                "sentryId": "QmYtGorFCBbFhM6jktEFQMGbc1LKdGmy5LUXKiczK64Aj6"
+            },
+            {
+                "name": "🇨🇳 GBC-冰链科技",
+                "stash": "Fy58miDJmu4jBDR6ma79yBgFeHYESURoZkAAHVDEF8od64D",
+                "riotHandle": "@xzhang:matrix.org",
+                "sentryId": "QmPfUq2QSJSRzMMhWzzZyGEFNmZPvDC7AqQU2F7EzMHhSU"
+            },
+            {
+                "name": "Magnetis-Node",
+                "stash": "G543pxmwKNAbW2WepZW7Ss9Wgx9wuDQWcPyhk4eEzpzcibG",
+                "riotHandle": "@tatan:matrix.org",
+                "sentryId": "QmSaDWnkThLZTgM5ASiUNCXY8iAe7XXUTBxy58r31RpoHG"
+            },
+            {
+                "name": "MurterKosirina",
+                "stash": "E84ypSizBDJDxwhtYy4Q4t5RKsy1DppPuU1AP47HVeKhXYt",
+                "riotHandle": "@kizos:matrix.org",
+                "sentryId": "QmNRuN5KCcaGJPK9X9611VA4XEvQQB1UpvzLPtmsiNXWqU"
+            },
+            {
+                "name": "maxsam4",
+                "stash": "EFM8UJLpkQ5CcEuH1hMDg7Y8ZsPQx1qzTrtXw412ydetiTV",
+                "riotHandle": "@maxsam4:matrix.org",
+                "sentryId": ["QmccJLiBfBBiJqgqcMCJAa9ZmnwQzpWaLZf7Z4DGAY55KT", "QmX6A9yebbgQRtUMtWRu8ut4JcpdRVUb6FVzR46TzVumxi"]
+            },
+            {
+                "name": "Grassfed_Validator_1",
+                "stash": "FAp5gVpwhwdmnJ1Ycet9z6Uva5tnfyCfA3AaY7WGi7u3DU4",
+                "riotHandle": "@devinwalsh:matrix.org",
+                "sentryId": ["QmNfu8PMryDjivoRLF3YeMXZpj1RHQtmk9QJnBz9pcD5AD", "QmeMci8JoHpHYGVqHPQZJ88jDv7enq8D9CTy1T4EPTgJAU", "Qmc4ck9R3qsbZuPJoRpFyVLRfoTa3qb7KvQ3JZZGwPfNWH"]
+            },
+            {
+                "name": "🐲 DragonStake 🐉",
+                "stash": "DSpbbk6HKKyS78c4KDLSxCetqbwnsemv2iocVXwNe2FAvWC",
+                "riotHandle": "@derfredy:matrix.org",
+                "sentryId": "QmNUcVQ9FrqG7qdHNDM6zfVBr9N3xjTpZtYeLpuVnxdEQn"
+            },
+            {
+                "name": "KeepNode",
+                "stash": "FDDy3cQa7JXiChYU2xq1B2WUUJBpZpZ51qn2tiN1DqDMEpS",
+                "riotHandle": "@Drun:matrix.org",
+                "sentryId": "QmT1X7qj7e4BMfTmjPiF18t3GbsoAarUXSHHyDF4EZqqpT"
+            },
+            {
+                "name": "Novy",
+                "stash": "Cs7UFcNBsBV4Y65GsM3bDzpvinMKFQZyt6x9TrhVhc8ps4E",
+                "riotHandle": "@novy4:matrix.org",
+                "sentryId": "QmXXCFS3PRHE5wbnkRvJgvtkGkgoiEJ84mW3nzc5SAj9qS"
             }
         ],
         "forceRound": false,

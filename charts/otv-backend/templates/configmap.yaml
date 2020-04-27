@@ -12,7 +12,7 @@ data:
         "wsEndpoint": "wss://kusama-rpc.polkadot.io/"
       },
       "constraints": {
-        "skipConnectionTime": true,
+        "skipConnectionTime": false,
         "skipSentries": false
       },
       "db": {

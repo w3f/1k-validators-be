@@ -217,10 +217,10 @@ data:
                 "sentryId": "QmXXCFS3PRHE5wbnkRvJgvtkGkgoiEJ84mW3nzc5SAj9qS"
             },
             {
-              "name": "stakethatV",
-              "stash": "DAUrb4UVvwpYxbx6jTVqMquCW2QuafKcFCkgEpnYBcbwaRQ",
-              "riotHandle": "@andreisid:matrix.org",
-              "sentryId": "QmYTADoj77CAZgEWgJt7LsE4V18ZcFWKYbcSL9Hq5mUcSd"
+                "name": "stakethatV",
+                "stash": "DAUrb4UVvwpYxbx6jTVqMquCW2QuafKcFCkgEpnYBcbwaRQ",
+                "riotHandle": "@andreisid:matrix.org",
+                "sentryId": "QmYTADoj77CAZgEWgJt7LsE4V18ZcFWKYbcSL9Hq5mUcSd"
             }
         ],
         "forceRound": false,

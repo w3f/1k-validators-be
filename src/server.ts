@@ -1,19 +1,18 @@
-import Koa from 'koa';
-import bodyparser from 'koa-bodyparser';
-//@ts-ignore
-import cors from 'koa2-cors';
+import Koa from "koa";
+import bodyparser from "koa-bodyparser";
+import cors from "koa2-cors";
 
-import Database from './db';
-import logger from './logger';
+import Database from "./db";
+import logger from "./logger";
+import { OTV } from "./constraints";
 
 const API: any = {
-  FindSentries: '/sentries',
-  GetValidators: '/validators',
-  GetCandidates: '/candidates',
-  GetNodes: '/nodes',
-  GetNominators: '/nominators',
-  GetRounds: '/rounds',
-  Health: '/healthcheck',
+  FindSentries: "/sentries",
+  GetCandidates: "/candidates",
+  GetNodes: "/nodes",
+  GetNominators: "/nominators",
+  ValidCandidates: "/valid",
+  Health: "/healthcheck",
 };
 
 export default class Server {
@@ -21,35 +20,41 @@ export default class Server {
   private db: Database;
   private port: number;
 
-  constructor(db: Database, port: number) {
+  constructor(db: Database, config: any, api: any) {
     this.app = new Koa();
     this.db = db;
-    this.port = port;
+    this.port = config.server.port;
 
     this.app.use(cors());
     this.app.use(bodyparser());
 
     this.app.use(async (ctx: any) => {
       switch (ctx.url.toLowerCase()) {
+        case API.ValidCandidates:
+          {
+            const allCandidates = await this.db.allCandidates();
+            const valid = await new OTV(
+              api,
+              config.constraints.skipConnectionTime,
+              config.constraints.skipSentries
+            ).getValidCandidates(allCandidates);
+            ctx.body = valid;
+          }
+          break;
         case API.FindSentries:
           {
             const allCandidates = await this.db.allCandidates();
-            let list = [];
+            const list = [];
             for (const candidate of allCandidates) {
-              const [found, sentryName] = await this.db.findSentry(candidate.sentryId);
+              const [found, sentryName] = await this.db.findSentry(
+                candidate.sentryId
+              );
               list.push([candidate.name, found, sentryName]);
             }
 
-            ctx.body = list.map((entry) => JSON.stringify(entry)).join('\n\n');
-          } 
-          break;
-        case API.GetValidators:
-          {
-            const allValidators = await this.db.allValidators();
-            ctx.body = allValidators;
+            ctx.body = list.map((entry) => JSON.stringify(entry)).join("\n\n");
           }
           break;
-
         case API.GetCandidates:
           {
             const allCandidates = await this.db.allCandidates();
@@ -68,11 +73,6 @@ export default class Server {
             ctx.body = allNominators;
           }
           break;
-        case API.GetRounds:
-          {
-            // TODO
-          }
-          break;
         case API.Health:
           {
             ctx.body = true;
@@ -80,7 +80,7 @@ export default class Server {
           }
           break;
         default:
-          ctx.body = 'Invalid api endpoint.'
+          ctx.body = "Invalid api endpoint.";
           ctx.status = 404;
       }
     });

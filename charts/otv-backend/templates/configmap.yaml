@@ -223,7 +223,7 @@ data:
                 "sentryId": "QmYTADoj77CAZgEWgJt7LsE4V18ZcFWKYbcSL9Hq5mUcSd"
             }
         ],
-        "forceRound": false,
+        "forceRound": true,
         "nominating": true
       },
       "server": {

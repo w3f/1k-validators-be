@@ -13,6 +13,7 @@ const API: any = {
   GetNominators: "/nominators",
   ValidCandidates: "/valid",
   Health: "/healthcheck",
+  Invalid: "/invalid",
 };
 
 export default class Server {
@@ -39,6 +40,24 @@ export default class Server {
               config.constraints.skipSentries
             ).getValidCandidates(allCandidates);
             ctx.body = valid;
+          }
+          break;
+        case API.Invalid:
+          {
+            const allCandidates = await this.db.allCandidates();
+            const result = await Promise.all(
+              allCandidates.map(async (candidate) => {
+                const [isValid, reason] = await new OTV(
+                  api,
+                  config.constraints.skipConnectionTime,
+                  config.constraints.skipSentries
+                ).checkSingleCandidate(candidate);
+
+                if (!isValid) return reason;
+              })
+            );
+
+            ctx.body = result.filter((item) => !!item).join("\n");
           }
           break;
         case API.FindSentries:

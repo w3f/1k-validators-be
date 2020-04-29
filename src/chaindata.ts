@@ -70,7 +70,6 @@ class ChainData {
     if (ledger.isNone) {
       return [null, `Ledger is empty.`];
     }
-    console.log("ledger", ledger.toString());
 
     return [ledger.toJSON().active, null];
   };

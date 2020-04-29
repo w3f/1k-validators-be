@@ -22,82 +22,94 @@ export class OTV implements Constraints {
     this.skipSentry = skipSentry;
   }
 
+  /// Returns true if it's a valid candidate or [false, "reason"] otherwise.
+  async checkSingleCandidate(
+    candidate: CandidateData
+  ): Promise<[boolean, string]> {
+    const {
+      connectedAt,
+      updated,
+      name,
+      offlineAccumulated,
+      offlineSince,
+      onlineSince,
+      sentryOfflineSince,
+      stash,
+    } = candidate;
+
+    // Ensure the candidate is online.
+    if (onlineSince === 0 || offlineSince !== 0) {
+      return [false, `${name} offline. Offline since ${offlineSince}.`];
+    }
+
+    // Ensure the sentry is online.
+    if (sentryOfflineSince !== 0 && !this.skipSentry) {
+      return [
+        false,
+        `${name} sentry is offline. Offline since ${sentryOfflineSince}.`,
+      ];
+    }
+
+    // Only take nodes that have been upgraded to latest versions.
+    if (!updated) {
+      return [false, `${name} is not running the latest client code.`];
+    }
+
+    if (!this.skipConnectionTime) {
+      const now = new Date().getTime();
+      if (now - connectedAt < WEEK) {
+        return [false, `${name} hasn't been connected for minimum length.`];
+      }
+    }
+
+    // Ensures node has 98% up time.
+    const totalOffline = offlineAccumulated / WEEK;
+    if (totalOffline > 0.02) {
+      return [
+        false,
+        `${name} has been offline ${
+          offlineAccumulated / 1000 / 60
+        } minutes this week.`,
+      ];
+    }
+
+    const [commission, err] = await this.chaindata.getCommission(stash);
+    if (err) {
+      return [false, `${name} ${err}`];
+    }
+    if (commission > TEN_PERCENT) {
+      return [
+        false,
+        `${name} commission is set higher than ten percent: ${commission}`,
+      ];
+    }
+
+    const [bondedAmt, err2] = await this.chaindata.getBondedAmount(stash);
+    if (err2) {
+      return [false, `${name} ${err2}`];
+    }
+
+    if (bondedAmt < FIFTY_KSM) {
+      return [
+        false,
+        `${name} has less then fifty KSM bonded: ${
+          bondedAmt / 10 ** 12
+        } KSM is bonded.`,
+      ];
+    }
+
+    return [true, ""];
+  }
+
   async getValidCandidates(
     candidates: CandidateData[]
   ): Promise<CandidateData[]> {
     let validCandidates = [];
     for (const candidate of candidates) {
-      const {
-        connectedAt,
-        updated,
-        name,
-        offlineAccumulated,
-        offlineSince,
-        sentryOfflineSince,
-        stash,
-      } = candidate;
+      const [isValid, reason] = await this.checkSingleCandidate(candidate);
 
-      // Ensure the candidate is online.
-      if (offlineSince !== 0) {
-        logger.info(`${name} offline. Offline since ${offlineSince}.`);
-        continue;
-      }
-
-      // Ensure the sentry is online.
-      if (sentryOfflineSince !== 0 && !this.skipSentry) {
-        logger.info(
-          `${name} sentry is offline. Offline since ${sentryOfflineSince}.`
-        );
-        continue;
-      }
-
-      // Only take nodes that have been upgraded to latest versions.
-      if (!updated) {
-        logger.info(`${name} is not running the latest client code.`);
-        continue;
-      }
-
-      if (!this.skipConnectionTime) {
-        const now = new Date().getTime();
-        if (now - connectedAt < WEEK) {
-          logger.info(`${name} hasn't been connected for minimum length.`);
-          continue;
-        }
-      }
-
-      // Ensures node has 98% up time.
-      const totalOffline = offlineAccumulated / WEEK;
-      if (totalOffline > 0.02) {
-        logger.info(
-          `${name} has been offline ${
-            offlineAccumulated / 1000 / 60
-          } minutes this week.`
-        );
-      }
-
-      const [commission, err] = await this.chaindata.getCommission(stash);
-      if (err) {
-        logger.info(`${name} ${err}`);
-        continue;
-      }
-      if (commission > TEN_PERCENT) {
-        logger.info(
-          `${name} commission is set higher than ten percent: ${commission}`
-        );
-        continue;
-      }
-
-      const [bondedAmt, err2] = await this.chaindata.getBondedAmount(stash);
-      if (err2) {
-        logger.info(`${name} ${err2}`);
-        continue;
-      }
-      if (bondedAmt < FIFTY_KSM) {
-        logger.info(
-          `${name} has less then fifty KSM bonded: ${
-            bondedAmt / 10 ** 12
-          } KSM is bonded.`
-        );
+      if (!isValid) {
+        logger.info(reason);
         continue;
       }
 

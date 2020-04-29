@@ -55,10 +55,10 @@ data:
                 "sentryId": ["QmPr2sykAydTitadF71Td62MZzNnhUC9Cy6JBCk9tNzsVL", "QmQ8dcwPhZ3SA1JhLav9enhQnhJF96CBt8qLsFJLTej8hd"]
             },
                 {
-                "name": "Anson&Fabio-sv-public-1",
+                "name": "Anson&Fabio-sv-public-temp",
                 "stash": "CmD9vaMYoiKe7HiFnfkftwvhKbxN9bhyjcDrfFRGbifJEG8",
                 "riotHandle": ["@anson:web3.foundation", "@fabio:web3.foundation"],
-                "sentryId": ["Qmf1BCcgXn7gwDoajWJ98hSPv98UbnCzBTvvtcAYoq2Ngo", "QmT4vBTsnqYsV4YxaYzXXuXM7jwdSdM5s9gRcapkJpwwjA"]
+                "sentryId": ["QmSAg4uHhVK1CHt5TJGPrWVWDJBVjgwKd1wSv88DPCtEHa"]
             },
                 {
                 "name": "Cat",

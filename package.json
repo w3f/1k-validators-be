@@ -19,7 +19,7 @@
   "dependencies": {
     "@octokit/rest": "^17.6.0",
     "@polkadot/api": "^1.11.2",
-    "@polkadot/keyring": "^2.8.1",
+    "@polkadot/keyring": "^2.9.1",
     "@types/cron": "^1.7.1",
     "@types/koa": "^2.11.3",
     "@types/koa-bodyparser": "^4.3.0",

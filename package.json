@@ -1,6 +1,6 @@
 {
   "name": "1k-validators-be",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "Services for running the Thousand Validator Program.",
   "main": "index.js",
   "scripts": {
@@ -10,7 +10,7 @@
     "lint": "tsc --noEmit && eslint 'src/**/*.{js,ts,tsx}' --quiet",
     "lint:fix": "tsc --noEmit && eslint 'src/**/*.{js,ts,tsx}' --quiet --fix",
     "start": "NODE_OPTIONS='--max-old-space-size=4096' ts-node src/index.ts start",
-    "js:start": "NODE_OPTIONS='--max-old-space-size=4096' node build/index.js start --useEnvMatrixToken",
+    "js:start": "NODE_OPTIONS='--max-old-space-size=4096' node build/index.js start",
     "test": "ava test/**/*.spec.ts --timeout=10m",
     "test:api": "ts-node test/api/chaindata.ts"
   },

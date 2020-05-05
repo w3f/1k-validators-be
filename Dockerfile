@@ -1,4 +1,5 @@
 FROM node:slim
+ARG MATRIX_TOKEN
 WORKDIR /code
 COPY . .
 RUN ["yarn"]

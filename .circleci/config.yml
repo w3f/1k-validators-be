@@ -46,7 +46,7 @@ jobs:
       - setup_remote_docker
       - run:
           command: |
-            /scripts/build-image.sh web3f/otv-backend .
+            /scripts/build-image.sh web3f/otv-backend . --build-arg MATRIX_TOKEN=${MATRIX_TOKEN}
 
   integrationTests:
     docker:

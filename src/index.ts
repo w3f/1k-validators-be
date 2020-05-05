@@ -15,8 +15,6 @@ import logger from "./logger";
 import { sleep } from "./util";
 import { SIXTEEN_HOURS } from "./constants";
 
-import Migration from "./db/migrate";
-
 const loadConfig = (configPath: string) => {
   let conf = fs.readFileSync(configPath, { encoding: "utf-8" });
   if (conf.startsWith("'")) {
@@ -55,6 +53,8 @@ const catchAndQuit = async (fn: any) => {
 };
 
 const start = async (cmd: Command) => {
+  const { useEnvMatrixToken } = cmd;
+
   const config = loadConfigDir(cmd.config);
 
   logger.info(`Starting the backend services.`);
@@ -76,7 +76,13 @@ const start = async (cmd: Command) => {
   let maybeBot: any = false;
   if (config.matrix.enabled) {
     const { accessToken, baseUrl, userId } = config.matrix;
-    maybeBot = new MatrixBot(baseUrl, accessToken, userId, db, config);
+    maybeBot = new MatrixBot(
+      baseUrl,
+      useEnvMatrixToken ? process.env.MATRIX_TOKEN : accessToken,
+      userId,
+      db,
+      config
+    );
     maybeBot.start();
     maybeBot.sendMessage(`Backend services (re)-started!`);
   }
@@ -167,7 +173,12 @@ const start = async (cmd: Command) => {
 
 program
   .option("--config <directory>", "The path to the config directory.", "config")
+  .option(
+    "--useEnvMatrixToken",
+    "If true, will use the MATRIX_TOKEN environment variable instead of the one in the configuration.",
+    false
+  )
   .action((cmd: Command) => catchAndQuit(start(cmd)));
 
-program.version("1.2.2");
+program.version("1.2.3");
 program.parse(process.argv);

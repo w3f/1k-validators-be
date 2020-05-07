@@ -21,14 +21,15 @@ export default class Db {
       useUnifiedTopology: true,
     });
 
-    mongoose.connection.on("error", (err) => {
-      logger.error(`MongoDB connection issue: ${err}`);
-    });
-
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       mongoose.connection.once("open", () => {
         logger.info(`Established a connection to MongoDB.`);
         resolve(new Db(mongoose.connection));
+      });
+
+      mongoose.connection.on("error", (err) => {
+        logger.error(`MongoDB connection issue: ${err}`);
+        reject(err);
       });
     });
   }

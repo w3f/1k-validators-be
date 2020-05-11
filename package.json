@@ -1,6 +1,6 @@
 {
   "name": "1k-validators-be",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "description": "Services for running the Thousand Validator Program.",
   "main": "index.js",
   "scripts": {
@@ -37,7 +37,7 @@
     "matrix-js-sdk": "^6.0.0",
     "mongodb": "^3.5.7",
     "mongodb-memory-server": "^6.5.2",
-    "mongoose": "^5.9.12",
+    "mongoose": "^5.9.13",
     "nedb": "lasalvavida/nedb#stream-large-files",
     "prettier": "^2.0.4",
     "reconnecting-websocket": "^4.4.0",
@@ -45,14 +45,14 @@
     "ts-node": "^8.10.1",
     "typescript": "^3.7.5",
     "winston": "^3.2.1",
-    "ws": "^7.2.5"
+    "ws": "^7.3.0"
   },
   "devDependencies": {
     "@ava/typescript": "^1.1.0",
     "@typescript-eslint/eslint-plugin": "^2.31.0",
     "@typescript-eslint/parser": "^2.31.0",
-    "ava": "^3.8.1",
-    "eslint": "^6.8.0",
+    "ava": "^3.8.2",
+    "eslint": "^7.0.0",
     "eslint-plugin-security": "^1.4.0"
   },
   "config": {

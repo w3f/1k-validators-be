@@ -37,7 +37,7 @@
     "matrix-js-sdk": "^6.0.0",
     "mongodb": "^3.5.7",
     "mongodb-memory-server": "^6.5.2",
-    "mongoose": "^5.9.12",
+    "mongoose": "^5.9.13",
     "nedb": "lasalvavida/nedb#stream-large-files",
     "prettier": "^2.0.4",
     "reconnecting-websocket": "^4.4.0",

@@ -221,6 +221,102 @@ data:
                 "stash": "DAUrb4UVvwpYxbx6jTVqMquCW2QuafKcFCkgEpnYBcbwaRQ",
                 "riotHandle": "@andreisid:matrix.org",
                 "sentryId": "QmYTADoj77CAZgEWgJt7LsE4V18ZcFWKYbcSL9Hq5mUcSd"
+            },
+            {
+                "name": "clockchain",
+                "stash": "GHiteLMW6qa4s1MU4pUNvxu2vWEpPJwqEpn1SVJCzEBSE7Y",
+                "riotHandle": "@clockchain:matrix.org",
+                "sentryId": "QmNa2aZTVAkHGrmaUFoiymKRJcmU9zvji9dT8CddnK4qdB"
+            },
+            {
+                "name": "Cable-XVAL-1",
+                "stash": "H4Szoc2sxXxBTF1x88pDj9DCYERFvn4oqzQNsV7y89FnD1g",
+                "riotHandle": "@cable:matrix.org",
+                "sentryId": "QmVuPd5zXW6qYrSnSH7JfE8L9SzjfoXKJmoqZtvSnFqdpJ"
+            },
+            {
+                "name": "sebytza05_kusama1",
+                "stash": "DmhYesx1SpC5Edfh9xYNyKH1AbQx2W3HiVDLkPMvXqmiSVB",
+                "riotHandle": "@sebytza05:matrix.org",
+                "sentryId": "QmZV4JPrZTbQ4VsLr8QeiGjhkubkRK1ok1RKYhi8Ln2BrY"
+            },
+            {
+                "name": "TOKENIKA",
+                "stash": "EqbW9Q7nagHPjkYCZMK5qZ8KUcBJg9mp7jUDfmQz4RgP2Gx",
+                "riotHandle": "@kmanijak:matrix.org",
+                "sentryId": "QmTNX8RMzvp6uzsexdbpbsKQVNF1c4p111qy6yyjGYH5UY"
+            },
+            {
+                "name": "StakeTomato",
+                "stash": "EkpjJUusZu4FZxzC1EyYxoyCxKVGKAd5aEygoF38tqSv3C3",
+                "riotHandle": "@ade007:matrix.org",
+                "sentryId": "QmZiZY2KeU3dmDFi6hU2sszUX1VbfaWS7gBHiUL9DDmYCu"
+            },
+            {
+                "name": "YT-staking",
+                "stash": "EXS1FwCt9YvUMpqqrG7BUUonhoFDkqnHXPrHfSCATYvQCUc",
+                "riotHandle": "@xzhang:matrix.org",
+                "sentryId": "Qmbk9JtmpDdf2z7fWZs5xaXaWXVYBRy4LxJGC6bKmZpdgM"
+            },
+            {
+                "name": "Archipel-kusama-node-1",
+                "stash": "HKnRS3RryHjzTHGu42u6BtVp2cNuYoRVnrUJGeRAKqagsKY",
+                "riotHandle": ["@fbranciard:matrix.org", "@vladost:matrix.org"],
+                "sentryId": ["QmNVLob34jWuGr8npmE8te6MBMPhr3tfNddzvpBtkoep8P", "QmXgv3tkSS5G5BdLsqCnXzjeitE1ESEbRRh2D3LuhZX4Cc", "QmWoy2qPmPtGNnxh9y3C8vbRtPSkQsAraedFq4aaTTvekt"]
+            },
+            {
+                "name": "Genesis-Node",
+                "stash": "Cm6QfCvV3vud3X6Zfg3yMBEnG6JFNsn6EzcZv6UyqTefkR1",
+                "riotHandle": " @v0idum:matrix.org",
+                "sentryId": "QmRhFHgU4DHyZz87A2YYt5g7D2v78GfgxTc1BH9V7G4F2f"
+            },
+            {
+                "name": "otter-sv-validator-0",
+                "stash": "FrQ4W8Bo6wgXzkaGHLzVFSsfbWWHvqGGNP1YkRmTPSkN17J",
+                "riotHandle": "@krzysztof-jelski:matrix.org",
+                "sentryId": "Qma8j2NBhLxASTH25EqPDjdBf5SHAiYAvX4XeCmGiX8TRQ"
+            },
+            {
+                "name": "SNZPool",
+                "stash": "FJ68vDYXj1A7QxHKf6j7qcCdShrU2o5A2sZ3y5w4Rst2d3a",
+                "riotHandle": "@shuai.yuan:matrix.org",
+                "sentryId": "Qmc7jtg2EUzex8cYrUaxyUWRiu7YB1XifgD3Wogw4i2d8d"
+            },
+            {
+                "name": "Robonomics_team-01",
+                "stash": "Dcw5vVBmon1PCERJXkYLvvMVmAE8xdqytUwNQLE8p1Hm33J",
+                "riotHandle": "@spd_aira:matrix.org",
+                "sentryId": "QmYroXKU8ZVQgEethTsQ9RdzpKmCNsnK9Fqn7FhH25aL3y"
+            },
+            {
+                "name": "GontaValidator_1",
+                "stash": "D3ii6afqaMSFvw8R2NExE1qGQ8EawDsXTduSVm9y51K3Jnb",
+                "riotHandle": "@GontaJones:matrix.org",
+                "sentryId": "QmVZ4auez6WAtESVj7z17738u9t9vfajCTnHGJqEcXfgUT"
+            },
+            {
+                "name": "thirdwave-network-validator",
+                "stash": "G1nqzheixN1fuiW5CWYvZNWs8SDtwxvJEKKsWXveVFRkdQ4",
+                "riotHandle": "@tomaszwaszczyk:matrix.org",
+                "sentryId": "Qmed7fLYzxj4pt7siAqpJnmFzvAc2buM2QVs3ywMPaney6"
+            },
+            {
+                "name": "Axia",
+                "stash": "HnR4exC2rBF6MCGVQSH1tdf6UppPvnz8CLNSVCL3VPR4mzQ",
+                "riotHandle": "@axia_:matrix.org",
+                "sentryId": "QmaAdMqZYopaHV5BqqE91HmsQMDnp4mA8xcfCWwyzKcfrk"
+            },
+            {
+                "name": "alphavirtual-ne",
+                "stash": "GksmaRC5vew3tP7bEdeRfojsoFYKESjPVhwrZuyUTbMgb8c",
+                "riotHandle": "@nbolamav:matrix.org",
+                "sentryId": "Qmf83R5kpfTjCsB4Q9TXceD6X3CWKkjSN9kQuxJjfVJe6X"
+            },
+            {
+                "name": "Lightingfury Staking Lab",
+                "stash": "CaSNtNAiKEsQiTcEU9DamgFeji9Hh63QFo91XrmftCTNBva",
+                "riotHandle": "@aquariusluo:matrix.org",
+                "sentryId": "QmNTL5ZTzwLNowQpooFCkD3ox4PjM4F2TH92mHNtcfpZsq"
             }
         ],
         "forceRound": false,

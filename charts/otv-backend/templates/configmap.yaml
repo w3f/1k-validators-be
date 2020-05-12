@@ -160,7 +160,7 @@ data:
                 "name": "ryabinav1",
                 "stash": "D5Xo7N2jginhYchuMNud2dYtby899koFcaRo2YWNmUquo5H",
                 "riotHandle": "@ryabina:matrix.org",
-                "sentryId": "QmZpBSnBGE5p299jWGzHPwiP6rsSmav8Fca9ZxATh5xWp8"
+                "sentryId": ["QmZpBSnBGE5p299jWGzHPwiP6rsSmav8Fca9ZxATh5xWp8", "QmYyMuZtToeKe2oYn8iP4EJTW8unvv88PiSPPTkqf1pQep"]
             },
             {
                 "name": "🚀 PolkaStats",

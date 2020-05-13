@@ -481,7 +481,7 @@ export default class Db {
             name,
           },
           {
-            stash: "",
+            stash: null,
           }
         )
         .exec();

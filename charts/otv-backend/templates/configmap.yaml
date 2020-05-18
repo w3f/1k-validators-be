@@ -100,7 +100,11 @@ data:
                 "name": "MES-2",
                 "stash": "HZvvFHgPdhDr6DHN43xT1sP5fDyzLDFv5t5xwmXBrm6dusm",
                 "riotHandle": "@aaronschwarz:matrix.org",
-                "sentryId": "Qmc68W2ZMYB6LNbcq5JbABqNTRqqDHK3omMwY7dBrQe5vX"
+                "sentryId": [
+                    "QmYkpYs4DVE4DgLNZvczgRK3hP2PmYEWRXpwYcqKDqaFZ8",
+                    "QmdKXtUqGJQ3teC73v9vFmts4LdjcUMHF1YM5oXeQde6ZB",
+                    "QmR3HVXCH5LukRaxPVH8mvUn6dcceMGGu5frLy7DvZTwEc"
+                ]
             },
             {
                 "name": "Rick_Sanchez_C137",

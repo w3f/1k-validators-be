@@ -284,7 +284,7 @@ data:
                 "name": "SNZPool",
                 "stash": "FJ68vDYXj1A7QxHKf6j7qcCdShrU2o5A2sZ3y5w4Rst2d3a",
                 "riotHandle": "@shuai.yuan:matrix.org",
-                "sentryId": "Qmc7jtg2EUzex8cYrUaxyUWRiu7YB1XifgD3Wogw4i2d8d"
+                "sentryId": ["Qmc7jtg2EUzex8cYrUaxyUWRiu7YB1XifgD3Wogw4i2d8d", "QmS1kcF1YZ8WVi8uEnwtMjS2aYTdEmE4fmhqjPjuCsB4Zo"]
             },
             {
                 "name": "robonomics_team-01",

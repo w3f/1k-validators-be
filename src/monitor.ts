@@ -22,7 +22,7 @@ export default class Monitor {
     this.ghApi = new Octokit();
   }
 
-  public async getLatestTaggedRelease() {
+  public async getLatestTaggedRelease(): Promise<TaggedRelease> {
     logger.info("(Monitor::getLatestTaggedRelease) Fetching latest release");
 
     const tags = await this.ghApi.repos.listTags({
@@ -30,7 +30,11 @@ export default class Monitor {
       repo: "polkadot",
     });
 
-    const tagName = tags.data[0].name;
+    const lastKusamaRelease = tags.data.find((tag: any) => {
+      return semver.coerce(tag.name).minor === 7;
+    });
+
+    const tagName = lastKusamaRelease.name;
 
     if (
       this.latestTaggedRelease &&
@@ -56,6 +60,8 @@ export default class Monitor {
     logger.info(
       `Latest release updated: ${tagName} | Published at: ${publishedAt}`
     );
+
+    return this.latestTaggedRelease;
   }
 
   /// Ensures that nodes have upgraded within a `grace` period.

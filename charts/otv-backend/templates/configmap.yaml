@@ -337,8 +337,8 @@ data:
             {
                 "name": "sf-ksm-val-00",
                 "stash": "GXaUd6gyCaEoBVzXnkLVGneCF3idnLNtNZs5RHTugb9dCpY",
-                "riotHandle": "ops+kusama@stake.fish",
-                "sentryId": "@m4dbi7:matrix.org"
+                "riotHandle": "@m4dbi7:matrix.org",
+                "sentryId": "12D3KooWRf5fMhK4U1KWAeSu2FZ1fmvEhcgCjUgHoMGG1fkcPJW8"
             },
             {
                 "name": "LunaNova-KSM-Val1-ValidatorA",
@@ -349,7 +349,7 @@ data:
             {
                 "name": "King Kusama",
                 "stash": "EDHmmQtv8jGf3PGrsSJC2Bm2YWsF6DWTdKyTtBifPRHQTna",
-                "riotHandle": "@kingkusama:matrix.org",
+                "riotHandle": "@king-kusama:matrix.org",
                 "sentryId": "QmZwmhb3qfCkjHrzM1H5vGbZ521bb91aS4q3cBqMgAPZt2"
             },
             {

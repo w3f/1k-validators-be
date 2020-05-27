@@ -116,13 +116,13 @@ workflows:
               only: /.*/
           requires:
             - unitTests
-      - integrationTests:
-          filters:
-            tags:
-              only: /.*/
-          requires:
-            - helmLint
-            - buildImage
+      # - integrationTests:
+      #     filters:
+      #       tags:
+      #         only: /.*/
+      #     requires:
+      #       - helmLint
+      #       - buildImage
       - publishImage:
           filters:
             branches:
@@ -130,7 +130,7 @@ workflows:
             tags:
               only: /v[0-9]+(\.[0-9]+)*/
           requires:
-            - integrationTests
+            - buildImage
       - publishChart:
           filters:
             branches:
@@ -138,7 +138,7 @@ workflows:
             tags:
               only: /v[0-9]+(\.[0-9]+)*/
           requires:
-            - integrationTests
+            - buildImage
       - deploy:
           filters:
             branches:

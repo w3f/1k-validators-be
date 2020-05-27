@@ -3,6 +3,8 @@ import mongoose from "mongoose";
 import { CandidateSchema, NominatorSchema } from "./models";
 import logger from "../logger";
 
+import { getRawPeerId } from "../util";
+
 // Sets a global configuration to silence mongoose deprecation warnings.
 mongoose.set("useFindAndModify", false);
 
@@ -256,7 +258,7 @@ export default class Db {
   async findSentry(sentryId: string): Promise<[boolean, string]> {
     const nodes = await this.allNodes();
     const found = nodes.filter((node) => {
-      return node.networkId === sentryId;
+      return getRawPeerId(node.networkId) === getRawPeerId(sentryId);
     });
 
     logger.info(`FOUND: ${JSON.stringify(found)}`);

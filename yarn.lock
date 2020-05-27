@@ -2282,7 +2282,7 @@ hash-base@^3.0.0:
     readable-stream "^3.6.0"
     safe-buffer "^5.2.0"
 
-hash.js@^1.0.0, hash.js@^1.0.3:
+hash.js@^1.0.0, hash.js@^1.0.3, hash.js@^1.1.7:
   version "1.1.7"
   resolved "https://registry.yarnpkg.com/hash.js/-/hash.js-1.1.7.tgz#0babca538e8d4ee4a0f8988d68866537a003cf42"
   integrity sha512-taOaskGt4z4SOANNseOviYDvjEJinIkRgmp7LbKP2YTTmVxWBl87s/uzK9r+44BclBSp2X7K1hqeNfz9JbBeXA==
@@ -3227,7 +3227,6 @@ nedb@lasalvavida/nedb#stream-large-files:
   dependencies:
     async "0.2.10"
     binary-search-tree "0.2.5"
-    byline "5.0.0"
     localforage "^1.3.0"
     mkdirp "~0.5.1"
     underscore "~1.4.4"

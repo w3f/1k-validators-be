@@ -162,7 +162,7 @@ data:
             },
             {
                 "name": "ryabinav1",
-                "stash": "D5Xo7N2jginhYchuMNud2dYtby899koFcaRo2YWNmUquo5H",
+                "stash": "GxxV8DAcHCSzBbspu83AK9UoTYxzSQ6VVfdopjnkXfPtE8d",
                 "riotHandle": "@ryabina:matrix.org",
                 "sentryId": ["QmZpBSnBGE5p299jWGzHPwiP6rsSmav8Fca9ZxATh5xWp8", "QmYyMuZtToeKe2oYn8iP4EJTW8unvv88PiSPPTkqf1pQep"]
             },
@@ -284,7 +284,7 @@ data:
                 "name": "SNZPool",
                 "stash": "FJ68vDYXj1A7QxHKf6j7qcCdShrU2o5A2sZ3y5w4Rst2d3a",
                 "riotHandle": "@shuai.yuan:matrix.org",
-                "sentryId": "Qmc7jtg2EUzex8cYrUaxyUWRiu7YB1XifgD3Wogw4i2d8d"
+                "sentryId": ["Qmc7jtg2EUzex8cYrUaxyUWRiu7YB1XifgD3Wogw4i2d8d", "QmS1kcF1YZ8WVi8uEnwtMjS2aYTdEmE4fmhqjPjuCsB4Zo"]
             },
             {
                 "name": "robonomics_team-01",
@@ -321,6 +321,81 @@ data:
                 "stash": "CaSNtNAiKEsQiTcEU9DamgFeji9Hh63QFo91XrmftCTNBva",
                 "riotHandle": "@aquariusluo:matrix.org",
                 "sentryId": "QmNTL5ZTzwLNowQpooFCkD3ox4PjM4F2TH92mHNtcfpZsq"
+            },
+            {
+                "name": "Cube3-KSM-Val1-ValidatorA",
+                "stash": "J7Z1bxUB7qhxjqT5js6yAkCZoU1VYNxPvTdg9mtyNNbU845",
+                "riotHandle": "@mike-cube3:matrix.org",
+                "sentryId": "QmVP5W1nSbCUAz1UipB9HQaH3XsHxBJ39PYWbUJ9JgaZZv"
+            },
+            {
+                "name": "🚀🂱🂡 Fabrice Validator Vinsberg",
+                "stash": "GJYTvSewzH8UntrCfv99KByGggRijqXv8877oh1jsrdCEwg",
+                "riotHandle": "@fcroiseaux:matrix.org",
+                "sentryId": "QmUBjXUDZzmLoBhgGdAizsopqtECA4mPHe6LXdHq2WAKeE"
+            },
+            {
+                "name": "sf-ksm-val-00",
+                "stash": "GXaUd6gyCaEoBVzXnkLVGneCF3idnLNtNZs5RHTugb9dCpY",
+                "riotHandle": "@m4dbi7:matrix.org",
+                "sentryId": "12D3KooWRf5fMhK4U1KWAeSu2FZ1fmvEhcgCjUgHoMGG1fkcPJW8"
+            },
+            {
+                "name": "LunaNova-KSM-Val1-ValidatorA",
+                "stash": "CgpV58FSvuzGmfZXfiAQfkdDMVcFtpMq91ahk2zNYZdjdR9",
+                "riotHandle": "@pete-lunanova:matrix.org",
+                "sentryId": "QmZ5GE6h5dziLpte2MebgpXeKdmA1dq7uCGnxE4hrXdGfY"
+            },
+            {
+                "name": "King Kusama",
+                "stash": "EDHmmQtv8jGf3PGrsSJC2Bm2YWsF6DWTdKyTtBifPRHQTna",
+                "riotHandle": "@king-kusama:matrix.org",
+                "sentryId": "QmZwmhb3qfCkjHrzM1H5vGbZ521bb91aS4q3cBqMgAPZt2"
+            },
+            {
+                "name": "china_kusama",
+                "stash": "JCeGAwefQ4ePQreZ8hixznNQLgyT5QasCUm6znW7Xkh3u9U",
+                "riotHandle": "@yaanhyy:matrix.org",
+                "sentryId": "Qme3foDjkr93vodH4YpwyygRzzDkDjdBLsHmtwTbpJWBa5"
+            },
+            {
+                "name": "Sentosa 01",
+                "stash": "HqZG9NMeeHLuHq4v3JmwVkHvGoEGAnrnNfYSvd2VYADNi7Z",
+                "riotHandle": "@skyvalor:matrix.org",
+                "sentryId": ["QmNg1TwJHGZH6fpgK85fTTVdz8V6dGrVcvM3GtpLbCWjsz", "QmZEpcMtMK9FQuFR4vq8HVxEvSeg2tCGmdbC3RfuP2gWdJ"]
+            },
+            {
+                "name": "lantau",
+                "stash": "Hnfd2bJ224FQugYsaDvoj4v46HJieMeLe9UQzWtUR7wf5dh",
+                "riotHandle": "@nuevax:matrix.org",
+                "sentryId": "QmWgs18XQ6TTQReorLB57GchuEi6bs5tLe146sKiYqCasJ"
+            },
+            {
+                "name": "web3italy",
+                "stash": "Gt6HqWBhdu4Sy1u8ASTbS1qf2Ac5gwdegwr8tWN8saMxPt5",
+                "riotHandle": "@web3italy:matrix.org",
+                "sentryId": "QmRsNjr79Hhnv5Nv1VKso37R9Kgws6T43rfMUpfxSt4X5C"
+            },
+            {
+                "name": "Blockdaemon_😈_Validator_1",
+                "stash": "Etij9aH36W1NjjWbR7wB5j41CmfpqAx8D4V4HCJhUydSH9Y",
+                "riotHandle": ["@meshann:matrix.org", "@rickbd:matrix.org", "@nyet:matrix.org"]
+                "sentryId": [
+                    "QmQYXBJPZtaVspCNoRnGZcoxVMqSsUKGB3tRkMdQQnt119", 
+                    "QmS7onzrtst665Li5GNAbq8tQMKkmcLwynJjYx1YTvPbiG", 
+                    "QmUTxKQeRNSTbTxyw3TKgun3ycuE53Tt1oMuty5M7cu1gV", 
+                    "QmQTZDjcJzfeBVXjfnrLVWV9RMg7CpUBe8jdmyAf2u2YqT"
+                    ]
+            },
+            {
+                "name": "vos",
+                "stash": "Fk3yTFztZdZa4a7yBpisz9ceMyjgYLtZ9CKSCfFNVhoW2ZC",
+                "riotHandle": "@jleony:matrix.org",
+                "sentryId": [
+                    "QmNjrWKL6K2L72A9SADCotZb6pJk2TzThnTigsRmRa9kCn", 
+                    "QmXRyvvkkNymdnqEhD8JGadBCLSkc1pXpb6aFtKtWLBjkY", 
+                    "QmcJFQ1Gb6nRQVXWGRaC4i41bTbzFoJ6LsJJ6dzgcxTsSK"
+                ]
             }
         ],
         "forceRound": false,

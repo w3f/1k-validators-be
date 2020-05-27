@@ -379,7 +379,7 @@ data:
             {
                 "name": "Blockdaemon_😈_Validator_1",
                 "stash": "Etij9aH36W1NjjWbR7wB5j41CmfpqAx8D4V4HCJhUydSH9Y",
-                "riotHandle": ["@meshann:matrix.org", "@rickbd:matrix.org", "@nyet:matrix.org"]
+                "riotHandle": ["@meshann:matrix.org", "@rickbd:matrix.org", "@nyet:matrix.org"],
                 "sentryId": [
                     "QmQYXBJPZtaVspCNoRnGZcoxVMqSsUKGB3tRkMdQQnt119", 
                     "QmS7onzrtst665Li5GNAbq8tQMKkmcLwynJjYx1YTvPbiG", 

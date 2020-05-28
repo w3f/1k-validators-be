@@ -12,7 +12,14 @@ run_tests() {
 }
 
 teardown() {
+    retval=$?
+    if [ $retval -ne 0 ]; then
+        kubectl describe pod otv-backend-0
+        kubectl logs -l app=otv-backend
+    fi
+
     helmfile delete --purge
+    exit $retval
 }
 
 main(){

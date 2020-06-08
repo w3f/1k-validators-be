@@ -17,7 +17,7 @@
   "author": "Web3 Foundation <teched@web3.foundation>",
   "license": "GPL-3.0",
   "dependencies": {
-    "@octokit/rest": "^17.9.3",
+    "@octokit/rest": "^17.11.0",
     "@polkadot/api": "^1.17.2",
     "@polkadot/keyring": "^2.12.2",
     "@types/cron": "^1.7.1",

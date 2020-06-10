@@ -396,6 +396,46 @@ data:
                     "QmXRyvvkkNymdnqEhD8JGadBCLSkc1pXpb6aFtKtWLBjkY", 
                     "QmcJFQ1Gb6nRQVXWGRaC4i41bTbzFoJ6LsJJ6dzgcxTsSK"
                 ]
+            },
+            {
+                "name": "PefectStake",
+                "stash": "Dwq62USrcGMwZpJ4uNXR3Q6EMWxuyiwa91gYNN6Ekp9RMN6",
+                "riotHandle": "@alive29:matrix.org",
+                "sentryId": "QmSe8M2c173BWRL6mUP1gJiFtoNmiAeFTWeipeRmivXWCm"
+            },
+            {
+                "name": "AGx1",
+                "stash": "DVasGX5qBMrCwNM8SnLyFrRpeniAwAsWe2noN6jPdx1jjao",
+                "riotHandle": "@agx10000:matrix.org",
+                "sentryId": "12D3KooWSWk2baa1T6N9DsejB5DE9DB7t5Veph6qWzTaw1FyMFAj"
+            },
+            {
+                "name": "Tornado-Validator",
+                "stash": "HRYTEruAjwDD46kkgaTYpGHQC6uea3AkeLJg4iterSmmjo2",
+                "riotHandle": "@izit:matrix.org",
+                "sentryId": "12D3KooWBSsQyZPXPk9Gbuw4ovzFxgXUu3B2sUUyZ7WD3pyd3EZw"
+            },
+            {
+                "name": "punkrock-sv-validator-0",
+                "stash": "J75Bj4JkQ1oZ5Y2UCtLBq8FFHDdnrfTQgDGErvk9kyS1wMn",
+                "riotHandle": "@punkrock:matrix.org",
+                "sentryId": [
+                    "12D3KooWNFZTqKsCfsfSfJ687CfwJWjavzaRPg4Uy7QDagMnUG6K",
+                    "12D3KooWGmQS51DfpZ3sAxb9V6wrQCGnTQazZqRYW1TNGZrwj9q6",
+                    "12D3KooWMFG3J5mykDau3LEicPZQwHghQAuqCFwJT4pa6BgV3k8P"
+                ]
+            },
+            {
+                "name": "DrNo-sv-validator-0",
+                "stash": "FiNuPk2iPirbKC7Spse3NuE9rWjzaQonZmk6wRvk1LcEU13",
+                "riotHandle": "@goldeneye1:matrix.org",
+                "sentryId": "12D3KooWHXkAzN9MNYXxmxnXVaxV8FmPk5oekTgJPKHu8isuKnUR"
+            },
+            {
+                "name": "",
+                "stash": "",
+                "riotHandle": "",
+                "sentryId": ""
             }
         ],
         "forceRound": false,

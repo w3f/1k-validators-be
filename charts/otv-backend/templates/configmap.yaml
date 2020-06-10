@@ -430,12 +430,6 @@ data:
                 "stash": "FiNuPk2iPirbKC7Spse3NuE9rWjzaQonZmk6wRvk1LcEU13",
                 "riotHandle": "@goldeneye1:matrix.org",
                 "sentryId": "12D3KooWHXkAzN9MNYXxmxnXVaxV8FmPk5oekTgJPKHu8isuKnUR"
-            },
-            {
-                "name": "",
-                "stash": "",
-                "riotHandle": "",
-                "sentryId": ""
             }
         ],
         "forceRound": false,

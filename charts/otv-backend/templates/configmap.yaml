@@ -430,6 +430,18 @@ data:
                 "stash": "FiNuPk2iPirbKC7Spse3NuE9rWjzaQonZmk6wRvk1LcEU13",
                 "riotHandle": "@goldeneye1:matrix.org",
                 "sentryId": "12D3KooWHXkAzN9MNYXxmxnXVaxV8FmPk5oekTgJPKHu8isuKnUR"
+            },
+            {
+                "name": "NeNa",
+                "stash": "GhNL9Mi5KiL3Ge2jv4jUdncipZNnUFALbzmwg8QqwjxJxcp",
+                "riotHandle": "@nametaken:matrix.org",
+                "sentryId": "12D3KooWJxeyvrWCYmJVwW9xrU1URnHh2VUk1ibonTjmRsfz9Rkv"
+            },
+            {
+                "name": "cc001-sv-validator-0",
+                "stash": "GfbeqMNnxHNtictRpqo5Wfdjc8XSoWnFuBpgYB5oCJQbB6b",
+                "riotHandle": "@cc001:matrix.org",
+                "sentryId": "12D3KooWJc1Vs5yXSWMMrygHsm36F6pFD1dDNTncAJsSkWEfjvfB"
             }
         ],
         "forceRound": false,

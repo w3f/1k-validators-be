@@ -37,7 +37,7 @@
     "koa-bodyparser": "^4.3.0",
     "koa2-cors": "^2.0.6",
     "matrix-js-sdk": "^6.2.1",
-    "mongodb": "^3.5.8",
+    "mongodb": "^3.5.9",
     "mongodb-memory-server": "^6.6.1",
     "mongoose": "^5.9.18",
     "nedb": "lasalvavida/nedb#stream-large-files",

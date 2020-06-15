@@ -302,7 +302,7 @@ data:
                 "name": "thirdwave-network-validator",
                 "stash": "G1nqzheixN1fuiW5CWYvZNWs8SDtwxvJEKKsWXveVFRkdQ4",
                 "riotHandle": "@tomaszwaszczyk:matrix.org",
-                "sentryId": "Qmed7fLYzxj4pt7siAqpJnmFzvAc2buM2QVs3ywMPaney6"
+                "sentryId": "12D3KooWGe1XWT2T52nkGN4gbtij8CeJMNjm8tbKW8yHeNpJgKxJ"
             },
             {
                 "name": "Axia",
@@ -420,9 +420,9 @@ data:
                 "stash": "J75Bj4JkQ1oZ5Y2UCtLBq8FFHDdnrfTQgDGErvk9kyS1wMn",
                 "riotHandle": "@punkrock:matrix.org",
                 "sentryId": [
-                    "12D3KooWNFZTqKsCfsfSfJ687CfwJWjavzaRPg4Uy7QDagMnUG6K",
-                    "12D3KooWGmQS51DfpZ3sAxb9V6wrQCGnTQazZqRYW1TNGZrwj9q6",
-                    "12D3KooWMFG3J5mykDau3LEicPZQwHghQAuqCFwJT4pa6BgV3k8P"
+                   "12D3KooWQf2mydMbHZr1MG1krxvcz57WUsBeomjR1V5yCQVgX9sF",
+                    "12D3KooWLEGSUuVfUdrKknsxqed1n63Qg5TeK4j9kj1QRbjiCNhp",
+                    "12D3KooWKNYbba9oyStKFzaYW8TxhHHxS57WBz4QELUpBgYkXkYR"
                 ]
             },
             {

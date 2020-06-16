@@ -97,7 +97,7 @@ data:
                 "sentryId": "QmfFnn3WSsHbgBQkfitPvtYoqLfV3are5s45182d6SD1UU"
             },
             {
-                "name": "MES-2",
+                "name": "stateless.money-2",
                 "stash": "HZvvFHgPdhDr6DHN43xT1sP5fDyzLDFv5t5xwmXBrm6dusm",
                 "riotHandle": "@aaronschwarz:matrix.org",
                 "sentryId": [
@@ -381,9 +381,9 @@ data:
                 "stash": "Etij9aH36W1NjjWbR7wB5j41CmfpqAx8D4V4HCJhUydSH9Y",
                 "riotHandle": ["@meshann:matrix.org", "@rickbd:matrix.org", "@nyet:matrix.org"],
                 "sentryId": [
-                    "QmQYXBJPZtaVspCNoRnGZcoxVMqSsUKGB3tRkMdQQnt119", 
-                    "QmS7onzrtst665Li5GNAbq8tQMKkmcLwynJjYx1YTvPbiG", 
-                    "QmUTxKQeRNSTbTxyw3TKgun3ycuE53Tt1oMuty5M7cu1gV", 
+                    "QmQYXBJPZtaVspCNoRnGZcoxVMqSsUKGB3tRkMdQQnt119",
+                    "QmS7onzrtst665Li5GNAbq8tQMKkmcLwynJjYx1YTvPbiG",
+                    "QmUTxKQeRNSTbTxyw3TKgun3ycuE53Tt1oMuty5M7cu1gV",
                     "QmQTZDjcJzfeBVXjfnrLVWV9RMg7CpUBe8jdmyAf2u2YqT"
                     ]
             },
@@ -392,8 +392,8 @@ data:
                 "stash": "Fk3yTFztZdZa4a7yBpisz9ceMyjgYLtZ9CKSCfFNVhoW2ZC",
                 "riotHandle": "@jleony:matrix.org",
                 "sentryId": [
-                    "QmNjrWKL6K2L72A9SADCotZb6pJk2TzThnTigsRmRa9kCn", 
-                    "QmXRyvvkkNymdnqEhD8JGadBCLSkc1pXpb6aFtKtWLBjkY", 
+                    "QmNjrWKL6K2L72A9SADCotZb6pJk2TzThnTigsRmRa9kCn",
+                    "QmXRyvvkkNymdnqEhD8JGadBCLSkc1pXpb6aFtKtWLBjkY",
                     "QmcJFQ1Gb6nRQVXWGRaC4i41bTbzFoJ6LsJJ6dzgcxTsSK"
                 ]
             },

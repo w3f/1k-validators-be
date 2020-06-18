@@ -97,13 +97,14 @@ data:
                 "sentryId": "QmfFnn3WSsHbgBQkfitPvtYoqLfV3are5s45182d6SD1UU"
             },
             {
-                "name": "MES-2",
+                "name": "stateless.money-2",
                 "stash": "HZvvFHgPdhDr6DHN43xT1sP5fDyzLDFv5t5xwmXBrm6dusm",
                 "riotHandle": "@aaronschwarz:matrix.org",
                 "sentryId": [
-                    "QmYkpYs4DVE4DgLNZvczgRK3hP2PmYEWRXpwYcqKDqaFZ8",
-                    "QmdKXtUqGJQ3teC73v9vFmts4LdjcUMHF1YM5oXeQde6ZB",
-                    "QmR3HVXCH5LukRaxPVH8mvUn6dcceMGGu5frLy7DvZTwEc"
+                    "12D3KooWDb8iWRAHbNMpdDwxtERP2ANxj3rk6KHSayaNupAQhvTe",
+                    "12D3KooWMuRjcb5pnQ37DBaUKuRH2eb9iq9pqYyr5GTB4Zr3dwKD",
+                    "12D3KooWM5vdNaDHg5jjA8myYzmgGAKn9tqfqK96qspX3HetgbpQ",
+                    "12D3KooWEakzfKJNNi4WxYVk1S93nsQiyn2wNJqn9HaWh8vF2mRu"
                 ]
             },
             {
@@ -381,9 +382,9 @@ data:
                 "stash": "Etij9aH36W1NjjWbR7wB5j41CmfpqAx8D4V4HCJhUydSH9Y",
                 "riotHandle": ["@meshann:matrix.org", "@rickbd:matrix.org", "@nyet:matrix.org"],
                 "sentryId": [
-                    "QmQYXBJPZtaVspCNoRnGZcoxVMqSsUKGB3tRkMdQQnt119", 
-                    "QmS7onzrtst665Li5GNAbq8tQMKkmcLwynJjYx1YTvPbiG", 
-                    "QmUTxKQeRNSTbTxyw3TKgun3ycuE53Tt1oMuty5M7cu1gV", 
+                    "QmQYXBJPZtaVspCNoRnGZcoxVMqSsUKGB3tRkMdQQnt119",
+                    "QmS7onzrtst665Li5GNAbq8tQMKkmcLwynJjYx1YTvPbiG",
+                    "QmUTxKQeRNSTbTxyw3TKgun3ycuE53Tt1oMuty5M7cu1gV",
                     "QmQTZDjcJzfeBVXjfnrLVWV9RMg7CpUBe8jdmyAf2u2YqT"
                     ]
             },
@@ -392,8 +393,8 @@ data:
                 "stash": "Fk3yTFztZdZa4a7yBpisz9ceMyjgYLtZ9CKSCfFNVhoW2ZC",
                 "riotHandle": "@jleony:matrix.org",
                 "sentryId": [
-                    "QmNjrWKL6K2L72A9SADCotZb6pJk2TzThnTigsRmRa9kCn", 
-                    "QmXRyvvkkNymdnqEhD8JGadBCLSkc1pXpb6aFtKtWLBjkY", 
+                    "QmNjrWKL6K2L72A9SADCotZb6pJk2TzThnTigsRmRa9kCn",
+                    "QmXRyvvkkNymdnqEhD8JGadBCLSkc1pXpb6aFtKtWLBjkY",
                     "QmcJFQ1Gb6nRQVXWGRaC4i41bTbzFoJ6LsJJ6dzgcxTsSK"
                 ]
             },

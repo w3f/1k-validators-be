@@ -46,7 +46,7 @@
     "semver": "^7.3.2",
     "ts-node": "^8.10.2",
     "typescript": "^3.9.5",
-    "winston": "^3.2.1",
+    "winston": "^3.3.2",
     "ws": "^7.3.0"
   },
   "devDependencies": {

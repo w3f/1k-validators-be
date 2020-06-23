@@ -219,7 +219,10 @@ data:
                 "name": "⛓  Novy Validator ⛓ ",
                 "stash": "Cs7UFcNBsBV4Y65GsM3bDzpvinMKFQZyt6x9TrhVhc8ps4E",
                 "riotHandle": "@novy4:matrix.org",
-                "sentryId": "QmXXCFS3PRHE5wbnkRvJgvtkGkgoiEJ84mW3nzc5SAj9qS"
+                "sentryId": [
+                    "QmRx7FRV1GTYPtDmnQsZKP4x4cVuMC36g2zWgT9JrLUahu",
+                    "QmeRA3pUXaN3C4FFtGVmkRHKyq6dFQC6VtGBQEkrdZtAVn"
+                ]
             },
             {
                 "name": "stakethatV",

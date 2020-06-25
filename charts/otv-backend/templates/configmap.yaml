@@ -414,7 +414,7 @@ data:
                 "sentryId": "12D3KooWSWk2baa1T6N9DsejB5DE9DB7t5Veph6qWzTaw1FyMFAj"
             },
             {
-                "name": "Tornado-Validator",
+                "name": "Tornado-V1",
                 "stash": "HRYTEruAjwDD46kkgaTYpGHQC6uea3AkeLJg4iterSmmjo2",
                 "riotHandle": "@izit:matrix.org",
                 "sentryId": "12D3KooWBSsQyZPXPk9Gbuw4ovzFxgXUu3B2sUUyZ7WD3pyd3EZw"
@@ -446,6 +446,33 @@ data:
                 "stash": "GfbeqMNnxHNtictRpqo5Wfdjc8XSoWnFuBpgYB5oCJQbB6b",
                 "riotHandle": "@cc001:matrix.org",
                 "sentryId": "12D3KooWJc1Vs5yXSWMMrygHsm36F6pFD1dDNTncAJsSkWEfjvfB"
+            },
+            {
+                "name": "Red Dog Staking",
+                "stash": "G9kX2FiFymTEdUL1CgZj3pwjQQoQu6Gid7wzpraUZPHVrxb",
+                "riotHandle": "@snifferdog:matrix.org",
+                "sentryId": "12D3KooWMgWsjAJvXnF8qNc7ypcmQ86LjXB9cShe19PWB1TwmP6Q"
+            },
+            {
+                "name": "BladeRunner",
+                "stash": "CpYNXnYC1mPPRSXMHvm9EUuhEqHjvj6kCN4kshqMdEpPYSF",
+                "riotHandle": "@d3ckard:matrix.org",
+                "sentryId": "12D3KooWMaEnpJmJbEXHjJY6M6Go1n7FZR4wa6LLQUa2vZHEqr21"
+            },
+                        {
+                "name": "Saxemberg",
+                "stash": "J19LYGghRCe4Ct3VW4Vz1amMoUgogS1sh2FQvPWroKcDdb1",
+                "riotHandle": "@s_saxemberg:matrix.org",
+                "sentryId": [
+                    "12D3KooWEdfvQTHZowcqXdwntLQEojnjTXmYVDY3gwTi5NuHhH1m",
+                    "12D3KooWGTPRGMt4YGuEiMfBZM1s2xkgvhT11YG4cAVYFPFuXBs5"
+                ]
+            },
+            {
+                "name": "NotaRaspberryPi",
+                "stash": "JKmFAAo9QbR9w3cfSYxk7zdpNEXaN1XbX4NcMU1okAdpwYx",
+                "riotHandle": "@kscheyer:matrix.org",
+                "sentryId": "12D3KooWKbHbQab27WVp1V2b8TQsHRD4EAie4F1g6bwZXk7BkC1c"
             }
         ],
         "forceRound": false,

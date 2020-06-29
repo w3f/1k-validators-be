@@ -473,6 +473,12 @@ data:
                 "stash": "JKmFAAo9QbR9w3cfSYxk7zdpNEXaN1XbX4NcMU1okAdpwYx",
                 "riotHandle": "@kscheyer:matrix.org",
                 "sentryId": "12D3KooWKbHbQab27WVp1V2b8TQsHRD4EAie4F1g6bwZXk7BkC1c"
+            },
+            {
+                "name": "tsuki-validator-0",
+                "stash": "D3GpUSsNEnabe5mX8bCkq8Nnc9FVsZgb9nBbTjBq8t52GBg",
+                "riotHandle": "@nasamura:matrix.org",
+                "sentryId": "12D3KooWFWEZQtNQXancUipwu1MFFELa856XzLct16Yu2FQsxQvE"
             }
         ],
         "forceRound": false,

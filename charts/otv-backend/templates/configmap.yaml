@@ -479,6 +479,12 @@ data:
                 "stash": "D3GpUSsNEnabe5mX8bCkq8Nnc9FVsZgb9nBbTjBq8t52GBg",
                 "riotHandle": "@nasamura:matrix.org",
                 "sentryId": "12D3KooWFWEZQtNQXancUipwu1MFFELa856XzLct16Yu2FQsxQvE"
+            },
+            {
+                "name: "Stake Capital | StakeDAO",
+                "stash": "CsHw8cfzbnKdkCuUq24yuaPyJ1E5a55sNPqejJZ4h7CRtEs",
+                "riotHandle": "@bneiluj:matrix.org",
+                "sentyId": "12D3KooWEJLnqaxWA4V8eZLzxn9GRSpxrSerGhJFYqC3BD8wixqN"
             }
         ],
         "forceRound": false,

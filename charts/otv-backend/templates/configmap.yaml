@@ -484,7 +484,7 @@ data:
                 "name: "Stake Capital | StakeDAO",
                 "stash": "CsHw8cfzbnKdkCuUq24yuaPyJ1E5a55sNPqejJZ4h7CRtEs",
                 "riotHandle": "@bneiluj:matrix.org",
-                "sentyId": "12D3KooWEJLnqaxWA4V8eZLzxn9GRSpxrSerGhJFYqC3BD8wixqN"
+                "sentryId": "12D3KooWEJLnqaxWA4V8eZLzxn9GRSpxrSerGhJFYqC3BD8wixqN"
             }
         ],
         "forceRound": false,

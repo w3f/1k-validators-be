@@ -528,10 +528,10 @@
   dependencies:
     "@types/node" "*"
 
-"@types/nedb@^1.8.9":
-  version "1.8.9"
-  resolved "https://registry.yarnpkg.com/@types/nedb/-/nedb-1.8.9.tgz#3cb80a94dfe41bea1dc33c4ea39cd4e7f754abc4"
-  integrity sha512-w9Tl3DQCkdT0Ghes+PKhe+3/pZppBXuFFpSCjPJbb2KE3DjYmUpEyCYzjrAYlT9Y1TndnbbnChzkax2h/JorVQ==
+"@types/nedb@^1.8.10":
+  version "1.8.10"
+  resolved "https://registry.yarnpkg.com/@types/nedb/-/nedb-1.8.10.tgz#b3bdbe1a702751e55976581d79c8b344c059cf29"
+  integrity sha512-M0ISm1qsNvkdXNZml1r/1bEVqt5SJHF/LFcCtH5dHfsSIG0LEj5FhwK0f4fZy9WPCsXjmrKfpzgEW/bdQuKqmQ==
   dependencies:
     "@types/node" "*"
 

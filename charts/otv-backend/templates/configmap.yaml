@@ -463,9 +463,10 @@ data:
                 "name": "Saxemberg",
                 "stash": "J19LYGghRCe4Ct3VW4Vz1amMoUgogS1sh2FQvPWroKcDdb1",
                 "riotHandle": "@s_saxemberg:matrix.org",
-                "sentryId": [
+                "sentryId": [                        
                     "12D3KooWEdfvQTHZowcqXdwntLQEojnjTXmYVDY3gwTi5NuHhH1m",
-                    "12D3KooWGTPRGMt4YGuEiMfBZM1s2xkgvhT11YG4cAVYFPFuXBs5"
+                    "12D3KooWMqNmyeNdkc1Eusr2hiiJbGVL1g7wvqpk9JgtzXN5En9P",
+                    "12D3KooWK4eBgGypbtqCEQz7BBrTRg9saLzBAH1qQCeeSN4qV81B"
                 ]
             },
             {

@@ -282,7 +282,7 @@ data:
                 "name": "otter-sv-validator-1",
                 "stash": "FrQ4W8Bo6wgXzkaGHLzVFSsfbWWHvqGGNP1YkRmTPSkN17J",
                 "riotHandle": "@krzysztof-jelski:matrix.org",
-                "sentryId": ["12D3KooWL5FpGeHSeCNBESn4qE8SGnvs3ihuCN1efhBycQ9EMUHb", "12D3KooWGj2CKwdwsVuewEc8dGbS3xh5d5bAJEjx5s8uo7VJg9z5"]
+                "sentryId": ["12D3KooWL5FpGeHSeCNBESn4qE8SGnvs3ihuCN1efhBycQ9EMUHb"]
             },
             {
                 "name": "SNZPool",

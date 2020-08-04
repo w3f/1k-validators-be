@@ -491,7 +491,31 @@ data:
                 "name": "MantraDAO",
                 "stash": "HhZkxUEceUTr4FYNUAZECizfd5QLVKMdfZAL1eY3xPAPmwA",
                 "riotHandle": "@jp_mullin:matrix.org",
-                "sentryId": "12D3KooWQQ3Bb9L8YLCGHgadrCYqzDVMHpWMeNrXRjrKWWVZzbL3"
+                "sentryId": "12D3KooWRM91qCaRQgQp7d6btfTK1b997crfc3sWLChyJWo2YvGr"
+            },
+            {
+                "name": "Melange",
+                "stash": "EAhgtgo4qb6tbh3VwrPEgxne9qkwiqg5SzNHTmbqyoVyHk5",
+                "riotHandle": "@palace:tzchat.org",
+                "sentryId": "12D3KooWNFjDHHtHyeQEWASXhCT8e8jvQQkjeDn4USrc3UVek3ue"
+            },
+            {
+                "name": "liberty-sv-validator-0",
+                "stash": "DAexrmQxJ8TKiqpcU2QSn2QiGppGCpWZkJ9p7Nyhm7DW6nB",
+                "riotHandle": "@bluerare:matrix.org",
+                "sentryId": "12D3KooWJVd493qtTnPwFs11DPNPo6LtbaisYaYZiHNebaBqr3kF"
+            },
+            {
+                "name": "Angel",
+                "stash": "J7TBFB4UyLAsyaLa2hXXUc1rJbsTQwCfw15reKEj9NnYsae",
+                "riotHandle": "@hagie:matrix.org",
+                "sentryId": "12D3KooWHsyFCVGy6Dc9qCqjjbeL9i2esiM5ZG8JVW8mFUk3Hguz"
+            },
+            {
+                "name": "PDP_Validator",
+                "stash": "J7MmkYX4dJzUbNnU9ccemPFbxtsyaSgFVwAGMxx8k9Lf5cu",
+                "riotHandle": "@paveldp:matrix.org",
+                "sentryId": "12D3KooWDxA4ioT1nhAZRpsUJBGrJAbfKf2eo1fP3TtKXr9Hgcdt"
             }
         ],
         "forceRound": false,

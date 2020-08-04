@@ -1,6 +1,6 @@
 {
   "name": "1k-validators-be",
-  "version": "1.2.25",
+  "version": "1.2.26",
   "description": "Services for running the Thousand Validator Program.",
   "main": "index.js",
   "scripts": {
@@ -18,7 +18,7 @@
   "license": "GPL-3.0",
   "dependencies": {
     "@octokit/rest": "^18.0.3",
-    "@polkadot/api": "^1.26.1",
+    "@polkadot/api": "^1.27.1",
     "@polkadot/keyring": "^3.0.1",
     "@types/cron": "^1.7.1",
     "@types/koa": "^2.11.3",
@@ -37,9 +37,9 @@
     "koa-bodyparser": "^4.3.0",
     "koa2-cors": "^2.0.6",
     "matrix-js-sdk": "^8.0.0",
-    "mongodb": "^3.5.9",
+    "mongodb": "^3.6.0",
     "mongodb-memory-server": "^6.6.3",
-    "mongoose": "^5.9.26",
+    "mongoose": "^5.9.27",
     "nedb": "lasalvavida/nedb#stream-large-files",
     "prettier": "^2.0.4",
     "reconnecting-websocket": "^4.4.0",
@@ -51,10 +51,10 @@
   },
   "devDependencies": {
     "@ava/typescript": "^1.1.0",
-    "@typescript-eslint/eslint-plugin": "^3.7.1",
-    "@typescript-eslint/parser": "^3.7.1",
-    "ava": "^3.11.0",
-    "eslint": "^7.5.0",
+    "@typescript-eslint/eslint-plugin": "^3.8.0",
+    "@typescript-eslint/parser": "^3.8.0",
+    "ava": "^3.11.1",
+    "eslint": "^7.6.0",
     "eslint-plugin-security": "^1.4.0"
   },
   "config": {

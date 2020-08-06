@@ -47,10 +47,10 @@ spec:
         resources:
           limits:
             cpu: 600m
-            memory: 600Mi
+            memory: 1Gi
           requests:
             cpu: 300m
-            memory: 200Mi
+            memory: 400Mi
       {{- end }}
       volumes:
       - name: secret-config

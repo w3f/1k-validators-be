@@ -106,14 +106,6 @@ const start = async (cmd: Command) => {
   await monitor.getLatestTaggedRelease();
   await monitor.ensureUpgrades();
 
-  const sentryMonitor = new CronJob("30 * * * * *", async () => {
-    logger.info(
-      `\nsentryMonitor mem usage ${JSON.stringify(process.memoryUsage())}\n`
-    );
-    await monitor.ensureSentryOnline();
-  });
-  sentryMonitor.start();
-
   /// Once a week reset the offline accumulations of nodes.
   const clearFrequency = "* * * * * 0";
   const clearCron = new CronJob(clearFrequency, () => {
@@ -149,7 +141,6 @@ const start = async (cmd: Command) => {
 
   /// Runs right after adding candidates.
   sleep(3000);
-  await monitor.ensureSentryOnline();
 
   logger.info(
     `\nBefore sk mem usage ${JSON.stringify(process.memoryUsage())}\n`

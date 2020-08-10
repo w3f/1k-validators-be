@@ -26,7 +26,7 @@ export default class ScoreKeeper {
 
   public nominatorGroups: Array<NominatorGroup> = [];
 
-  constructor(api: ApiPromise, db: any, config: any, bot: any = false) {
+  constructor(api: ApiPromise, db: Db, config: any, bot: any = false) {
     this.api = api;
     this.db = db;
     this.config = config;
@@ -39,7 +39,7 @@ export default class ScoreKeeper {
     );
   }
 
-  async botLog(msg: string) {
+  async botLog(msg: string): Promise<void> {
     if (this.bot) {
       await this.bot.sendMessage(msg);
     }
@@ -47,15 +47,10 @@ export default class ScoreKeeper {
 
   /// Spawns a new nominator.
   _spawn(seed: string, maxNominations = 1): Nominator {
-    return new Nominator(
-      this.api,
-      this.db,
-      { seed, maxNominations },
-      this.botLog.bind(this)
-    );
+    return new Nominator(this.api, this.db, { seed, maxNominations });
   }
 
-  async addNominatorGroup(nominatorGroup: NominatorGroup) {
+  async addNominatorGroup(nominatorGroup: NominatorGroup): Promise<void> {
     const group = [];
     const now = getNow();
     for (const nominator of nominatorGroup) {
@@ -66,7 +61,7 @@ export default class ScoreKeeper {
     this.nominatorGroups.push(group);
   }
 
-  async begin(frequency: string) {
+  async begin(frequency: string): Promise<void> {
     // If `forceRound` is on - start immediately.
     if (this.config.scorekeeper.forceRound) {
       await this.startRound();
@@ -93,7 +88,7 @@ export default class ScoreKeeper {
   }
 
   /// Handles the beginning of a new round.
-  async startRound() {
+  async startRound(): Promise<void> {
     const now = new Date().getTime();
 
     // The nominations sent now won't be active until the next era.

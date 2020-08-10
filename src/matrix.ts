@@ -23,12 +23,12 @@ export default class MatrixBot {
     this.conf = config;
   }
 
-  start() {
+  start(): void {
     this.client.startClient();
     this.listenForCommands();
   }
 
-  listenForCommands() {
+  listenForCommands(): void {
     this.client.on(
       "Room.timeline",
       async (event: any, room: any, toStartOfTimeline: any) => {

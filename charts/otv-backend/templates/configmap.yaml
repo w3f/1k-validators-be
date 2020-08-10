@@ -13,7 +13,7 @@ data:
       },
       "constraints": {
         "skipConnectionTime": false,
-        "skipSentries": false
+        "skipSentries": true
       },
       "db": {
         "mongo": {

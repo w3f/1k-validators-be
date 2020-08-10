@@ -12,20 +12,13 @@ export default class Nominator {
   public maxNominations: number;
 
   private api: ApiPromise;
-  private botLog: any;
   private db: Database;
   private signer: KeyringPair;
 
-  constructor(
-    api: ApiPromise,
-    db: Database,
-    cfg: NominatorConfig,
-    botLog: any
-  ) {
+  constructor(api: ApiPromise, db: Database, cfg: NominatorConfig) {
     this.api = api;
     this.db = db;
     this.maxNominations = cfg.maxNominations;
-    this.botLog = botLog;
 
     const keyring = new Keyring({
       type: "sr25519",
@@ -35,7 +28,7 @@ export default class Nominator {
     logger.info(`(Nominator::constructor) Nominator spawned: ${this.address}`);
   }
 
-  public get address() {
+  public get address(): string {
     return this.signer.address;
   }
 

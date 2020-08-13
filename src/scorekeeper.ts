@@ -213,7 +213,7 @@ export default class ScoreKeeper {
 
     for (const badOne of bad.values()) {
       const { stash } = badOne;
-      await this.addPoint(stash);
+      await this.dockPoints(stash);
     }
   }
 

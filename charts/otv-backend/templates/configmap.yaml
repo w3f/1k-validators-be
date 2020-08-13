@@ -539,7 +539,7 @@ data:
                 "name": "StakedTech",
                 "stash": "FeucRg3Scsv1Fb4cz7iHUcJ6shczZv3j6QBCU426XUBQTMu",
                 "riotHandle": "@matherceg:matrix.org",
-                sentryId": ""
+                "sentryId": ""
             }
         ],
         "forceRound": false,

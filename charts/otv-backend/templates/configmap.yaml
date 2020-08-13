@@ -516,6 +516,30 @@ data:
                 "stash": "J7MmkYX4dJzUbNnU9ccemPFbxtsyaSgFVwAGMxx8k9Lf5cu",
                 "riotHandle": "@paveldp:matrix.org",
                 "sentryId": "12D3KooWDxA4ioT1nhAZRpsUJBGrJAbfKf2eo1fP3TtKXr9Hgcdt"
+            },
+            {
+                "name": "DelegaNetworks∞",
+                "stash": "CoqysGbay3t3Q7hXgEmGJJquhYYpo8PqLwvW1WsUwR7KvXm",
+                "riotHandle": "@cosmaut:matrix.org",
+                "sentryId": ""
+            },
+            {
+                "name": "Avtomax69",
+                "stash": "D6NRToQpB3LRqWX1K52PmdsdMfh8d31FouPwr58mTSQvgUS",
+                "riotHandle": "@maxim_m_1",
+                "sentryId": ""
+            },
+            {
+                "name": "Blackstone",
+                "stash": "HUhvDrXv3wScT5Xr7jFt7pgVjD2Nojm86sVbne53B4NJH2J",
+                "riotHandle": "@blackstone:matrix.org",
+                "sentryId": ""
+            },
+            {
+                "name": "StakedTech",
+                "stash": "FeucRg3Scsv1Fb4cz7iHUcJ6shczZv3j6QBCU426XUBQTMu",
+                "riotHandle": "@matherceg:matrix.org",
+                "sentryId": ""
             }
         ],
         "forceRound": false,

@@ -533,7 +533,7 @@ data:
                 "name": "Blackstone",
                 "stash": "HUhvDrXv3wScT5Xr7jFt7pgVjD2Nojm86sVbne53B4NJH2J",
                 "riotHandle": "@blackstone:matrix.org",
-                sentryId": ""
+                "sentryId": ""
             },
             {
                 "name": "StakedTech",

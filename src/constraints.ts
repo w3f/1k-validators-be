@@ -42,14 +42,6 @@ export class OTV implements Constraints {
       return [false, `${name} offline. Offline since ${offlineSince}.`];
     }
 
-    // Ensure the sentry is online.
-    if (sentryOfflineSince !== 0 && !this.skipSentry) {
-      return [
-        false,
-        `${name} sentry is offline. Offline since ${sentryOfflineSince}.`,
-      ];
-    }
-
     // Only take nodes that have been upgraded to latest versions.
     if (!updated) {
       return [false, `${name} is not running the latest client code.`];

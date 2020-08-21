@@ -542,7 +542,7 @@ data:
                 "sentryId": ""
             }
         ],
-        "forceRound": false,
+        "forceRound": true,
         "nominating": true
       },
       "server": {

@@ -41,7 +41,7 @@
     "mongodb-memory-server": "^6.6.4",
     "mongoose": "^5.10.0",
     "nedb": "lasalvavida/nedb#stream-large-files",
-    "prettier": "^2.0.4",
+    "prettier": "^2.1.0",
     "reconnecting-websocket": "^4.4.0",
     "semver": "^7.3.2",
     "ts-node": "^9.0.0",

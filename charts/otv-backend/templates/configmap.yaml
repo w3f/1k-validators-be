@@ -540,6 +540,30 @@ data:
                 "stash": "FeucRg3Scsv1Fb4cz7iHUcJ6shczZv3j6QBCU426XUBQTMu",
                 "riotHandle": "@matherceg:matrix.org",
                 "sentryId": ""
+            },
+            {
+                "name": "lab-node-cp1q",
+                "stash": "DY3hczPcJjHXScXkKwJZ7vgqTE4bZaCUa56XsAQH8gDzB7x",
+                "riotHandle": "@kogeler:matrix.org",
+                "sentryId": ""
+            },
+            {
+                "name": "HuobiPool",
+                "stash": "DfVSzaqigoaAzmiHpshztww8nJoWNaxX1rfbFniQk9JzfmB",
+                "riotHandle": "@sean.huobipool:matrix.org",
+                "sentryId": ""
+            },
+            {
+                "name": "TX1",
+                "stash": "EtuN1h92gaV961S15PwxN6GHyeonaojALZ8Dddgn1oDPRFt",
+                "riotHandle": "@olegan_:matrix.org",
+                "sentryId": ""
+            },
+            {
+                "name": "node_vw7pkg",
+                "stash": "Day71GSJAxUUiFic8bVaWoAczR3Ue3jNonBZthVHp2BKzyJ",
+                "riotHandle": "@day7:matrix.org",
+                "sentryId": ""
             }
         ],
         "forceRound": true,

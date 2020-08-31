@@ -38,7 +38,7 @@
     "koa2-cors": "^2.0.6",
     "matrix-js-sdk": "^8.1.0",
     "mongodb": "^3.6.0",
-    "mongodb-memory-server": "^6.6.4",
+    "mongodb-memory-server": "^6.6.7",
     "mongoose": "^5.10.0",
     "nedb": "lasalvavida/nedb#stream-large-files",
     "prettier": "^2.0.4",

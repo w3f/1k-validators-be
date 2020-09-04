@@ -564,6 +564,30 @@ data:
                 "stash": "Day71GSJAxUUiFic8bVaWoAczR3Ue3jNonBZthVHp2BKzyJ",
                 "riotHandle": "@day7:matrix.org",
                 "sentryId": ""
+            },
+            {
+                "name": "zhe world",
+                "stash": "HZrUY3jizvyrNknE9LSvTTSnkNayxAAW4GBcmRMoJMHZekM",
+                "riotHandle": "@zheworld:matrix.org",
+                "sentryId": ""
+            },
+            {
+                "name": "EasyStake",
+                "stash": "JFPb5PGc8hRdCFx9kkbnuAnUhaxGPMQygM7XjNsuebiZWTp",
+                "riotHandle": "@maksus:matrix.org",
+                "sentryId": ""
+            },
+            {
+                "name": "rocknode",
+                "stash": "EUviNVqJCsvWaKnSHdqyVQQaJB5zQv6szGKUdPKK1dsBvcn",
+                "riotHandle": "@rocknode:matrix.org",
+                "sentryId": ""
+            },
+            {
+                "name": "SlavaMo,
+                "stash": "D2r9AudNkHHpKfGtS5rpVHkchBoBhRsR6TmNcTuU4yiTp6w",
+                "riotHandle": "@slavamo:matrix.org",
+                "sentryId": ""
             }
         ],
         "forceRound": true,

@@ -584,11 +584,24 @@ data:
                 "sentryId": ""
             },
             {
-                "name": "SlavaMo,
+                "name": "SlavaMo",
                 "stash": "D2r9AudNkHHpKfGtS5rpVHkchBoBhRsR6TmNcTuU4yiTp6w",
                 "riotHandle": "@slavamo:matrix.org",
                 "sentryId": ""
+            },
+            {
+                "name": "KOLM",
+                "stash": "FchdrEErnNyhoYCPAbUmw5a9ZzPYbLeACUGC57Qd8ZrwhSG",
+                "riotHandle": "@aaeet:matrix.org",
+                "sentryId": ""
+            },
+            {
+                "name": "ANGL",
+                "stash": "Ef1zUqDDDNME7FwfD2AXKUD5NTixnrmwaF8cfjKwYnsHqCn",
+                "riotHandle": "@angl:matrix.org",
+                "sentryId": ""
             }
+
         ],
         "forceRound": true,
         "nominating": true

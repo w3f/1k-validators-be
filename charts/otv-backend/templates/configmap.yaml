@@ -540,7 +540,68 @@ data:
                 "stash": "FeucRg3Scsv1Fb4cz7iHUcJ6shczZv3j6QBCU426XUBQTMu",
                 "riotHandle": "@matherceg:matrix.org",
                 "sentryId": ""
+            },
+            {
+                "name": "lab-node-cp1q",
+                "stash": "DY3hczPcJjHXScXkKwJZ7vgqTE4bZaCUa56XsAQH8gDzB7x",
+                "riotHandle": "@kogeler:matrix.org",
+                "sentryId": ""
+            },
+            {
+                "name": "HuobiPool",
+                "stash": "DfVSzaqigoaAzmiHpshztww8nJoWNaxX1rfbFniQk9JzfmB",
+                "riotHandle": "@sean.huobipool:matrix.org",
+                "sentryId": ""
+            },
+            {
+                "name": "TX1",
+                "stash": "EtuN1h92gaV961S15PwxN6GHyeonaojALZ8Dddgn1oDPRFt",
+                "riotHandle": "@olegan_:matrix.org",
+                "sentryId": ""
+            },
+            {
+                "name": "node_vw7pkg",
+                "stash": "Day71GSJAxUUiFic8bVaWoAczR3Ue3jNonBZthVHp2BKzyJ",
+                "riotHandle": "@day7:matrix.org",
+                "sentryId": ""
+            },
+            {
+                "name": "zhe world",
+                "stash": "HZrUY3jizvyrNknE9LSvTTSnkNayxAAW4GBcmRMoJMHZekM",
+                "riotHandle": "@zheworld:matrix.org",
+                "sentryId": ""
+            },
+            {
+                "name": "EasyStake",
+                "stash": "JFPb5PGc8hRdCFx9kkbnuAnUhaxGPMQygM7XjNsuebiZWTp",
+                "riotHandle": "@maksus:matrix.org",
+                "sentryId": ""
+            },
+            {
+                "name": "rocknode",
+                "stash": "EUviNVqJCsvWaKnSHdqyVQQaJB5zQv6szGKUdPKK1dsBvcn",
+                "riotHandle": "@rocknode:matrix.org",
+                "sentryId": ""
+            },
+            {
+                "name": "SlavaMo",
+                "stash": "D2r9AudNkHHpKfGtS5rpVHkchBoBhRsR6TmNcTuU4yiTp6w",
+                "riotHandle": "@slavamo:matrix.org",
+                "sentryId": ""
+            },
+            {
+                "name": "KOLM",
+                "stash": "FchdrEErnNyhoYCPAbUmw5a9ZzPYbLeACUGC57Qd8ZrwhSG",
+                "riotHandle": "@aaeet:matrix.org",
+                "sentryId": ""
+            },
+            {
+                "name": "ANGL",
+                "stash": "Ef1zUqDDDNME7FwfD2AXKUD5NTixnrmwaF8cfjKwYnsHqCn",
+                "riotHandle": "@angl:matrix.org",
+                "sentryId": ""
             }
+
         ],
         "forceRound": true,
         "nominating": true

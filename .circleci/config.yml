@@ -27,7 +27,6 @@ jobs:
       - run:
           command: |
             yarn
-            # yarn; yarn test
 
   helmLint:
     docker:
@@ -46,7 +45,7 @@ jobs:
       - setup_remote_docker
       - run:
           command: |
-            /scripts/build-image.sh web3f/otv-backend .
+            yarn cache clean; /scripts/build-image.sh web3f/otv-backend .
 
   integrationTests:
     docker:

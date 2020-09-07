@@ -45,7 +45,7 @@ jobs:
       - setup_remote_docker
       - run:
           command: |
-            yarn cache clean; /scripts/build-image.sh web3f/otv-backend .
+            /scripts/build-image.sh web3f/otv-backend .
 
   integrationTests:
     docker:

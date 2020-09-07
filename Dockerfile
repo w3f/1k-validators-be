@@ -1,4 +1,4 @@
-FROM node:slim
+FROM node:14-slim
 ARG MATRIX_TOKEN
 WORKDIR /code
 COPY . .

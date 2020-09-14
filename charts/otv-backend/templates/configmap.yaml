@@ -561,7 +561,7 @@ data:
             },
             {
                 "name": "node_vw7pkg",
-                "stash": "Day71GSJAxUUiFic8bVaWoAczR3Ue3jNonBZthVHp2BKzyJ",
+                "stash": "DayVh23V32nFhvm2WojKx2bYZF1CirRgW2Jti9TXN9zaiH5",
                 "riotHandle": "@day7:matrix.org",
                 "sentryId": ""
             },
@@ -599,6 +599,30 @@ data:
                 "name": "ANGL",
                 "stash": "Ef1zUqDDDNME7FwfD2AXKUD5NTixnrmwaF8cfjKwYnsHqCn",
                 "riotHandle": "@angl:matrix.org",
+                "sentryId": ""
+            },
+            {
+                "name": "helping-hands 🤝",
+                "stash": "D7oihPA6DAP2qbYtFiHbqejYedwjo6sRPSUC9ZxM8r1T5kY",
+                "riotHandle": "@karuturirs:matrix.org",
+                "sentryId": ""
+            },
+            {
+                "name": "kusamaStaker",
+                "stash": "Ga23zKfKTthWAChktd6Pn9xCSAZkCbsAokkzB2mT82TsPYD",
+                "riotHandle": "usermax11:matrix.org",
+                "sentryId": ""
+            },
+            {
+                "name": "POLKADOT-KOREA",
+                "stash": "CupCfDnJnt5WYFPArdp5GNh3hFbyW7DwTRwhGadHyz3uLxR",
+                "riotHandle": "@polka_kr:matrix.org",
+                "sentryId": ""
+            },
+            {
+                "name": "Python",
+                "stash": "F5RKo68FmdnyMZ5BtoPQoing6etJDLmYMFwRSGLaErh8bGh",
+                "riotHandle": "@maxblock:matrix.org",
                 "sentryId": ""
             }
 

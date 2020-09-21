@@ -36,31 +36,9 @@ export default class Db {
     });
   }
 
-  /// TMP
-  async migrateCandidate(
-    name: string,
-    discoveredAt: number,
-    rank: number
-  ): Promise<any> {
-    const candidate = new this.candidateModel({
-      name,
-      discoveredAt,
-      rank,
-    });
-
-    return candidate.save();
-  }
-  /// END TMP
-
   // Adds a new candidate from the configuration file data.
-  async addCandidate(
-    name: string,
-    stash: string,
-    sentryId: string[]
-  ): Promise<boolean> {
-    logger.info(
-      `(Db::addCandidate) name: ${name} stash: ${stash} sentryId: ${sentryId}`
-    );
+  async addCandidate(name: string, stash: string): Promise<boolean> {
+    logger.info(`(Db::addCandidate) name: ${name} stash: ${stash}`);
 
     // Check to see if the candidate has already been added as a node.
     const data = await this.candidateModel.findOne({ name });
@@ -72,7 +50,6 @@ export default class Db {
       const candidate = new this.candidateModel({
         name,
         stash,
-        sentryId,
       });
       return candidate.save();
     }
@@ -85,7 +62,6 @@ export default class Db {
       },
       {
         stash,
-        sentryId,
       }
     );
   }
@@ -215,65 +191,6 @@ export default class Db {
         onlineSince: 0,
       }
     );
-  }
-
-  async reportSentryOnline(name: string, now: number): Promise<boolean> {
-    const data = await this.candidateModel.findOne({ name });
-    const { sentryOnlineSince } = data;
-    if (!sentryOnlineSince || sentryOnlineSince === 0) {
-      await this.candidateModel
-        .findOneAndUpdate(
-          {
-            name,
-          },
-          {
-            sentryOnlineSince: now,
-            sentryOfflineSince: 0,
-          }
-        )
-        .exec();
-    }
-
-    return true;
-  }
-
-  async reportSentryOffline(name: string, now: number): Promise<boolean> {
-    const data = await this.candidateModel.findOne({ name });
-    const { sentryOfflineSince } = data;
-    if (!sentryOfflineSince || sentryOfflineSince === 0) {
-      await this.candidateModel
-        .findOneAndUpdate(
-          { name },
-          {
-            sentryOfflineSince: now,
-            sentryOnlineSince: 0,
-          }
-        )
-        .exec();
-    }
-
-    return true;
-  }
-
-  async findSentry(sentryId: string): Promise<[boolean, string]> {
-    return [true, ""];
-    // const nodes = await this.allNodes();
-    // const found = nodes.filter((node) => {
-    //   return getRawPeerId(node.networkId) === getRawPeerId(sentryId);
-    // });
-
-    // logger.info(`FOUND: ${JSON.stringify(found)}`);
-
-    // if (found.length > 0) {
-    //   for (const node of found) {
-    //     const { offlineSince, name } = node;
-    //     if (offlineSince === 0) {
-    //       return [offlineSince === 0, name];
-    //     }
-    //   }
-    //   return [false, "All sentries are offline."];
-    // }
-    // return [false, "Did not find sentry in all nodes recorded."];
   }
 
   async reportUpdated(name: string, now: number): Promise<boolean> {

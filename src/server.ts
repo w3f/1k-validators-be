@@ -4,10 +4,10 @@ import cors from "koa2-cors";
 
 import Database from "./db";
 import logger from "./logger";
-import { OTV } from "./constraints";
+import { ApiPromise } from "@polkadot/api";
+import ScoreKeeper from "./scorekeeper";
 
-const API: any = {
-  FindSentries: "/sentries",
+const API = {
   GetCandidates: "/candidates",
   GetNodes: "/nodes",
   GetNominators: "/nominators",
@@ -21,7 +21,7 @@ export default class Server {
   private db: Database;
   private port: number;
 
-  constructor(db: Database, config: any, api: any) {
+  constructor(db: Database, config: any, scoreKeeper: ScoreKeeper) {
     this.app = new Koa();
     this.db = db;
     this.port = config.server.port;
@@ -29,49 +29,18 @@ export default class Server {
     this.app.use(cors());
     this.app.use(bodyparser());
 
-    this.app.use(async (ctx: any) => {
+    this.app.use(async (ctx) => {
       switch (ctx.url.toLowerCase()) {
         case API.ValidCandidates:
           {
-            const allCandidates = await this.db.allCandidates();
-            const valid = await new OTV(
-              api,
-              config.constraints.skipConnectionTime,
-              config.constraints.skipSentries
-            ).getValidCandidates(allCandidates);
+            const valid = scoreKeeper.constraints.validCandidateCache;
             ctx.body = valid;
           }
           break;
         case API.Invalid:
           {
-            const allCandidates = await this.db.allCandidates();
-            const result = await Promise.all(
-              allCandidates.map(async (candidate) => {
-                const [isValid, reason] = await new OTV(
-                  api,
-                  config.constraints.skipConnectionTime,
-                  config.constraints.skipSentries
-                ).checkSingleCandidate(candidate);
-
-                if (!isValid) return reason;
-              })
-            );
-
+            const result = scoreKeeper.constraints.invalidCandidateCache;
             ctx.body = result.filter((item) => !!item).join("\n");
-          }
-          break;
-        case API.FindSentries:
-          {
-            const allCandidates = await this.db.allCandidates();
-            const list = [];
-            for (const candidate of allCandidates) {
-              const [found, sentryName] = await this.db.findSentry(
-                candidate.sentryId
-              );
-              list.push([candidate.name, found, sentryName]);
-            }
-
-            ctx.body = list.map((entry) => JSON.stringify(entry)).join("\n\n");
           }
           break;
         case API.GetCandidates:
@@ -105,7 +74,7 @@ export default class Server {
     });
   }
 
-  start() {
+  start(): void {
     logger.info(`Now listening on ${this.port}`);
     this.app.listen(this.port);
   }

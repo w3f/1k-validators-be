@@ -62,9 +62,6 @@ const start = async (cmd: Command) => {
   const api = await createApi(config.global.wsEndpoint);
   const db = await Database.create(config.db.mongo.uri);
 
-  const server = new Server(db, config, api);
-  server.start();
-
   const telemetry = new TelemetryClient(config, db);
   telemetry.start();
 
@@ -129,12 +126,8 @@ const start = async (cmd: Command) => {
         continue;
       } else {
         const { name, stash } = candidate;
-        let { sentryId } = candidate;
-        if (!Array.isArray(sentryId)) {
-          sentryId = [sentryId];
-        }
 
-        await db.addCandidate(name, stash, sentryId);
+        await db.addCandidate(name, stash);
       }
     }
   }
@@ -152,11 +145,14 @@ const start = async (cmd: Command) => {
     "0 0 0 * * *"; // 24 hours
 
   scorekeeper.begin(scorekeeperFrequency);
+
+  const server = new Server(db, config, scorekeeper);
+  server.start();
 };
 
 program
   .option("--config <directory>", "The path to the config directory.", "config")
   .action((cmd: Command) => catchAndQuit(start(cmd)));
 
-program.version("1.3.7");
+program.version("1.4.0");
 program.parse(process.argv);

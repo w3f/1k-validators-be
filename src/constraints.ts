@@ -14,12 +14,35 @@ export interface Constraints {
 export class OTV implements Constraints {
   private chaindata: ChainData;
   private skipConnectionTime: boolean;
-  private skipSentry: boolean;
 
-  constructor(api: ApiPromise, skipConnectionTime = false, skipSentry = false) {
+  private validCache: CandidateData[] = [];
+  private invalidCache: string[] = [];
+
+  constructor(api: ApiPromise, skipConnectionTime = false) {
     this.chaindata = new ChainData(api);
     this.skipConnectionTime = skipConnectionTime;
-    this.skipSentry = skipSentry;
+  }
+
+  get validCandidateCache(): CandidateData[] {
+    return this.validCache;
+  }
+
+  get invalidCandidateCache(): string[] {
+    return this.invalidCache;
+  }
+
+  /// Returns true if it's a valid candidate or [false, "reason"] otherwise.
+  async getInvalidCandidates(candidates: CandidateData[]): Promise<string[]> {
+    const invalid = await Promise.all(
+      candidates.map(async (candidate) => {
+        const [isValid, reason] = await this.checkSingleCandidate(candidate);
+        if (!isValid) return reason;
+      })
+    );
+
+    this.invalidCache = invalid;
+
+    return invalid;
   }
 
   /// Returns true if it's a valid candidate or [false, "reason"] otherwise.
@@ -33,7 +56,6 @@ export class OTV implements Constraints {
       offlineAccumulated,
       offlineSince,
       onlineSince,
-      sentryOfflineSince,
       stash,
     } = candidate;
 
@@ -123,6 +145,9 @@ export class OTV implements Constraints {
         return a.nominatedAt - b.nominatedAt;
       }
     );
+
+    // Cache the value to return from the server.
+    this.validCache = validCandidates;
 
     return validCandidates;
   }

@@ -17,7 +17,7 @@ export default class ScoreKeeper {
   public bot: any;
   public chaindata: ChainData;
   public config: any;
-  private constraints: Constraints;
+  public constraints: OTV;
   public currentEra = 0;
   public currentTargets: string[];
   public db: Db;
@@ -34,8 +34,7 @@ export default class ScoreKeeper {
     this.chaindata = new ChainData(this.api);
     this.constraints = new OTV(
       this.api,
-      this.config.constraints.skipConnectionTime,
-      this.config.constraints.skipSentries
+      this.config.constraints.skipConnectionTime
     );
   }
 
@@ -62,6 +61,12 @@ export default class ScoreKeeper {
   }
 
   async begin(frequency: string): Promise<void> {
+    setInterval(async () => {
+      const allCandidates = await this.db.allCandidates();
+      await this.constraints.getInvalidCandidates(allCandidates);
+      await this.constraints.getValidCandidates(allCandidates);
+    }, 2 * 60 * 1000);
+
     // If `forceRound` is on - start immediately.
     if (this.config.scorekeeper.forceRound) {
       await this.startRound();

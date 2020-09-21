@@ -31,7 +31,7 @@ export default class Monitor {
     });
 
     const lastKusamaRelease = tags.data.find((tag: any) => {
-      return semver.coerce(tag.name).minor === 7;
+      return semver.coerce(tag.name).minor === 8;
     });
 
     const tagName = lastKusamaRelease.name;

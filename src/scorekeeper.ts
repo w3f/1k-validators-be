@@ -61,6 +61,12 @@ export default class ScoreKeeper {
   }
 
   async begin(frequency: string): Promise<void> {
+    setInterval(async () => {
+      const allCandidates = await this.db.allCandidates();
+      await this.constraints.getInvalidCandidates(allCandidates);
+      await this.constraints.getValidCandidates(allCandidates);
+    }, 2 * 60 * 1000);
+
     // If `forceRound` is on - start immediately.
     if (this.config.scorekeeper.forceRound) {
       await this.startRound();

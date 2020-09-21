@@ -15,7 +15,8 @@ export class OTV implements Constraints {
   private chaindata: ChainData;
   private skipConnectionTime: boolean;
 
-  private candidateCache: CandidateData[] = [];
+  private validCache: CandidateData[] = [];
+  private invalidCache: string[] = [];
 
   constructor(api: ApiPromise, skipConnectionTime = false) {
     this.chaindata = new ChainData(api);
@@ -23,7 +24,25 @@ export class OTV implements Constraints {
   }
 
   get validCandidateCache(): CandidateData[] {
-    return this.candidateCache;
+    return this.validCache;
+  }
+
+  get invalidCandidateCache(): string[] {
+    return this.invalidCache;
+  }
+
+  /// Returns true if it's a valid candidate or [false, "reason"] otherwise.
+  async getInvalidCandidates(candidates: CandidateData[]): Promise<string[]> {
+    const invalid = await Promise.all(
+      candidates.map(async (candidate) => {
+        const [isValid, reason] = await this.checkSingleCandidate(candidate);
+        if (!isValid) return reason;
+      })
+    );
+
+    this.invalidCache = invalid;
+
+    return invalid;
   }
 
   /// Returns true if it's a valid candidate or [false, "reason"] otherwise.
@@ -128,7 +147,7 @@ export class OTV implements Constraints {
     );
 
     // Cache the value to return from the server.
-    this.candidateCache = validCandidates;
+    this.validCache = validCandidates;
 
     return validCandidates;
   }

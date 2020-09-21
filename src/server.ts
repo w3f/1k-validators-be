@@ -39,20 +39,7 @@ export default class Server {
           break;
         case API.Invalid:
           {
-            const allCandidates = await this.db.allCandidates();
-            const result = await Promise.all(
-              allCandidates.map(async (candidate) => {
-                const [
-                  isValid,
-                  reason,
-                ] = await scoreKeeper.constraints.checkSingleCandidate(
-                  candidate
-                );
-
-                if (!isValid) return reason;
-              })
-            );
-
+            const result = scoreKeeper.constraints.invalidCandidateCache;
             ctx.body = result.filter((item) => !!item).join("\n");
           }
           break;

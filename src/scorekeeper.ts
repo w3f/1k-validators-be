@@ -17,7 +17,7 @@ export default class ScoreKeeper {
   public bot: any;
   public chaindata: ChainData;
   public config: any;
-  private constraints: Constraints;
+  public constraints: OTV;
   public currentEra = 0;
   public currentTargets: string[];
   public db: Db;

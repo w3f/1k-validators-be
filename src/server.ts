@@ -4,8 +4,8 @@ import cors from "koa2-cors";
 
 import Database from "./db";
 import logger from "./logger";
-import { OTV } from "./constraints";
 import { ApiPromise } from "@polkadot/api";
+import ScoreKeeper from "./scorekeeper";
 
 const API = {
   GetCandidates: "/candidates",
@@ -21,7 +21,7 @@ export default class Server {
   private db: Database;
   private port: number;
 
-  constructor(db: Database, config: any, api: ApiPromise) {
+  constructor(db: Database, config: any, scoreKeeper: ScoreKeeper) {
     this.app = new Koa();
     this.db = db;
     this.port = config.server.port;
@@ -33,11 +33,7 @@ export default class Server {
       switch (ctx.url.toLowerCase()) {
         case API.ValidCandidates:
           {
-            const allCandidates = await this.db.allCandidates();
-            const valid = await new OTV(
-              api,
-              config.constraints.skipConnectionTime
-            ).getValidCandidates(allCandidates);
+            const valid = scoreKeeper.constraints.validCandidateCache;
             ctx.body = valid;
           }
           break;
@@ -46,10 +42,12 @@ export default class Server {
             const allCandidates = await this.db.allCandidates();
             const result = await Promise.all(
               allCandidates.map(async (candidate) => {
-                const [isValid, reason] = await new OTV(
-                  api,
-                  config.constraints.skipConnectionTime
-                ).checkSingleCandidate(candidate);
+                const [
+                  isValid,
+                  reason,
+                ] = await scoreKeeper.constraints.checkSingleCandidate(
+                  candidate
+                );
 
                 if (!isValid) return reason;
               })

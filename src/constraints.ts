@@ -15,9 +15,15 @@ export class OTV implements Constraints {
   private chaindata: ChainData;
   private skipConnectionTime: boolean;
 
+  private candidateCache: CandidateData[] = [];
+
   constructor(api: ApiPromise, skipConnectionTime = false) {
     this.chaindata = new ChainData(api);
     this.skipConnectionTime = skipConnectionTime;
+  }
+
+  get validCandidateCache(): CandidateData[] {
+    return this.candidateCache;
   }
 
   /// Returns true if it's a valid candidate or [false, "reason"] otherwise.
@@ -120,6 +126,9 @@ export class OTV implements Constraints {
         return a.nominatedAt - b.nominatedAt;
       }
     );
+
+    // Cache the value to return from the server.
+    this.candidateCache = validCandidates;
 
     return validCandidates;
   }

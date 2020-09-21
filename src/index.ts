@@ -62,9 +62,6 @@ const start = async (cmd: Command) => {
   const api = await createApi(config.global.wsEndpoint);
   const db = await Database.create(config.db.mongo.uri);
 
-  const server = new Server(db, config, api);
-  server.start();
-
   const telemetry = new TelemetryClient(config, db);
   telemetry.start();
 
@@ -148,6 +145,9 @@ const start = async (cmd: Command) => {
     "0 0 0 * * *"; // 24 hours
 
   scorekeeper.begin(scorekeeperFrequency);
+
+  const server = new Server(db, config, scorekeeper);
+  server.start();
 };
 
 program

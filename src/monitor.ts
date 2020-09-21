@@ -65,7 +65,7 @@ export default class Monitor {
   }
 
   /// Ensures that nodes have upgraded within a `grace` period.
-  public async ensureUpgrades() {
+  public async ensureUpgrades() : Promise<void> {
     // If there is no tagged release stored in state, fetch it now.
     if (!this.latestTaggedRelease) {
       await this.getLatestTaggedRelease();
@@ -100,45 +100,6 @@ export default class Monitor {
       }
 
       await this.db.reportNotUpdated(name);
-    }
-  }
-
-  public async ensureSentryOnline() {
-    const candidates = await this.db.allCandidates();
-    const now = new Date().getTime();
-
-    if (!candidates.length) {
-      logger.info("(Monitor::ensureSentryOnline) No candidates in DB.");
-      return;
-    }
-
-    for (const candidate of candidates) {
-      const { name, sentryId } = candidate;
-      // Sometimes the sentries are in an array if more than one exists.
-      // The programme only requires a single to be running.
-      if (Array.isArray(sentryId)) {
-        let oneOnline = false;
-        for (const sId of sentryId) {
-          const [foundAndOnline] = await this.db.findSentry(sId);
-          if (foundAndOnline) {
-            oneOnline = true;
-            break;
-          }
-        }
-        if (oneOnline) {
-          await this.db.reportSentryOnline(name, now);
-        } else {
-          await this.db.reportSentryOffline(name, now);
-        }
-      } else {
-        // Just a single sentry to look for.
-        const [foundAndOnline] = await this.db.findSentry(sentryId);
-        if (foundAndOnline) {
-          await this.db.reportSentryOnline(name, now);
-        } else {
-          await this.db.reportSentryOffline(name, now);
-        }
-      }
     }
   }
 }

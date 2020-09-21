@@ -14,12 +14,10 @@ export interface Constraints {
 export class OTV implements Constraints {
   private chaindata: ChainData;
   private skipConnectionTime: boolean;
-  private skipSentry: boolean;
 
-  constructor(api: ApiPromise, skipConnectionTime = false, skipSentry = false) {
+  constructor(api: ApiPromise, skipConnectionTime = false) {
     this.chaindata = new ChainData(api);
     this.skipConnectionTime = skipConnectionTime;
-    this.skipSentry = skipSentry;
   }
 
   /// Returns true if it's a valid candidate or [false, "reason"] otherwise.
@@ -33,7 +31,6 @@ export class OTV implements Constraints {
       offlineAccumulated,
       offlineSince,
       onlineSince,
-      sentryOfflineSince,
       stash,
     } = candidate;
 

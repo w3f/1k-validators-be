@@ -193,7 +193,6 @@ export default class Db {
     );
   }
 
-
   async reportUpdated(name: string, now: number): Promise<boolean> {
     await this.candidateModel
       .findOneAndUpdate(

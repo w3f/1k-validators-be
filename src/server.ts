@@ -36,8 +36,7 @@ export default class Server {
             const allCandidates = await this.db.allCandidates();
             const valid = await new OTV(
               api,
-              config.constraints.skipConnectionTime,
-              config.constraints.skipSentries
+              config.constraints.skipConnectionTime
             ).getValidCandidates(allCandidates);
             ctx.body = valid;
           }
@@ -49,8 +48,7 @@ export default class Server {
               allCandidates.map(async (candidate) => {
                 const [isValid, reason] = await new OTV(
                   api,
-                  config.constraints.skipConnectionTime,
-                  config.constraints.skipSentries
+                  config.constraints.skipConnectionTime
                 ).checkSingleCandidate(candidate);
 
                 if (!isValid) return reason;

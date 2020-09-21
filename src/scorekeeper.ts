@@ -34,8 +34,7 @@ export default class ScoreKeeper {
     this.chaindata = new ChainData(this.api);
     this.constraints = new OTV(
       this.api,
-      this.config.constraints.skipConnectionTime,
-      this.config.constraints.skipSentries
+      this.config.constraints.skipConnectionTime
     );
   }
 

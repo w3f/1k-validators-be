@@ -65,7 +65,7 @@ export default class Monitor {
   }
 
   /// Ensures that nodes have upgraded within a `grace` period.
-  public async ensureUpgrades() : Promise<void> {
+  public async ensureUpgrades(): Promise<void> {
     // If there is no tagged release stored in state, fetch it now.
     if (!this.latestTaggedRelease) {
       await this.getLatestTaggedRelease();

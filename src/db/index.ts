@@ -10,7 +10,7 @@ export default class Db {
   private candidateModel: any;
   private nominatorModel: any;
 
-  constructor(connection: any) {
+  constructor() {
     this.candidateModel = mongoose.model("Candidate", CandidateSchema);
     this.nominatorModel = mongoose.model("Nominator", NominatorSchema);
   }
@@ -24,7 +24,7 @@ export default class Db {
     return new Promise((resolve, reject) => {
       mongoose.connection.once("open", () => {
         logger.info(`Established a connection to MongoDB.`);
-        resolve(new Db(mongoose.connection));
+        resolve(new Db());
       });
 
       mongoose.connection.on("error", (err) => {

@@ -3,8 +3,6 @@ import mongoose from "mongoose";
 import { CandidateSchema, NominatorSchema } from "./models";
 import logger from "../logger";
 
-import { getRawPeerId } from "../util";
-
 // Sets a global configuration to silence mongoose deprecation warnings.
 mongoose.set("useFindAndModify", false);
 
@@ -350,6 +348,25 @@ export default class Db {
         {
           rank: Math.floor(data.rank / 2),
           faults: data.faults + 1,
+        }
+      )
+      .exec();
+
+    return true;
+  }
+
+  async forgiveDockedPoints(stash: string): Promise<boolean> {
+    logger.info(`Forgiving docked points for ${stash}`);
+
+    const data = await this.candidateModel.findOne({ stash });
+    await this.candidateModel
+      .findOneAndUpdate(
+        {
+          stash,
+        },
+        {
+          rank: data.rank * 2 + 1,
+          faults: data.faults - 1,
         }
       )
       .exec();

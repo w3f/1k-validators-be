@@ -419,9 +419,6 @@ export default class Db {
           },
           {
             stash: null,
-            // TMP - forgive offline
-            offlineSince: 0,
-            offlineAccumulated: 0,
           }
         )
         .exec();

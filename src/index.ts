@@ -132,25 +132,6 @@ const start = async (cmd: Command) => {
     }
   }
 
-  const alreadyForgiven = [
-    "FrQ4W8Bo6wgXzkaGHLzVFSsfbWWHvqGGNP1YkRmTPSkN17J",
-    "DAUrb4UVvwpYxbx6jTVqMquCW2QuafKcFCkgEpnYBcbwaRQ",
-    "DNDBcYD8zzqAoZEtgNzouVp2sVxsvqzD4UdB5WrAUwjqpL8",
-    "D9rwRxuG8xm8TZf5tgkbPxhhTJK5frCJU9wvp59VRjcMkUf",
-    "HhcrzHdB5iBx823XNfBUukjj4TUGzS9oXS8brwLm4ovMuVp",
-  ];
-
-  // TMP - Forgive candidates
-  const candidates = await db.allCandidates();
-  for (const candidate of candidates) {
-    if (
-      candidate.faults == 1 &&
-      alreadyForgiven.indexOf(candidate.stash) === -1
-    ) {
-      await db.forgiveDockedPoints(candidate.stash);
-    }
-  }
-
   /// Runs right after adding candidates.
   sleep(3000);
 
@@ -173,5 +154,5 @@ program
   .option("--config <directory>", "The path to the config directory.", "config")
   .action((cmd: Command) => catchAndQuit(start(cmd)));
 
-program.version("1.4.2");
+program.version("1.4.3");
 program.parse(process.argv);

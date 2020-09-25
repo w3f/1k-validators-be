@@ -21,6 +21,7 @@ export default class TelemetryClient {
   private db: Database;
   private host: string;
   private socket: ReconnectingWebSocket;
+  private beingReported: Map<number, boolean> = new Map();
 
   constructor(config: any, db: Database) {
     this.config = config;
@@ -85,7 +86,7 @@ export default class TelemetryClient {
     return messages;
   }
 
-  private async _handle(message: any, timestamp: number) {
+  private async _handle(message: any) {
     const { action, payload } = message;
 
     switch (action) {
@@ -96,15 +97,28 @@ export default class TelemetryClient {
 
           MemNodes[parseInt(id)] = details;
 
+          // a mutex that will only update after its free to avoid race conditions
+          const waitUntilFree = async (id: number): Promise<void> => {
+            if (this.beingReported.get(id)) {
+              return new Promise((resolve) => {
+                setInterval(() => {
+                  if (!this.beingReported.get(id)) resolve();
+                }, 1000);
+              });
+            }
+          };
+
+          await waitUntilFree(parseInt(id));
           await this.db.reportOnline(id, details, now);
         }
         break;
       case TelemetryMessage.RemovedNode:
         {
-          const id = payload;
+          const id = parseInt(payload);
           const now = new Date().getTime();
 
-          const details = MemNodes[parseInt(id)];
+          //this is to get around security warning vvv
+          const details = MemNodes[parseInt(String(id))];
 
           if (!details) {
             logger.info(`Unknown node with ${id} reported offline.`);
@@ -113,7 +127,9 @@ export default class TelemetryClient {
           const name = details[0];
 
           logger.info(`(TELEMETRY) Reporting ${details[0]} OFFLINE`);
+          this.beingReported.set(id, true);
           await this.db.reportOffline(id, name, now);
+          this.beingReported.set(id, false);
         }
         break;
     }

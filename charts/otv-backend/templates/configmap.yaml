@@ -624,8 +624,19 @@ data:
                 "stash": "F5RKo68FmdnyMZ5BtoPQoing6etJDLmYMFwRSGLaErh8bGh",
                 "riotHandle": "@maxblock:matrix.org",
                 "sentryId": ""
+            },
+            {
+                "name": "OneMoreBlock-01",
+                "stash": "HRYTEruAjwDD46kkgaTYpGHQC6uea3AkeLJg4iterSmmjo2",
+                "riotHandle": "@izit:matrix.org",
+                "sentryId": "",
+            },
+            {
+                "name": "Taiwan 001",
+                "stash": "GCNeCFUCEjcJ8XQxJe1QuExpS61MavucrnEAVpcngWBYsP2",
+                "riotHandle": "@yaohsin:matrix.org",
+                "sentryId": "",
             }
-
         ],
         "forceRound": true,
         "nominating": true

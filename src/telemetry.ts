@@ -64,10 +64,9 @@ export default class TelemetryClient {
       };
 
       this.socket.onmessage = (msg: any) => {
-        const timestamp = new Date().getTime();
         const messages = this._deserialize(msg);
         for (const message of messages) {
-          this._handle(message, timestamp);
+          this._handle(message);
         }
       };
     });

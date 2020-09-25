@@ -629,13 +629,13 @@ data:
                 "name": "OneMoreBlock-01",
                 "stash": "HRYTEruAjwDD46kkgaTYpGHQC6uea3AkeLJg4iterSmmjo2",
                 "riotHandle": "@izit:matrix.org",
-                "sentryId": "",
+                "sentryId": ""
             },
             {
                 "name": "Taiwan 001",
                 "stash": "GCNeCFUCEjcJ8XQxJe1QuExpS61MavucrnEAVpcngWBYsP2",
                 "riotHandle": "@yaohsin:matrix.org",
-                "sentryId": "",
+                "sentryId": ""
             }
         ],
         "forceRound": true,

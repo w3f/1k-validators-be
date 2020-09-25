@@ -132,6 +132,14 @@ const start = async (cmd: Command) => {
     }
   }
 
+  // TMP - Forgive candidates
+  const candidates = await db.allCandidates();
+  for (const candidate of candidates) {
+    if (candidate.faults >= 1) {
+      await db.forgiveDockedPoints(candidate.stash);
+    }
+  }
+
   /// Runs right after adding candidates.
   sleep(3000);
 

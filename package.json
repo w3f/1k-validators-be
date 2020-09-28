@@ -35,7 +35,7 @@
     "koa": "^2.13.0",
     "koa-bodyparser": "^4.3.0",
     "koa2-cors": "^2.0.6",
-    "matrix-js-sdk": "^8.3.0",
+    "matrix-js-sdk": "^8.4.1",
     "mongodb": "^3.6.2",
     "mongodb-memory-server": "^6.8.0",
     "mongoose": "^5.10.6",

@@ -90,9 +90,9 @@ export default class Db {
       return candidate.save();
     }
 
-    if (!data.networkId) {
+    if (!data.networkId && networkId) {
       // A candidate that haven't had their node registered on the network yet.
-      return this.candidateModel
+      await this.candidateModel
         .findOneAndUpdate(
           {
             name,

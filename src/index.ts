@@ -60,6 +60,15 @@ const start = async (cmd: Command) => {
     `\nStart-up mem usage ${JSON.stringify(process.memoryUsage())}\n`
   );
   const api = await createApi(config.global.wsEndpoint);
+  api.on("disconnected", () => {
+    logger.info(`API Disconnected... Reconnecting...`);
+    api.connect();
+  });
+  api.on("error", (err: any) => {
+    logger.info(`API ERROR ${err.toString()} Reconnecting...`);
+    api.connect();
+  });
+
   const db = await Database.create(config.db.mongo.uri);
 
   const telemetry = new TelemetryClient(config, db);
@@ -162,5 +171,5 @@ program
   .option("--config <directory>", "The path to the config directory.", "config")
   .action((cmd: Command) => catchAndQuit(start(cmd)));
 
-program.version("1.4.7");
+program.version("1.4.9");
 program.parse(process.argv);

@@ -93,3 +93,11 @@ export default class Monitor {
     }
   }
 }
+
+// const test = async () => {
+//   const monitor = new Monitor({} as any, 0);
+//   const latestRelease = await monitor.getLatestTaggedRelease();
+//   console.log(latestRelease);
+// };
+
+// test();

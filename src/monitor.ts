@@ -25,40 +25,30 @@ export default class Monitor {
   public async getLatestTaggedRelease(): Promise<TaggedRelease> {
     logger.info("(Monitor::getLatestTaggedRelease) Fetching latest release");
 
-    const tags = await this.ghApi.repos.listTags({
+    const latestRelease = await this.ghApi.repos.getLatestRelease({
       owner: "paritytech",
       repo: "polkadot",
     });
 
-    const lastKusamaRelease = tags.data.find((tag: any) => {
-      return semver.coerce(tag.name).minor === 8;
-    });
-
-    const tagName = lastKusamaRelease.name;
+    const { tag_name, published_at } = latestRelease;
 
     if (
       this.latestTaggedRelease &&
-      tagName === this.latestTaggedRelease!.name
+      tag_name === this.latestTaggedRelease!.name
     ) {
       logger.info("(Monitor::getLatestTaggedRelease) No new release found");
       return;
     }
 
-    const release = await this.ghApi.repos.getReleaseByTag({
-      owner: "paritytech",
-      repo: "polkadot",
-      tag: tagName,
-    });
-
-    const publishedAt = new Date(release.data.published_at).getTime();
+    const publishedAt = new Date(published_at).getTime();
 
     this.latestTaggedRelease = {
-      name: tagName,
+      name: tag_name,
       publishedAt,
     };
 
     logger.info(
-      `Latest release updated: ${tagName} | Published at: ${publishedAt}`
+      `Latest release updated: ${tag_name} | Published at: ${publishedAt}`
     );
 
     return this.latestTaggedRelease;

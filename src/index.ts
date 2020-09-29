@@ -133,12 +133,12 @@ const start = async (cmd: Command) => {
   }
 
   // TMP - Forgive candidates
-  const candidates = await db.allCandidates();
-  for (const candidate of candidates) {
-    if (candidate.faults >= 1) {
-      await db.forgiveDockedPoints(candidate.stash);
-    }
-  }
+  // const candidates = await db.allCandidates();
+  // for (const candidate of candidates) {
+  //   if (candidate.faults >= 1) {
+  //     await db.forgiveDockedPoints(candidate.stash);
+  //   }
+  // }
 
   /// Runs right after adding candidates.
   sleep(3000);
@@ -162,5 +162,5 @@ program
   .option("--config <directory>", "The path to the config directory.", "config")
   .action((cmd: Command) => catchAndQuit(start(cmd)));
 
-program.version("1.4.5");
+program.version("1.4.6");
 program.parse(process.argv);

@@ -30,7 +30,7 @@ export default class Monitor {
       repo: "polkadot",
     });
 
-    const { tag_name, published_at } = latestRelease;
+    const { tag_name, published_at } = latestRelease.data;
 
     if (
       this.latestTaggedRelease &&

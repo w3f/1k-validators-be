@@ -18,7 +18,7 @@
   "license": "GPL-3.0",
   "dependencies": {
     "@octokit/rest": "^18.0.6",
-    "@polkadot/api": "^2.0.1",
+    "@polkadot/api": "^2.2.1",
     "@polkadot/keyring": "^3.5.1",
     "@types/cron": "^1.7.1",
     "@types/koa": "^2.11.4",

@@ -636,6 +636,30 @@ data:
                 "stash": "GCNeCFUCEjcJ8XQxJe1QuExpS61MavucrnEAVpcngWBYsP2",
                 "riotHandle": "@yaohsin:matrix.org",
                 "sentryId": ""
+            },
+            {
+                "name": "SatanaV",
+                "stash": "GoKrgg1FP1YW8B976sr3jf4QYdHUiqgKeVSFs6Am1FBK2zE",
+                "riotHandle": "@veiodruida:matrix.org",
+                "sentryId": ""
+            },
+            {
+                "name": "INSIGHT-0",
+                "stash": "JH7Vy4p3BWUe2VqKQsHiUjWvj5VuF8daqqN25L2oGT6kwt4",
+                "riotHandle": ["Robc-io", "shinyfoil", "MPKT_Insight"]
+                "sentryId": ""
+            },
+            {
+                "name": "ProofOfTrue",
+                "stash": "EraxW9FCtQtJpnKSKGPxNSrzASoXpHRhctRs8gZv7C7GvHN",
+                "riotHandle": "@verstak:matrix.org",
+                "sentryId": ""
+            },
+            {
+                "name": "thorbecke",
+                "stash": "FJibatkh7kA8YveBf4ALVvcpwWQRrrbE8mfKwXNNgz8vsop",
+                "riotHandle": "@jflatow:matrix.org",
+                "sentryId": ""
             }
         ],
         "forceRound": true,

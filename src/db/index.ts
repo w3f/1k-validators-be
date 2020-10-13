@@ -71,6 +71,7 @@ export default class Db {
     now: number
   ): Promise<boolean> {
     const [name, , version, , networkId] = details;
+    logger.info(JSON.stringify(details));
 
     logger.info(
       `(Db::reportOnline) Reporting ${name} with network ID ${networkId} ONLINE.`
@@ -435,7 +436,7 @@ export default class Db {
   }
 
   async allNodes(): Promise<any[]> {
-    return this.candidateModel.find({ networkId: /.*/ }).exec();
+    return this.candidateModel.find({ name: /.*/ }).exec();
   }
 
   async allNominators(): Promise<any[]> {

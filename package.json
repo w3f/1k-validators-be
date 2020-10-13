@@ -1,6 +1,6 @@
 {
   "name": "1k-validators-be",
-  "version": "1.4.9",
+  "version": "1.4.10",
   "description": "Services for running the Thousand Validator Program.",
   "main": "index.js",
   "scripts": {
@@ -18,12 +18,12 @@
   "license": "GPL-3.0",
   "dependencies": {
     "@octokit/rest": "^18.0.6",
-    "@polkadot/api": "^2.0.1",
+    "@polkadot/api": "^2.2.1",
     "@polkadot/keyring": "^3.5.1",
     "@types/cron": "^1.7.1",
     "@types/koa": "^2.11.4",
     "@types/koa-bodyparser": "^4.3.0",
-    "@types/node": "^14.11.2",
+    "@types/node": "^14.11.8",
     "@types/semver": "^7.3.4",
     "@types/ws": "^7.2.7",
     "bs58": "^4.0.1",
@@ -35,10 +35,10 @@
     "koa": "^2.13.0",
     "koa-bodyparser": "^4.3.0",
     "koa2-cors": "^2.0.6",
-    "matrix-js-sdk": "^8.4.1",
+    "matrix-js-sdk": "^8.5.0",
     "mongodb": "^3.6.2",
-    "mongodb-memory-server": "^6.8.1",
-    "mongoose": "^5.10.7",
+    "mongodb-memory-server": "^6.9.2",
+    "mongoose": "^5.10.9",
     "prettier": "^2.1.2",
     "reconnecting-websocket": "^4.4.0",
     "semver": "^7.3.2",
@@ -49,10 +49,10 @@
   },
   "devDependencies": {
     "@ava/typescript": "^1.1.0",
-    "@typescript-eslint/eslint-plugin": "^4.3.0",
-    "@typescript-eslint/parser": "^4.3.0",
+    "@typescript-eslint/eslint-plugin": "^4.4.1",
+    "@typescript-eslint/parser": "^4.4.1",
     "ava": "^3.13.0",
-    "eslint": "^7.10.0",
+    "eslint": "^7.11.0",
     "eslint-plugin-security": "^1.4.0"
   },
   "config": {

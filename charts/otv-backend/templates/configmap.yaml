@@ -646,7 +646,7 @@ data:
             {
                 "name": "INSIGHT-0",
                 "stash": "JH7Vy4p3BWUe2VqKQsHiUjWvj5VuF8daqqN25L2oGT6kwt4",
-                "riotHandle": ["@Robc-io:matrix.org", "@shinyfoil:matrix.org", "@MPKT_Insight:matrix.org"]
+                "riotHandle": ["@Robc-io:matrix.org", "@shinyfoil:matrix.org", "@MPKT_Insight:matrix.org"],
                 "sentryId": ""
             },
             {

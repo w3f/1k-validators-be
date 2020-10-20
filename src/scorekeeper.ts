@@ -144,10 +144,7 @@ export default class ScoreKeeper {
         const current = await this.db.getCurrentTargets(curNominator.address);
         if (current.length) {
           logger.info("Wiping the old targets before making new nominations.");
-          await this.db.clearCurrent(
-            curNominator.address,
-            new Date().getTime()
-          );
+          await this.db.clearCurrent(curNominator.address);
         }
 
         await curNominator.nominate(targets, this.config.global.dryRun);
@@ -191,7 +188,7 @@ export default class ScoreKeeper {
         }
 
         // Wipe targets.
-        await this.db.clearCurrent(nominator.address, now);
+        await this.db.clearCurrent(nominator.address);
 
         for (const stash of current) {
           const candidate = await this.db.getCandidate(stash);

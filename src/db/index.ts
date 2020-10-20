@@ -192,7 +192,7 @@ export default class Db {
     );
   }
 
-  async reportUpdated(name: string, now: number): Promise<boolean> {
+  async reportUpdated(name: string): Promise<boolean> {
     await this.candidateModel
       .findOneAndUpdate(
         {
@@ -279,7 +279,7 @@ export default class Db {
     return true;
   }
 
-  async clearCurrent(address: string, now: number): Promise<boolean> {
+  async clearCurrent(address: string): Promise<boolean> {
     logger.info(`(Db::clearCurrent) Clearing current for ${address}.`);
 
     await this.nominatorModel
@@ -445,5 +445,13 @@ export default class Db {
 
   async getCandidate(stash: string): Promise<any> {
     return this.candidateModel.findOne({ stash }).exec();
+  }
+
+  async getNodeByName(name: string): Promise<any> {
+    return this.candidateModel.findOne({ name }).exec();
+  }
+
+  async getNominator(address: string): Promise<any> {
+    return this.nominatorModel.findOne({ address }).exec();
   }
 }

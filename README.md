@@ -10,7 +10,7 @@ Requirements for prospective validators:
  - 50 KSM.
  - Signed up on the [form][form] and has received approval.
  - Connection to the private telemetry.
- - Seven days of online sentry and validator infrastructure.
+ - Seven days of online validator infrastructure.
 
 Please see the [blog post][thousand] for more information and requirements for
 entering the program.

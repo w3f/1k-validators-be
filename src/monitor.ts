@@ -71,7 +71,12 @@ export default class Monitor {
       const latestVersion = semver.clean(this.latestTaggedRelease.name);
       logger.info(`${name} | version: ${nodeVersion} latest: ${latestVersion}`);
 
-      if (!nodeVersion) return;
+      if (!nodeVersion) {
+        if (updated) {
+          await this.db.reportNotUpdated(name);
+        }
+        continue;
+      }
 
       const isUpgraded = semver.gte(nodeVersion, latestVersion);
 

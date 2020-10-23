@@ -660,6 +660,24 @@ data:
                 "stash": "FJibatkh7kA8YveBf4ALVvcpwWQRrrbE8mfKwXNNgz8vsop",
                 "riotHandle": "@jflatow:matrix.org",
                 "sentryId": ""
+            },
+            {
+                "name": "Fennel Validator 0",
+                "stash": "Cd2ewfXdQiaUzTBYKSZTzL7hPuB3nzEKMT2y36zJC9QaEG4",
+                "riotHandle": "@romulus10:fennel.ems.host",
+                "sentryId": ""
+            },
+            {
+                "name": "🚀PromoTeam🚀 | Validator",
+                "stash": "GqPDeJBexSsvEq6gBzrnMCn7KNYbzn9bX9ePCjEDN3EikoV",
+                "riotHandle": "@alex-m:matrix.org",
+                "sentryId": ""
+            },
+            {
+                "name": "Stakezilla",
+                "stash": "EYLWsnmix2ZYGG1jBedDgUhQQ4cAjpbqH7KvggKYACrBKGr",
+                "riotHandle": "@dczoicas:matrix.org",
+                "sentryId": ""
             }
         ],
         "forceRound": true,

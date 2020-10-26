@@ -10,7 +10,10 @@ import logger from "./logger";
 import { CandidateData, Stash } from "./types";
 import { getNow } from "./util";
 
-type NominatorGroup = any[];
+type NominatorSeed = { seed: string };
+type NominatorGroup = NominatorSeed[];
+
+type SpawnedNominatorGroup = Nominator[];
 
 export default class ScoreKeeper {
   public api: ApiPromise;
@@ -24,7 +27,7 @@ export default class ScoreKeeper {
   // Keeps track of a starting era for a round.
   public startEra = 0;
 
-  public nominatorGroups: Array<NominatorGroup> = [];
+  private nominatorGroups: Array<SpawnedNominatorGroup> = [];
 
   constructor(api: ApiPromise, db: Db, config: any, bot: any = false) {
     this.api = api;
@@ -38,6 +41,18 @@ export default class ScoreKeeper {
     );
   }
 
+  getAllNominatorGroups(): SpawnedNominatorGroup[] {
+    return this.nominatorGroups;
+  }
+
+  getNominatorGroupAtIndex(index: number): SpawnedNominatorGroup {
+    if (index < 0 || index >= this.nominatorGroups.length) {
+      throw new Error("Index out of bounds.");
+    }
+
+    return this.nominatorGroups[index];
+  }
+
   async botLog(msg: string): Promise<void> {
     if (this.bot) {
       await this.bot.sendMessage(msg);
@@ -49,7 +64,7 @@ export default class ScoreKeeper {
     return new Nominator(this.api, this.db, { seed, maxNominations });
   }
 
-  async addNominatorGroup(nominatorGroup: NominatorGroup): Promise<void> {
+  async addNominatorGroup(nominatorGroup: NominatorGroup): Promise<boolean> {
     const group = [];
     const now = getNow();
     for (const nominator of nominatorGroup) {
@@ -58,6 +73,8 @@ export default class ScoreKeeper {
       group.push(nom);
     }
     this.nominatorGroups.push(group);
+
+    return true;
   }
 
   async begin(frequency: string): Promise<void> {
@@ -93,7 +110,7 @@ export default class ScoreKeeper {
   }
 
   /// Handles the beginning of a new round.
-  async startRound(): Promise<void> {
+  async startRound(): Promise<string[]> {
     const now = new Date().getTime();
 
     // The nominations sent now won't be active until the next era.
@@ -109,14 +126,15 @@ export default class ScoreKeeper {
       allCandidates
     );
 
-    await this._doNominations(validCandidates, 16, this.nominatorGroups);
+    return await this._doNominations(validCandidates, 16, this.nominatorGroups);
   }
 
   async _doNominations(
     candidates: CandidateData[],
     setSize: number,
-    nominatorGroups: NominatorGroup[] = []
-  ): Promise<void> {
+    nominatorGroups: SpawnedNominatorGroup[] = [],
+    dryRun = false
+  ): Promise<string[]> {
     // A "subset" is a group of 16 validators since this is the max that can
     // be nominated by a single account.
     const subsets = [];
@@ -124,7 +142,7 @@ export default class ScoreKeeper {
       subsets.push(candidates.slice(i, i + setSize));
     }
 
-    const totalTargets = [];
+    const totalTargets: string[] = [];
     let count = 0;
     for (const subset of subsets) {
       const targets = subset.map((candidate) => candidate.stash);
@@ -142,12 +160,15 @@ export default class ScoreKeeper {
         );
 
         const current = await this.db.getCurrentTargets(curNominator.address);
-        if (current.length) {
+        if (!!current.length) {
           logger.info("Wiping the old targets before making new nominations.");
           await this.db.clearCurrent(curNominator.address);
         }
 
-        await curNominator.nominate(targets, this.config.global.dryRun);
+        await curNominator.nominate(
+          targets,
+          dryRun || this.config.global.dryRun
+        );
       }
       count++;
     }
@@ -158,6 +179,8 @@ export default class ScoreKeeper {
         .map((target) => `- ${target}`)
         .join("\n")}`
     );
+
+    return totalTargets;
   }
 
   async _getCurrentEra(): Promise<number> {

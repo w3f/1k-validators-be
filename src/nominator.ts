@@ -35,11 +35,6 @@ export default class Nominator {
   public async nominate(targets: Stash[], dryRun = false): Promise<boolean> {
     const now = new Date().getTime();
 
-    const tx = this.api.tx.staking.nominate(targets);
-    logger.info(
-      `(Nominator::nominate) Sending extrinsic Staking::nominate from ${this.address} to targets ${targets} at ${now}`
-    );
-
     if (dryRun) {
       logger.info(`DRY RUN - STUBBING TRANSACTIONS`);
       for (const stash of targets) {
@@ -47,6 +42,11 @@ export default class Nominator {
         await this.db.setLastNomination(this.address, now);
       }
     } else {
+      const tx = this.api.tx.staking.nominate(targets);
+      logger.info(
+        `(Nominator::nominate) Sending extrinsic Staking::nominate from ${this.address} to targets ${targets} at ${now}`
+      );
+
       const unsub = await tx.signAndSend(this.signer, async (result: any) => {
         const { status } = result;
 

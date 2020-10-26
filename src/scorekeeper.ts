@@ -74,6 +74,12 @@ export default class ScoreKeeper {
     }
     this.nominatorGroups.push(group);
 
+    await this.botLog(
+      `Nominator group added! Nominator addresses: ${group
+        .map((n) => n.address)
+        .join(" ")}`
+    );
+
     return true;
   }
 

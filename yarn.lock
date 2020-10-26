@@ -2841,10 +2841,10 @@ matcher@^3.0.0:
   dependencies:
     escape-string-regexp "^4.0.0"
 
-matrix-js-sdk@^8.5.0:
-  version "8.5.0"
-  resolved "https://registry.yarnpkg.com/matrix-js-sdk/-/matrix-js-sdk-8.5.0.tgz#02d77e0e95fe32dcc74e0a94707f9103badfdca5"
-  integrity sha512-RJCqK/QkesL+63rX4C4mShEFw/ZR20D1UMw1RKY8pQhv1/7Skz+v5BTv/UCqG45E3rRYMarNOwy13CZ+yq33FA==
+matrix-js-sdk@^9.0.0:
+  version "9.0.0"
+  resolved "https://registry.yarnpkg.com/matrix-js-sdk/-/matrix-js-sdk-9.0.0.tgz#97d995fcb4209161a761cf59238caf52ff34882b"
+  integrity sha512-GEQ51wxnBfY00m39aMWVa2/sZqUFBsRWrsImr+mkXtPYs1OQVXHVipL2B3/rObOO+A+3bo7tfoaTTxhpQl2CaQ==
   dependencies:
     "@babel/runtime" "^7.11.2"
     another-json "^0.2.0"

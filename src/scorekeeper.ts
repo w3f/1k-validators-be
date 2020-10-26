@@ -110,7 +110,7 @@ export default class ScoreKeeper {
   }
 
   /// Handles the beginning of a new round.
-  async startRound(): Promise<void> {
+  async startRound(): Promise<string[]> {
     const now = new Date().getTime();
 
     // The nominations sent now won't be active until the next era.
@@ -126,14 +126,15 @@ export default class ScoreKeeper {
       allCandidates
     );
 
-    await this._doNominations(validCandidates, 16, this.nominatorGroups);
+    return await this._doNominations(validCandidates, 16, this.nominatorGroups);
   }
 
   async _doNominations(
     candidates: CandidateData[],
     setSize: number,
-    nominatorGroups: SpawnedNominatorGroup[] = []
-  ): Promise<void> {
+    nominatorGroups: SpawnedNominatorGroup[] = [],
+    dryRun = false
+  ): Promise<string[]> {
     // A "subset" is a group of 16 validators since this is the max that can
     // be nominated by a single account.
     const subsets = [];
@@ -141,7 +142,7 @@ export default class ScoreKeeper {
       subsets.push(candidates.slice(i, i + setSize));
     }
 
-    const totalTargets = [];
+    const totalTargets: string[] = [];
     let count = 0;
     for (const subset of subsets) {
       const targets = subset.map((candidate) => candidate.stash);
@@ -159,12 +160,15 @@ export default class ScoreKeeper {
         );
 
         const current = await this.db.getCurrentTargets(curNominator.address);
-        if (current.length) {
+        if (!!current.length) {
           logger.info("Wiping the old targets before making new nominations.");
           await this.db.clearCurrent(curNominator.address);
         }
 
-        await curNominator.nominate(targets, this.config.global.dryRun);
+        await curNominator.nominate(
+          targets,
+          dryRun || this.config.global.dryRun
+        );
       }
       count++;
     }
@@ -175,6 +179,8 @@ export default class ScoreKeeper {
         .map((target) => `- ${target}`)
         .join("\n")}`
     );
+
+    return totalTargets;
   }
 
   async _getCurrentEra(): Promise<number> {

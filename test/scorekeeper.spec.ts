@@ -1,6 +1,7 @@
 import test, { ExecutionContext } from "ava";
 import Db from "../src/db";
 import Scorekeeper from "../src/scorekeeper";
+import { CandidateData } from "../src/types";
 
 import { MockApi, MockConfig } from "./mock";
 import MockDb from "./mock/db";
@@ -59,5 +60,68 @@ test.serial(
     t.is(nomGroupTwo.length, 4);
     const nomGroupThree = sk.getNominatorGroupAtIndex(2);
     t.is(nomGroupThree.length, 4);
+  }
+);
+
+test.serial(
+  "doNominations() works properly with multiple nominator groups",
+  async (t: TestExecutionContext) => {
+    const { sk } = t.context;
+
+    const nominatorGroups = sk.getAllNominatorGroups();
+    const candidates = [...Array(120).keys()].map((item) => {
+      return {
+        id: item,
+        networkId: item.toString(),
+        name: item.toString(),
+        details: [],
+        connectedAt: 0,
+        nominatedAt: 0,
+        offlineSince: 0,
+        offlineAccumulated: 0,
+        onlineSince: 0,
+        updated: false,
+        rank: 0,
+        misbehaviors: 0,
+        stash: item.toString(),
+      } as CandidateData;
+    });
+
+    const totalTargets = await sk._doNominations(
+      candidates,
+      16,
+      nominatorGroups,
+      true
+    );
+
+    t.deepEqual(
+      totalTargets,
+      candidates.map((c) => c.name)
+    );
+
+    const nomGroupZero = sk.getNominatorGroupAtIndex(0);
+    const zeroZeroTargets = await sk.db.getCurrentTargets(
+      nomGroupZero[0].address
+    );
+    t.is(zeroZeroTargets.length, 16);
+    t.deepEqual(totalTargets.slice(0, 16), zeroZeroTargets);
+
+    const nomGroupOne = sk.getNominatorGroupAtIndex(1);
+    const oneZeroTargets = await sk.db.getCurrentTargets(
+      nomGroupOne[0].address
+    );
+    const oneOneTargets = await sk.db.getCurrentTargets(nomGroupOne[1].address);
+    const oneTwoTargets = await sk.db.getCurrentTargets(nomGroupOne[2].address);
+    const oneThreeTargets = await sk.db.getCurrentTargets(
+      nomGroupOne[3].address
+    );
+    t.is(oneZeroTargets.length, 16);
+    t.is(oneOneTargets.length, 16);
+    t.is(oneTwoTargets.length, 16);
+    t.is(oneThreeTargets.length, 16);
+    t.deepEqual(oneZeroTargets, totalTargets.slice(0, 16));
+    t.deepEqual(oneOneTargets, totalTargets.slice(16, 32));
+    t.deepEqual(oneTwoTargets, totalTargets.slice(32, 48));
+    t.deepEqual(oneThreeTargets, totalTargets.slice(48, 64));
   }
 );

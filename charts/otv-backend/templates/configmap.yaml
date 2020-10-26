@@ -678,6 +678,12 @@ data:
                 "stash": "EYLWsnmix2ZYGG1jBedDgUhQQ4cAjpbqH7KvggKYACrBKGr",
                 "riotHandle": "@dczoicas:matrix.org",
                 "sentryId": ""
+            },
+            {
+                "name": "canyon-ultimate-1",
+                "stash": "FP6NJ41XMsHb2t7ijRhrtNW9mmNkRp9jMfw5Nwakvz9xNXE",
+                "riotHandle": "@joe:matrix.parity.io",
+                "sentryId": ""
             }
         ],
         "forceRound": true,

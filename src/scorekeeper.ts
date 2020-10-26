@@ -10,7 +10,10 @@ import logger from "./logger";
 import { CandidateData, Stash } from "./types";
 import { getNow } from "./util";
 
-type NominatorGroup = any[];
+type NominatorSeed = { seed: string };
+type NominatorGroup = NominatorSeed[];
+
+type SpawnedNominatorGroup = Nominator[];
 
 export default class ScoreKeeper {
   public api: ApiPromise;
@@ -24,7 +27,7 @@ export default class ScoreKeeper {
   // Keeps track of a starting era for a round.
   public startEra = 0;
 
-  public nominatorGroups: Array<NominatorGroup> = [];
+  public nominatorGroups: Array<SpawnedNominatorGroup> = [];
 
   constructor(api: ApiPromise, db: Db, config: any, bot: any = false) {
     this.api = api;
@@ -115,7 +118,7 @@ export default class ScoreKeeper {
   async _doNominations(
     candidates: CandidateData[],
     setSize: number,
-    nominatorGroups: NominatorGroup[] = []
+    nominatorGroups: SpawnedNominatorGroup[] = []
   ): Promise<void> {
     // A "subset" is a group of 16 validators since this is the max that can
     // be nominated by a single account.

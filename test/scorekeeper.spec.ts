@@ -4,6 +4,7 @@ import Scorekeeper from "../src/scorekeeper";
 import { sleep } from "../src/util";
 
 import { MockApi, MockConfig, MockDb } from "./mock";
+import MockNominator from "./mock/nominator";
 
 type TestExecutionContext = ExecutionContext<{ db: Db; sk: Scorekeeper }>;
 
@@ -18,9 +19,9 @@ test.serial.before((t: TestExecutionContext) => {
 });
 
 test("Can addNominatorGroup and fake begin()", async (t: TestExecutionContext) => {
-  const seed = "0x" + "00".repeat(32);
   const { db, sk } = t.context;
 
+  const seed = "0x" + "00".repeat(32);
   await sk.addNominatorGroup([{ seed }]);
   // Call spawn directly in order to get the Nominator object.
   const nom = sk._spawn(seed);
@@ -29,6 +30,22 @@ test("Can addNominatorGroup and fake begin()", async (t: TestExecutionContext) =
   t.is(sk.nominatorGroups[0][0].address, nominators[0].nominator);
 
   await t.notThrowsAsync(sk.begin("* * * * * *"));
+});
+
+test("Can add multiple nominators and nominator groups", async (t: TestExecutionContext) => {
+  const { db, sk } = t.context;
+
+  const seeds = [...Array(8).keys()].map(
+    (i) => "0x" + "00".repeat(31) + "0" + i.toString()
+  );
+
+  const groupOne = seeds.slice(0, 4).map((seed) => ({ seed }));
+  const groupTwo = seeds.slice(4).map((seed) => ({ seed }));
+
+  await sk.addNominatorGroup(groupOne);
+  await sk.addNominatorGroup(groupTwo);
+
+  
 });
 
 test("addPoint() and dockPoints() works", async (t: TestExecutionContext) => {
@@ -55,25 +72,15 @@ test("It gets the right results from _doNominations()", async (t: TestExecutionC
   //@ts-ignore
   const sk = new Scorekeeper(MockApi, MockDb, MockConfig);
 
-  const FakeNominator = {
-    nominate: () => {
-      return true;
-    },
-  };
-
   // Mock the nominator groups.
   const nominatorGroups = [
-    [FakeNominator, FakeNominator],
-    [FakeNominator, FakeNominator, FakeNominator],
+    [MockNominator, MockNominator],
+    [MockNominator, MockNominator, MockNominator],
   ];
 
   const set = Array.from(Array(45).keys());
   await sk._doNominations(set, 16, nominatorGroups);
   t.pass();
-});
-
-test("It survives across restarts", async (t: TestExecutionContext) => {
-  t.pass(); // TODO
 });
 
 test("startRound() adds an empty round in db and makes nominations", async (t: TestExecutionContext) => {

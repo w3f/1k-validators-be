@@ -1,70 +1,23 @@
-import test from "ava";
-import Database from "../src/db";
+import test, { ExecutionContext } from "ava";
+import Db from "../src/db";
 import Scorekeeper from "../src/scorekeeper";
 import { sleep } from "../src/util";
 
 import { MockApi, MockConfig, MockDb } from "./mock";
 
-import { MongoMemoryServer } from "mongodb-memory-server";
+type TestExecutionContext = ExecutionContext<{ db: Db; sk: Scorekeeper }>;
 
-test.serial.before(async (t: any) => {
-  t.timeout(6000000);
-
-  if (process.env.CI) {
-    console.log("in ci");
-    t.context.mongod = await MongoMemoryServer.create({
-      binary: {
-        version: "latest",
-      },
-    });
-  } else {
-    t.context.mongod = await MongoMemoryServer.create();
-  }
-  const uri = await t.context.mongod.getUri();
-  const db = await Database.makeDB({
-    uri,
-    dbName: "test",
-    collection: "test",
-  });
-
-  const now = new Date().getTime();
-
-  await db.reportOnline(0, ["nodeZero"], now);
-  await db.addCandidate("nodeZero", "stash0");
-
-  await db.reportOnline(1, ["nodeOne"], now);
-  await db.addCandidate("nodeOne", "stash1");
-
-  //@ts-ignore
-  t.context.sk = new Scorekeeper(MockApi, db, MockConfig);
-  t.context.db = db;
-
-  await sleep(1200);
-});
-
-test.serial.after(async (t: any) => {
-  await t.context.mongod.stop();
-});
-
-test("Creates a new Scorekeeper", (t: any) => {
-  //@ts-ignore
-  const sk = new Scorekeeper(MockApi, MockDb, MockConfig);
-  t.is(MockApi, sk.api);
-  t.is(MockDb, sk.db);
+test.serial.before((t: TestExecutionContext) => {
+  const sk = new Scorekeeper(MockApi as any, MockDb as any, MockConfig);
+  t.is(MockApi, sk.api as any);
+  t.is(MockDb, sk.db as any);
   t.is(MockConfig, sk.config);
+
+  t.context.db = sk.db;
+  t.context.sk = sk;
 });
 
-// test('_getSet() returns the expected nodes', async (t: any) => {
-// 	//@ts-ignore
-// 	const sk = new Scorekeeper(MockApi, MockDb, MockConfig);
-// 	const set = await sk._getSet();
-// 	t.is(set.length, 2);
-// 	t.is(set[0].name, MockDb.allNodes()[1].name);
-// 	t.is(set[1].name, MockDb.allNodes()[0].name);
-// 	t.is(set.length, 2);
-// });
-
-test("Can addNominatorGroup and fake begin()", async (t: any) => {
+test("Can addNominatorGroup and fake begin()", async (t: TestExecutionContext) => {
   const seed = "0x" + "00".repeat(32);
   const { db, sk } = t.context;
 
@@ -78,7 +31,7 @@ test("Can addNominatorGroup and fake begin()", async (t: any) => {
   await t.notThrowsAsync(sk.begin("* * * * * *"));
 });
 
-test("addPoint() and dockPoints() works", async (t: any) => {
+test("addPoint() and dockPoints() works", async (t: TestExecutionContext) => {
   //@ts-ignore
   const { db, sk } = t.context;
 
@@ -98,7 +51,7 @@ test("addPoint() and dockPoints() works", async (t: any) => {
   t.is(dataAgain.misbehaviors, 1);
 });
 
-test("It gets the right results from _doNominations()", async (t: any) => {
+test("It gets the right results from _doNominations()", async (t: TestExecutionContext) => {
   //@ts-ignore
   const sk = new Scorekeeper(MockApi, MockDb, MockConfig);
 
@@ -119,14 +72,14 @@ test("It gets the right results from _doNominations()", async (t: any) => {
   t.pass();
 });
 
-test("It survives across restarts", async (t: any) => {
+test("It survives across restarts", async (t: TestExecutionContext) => {
   t.pass(); // TODO
 });
 
-test("startRound() adds an empty round in db and makes nominations", async (t: any) => {
+test("startRound() adds an empty round in db and makes nominations", async (t: TestExecutionContext) => {
   t.pass(); // TODO
 });
 
-test("endRound() completes the round", async (t: any) => {
+test("endRound() completes the round", async (t: TestExecutionContext) => {
   t.pass(); // TODO
 });

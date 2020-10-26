@@ -4,7 +4,7 @@ import { CronJob } from "cron";
 import ChainData from "./chaindata";
 import Db from "./db";
 import Nominator from "./nominator";
-import { Constraints, OTV } from "./constraints";
+import { OTV } from "./constraints";
 
 import logger from "./logger";
 import { CandidateData, Stash } from "./types";
@@ -169,9 +169,8 @@ export default class ScoreKeeper {
   }
 
   /// Handles the ending of a round.
-  async endRound() {
+  async endRound(): Promise<void> {
     logger.info("Ending round");
-    const now = getNow();
 
     /// The targets that have already been processed for this round.
     const toProcess: Map<Stash, CandidateData> = new Map();
@@ -233,7 +232,7 @@ export default class ScoreKeeper {
   }
 
   /// Handles the adding of points to successful validators.
-  async addPoint(stash: Stash) {
+  async addPoint(stash: Stash): Promise<boolean> {
     logger.info(`Stash ${stash} did GOOD, adding points`);
 
     // TODO: Do something with this return value.

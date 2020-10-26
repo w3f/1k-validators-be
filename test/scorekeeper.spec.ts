@@ -29,7 +29,7 @@ test.serial(
       "Unable to add nominator group with one seed."
     );
 
-    const nominatorGroups = sk.nominatorGroups;
+    const nominatorGroups = sk.getAllNominatorGroups();
     t.is(nominatorGroups.length, 1);
     t.is(nominatorGroups[0].length, 1);
   }
@@ -47,7 +47,17 @@ test.serial(
     const groupOne = seeds.slice(0, 4).map((seed) => ({ seed }));
     const groupTwo = seeds.slice(4).map((seed) => ({ seed }));
 
-    await sk.addNominatorGroup(groupOne);
-    await sk.addNominatorGroup(groupTwo);
+    t.assert(
+      (await sk.addNominatorGroup(groupOne)) &&
+        (await sk.addNominatorGroup(groupTwo)),
+      "Cannot add multiple nominator groups."
+    );
+
+    const nomGroupOne = sk.getNominatorGroupAtIndex(0);
+    t.is(nomGroupOne.length, 1);
+    const nomGroupTwo = sk.getNominatorGroupAtIndex(1);
+    t.is(nomGroupTwo.length, 4);
+    const nomGroupThree = sk.getNominatorGroupAtIndex(2);
+    t.is(nomGroupThree.length, 4);
   }
 );

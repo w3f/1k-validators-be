@@ -27,7 +27,7 @@ export default class ScoreKeeper {
   // Keeps track of a starting era for a round.
   public startEra = 0;
 
-  public nominatorGroups: Array<SpawnedNominatorGroup> = [];
+  private nominatorGroups: Array<SpawnedNominatorGroup> = [];
 
   constructor(api: ApiPromise, db: Db, config: any, bot: any = false) {
     this.api = api;
@@ -39,6 +39,18 @@ export default class ScoreKeeper {
       this.api,
       this.config.constraints.skipConnectionTime
     );
+  }
+
+  getAllNominatorGroups(): SpawnedNominatorGroup[] {
+    return this.nominatorGroups;
+  }
+
+  getNominatorGroupAtIndex(index: number): SpawnedNominatorGroup {
+    if (index < 0 || index >= this.nominatorGroups.length) {
+      throw new Error("Index out of bounds.");
+    }
+
+    return this.nominatorGroups[index];
   }
 
   async botLog(msg: string): Promise<void> {

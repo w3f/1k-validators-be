@@ -21,10 +21,7 @@ const createApi = (): Promise<ApiPromise> => {
 
   const testValidator = validators[1].toString();
 
-  const [commisssion, err] = await chaindata.getCommission(
-    activeEra,
-    testValidator
-  );
+  const [commisssion, err] = await chaindata.getCommission(testValidator);
   if (err) {
     throw new Error(err);
   }
@@ -46,5 +43,6 @@ const createApi = (): Promise<ApiPromise> => {
     throw new Error(err3);
   }
 
+  console.log("NO ERRORS!");
   process.exit(0);
 })();

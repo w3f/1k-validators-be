@@ -443,6 +443,10 @@ export default class Db {
     return this.nominatorModel.find({ address: /.*/ }).exec();
   }
 
+  /**
+   * Gets a candidate by its stash address.
+   * @param stash The DOT / KSM address.
+   */
   async getCandidate(stash: string): Promise<any> {
     return this.candidateModel.findOne({ stash }).exec();
   }

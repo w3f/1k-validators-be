@@ -52,7 +52,7 @@ export default class ScoreKeeper {
     return new Nominator(this.api, this.db, { seed, maxNominations });
   }
 
-  async addNominatorGroup(nominatorGroup: NominatorGroup): Promise<void> {
+  async addNominatorGroup(nominatorGroup: NominatorGroup): Promise<boolean> {
     const group = [];
     const now = getNow();
     for (const nominator of nominatorGroup) {
@@ -61,6 +61,8 @@ export default class ScoreKeeper {
       group.push(nom);
     }
     this.nominatorGroups.push(group);
+
+    return true;
   }
 
   async begin(frequency: string): Promise<void> {

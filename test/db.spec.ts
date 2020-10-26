@@ -1,225 +1,249 @@
-import test from 'ava';
-import Database from '../src/db';
-import { getNow } from '../src/util';
+import test, { ExecutionContext } from "ava";
+import Database from "../src/db";
+import { getNow } from "../src/util";
 
-import { MongoMemoryServer } from 'mongodb-memory-server';
+import { MongoMemoryServer } from "mongodb-memory-server";
 
-test.serial.before(async (t: any) => {
+type TestExecutionContext = ExecutionContext<{
+  db: Database;
+  mongod: MongoMemoryServer;
+}>;
+
+test.serial.before(async (t: TestExecutionContext) => {
   t.timeout(600000);
 
   if (process.env.CI) {
-    console.log('in ci')
+    console.log("in ci");
     t.context.mongod = await MongoMemoryServer.create({
       binary: {
-        version: 'latest'
+        version: "latest",
       },
     });
   } else {
     t.context.mongod = await MongoMemoryServer.create();
   }
   const uri = await t.context.mongod.getUri();
-  t.context.db = await Database.makeDB({
-    uri,
-    dbName: 'test',
-    collection: 'test',
-  });
+  t.context.db = await Database.create(uri);
 });
 
-test.serial.after(async (t:any) => {
+test.serial.after(async (t: TestExecutionContext) => {
   await t.context.mongod.stop();
 });
 
-test.serial('Created a new Database', async (t: any) => {
+test.serial("Created a new Database", async (t: TestExecutionContext) => {
   t.truthy(t.context.db);
 });
 
-test.serial('addCandidate() adds a new candidate before node online', async (t: any) => {
-  const { db } = t.context;
+test.serial(
+  "addCandidate() adds a new candidate before node online",
+  async (t: TestExecutionContext) => {
+    const { db } = t.context;
 
-  const candidates = await db.allCandidates();
-  t.deepEqual(candidates, []);
+    const candidates = await db.allCandidates();
+    t.deepEqual(candidates, []);
 
-  await db.addCandidate('One', 'stashOne');
+    await db.addCandidate("One", "stashOne");
 
-  const candidatesAfter = await db.allCandidates();
+    const candidatesAfter = await db.allCandidates();
 
-  const thisCandidate = candidatesAfter[0];
-  t.truthy(thisCandidate);
+    const thisCandidate = candidatesAfter[0];
+    t.truthy(thisCandidate);
 
-  t.is(thisCandidate.id, null);
-  t.is(thisCandidate.name, 'One');
-  t.is(thisCandidate.stash, 'stashOne');
-});
+    t.is(thisCandidate.name, "One");
+    t.is(thisCandidate.stash, "stashOne");
+  }
+);
 
-test.serial('reportOnline() reports a node online', async (t: any) => {
-  const { db } = t.context;
+test.serial(
+  "reportOnline() reports a node online",
+  async (t: TestExecutionContext) => {
+    const { db } = t.context;
 
-  const nodeDetails = ['One', '', '', '', '1'];
+    const nodeDetails = ["One", "", "", "", "1"];
 
-  const oldNodes = await db.allNodes();
-  t.deepEqual(oldNodes, []); // no node reported online
+    const oldNodes = await db.allNodes();
 
-  const now = getNow();
-  await db.reportOnline(1, nodeDetails, now);
+    t.is(oldNodes.length, 1);
 
-  const newNodes = await db.allNodes();
+    const now = getNow();
+    await db.reportOnline(1, nodeDetails, now);
 
-  const thisNode = newNodes[0];
-  t.truthy(thisNode);
+    const newNodes = await db.allNodes();
 
-  t.is(thisNode.id, 1);
-  t.is(thisNode.networkId, '1');
-  t.is(thisNode.name, 'One');
-  t.is(thisNode.connectedAt, now);
-  t.is(thisNode.nominatedAt, 0);
-  t.is(thisNode.onlineSince, now);
-  t.false(thisNode.updated);
-  t.is(thisNode.offlineSince, 0);
-  t.is(thisNode.offlineAccumulated, 0);
-  t.is(thisNode.rank, 0);
-  t.is(thisNode.misbehaviors, 0);
-  t.is(thisNode.stash, 'stashOne'); // Registered already.
-});
+    const thisNode = newNodes[0];
+    t.truthy(thisNode);
 
-test.serial('reportOffline() reports a node offline', async (t: any) => {
-  const { db } = t.context;
+    t.is(thisNode.networkId, "1");
+    t.is(thisNode.name, "One");
+    t.is(thisNode.discoveredAt, now);
+    t.is(thisNode.nominatedAt, 0);
+    t.is(thisNode.onlineSince, now);
+    t.false(thisNode.updated);
+    t.is(thisNode.offlineSince, 0);
+    t.is(thisNode.offlineAccumulated, 0);
+    t.is(thisNode.rank, 0);
+    t.is(thisNode.faults, 0);
+    t.is(thisNode.stash, "stashOne"); // Registered already.
+  }
+);
 
-  const nodeOneBefore = await db.getNode('1');
-  t.is(nodeOneBefore.networkId, '1');
-  t.is(nodeOneBefore.offlineSince, 0);
-  t.is(nodeOneBefore.offlineAccumulated, 0);
-  t.true(nodeOneBefore.onlineSince > 1);
+test.serial(
+  "reportOffline() reports a node offline",
+  async (t: TestExecutionContext) => {
+    const { db } = t.context;
 
-  const now = getNow();
-  await db.reportOffline(1, 'One', now);
+    const nodeOneBefore = await db.getCandidate("stashOne");
+    t.is(nodeOneBefore.networkId, "1");
+    t.is(nodeOneBefore.offlineSince, 0);
+    t.is(nodeOneBefore.offlineAccumulated, 0);
+    t.true(nodeOneBefore.onlineSince > 1);
 
-  const nodeOneAfter = await db.getNode('1');
-  t.is(nodeOneAfter.offlineSince, now);
-  t.is(nodeOneAfter.onlineSince, 0);
-});
+    const now = getNow();
+    await db.reportOffline(1, "One", now);
 
-test.serial('reportOnline() records the accumulated time', async (t: any) => {
-  const { db } = t.context;
+    const nodeOneAfter = await db.getCandidate("stashOne");
+    t.is(nodeOneAfter.offlineSince, now);
+    t.is(nodeOneAfter.onlineSince, 0);
+  }
+);
 
-  const nodeOneOffline = await db.getNode('1');
-  t.true(nodeOneOffline.offlineSince > 0);
-  t.is(nodeOneOffline.onlineSince, 0);
+test.serial(
+  "reportOnline() records the accumulated time",
+  async (t: TestExecutionContext) => {
+    const { db } = t.context;
 
-  const now = getNow();
-  await db.reportOnline(1, ['','','','','1'], now);
+    const nodeOneOffline = await db.getCandidate("stashOne");
+    t.true(nodeOneOffline.offlineSince > 0);
+    t.is(nodeOneOffline.onlineSince, 0);
 
-  const nodeOneOnline = await db.getNode('1');
-  t.is(nodeOneOnline.offlineSince, 0);
-  t.is(nodeOneOnline.offlineAccumulated, now - nodeOneOffline.offlineSince);
-  t.is(nodeOneOnline.onlineSince, now);
-});
+    const now = getNow();
+    await db.reportOnline(1, ["One", "", "", "", "1"], now);
 
-test.serial('addCandidate() adds candidate after node is online', async (t: any) => {
-  const { db } = t.context;
+    const nodeOneOnline = await db.getCandidate("stashOne");
+    t.is(nodeOneOnline.offlineSince, 0);
+    t.is(nodeOneOnline.offlineAccumulated, now - nodeOneOffline.offlineSince);
+    t.is(nodeOneOnline.onlineSince, now);
+  }
+);
 
-  const nodeTwo = await db.getNode('2');
-  t.is(nodeTwo, undefined); // not around yet
+test.serial(
+  "addCandidate() adds candidate after node is online",
+  async (t: TestExecutionContext) => {
+    const { db } = t.context;
 
-  const now = getNow();
-  await db.reportOnline(2, ['nodeTwo', '', '', '', '2'], now);
+    const nodeTwo = await db.getNodeByName("nodeTwo");
+    t.is(nodeTwo, null); // not around yet
 
-  const nodeTwoAfter = await db.getNode('2');
-  t.is(nodeTwoAfter.onlineSince, now);
-  t.is(nodeTwoAfter.stash, null);
+    const now = getNow();
+    await db.reportOnline(2, ["nodeTwo", "", "", "", "2"], now);
 
-  await db.addCandidate('nodeTwo', 'stashTwo');
-  
-  const nodeTwoLatest = await db.getNode('2');
-  t.is(nodeTwoLatest.stash, 'stashTwo');
-});
+    const nodeTwoAfter = await db.getNodeByName("nodeTwo");
+    t.is(nodeTwoAfter.onlineSince, now);
+    t.is(nodeTwoAfter.stash, undefined);
 
-test.serial('getValidator() gets a candidate by using stash', async (t: any) => {
-  const { db } = t.context;
+    await db.addCandidate("nodeTwo", "stashTwo");
 
-  const candidate = await db.getValidator('stashTwo');
-  t.is(candidate.name, 'nodeTwo');
-})
+    const nodeTwoLatest = await db.getNodeByName("nodeTwo");
+    t.is(nodeTwoLatest.stash, "stashTwo");
+  }
+);
 
-test.serial('addNominator() adds a new nominator to the db', async (t: any) => {
-  const { db } = t.context;
+test.serial(
+  "getValidator() gets a candidate by using stash",
+  async (t: TestExecutionContext) => {
+    const { db } = t.context;
 
-  const nominators = await db.allNominators();
-  t.deepEqual(nominators, []);
+    const candidate = await db.getCandidate("stashTwo");
+    t.is(candidate.name, "nodeTwo");
+  }
+);
 
-  const now = getNow();
-  await db.addNominator('nominator_one', now);
+test.serial(
+  "addNominator() adds a new nominator to the db",
+  async (t: TestExecutionContext) => {
+    const { db } = t.context;
 
-  const nominator = await db.getNominator('nominator_one');
+    const nominators = await db.allNominators();
+    t.deepEqual(nominators, []);
 
-  t.is(nominator.nominatedAt, null);
-  t.is(nominator.firstSeen, now);
-  t.is(nominator.lastSeen, now);
-  t.deepEqual(nominator.current, []);
-});
+    const now = getNow();
+    await db.addNominator("nominator_one", now);
 
-test.serial('newTargets() adds targets for the nominator', async (t: any) => {
-  const { db } = t.context;
+    const nominator = await db.getNominator("nominator_one");
 
-  const nomBefore = await db.getNominator('nominator_one');
-  t.deepEqual(nomBefore.current, []);
-  t.is(nomBefore.nominatedAt, null);
+    t.is(nominator.nominatedAt, undefined);
+    t.is(nominator.createdAt, now);
+    t.deepEqual(Array.from(nominator.current), []);
+  }
+);
 
-  const now = getNow();
-  await db.newTargets('nominator_one', ['stashOne', 'stashTwo'], now);
+test.serial(
+  "newTargets() adds targets for the nominator",
+  async (t: TestExecutionContext) => {
+    const { db } = t.context;
 
-  const nomAfter = await db.getNominator('nominator_one');
-  t.is(nomAfter.nominatedAt, now);
-  t.is(nomAfter.lastSeen, now);
-  t.deepEqual(nomAfter.current, ['stashOne', 'stashTwo']);
-});
+    const nomBefore = await db.getNominator("nominator_one");
+    t.deepEqual(Array.from(nomBefore.current), []);
+    t.is(nomBefore.nominatedAt, undefined);
 
-test.serial('getCurrentTargets() returns the expected values', async (t: any) => {
-  const { db } = t.context;
+    const now = getNow();
+    await db.setTarget("nominator_one", "stashOne", now);
+    await db.setTarget("nominator_one", "stashTwo", now);
+    await db.setLastNomination("nominator_one", now);
 
-  const currentTargets = await db.getCurrentTargets('nominator_one');
-  t.deepEqual(currentTargets, ['stashOne', 'stashTwo']);
-});
+    const nomAfter = await db.getNominator("nominator_one");
+    t.is(nomAfter.lastNomination, now);
+    t.deepEqual(Array.from(nomAfter.current), ["stashOne", "stashTwo"]);
+  }
+);
 
-test.serial('setNominatedAt() sets nominatedAt for node', async (t: any) => {
-  const { db } = t.context;
+test.serial(
+  "getCurrentTargets() returns the expected values",
+  async (t: TestExecutionContext) => {
+    const { db } = t.context;
 
-  const now = getNow();
-  await db.setNominatedAt('stashOne', now);
+    const currentTargets = await db.getCurrentTargets("nominator_one");
+    t.deepEqual(Array.from(currentTargets), ["stashOne", "stashTwo"]);
+  }
+);
 
-  // TODO
-  t.pass();
-});
+test.serial(
+  "setTarget() sets a single target",
+  async (t: TestExecutionContext) => {
+    const { db } = t.context;
 
-test.serial('setTarget() sets a single target', async (t: any) => {
-  const { db } = t.context;
+    const now = getNow();
 
-  const now = getNow();
+    await db.setTarget("nominator_one", "stashThree", now);
+    const data = await db.getNominator("nominator_one");
+    t.deepEqual(Array.from(data.current), [
+      "stashOne",
+      "stashTwo",
+      "stashThree",
+    ]);
+  }
+);
 
-  await db.setTarget('nominator_one', 'stashThree', now);
-  const data = await db.getNominator('nominator_one');
-  t.deepEqual(data.current, ['stashOne', 'stashTwo', 'stashThree']);
-  t.is(data.nominatedAt, now);
-  t.is(data.lastSeen, now);
-});
+test.serial(
+  "Clears all the candidates (used at beginning of restarts)",
+  async (t: TestExecutionContext) => {
+    const { db } = t.context;
 
-
-test.serial('Clears all the candidates (used at beginning of restarts)', async (t: any) => {
-  const { db } = t.context;
-
-  const nodesBefore = await db.allNodes();
-  for (const node of nodesBefore) {
-    if (node.name === 'One') {
-      t.is(node.stash, 'stashOne');
+    const nodesBefore = await db.allNodes();
+    for (const node of nodesBefore) {
+      if (node.name === "One") {
+        t.is(node.stash, "stashOne");
+      }
+      if (node.name === "nodeTwo") {
+        t.is(node.stash, "stashTwo");
+      }
     }
-    if (node.name === 'nodeTwo') {
-      t.is(node.stash, 'stashTwo');
+
+    await db.clearCandidates();
+
+    const nodesAfter = await db.allNodes();
+    for (const node of nodesAfter) {
+      t.is(node.stash, null);
     }
   }
-
-  await db.clearCandidates();
-
-  const nodesAfter = await db.allNodes();
-  for (const node of nodesAfter) {
-    t.is(node.stash, null);
-  }
-});
+);

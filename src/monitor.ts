@@ -82,7 +82,7 @@ export default class Monitor {
 
       if (isUpgraded) {
         if (!updated) {
-          await this.db.reportUpdated(name, now);
+          await this.db.reportUpdated(name);
         }
         continue;
       }
@@ -91,7 +91,7 @@ export default class Monitor {
         // Still in grace, but check if the node is only one patch version away.
         const incremented = semver.inc(nodeVersion, "patch");
         if (semver.gte(incremented, latestVersion)) {
-          await this.db.reportUpdated(name, now);
+          await this.db.reportUpdated(name);
           continue;
         }
       }

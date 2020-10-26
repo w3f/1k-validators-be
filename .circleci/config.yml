@@ -54,7 +54,6 @@ jobs:
       - checkout
       - setup_remote_docker
       - run:
-          description: run integration tests
           command: |
             /scripts/integration-tests.sh
 

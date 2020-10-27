@@ -50,6 +50,7 @@ export default class ScoreKeeper {
       throw new Error("Index out of bounds.");
     }
 
+    // eslint-disable-next-line security/detect-object-injection
     return this.nominatorGroups[index];
   }
 
@@ -174,6 +175,9 @@ export default class ScoreKeeper {
         await curNominator.nominate(
           targets,
           dryRun || this.config.global.dryRun
+        );
+        this.botLog(
+          `Nominator ${curNominator.address} nominated ${targets.join(" ")}`
         );
       }
       count++;

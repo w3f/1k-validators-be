@@ -37,10 +37,53 @@ const loadConfigDir = (configDir: string) => {
   return mainConf;
 };
 
-const createApi = (wsEndpoint: string): Promise<ApiPromise> => {
-  return ApiPromise.create({
+const KusamaEndpoints = [
+  "wss://cc3-1.kusama.network",
+  "wss://cc3-2.kusama.network",
+  "wss://cc3-3.kusama.network",
+  "wss://cc3-4.kusama.network",
+  "wss://cc3-5.kusama.network",
+];
+
+const createApi = async (wsEndpoint: string): Promise<ApiPromise> => {
+  const api = await ApiPromise.create({
     provider: new WsProvider(wsEndpoint),
   });
+
+  let reconnectLock = false;
+  let reconnectIndex = 0;
+
+  api.on("disconnected", () => {
+    if (reconnectLock) {
+      logger.info(`API Already Trying Reconnect...`);
+      return;
+    }
+
+    logger.info(
+      `API Disconnected... Reconnecting... (reconnect tries: ${reconnectIndex})`
+    );
+    reconnectLock = true;
+    reconnectIndex++;
+    api.connect();
+  });
+
+  api.on("error", (err: any) => {
+    logger.info(`API ERROR ${err.toString()}`);
+    if (reconnectLock) {
+      logger.info(`API Already Trying Reconnect...`);
+      return;
+    }
+
+    logger.info(
+      `API Disconnected... Reconnecting... (reconnect tries: ${reconnectIndex})`
+    );
+    reconnectLock = true;
+    reconnectIndex++;
+    api.connect();
+    reconnectLock = false;
+  });
+
+  return api;
 };
 
 const catchAndQuit = async (fn: any) => {
@@ -60,14 +103,6 @@ const start = async (cmd: Command) => {
     `\nStart-up mem usage ${JSON.stringify(process.memoryUsage())}\n`
   );
   const api = await createApi(config.global.wsEndpoint);
-  api.on("disconnected", () => {
-    logger.info(`API Disconnected... Reconnecting...`);
-    api.connect();
-  });
-  api.on("error", (err: any) => {
-    logger.info(`API ERROR ${err.toString()} Reconnecting...`);
-    api.connect();
-  });
 
   const db = await Database.create(config.db.mongo.uri);
 
@@ -140,14 +175,6 @@ const start = async (cmd: Command) => {
       }
     }
   }
-
-  // TMP - Forgive candidates
-  // const candidates = await db.allCandidates();
-  // for (const candidate of candidates) {
-  //   if (candidate.faults >= 1) {
-  //     await db.forgiveDockedPoints(candidate.stash);
-  //   }
-  // }
 
   /// Runs right after adding candidates.
   sleep(3000);

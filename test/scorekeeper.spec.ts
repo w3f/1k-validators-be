@@ -10,7 +10,7 @@ type TestExecutionContext = ExecutionContext<{ db: Db; sk: Scorekeeper }>;
 
 test.serial.before(async (t: TestExecutionContext) => {
   const sk = new Scorekeeper(MockApi as any, new MockDb() as any, MockConfig);
-  t.is(MockApi, sk.api as any);
+  t.is(MockApi, sk.handler as any);
   t.is(MockConfig, sk.config);
 
   t.context.sk = sk;

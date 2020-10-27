@@ -1,4 +1,4 @@
-import { ApiPromise } from "@polkadot/api";
+import ApiHandler from "./ApiHandler";
 
 import logger from "./logger";
 import { BooleanResult, NumberResult } from "./types";
@@ -6,14 +6,15 @@ import { BooleanResult, NumberResult } from "./types";
 type JSON = any;
 
 class ChainData {
-  public api: ApiPromise;
+  public handler: ApiHandler;
 
-  constructor(api: ApiPromise) {
-    this.api = api;
+  constructor(handler: ApiHandler) {
+    this.handler = handler;
   }
 
   getActiveEraIndex = async (): Promise<NumberResult> => {
-    const activeEra = await this.api.query.staking.activeEra();
+    const api = await this.handler.getApi();
+    const activeEra = await api.query.staking.activeEra();
     if (activeEra.isNone) {
       logger.info(`NO ACTIVE ERA: ${activeEra.toString()}`);
       return [
@@ -25,7 +26,8 @@ class ChainData {
   };
 
   getCommission = async (validator: string): Promise<NumberResult> => {
-    const prefs = await this.api.query.staking.validators(validator);
+    const api = await this.handler.getApi();
+    const prefs = await api.query.staking.validators(validator);
     return [prefs.commission.toNumber(), null];
   };
 
@@ -33,7 +35,8 @@ class ChainData {
     eraIndex: number,
     validator: string
   ): Promise<NumberResult> => {
-    const prefs = await this.api.query.staking.erasValidatorPrefs(
+    const api = await this.handler.getApi();
+    const prefs = await api.query.staking.erasValidatorPrefs(
       eraIndex,
       validator
     );
@@ -48,12 +51,14 @@ class ChainData {
   };
 
   getBalanceOf = async (validator: string): Promise<NumberResult> => {
-    const account = await this.api.query.system.account(validator);
+    const api = await this.handler.getApi();
+    const account = await api.query.system.account(validator);
     return [account.data.free.toNumber(), null];
   };
 
   getBondedAmount = async (stash: string): Promise<NumberResult> => {
-    const controller = await this.api.query.staking.bonded(stash);
+    const api = await this.handler.getApi();
+    const controller = await api.query.staking.bonded(stash);
     if (controller.isNone) {
       return [null, "Not bonded to any account."];
     }
@@ -64,9 +69,7 @@ class ChainData {
       ];
     }
 
-    const ledger: JSON = await this.api.query.staking.ledger(
-      controller.toString()
-    );
+    const ledger: JSON = await api.query.staking.ledger(controller.toString());
     if (ledger.isNone) {
       return [null, `Ledger is empty.`];
     }
@@ -78,10 +81,8 @@ class ChainData {
     eraIndex: number,
     validator: string
   ): Promise<NumberResult> => {
-    const exposure = await this.api.query.staking.erasStakers(
-      eraIndex,
-      validator
-    );
+    const api = await this.handler.getApi();
+    const exposure = await api.query.staking.erasStakers(eraIndex, validator);
     if (exposure.isEmpty) {
       return [
         null,
@@ -97,7 +98,8 @@ class ChainData {
     endEraIndex: number,
     validator: string
   ): Promise<BooleanResult> => {
-    const earliestUnapplied = await this.api.query.staking.earliestUnappliedSlash();
+    const api = await this.handler.getApi();
+    const earliestUnapplied = await api.query.staking.earliestUnappliedSlash();
     if (earliestUnapplied.isNone) {
       return [null, "Earliest unapplied is none."];
     }
@@ -109,7 +111,7 @@ class ChainData {
     const slashes = [];
     let curIndex = startEraIndex;
     while (curIndex <= endEraIndex) {
-      const unappliedSlashes = await this.api.query.staking.unappliedSlashes(
+      const unappliedSlashes = await api.query.staking.unappliedSlashes(
         curIndex
       );
 

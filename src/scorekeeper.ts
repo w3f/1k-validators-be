@@ -1,4 +1,3 @@
-import { ApiPromise } from "@polkadot/api";
 import { CronJob } from "cron";
 
 import ChainData from "./chaindata";
@@ -9,6 +8,7 @@ import { OTV } from "./constraints";
 import logger from "./logger";
 import { CandidateData, Stash } from "./types";
 import { getNow } from "./util";
+import ApiHandler from "./ApiHandler";
 
 type NominatorSeed = { seed: string };
 type NominatorGroup = NominatorSeed[];
@@ -16,7 +16,7 @@ type NominatorGroup = NominatorSeed[];
 type SpawnedNominatorGroup = Nominator[];
 
 export default class ScoreKeeper {
-  public api: ApiPromise;
+  public handler: ApiHandler;
   public bot: any;
   public chaindata: ChainData;
   public config: any;
@@ -29,14 +29,14 @@ export default class ScoreKeeper {
 
   private nominatorGroups: Array<SpawnedNominatorGroup> = [];
 
-  constructor(api: ApiPromise, db: Db, config: any, bot: any = false) {
-    this.api = api;
+  constructor(handler: ApiHandler, db: Db, config: any, bot: any = false) {
+    this.handler = handler;
     this.db = db;
     this.config = config;
     this.bot = bot;
-    this.chaindata = new ChainData(this.api);
+    this.chaindata = new ChainData(this.handler);
     this.constraints = new OTV(
-      this.api,
+      this.handler,
       this.config.constraints.skipConnectionTime
     );
   }
@@ -50,6 +50,7 @@ export default class ScoreKeeper {
       throw new Error("Index out of bounds.");
     }
 
+    // eslint-disable-next-line security/detect-object-injection
     return this.nominatorGroups[index];
   }
 
@@ -61,7 +62,7 @@ export default class ScoreKeeper {
 
   /// Spawns a new nominator.
   _spawn(seed: string, maxNominations = 1): Nominator {
-    return new Nominator(this.api, this.db, { seed, maxNominations });
+    return new Nominator(this.handler, this.db, { seed, maxNominations });
   }
 
   async addNominatorGroup(nominatorGroup: NominatorGroup): Promise<boolean> {
@@ -174,6 +175,9 @@ export default class ScoreKeeper {
         await curNominator.nominate(
           targets,
           dryRun || this.config.global.dryRun
+        );
+        this.botLog(
+          `Nominator ${curNominator.address} nominated ${targets.join(" ")}`
         );
       }
       count++;

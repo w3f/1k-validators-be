@@ -4,6 +4,7 @@ import * as fs from "fs";
 import path from "path";
 import program, { Command } from "commander";
 
+import ApiHandler from "./ApiHandler";
 import Database from "./db";
 import MatrixBot from "./matrix";
 import Monitor from "./monitor";
@@ -37,12 +38,6 @@ const loadConfigDir = (configDir: string) => {
   return mainConf;
 };
 
-const createApi = (wsEndpoint: string): Promise<ApiPromise> => {
-  return ApiPromise.create({
-    provider: new WsProvider(wsEndpoint),
-  });
-};
-
 const catchAndQuit = async (fn: any) => {
   try {
     await fn;
@@ -59,15 +54,7 @@ const start = async (cmd: Command) => {
   logger.info(
     `\nStart-up mem usage ${JSON.stringify(process.memoryUsage())}\n`
   );
-  const api = await createApi(config.global.wsEndpoint);
-  api.on("disconnected", () => {
-    logger.info(`API Disconnected... Reconnecting...`);
-    api.connect();
-  });
-  api.on("error", (err: any) => {
-    logger.info(`API ERROR ${err.toString()} Reconnecting...`);
-    api.connect();
-  });
+  const handler = await ApiHandler.create();
 
   const db = await Database.create(config.db.mongo.uri);
 
@@ -119,7 +106,7 @@ const start = async (cmd: Command) => {
   });
   clearCron.start();
 
-  const scorekeeper = new Scorekeeper(api, db, config, maybeBot);
+  const scorekeeper = new Scorekeeper(handler, db, config, maybeBot);
   for (const nominatorGroup of config.scorekeeper.nominators) {
     await scorekeeper.addNominatorGroup(nominatorGroup);
   }
@@ -140,14 +127,6 @@ const start = async (cmd: Command) => {
       }
     }
   }
-
-  // TMP - Forgive candidates
-  // const candidates = await db.allCandidates();
-  // for (const candidate of candidates) {
-  //   if (candidate.faults >= 1) {
-  //     await db.forgiveDockedPoints(candidate.stash);
-  //   }
-  // }
 
   /// Runs right after adding candidates.
   sleep(3000);
@@ -171,5 +150,5 @@ program
   .option("--config <directory>", "The path to the config directory.", "config")
   .action((cmd: Command) => catchAndQuit(start(cmd)));
 
-program.version("1.4.18");
+program.version("1.4.19");
 program.parse(process.argv);

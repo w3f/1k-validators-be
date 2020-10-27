@@ -2,7 +2,7 @@ import { WEEK, TEN_PERCENT, FIFTY_KSM } from "./constants";
 import logger from "./logger";
 import { CandidateData } from "./types";
 import ChainData from "./chaindata";
-import { ApiPromise } from "@polkadot/api";
+import ApiHandler from "./ApiHandler";
 
 export interface Constraints {
   getValidCandidates(candidates: any[]): Promise<any[]>;
@@ -18,8 +18,8 @@ export class OTV implements Constraints {
   private validCache: CandidateData[] = [];
   private invalidCache: string[] = [];
 
-  constructor(api: ApiPromise, skipConnectionTime = false) {
-    this.chaindata = new ChainData(api);
+  constructor(handler: ApiHandler, skipConnectionTime = false) {
+    this.chaindata = new ChainData(handler);
     this.skipConnectionTime = skipConnectionTime;
   }
 

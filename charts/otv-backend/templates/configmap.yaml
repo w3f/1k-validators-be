@@ -684,6 +684,12 @@ data:
                 "stash": "FP6NJ41XMsHb2t7ijRhrtNW9mmNkRp9jMfw5Nwakvz9xNXE",
                 "riotHandle": "@joe:matrix.parity.io",
                 "sentryId": ""
+            },
+            {
+                "name": "Gull Canary 002",
+                "stash": "JECeyN45Ycx5t1M1hj2pBbsEZpdeGzDsYA1Wrt2Tdte2wV7",
+                "riotHandle": "@bodysophon:matrix.org",
+                "sentryId": ""
             }
         ],
         "forceRound": true,

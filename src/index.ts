@@ -4,6 +4,7 @@ import * as fs from "fs";
 import path from "path";
 import program, { Command } from "commander";
 
+import ApiHandler from "./ApiHandler";
 import Database from "./db";
 import MatrixBot from "./matrix";
 import Monitor from "./monitor";
@@ -37,55 +38,6 @@ const loadConfigDir = (configDir: string) => {
   return mainConf;
 };
 
-const KusamaEndpoints = [
-  "wss://cc3-1.kusama.network",
-  "wss://cc3-2.kusama.network",
-  "wss://cc3-3.kusama.network",
-  "wss://cc3-4.kusama.network",
-  "wss://cc3-5.kusama.network",
-];
-
-const createApi = async (wsEndpoint: string): Promise<ApiPromise> => {
-  const api = await ApiPromise.create({
-    provider: new WsProvider(wsEndpoint),
-  });
-
-  let reconnectLock = false;
-  let reconnectIndex = 0;
-
-  api.on("disconnected", () => {
-    if (reconnectLock) {
-      logger.info(`API Already Trying Reconnect...`);
-      return;
-    }
-
-    logger.info(
-      `API Disconnected... Reconnecting... (reconnect tries: ${reconnectIndex})`
-    );
-    reconnectLock = true;
-    reconnectIndex++;
-    api.connect();
-  });
-
-  api.on("error", (err: any) => {
-    logger.info(`API ERROR ${err.toString()}`);
-    if (reconnectLock) {
-      logger.info(`API Already Trying Reconnect...`);
-      return;
-    }
-
-    logger.info(
-      `API Disconnected... Reconnecting... (reconnect tries: ${reconnectIndex})`
-    );
-    reconnectLock = true;
-    reconnectIndex++;
-    api.connect();
-    reconnectLock = false;
-  });
-
-  return api;
-};
-
 const catchAndQuit = async (fn: any) => {
   try {
     await fn;
@@ -102,7 +54,7 @@ const start = async (cmd: Command) => {
   logger.info(
     `\nStart-up mem usage ${JSON.stringify(process.memoryUsage())}\n`
   );
-  const api = await createApi(config.global.wsEndpoint);
+  const handler = await ApiHandler.create();
 
   const db = await Database.create(config.db.mongo.uri);
 
@@ -154,7 +106,7 @@ const start = async (cmd: Command) => {
   });
   clearCron.start();
 
-  const scorekeeper = new Scorekeeper(api, db, config, maybeBot);
+  const scorekeeper = new Scorekeeper(handler, db, config, maybeBot);
   for (const nominatorGroup of config.scorekeeper.nominators) {
     await scorekeeper.addNominatorGroup(nominatorGroup);
   }

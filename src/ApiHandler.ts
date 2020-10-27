@@ -22,15 +22,14 @@ class ApiHandler {
 
   constructor(api: ApiPromise) {
     this._api = api;
+    this._registerEventHandlers(api);
   }
 
-  async create(): Promise<ApiHandler> {
+  static async create(): Promise<ApiHandler> {
     const initialEndpoint = KusamaEndpoints[3];
     const api = await ApiPromise.create({
       provider: new WsProvider(initialEndpoint),
     });
-
-    this._registerEventHandlers(api);
 
     return new ApiHandler(api);
   }

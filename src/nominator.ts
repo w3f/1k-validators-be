@@ -1,6 +1,6 @@
-import { ApiPromise } from "@polkadot/api";
 import Keyring from "@polkadot/keyring";
 import { KeyringPair } from "@polkadot/keyring/types";
+import ApiHandler from "./ApiHandler";
 
 import Database from "./db";
 import logger from "./logger";
@@ -11,12 +11,12 @@ export default class Nominator {
   public currentlyNominating: Stash[] = [];
   public maxNominations: number;
 
-  private api: ApiPromise;
+  private handler: ApiHandler;
   private db: Database;
   private signer: KeyringPair;
 
-  constructor(api: ApiPromise, db: Database, cfg: NominatorConfig) {
-    this.api = api;
+  constructor(handler: ApiHandler, db: Database, cfg: NominatorConfig) {
+    this.handler = handler;
     this.db = db;
     this.maxNominations = cfg.maxNominations;
 
@@ -42,7 +42,8 @@ export default class Nominator {
         await this.db.setLastNomination(this.address, now);
       }
     } else {
-      const tx = this.api.tx.staking.nominate(targets);
+      const api = await this.handler.getApi();
+      const tx = api.tx.staking.nominate(targets);
       logger.info(
         `(Nominator::nominate) Sending extrinsic Staking::nominate from ${this.address} to targets ${targets} at ${now}`
       );

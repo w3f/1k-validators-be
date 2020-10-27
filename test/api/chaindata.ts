@@ -1,15 +1,10 @@
 import ChainData from "../../src/chaindata";
-import { ApiPromise, WsProvider } from "@polkadot/api";
-
-const createApi = (): Promise<ApiPromise> => {
-  return ApiPromise.create({
-    provider: new WsProvider("wss://kusama-rpc.polkadot.io/"),
-  });
-};
+import ApiHandler from "../../src/ApiHandler";
 
 (async () => {
-  const api = await createApi();
-  const chaindata = new ChainData(api);
+  const handler = await ApiHandler.create();
+  const api = await handler.getApi();
+  const chaindata = new ChainData(handler);
 
   const [activeEra, eraErr] = await chaindata.getActiveEraIndex();
   if (eraErr) {
@@ -21,20 +16,17 @@ const createApi = (): Promise<ApiPromise> => {
 
   const testValidator = validators[1].toString();
 
-  const [commisssion, err] = await chaindata.getCommission(testValidator);
+  const [, err] = await chaindata.getCommission(testValidator);
   if (err) {
     throw new Error(err);
   }
 
-  const [ownExposure, err2] = await chaindata.getOwnExposure(
-    activeEra,
-    testValidator
-  );
+  const [, err2] = await chaindata.getOwnExposure(activeEra, testValidator);
   if (err2) {
     throw new Error(err2);
   }
 
-  const [hasThem, err3] = await chaindata.hasUnappliedSlashes(
+  const [, err3] = await chaindata.hasUnappliedSlashes(
     activeEra - 6,
     activeEra,
     testValidator

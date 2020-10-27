@@ -11,7 +11,7 @@
     "lint:fix": "tsc --noEmit && eslint 'src/**/*.{js,ts,tsx}' --quiet --fix",
     "start": "NODE_OPTIONS='--max-old-space-size=4096' ts-node src/index.ts start",
     "js:start": "NODE_OPTIONS='--max-old-space-size=4096' node build/index.js start",
-    "test": "ava test/scorekeeper.spec.ts --timeout=10m",
+    "test": "ava test/*.spec.ts --timeout=10m",
     "test:api": "ts-node test/api/chaindata.ts"
   },
   "author": "Web3 Foundation <teched@web3.foundation>",

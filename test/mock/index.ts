@@ -93,7 +93,7 @@ export const MockConfig = {
     test: false,
   },
   constraints: {
-    skipConnection: true,
+    skipConnectionTime: true,
   },
   scorekeeper: {
     forceRound: false,

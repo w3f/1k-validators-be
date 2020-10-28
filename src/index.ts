@@ -1,10 +1,8 @@
-import { ApiPromise, WsProvider } from "@polkadot/api";
 import { CronJob } from "cron";
-import * as fs from "fs";
-import path from "path";
 import program, { Command } from "commander";
 
 import ApiHandler from "./ApiHandler";
+import { loadConfigDir } from "./config";
 import Database from "./db";
 import MatrixBot from "./matrix";
 import Monitor from "./monitor";
@@ -15,28 +13,6 @@ import TelemetryClient from "./telemetry";
 import logger from "./logger";
 import { sleep } from "./util";
 import { SIXTEEN_HOURS } from "./constants";
-
-const loadConfig = (configPath: string) => {
-  let conf = fs.readFileSync(configPath, { encoding: "utf-8" });
-  if (conf.startsWith("'")) {
-    conf = conf.slice(1).slice(0, -1);
-  }
-  return JSON.parse(conf);
-};
-
-const loadConfigDir = (configDir: string) => {
-  const secretPath = path.join(configDir, "secret.json");
-  const secretConf = loadConfig(secretPath);
-
-  const mainPath = path.join(configDir, "main.json");
-  const mainConf = loadConfig(mainPath);
-
-  // FIXME: Object.assign overwrites existing properties
-  mainConf.matrix.accessToken = secretConf.matrix.accessToken;
-  mainConf.scorekeeper.nominators = secretConf.scorekeeper.nominators;
-
-  return mainConf;
-};
 
 const catchAndQuit = async (fn: any) => {
   try {

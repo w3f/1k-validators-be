@@ -1,3 +1,4 @@
+import { valid } from "semver";
 import ApiHandler from "./ApiHandler";
 
 import { KUSAMA_APPROX_ERA_LENGTH_IN_BLOCKS } from "./constants";
@@ -173,6 +174,34 @@ class ChainData {
         testBlockNumber = testBlockNumber - 25;
       }
     }
+  };
+
+  activeValidatorsInPeriod = async (
+    startEra: number,
+    endEra: number
+  ): Promise<[string[] | null, string | null]> => {
+    const api = await this.handler.getApi();
+
+    const allValidators: Set<string> = new Set();
+    let testEra = startEra;
+    while (testEra <= endEra) {
+      const [blockHash, err] = await this.findEraBlockHash(testEra);
+      if (err) {
+        return [null, err];
+      }
+
+      const validators = await api.query.session.validators.at(blockHash);
+      console.log(validators);
+      for (const v of validators.toHuman() as any) {
+        if (!allValidators.has(v)) {
+          allValidators.add(v);
+        }
+      }
+
+      testEra++;
+    }
+
+    return [Array.from(allValidators), null];
   };
 }
 

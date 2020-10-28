@@ -1,6 +1,7 @@
 import ReconnectingWebSocket from "reconnecting-websocket";
 import WS from "ws";
 
+import { Config } from "./config";
 import Database from "./db";
 import logger from "./logger";
 
@@ -17,13 +18,13 @@ const DEFAULT_HOST = "ws://localhost:8000/feed";
 const MemNodes = {};
 
 export default class TelemetryClient {
-  private config: any;
+  private config: Config;
   private db: Database;
   private host: string;
   private socket: ReconnectingWebSocket;
   private beingReported: Map<number, boolean> = new Map();
 
-  constructor(config: any, db: Database) {
+  constructor(config: Config, db: Database) {
     this.config = config;
     this.db = db;
     this.host = this.config.telemetry.host || DEFAULT_HOST;

@@ -2,9 +2,9 @@ import Koa from "koa";
 import bodyparser from "koa-bodyparser";
 import cors from "koa2-cors";
 
+import { Config } from "./config";
 import Database from "./db";
 import logger from "./logger";
-import { ApiPromise } from "@polkadot/api";
 import ScoreKeeper from "./scorekeeper";
 
 const API = {
@@ -21,7 +21,7 @@ export default class Server {
   private db: Database;
   private port: number;
 
-  constructor(db: Database, config: any, scoreKeeper: ScoreKeeper) {
+  constructor(db: Database, config: Config, scoreKeeper: ScoreKeeper) {
     this.app = new Koa();
     this.db = db;
     this.port = config.server.port;

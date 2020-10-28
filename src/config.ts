@@ -2,6 +2,9 @@ import * as fs from "fs";
 import path from "path";
 
 export type Config = {
+  constraints: {
+    skipConnectionTime: boolean;
+  };
   db: {
     mongo: {
       uri: string;
@@ -15,11 +18,21 @@ export type Config = {
     accessToken: string;
     baseUrl: string;
     enabled: boolean;
+    room: string;
     userId: string;
   };
   scorekeeper: {
     candidates: any[];
+    forceRound: boolean;
+    nominating: boolean;
     nominators: any[];
+  };
+  server: {
+    port: number;
+  };
+  telemetry: {
+    chains: string[];
+    host: string;
   };
 };
 

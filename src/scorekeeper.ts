@@ -1,14 +1,14 @@
 import { CronJob } from "cron";
 
+import ApiHandler from "./ApiHandler";
 import ChainData from "./chaindata";
-import Db from "./db";
-import Nominator from "./nominator";
+import { Config } from "./config";
 import { OTV } from "./constraints";
-
+import Db from "./db";
 import logger from "./logger";
+import Nominator from "./nominator";
 import { CandidateData, Stash } from "./types";
 import { getNow } from "./util";
-import ApiHandler from "./ApiHandler";
 
 type NominatorSeed = { seed: string };
 type NominatorGroup = NominatorSeed[];
@@ -19,7 +19,7 @@ export default class ScoreKeeper {
   public handler: ApiHandler;
   public bot: any;
   public chaindata: ChainData;
-  public config: any;
+  public config: Config;
   public constraints: OTV;
   public currentEra = 0;
   public currentTargets: string[];
@@ -29,7 +29,7 @@ export default class ScoreKeeper {
 
   private nominatorGroups: Array<SpawnedNominatorGroup> = [];
 
-  constructor(handler: ApiHandler, db: Db, config: any, bot: any = false) {
+  constructor(handler: ApiHandler, db: Db, config: Config, bot: any = false) {
     this.handler = handler;
     this.db = db;
     this.config = config;

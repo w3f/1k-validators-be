@@ -191,7 +191,6 @@ class ChainData {
       }
 
       const validators = await api.query.session.validators.at(blockHash);
-      console.log(validators);
       for (const v of validators.toHuman() as any) {
         if (!allValidators.has(v)) {
           allValidators.add(v);

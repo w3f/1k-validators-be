@@ -1,7 +1,27 @@
 import * as fs from "fs";
 import path from "path";
 
-export type Config = any;
+export type Config = {
+  db: {
+    mongo: {
+      uri: string;
+    };
+  };
+  global: {
+    dryRun: boolean;
+    test: boolean;
+  };
+  matrix: {
+    accessToken: string;
+    baseUrl: string;
+    enabled: boolean;
+    userId: string;
+  };
+  scorekeeper: {
+    candidates: any[];
+    nominators: any[];
+  };
+};
 
 export const loadConfig = (configPath: string): Config => {
   let conf = fs.readFileSync(configPath, { encoding: "utf-8" });

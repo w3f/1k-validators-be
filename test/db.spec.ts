@@ -247,3 +247,18 @@ test.serial(
     }
   }
 );
+
+test.serial(
+  "Checks that lastNominatedEraIndex can be set and gotten",
+  async (t: TestExecutionContext) => {
+    const { db } = t.context;
+
+    const before = await db.getLastNominatedEraIndex();
+    t.is(before.lastNominatedEraIndex, "0");
+
+    await db.setLastNominatedEraIndex(1269);
+
+    const after = await db.getLastNominatedEraIndex();
+    t.is(after.lastNominatedEraIndex, "1269");
+  }
+);

@@ -1,17 +1,19 @@
 import mongoose from "mongoose";
 
-import { CandidateSchema, NominatorSchema } from "./models";
+import { CandidateSchema, EraSchema, NominatorSchema } from "./models";
 import logger from "../logger";
 
 // Sets a global configuration to silence mongoose deprecation warnings.
 mongoose.set("useFindAndModify", false);
 
 export default class Db {
-  private candidateModel: any;
-  private nominatorModel: any;
+  private candidateModel;
+  private eraModel;
+  private nominatorModel;
 
   constructor() {
     this.candidateModel = mongoose.model("Candidate", CandidateSchema);
+    this.eraModel = mongoose.model("Era", EraSchema);
     this.nominatorModel = mongoose.model("Nominator", NominatorSchema);
   }
 
@@ -22,9 +24,14 @@ export default class Db {
     });
 
     return new Promise((resolve, reject) => {
-      mongoose.connection.once("open", () => {
+      mongoose.connection.once("open", async () => {
         logger.info(`Established a connection to MongoDB.`);
-        resolve(new Db());
+        const db = new Db();
+        // Initialize lastNominatedEraIndex if it's not already set.
+        if (!(await db.getLastNominatedEraIndex())) {
+          await db.setLastNominatedEraIndex(0);
+        }
+        resolve(db);
       });
 
       mongoose.connection.on("error", (err) => {
@@ -313,6 +320,25 @@ export default class Db {
       .exec();
   }
 
+  async setLastNominatedEraIndex(index: number): Promise<boolean> {
+    const data = await this.eraModel.findOne({ lastNominatedEraIndex: /.*/ });
+    if (!data) {
+      const eraIndex = new this.eraModel({
+        lastNominatedEraIndex: index.toString(),
+      });
+      return eraIndex.save();
+    }
+
+    return this.eraModel
+      .findOneAndUpdate(
+        { lastNominatedEraIndex: /.*/ },
+        {
+          $set: { lastNominatedEraIndex: index.toString() },
+        }
+      )
+      .exec();
+  }
+
   async getCurrentTargets(address: string): Promise<string[]> {
     return (await this.nominatorModel.findOne({ address })).current;
   }
@@ -457,5 +483,9 @@ export default class Db {
 
   async getNominator(address: string): Promise<any> {
     return this.nominatorModel.findOne({ address }).exec();
+  }
+
+  async getLastNominatedEraIndex(): Promise<any> {
+    return this.eraModel.findOne({ lastNominatedEraIndex: /[0-9]+/ }).exec();
   }
 }

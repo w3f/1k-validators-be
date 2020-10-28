@@ -35,6 +35,11 @@ import ApiHandler from "../../src/ApiHandler";
     throw new Error(err3);
   }
 
+  const [res, err4] = await chaindata.findEraBlockHash(activeEra - 3);
+  if (err4) {
+    throw new Error(err4);
+  }
+
   console.log("NO ERRORS!");
   process.exit(0);
 })();

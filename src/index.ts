@@ -3,16 +3,15 @@ import program, { Command } from "commander";
 
 import ApiHandler from "./ApiHandler";
 import { loadConfigDir } from "./config";
+import { SIXTEEN_HOURS } from "./constants";
 import Database from "./db";
+import logger from "./logger";
 import MatrixBot from "./matrix";
 import Monitor from "./monitor";
 import Scorekeeper from "./scorekeeper";
 import Server from "./server";
 import TelemetryClient from "./telemetry";
-
-import logger from "./logger";
 import { sleep } from "./util";
-import { SIXTEEN_HOURS } from "./constants";
 
 const catchAndQuit = async (fn: any) => {
   try {

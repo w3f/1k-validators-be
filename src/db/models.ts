@@ -67,4 +67,4 @@ const NominatorSchema = new Schema({
   createdAt: { type: Number, default: 0 },
 });
 
-export { CandidateSchema, EraSchema, NominatorSchema };
+export { AccountingSchema, CandidateSchema, EraSchema, NominatorSchema };

@@ -209,11 +209,13 @@ export default class ScoreKeeper {
     return eraIndex;
   }
 
-  /// Handles the ending of a round.
+  /**
+   * Handles the ending of a Nomination round.
+   */
   async endRound(): Promise<void> {
     logger.info("Ending round");
 
-    /// The targets that have already been processed for this round.
+    // The targets that have already been processed for this round.
     const toProcess: Map<Stash, CandidateData> = new Map();
 
     for (const nomGroup of this.nominatorGroups) {
@@ -233,6 +235,17 @@ export default class ScoreKeeper {
         for (const stash of current) {
           const candidate = await this.db.getCandidate(stash);
           logger.info(`CANDIDATE TO PROCESS - ${candidate}`);
+          // TODO: Should check that the validator was actually part of the active set.
+          //
+          const startEra = await this.db.getLastNominatedEraIndex();
+          const [activeEra] = await this.chaindata.getActiveEraIndex();
+          const activeValidators = await this.chaindata.activeValidatorsInPeriod(
+            startEra,
+            activeEra
+          );
+          const wasActive = activeValidators.indexOf(stash) !== -1;
+          // TODO ^^ do something with this
+          // TODO: Should do accounting.
 
           // If already processed, then skip to next stash.
           if (toProcess.has(stash)) continue;

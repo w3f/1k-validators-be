@@ -38,6 +38,10 @@ const CandidateSchema = new Schema({
   sentryOfflineSince: { type: Number, default: 0 },
 });
 
+const EraSchema = new Schema({
+  lastNominatedEraIndex: { type: String, default: "0" },
+});
+
 const NominatorSchema = new Schema({
   address: String,
   current: [],
@@ -45,4 +49,4 @@ const NominatorSchema = new Schema({
   createdAt: { type: Number, default: 0 },
 });
 
-export { CandidateSchema, NominatorSchema };
+export { CandidateSchema, EraSchema, NominatorSchema };

@@ -8,6 +8,7 @@ export type NominatorConfig = {
 
 export type BooleanResult = [boolean | null, string | null];
 export type NumberResult = [number | null, string | null];
+export type StringResult = [string | null, string | null];
 
 /// The data for a candidate that's kept in the DB.
 export type CandidateData = {

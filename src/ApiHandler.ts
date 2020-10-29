@@ -1,15 +1,7 @@
 import { ApiPromise, WsProvider } from "@polkadot/api";
+import { KusamaEndpoints } from "./constants";
 
 import logger from "./logger";
-
-// TODO: move to constants
-const KusamaEndpoints = [
-  "wss://cc3-1.kusama.network",
-  "wss://cc3-2.kusama.network",
-  "wss://cc3-3.kusama.network",
-  "wss://cc3-4.kusama.network",
-  "wss://cc3-5.kusama.network",
-];
 
 /**
  * A higher level handler for the Polkadot-Js API that can handle reconnecting

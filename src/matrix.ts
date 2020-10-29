@@ -1,10 +1,12 @@
 import * as Sdk from "matrix-js-sdk";
 
+import { Config } from "./config";
+
 const sdk: any = Sdk;
 
 export default class MatrixBot {
   public client: any;
-  public conf: any;
+  public conf: Config;
   public db: any;
 
   constructor(
@@ -12,7 +14,7 @@ export default class MatrixBot {
     accessToken: string,
     userId: string,
     db: any,
-    config: any
+    config: Config
   ) {
     this.client = sdk.createClient({
       baseUrl,
@@ -77,7 +79,7 @@ export default class MatrixBot {
         "m.room.message",
         content,
         "",
-        (err: any, res: any) => {
+        (err: any) => {
           if (err) reject(err);
           resolve(true);
         }

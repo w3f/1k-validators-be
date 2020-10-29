@@ -9,7 +9,11 @@ import MockDb from "./mock/db";
 type TestExecutionContext = ExecutionContext<{ db: Db; sk: Scorekeeper }>;
 
 test.serial.before(async (t: TestExecutionContext) => {
-  const sk = new Scorekeeper(MockApi as any, new MockDb() as any, MockConfig);
+  const sk = new Scorekeeper(
+    MockApi as any,
+    new MockDb() as any,
+    MockConfig as any
+  );
   t.is(MockApi, sk.handler as any);
   t.is(MockConfig, sk.config);
 

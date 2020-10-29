@@ -1,7 +1,9 @@
+import { valid } from "semver";
 import ApiHandler from "./ApiHandler";
 
+import { KUSAMA_APPROX_ERA_LENGTH_IN_BLOCKS } from "./constants";
 import logger from "./logger";
-import { BooleanResult, NumberResult } from "./types";
+import { BooleanResult, NumberResult, StringResult } from "./types";
 
 type JSON = any;
 
@@ -129,6 +131,76 @@ class ChainData {
     } else {
       return [false, null];
     }
+  };
+
+  /**
+   * Finds the block hash for a particular era index. Used to determine the
+   * active validators within an era in `getActiveValidators`.
+   */
+  findEraBlockHash = async (era: number): Promise<StringResult> => {
+    const api = await this.handler.getApi();
+    const [activeEraIndex, err] = await this.getActiveEraIndex();
+    if (err) {
+      return [null, err];
+    }
+
+    if (era > activeEraIndex) {
+      return [null, "Era has not happened."];
+    }
+
+    const latestBlock = await api.rpc.chain.getBlock();
+    if (era == activeEraIndex) {
+      return [latestBlock.block.header.hash.toString(), null];
+    }
+
+    const diff = activeEraIndex - era;
+    const approxBlocksAgo = diff * KUSAMA_APPROX_ERA_LENGTH_IN_BLOCKS;
+
+    let testBlockNumber =
+      latestBlock.block.header.number.toNumber() - approxBlocksAgo;
+    while (true) {
+      const blockHash = await api.rpc.chain.getBlockHash(testBlockNumber);
+      const testEra = await api.query.staking.activeEra.at(blockHash);
+      const testIndex = testEra.unwrap().index.toNumber();
+      if (era == testIndex) {
+        return [blockHash.toString(), null];
+      }
+
+      if (testIndex > era) {
+        testBlockNumber = testBlockNumber + 25;
+      }
+
+      if (testIndex < era) {
+        testBlockNumber = testBlockNumber - 25;
+      }
+    }
+  };
+
+  activeValidatorsInPeriod = async (
+    startEra: number,
+    endEra: number
+  ): Promise<[string[] | null, string | null]> => {
+    const api = await this.handler.getApi();
+
+    const allValidators: Set<string> = new Set();
+    let testEra = startEra;
+    while (testEra <= endEra) {
+      const [blockHash, err] = await this.findEraBlockHash(testEra);
+      if (err) {
+        return [null, err];
+      }
+
+      const validators = await api.query.session.validators.at(blockHash);
+      for (const v of validators.toHuman() as any) {
+        if (!allValidators.has(v)) {
+          allValidators.add(v);
+        }
+      }
+
+      testEra++;
+    }
+
+    return [Array.from(allValidators), null];
   };
 }
 

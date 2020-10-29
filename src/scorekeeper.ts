@@ -232,20 +232,21 @@ export default class ScoreKeeper {
         // Wipe targets.
         await this.db.clearCurrent(nominator.address);
 
+        const startEra = await this.db.getLastNominatedEraIndex();
+        const [activeEra] = await this.chaindata.getActiveEraIndex();
+        const activeValidators = await this.chaindata.activeValidatorsInPeriod(
+          startEra,
+          activeEra
+        );
+
+        //TODO should do accounting
+
         for (const stash of current) {
           const candidate = await this.db.getCandidate(stash);
           logger.info(`CANDIDATE TO PROCESS - ${candidate}`);
-          // TODO: Should check that the validator was actually part of the active set.
-          //
-          const startEra = await this.db.getLastNominatedEraIndex();
-          const [activeEra] = await this.chaindata.getActiveEraIndex();
-          const activeValidators = await this.chaindata.activeValidatorsInPeriod(
-            startEra,
-            activeEra
-          );
+
           const wasActive = activeValidators.indexOf(stash) !== -1;
           // TODO ^^ do something with this
-          // TODO: Should do accounting.
 
           // If already processed, then skip to next stash.
           if (toProcess.has(stash)) continue;

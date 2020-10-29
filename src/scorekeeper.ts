@@ -121,9 +121,11 @@ export default class ScoreKeeper {
     const now = new Date().getTime();
 
     // The nominations sent now won't be active until the next era.
-    this.currentEra = (await this._getCurrentEra()) + 1;
+    this.currentEra = await this._getCurrentEra();
 
-    logger.info(`New round starting at ${now} for next Era ${this.currentEra}`);
+    logger.info(
+      `New round starting at ${now} for next Era ${this.currentEra + 1}`
+    );
     this.botLog(
       `New round is starting! Era ${this.currentEra} will begin new nominations.`
     );
@@ -238,8 +240,6 @@ export default class ScoreKeeper {
           startEra,
           activeEra
         );
-
-        //TODO should do accounting
 
         for (const stash of current) {
           const candidate = await this.db.getCandidate(stash);

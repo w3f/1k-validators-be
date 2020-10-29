@@ -692,7 +692,7 @@ data:
                 "sentryId": ""
             }
         ],
-        "forceRound": true,
+        "forceRound": false,
         "nominating": true
       },
       "server": {

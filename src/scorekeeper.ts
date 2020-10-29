@@ -133,7 +133,15 @@ export default class ScoreKeeper {
       allCandidates
     );
 
-    return await this._doNominations(validCandidates, 16, this.nominatorGroups);
+    const targets = await this._doNominations(
+      validCandidates,
+      16,
+      this.nominatorGroups
+    );
+
+    await this.db.setLastNominatedEraIndex(this.currentEra);
+
+    return targets;
   }
 
   async _doNominations(

@@ -1,4 +1,5 @@
 import { CronJob } from "cron";
+import { EventEmitter } from "events";
 
 import ApiHandler from "./ApiHandler";
 import ChainData from "./chaindata";
@@ -32,9 +33,31 @@ export default class ScoreKeeper {
   constructor(handler: ApiHandler, db: Db, config: Config, bot: any = false) {
     this.handler = handler;
     this.db = db;
+    this.chaindata = new ChainData(this.handler);
+
+    this.handler.on(
+      "reward",
+      async (data: { stash: string; amount: string }) => {
+        const { stash, amount } = data;
+        for (const nomGroup of this.nominatorGroups) {
+          for (const nom of nomGroup) {
+            const nomStash = await nom.stash();
+            if (nomStash == stash) {
+              const activeEra = await this.chaindata.getActiveEraIndex();
+              await this.db.updateAccountingRecord(
+                nom.address,
+                nomStash,
+                activeEra.toString(),
+                amount
+              );
+            }
+          }
+        }
+      }
+    );
+
     this.config = config;
     this.bot = bot;
-    this.chaindata = new ChainData(this.handler);
     this.constraints = new OTV(
       this.handler,
       this.config.constraints.skipConnectionTime
@@ -121,9 +144,11 @@ export default class ScoreKeeper {
     const now = new Date().getTime();
 
     // The nominations sent now won't be active until the next era.
-    this.currentEra = (await this._getCurrentEra()) + 1;
+    this.currentEra = await this._getCurrentEra();
 
-    logger.info(`New round starting at ${now} for next Era ${this.currentEra}`);
+    logger.info(
+      `New round starting at ${now} for next Era ${this.currentEra + 1}`
+    );
     this.botLog(
       `New round is starting! Era ${this.currentEra} will begin new nominations.`
     );
@@ -209,11 +234,13 @@ export default class ScoreKeeper {
     return eraIndex;
   }
 
-  /// Handles the ending of a round.
+  /**
+   * Handles the ending of a Nomination round.
+   */
   async endRound(): Promise<void> {
     logger.info("Ending round");
 
-    /// The targets that have already been processed for this round.
+    // The targets that have already been processed for this round.
     const toProcess: Map<Stash, CandidateData> = new Map();
 
     for (const nomGroup of this.nominatorGroups) {
@@ -230,9 +257,19 @@ export default class ScoreKeeper {
         // Wipe targets.
         await this.db.clearCurrent(nominator.address);
 
+        const startEra = await this.db.getLastNominatedEraIndex();
+        const [activeEra] = await this.chaindata.getActiveEraIndex();
+        const activeValidators = await this.chaindata.activeValidatorsInPeriod(
+          startEra,
+          activeEra
+        );
+
         for (const stash of current) {
           const candidate = await this.db.getCandidate(stash);
           logger.info(`CANDIDATE TO PROCESS - ${candidate}`);
+
+          const wasActive = activeValidators.indexOf(stash) !== -1;
+          // TODO ^^ do something with this
 
           // If already processed, then skip to next stash.
           if (toProcess.has(stash)) continue;

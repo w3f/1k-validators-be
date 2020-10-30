@@ -1,17 +1,24 @@
 import mongoose from "mongoose";
 
-import { CandidateSchema, EraSchema, NominatorSchema } from "./models";
+import {
+  AccountingSchema,
+  CandidateSchema,
+  EraSchema,
+  NominatorSchema,
+} from "./models";
 import logger from "../logger";
 
 // Sets a global configuration to silence mongoose deprecation warnings.
 mongoose.set("useFindAndModify", false);
 
 export default class Db {
+  private accountingModel;
   private candidateModel;
   private eraModel;
   private nominatorModel;
 
   constructor() {
+    this.accountingModel = mongoose.model("Accounting", AccountingSchema);
     this.candidateModel = mongoose.model("Candidate", CandidateSchema);
     this.eraModel = mongoose.model("Era", EraSchema);
     this.nominatorModel = mongoose.model("Nominator", NominatorSchema);
@@ -250,6 +257,89 @@ export default class Db {
         createdAt: now,
       }
     );
+  }
+
+  /**
+   * Creates a new accounting record if none exists.
+   * @param stash
+   * @param controller
+   */
+  async newAccountingRecord(
+    stash: string,
+    controller: string
+  ): Promise<boolean> {
+    logger.info(
+      `(Db::newAccountingRecord) Adding stash ${stash} and controller ${controller}`
+    );
+
+    const record = await this.accountingModel.findOne({ stash, controller });
+    if (!record) {
+      const accounting = new this.accountingModel({
+        stash,
+        controller,
+        total: "0",
+        records: [],
+      });
+
+      return accounting.save();
+    }
+
+    return true;
+  }
+
+  async updateAccountingRecord(
+    controller: string,
+    stash: string,
+    era: string,
+    reward: string
+  ): Promise<boolean> {
+    logger.info(
+      `(Db::updateAccountingRecord) Adding era ${era} and reward ${reward}`
+    );
+
+    const record = await this.accountingModel.findOne({ stash, controller });
+    if (!record) {
+      // record doesn't exist just return false
+      return false;
+    }
+
+    await this.accountingModel
+      .findOneAndUpdate(
+        {
+          stash,
+          controller,
+        },
+        {
+          $push: { records: { era, reward } },
+        }
+      )
+      .exec();
+
+    return true;
+  }
+
+  async getAccounting(controllerOrStash: string): Promise<any> {
+    const stashResult = await this.accountingModel
+      .findOne({
+        stash: controllerOrStash,
+      })
+      .exec();
+
+    if (stashResult) {
+      return stashResult;
+    }
+
+    const controllerResult = await this.accountingModel
+      .findOne({
+        controller: controllerOrStash,
+      })
+      .exec();
+
+    if (controllerResult) {
+      return controllerResult;
+    }
+
+    return null;
   }
 
   async setTarget(

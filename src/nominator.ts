@@ -14,6 +14,7 @@ export default class Nominator {
   private handler: ApiHandler;
   private db: Database;
   private signer: KeyringPair;
+  private controller: string;
 
   constructor(handler: ApiHandler, db: Database, cfg: NominatorConfig) {
     this.handler = handler;
@@ -25,11 +26,20 @@ export default class Nominator {
     });
 
     this.signer = keyring.createFromUri(cfg.seed);
+    this.controller = this.signer.address;
     logger.info(`(Nominator::constructor) Nominator spawned: ${this.address}`);
   }
 
   public get address(): string {
-    return this.signer.address;
+    return this.controller;
+  }
+
+  public async stash(): Promise<any> {
+    const api = await this.handler.getApi();
+    const ledger = await api.query.staking.ledger(this.controller);
+    const { stash } = ledger.unwrap();
+
+    return stash;
   }
 
   public async nominate(targets: Stash[], dryRun = false): Promise<boolean> {

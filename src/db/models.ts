@@ -1,5 +1,23 @@
 import { Schema } from "mongoose";
 
+const RewardRecordScheme = new Schema({
+  // Era
+  era: String,
+  // reward for era
+  reward: String,
+});
+
+const AccountingSchema = new Schema({
+  // The nominator's stash account.
+  stash: String,
+  // The nominator's controller account.
+  controller: String,
+  // Total rewards since starting the service.
+  total: String,
+  // More detailed reward records.
+  records: [RewardRecordScheme],
+});
+
 const CandidateSchema = new Schema({
   // The inherited telemetry ID.
   telemetryId: Number,
@@ -49,4 +67,4 @@ const NominatorSchema = new Schema({
   createdAt: { type: Number, default: 0 },
 });
 
-export { CandidateSchema, EraSchema, NominatorSchema };
+export { AccountingSchema, CandidateSchema, EraSchema, NominatorSchema };

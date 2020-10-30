@@ -8,6 +8,7 @@ import logger from "./logger";
 import ScoreKeeper from "./scorekeeper";
 
 const API = {
+  Accounting: "/accounting",
   GetCandidates: "/candidates",
   GetNodes: "/nodes",
   GetNominators: "/nominators",
@@ -59,6 +60,13 @@ export default class Server {
           {
             const allNominators = await this.db.allNominators();
             ctx.body = allNominators;
+          }
+          break;
+
+        case API.Accounting:
+          {
+            const accounting = await this.db.getAccounting("");
+            ctx.body = accounting;
           }
           break;
         case API.Health:

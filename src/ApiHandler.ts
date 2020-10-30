@@ -1,18 +1,20 @@
 import { ApiPromise, WsProvider } from "@polkadot/api";
-import { KusamaEndpoints } from "./constants";
+import EventEmitter from "eventemitter3";
 
+import { KusamaEndpoints } from "./constants";
 import logger from "./logger";
 
 /**
  * A higher level handler for the Polkadot-Js API that can handle reconnecting
  * to a different provider if one proves troublesome.
  */
-class ApiHandler {
+class ApiHandler extends EventEmitter {
   private _api: ApiPromise;
   private _reconnectLock: boolean;
   private _reconnectTries = 0;
 
   constructor(api: ApiPromise) {
+    super();
     this._api = api;
     this._registerEventHandlers(api);
   }
@@ -50,6 +52,25 @@ class ApiHandler {
       logger.info(`API ERROR ${err.toString()}`);
       this._reconnect();
     });
+
+    api.query.system.events((events) => {
+      console.log(`\nReceived ${events.length} events:`);
+
+      // Loop through the Vec<EventRecord>
+      events.forEach((record) => {
+        // Extract the phase, event and the event types
+        const { event } = record;
+
+        if (event.section == "staking" && event.method == "Reward") {
+          const [stash, amount] = event.data;
+
+          this.emit("reward", {
+            stash: stash.toString(),
+            amount: amount.toString(),
+          });
+        }
+      });
+    });
   }
 
   async _reconnect(): Promise<void> {
@@ -63,6 +84,8 @@ class ApiHandler {
     );
     this._reconnectLock = true;
     this._reconnectTries++;
+    // disconnect from the old one
+    this._api.disconnect();
     // do the actual reconnection
     const nextEndpoint = KusamaEndpoints[this._reconnectTries % 5];
     const api = await ApiPromise.create({

@@ -4,6 +4,7 @@ export const MockApi = {
       era: 0,
     },
   },
+  on: () => {},
   query: {
     staking: {
       currentEra: () => {

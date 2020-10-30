@@ -1,4 +1,5 @@
 import { CronJob } from "cron";
+import { EventEmitter } from "events";
 
 import ApiHandler from "./ApiHandler";
 import ChainData from "./chaindata";
@@ -32,9 +33,31 @@ export default class ScoreKeeper {
   constructor(handler: ApiHandler, db: Db, config: Config, bot: any = false) {
     this.handler = handler;
     this.db = db;
+    this.chaindata = new ChainData(this.handler);
+
+    this.handler.on(
+      "reward",
+      async (data: { stash: string; amount: string }) => {
+        const { stash, amount } = data;
+        for (const nomGroup of this.nominatorGroups) {
+          for (const nom of nomGroup) {
+            const nomStash = await nom.stash();
+            if (nomStash == stash) {
+              const activeEra = await this.chaindata.getActiveEraIndex();
+              await this.db.updateAccountingRecord(
+                nom.address,
+                nomStash,
+                activeEra.toString(),
+                amount
+              );
+            }
+          }
+        }
+      }
+    );
+
     this.config = config;
     this.bot = bot;
-    this.chaindata = new ChainData(this.handler);
     this.constraints = new OTV(
       this.handler,
       this.config.constraints.skipConnectionTime

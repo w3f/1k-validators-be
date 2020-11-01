@@ -690,6 +690,24 @@ data:
                 "stash": "JECeyN45Ycx5t1M1hj2pBbsEZpdeGzDsYA1Wrt2Tdte2wV7",
                 "riotHandle": "@bodysophon:matrix.org",
                 "sentryId": ""
+            },
+            {
+                "name": "Cryptonic",
+                "stash": "Ffd5sG7N65LEFr4bXbpwvPnpmezwpfrCVDEozH2jkMs1utk",
+                "riotHandle": "@bogdi:matrix.org",
+                "sentryId": ""
+            },
+            {
+                "name": "Spellcaster",
+                "stash": "F7c6ocWu397zYewAHBxqTwHgXhXDebgYSVjRX9oQM42hkpn",
+                "riotHandle": "@spellcaster:matrix.og",
+                "sentryId": ""
+            },
+            {
+                "name": "Hsinchu"",
+                "stash": "CjU6xRgu5f9utpaCbYHBWZGxZPrpgUPSSXqSQQG5mkH9LKM",
+                "riotHandle": "@hsinchu:matrix.org",
+                "sentryId": ""
             }
         ],
         "forceRound": false,

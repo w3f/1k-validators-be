@@ -49,5 +49,5 @@ import ApiHandler from "../../src/ApiHandler";
   }
 
   console.log("NO ERRORS!");
-  // process.exit(0);
+  process.exit(0);
 })();

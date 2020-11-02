@@ -28,7 +28,14 @@ const Test = async () => {
   const server = new Server(MockDb as any, MockConfig as any, MockSk as any);
   server.start();
 
-  await ax.get("/accounting/bleh");
+  const res = await ax.get("/accounting/bleh");
+
+  if (res.data != "bleh") {
+    throw new Error("Server returned an incorrect value.");
+  }
+
+  console.log("No errors!");
+  process.exit(0);
 };
 
 try {

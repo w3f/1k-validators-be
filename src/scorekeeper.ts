@@ -1,5 +1,4 @@
 import { CronJob } from "cron";
-import { EventEmitter } from "events";
 
 import ApiHandler from "./ApiHandler";
 import ChainData from "./chaindata";
@@ -94,6 +93,9 @@ export default class ScoreKeeper {
     for (const nominator of nominatorGroup) {
       const nom = this._spawn(nominator.seed);
       await this.db.addNominator(nom.address, now);
+      // Create a new accounting record in case one doesn't exist.
+      const stash = await nom.stash();
+      await this.db.newAccountingRecord(stash, nom.address);
       group.push(nom);
     }
     this.nominatorGroups.push(group);

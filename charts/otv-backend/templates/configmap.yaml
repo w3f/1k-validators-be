@@ -9,7 +9,7 @@ data:
       "global": {
         "dryRun": false,
         "networkPrefix": 2,
-        "test": false,
+        "test": false
       },
       "constraints": {
         "skipConnectionTime": false,

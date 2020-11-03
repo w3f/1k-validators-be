@@ -18,7 +18,7 @@
   "license": "GPL-3.0",
   "dependencies": {
     "@koa/router": "^10.0.0",
-    "@octokit/rest": "^18.0.8",
+    "@octokit/rest": "^18.0.9",
     "@polkadot/api": "^2.5.1",
     "@polkadot/keyring": "^3.7.1",
     "@types/cron": "^1.7.1",
@@ -52,8 +52,8 @@
   },
   "devDependencies": {
     "@ava/typescript": "^1.1.0",
-    "@typescript-eslint/eslint-plugin": "^4.6.0",
-    "@typescript-eslint/parser": "^4.6.0",
+    "@typescript-eslint/eslint-plugin": "^4.6.1",
+    "@typescript-eslint/parser": "^4.6.1",
     "ava": "^3.13.0",
     "eslint": "^7.12.1",
     "eslint-plugin-security": "^1.4.0"

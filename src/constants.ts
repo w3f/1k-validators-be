@@ -24,3 +24,12 @@ export const KusamaEndpoints = [
   "wss://cc3-4.kusama.network",
   "wss://cc3-5.kusama.network",
 ];
+
+/// List of Polkadot endpoints we can switch between.
+export const PolkadotEndpoints = [
+  "wss://cc1-1.polkadot.network",
+  "wss://cc1-2.polkadot.network",
+  "wss://cc1-3.polkadot.network",
+  "wss://cc1-4.polkadot.network",
+  "wss://cc1-5.polkadot.network",
+];

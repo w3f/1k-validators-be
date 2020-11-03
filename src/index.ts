@@ -3,7 +3,7 @@ import program, { Command } from "commander";
 
 import ApiHandler from "./ApiHandler";
 import { loadConfigDir } from "./config";
-import { SIXTEEN_HOURS } from "./constants";
+import { SIXTEEN_HOURS, KusamaEndpoints, PolkadotEndpoints } from "./constants";
 import Database from "./db";
 import logger from "./logger";
 import MatrixBot from "./matrix";
@@ -26,19 +26,20 @@ const start = async (cmd: Command) => {
   const config = loadConfigDir(cmd.config);
 
   logger.info(`Starting the backend services.`);
-  logger.info(
-    `\nStart-up mem usage ${JSON.stringify(process.memoryUsage())}\n`
-  );
-  const handler = await ApiHandler.create();
 
+  // Create the API handler.
+  const endpoints =
+    config.global.networkPrefix == 2 ? KusamaEndpoints : PolkadotEndpoints;
+  const handler = await ApiHandler.create(endpoints);
+
+  // Create the Database.
   const db = await Database.create(config.db.mongo.uri);
 
+  // Start the telemetry client.
   const telemetry = new TelemetryClient(config, db);
   telemetry.start();
 
-  logger.info(
-    `\nBefore bot mem usage ${JSON.stringify(process.memoryUsage())}\n`
-  );
+  // Create the matrix bot if enabled.
   let maybeBot: any = false;
   if (config.matrix.enabled) {
     const { accessToken, baseUrl, userId } = config.matrix;
@@ -47,19 +48,13 @@ const start = async (cmd: Command) => {
     maybeBot.sendMessage(`Backend services (re)-started!`);
   }
 
-  /// Buffer some time for set up.
+  // Buffer some time for set up.
   await sleep(1500);
 
-  logger.info(
-    `\nBefore monitor mem usage ${JSON.stringify(process.memoryUsage())}\n`
-  );
-
-  /// Monitors the latest GitHub releases and ensures nodes have upgraded
-  /// within a timely period.
+  // Monitors the latest GitHub releases and ensures nodes have upgraded
+  // within a timely period.
   const monitor = new Monitor(db, SIXTEEN_HOURS);
-  const monitorFrequency = config.global.test
-    ? "0 */15 * * * *" // Every 15 minutes.
-    : "0 */15 * * * *"; // Every 15 minutes.
+  const monitorFrequency = "0 */15 * * * *"; // Every 15 minutes.
 
   const monitorCron = new CronJob(monitorFrequency, async () => {
     logger.info(
@@ -70,23 +65,25 @@ const start = async (cmd: Command) => {
     await monitor.getLatestTaggedRelease();
     await monitor.ensureUpgrades();
   });
-  monitorCron.start();
+
   await monitor.getLatestTaggedRelease();
   await monitor.ensureUpgrades();
+  monitorCron.start();
 
-  /// Once a week reset the offline accumulations of nodes.
+  // Once a week reset the offline accumulations of nodes.
   const clearFrequency = "* * * * * 0";
   const clearCron = new CronJob(clearFrequency, () => {
     db.clearAccumulated();
   });
   clearCron.start();
 
+  // Set up the nominators in the scorekeeper.
   const scorekeeper = new Scorekeeper(handler, db, config, maybeBot);
   for (const nominatorGroup of config.scorekeeper.nominators) {
     await scorekeeper.addNominatorGroup(nominatorGroup);
   }
 
-  /// Wipe the candidates on every start-up and re-add the ones in config.
+  // Wipe the candidates on every start-up and re-add the ones in config.
   logger.info(
     "Wiping old candidates data and intializing latest candidates from config."
   );
@@ -103,13 +100,10 @@ const start = async (cmd: Command) => {
     }
   }
 
-  /// Runs right after adding candidates.
+  // Buffer more time.
   sleep(3000);
 
-  logger.info(
-    `\nBefore sk mem usage ${JSON.stringify(process.memoryUsage())}\n`
-  );
-
+  // Start the scorekeeper
   const scorekeeperFrequency =
     (config.global.test && "0 */15 * * * *") || // 15 mins
     (config.global.dryRun && "0 */5 * * * *") || // 5 mins
@@ -117,6 +111,7 @@ const start = async (cmd: Command) => {
 
   scorekeeper.begin(scorekeeperFrequency);
 
+  // Start the API server.
   const server = new Server(db, config, scorekeeper);
   server.start();
 };
@@ -125,5 +120,5 @@ program
   .option("--config <directory>", "The path to the config directory.", "config")
   .action((cmd: Command) => catchAndQuit(start(cmd)));
 
-program.version("1.4.26");
+program.version("1.4.27");
 program.parse(process.argv);

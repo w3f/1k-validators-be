@@ -7,9 +7,9 @@ data:
   main.json: |
     {
       "global": {
-        "test": false,
         "dryRun": false,
-        "wsEndpoint": "wss://kusama-rpc.polkadot.io/"
+        "networkPrefix": 2,
+        "test": false,
       },
       "constraints": {
         "skipConnectionTime": false,

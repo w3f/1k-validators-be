@@ -94,6 +94,18 @@ export default class Db {
     return true;
   }
 
+  // Sets an invalidityReason for a candidate.
+  async setInvalidityReason(stash: string, reason: string): Promise<boolean> {
+    await this.candidateModel.findOneAndUpdate(
+      { stash },
+      {
+        invalidityReason: reason,
+      }
+    );
+
+    return true;
+  }
+
   // Reports a node online that has joined telemetry.
   async reportOnline(
     telemetryId: number,

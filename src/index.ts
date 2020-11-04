@@ -34,6 +34,9 @@ const start = async (cmd: Command) => {
 
   // Create the Database.
   const db = await Database.create(config.db.mongo.uri);
+  // TMP - just need to run this once
+  await db.deleteOldCandidateFields();
+  // TMP
 
   // Start the telemetry client.
   const telemetry = new TelemetryClient(config, db);

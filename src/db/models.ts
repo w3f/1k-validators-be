@@ -48,6 +48,8 @@ const CandidateSchema = new Schema({
   faults: { type: Number, default: 0 },
   // The stash account of the candidate. May be empty if no stash is registered.
   stash: String,
+  // The reasons a candidate is not meeting the programme requirements.
+  invalidityReasons: { type: String, default: "" },
 });
 
 const EraSchema = new Schema({

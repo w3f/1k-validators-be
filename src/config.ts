@@ -12,6 +12,7 @@ export type Config = {
   };
   global: {
     dryRun: boolean;
+    networkPrefix: 0 | 2;
     test: boolean;
   };
   matrix: {

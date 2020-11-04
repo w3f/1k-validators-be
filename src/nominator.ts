@@ -16,7 +16,12 @@ export default class Nominator {
   private signer: KeyringPair;
   private controller: string;
 
-  constructor(handler: ApiHandler, db: Database, cfg: NominatorConfig) {
+  constructor(
+    handler: ApiHandler,
+    db: Database,
+    cfg: NominatorConfig,
+    networkPrefix = 2
+  ) {
     this.handler = handler;
     this.db = db;
     this.maxNominations = cfg.maxNominations;
@@ -24,6 +29,8 @@ export default class Nominator {
     const keyring = new Keyring({
       type: "sr25519",
     });
+
+    keyring.setSS58Format(networkPrefix);
 
     this.signer = keyring.createFromUri(cfg.seed);
     this.controller = this.signer.address;

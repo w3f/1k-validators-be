@@ -25,4 +25,8 @@ export default class MockDb {
 
     return true;
   }
+
+  newAccountingRecord(): boolean {
+    return true;
+  }
 }

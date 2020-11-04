@@ -1,7 +1,6 @@
 import { ApiPromise, WsProvider } from "@polkadot/api";
 import EventEmitter from "eventemitter3";
 
-import { KusamaEndpoints } from "./constants";
 import logger from "./logger";
 
 /**
@@ -10,22 +9,26 @@ import logger from "./logger";
  */
 class ApiHandler extends EventEmitter {
   private _api: ApiPromise;
+  private _endpoints: string[];
   private _reconnectLock: boolean;
   private _reconnectTries = 0;
 
-  constructor(api: ApiPromise) {
+  constructor(api: ApiPromise, endpoints: string[]) {
     super();
     this._api = api;
+    this._endpoints = endpoints;
     this._registerEventHandlers(api);
   }
 
-  static async create(): Promise<ApiHandler> {
-    const initialEndpoint = KusamaEndpoints[3];
+  static async create(endpoints: string[]): Promise<ApiHandler> {
+    const initialIndex = Math.floor(endpoints.length / 2);
+    // eslint-disable-next-line security/detect-object-injection
+    const initialEndpoint = endpoints[initialIndex];
     const api = await ApiPromise.create({
       provider: new WsProvider(initialEndpoint),
     });
 
-    return new ApiHandler(api);
+    return new ApiHandler(api, endpoints);
   }
 
   isConnected(): boolean {
@@ -87,7 +90,7 @@ class ApiHandler extends EventEmitter {
     // disconnect from the old one
     this._api.disconnect();
     // do the actual reconnection
-    const nextEndpoint = KusamaEndpoints[this._reconnectTries % 5];
+    const nextEndpoint = this._endpoints[this._reconnectTries % 5];
     const api = await ApiPromise.create({
       provider: new WsProvider(nextEndpoint),
     });

@@ -1,12 +1,12 @@
 import * as bs58 from "bs58";
 import * as hash from "hash.js";
 
-export const sleep = (ms: number) =>
-  new Promise((resolve: any) => {
+export const sleep = (ms: number): Promise<void> =>
+  new Promise((resolve) => {
     setTimeout(() => resolve(), ms);
   });
 
-export const getNow = () => new Date().getTime();
+export const getNow = (): number => new Date().getTime();
 
 export const getRawPeerId = (peerId: string): string => {
   // There's two versions of the peer id:

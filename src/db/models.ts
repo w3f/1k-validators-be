@@ -48,12 +48,6 @@ const CandidateSchema = new Schema({
   faults: { type: Number, default: 0 },
   // The stash account of the candidate. May be empty if no stash is registered.
   stash: String,
-  // The network identifier for the sentry node attached to this node.
-  sentryId: [],
-  // Timestamp for when the sentry was found online (zero if currently offline).
-  sentryOnlineSince: { type: Number, default: 0 },
-  // Timestamp for when the sentry was found offline (zero if currently online).
-  sentryOfflineSince: { type: Number, default: 0 },
 });
 
 const EraSchema = new Schema({

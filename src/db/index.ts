@@ -78,6 +78,22 @@ export default class Db {
     );
   }
 
+  // Unsets old candidate fields.
+  async deleteOldCandidateFields(): Promise<boolean> {
+    await this.candidateModel.update(
+      {},
+      {
+        $unset: {
+          sentryId: 1,
+          sentryOnlineSince: 1,
+          sentryOfflineSince: 1,
+        },
+      }
+    );
+
+    return true;
+  }
+
   // Reports a node online that has joined telemetry.
   async reportOnline(
     telemetryId: number,

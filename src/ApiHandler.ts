@@ -21,7 +21,9 @@ class ApiHandler extends EventEmitter {
   }
 
   static async create(endpoints: string[]): Promise<ApiHandler> {
-    const initialEndpoint = endpoints[endpoints.length / 2];
+    const initialIndex = Math.floor(endpoints.length / 2);
+    // eslint-disable-next-line security/detect-object-injection
+    const initialEndpoint = endpoints[initialIndex];
     const api = await ApiPromise.create({
       provider: new WsProvider(initialEndpoint),
     });

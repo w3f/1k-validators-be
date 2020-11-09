@@ -708,6 +708,12 @@ data:
                 "stash": "CjU6xRgu5f9utpaCbYHBWZGxZPrpgUPSSXqSQQG5mkH9LKM",
                 "riotHandle": "@hsinchu:matrix.org",
                 "sentryId": ""
+            },
+            {
+                "name": "Sanad04",
+                "stash": "EMqHUxXXvSzzbRXpNhrYrnAnmR1BpvDm4CMii5XX529c69p",
+                "riotHandle": "@rayamag:matrix.org",
+                "sentryId": ""
             }
         ],
         "forceRound": false,

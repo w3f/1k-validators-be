@@ -34,6 +34,9 @@ const start = async (cmd: Command) => {
 
   // Create the Database.
   const db = await Database.create(config.db.mongo.uri);
+  // TMP - just need to run this once
+  await db.deleteOldCandidateFields();
+  // TMP
 
   // Start the telemetry client.
   const telemetry = new TelemetryClient(config, db);
@@ -120,5 +123,5 @@ program
   .option("--config <directory>", "The path to the config directory.", "config")
   .action((cmd: Command) => catchAndQuit(start(cmd)));
 
-program.version("1.4.28");
+program.version("1.4.29");
 program.parse(process.argv);

@@ -32,15 +32,18 @@ export class OTV implements Constraints {
   }
 
   /// Returns true if it's a valid candidate or [false, "reason"] otherwise.
-  async getInvalidCandidates(candidates: CandidateData[]): Promise<string[]> {
+  async getInvalidCandidates(
+    candidates: CandidateData[]
+  ): Promise<{ stash: string; reason: string }[]> {
     const invalid = await Promise.all(
       candidates.map(async (candidate) => {
+        const { stash } = candidate;
         const [isValid, reason] = await this.checkSingleCandidate(candidate);
-        if (!isValid) return reason;
+        if (!isValid) return { stash, reason };
       })
     );
 
-    this.invalidCache = invalid;
+    this.invalidCache = invalid.map((i) => i.reason);
 
     return invalid;
   }

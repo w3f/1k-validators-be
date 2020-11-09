@@ -121,8 +121,22 @@ export default class ScoreKeeper {
   async begin(frequency: string): Promise<void> {
     setInterval(async () => {
       const allCandidates = await this.db.allCandidates();
-      await this.constraints.getInvalidCandidates(allCandidates);
-      await this.constraints.getValidCandidates(allCandidates);
+
+      // set invalidityReason for stashes
+      const invalid = await this.constraints.getInvalidCandidates(
+        allCandidates
+      );
+      for (const i of invalid) {
+        const { stash, reason } = i;
+        await this.db.setInvalidityReason(stash, reason);
+      }
+
+      // set invalidityReason as empty for valid candidates
+      const valid = await this.constraints.getValidCandidates(allCandidates);
+      for (const v of valid) {
+        const { stash } = v;
+        await this.db.setInvalidityReason(stash, "");
+      }
     }, 2 * 60 * 1000);
 
     // If `forceRound` is on - start immediately.

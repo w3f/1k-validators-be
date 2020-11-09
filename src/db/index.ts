@@ -78,6 +78,34 @@ export default class Db {
     );
   }
 
+  // Unsets old candidate fields.
+  async deleteOldCandidateFields(): Promise<boolean> {
+    await this.candidateModel.update(
+      {},
+      {
+        $unset: {
+          sentryId: 1,
+          sentryOnlineSince: 1,
+          sentryOfflineSince: 1,
+        },
+      }
+    );
+
+    return true;
+  }
+
+  // Sets an invalidityReason for a candidate.
+  async setInvalidityReason(stash: string, reason: string): Promise<boolean> {
+    await this.candidateModel.findOneAndUpdate(
+      { stash },
+      {
+        invalidityReason: reason,
+      }
+    );
+
+    return true;
+  }
+
   // Reports a node online that has joined telemetry.
   async reportOnline(
     telemetryId: number,

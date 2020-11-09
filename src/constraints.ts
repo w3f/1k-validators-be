@@ -43,7 +43,7 @@ export class OTV implements Constraints {
       })
     );
 
-    this.invalidCache = invalid.map((i) => i.reason);
+    this.invalidCache = invalid.filter((i) => !!i).map((i) => i.reason);
 
     return invalid;
   }
@@ -159,14 +159,16 @@ export class OTV implements Constraints {
   /// candidates that did good from the ones that did badly.
   async processCandidates(
     candidates: Set<CandidateData>
-  ): Promise<[Set<CandidateData>, Set<CandidateData>]> {
+  ): Promise<
+    [Set<CandidateData>, Set<{ candidate: CandidateData; reason: string }>]
+  > {
     const [activeEraIndex, eraErr] = await this.chaindata.getActiveEraIndex();
     if (eraErr) {
       throw eraErr;
     }
 
     const good: Set<CandidateData> = new Set();
-    const bad: Set<CandidateData> = new Set();
+    const bad: Set<{ candidate: CandidateData; reason: string }> = new Set();
 
     for (const candidate of candidates) {
       const { name, offlineSince, stash } = candidate;
@@ -174,33 +176,38 @@ export class OTV implements Constraints {
       const [commission, err] = await this.chaindata.getCommission(stash);
       /// If it errors we assume that a validator removed their validator status.
       if (err) {
-        logger.info(`${name} ${err}`);
-        bad.add(candidate);
+        const reason = `${name} ${err}`;
+        logger.info(reason);
+        bad.add({ candidate, reason });
         continue;
       }
 
       if (commission > TEN_PERCENT) {
-        logger.info(
-          `${name} found commission higher than ten percent: ${commission}`
-        );
-        bad.add(candidate);
+        const reason = `${name} found commission higher than ten percent: ${commission}`;
+        logger.info(reason);
+        bad.add({ candidate, reason });
         continue;
       }
 
       const [bondedAmt, err2] = await this.chaindata.getBondedAmount(stash);
       if (err2) {
-        logger.info(`${name} ${err2}`);
+        const reason = `${name} ${err2}`;
+        logger.info(reason);
+        bad.add({ candidate, reason });
         continue;
       }
       if (bondedAmt < FIFTY_KSM) {
-        logger.info(`${name} has less then fifty KSM bonded: ${bondedAmt}`);
+        const reason = `${name} has less then fifty KSM bonded: ${bondedAmt}`;
+        logger.info(reason);
+        bad.add({ candidate, reason });
         continue;
       }
 
       // Ensure the candidate is online.
       if (offlineSince !== 0) {
-        logger.info(`${name} offline. Offline since ${offlineSince}.`);
-        bad.add(candidate);
+        const reason = `${name} offline. Offline since ${offlineSince}.`;
+        logger.info(reason);
+        bad.add({ candidate, reason });
         continue;
       }
 
@@ -210,13 +217,15 @@ export class OTV implements Constraints {
         stash
       );
       if (err3) {
-        logger.info(`${name} ${err3}`);
-        bad.add(candidate);
+        const reason = `${name} ${err3}`;
+        logger.info(reason);
+        bad.add({ candidate, reason });
         continue;
       }
       if (hasSlashes) {
-        logger.info(`${name} has slashes.`);
-        bad.add(candidate);
+        const reason = `${name} has slashes.`;
+        logger.info(reason);
+        bad.add({ candidate, reason });
         continue;
       }
 

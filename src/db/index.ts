@@ -287,6 +287,31 @@ export default class Db {
     );
   }
 
+  async pushFaultEvent(stash: string, reason: string): Promise<boolean> {
+    logger.info(
+      `(Db::pushFault) Adding new fault for ${stash} for reason ${reason}`
+    );
+
+    const record = await this.candidateModel.findOne({ stash });
+    if (!record) {
+      return false;
+    }
+
+    await this.candidateModel.findOneAndUpdate(
+      {
+        stash,
+      },
+      {
+        $push: {
+          faultEvents: {
+            when: Date.now(),
+            reason,
+          },
+        },
+      }
+    );
+  }
+
   /**
    * Creates a new accounting record if none exists.
    * @param stash

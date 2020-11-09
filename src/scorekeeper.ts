@@ -271,7 +271,6 @@ export default class ScoreKeeper {
     for (const nomGroup of this.nominatorGroups) {
       for (const nominator of nomGroup) {
         const current = await this.db.getCurrentTargets(nominator.address);
-        logger.info(`CURRENT - ${current}`);
 
         // If not nominating any... then return.
         if (!current.length) {
@@ -291,7 +290,6 @@ export default class ScoreKeeper {
 
         for (const stash of current) {
           const candidate = await this.db.getCandidate(stash);
-          logger.info(`CANDIDATE TO PROCESS - ${candidate}`);
 
           const wasActive = activeValidators.indexOf(stash) !== -1;
           // TODO ^^ do something with this
@@ -305,7 +303,6 @@ export default class ScoreKeeper {
       }
     }
 
-    logger.info(`SENDING TO PROCESSING - ${toProcess.values()}`);
     const [good, bad] = await this.constraints.processCandidates(
       new Set(toProcess.values())
     );
@@ -316,7 +313,9 @@ export default class ScoreKeeper {
     }
 
     for (const badOne of bad.values()) {
-      const { stash } = badOne;
+      const { candidate, reason } = badOne;
+      const { stash } = candidate;
+      await this.db.pushFaultEvent(stash, reason);
       await this.dockPoints(stash);
     }
   }

@@ -18,6 +18,13 @@ const AccountingSchema = new Schema({
   records: [RewardRecordScheme],
 });
 
+const FaultEventSchema = new Schema({
+  // Timestamp when the fault happened.
+  when: Number,
+  // The reason the fault took place.
+  reason: String,
+});
+
 const CandidateSchema = new Schema({
   // The inherited telemetry ID.
   telemetryId: Number,
@@ -50,6 +57,8 @@ const CandidateSchema = new Schema({
   stash: String,
   // The reasons a candidate is not meeting the programme requirements.
   invalidityReasons: { type: String, default: "" },
+  // If a validator has faults, this will contain the details.
+  faultEvents: { type: [FaultEventSchema], default: [] },
 });
 
 const EraSchema = new Schema({

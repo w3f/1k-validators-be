@@ -10,12 +10,13 @@ import ScoreKeeper from "./scorekeeper";
 
 const API = {
   Accounting: "/accounting/:stashOrController",
+  Candidate: "/candidate/:stash",
   GetCandidates: "/candidates",
   GetNodes: "/nodes",
   GetNominators: "/nominators",
-  ValidCandidates: "/valid",
   Health: "/healthcheck",
   Invalid: "/invalid",
+  ValidCandidates: "/valid",
 };
 
 export default class Server {
@@ -33,14 +34,16 @@ export default class Server {
 
     const router = new Router();
 
-    router.get(API.ValidCandidates, (ctx) => {
-      const valid = scoreKeeper.constraints.validCandidateCache;
-      ctx.body = valid;
+    router.get(API.Accounting, async (ctx) => {
+      const { stashOrController } = ctx.params;
+      const accounting = await this.db.getAccounting(stashOrController);
+      ctx.body = accounting;
     });
 
-    router.get(API.Invalid, (ctx) => {
-      const result = scoreKeeper.constraints.invalidCandidateCache;
-      ctx.body = result.filter((item) => !!item).join("\n");
+    router.get(API.Candidate, async (ctx) => {
+      const { stash } = ctx.params;
+      const candidateData = await this.db.getCandidate(stash);
+      ctx.body = candidateData;
     });
 
     router.get(API.GetCandidates, async (ctx) => {
@@ -58,15 +61,19 @@ export default class Server {
       ctx.body = allNominators;
     });
 
-    router.get(API.Accounting, async (ctx) => {
-      const { stashOrController } = ctx.params;
-      const accounting = await this.db.getAccounting(stashOrController);
-      ctx.body = accounting;
-    });
-
     router.get(API.Health, (ctx) => {
       ctx.body = true;
       ctx.status = 200;
+    });
+
+    router.get(API.Invalid, (ctx) => {
+      const result = scoreKeeper.constraints.invalidCandidateCache;
+      ctx.body = result.filter((item) => !!item).join("\n");
+    });
+
+    router.get(API.ValidCandidates, (ctx) => {
+      const valid = scoreKeeper.constraints.validCandidateCache;
+      ctx.body = valid;
     });
 
     this.app.use(router.routes());

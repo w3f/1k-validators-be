@@ -714,6 +714,12 @@ data:
                 "stash": "EMqHUxXXvSzzbRXpNhrYrnAnmR1BpvDm4CMii5XX529c69p",
                 "riotHandle": "@rayamag:matrix.org",
                 "sentryId": ""
+            },
+            {
+                "name": "Ethical Validators 0",
+                "stash": "DbDAmhLFMhSQkZjnmAYjSktubPiSYKs6ubGtUmt5uC4eHzm",
+                "riotHandle": "@evaluators:matrix.org",
+                "sentryId": ""
             }
         ],
         "forceRound": false,

@@ -57,8 +57,6 @@ class ApiHandler extends EventEmitter {
     });
 
     api.query.system.events((events) => {
-      console.log(`\nReceived ${events.length} events:`);
-
       // Loop through the Vec<EventRecord>
       events.forEach((record) => {
         // Extract the phase, event and the event types

@@ -44,7 +44,7 @@ export default class ScoreKeeper {
             if (nomStash == stash) {
               const activeEra = await this.chaindata.getActiveEraIndex();
               await this.db.updateAccountingRecord(
-                nom.address,
+                nom.controller,
                 nomStash,
                 activeEra.toString(),
                 amount
@@ -101,17 +101,17 @@ export default class ScoreKeeper {
         16,
         this.config.global.networkPrefix
       );
-      await this.db.addNominator(nom.address, now);
+      await this.db.addNominator(nom.controller, now);
       // Create a new accounting record in case one doesn't exist.
       const stash = await nom.stash();
-      await this.db.newAccountingRecord(stash, nom.address);
+      await this.db.newAccountingRecord(stash, nom.controller);
       group.push(nom);
     }
     this.nominatorGroups.push(group);
 
     await this.botLog(
       `Nominator group added! Nominator addresses: ${group
-        .map((n) => n.address)
+        .map((n) => n.controller)
         .join(" ")}`
     );
 
@@ -224,10 +224,12 @@ export default class ScoreKeeper {
           `(SK::_doNominations) targets = ${JSON.stringify(targets)}`
         );
 
-        const current = await this.db.getCurrentTargets(curNominator.address);
+        const current = await this.db.getCurrentTargets(
+          curNominator.controller
+        );
         if (!!current.length) {
           logger.info("Wiping the old targets before making new nominations.");
-          await this.db.clearCurrent(curNominator.address);
+          await this.db.clearCurrent(curNominator.controller);
         }
 
         await curNominator.nominate(
@@ -235,7 +237,7 @@ export default class ScoreKeeper {
           dryRun || this.config.global.dryRun
         );
         this.botLog(
-          `Nominator ${curNominator.address} nominated ${targets.join(" ")}`
+          `Nominator ${curNominator.controller} nominated ${targets.join(" ")}`
         );
       }
       count++;
@@ -270,16 +272,16 @@ export default class ScoreKeeper {
 
     for (const nomGroup of this.nominatorGroups) {
       for (const nominator of nomGroup) {
-        const current = await this.db.getCurrentTargets(nominator.address);
+        const current = await this.db.getCurrentTargets(nominator.controller);
 
         // If not nominating any... then return.
         if (!current.length) {
-          logger.info(`${nominator.address} is not nominating any targets.`);
+          logger.info(`${nominator.controller} is not nominating any targets.`);
           continue;
         }
 
         // Wipe targets.
-        await this.db.clearCurrent(nominator.address);
+        await this.db.clearCurrent(nominator.controller);
 
         const startEra = await this.db.getLastNominatedEraIndex();
         const [activeEra] = await this.chaindata.getActiveEraIndex();

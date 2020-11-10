@@ -70,8 +70,8 @@ export default class Nominator {
     if (dryRun) {
       logger.info(`DRY RUN - STUBBING TRANSACTIONS`);
       for (const stash of targets) {
-        await this.db.setTarget(this.address, stash, now);
-        await this.db.setLastNomination(this.address, now);
+        await this.db.setTarget(this.controller, stash, now);
+        await this.db.setLastNomination(this.controller, now);
       }
     } else {
       const api = await this.handler.getApi();
@@ -98,8 +98,8 @@ export default class Nominator {
           );
           this.currentlyNominating = targets;
           for (const stash of targets) {
-            await this.db.setTarget(this.address, stash, now);
-            await this.db.setLastNomination(this.address, now);
+            await this.db.setTarget(this.controller, stash, now);
+            await this.db.setLastNomination(this.controller, now);
           }
           unsub();
         }

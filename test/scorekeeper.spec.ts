@@ -105,19 +105,23 @@ test.serial(
 
     const nomGroupZero = sk.getNominatorGroupAtIndex(0);
     const zeroZeroTargets = await sk.db.getCurrentTargets(
-      nomGroupZero[0].address
+      nomGroupZero[0].controller
     );
     t.is(zeroZeroTargets.length, 16);
     t.deepEqual(totalTargets.slice(0, 16), zeroZeroTargets);
 
     const nomGroupOne = sk.getNominatorGroupAtIndex(1);
     const oneZeroTargets = await sk.db.getCurrentTargets(
-      nomGroupOne[0].address
+      nomGroupOne[0].controller
     );
-    const oneOneTargets = await sk.db.getCurrentTargets(nomGroupOne[1].address);
-    const oneTwoTargets = await sk.db.getCurrentTargets(nomGroupOne[2].address);
+    const oneOneTargets = await sk.db.getCurrentTargets(
+      nomGroupOne[1].controller
+    );
+    const oneTwoTargets = await sk.db.getCurrentTargets(
+      nomGroupOne[2].controller
+    );
     const oneThreeTargets = await sk.db.getCurrentTargets(
-      nomGroupOne[3].address
+      nomGroupOne[3].controller
     );
     t.is(oneZeroTargets.length, 16);
     t.is(oneOneTargets.length, 16);

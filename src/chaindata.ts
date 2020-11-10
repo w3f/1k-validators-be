@@ -202,6 +202,28 @@ class ChainData {
 
     return [Array.from(allValidators), null];
   };
+
+  /**
+   * Checks if an account has an identity set.
+   * @param account The account to check.
+   * @returns [hasIdentity, verified]
+   */
+  hasIdentity = async (account: string): Promise<[boolean, boolean]> => {
+    const api = await this.handler.getApi();
+
+    const identity = await api.query.identity.identityOf(account);
+    let verified = false;
+    if (identity.isSome) {
+      const { judgements } = identity.unwrap();
+      for (const judgement of judgements) {
+        const status = judgement[1];
+        verified = status.isReasonable || status.isKnownGood;
+        if (verified) break;
+      }
+    }
+
+    return [identity.isSome, verified];
+  };
 }
 
 export default ChainData;

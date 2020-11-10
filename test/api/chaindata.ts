@@ -1,8 +1,9 @@
 import ChainData from "../../src/chaindata";
 import ApiHandler from "../../src/ApiHandler";
+import { KusamaEndpoints } from "../../src/constants";
 
 (async () => {
-  const handler = await ApiHandler.create();
+  const handler = await ApiHandler.create(KusamaEndpoints);
   const api = await handler.getApi();
   const chaindata = new ChainData(handler);
 
@@ -46,6 +47,20 @@ import ApiHandler from "../../src/ApiHandler";
   );
   if (err5) {
     throw new Error(err5);
+  }
+
+  const [doesHaveIdentity, isVerified] = await chaindata.hasIdentity(
+    "D11XNhmwHJLtP18V3nGbS5dLZLpqf2ez65r3noiN2sEkKZz"
+  );
+  if (!doesHaveIdentity || !isVerified) {
+    throw new Error("Does have an identity.");
+  }
+
+  const [doesNotHaveIdentity, notVerified] = await chaindata.hasIdentity(
+    "FqfW96FuXRH7pRy9njeNSxu4CNoBM1hKnVAmNRrFrU2izwj"
+  );
+  if (doesNotHaveIdentity || notVerified) {
+    throw new Error("Does not have identity");
   }
 
   console.log("NO ERRORS!");

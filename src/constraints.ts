@@ -14,13 +14,19 @@ export interface Constraints {
 export class OTV implements Constraints {
   private chaindata: ChainData;
   private skipConnectionTime: boolean;
+  private skipIdentity: boolean;
 
   private validCache: CandidateData[] = [];
   private invalidCache: string[] = [];
 
-  constructor(handler: ApiHandler, skipConnectionTime = false) {
+  constructor(
+    handler: ApiHandler,
+    skipConnectionTime = false,
+    skipIdentity = true
+  ) {
     this.chaindata = new ChainData(handler);
     this.skipConnectionTime = skipConnectionTime;
+    this.skipIdentity = skipIdentity;
   }
 
   get validCandidateCache(): CandidateData[] {
@@ -72,10 +78,25 @@ export class OTV implements Constraints {
       return [false, `${name} is not running the latest client code.`];
     }
 
+    // Ensure the node has been connected for a minimum of one week.
     if (!this.skipConnectionTime) {
       const now = new Date().getTime();
       if (now - connectedAt < WEEK) {
         return [false, `${name} hasn't been connected for minimum length.`];
+      }
+    }
+
+    // Ensure the validator stash has an identity set.
+    if (!this.skipIdentity) {
+      const [hasIdentity, verified] = await this.chaindata.hasIdentity(stash);
+      if (!hasIdentity) {
+        return [false, `${name} does not have an identity set.`];
+      }
+      if (!verified) {
+        return [
+          false,
+          `${name} has an identity but is not verified by registrar.`,
+        ];
       }
     }
 

@@ -2924,10 +2924,10 @@ matcher@^3.0.0:
   dependencies:
     escape-string-regexp "^4.0.0"
 
-matrix-js-sdk@^9.0.1:
-  version "9.0.1"
-  resolved "https://registry.yarnpkg.com/matrix-js-sdk/-/matrix-js-sdk-9.0.1.tgz#bb84a80db0dec1c21b6867c38bb2aa3f63811d6d"
-  integrity sha512-D2b/pf1/0FTnJoroZhhFCo9WFv+iXELqDgEozo0mBSTbQolIXjHLDQfmhi3p7nDZxxtjWvJjVaiKiVQPjwHCrg==
+matrix-js-sdk@^9.1.0:
+  version "9.1.0"
+  resolved "https://registry.yarnpkg.com/matrix-js-sdk/-/matrix-js-sdk-9.1.0.tgz#51a3240f6545c0ae42ca0db0c579d17476b0ca94"
+  integrity sha512-4swrPb93qF2lid9mqzCDPMIvUlgS/MIUVxxD0EfNQoapdekFtnf7pMimYs+lMpRk3VDfa01FEsUu1k0q8O+Utw==
   dependencies:
     "@babel/runtime" "^7.11.2"
     another-json "^0.2.0"

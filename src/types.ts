@@ -4,6 +4,8 @@ export type Stash = string;
 export type NominatorConfig = {
   seed: string;
   maxNominations: number;
+  isProxy?: boolean;
+  proxyFor?: string;
 };
 
 export type BooleanResult = [boolean | null, string | null];

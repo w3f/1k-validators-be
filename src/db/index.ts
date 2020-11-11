@@ -129,6 +129,7 @@ export default class Db {
         version,
         discoveredAt: now,
         onlineSince: now,
+        offlineSince: 0,
       });
       return candidate.save();
     }

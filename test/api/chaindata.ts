@@ -57,10 +57,18 @@ import { KusamaEndpoints } from "../../src/constants";
   }
 
   const [doesNotHaveIdentity, notVerified] = await chaindata.hasIdentity(
-    "FqfW96FuXRH7pRy9njeNSxu4CNoBM1hKnVAmNRrFrU2izwj"
+    "HqE13RoY1yntxvAvySn8ogit5XrX1EAxZe4HPPaFf48q8JM"
   );
   if (doesNotHaveIdentity || notVerified) {
     throw new Error("Does not have identity");
+  }
+
+  // sub-identity
+  const [subIdentity, subVerified] = await chaindata.hasIdentity(
+    "FqfW96FuXRH7pRy9njeNSxu4CNoBM1hKnVAmNRrFrU2izwj"
+  );
+  if (!subIdentity || !subVerified) {
+    throw new Error("Sub identity doesn't work.");
   }
 
   console.log("NO ERRORS!");

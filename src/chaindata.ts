@@ -211,7 +211,14 @@ class ChainData {
   hasIdentity = async (account: string): Promise<[boolean, boolean]> => {
     const api = await this.handler.getApi();
 
-    const identity = await api.query.identity.identityOf(account);
+    let identity = await api.query.identity.identityOf(account);
+    if (!identity.isSome) {
+      // check if it's a sub
+      const superOf = await api.query.identity.superOf(account);
+      if (superOf.isSome) {
+        identity = await api.query.identity.identityOf(superOf.unwrap()[0]);
+      }
+    }
     let verified = false;
     if (identity.isSome) {
       const { judgements } = identity.unwrap();

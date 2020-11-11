@@ -614,10 +614,16 @@ export default class Db {
 
   /**
    * Gets a candidate by its stash address.
-   * @param stash The DOT / KSM address.
+   * @param stashOrName The DOT / KSM address or the name of the validator.
    */
-  async getCandidate(stash: string): Promise<any> {
-    return this.candidateModel.findOne({ stash }).exec();
+  async getCandidate(stashOrName: string): Promise<any> {
+    let data = await this.candidateModel.findOne({ stash: stashOrName }).exec();
+
+    if (!data) {
+      data = await this.candidateModel.findOne({ name: stashOrName }).exec();
+    }
+
+    return data;
   }
 
   async getNodeByName(name: string): Promise<any> {

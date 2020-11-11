@@ -99,7 +99,7 @@ export default class Db {
     await this.candidateModel.findOneAndUpdate(
       { stash },
       {
-        invalidityReason: reason,
+        invalidityReasons: reason,
       }
     );
 

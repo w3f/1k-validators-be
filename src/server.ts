@@ -10,7 +10,7 @@ import ScoreKeeper from "./scorekeeper";
 
 const API = {
   Accounting: "/accounting/:stashOrController",
-  Candidate: "/candidate/:stash",
+  Candidate: "/candidate/:stashOrName",
   GetCandidates: "/candidates",
   GetNodes: "/nodes",
   GetNominators: "/nominators",
@@ -41,8 +41,8 @@ export default class Server {
     });
 
     router.get(API.Candidate, async (ctx) => {
-      const { stash } = ctx.params;
-      const candidateData = await this.db.getCandidate(stash);
+      const { stashOrName } = ctx.params;
+      const candidateData = await this.db.getCandidate(stashOrName);
       ctx.body = candidateData;
     });
 

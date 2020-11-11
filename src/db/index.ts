@@ -80,28 +80,32 @@ export default class Db {
 
   // Unsets old candidate fields.
   async deleteOldCandidateFields(): Promise<boolean> {
-    await this.candidateModel.update(
-      {},
-      {
-        $unset: {
-          sentryId: 1,
-          sentryOnlineSince: 1,
-          sentryOfflineSince: 1,
-        },
-      }
-    );
+    await this.candidateModel
+      .update(
+        {},
+        {
+          $unset: {
+            sentryId: 1,
+            sentryOnlineSince: 1,
+            sentryOfflineSince: 1,
+          },
+        }
+      )
+      .exec();
 
     return true;
   }
 
   // Sets an invalidityReason for a candidate.
   async setInvalidityReason(stash: string, reason: string): Promise<boolean> {
-    await this.candidateModel.findOneAndUpdate(
-      { stash },
-      {
-        invalidityReason: reason,
-      }
-    );
+    await this.candidateModel
+      .findOneAndUpdate(
+        { stash },
+        {
+          invalidityReasons: reason,
+        }
+      )
+      .exec();
 
     return true;
   }

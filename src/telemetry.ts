@@ -22,7 +22,8 @@ export default class TelemetryClient {
   private db: Database;
   private host: string;
   private socket: ReconnectingWebSocket;
-  private beingReported: Map<number, boolean> = new Map();
+  // map of name -> boolean
+  private beingReported: Map<string, boolean> = new Map();
 
   constructor(config: Config, db: Database) {
     this.config = config;
@@ -98,17 +99,17 @@ export default class TelemetryClient {
           MemNodes[parseInt(id)] = details;
 
           // a mutex that will only update after its free to avoid race conditions
-          const waitUntilFree = async (id: number): Promise<void> => {
-            if (this.beingReported.get(id)) {
+          const waitUntilFree = async (name: string): Promise<void> => {
+            if (this.beingReported.get(name)) {
               return new Promise((resolve) => {
                 setInterval(() => {
-                  if (!this.beingReported.get(id)) resolve();
+                  if (!this.beingReported.get(name)) resolve();
                 }, 1000);
               });
             }
           };
 
-          await waitUntilFree(parseInt(id));
+          await waitUntilFree(details[0]);
           await this.db.reportOnline(id, details, now);
         }
         break;
@@ -126,10 +127,10 @@ export default class TelemetryClient {
 
           const name = details[0];
 
-          logger.info(`(TELEMETRY) Reporting ${details[0]} OFFLINE`);
-          this.beingReported.set(id, true);
+          logger.info(`(TELEMETRY) Reporting ${name} OFFLINE`);
+          this.beingReported.set(name, true);
           await this.db.reportOffline(id, name, now);
-          this.beingReported.set(id, false);
+          this.beingReported.set(name, false);
         }
         break;
     }

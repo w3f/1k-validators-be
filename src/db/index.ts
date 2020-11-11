@@ -110,17 +110,6 @@ export default class Db {
     return true;
   }
 
-  async removeInvalidityReason(stash: string): Promise<boolean> {
-    await this.candidateModel
-      .findOneAndUpdate(
-        { stash },
-        {
-          invalidityReasons: "",
-        }
-      )
-      .exec();
-  }
-
   // Reports a node online that has joined telemetry.
   async reportOnline(
     telemetryId: number,

@@ -686,8 +686,8 @@ data:
                 "sentryId": ""
             },
             {
-                "name": "Gull Canary 002",
-                "stash": "JECeyN45Ycx5t1M1hj2pBbsEZpdeGzDsYA1Wrt2Tdte2wV7",
+                "name": "XinixBB",
+                "stash": "FSXMz8Xz52FgzftVzrAV9BmshiLpmHmFA1TfFE8ePNEmEiE",
                 "riotHandle": "@bodysophon:matrix.org",
                 "sentryId": ""
             },
@@ -737,6 +737,12 @@ data:
                 "name": "Filimonov",
                 "stash": "HNKtoRFLmLsa4mti1LxjE5CmJhcTwq5SBkjDcmySHBZLPir",
                 "riotHandle": "@drae09:matrix.org",
+                "sentryId": ""
+            },
+            {
+                "name": "Binary Holdings",
+                "stash": "GKEvLVdBEvjHyU77Ai1aPR6KdfVfoAEUQVfUk8uFTQQfvmT",
+                "riotHandle": "@tacoturtle:matrix.org",
                 "sentryId": ""
             }
         ],

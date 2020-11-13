@@ -720,6 +720,24 @@ data:
                 "stash": "DbDAmhLFMhSQkZjnmAYjSktubPiSYKs6ubGtUmt5uC4eHzm",
                 "riotHandle": "@evaluators:matrix.org",
                 "sentryId": ""
+            },
+            {
+                "name": "Hypersphere-1",
+                "stash": "Ht3WHUkK4gc9sYBFeLrnsGUQoHvkK2jZtUK8yaajrBYaEci",
+                "riotHandle": "@jackbplatts:matrix.org",
+                "sentryId": ""
+            },
+            {
+                "name": "blockzilla",
+                "stash": "EJi7cj4VsdyJvEXnyLptuh8pWQ2ycswHTsGui3AbfhStuyT",
+                "riotHandle": "@blockzilla.team:matrix.org",
+                "sentryId": ""
+            },
+            {
+                "name": "Filimonov",
+                "stash": "HNKtoRFLmLsa4mti1LxjE5CmJhcTwq5SBkjDcmySHBZLPir",
+                "riotHandle": "@drae09:matrix.org",
+                "sentryId": ""
             }
         ],
         "forceRound": false,

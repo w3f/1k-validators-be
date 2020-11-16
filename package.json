@@ -20,7 +20,7 @@
     "@koa/router": "^10.0.0",
     "@octokit/rest": "^18.0.9",
     "@polkadot/api": "^2.6.1",
-    "@polkadot/keyring": "^4.0.1",
+    "@polkadot/keyring": "^4.1.1",
     "@types/cron": "^1.7.1",
     "@types/koa": "^2.11.6",
     "@types/koa-bodyparser": "^4.3.0",

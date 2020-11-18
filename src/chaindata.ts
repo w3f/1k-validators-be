@@ -231,6 +231,29 @@ class ChainData {
 
     return [identity.isSome, verified];
   };
+
+  /**
+   * Gets the identity root for an account.
+   * @param account The account to check.
+   * @returns The identity root string.
+   */
+  getIdentity = async (account: string): Promise<string | null> => {
+    const api = await this.handler.getApi();
+
+    const identitiy = await api.query.identity.identityOf(account);
+    if (!identitiy.isSome) {
+      const superOf = await api.query.identity.superOf(account);
+      if (superOf.isSome) {
+        const id = await api.query.identity.identityOf(superOf.unwrap()[0]);
+        return id.unwrap().info.toString();
+      }
+    }
+    if (identitiy.isSome) {
+      return identitiy.unwrap().info.toString();
+    }
+
+    return null;
+  };
 }
 
 export default ChainData;

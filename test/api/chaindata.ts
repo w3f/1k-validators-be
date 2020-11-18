@@ -2,6 +2,8 @@ import ChainData from "../../src/chaindata";
 import ApiHandler from "../../src/ApiHandler";
 import { KusamaEndpoints } from "../../src/constants";
 
+import { blake2AsHex } from "@polkadot/util-crypto";
+
 (async () => {
   const handler = await ApiHandler.create(KusamaEndpoints);
   const api = await handler.getApi();
@@ -69,6 +71,20 @@ import { KusamaEndpoints } from "../../src/constants";
   );
   if (!subIdentity || !subVerified) {
     throw new Error("Sub identity doesn't work.");
+  }
+
+  const identityString = await chaindata.getIdentity(
+    "D11XNhmwHJLtP18V3nGbS5dLZLpqf2ez65r3noiN2sEkKZz"
+  );
+  const hash = blake2AsHex(identityString);
+
+  const subIdentityString = await chaindata.getIdentity(
+    "FqfW96FuXRH7pRy9njeNSxu4CNoBM1hKnVAmNRrFrU2izwj"
+  );
+  const hash2 = blake2AsHex(subIdentityString);
+
+  if (hash !== hash2) {
+    throw new Error("identity hashes should match");
   }
 
   console.log("NO ERRORS!");

@@ -1,8 +1,10 @@
+import { blake2AsHex } from "@polkadot/util-crypto";
+
+import ApiHandler from "./ApiHandler";
+import ChainData from "./chaindata";
 import { WEEK, TEN_PERCENT, FIFTY_KSM } from "./constants";
 import logger from "./logger";
 import { CandidateData } from "./types";
-import ChainData from "./chaindata";
-import ApiHandler from "./ApiHandler";
 
 export interface Constraints {
   getValidCandidates(candidates: any[]): Promise<any[]>;
@@ -18,6 +20,8 @@ export class OTV implements Constraints {
 
   private validCache: CandidateData[] = [];
   private invalidCache: string[] = [];
+
+  private identityHashTable = {};
 
   constructor(
     handler: ApiHandler,
@@ -35,6 +39,19 @@ export class OTV implements Constraints {
 
   get invalidCandidateCache(): string[] {
     return this.invalidCache;
+  }
+
+  async populateIdentityHashTable(candidates: CandidateData[]): Promise<void> {
+    // first wipe it
+    delete this.identityHashTable;
+
+    for (const candidate of candidates) {
+      const { stash } = candidate;
+      const identityString = await this.chaindata.getIdentity(stash);
+      const identityHash = blake2AsHex(identityString);
+      const prevValue = this.identityHashTable[identityHash] || 0;
+      this.identityHashTable[identityHash] = prevValue + 1;
+    }
   }
 
   /// Returns true if it's a valid candidate or [false, "reason"] otherwise.
@@ -96,6 +113,16 @@ export class OTV implements Constraints {
         return [
           false,
           `${name} has an identity but is not verified by registrar.`,
+        ];
+      }
+
+      const idString = await this.chaindata.getIdentity(stash);
+      const idHash = blake2AsHex(idString);
+      const numIds = this.identityHashTable[idHash];
+      if (numIds === null || numIds > 2) {
+        return [
+          false,
+          `${name} has too many candidates in the set with same identity: ${numIds}`,
         ];
       }
     }

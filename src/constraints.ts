@@ -21,7 +21,7 @@ export class OTV implements Constraints {
   private validCache: CandidateData[] = [];
   private invalidCache: string[] = [];
 
-  private identityHashTable = {};
+  private identityHashTable: Map<string, number>;
 
   constructor(
     handler: ApiHandler,
@@ -31,6 +31,7 @@ export class OTV implements Constraints {
     this.chaindata = new ChainData(handler);
     this.skipConnectionTime = skipConnectionTime;
     this.skipIdentity = skipIdentity;
+    this.identityHashTable = new Map();
   }
 
   get validCandidateCache(): CandidateData[] {
@@ -43,14 +44,14 @@ export class OTV implements Constraints {
 
   async populateIdentityHashTable(candidates: CandidateData[]): Promise<void> {
     // first wipe it
-    this.identityHashTable = {};
+    this.identityHashTable = new Map();
 
     for (const candidate of candidates) {
       const { stash } = candidate;
       const identityString = await this.chaindata.getIdentity(stash);
       const identityHash = blake2AsHex(identityString);
-      const prevValue = this.identityHashTable[identityHash] || 0;
-      this.identityHashTable[identityHash] = prevValue + 1;
+      const prevValue = this.identityHashTable.get(identityHash) || 0;
+      this.identityHashTable.set(identityHash, prevValue + 1);
     }
   }
 
@@ -118,8 +119,8 @@ export class OTV implements Constraints {
 
       const idString = await this.chaindata.getIdentity(stash);
       const idHash = blake2AsHex(idString);
-      const numIds = this.identityHashTable[idHash];
-      if (numIds === null || numIds > 2) {
+      const numIds = this.identityHashTable.get(idHash);
+      if (!numIds || numIds > 2) {
         return [
           false,
           `${name} has too many candidates in the set with same identity: ${numIds}`,

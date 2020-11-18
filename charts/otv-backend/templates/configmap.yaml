@@ -55,7 +55,7 @@ data:
                 "stash": "CmD9vaMYoiKe7HiFnfkftwvhKbxN9bhyjcDrfFRGbifJEG8",
                 "riotHandle": ["@anson:web3.foundation", "@fabio:web3.foundation"]
             },
-                {
+            {
                 "name": "Cat",
                 "stash": "ErhkFXudde5xXFVMGUtNpiPLvZ9zcvqM3ueRLukDdpjszys",
                 "riotHandle": "@niuniu:matrix.org"
@@ -88,12 +88,7 @@ data:
             {
                 "name": "🔒stateless_money-2🔒",
                 "stash": "HZvvFHgPdhDr6DHN43xT1sP5fDyzLDFv5t5xwmXBrm6dusm",
-                "riotHandle": "@aaronschwarz:matrix.org",
-                    "12D3KooWDb8iWRAHbNMpdDwxtERP2ANxj3rk6KHSayaNupAQhvTe",
-                    "12D3KooWMuRjcb5pnQ37DBaUKuRH2eb9iq9pqYyr5GTB4Zr3dwKD",
-                    "12D3KooWM5vdNaDHg5jjA8myYzmgGAKn9tqfqK96qspX3HetgbpQ",
-                    "12D3KooWEakzfKJNNi4WxYVk1S93nsQiyn2wNJqn9HaWh8vF2mRu"
-                ]
+                "riotHandle": "@aaronschwarz:matrix.org"
             },
             {
                 "name": "Rick_Sanchez_C137",
@@ -188,10 +183,7 @@ data:
             {
                 "name": "⛓  Novy Validator ⛓ ",
                 "stash": "Cs7UFcNBsBV4Y65GsM3bDzpvinMKFQZyt6x9TrhVhc8ps4E",
-                "riotHandle": "@novy4:matrix.org",
-                    "QmRx7FRV1GTYPtDmnQsZKP4x4cVuMC36g2zWgT9JrLUahu",
-                    "QmeRA3pUXaN3C4FFtGVmkRHKyq6dFQC6VtGBQEkrdZtAVn"
-                ]
+                "riotHandle": "@novy4:matrix.org"
             },
             {
                 "name": "stakethat",
@@ -326,21 +318,12 @@ data:
             {
                 "name": "Blockdaemon_😈_Validator_1",
                 "stash": "Etij9aH36W1NjjWbR7wB5j41CmfpqAx8D4V4HCJhUydSH9Y",
-                "riotHandle": ["@meshann:matrix.org", "@rickbd:matrix.org", "@nyet:matrix.org"],
-                    "QmQYXBJPZtaVspCNoRnGZcoxVMqSsUKGB3tRkMdQQnt119",
-                    "QmS7onzrtst665Li5GNAbq8tQMKkmcLwynJjYx1YTvPbiG",
-                    "QmUTxKQeRNSTbTxyw3TKgun3ycuE53Tt1oMuty5M7cu1gV",
-                    "QmQTZDjcJzfeBVXjfnrLVWV9RMg7CpUBe8jdmyAf2u2YqT"
-                    ]
+                "riotHandle": ["@meshann:matrix.org", "@rickbd:matrix.org", "@nyet:matrix.org"]
             },
             {
                 "name": "vos",
                 "stash": "Fk3yTFztZdZa4a7yBpisz9ceMyjgYLtZ9CKSCfFNVhoW2ZC",
-                "riotHandle": "@jleony:matrix.org",
-                    "QmNjrWKL6K2L72A9SADCotZb6pJk2TzThnTigsRmRa9kCn",
-                    "QmXRyvvkkNymdnqEhD8JGadBCLSkc1pXpb6aFtKtWLBjkY",
-                    "QmcJFQ1Gb6nRQVXWGRaC4i41bTbzFoJ6LsJJ6dzgcxTsSK"
-                ]
+                "riotHandle": "@jleony:matrix.org"
             },
             {
                 "name": "PerfectStake",
@@ -360,11 +343,7 @@ data:
             {
                 "name": "punkrock-sv-validator-0",
                 "stash": "J75Bj4JkQ1oZ5Y2UCtLBq8FFHDdnrfTQgDGErvk9kyS1wMn",
-                "riotHandle": "@punkrock:matrix.org",
-                   "12D3KooWQf2mydMbHZr1MG1krxvcz57WUsBeomjR1V5yCQVgX9sF",
-                    "12D3KooWLEGSUuVfUdrKknsxqed1n63Qg5TeK4j9kj1QRbjiCNhp",
-                    "12D3KooWKNYbba9oyStKFzaYW8TxhHHxS57WBz4QELUpBgYkXkYR"
-                ]
+                "riotHandle": "@punkrock:matrix.org"
             },
             {
                 "name": "DrNo-sv-validator-0",
@@ -394,11 +373,7 @@ data:
                         {
                 "name": "Saxemberg",
                 "stash": "J19LYGghRCe4Ct3VW4Vz1amMoUgogS1sh2FQvPWroKcDdb1",
-                "riotHandle": "@s_saxemberg:matrix.org",
-                    "12D3KooWEdfvQTHZowcqXdwntLQEojnjTXmYVDY3gwTi5NuHhH1m",
-                    "12D3KooWMqNmyeNdkc1Eusr2hiiJbGVL1g7wvqpk9JgtzXN5En9P",
-                    "12D3KooWK4eBgGypbtqCEQz7BBrTRg9saLzBAH1qQCeeSN4qV81B"
-                ]
+                "riotHandle": "@s_saxemberg:matrix.org"
             },
             {
                 "name": "NotaRaspberryPi",

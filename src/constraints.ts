@@ -59,7 +59,7 @@ export class OTV implements Constraints {
   async getInvalidCandidates(
     candidates: CandidateData[]
   ): Promise<{ stash: string; reason: string }[]> {
-    const invalid = await Promise.all(
+    let invalid = await Promise.all(
       candidates.map(async (candidate) => {
         const { stash } = candidate;
         const [isValid, reason] = await this.checkSingleCandidate(candidate);
@@ -67,7 +67,10 @@ export class OTV implements Constraints {
       })
     );
 
-    this.invalidCache = invalid.filter((i) => !!i).map((i) => i.reason);
+    // filter out any `undefined` results.
+    invalid = invalid.filter((i) => !!i);
+
+    this.invalidCache = invalid.map((i) => i.reason);
 
     return invalid;
   }

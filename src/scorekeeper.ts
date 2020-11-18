@@ -59,7 +59,8 @@ export default class ScoreKeeper {
     this.bot = bot;
     this.constraints = new OTV(
       this.handler,
-      this.config.constraints.skipConnectionTime
+      this.config.constraints.skipConnectionTime,
+      this.config.constraints.skipIdentity
     );
   }
 

@@ -26,7 +26,7 @@ export class OTV implements Constraints {
   constructor(
     handler: ApiHandler,
     skipConnectionTime = false,
-    skipIdentity = true
+    skipIdentity = false
   ) {
     this.chaindata = new ChainData(handler);
     this.skipConnectionTime = skipConnectionTime;

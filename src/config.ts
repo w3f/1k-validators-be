@@ -4,6 +4,7 @@ import path from "path";
 export type Config = {
   constraints: {
     skipConnectionTime: boolean;
+    skipIdentity: boolean;
   };
   db: {
     mongo: {

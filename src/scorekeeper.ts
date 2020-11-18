@@ -59,7 +59,8 @@ export default class ScoreKeeper {
     this.bot = bot;
     this.constraints = new OTV(
       this.handler,
-      this.config.constraints.skipConnectionTime
+      this.config.constraints.skipConnectionTime,
+      this.config.constraints.skipIdentity
     );
   }
 
@@ -122,6 +123,8 @@ export default class ScoreKeeper {
     setInterval(async () => {
       const allCandidates = await this.db.allCandidates();
 
+      await this.constraints.populateIdentityHashTable(allCandidates);
+
       // set invalidityReason for stashes
       const invalid = await this.constraints.getInvalidCandidates(
         allCandidates
@@ -179,6 +182,8 @@ export default class ScoreKeeper {
     );
 
     const allCandidates = await this.db.allCandidates();
+    await this.constraints.populateIdentityHashTable(allCandidates);
+
     const validCandidates = await this.constraints.getValidCandidates(
       allCandidates
     );

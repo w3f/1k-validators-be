@@ -30,6 +30,8 @@ const CandidateSchema = new Schema({
   telemetryId: Number,
   // The network identifier derived from the networking key.
   networkId: String,
+  // The number of nodes that are online for this candidate (this handles upgrade situations).
+  nodeRefs: Number,
   // The name registered on the candidates list.
   name: String,
   // The inherited telemetry details.

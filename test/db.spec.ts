@@ -1,5 +1,5 @@
 import test, { ExecutionContext } from "ava";
-import Database from "../src/db";
+import Database, { NodeDetails } from "../src/db";
 import { getNow } from "../src/util";
 
 import { MongoMemoryServer } from "mongodb-memory-server";
@@ -59,7 +59,7 @@ test.serial(
   async (t: TestExecutionContext) => {
     const { db } = t.context;
 
-    const nodeDetails = ["One", "", "", "", "1"];
+    const nodeDetails: NodeDetails = ["One", "", "", "", "1"];
 
     const oldNodes = await db.allNodes();
 
@@ -73,8 +73,8 @@ test.serial(
     const thisNode = newNodes[0];
     t.truthy(thisNode);
 
-    t.is(thisNode.networkId, "1");
     t.is(thisNode.name, "One");
+    t.is(thisNode.nodeRefs, 1);
     t.is(thisNode.discoveredAt, now);
     t.is(thisNode.nominatedAt, 0);
     t.is(thisNode.onlineSince, now);
@@ -93,7 +93,6 @@ test.serial(
     const { db } = t.context;
 
     const nodeOneBefore = await db.getCandidate("stashOne");
-    t.is(nodeOneBefore.networkId, "1");
     t.is(nodeOneBefore.offlineSince, 0);
     t.is(nodeOneBefore.offlineAccumulated, 0);
     t.true(nodeOneBefore.onlineSince > 1);

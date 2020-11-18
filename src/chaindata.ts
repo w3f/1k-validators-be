@@ -1,4 +1,3 @@
-import { valid } from "semver";
 import ApiHandler from "./ApiHandler";
 
 import { KUSAMA_APPROX_ERA_LENGTH_IN_BLOCKS } from "./constants";

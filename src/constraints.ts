@@ -43,7 +43,7 @@ export class OTV implements Constraints {
 
   async populateIdentityHashTable(candidates: CandidateData[]): Promise<void> {
     // first wipe it
-    delete this.identityHashTable;
+    this.identityHashTable = {};
 
     for (const candidate of candidates) {
       const { stash } = candidate;

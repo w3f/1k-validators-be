@@ -3,15 +3,8 @@ yarn-error.log
 package-lock.json
 config/main.json
 config/secret.json
-archive
 *.db
 combined.log
-prod.json
-test.json
 scripts/test
-alice
-bob
 config.json*
-prod2.json
 build
-prod_test.json

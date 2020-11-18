@@ -8,6 +8,9 @@ import {
 } from "./models";
 import logger from "../logger";
 
+// [name, client, version, null, networkId]
+export type NodeDetails = [string, string, string, string, string];
+
 // Sets a global configuration to silence mongoose deprecation warnings.
 mongoose.set("useFindAndModify", false);
 
@@ -113,49 +116,45 @@ export default class Db {
   // Reports a node online that has joined telemetry.
   async reportOnline(
     telemetryId: number,
-    details: any[],
+    details: NodeDetails,
     now: number
   ): Promise<boolean> {
-    const [name, , version, , networkId] = details;
+    const [name, , version] = details;
     logger.info(JSON.stringify(details));
 
-    logger.info(
-      `(Db::reportOnline) Reporting ${name} with network ID ${networkId} ONLINE.`
-    );
+    logger.info(`(Db::reportOnline) Reporting ${name} ONLINE.`);
 
     const data = await this.candidateModel.findOne({ name });
     if (!data) {
       // A new node that is not already registered as a candidate.
       const candidate = new this.candidateModel({
         telemetryId,
-        networkId,
+        networkId: null,
+        nodeRefs: 1,
         name,
         version,
         discoveredAt: now,
         onlineSince: now,
         offlineSince: 0,
       });
+
       return candidate.save();
     }
 
-    if (!data.networkId && networkId) {
-      // A candidate that haven't had their node registered on the network yet.
+    if (!data.discoveredAt) {
       await this.candidateModel
         .findOneAndUpdate(
+          { name },
           {
-            name,
-          },
-          {
-            telemetryId,
-            networkId,
-            version,
-            discoveredAt: data.discoveredAt || now,
+            discoveredAt: now,
             onlineSince: now,
+            offlineSince: 0,
           }
         )
         .exec();
     }
 
+    // Update to the latest version.
     if (data.version !== version) {
       await this.candidateModel
         .findOneAndUpdate(
@@ -169,26 +168,16 @@ export default class Db {
         .exec();
     }
 
+    // update the nodeRefs
+    await this.candidateModel
+      .findOneAndUpdate({ name }, { $inc: { nodeRefs: 1 } })
+      .exec();
+
     if (data.offlineSince && data.offlineSince !== 0) {
       logger.debug(`Offline since: ${data.offlineSince}`);
       // The node was previously offline.
       const timeOffline = now - data.offlineSince;
       const accumulated = (data.offlineAccumulated || 0) + timeOffline;
-
-      if (data.networkId !== networkId) {
-        // It changed its network id too.
-        await this.candidateModel
-          .findOneAndUpdate(
-            {
-              name,
-            },
-            {
-              telemetryId,
-              networkId,
-            }
-          )
-          .exec();
-      }
 
       return this.candidateModel
         .findOneAndUpdate(
@@ -226,6 +215,19 @@ export default class Db {
     if (!data) {
       logger.info(`(Db::reportOffline) No data for node named ${name}.`);
       return false;
+    }
+
+    // If more than one node has this name, we assume the validator is updating.
+    // Only decrement the nodeRefs, don't mark offline.
+    if (data.nodeRefs > 1) {
+      return this.candidateModel.findOneAndUpdate(
+        { name },
+        {
+          $inc: {
+            nodeRefs: -1,
+          },
+        }
+      );
     }
 
     return this.candidateModel.findOneAndUpdate(

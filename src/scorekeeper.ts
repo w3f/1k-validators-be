@@ -147,24 +147,40 @@ export default class ScoreKeeper {
       await this.startRound();
     }
 
-    new CronJob(frequency, async () => {
-      if (!this.nominatorGroups) {
-        logger.info("No nominators spawned. Skipping round.");
+    setInterval(async () => {
+      const [activeEra, err] = await this.chaindata.getActiveEraIndex();
+      if (err) {
+        logger.info(`CRITICAL: ${err}`);
         return;
       }
 
-      if (!this.config.scorekeeper.nominating) {
-        logger.info("Nominating is disabled in the settings. Skipping round.");
-        return;
-      }
+      const {
+        lastNominatedEraIndex,
+      } = await this.db.getLastNominatedEraIndex();
 
-      if (!this.currentTargets) {
-        await this.startRound();
-      } else {
-        await this.endRound();
-        await this.startRound();
+      const eraBuffer = 3; // for Kusama
+
+      if (Number(lastNominatedEraIndex) === activeEra - eraBuffer) {
+        if (!this.nominatorGroups) {
+          logger.info("No nominators spawned. Skipping round.");
+          return;
+        }
+
+        if (!this.config.scorekeeper.nominating) {
+          logger.info(
+            "Nominating is disabled in the settings. Skipping round."
+          );
+          return;
+        }
+
+        if (!this.currentTargets) {
+          await this.startRound();
+        } else {
+          await this.endRound();
+          await this.startRound();
+        }
       }
-    }).start();
+    }, 5 * 60 * 1000);
   }
 
   /// Handles the beginning of a new round.

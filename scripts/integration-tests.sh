@@ -7,8 +7,10 @@ source /scripts/bootstrap-helm.sh
 run_tests() {
     echo Running tests...
 
-    wait_pod_ready otv-backend
-    wait_pod_ready otv-mongo-express
+    wait_pod_ready otv-backend-0
+
+    express_pod=$(kubectl get pods | grep express | cut -d' ' -f1)
+    wait_pod_ready $express_pod
 }
 
 teardown() {

@@ -275,6 +275,13 @@ export default class ScoreKeeper {
     // The targets that have already been processed for this round.
     const toProcess: Map<Stash, CandidateData> = new Map();
 
+    const startEra = await this.db.getLastNominatedEraIndex();
+    const [activeEra] = await this.chaindata.getActiveEraIndex();
+    const activeValidators = await this.chaindata.activeValidatorsInPeriod(
+      startEra,
+      activeEra
+    );
+
     for (const nomGroup of this.nominatorGroups) {
       for (const nominator of nomGroup) {
         const current = await this.db.getCurrentTargets(nominator.controller);
@@ -288,23 +295,11 @@ export default class ScoreKeeper {
         // Wipe targets.
         await this.db.clearCurrent(nominator.controller);
 
-        const startEra = await this.db.getLastNominatedEraIndex();
-        const [activeEra] = await this.chaindata.getActiveEraIndex();
-        const activeValidators = await this.chaindata.activeValidatorsInPeriod(
-          startEra,
-          activeEra
-        );
-
         for (const stash of current) {
           const candidate = await this.db.getCandidate(stash);
 
-          const wasActive = activeValidators.indexOf(stash) !== -1;
-          // TODO ^^ do something with this
-
-          // If already processed, then skip to next stash.
+          // if we already have, don't add it again
           if (toProcess.has(stash)) continue;
-          // Setting this here is probably fine, although it's not truly processed
-          // until the end of this block.
           toProcess.set(stash, candidate);
         }
       }
@@ -316,6 +311,16 @@ export default class ScoreKeeper {
 
     for (const goodOne of good.values()) {
       const { stash } = goodOne;
+      const wasActive = activeValidators.indexOf(stash) !== -1;
+
+      // if it wasn't active we will not increase the point
+      if (!wasActive) {
+        logger.info(
+          `${stash} was not active during eras ${startEra} to ${activeEra}`
+        );
+        continue;
+      }
+
       await this.addPoint(stash);
     }
 
@@ -331,7 +336,6 @@ export default class ScoreKeeper {
   async dockPoints(stash: Stash): Promise<boolean> {
     logger.info(`Stash ${stash} did BAD, docking points`);
 
-    // TODO: Do something with this return value.
     await this.db.dockPoints(stash);
 
     const candidate = await this.db.getCandidate(stash);
@@ -344,7 +348,6 @@ export default class ScoreKeeper {
   async addPoint(stash: Stash): Promise<boolean> {
     logger.info(`Stash ${stash} did GOOD, adding points`);
 
-    // TODO: Do something with this return value.
     await this.db.addPoint(stash);
 
     const candidate = await this.db.getCandidate(stash);

@@ -25,7 +25,7 @@ class ApiHandler extends EventEmitter {
     // eslint-disable-next-line security/detect-object-injection
     const initialEndpoint = endpoints[initialIndex];
     const api = await ApiPromise.create({
-      provider: new WsProvider(initialEndpoint),
+      provider: new WsProvider(initialEndpoint, false),
     });
 
     return new ApiHandler(api, endpoints);
@@ -48,6 +48,7 @@ class ApiHandler extends EventEmitter {
 
   _registerEventHandlers(api: ApiPromise): void {
     api.on("disconnected", () => {
+      logger.info(`API DISCONNECTED...`);
       this._reconnect();
     });
 
@@ -90,7 +91,7 @@ class ApiHandler extends EventEmitter {
     // do the actual reconnection
     const nextEndpoint = this._endpoints[this._reconnectTries % 5];
     const api = await ApiPromise.create({
-      provider: new WsProvider(nextEndpoint),
+      provider: new WsProvider(nextEndpoint, false),
     });
     this._registerEventHandlers(api);
     this._api = api;

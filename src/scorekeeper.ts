@@ -160,7 +160,7 @@ export default class ScoreKeeper {
 
       const eraBuffer = 3; // for Kusama
 
-      if (Number(lastNominatedEraIndex) === activeEra - eraBuffer) {
+      if (Number(lastNominatedEraIndex) <= activeEra - eraBuffer) {
         if (!this.nominatorGroups) {
           logger.info("No nominators spawned. Skipping round.");
           return;

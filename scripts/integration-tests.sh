@@ -8,7 +8,7 @@ run_tests() {
     echo Running tests...
 
     wait_pod_ready otv-backend-0
-    wait_pod_ready otv-mongo-express
+    # wait_pod_ready otv-mongo-express
 }
 
 teardown() {

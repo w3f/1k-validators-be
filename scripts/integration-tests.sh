@@ -7,7 +7,7 @@ source /scripts/bootstrap-helm.sh
 run_tests() {
     echo Running tests...
 
-    wait_pod_ready otv-backend
+    wait_pod_ready otv-backend-0
     wait_pod_ready otv-mongo-express
 }
 

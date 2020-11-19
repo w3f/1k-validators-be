@@ -23,9 +23,9 @@ class ApiHandler extends EventEmitter {
   static async create(endpoints: string[]): Promise<ApiHandler> {
     const initialIndex = Math.floor(endpoints.length / 2);
     // eslint-disable-next-line security/detect-object-injection
-    const initialEndpoint = endpoints[initialIndex];
+    // const initialEndpoint = endpoints[initialIndex];
     const api = await ApiPromise.create({
-      provider: new WsProvider(initialEndpoint, false),
+      provider: new WsProvider(endpoints),
     });
 
     return new ApiHandler(api, endpoints);
@@ -47,15 +47,15 @@ class ApiHandler extends EventEmitter {
   }
 
   _registerEventHandlers(api: ApiPromise): void {
-    api.on("disconnected", () => {
-      logger.info(`API DISCONNECTED...`);
-      this._reconnect();
-    });
+    // api.on("disconnected", () => {
+    //   logger.info(`API DISCONNECTED...`);
+    //   this._reconnect();
+    // });
 
-    api.on("error", (err: Error) => {
-      logger.info(`API ERROR ${err.toString()}`);
-      this._reconnect();
-    });
+    // api.on("error", (err: Error) => {
+    //   logger.info(`API ERROR ${err.toString()}`);
+    //   this._reconnect();
+    // });
 
     api.query.system.events((events) => {
       // Loop through the Vec<EventRecord>
@@ -91,7 +91,7 @@ class ApiHandler extends EventEmitter {
     // do the actual reconnection
     const nextEndpoint = this._endpoints[this._reconnectTries % 5];
     const api = await ApiPromise.create({
-      provider: new WsProvider(nextEndpoint, false),
+      provider: new WsProvider(nextEndpoint),
     });
     this._registerEventHandlers(api);
     this._api = api;

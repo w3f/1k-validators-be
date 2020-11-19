@@ -17,9 +17,7 @@ data:
       },
       "db": {
         "mongo": {
-            "uri": "mongodb://mongodb-replicaset-0.mongodb-replicaset.default.svc.cluster.local,mongodb-replicaset-1.mongodb-replicaset.default.svc.cluster.local:27017/otv?replicaSet=otv",
-            "dbName": "otv",
-            "collection": "otv"
+            "uri": "mongodb://mongodb-replicaset-0.mongodb-replicaset.default.svc.cluster.local,mongodb-replicaset-1.mongodb-replicaset.default.svc.cluster.local:27017/otv?replicaSet=otv"
         }
       },
       "matrix": {

@@ -43,6 +43,7 @@ export class OTV implements Constraints {
   }
 
   async populateIdentityHashTable(candidates: CandidateData[]): Promise<void> {
+    logger.info(`(OTV::populateIdentityHashTable) Populating hash table`);
     // first wipe it
     this.identityHashTable = new Map();
 
@@ -173,6 +174,8 @@ export class OTV implements Constraints {
   async getValidCandidates(
     candidates: CandidateData[]
   ): Promise<CandidateData[]> {
+    logger.info(`(OTV::getValidCandidates) Getting candidates`);
+
     let validCandidates = [];
     for (const candidate of candidates) {
       const [isValid, reason] = await this.checkSingleCandidate(candidate);

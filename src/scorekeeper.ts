@@ -291,10 +291,12 @@ export default class ScoreKeeper {
     // The targets that have already been processed for this round.
     const toProcess: Map<Stash, CandidateData> = new Map();
 
-    const startEra = await this.db.getLastNominatedEraIndex();
+    const {
+      lastNominatedEraIndex: startEra,
+    } = await this.db.getLastNominatedEraIndex();
     const [activeEra] = await this.chaindata.getActiveEraIndex();
     const activeValidators = await this.chaindata.activeValidatorsInPeriod(
-      startEra,
+      Number(startEra),
       activeEra
     );
 

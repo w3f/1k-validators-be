@@ -49,15 +49,18 @@ export class OTV implements Constraints {
   async populateIdentityHashTable(candidates: CandidateData[]): Promise<void> {
     logger.info(`(OTV::populateIdentityHashTable) Populating hash table`);
     // first wipe it
-    this.identityHashTable = new Map();
+    const newTable = new Map();
 
     for (const candidate of candidates) {
       const { stash } = candidate;
+      logger.info(`(OTV::populateIdentityHashTable) populating for ${stash}`);
       const identityString = await this.chaindata.getIdentity(stash);
       const identityHash = blake2AsHex(identityString);
       const prevValue = this.identityHashTable.get(identityHash) || 0;
-      this.identityHashTable.set(identityHash, prevValue + 1);
+      newTable.set(identityHash, prevValue + 1);
     }
+
+    this.identityHashTable = newTable;
   }
 
   /// Returns true if it's a valid candidate or [false, "reason"] otherwise.

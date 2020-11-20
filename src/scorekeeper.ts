@@ -140,7 +140,7 @@ export default class ScoreKeeper {
         const { stash } = v;
         await this.db.setInvalidityReason(stash, "");
       }
-    }, 2 * 60 * 1000);
+    }, 5 * 60 * 1000);
 
     // If `forceRound` is on - start immediately.
     if (this.config.scorekeeper.forceRound) {

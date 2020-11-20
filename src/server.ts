@@ -54,7 +54,7 @@ export default class Server {
 
     router.get(API.GetIdentityHashes, (ctx) => {
       const hashTable = scoreKeeper.constraints.indentityHashes;
-      ctx.body = JSON.stringify(hashTable, null, 2);
+      ctx.body = hashTable;
     });
 
     router.get(API.GetNodes, async (ctx) => {

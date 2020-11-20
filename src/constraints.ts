@@ -56,7 +56,7 @@ export class OTV implements Constraints {
       logger.info(`(OTV::populateIdentityHashTable) populating for ${stash}`);
       const identityString = await this.chaindata.getIdentity(stash);
       const identityHash = blake2AsHex(identityString);
-      const prevValue = this.identityHashTable.get(identityHash) || 0;
+      const prevValue = newTable.get(identityHash) || 0;
       newTable.set(identityHash, prevValue + 1);
     }
 

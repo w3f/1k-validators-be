@@ -42,6 +42,10 @@ export class OTV implements Constraints {
     return this.invalidCache;
   }
 
+  get indentityHashes(): Map<string, number> {
+    return this.identityHashTable;
+  }
+
   async populateIdentityHashTable(candidates: CandidateData[]): Promise<void> {
     logger.info(`(OTV::populateIdentityHashTable) Populating hash table`);
     // first wipe it
@@ -123,11 +127,11 @@ export class OTV implements Constraints {
 
       const idString = await this.chaindata.getIdentity(stash);
       const idHash = blake2AsHex(idString);
-      const numIds = this.identityHashTable.get(idHash);
+      const numIds = this.identityHashTable.get(idHash) || 0;
       if (!numIds || numIds > 2) {
         return [
           false,
-          `${name} has too many candidates in the set with same identity: ${numIds}`,
+          `${name} has too many candidates in the set with same identity. Number: ${numIds} Hash: ${idHash}`,
         ];
       }
     }

@@ -28,7 +28,7 @@ config: |
     },
     "db": {
       "mongo": {
-          "uri": "mongodb://[username:password@]mongodb-replicaset-headless:27017/otv?replicaSet=otv"
+          "uri": "mongodb://{{ env "KUSAMA_MONGO_USERNAME" | default "username" }}:{{ env "KUSAMA_MONGO_PASSWORD" | default "password123" }}@mongodb-replicaset-headless:27017/otv?replicaSet=otv"
       }
     },
     "matrix": {

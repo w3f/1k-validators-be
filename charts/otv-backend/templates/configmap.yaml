@@ -17,7 +17,7 @@ data:
       },
       "db": {
         "mongo": {
-            "uri": "mongodb://mongodb-replicaset-0,mongodb-replicaset-1:27017/otv?replicaSet=otv"
+            "uri": "mongodb://mongodb-replicaset-headless:27017/otv?replicaSet=otv"
         }
       },
       "matrix": {

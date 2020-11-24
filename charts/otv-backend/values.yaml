@@ -1,6 +1,6 @@
 environment: production
 
-domain: w3f.community
+domain: otv.w3f.community
 dataPath: "/data"
 
 namespace: default

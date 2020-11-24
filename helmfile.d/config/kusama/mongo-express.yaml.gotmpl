@@ -3,8 +3,6 @@ environment: {{ .Environment.Name }}
 image:
   tag: v0.1.0
 
-namespace: kusama
-
 {{ if eq .Environment.Name "production" }}
 basicauth:
   username: {{ env "KUSAMA_MONGO_EXPRESS_USERNAME" | default "admin" | quote }}

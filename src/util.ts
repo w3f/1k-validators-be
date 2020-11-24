@@ -31,3 +31,16 @@ export const getRawPeerId = (peerId: string): string => {
 
   return "";
 };
+
+/*
+ * Turn the map<String, Object> to an Object so it can be converted to JSON
+ */
+export function mapToObj(inputMap: Map<string, number>): any {
+  const obj = {};
+
+  inputMap.forEach(function (value, key) {
+    obj[key] = value;
+  });
+
+  return obj;
+}

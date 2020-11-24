@@ -158,7 +158,7 @@ export default class ScoreKeeper {
         lastNominatedEraIndex,
       } = await this.db.getLastNominatedEraIndex();
 
-      const eraBuffer = 3; // for Kusama
+      const eraBuffer = this.config.global.networkPrefix == 0 ? 1 : 1; // TODO change for Kusama
 
       if (Number(lastNominatedEraIndex) <= activeEra - eraBuffer) {
         if (!this.nominatorGroups) {
@@ -294,11 +294,21 @@ export default class ScoreKeeper {
     const {
       lastNominatedEraIndex: startEra,
     } = await this.db.getLastNominatedEraIndex();
-    const [activeEra] = await this.chaindata.getActiveEraIndex();
-    const activeValidators = await this.chaindata.activeValidatorsInPeriod(
+    const [activeEra, err] = await this.chaindata.getActiveEraIndex();
+    if (err) {
+      throw new Error(`Error getting active era: ${err}`);
+    }
+
+    const [
+      activeValidators,
+      err2,
+    ] = await this.chaindata.activeValidatorsInPeriod(
       Number(startEra),
       activeEra
     );
+    if (err2) {
+      throw new Error(`Error getting active validators: ${err2}`);
+    }
 
     for (const nomGroup of this.nominatorGroups) {
       for (const nominator of nomGroup) {

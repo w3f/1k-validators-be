@@ -9,6 +9,10 @@ metadata:
     certmanager.k8s.io/cluster-issuer: letsencrypt
     external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
     {{ end }}
+    nginx.ingress.kubernetes.io/server-snippet: |
+      location /metrics {
+        deny all;
+      }
 spec:
   tls:
   - hosts:

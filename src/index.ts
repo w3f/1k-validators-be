@@ -34,9 +34,15 @@ const start = async (cmd: Command) => {
 
   // Create the Database.
   const db = await Database.create(config.db.mongo.uri);
-  // TMP - just need to run this once
-  await db.deleteOldCandidateFields();
-  // TMP
+
+  // Clear node refs and delete old fields from all nodes before starting new
+  // telemetry client.
+  const allNodes = await db.allNodes();
+  for (const node of allNodes) {
+    const { name } = node;
+    await db.deleteOldFieldFrom(name);
+    await db.clearNodeRefsFrom(name);
+  }
 
   // Start the telemetry client.
   const telemetry = new TelemetryClient(config, db);

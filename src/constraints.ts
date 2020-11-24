@@ -42,18 +42,19 @@ export class OTV implements Constraints {
     return this.invalidCache;
   }
 
-  get indentityHashes(): Map<string, number> {
+  get identityHashes(): Map<string, number> {
     return this.identityHashTable;
   }
 
-  async populateIdentityHashTable(candidates: CandidateData[]): Promise<void> {
+  async populateIdentityHashTable(
+    candidates: CandidateData[]
+  ): Promise<Map<string, number>> {
     logger.info(`(OTV::populateIdentityHashTable) Populating hash table`);
     // first wipe it
     const newTable = new Map();
 
     for (const candidate of candidates) {
       const { stash } = candidate;
-      logger.info(`(OTV::populateIdentityHashTable) populating for ${stash}`);
       const identityString = await this.chaindata.getIdentity(stash);
       const identityHash = blake2AsHex(identityString);
       const prevValue = newTable.get(identityHash) || 0;
@@ -61,6 +62,8 @@ export class OTV implements Constraints {
     }
 
     this.identityHashTable = newTable;
+
+    return this.identityHashTable;
   }
 
   /// Returns true if it's a valid candidate or [false, "reason"] otherwise.
@@ -224,6 +227,8 @@ export class OTV implements Constraints {
   ): Promise<
     [Set<CandidateData>, Set<{ candidate: CandidateData; reason: string }>]
   > {
+    logger.info(`(OTV::processCandidates) Processing candidates`);
+
     const [activeEraIndex, eraErr] = await this.chaindata.getActiveEraIndex();
     if (eraErr) {
       throw eraErr;

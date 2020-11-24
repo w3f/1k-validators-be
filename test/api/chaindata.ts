@@ -1,6 +1,7 @@
 import ChainData from "../../src/chaindata";
 import ApiHandler from "../../src/ApiHandler";
 import { KusamaEndpoints } from "../../src/constants";
+import { OTV } from "../../src/constraints";
 
 import { blake2AsHex } from "@polkadot/util-crypto";
 
@@ -86,6 +87,57 @@ import { blake2AsHex } from "@polkadot/util-crypto";
   if (hash !== hash2) {
     throw new Error("identity hashes should match");
   }
+
+  const constraints = new OTV(handler, false, false);
+
+  const candidates = [
+    {
+      name: "LetzBake!",
+      stash: "Cp4U5UYg2FaVUpyEtQgfBm9aqge6EEPkJxEFVZFYy7L1AZF",
+      riotHandle: "@marc1104:matrix.org",
+      sentryId: "QmdpRp4GZuNhWYKmCHmejrjGJzscgKkGB9KVecoPmPPaKj",
+    },
+    {
+      name: "🎠 Forbole GP01 🇭🇰",
+      stash: "D9rwRxuG8xm8TZf5tgkbPxhhTJK5frCJU9wvp59VRjcMkUf",
+      riotHandle: "@kwunyeung:matrix.org",
+      sentryId: "QmaqXZfUWezxCSPjCxgwYdqPxknGCrk4fkhquG11ghfxyX",
+    },
+    {
+      name: "🔱-Masternode24-🔱",
+      stash: "FyRaMYvPqpNGq6PFGCcUWcJJWKgEz29ZFbdsnoNAczC2wJZ",
+      riotHandle: "@alexkidd:matrix.org",
+      sentryId: "QmWKyEyTp8XFJT6rS5hdfUTsJHGV5X66LeXYhbXi6PL5xy",
+    },
+    {
+      name: "Anonstake",
+      stash: "J4hAvZoHCviZSoPHoSwLida8cEkZR1NXJcGrcfx9saHTk7D",
+      riotHandle: "@anon2020:matrix.org",
+      sentryId: [
+        "QmPr2sykAydTitadF71Td62MZzNnhUC9Cy6JBCk9tNzsVL",
+        "QmQ8dcwPhZ3SA1JhLav9enhQnhJF96CBt8qLsFJLTej8hd",
+      ],
+    },
+    {
+      name: "Anson&Fabio-sv-public-1",
+      stash: "CmD9vaMYoiKe7HiFnfkftwvhKbxN9bhyjcDrfFRGbifJEG8",
+      riotHandle: ["@anson:web3.foundation", "@fabio:web3.foundation"],
+      sentryId: [
+        "Qmf1BCcgXn7gwDoajWJ98hSPv98UbnCzBTvvtcAYoq2Ngo",
+        "QmT4vBTsnqYsV4YxaYzXXuXM7jwdSdM5s9gRcapkJpwwjA",
+      ],
+    },
+  ];
+
+  const hashTable = await constraints.populateIdentityHashTable(
+    candidates as any
+  );
+
+  if (hashTable !== constraints.identityHashes) {
+    throw new Error("Identity hashes do not match");
+  }
+
+  const active
 
   console.log("NO ERRORS!");
   process.exit(0);

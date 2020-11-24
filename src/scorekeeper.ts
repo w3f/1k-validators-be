@@ -206,7 +206,7 @@ export default class ScoreKeeper {
 
     const targets = await this._doNominations(
       validCandidates,
-      16,
+      10, //setSize
       this.nominatorGroups
     );
 

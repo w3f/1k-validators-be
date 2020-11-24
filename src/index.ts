@@ -35,6 +35,9 @@ const start = async (cmd: Command) => {
   // Create the Database.
   const db = await Database.create(config.db.mongo.uri);
 
+  // Delete the old candidate fields.
+  await db.deleteOldCandidateFields();
+
   // Clear node refs and delete old fields from all nodes before starting new
   // telemetry client.
   const allNodes = await db.allNodes();
@@ -129,5 +132,5 @@ program
   .option("--config <directory>", "The path to the config directory.", "config")
   .action((cmd: Command) => catchAndQuit(start(cmd)));
 
-program.version("1.4.46");
+program.version("1.4.47");
 program.parse(process.argv);

@@ -83,7 +83,7 @@ export default class Db {
 
   // Unsets old candidate fields.
   async deleteOldCandidateFields(): Promise<boolean> {
-    await this.candidateModel
+    await this.candidateModel.collection
       .update(
         {},
         {
@@ -93,7 +93,7 @@ export default class Db {
             sentryOfflineSince: 1,
           },
         },
-        { multi: true }
+        { multi: true, safe: true }
       )
       .exec();
 

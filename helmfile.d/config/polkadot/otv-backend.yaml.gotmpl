@@ -28,7 +28,7 @@ config: |
     },
     "db": {
       "mongo": {
-          "uri": "mongodb://{{ env "POLKADOT_MONGO_USERNAME" | default "username" }}:{{ env "POLKADOT_MONGO_PASSWORD" | default "password123" }}@mongodb-replicaset-headless:27017/otv?replicaSet=otv"
+          "uri": "mongodb://{{ env "POLKADOT_MONGO_USERNAME" | default "username" }}:{{ env "POLKADOT_MONGO_PASSWORD" | default "password123" }}@mongodb-replicaset-headless:27017/{{ env "POLKADOT_MONGO_DB" | default "otv" }}?replicaSet=otv"
       }
     },
     "matrix": {

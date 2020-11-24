@@ -23,3 +23,52 @@ secret: |
         "nominators": []
     }
   }
+
+config: |
+  {
+    "global": {
+      "dryRun": false,
+      "networkPrefix": 2,
+      "test": false
+    },
+    "constraints": {
+      "skipConnectionTime": false,
+      "skipIdentity": false
+    },
+    "db": {
+      "mongo": {
+          "uri": "mongodb://mongodb-replicaset-headless:27017/otv?replicaSet=otv"
+      }
+    },
+    "matrix": {
+      "enabled": true,
+      "baseUrl": "https://matrix.org",
+      "room": "!mdugGIKqSTweIOpTlA:web3.foundation",
+      "userId": "@1kv-stats:matrix.org"
+    },
+    "scorekeeper": {
+      "candidates": [
+          {
+              "name": "LetzBake!",
+              "stash": "Cp4U5UYg2FaVUpyEtQgfBm9aqge6EEPkJxEFVZFYy7L1AZF",
+              "riotHandle": "@marc1104:matrix.org"
+          },
+          {
+              "name": "Binary Holdings",
+              "stash": "GKEvLVdBEvjHyU77Ai1aPR6KdfVfoAEUQVfUk8uFTQQfvmT",
+              "riotHandle": "@tacoturtle:matrix.org"
+          }
+      ],
+      "forceRound": true,
+      "nominating": true
+    },
+    "server": {
+      "port": 3300
+    },
+    "telemetry": {
+      "chains": [
+          "Kusama"
+      ],
+      "host": "wss://telemetry-backend.w3f.community/feed"
+    }
+  }

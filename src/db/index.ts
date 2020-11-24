@@ -83,19 +83,17 @@ export default class Db {
 
   // Unsets old candidate fields.
   async deleteOldCandidateFields(): Promise<boolean> {
-    await this.candidateModel.collection
-      .update(
-        {},
-        {
-          $unset: {
-            sentryId: 1,
-            sentryOnlineSince: 1,
-            sentryOfflineSince: 1,
-          },
+    await this.candidateModel.collection.update(
+      {},
+      {
+        $unset: {
+          sentryId: 1,
+          sentryOnlineSince: 1,
+          sentryOfflineSince: 1,
         },
-        { multi: true, safe: true }
-      )
-      .exec();
+      },
+      { multi: true, safe: true }
+    );
 
     return true;
   }

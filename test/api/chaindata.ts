@@ -137,8 +137,6 @@ import { blake2AsHex } from "@polkadot/util-crypto";
     throw new Error("Identity hashes do not match");
   }
 
-  const active
-
   console.log("NO ERRORS!");
   process.exit(0);
 })();

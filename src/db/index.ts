@@ -92,8 +92,34 @@ export default class Db {
             sentryOnlineSince: 1,
             sentryOfflineSince: 1,
           },
+        },
+        { multi: true }
+      )
+      .exec();
+
+    return true;
+  }
+
+  async deleteOldFieldFrom(name: string): Promise<boolean> {
+    await this.candidateModel
+      .findOneAndUpdate(
+        { name },
+        {
+          $unset: {
+            sentryId: 1,
+            sentryOnlineSince: 1,
+            sentryOfflineSince: 1,
+          },
         }
       )
+      .exec();
+
+    return true;
+  }
+
+  async clearNodeRefsFrom(name: string): Promise<boolean> {
+    await this.candidateModel
+      .findOneAndUpdate({ name }, { nodeRefs: 0 })
       .exec();
 
     return true;

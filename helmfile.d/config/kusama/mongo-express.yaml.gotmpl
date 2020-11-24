@@ -3,10 +3,12 @@ environment: {{ .Environment.Name }}
 image:
   tag: v0.1.0
 
+namespace: kusama
+
 {{ if eq .Environment.Name "production" }}
 basicauth:
-  username: {{ env "MONGO_EXPRESS_USERNAME" | default "admin" | quote }}
-  password: {{ env "MONGO_EXPRESS_PASSWORD" | default "pass" | quote }}
+  username: {{ env "KUSAMA_MONGO_EXPRESS_USERNAME" | default "admin" | quote }}
+  password: {{ env "KUSAMA_MONGO_EXPRESS_PASSWORD" | default "pass" | quote }}
 {{ else }}
 certificate:
   enabled: false

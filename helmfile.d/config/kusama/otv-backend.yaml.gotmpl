@@ -1,0 +1,16 @@
+environment: {{ .Environment.Name }}
+
+{{ if eq .Environment.Name "production" }}
+image:
+  tag: {{ env "CIRCLE_TAG" }}
+
+secret: {{ env "KUSAMA_OTV_BACKEND_SECRET" | default "{}" }}
+
+{{ else }}
+image:
+  tag: {{ env "CIRCLE_SHA1" }}
+
+certificate:
+  enabled: false
+{{ end }}
+namespace: kusama

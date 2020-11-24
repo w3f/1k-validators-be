@@ -4,7 +4,7 @@ environment: {{ .Environment.Name }}
 image:
   tag: {{ env "CIRCLE_TAG" }}
 
-secret: {{ env "OTV_BACKEND_SECRET" | default "{}" }}
+secret: {{ env "POLKADOT_OTV_BACKEND_SECRET" | default "{}" }}
 
 {{ else }}
 image:
@@ -13,3 +13,4 @@ image:
 certificate:
   enabled: false
 {{ end }}
+namespace: polkadot

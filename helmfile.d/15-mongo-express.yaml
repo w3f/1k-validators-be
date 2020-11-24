@@ -8,7 +8,14 @@ repositories:
 
 releases:
 - name: otv-mongo-express
+  namespace: kusama
   chart: w3f/mongo-express
   version: v0.1.0
   values:
-  - ./config/mongo-express.yaml.gotmpl
+  - ./config/kusama/mongo-express.yaml.gotmpl
+- name: otv-mongo-express
+  namespace: polkadot
+  chart: w3f/mongo-express
+  version: v0.1.0
+  values:
+  - ./config/polkadot/mongo-express.yaml.gotmpl

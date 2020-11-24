@@ -4,7 +4,14 @@ environments:
 
 releases:
 - name: mongodb-replicaset
+  namespace: kusama
   chart: stable/mongodb-replicaset
   version: 3.14.1
   values:
-  - ./config/mongodb-replicaset.yaml.gotmpl
+  - ./config/kusama/mongodb-replicaset.yaml.gotmpl
+- name: mongodb-replicaset
+  namespace: polkadot
+  chart: stable/mongodb-replicaset
+  version: 3.14.1
+  values:
+  - ./config/polkadot/mongodb-replicaset.yaml.gotmpl

@@ -14,7 +14,7 @@ auth:
   rootPassword: {{ env "KUSAMA_MONGO_ROOT_PASSWORD" | default "root123123" }}
   username: {{ env "KUSAMA_MONGO_USERNAME" | default "username" }}
   password: {{ env "KUSAMA_MONGO_PASSWORD" | default "password123" }}
-  database: {{ env "KUSAMA_MONGO_DB" | default "db" }}
+  database: {{ env "KUSAMA_MONGO_DB" | default "otv" }}
   replicaSetKey: {{ env "KUSAMA_MONGO_RS_KEY" | default "rskey123456789" }}
 
 tls:

@@ -14,7 +14,7 @@ auth:
   rootPassword: {{ env "POLKADOT_MONGO_ROOT_PASSWORD" | default "root123123" }}
   username: {{ env "POLKADOT_MONGO_USERNAME" | default "username" }}
   password: {{ env "POLKADOT_MONGO_PASSWORD" | default "password123" }}
-  database: {{ env "POLKADOT_MONGO_DB" | default "db" }}
+  database: {{ env "POLKADOT_MONGO_DB" | default "otv" }}
   replicaSetKey: {{ env "POLKADOT_MONGO_RS_KEY" | default "rskey123456789" }}
 
 tls:

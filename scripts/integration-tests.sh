@@ -7,15 +7,17 @@ source /scripts/bootstrap-helm.sh
 run_tests() {
     echo Running tests...
 
-    wait_pod_ready mongodb-replicaset-0 kusama
-    wait_pod_ready mongodb-replicaset-1 kusama
+    wait_pod_ready mongodb-replicaset-0 kusama 2/2
+    wait_pod_ready mongodb-replicaset-1 kusama 2/2
+    wait_pod_ready mongodb-replicaset-arbiter-0 kusama
     wait_pod_ready otv-backend-0 kusama
 
     express_pod=$(kubectl -n kusama get pods | grep express | cut -d' ' -f1)
     wait_pod_ready $express_pod kusama
 
-    wait_pod_ready mongodb-replicaset-0 polkadot
-    wait_pod_ready mongodb-replicaset-1 polkadot
+    wait_pod_ready mongodb-replicaset-0 polkadot 2/2
+    wait_pod_ready mongodb-replicaset-1 polkadot 2/2
+    wait_pod_ready mongodb-replicaset-arbiter-0 polkadot
     wait_pod_ready otv-backend-0 polkadot
 
     express_pod=$(kubectl -n polkadot get pods | grep express | cut -d' ' -f1)

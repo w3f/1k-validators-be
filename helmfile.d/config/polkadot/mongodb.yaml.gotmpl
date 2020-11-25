@@ -27,23 +27,6 @@ directoryPerDB: false
 systemLogVerbosity: 0
 disableSystemLog: false
 
-configuration: |-
-  storage:
-    dbPath: /bitnami/mongodb/data/db
-    journal:
-      enabled: true
-    directoryPerDB: false
-  systemLog:
-    destination: file
-    quiet: false
-    logAppend: true
-    logRotate: reopen
-    path: /opt/bitnami/mongodb/logs/mongodb.log
-    verbosity: 0
-  replication:
-    replSetName: otv
-    enableMajorityReadConcern: true
-
 annotations: {}
 labels: {}
 replicaCount: 2

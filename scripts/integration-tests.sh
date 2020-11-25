@@ -45,7 +45,8 @@ main(){
     fi
 
     /scripts/build-helmfile.sh
-
+    kubectl create namespace kusama
+    kubectl create namespace polkadot
     run_tests
 }
 

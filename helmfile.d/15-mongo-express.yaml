@@ -7,6 +7,7 @@ repositories:
   url: https://w3f.github.io/helm-charts/
 
 releases:
+{{ if eq .Environment.Name "production" }}
 - name: otv-mongo-express
   namespace: kusama
   chart: w3f/mongo-express
@@ -19,3 +20,11 @@ releases:
   version: v0.1.0
   values:
   - ./config/polkadot/mongo-express.yaml.gotmpl
+
+{{ else }}
+- name: otv-mongo-express
+  chart: w3f/mongo-express
+  version: v0.1.0
+  values:
+  - ./config/polkadot/mongo-express.yaml.gotmpl
+{{ end }}

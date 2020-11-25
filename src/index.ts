@@ -116,12 +116,7 @@ const start = async (cmd: Command) => {
   sleep(3000);
 
   // Start the scorekeeper
-  const scorekeeperFrequency =
-    (config.global.test && "0 */15 * * * *") || // 15 mins
-    (config.global.dryRun && "0 */5 * * * *") || // 5 mins
-    "0 0 0 * * *"; // 24 hours
-
-  scorekeeper.begin(scorekeeperFrequency);
+  scorekeeper.begin();
 
   // Start the API server.
   const server = new Server(db, config, scorekeeper);

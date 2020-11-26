@@ -11,14 +11,14 @@ releases:
 - name: otv-backend
   namespace: kusama
   chart: w3f/otv-backend
-  version: v1.4.44
+  version: v2.0.0
   values:
   - ./config/kusama/otv-backend.yaml.gotmpl
   
 - name: otv-backend
   namespace: polkadot
   chart: w3f/otv-backend
-  version: v1.4.44
+  version: v2.0.0
   values:
   - ./config/polkadot/otv-backend.yaml.gotmpl
 

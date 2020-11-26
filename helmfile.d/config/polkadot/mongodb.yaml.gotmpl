@@ -1,0 +1,206 @@
+image:
+  registry: docker.io
+  repository: bitnami/mongodb
+  tag: 4.4.2-debian-10-r0
+  pullPolicy: IfNotPresent
+  debug: false
+
+clusterDomain: cluster.local
+architecture: replicaset
+useStatefulSet: true
+
+auth:
+  enabled: true
+  rootPassword: {{ env "POLKADOT_MONGO_ROOT_PASSWORD" | default "root123123" }}
+  username: {{ env "POLKADOT_MONGO_USERNAME" | default "username" }}
+  password: {{ env "POLKADOT_MONGO_PASSWORD" | default "password123" }}
+  database: {{ env "POLKADOT_MONGO_DB" | default "otv" }}
+  replicaSetKey: {{ env "POLKADOT_MONGO_RS_KEY" | default "rskey123456789" }}
+
+tls:
+  enabled: false
+
+replicaSetName: rs0
+replicaSetHostnames: true
+
+directoryPerDB: false
+systemLogVerbosity: 0
+disableSystemLog: false
+
+annotations: {}
+labels: {}
+replicaCount: 2
+strategyType: RollingUpdate
+podManagementPolicy: OrderedReady
+affinity: {}
+nodeSelector: {}
+podLabels: {}
+podAnnotations: {}
+
+podSecurityContext:
+  enabled: true
+  fsGroup: 1001
+  ## sysctl settings
+  ## Example:
+  ## sysctls:
+  ## - name: net.core.somaxconn
+  ##   value: "10000"
+  ##
+  sysctls: []
+
+containerSecurityContext:
+  enabled: true
+  runAsUser: 1001
+  runAsNonRoot: true
+
+resources:
+  limits: 
+    cpu: 100m
+    memory: 128Mi
+  requests: 
+    cpu: 100m
+    memory: 128Mi
+
+livenessProbe:
+  enabled: true
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 6
+  successThreshold: 1
+readinessProbe:
+  enabled: true
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 6
+  successThreshold: 1
+
+extraVolumeMounts: []
+extraVolumes: []
+
+pdb:
+  create: false
+  minAvailable: 1
+  maxUnavailable: 1
+
+persistence:
+  enabled: true
+  storageClass: "standard"
+  accessModes:
+    - ReadWriteOnce
+  size: 8Gi
+  annotations: {}
+  mountPath: /bitnami/mongodb
+  subPath: ""
+
+
+service:
+  type: ClusterIP
+  port: 27017
+  portName: mongodb
+  nodePort: ""
+
+externalAccess:
+  enabled: false
+
+arbiter:
+  enabled: true
+  configuration: ""
+  # existingConfigmap:
+  annotations: {}
+  labels: {}
+  affinity: {}
+  nodeSelector: {}
+  tolerations: []
+  podLabels: {}
+  podAnnotations: {}
+
+  podSecurityContext:
+    enabled: true
+    fsGroup: 1001
+    ## sysctl settings
+    ## Example:
+    ## sysctls:
+    ## - name: net.core.somaxconn
+    ##   value: "10000"
+    ##
+    sysctls: []
+
+  containerSecurityContext:
+    enabled: true
+    runAsUser: 1001
+
+  resources:
+    limits: 
+      cpu: 100m
+      memory: 128Mi
+    requests: 
+      cpu: 100m
+      memory: 128Mi
+
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 6
+    successThreshold: 1
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 6
+    successThreshold: 1
+
+  pdb:
+    create: false
+    minAvailable: 1
+
+serviceAccount:
+  create: true
+
+rbac:
+  create: false
+
+metrics:
+  enabled: true
+  image:
+    registry: docker.io
+    repository: bitnami/mongodb-exporter
+    tag: 0.11.2-debian-10-r44
+    pullPolicy: IfNotPresent
+
+  resources:
+    limits: 
+      cpu: 100m
+      memory: 128Mi
+    requests: 
+      cpu: 100m
+      memory: 128Mi
+
+  service:
+    annotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "9216"
+      prometheus.io/path: "/metrics"
+    type: ClusterIP
+    port: 9216
+
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 15
+    periodSeconds: 5
+    timeoutSeconds: 5
+    failureThreshold: 3
+    successThreshold: 1
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 5
+    periodSeconds: 5
+    timeoutSeconds: 1
+    failureThreshold: 3
+    successThreshold: 1
+
+

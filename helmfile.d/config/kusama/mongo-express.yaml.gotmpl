@@ -1,0 +1,20 @@
+environment: {{ .Environment.Name }}
+
+image:
+  tag: v0.1.0
+
+basicauth:
+  username: {{ env "KUSAMA_MONGO_USERNAME" | default "username" | quote }}
+  password: {{ env "KUSAMA_MONGO_PASSWORD" | default "password123" | quote }}
+{{ if eq .Environment.Name "production" }}
+certificate:
+  enabled: true
+{{ else }}
+certificate:
+  enabled: false
+{{ end }}
+
+domain: w3f.community
+
+mongodb:
+  host: "mongodb://{{ env "KUSAMA_MONGO_USERNAME" | default "username" }}:{{ env "KUSAMA_MONGO_PASSWORD" | default "password123" }}@mongodb-0.mongodb-headless:27017/{{ env "KUSAMA_MONGO_DB" | default "otv" }}"

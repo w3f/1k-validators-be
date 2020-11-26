@@ -7,11 +7,24 @@ repositories:
   url: https://w3f.github.io/helm-charts/
 
 releases:
-- name: otv-backend
 {{ if eq .Environment.Name "production" }}
+- name: otv-backend
+  namespace: kusama
   chart: w3f/otv-backend
-{{ else }}
-  chart: ../charts/otv-backend
-{{ end }}
+  version: v1.4.44
   values:
-  - ./config/otv-backend.yaml.gotmpl
+  - ./config/kusama/otv-backend.yaml.gotmpl
+  
+- name: otv-backend
+  namespace: polkadot
+  chart: w3f/otv-backend
+  version: v1.4.44
+  values:
+  - ./config/polkadot/otv-backend.yaml.gotmpl
+
+{{ else }}
+- name: otv-backend
+  chart: ../charts/otv-backend
+  values:
+  - ./config/polkadot/otv-backend.yaml.gotmpl
+{{ end }}

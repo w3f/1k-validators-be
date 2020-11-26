@@ -1,28 +1,19 @@
-environment: production
+environment: {{ .Environment.Name }}
 
-domain: otv.w3f.community
+domain: polkadot.w3f.community
 dataPath: "/data"
-
-namespace: default
 
 backendPort: 3300
 
 image:
   repo: web3f/otv-backend
-  tag: latest
+ {{ if eq .Environment.Name "production" }}
+  tag: {{ env "CIRCLE_TAG" }}
 
-certificate:
-  enabled: true
-
-secret: |
-  {
-    "matrix": {
-        "accessToken": "xxxxx"
-    },
-    "scorekeeper": {
-        "nominators": []
-    }
-  }
+secret: {{ env "POLKADOT_OTV_BACKEND_SECRET" | default "{}" }}  
+ {{ else }}
+  tag: {{ env "CIRCLE_SHA1" }}
+ {{ end }}
 
 config: |
   {
@@ -37,7 +28,7 @@ config: |
     },
     "db": {
       "mongo": {
-          "uri": "mongodb://[username:password@]mongodb-replicaset-headless:27017/otv?replicaSet=otv"
+          "uri": "mongodb://{{ env "POLKADOT_MONGO_USERNAME" | default "username" }}:{{ env "POLKADOT_MONGO_PASSWORD" | default "password123" }}@mongodb-0.mongodb-headless:27017,mongodb-1.mongodb-headless:27017/{{ env "POLKADOT_MONGO_DB" | default "otv" }}"
       }
     },
     "matrix": {
@@ -52,11 +43,6 @@ config: |
               "name": "LetzBake!",
               "stash": "Cp4U5UYg2FaVUpyEtQgfBm9aqge6EEPkJxEFVZFYy7L1AZF",
               "riotHandle": "@marc1104:matrix.org"
-          },
-          {
-              "name": "Binary Holdings",
-              "stash": "GKEvLVdBEvjHyU77Ai1aPR6KdfVfoAEUQVfUk8uFTQQfvmT",
-              "riotHandle": "@tacoturtle:matrix.org"
           }
       ],
       "forceRound": true,
@@ -72,3 +58,4 @@ config: |
       "host": "wss://telemetry-backend.w3f.community/feed"
     }
   }
+

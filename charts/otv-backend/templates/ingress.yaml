@@ -2,17 +2,24 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: {{ .Release.Name }}
-  namespace: {{ .Values.namespace }}
   annotations:
     kubernetes.io/ingress.class: "nginx"
     nginx.ingress.kubernetes.io/limit-rps: "10"
+    external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
+    {{ if .Values.certificate.enabled }}
+    cert-manager.io/cluster-issuer: letsencrypt
+    {{ end }}
+    nginx.ingress.kubernetes.io/server-snippet: |
+      location /metrics {
+        deny all;
+      }
 spec:
   tls:
   - hosts:
-      - {{ include "otv-backend.backend-domain" . }}
+      - {{ .Values.domain }}
     secretName: {{ include "otv-backend.tls-secret-name" . }}
   rules:
-  - host: {{ include "otv-backend.backend-domain" . }}
+  - host: {{ .Values.domain }}
     http:
       paths:
       - path: /

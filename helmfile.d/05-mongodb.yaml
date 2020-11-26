@@ -2,9 +2,30 @@ environments:
   production:
   ci:
 
+repositories:
+- name: bitnami
+  url: https://charts.bitnami.com/bitnami
+
 releases:
-- name: mongodb-replicaset
-  chart: stable/mongodb-replicaset
-  version: 3.14.1
+{{ if eq .Environment.Name "production" }}
+- name: mongodb
+  namespace: kusama
+  chart: bitnami/mongodb
+  version: 10.0.5
   values:
-  - ./config/mongodb-replicaset.yaml.gotmpl
+  - ./config/kusama/mongodb.yaml.gotmpl
+  
+- name: mongodb
+  namespace: polkadot
+  chart: bitnami/mongodb
+  version: 10.0.5
+  values:
+  - ./config/polkadot/mongodb.yaml.gotmpl
+
+{{ else }}
+- name: mongodb
+  chart: bitnami/mongodb
+  version: 10.0.5
+  values:
+  - ./config/polkadot/mongodb.yaml.gotmpl
+{{ end }}

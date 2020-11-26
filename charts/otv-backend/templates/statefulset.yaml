@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: {{ .Release.Name }}
-  namespace: {{ .Values.namespace }}
   labels:
     app: {{ .Release.Name }}
 spec:
@@ -21,7 +20,7 @@ spec:
     spec:
       containers:
       - name: {{ .Release.Name }}
-        image: {{ .Values.image.repo }}:{{ .Values.image.tag }}
+        image: {{ .Values.image.repo }}:{{ .Values.image.tag | default "latest" }}
         imagePullPolicy: IfNotPresent
         ports:
         - name: backend

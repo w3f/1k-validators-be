@@ -50,6 +50,7 @@ jobs:
   integrationTests:
     docker:
       - image: web3f/ci-commons:v2.1.4
+    resource_class: xlarge
     steps:
       - checkout
       - setup_remote_docker

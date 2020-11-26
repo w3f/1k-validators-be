@@ -8,7 +8,6 @@ run_tests() {
     echo Running tests...
 
     wait_pod_ready kusama-mongodb-0 kusama 2/2
-    wait_pod_ready kusama-mongodb-1 kusama 2/2
     wait_pod_ready kusama-mongodb-arbiter-0 kusama 1/1
     wait_pod_ready kusama-otv-backend-0 kusama 1/1
 
@@ -17,7 +16,6 @@ run_tests() {
     kubectl delete namespace kusama
 
     wait_pod_ready polkadot-mongodb-0 polkadot 2/2
-    wait_pod_ready polkadot-mongodb-1 polkadot 2/2
     wait_pod_ready polkadot-mongodb-arbiter-0 polkadot 1/1
     wait_pod_ready polkadot-otv-backend-0 polkadot 1/1
 

@@ -18,8 +18,8 @@ secret: {{ env "POLKADOT_OTV_BACKEND_SECRET" | default "{}" }}
 config: |
   {
     "global": {
-      "dryRun": false,
-      "networkPrefix": 2,
+      "dryRun": true,
+      "networkPrefix": 0,
       "test": false
     },
     "constraints": {
@@ -41,8 +41,8 @@ config: |
       "candidates": [
 
       ],
-      "forceRound": true,
-      "nominating": true
+      "forceRound": false,
+      "nominating": false
     },
     "server": {
       "port": 3300

@@ -13,6 +13,7 @@ jobs:
   checkESLint:
     docker:
       - image: node:slim
+    resource_class: large      
     steps:
       - checkout
       - run:
@@ -40,6 +41,7 @@ jobs:
   buildImage:
     docker:
       - image: web3f/ci-commons:v2.1.4
+    resource_class: xlarge
     steps:
       - checkout
       - setup_remote_docker

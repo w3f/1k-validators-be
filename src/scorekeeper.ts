@@ -1,5 +1,4 @@
-import { CronJob } from "cron";
-
+import { textChangeRangeIsUnchanged } from "typescript";
 import ApiHandler from "./ApiHandler";
 import ChainData from "./chaindata";
 import { Config } from "./config";
@@ -24,10 +23,11 @@ export default class ScoreKeeper {
   public currentEra = 0;
   public currentTargets: string[];
   public db: Db;
-  // Keeps track of a starting era for a round.
-  public startEra = 0;
 
   private nominatorGroups: Array<SpawnedNominatorGroup> = [];
+  // A lock that tells whether the Scorekeeper is currently doing something,
+  // and prevents it from starting a new action.
+  private lock: boolean;
 
   constructor(handler: ApiHandler, db: Db, config: Config, bot: any = false) {
     this.handler = handler;
@@ -119,8 +119,15 @@ export default class ScoreKeeper {
     return true;
   }
 
-  async begin(frequency: string): Promise<void> {
+  async begin(): Promise<void> {
     setInterval(async () => {
+      // Return if currently locked.
+      if (this.lock) {
+        logger.info(`Stopping POPULATING HASH TABLE - SK is locked`);
+        return;
+      }
+      this.lock = true;
+
       const allCandidates = await this.db.allCandidates();
 
       await this.constraints.populateIdentityHashTable(allCandidates);
@@ -140,7 +147,9 @@ export default class ScoreKeeper {
         const { stash } = v;
         await this.db.setInvalidityReason(stash, "");
       }
-    }, 5 * 60 * 1000);
+
+      this.lock = false;
+    }, 7 * 60 * 1000);
 
     // If `forceRound` is on - start immediately.
     if (this.config.scorekeeper.forceRound) {
@@ -148,6 +157,13 @@ export default class ScoreKeeper {
     }
 
     setInterval(async () => {
+      // Return if currently locked.
+      if (this.lock) {
+        logger.info(`Stopping END / START ROUND - SK is locked`);
+        return;
+      }
+      this.lock = true;
+
       const [activeEra, err] = await this.chaindata.getActiveEraIndex();
       if (err) {
         logger.info(`CRITICAL: ${err}`);
@@ -158,7 +174,7 @@ export default class ScoreKeeper {
         lastNominatedEraIndex,
       } = await this.db.getLastNominatedEraIndex();
 
-      const eraBuffer = 3; // for Kusama
+      const eraBuffer = this.config.global.networkPrefix == 0 ? 1 : 1; // TODO change for Kusama
 
       if (Number(lastNominatedEraIndex) <= activeEra - eraBuffer) {
         if (!this.nominatorGroups) {
@@ -180,6 +196,8 @@ export default class ScoreKeeper {
           await this.startRound();
         }
       }
+
+      this.lock = false;
     }, 5 * 60 * 1000);
   }
 
@@ -206,7 +224,7 @@ export default class ScoreKeeper {
 
     const targets = await this._doNominations(
       validCandidates,
-      16,
+      10, //setSize
       this.nominatorGroups
     );
 
@@ -294,11 +312,21 @@ export default class ScoreKeeper {
     const {
       lastNominatedEraIndex: startEra,
     } = await this.db.getLastNominatedEraIndex();
-    const [activeEra] = await this.chaindata.getActiveEraIndex();
-    const activeValidators = await this.chaindata.activeValidatorsInPeriod(
+    const [activeEra, err] = await this.chaindata.getActiveEraIndex();
+    if (err) {
+      throw new Error(`Error getting active era: ${err}`);
+    }
+
+    const [
+      activeValidators,
+      err2,
+    ] = await this.chaindata.activeValidatorsInPeriod(
       Number(startEra),
       activeEra
     );
+    if (err2) {
+      throw new Error(`Error getting active validators: ${err2}`);
+    }
 
     for (const nomGroup of this.nominatorGroups) {
       for (const nominator of nomGroup) {

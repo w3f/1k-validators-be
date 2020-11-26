@@ -59,6 +59,11 @@ export default class Nominator {
   public async stash(): Promise<any> {
     const api = await this.handler.getApi();
     const ledger = await api.query.staking.ledger(this.controller);
+    if (!ledger.isSome) {
+      throw new Error(
+        `Account ${this.controller} is not a controller account!`
+      );
+    }
     const { stash } = ledger.unwrap();
 
     return stash;

@@ -20,7 +20,7 @@ test.serial.before(async (t: TestExecutionContext) => {
   t.context.sk = sk;
 
   // Waits for WASM to be initialized.
-  await new Promise((resolve) => setTimeout(() => resolve(), 2000));
+  await new Promise<void>((resolve) => setTimeout(() => resolve(), 2000));
 });
 
 test.serial(

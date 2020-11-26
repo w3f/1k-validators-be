@@ -7,6 +7,7 @@ import { Config } from "./config";
 import Database from "./db";
 import logger from "./logger";
 import ScoreKeeper from "./scorekeeper";
+import { mapToObj } from "./util";
 
 const API = {
   Accounting: "/accounting/:stashOrController",
@@ -53,8 +54,8 @@ export default class Server {
     });
 
     router.get(API.GetIdentityHashes, (ctx) => {
-      const hashTable = scoreKeeper.constraints.indentityHashes;
-      ctx.body = hashTable;
+      const hashTable = scoreKeeper.constraints.identityHashes;
+      ctx.body = JSON.stringify(mapToObj(hashTable), null, 2);
     });
 
     router.get(API.GetNodes, async (ctx) => {

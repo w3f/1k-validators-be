@@ -34,9 +34,18 @@ const start = async (cmd: Command) => {
 
   // Create the Database.
   const db = await Database.create(config.db.mongo.uri);
-  // TMP - just need to run this once
+
+  // Delete the old candidate fields.
   await db.deleteOldCandidateFields();
-  // TMP
+
+  // Clear node refs and delete old fields from all nodes before starting new
+  // telemetry client.
+  const allNodes = await db.allNodes();
+  for (const node of allNodes) {
+    const { name } = node;
+    await db.deleteOldFieldFrom(name);
+    await db.clearNodeRefsFrom(name);
+  }
 
   // Start the telemetry client.
   const telemetry = new TelemetryClient(config, db);
@@ -107,12 +116,7 @@ const start = async (cmd: Command) => {
   sleep(3000);
 
   // Start the scorekeeper
-  const scorekeeperFrequency =
-    (config.global.test && "0 */15 * * * *") || // 15 mins
-    (config.global.dryRun && "0 */5 * * * *") || // 5 mins
-    "0 0 0 * * *"; // 24 hours
-
-  scorekeeper.begin(scorekeeperFrequency);
+  scorekeeper.begin();
 
   // Start the API server.
   const server = new Server(db, config, scorekeeper);
@@ -123,5 +127,5 @@ program
   .option("--config <directory>", "The path to the config directory.", "config")
   .action((cmd: Command) => catchAndQuit(start(cmd)));
 
-program.version("1.4.44");
+program.version("1.4.50");
 program.parse(process.argv);

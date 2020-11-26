@@ -83,9 +83,25 @@ export default class Db {
 
   // Unsets old candidate fields.
   async deleteOldCandidateFields(): Promise<boolean> {
+    await this.candidateModel.collection.update(
+      {},
+      {
+        $unset: {
+          sentryId: 1,
+          sentryOnlineSince: 1,
+          sentryOfflineSince: 1,
+        },
+      },
+      { multi: true, safe: true }
+    );
+
+    return true;
+  }
+
+  async deleteOldFieldFrom(name: string): Promise<boolean> {
     await this.candidateModel
-      .update(
-        {},
+      .findOneAndUpdate(
+        { name },
         {
           $unset: {
             sentryId: 1,
@@ -94,6 +110,14 @@ export default class Db {
           },
         }
       )
+      .exec();
+
+    return true;
+  }
+
+  async clearNodeRefsFrom(name: string): Promise<boolean> {
+    await this.candidateModel
+      .findOneAndUpdate({ name }, { nodeRefs: 0 })
       .exec();
 
     return true;

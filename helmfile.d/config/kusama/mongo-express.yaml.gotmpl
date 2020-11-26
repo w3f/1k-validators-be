@@ -17,4 +17,4 @@ certificate:
 domain: w3f.community
 
 mongodb:
-  host: "mongodb://{{ env "KUSAMA_MONGO_USERNAME" | default "username" }}:{{ env "KUSAMA_MONGO_PASSWORD" | default "password123" }}@mongodb-0.mongodb-headless:27017/{{ env "KUSAMA_MONGO_DB" | default "otv" }}"
+  host: "mongodb://{{ env "KUSAMA_MONGO_USERNAME" | default "username" }}:{{ env "KUSAMA_MONGO_PASSWORD" | default "password123" }}@kusama-mongodb-0.kusama-mongodb-headless:27017/{{ env "KUSAMA_MONGO_DB" | default "otv" }}"

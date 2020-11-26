@@ -28,7 +28,7 @@ config: |
     },
     "db": {
       "mongo": {
-          "uri": "mongodb://{{ env "KUSAMA_MONGO_USERNAME" | default "username" }}:{{ env "KUSAMA_MONGO_PASSWORD" | default "password123" }}@mongodb-replicaset-headless:27017/{{ env "KUSAMA_MONGO_DB" | default "otv" }}"
+          "uri": "mongodb://{{ env "KUSAMA_MONGO_USERNAME" | default "username" }}:{{ env "KUSAMA_MONGO_PASSWORD" | default "password123" }}@mongodb-0.mongodb-headless:27017,mongodb-1.mongodb-headless:27017/{{ env "KUSAMA_MONGO_DB" | default "otv" }}"
       }
     },
     "matrix": {

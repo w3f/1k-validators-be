@@ -7,9 +7,9 @@ source /scripts/bootstrap-helm.sh
 run_tests() {
     echo Running tests...
 
-    wait_pod_ready mongodb-replicaset-0 default 2/2
-    wait_pod_ready mongodb-replicaset-1 default 2/2
-    wait_pod_ready mongodb-replicaset-arbiter-0
+    wait_pod_ready mongodb-0 default 2/2
+    wait_pod_ready mongodb-1 default 2/2
+    wait_pod_ready mongodb-arbiter-0
     wait_pod_ready otv-backend-0
 
     express_pod=$(kubectl get pods | grep express | cut -d' ' -f1)

@@ -8,14 +8,14 @@ repositories:
 
 releases:
 {{ if eq .Environment.Name "production" }}
-- name: mongodb-replicaset
+- name: mongodb
   namespace: kusama
   chart: bitnami/mongodb
   version: 10.0.5
   values:
   - ./config/kusama/mongodb.yaml.gotmpl
   
-- name: mongodb-replicaset
+- name: mongodb
   namespace: polkadot
   chart: bitnami/mongodb
   version: 10.0.5
@@ -23,11 +23,9 @@ releases:
   - ./config/polkadot/mongodb.yaml.gotmpl
 
 {{ else }}
-
-- name: mongodb-replicaset
+- name: mongodb
   chart: bitnami/mongodb
   version: 10.0.5
   values:
   - ./config/polkadot/mongodb.yaml.gotmpl
-
 {{ end }}

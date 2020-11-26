@@ -29,7 +29,11 @@ disableSystemLog: false
 
 annotations: {}
 labels: {}
+{{ if eq .Environment.Name "production" }}
 replicaCount: 2
+{{ else }}
+replicaCount: 1
+{{ end }}
 strategyType: RollingUpdate
 podManagementPolicy: OrderedReady
 affinity: {}

@@ -5,9 +5,9 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: "nginx"
     nginx.ingress.kubernetes.io/limit-rps: "10"
+    external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
     {{ if .Values.certificate.enabled }}
     cert-manager.io/cluster-issuer: letsencrypt
-    external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
     {{ end }}
     nginx.ingress.kubernetes.io/server-snippet: |
       location /metrics {

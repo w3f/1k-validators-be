@@ -57,6 +57,7 @@ containerSecurityContext:
   runAsUser: 1001
   runAsNonRoot: true
 
+{{ if eq .Environment.Name "production" }}
 resources:
   limits: 
     cpu: 1000m
@@ -64,6 +65,9 @@ resources:
   requests: 
     cpu: 500m
     memory: "1Gi"
+{{ else }}
+resources: {}
+{{ end }}
 
 livenessProbe:
   enabled: true
@@ -97,7 +101,6 @@ persistence:
   annotations: {}
   mountPath: /bitnami/mongodb
   subPath: ""
-
 
 service:
   type: ClusterIP

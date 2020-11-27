@@ -23,7 +23,7 @@ tls:
 replicaSetName: rs0
 replicaSetHostnames: true
 
-directoryPerDB: false
+directoryPerDB: true
 systemLogVerbosity: 0
 disableSystemLog: false
 
@@ -59,11 +59,11 @@ containerSecurityContext:
 
 resources:
   limits: 
-    cpu: 100m
-    memory: 128Mi
+    cpu: 300m
+    memory: 256Mi
   requests: 
     cpu: 100m
-    memory: 128Mi
+    memory: 200Mi
 
 livenessProbe:
   enabled: true
@@ -200,11 +200,11 @@ metrics:
     failureThreshold: 3
     successThreshold: 1
   readinessProbe:
-    enabled: true
-    initialDelaySeconds: 5
+    enabled: false
+    initialDelaySeconds: 15
     periodSeconds: 5
     timeoutSeconds: 1
-    failureThreshold: 3
+    failureThreshold: 30
     successThreshold: 1
 
 

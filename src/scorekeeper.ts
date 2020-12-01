@@ -130,11 +130,14 @@ export default class ScoreKeeper {
 
       const allCandidates = await this.db.allCandidates();
 
-      await this.constraints.populateIdentityHashTable(allCandidates);
+      const identityHashTable = await this.constraints.populateIdentityHashTable(
+        allCandidates
+      );
 
       // set invalidityReason for stashes
       const invalid = await this.constraints.getInvalidCandidates(
-        allCandidates
+        allCandidates,
+        identityHashTable
       );
       for (const i of invalid) {
         const { stash, reason } = i;
@@ -142,7 +145,10 @@ export default class ScoreKeeper {
       }
 
       // set invalidityReason as empty for valid candidates
-      const valid = await this.constraints.getValidCandidates(allCandidates);
+      const valid = await this.constraints.getValidCandidates(
+        allCandidates,
+        identityHashTable
+      );
       for (const v of valid) {
         const { stash } = v;
         await this.db.setInvalidityReason(stash, "");
@@ -216,10 +222,13 @@ export default class ScoreKeeper {
     );
 
     const allCandidates = await this.db.allCandidates();
-    await this.constraints.populateIdentityHashTable(allCandidates);
+    const identityHashTable = await this.constraints.populateIdentityHashTable(
+      allCandidates
+    );
 
     const validCandidates = await this.constraints.getValidCandidates(
-      allCandidates
+      allCandidates,
+      identityHashTable
     );
 
     const targets = await this._doNominations(

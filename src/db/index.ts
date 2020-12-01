@@ -12,7 +12,7 @@ import logger from "../logger";
 export type NodeDetails = [string, string, string, string, string];
 
 // Sets a global configuration to silence mongoose deprecation warnings.
-mongoose.set("useFindAndModify", false);
+(mongoose as any).set("useFindAndModify", false);
 
 export default class Db {
   private accountingModel;

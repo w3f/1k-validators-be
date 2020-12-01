@@ -7,13 +7,11 @@ import { Config } from "./config";
 import Database from "./db";
 import logger from "./logger";
 import ScoreKeeper from "./scorekeeper";
-import { mapToObj } from "./util";
 
 const API = {
   Accounting: "/accounting/:stashOrController",
   Candidate: "/candidate/:stashOrName",
   GetCandidates: "/candidates",
-  GetIdentityHashes: "/identityHashes",
   GetNodes: "/nodes",
   GetNominators: "/nominators",
   Health: "/healthcheck",
@@ -51,11 +49,6 @@ export default class Server {
     router.get(API.GetCandidates, async (ctx) => {
       const allCandidates = await this.db.allCandidates();
       ctx.body = allCandidates;
-    });
-
-    router.get(API.GetIdentityHashes, (ctx) => {
-      const hashTable = scoreKeeper.constraints.identityHashes;
-      ctx.body = JSON.stringify(mapToObj(hashTable), null, 2);
     });
 
     router.get(API.GetNodes, async (ctx) => {

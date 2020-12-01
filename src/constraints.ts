@@ -7,7 +7,10 @@ import logger from "./logger";
 import { CandidateData } from "./types";
 
 export interface Constraints {
-  getValidCandidates(candidates: any[]): Promise<any[]>;
+  getValidCandidates(
+    candidates: any[],
+    identityHashTable: Map<string, number>
+  ): Promise<any[]>;
   processCandidates(
     candidates: Set<CandidateData>
   ): Promise<[Set<any>, Set<any>]>;
@@ -21,8 +24,6 @@ export class OTV implements Constraints {
   private validCache: CandidateData[] = [];
   private invalidCache: string[] = [];
 
-  private identityHashTable: Map<string, number>;
-
   constructor(
     handler: ApiHandler,
     skipConnectionTime = false,
@@ -31,7 +32,6 @@ export class OTV implements Constraints {
     this.chaindata = new ChainData(handler);
     this.skipConnectionTime = skipConnectionTime;
     this.skipIdentity = skipIdentity;
-    this.identityHashTable = new Map();
   }
 
   get validCandidateCache(): CandidateData[] {
@@ -42,38 +42,35 @@ export class OTV implements Constraints {
     return this.invalidCache;
   }
 
-  get identityHashes(): Map<string, number> {
-    return this.identityHashTable;
-  }
-
   async populateIdentityHashTable(
     candidates: CandidateData[]
   ): Promise<Map<string, number>> {
     logger.info(`(OTV::populateIdentityHashTable) Populating hash table`);
-    // first wipe it
-    const newTable = new Map();
+    const map = new Map();
 
     for (const candidate of candidates) {
       const { stash } = candidate;
       const identityString = await this.chaindata.getIdentity(stash);
       const identityHash = blake2AsHex(identityString);
-      const prevValue = newTable.get(identityHash) || 0;
-      newTable.set(identityHash, prevValue + 1);
+      const prevValue = map.get(identityHash) || 0;
+      map.set(identityHash, prevValue + 1);
     }
 
-    this.identityHashTable = newTable;
-
-    return this.identityHashTable;
+    return map;
   }
 
   /// Returns true if it's a valid candidate or [false, "reason"] otherwise.
   async getInvalidCandidates(
-    candidates: CandidateData[]
+    candidates: CandidateData[],
+    identityHashTable: Map<string, number>
   ): Promise<{ stash: string; reason: string }[]> {
     let invalid = await Promise.all(
       candidates.map(async (candidate) => {
         const { stash } = candidate;
-        const [isValid, reason] = await this.checkSingleCandidate(candidate);
+        const [isValid, reason] = await this.checkSingleCandidate(
+          candidate,
+          identityHashTable
+        );
         if (!isValid) return { stash, reason };
       })
     );
@@ -88,7 +85,8 @@ export class OTV implements Constraints {
 
   /// Returns true if it's a valid candidate or [false, "reason"] otherwise.
   async checkSingleCandidate(
-    candidate: CandidateData
+    candidate: CandidateData,
+    identityHashTable: Map<string, number>
   ): Promise<[boolean, string]> {
     const {
       connectedAt,
@@ -133,7 +131,7 @@ export class OTV implements Constraints {
 
       const idString = await this.chaindata.getIdentity(stash);
       const idHash = blake2AsHex(idString);
-      const numIds = this.identityHashTable.get(idHash) || 0;
+      const numIds = identityHashTable.get(idHash) || 0;
       if (!numIds || numIds > 2) {
         return [
           false,
@@ -182,13 +180,17 @@ export class OTV implements Constraints {
   }
 
   async getValidCandidates(
-    candidates: CandidateData[]
+    candidates: CandidateData[],
+    identityHashTable: Map<string, number>
   ): Promise<CandidateData[]> {
     logger.info(`(OTV::getValidCandidates) Getting candidates`);
 
     let validCandidates = [];
     for (const candidate of candidates) {
-      const [isValid, reason] = await this.checkSingleCandidate(candidate);
+      const [isValid, reason] = await this.checkSingleCandidate(
+        candidate,
+        identityHashTable
+      );
 
       if (!isValid) {
         logger.info(reason);

@@ -9,6 +9,7 @@ export const MockApi = {
   query: {
     staking: {
       ledger: () => ({
+        isSome: true,
         unwrap: () => true,
       }),
       currentEra: () => {

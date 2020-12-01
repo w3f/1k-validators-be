@@ -63,13 +63,15 @@ containerSecurityContext:
 {{ if eq .Environment.Name "production" }}
 resources:
   limits: 
-    cpu: 1000m
+    cpu: 800m
     memory: "1Gi"
   requests: 
     cpu: 500m
     memory: "1Gi"
 {{ else }}
-resources: {}
+resources:
+  limits: {}
+  requests: {}
 {{ end }}
 
 livenessProbe:
@@ -95,6 +97,8 @@ pdb:
   minAvailable: 1
   maxUnavailable: 1
 
+
+{{ if eq .Environment.Name "production" }}
 persistence:
   enabled: true
   # storageClass: ""
@@ -104,6 +108,10 @@ persistence:
   annotations: {}
   mountPath: /bitnami/mongodb
   subPath: ""
+{{ else }}
+persistence:
+  enabled: true
+{{ end }}
 
 service:
   type: ClusterIP
@@ -115,7 +123,11 @@ externalAccess:
   enabled: false
 
 arbiter:
+{{ if eq .Environment.Name "production" }}
   enabled: true
+{{ else }}
+  enabled: false
+{{ end }}
   configuration: ""
   # existingConfigmap:
   annotations: {}

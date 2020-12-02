@@ -1,6 +1,14 @@
 import * as fs from "fs";
 import path from "path";
 
+type CandidateConfig = {
+  name: string;
+  stash: string;
+  riotHandle: string;
+  kusamaStash?: string;
+  skipSelfStake?: boolean;
+};
+
 export type Config = {
   constraints: {
     skipConnectionTime: boolean;
@@ -24,7 +32,7 @@ export type Config = {
     userId: string;
   };
   scorekeeper: {
-    candidates: any[];
+    candidates: CandidateConfig[];
     forceRound: boolean;
     nominating: boolean;
     nominators: any[];

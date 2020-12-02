@@ -33,3 +33,6 @@ export const PolkadotEndpoints = [
   "wss://cc1-4.polkadot.network",
   "wss://cc1-5.polkadot.network",
 ];
+
+/// Endpoint of the Kusama Thousand Validators backend. Used for the Polkadot program.
+export const KOTVBackendEnpoint = "https://kusama.w3f.community";

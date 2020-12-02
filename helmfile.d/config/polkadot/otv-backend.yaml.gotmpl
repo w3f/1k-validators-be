@@ -28,7 +28,7 @@ config: |
     },
     "db": {
       "mongo": {
-          "uri": "mongodb://{{ env "POLKADOT_MONGO_USERNAME" | default "username" }}:{{ env "POLKADOT_MONGO_PASSWORD" | default "password123" }}@polkadot-mongodb-0.polkadot-mongodb-headless:27017,polkadot-mongodb-1.polkadot-mongodb-headless:27017/{{ env "POLKADOT_MONGO_DB" | default "otv" }}?replicaSet=rs0"
+          "uri": "mongodb://{{ env "POLKADOT_MONGO_USERNAME" | default "username" }}:{{ env "POLKADOT_MONGO_PASSWORD" | default "password123" }}@polkadot-mongodb-0.polkadot-mongodb-headless:27017,polkadot-mongodb-1.polkadot-mongodb-headless:27017/{{ env "POLKADOT_MONGO_DB" | default "otv" }}"
       }
     },
     "matrix": {

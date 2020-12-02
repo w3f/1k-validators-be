@@ -61,6 +61,8 @@ const CandidateSchema = new Schema({
   invalidityReasons: { type: String, default: "" },
   // If a validator has faults, this will contain the details.
   faultEvents: { type: [FaultEventSchema], default: [] },
+  // Polkadot specific: Kusama Stash
+  kusamaStash: String,
 });
 
 const EraSchema = new Schema({

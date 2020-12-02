@@ -36,4 +36,6 @@ export type CandidateData = {
   /// This will only be null for nodes that are connected to
   /// the telemetry and not registered as a candidate.
   stash: string | null;
+  kusamaStash: string;
+  skipSelfStake: boolean;
 };

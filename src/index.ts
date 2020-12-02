@@ -106,8 +106,11 @@ const start = async (cmd: Command) => {
         continue;
       } else {
         const { name, stash } = candidate;
+        // Polkadot only options.
+        const kusamaStash = candidate.kusamaStash || "";
+        const skipSelfStake = candidate.skipSelfStake || false;
 
-        await db.addCandidate(name, stash);
+        await db.addCandidate(name, stash, kusamaStash, skipSelfStake);
       }
     }
   }

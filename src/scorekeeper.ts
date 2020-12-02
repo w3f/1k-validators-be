@@ -2,6 +2,7 @@ import { textChangeRangeIsUnchanged } from "typescript";
 import ApiHandler from "./ApiHandler";
 import ChainData from "./chaindata";
 import { Config } from "./config";
+import { FIFTY_KSM, TEN_THOUSAND_DOT } from "./constants";
 import { OTV } from "./constraints";
 import Db from "./db";
 import logger from "./logger";
@@ -60,7 +61,8 @@ export default class ScoreKeeper {
     this.constraints = new OTV(
       this.handler,
       this.config.constraints.skipConnectionTime,
-      this.config.constraints.skipIdentity
+      this.config.constraints.skipIdentity,
+      this.config.global.networkPrefix == 2 ? FIFTY_KSM : TEN_THOUSAND_DOT
     );
   }
 

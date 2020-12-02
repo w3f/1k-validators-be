@@ -88,7 +88,7 @@ import { blake2AsHex } from "@polkadot/util-crypto";
     throw new Error("identity hashes should match");
   }
 
-  const constraints = new OTV(handler, false, false);
+  const constraints = new OTV(handler, false, false, 0);
 
   const candidates = [
     {
@@ -132,10 +132,6 @@ import { blake2AsHex } from "@polkadot/util-crypto";
   const hashTable = await constraints.populateIdentityHashTable(
     candidates as any
   );
-
-  if (hashTable !== constraints.identityHashes) {
-    throw new Error("Identity hashes do not match");
-  }
 
   console.log("NO ERRORS!");
   process.exit(0);

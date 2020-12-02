@@ -2,9 +2,10 @@ import { blake2AsHex } from "@polkadot/util-crypto";
 
 import ApiHandler from "./ApiHandler";
 import ChainData from "./chaindata";
-import { WEEK, TEN_PERCENT, FIFTY_KSM } from "./constants";
+import { WEEK, TEN_PERCENT, KOTVBackendEnpoint } from "./constants";
 import logger from "./logger";
 import { CandidateData } from "./types";
+import axios from "axios";
 
 export interface Constraints {
   getValidCandidates(
@@ -20,6 +21,7 @@ export class OTV implements Constraints {
   private chaindata: ChainData;
   private skipConnectionTime: boolean;
   private skipIdentity: boolean;
+  private minSelfStake: number;
 
   private validCache: CandidateData[] = [];
   private invalidCache: string[] = [];
@@ -27,11 +29,13 @@ export class OTV implements Constraints {
   constructor(
     handler: ApiHandler,
     skipConnectionTime = false,
-    skipIdentity = false
+    skipIdentity = false,
+    minSelfStake = 0
   ) {
     this.chaindata = new ChainData(handler);
     this.skipConnectionTime = skipConnectionTime;
     this.skipIdentity = skipIdentity;
+    this.minSelfStake = minSelfStake;
   }
 
   get validCandidateCache(): CandidateData[] {
@@ -96,6 +100,8 @@ export class OTV implements Constraints {
       offlineSince,
       onlineSince,
       stash,
+      kusamaStash,
+      skipSelfStake,
     } = candidate;
 
     // Ensure the candidate is online.
@@ -162,18 +168,34 @@ export class OTV implements Constraints {
       ];
     }
 
-    const [bondedAmt, err2] = await this.chaindata.getBondedAmount(stash);
-    if (err2) {
-      return [false, `${name} ${err2}`];
+    if (!skipSelfStake) {
+      const [bondedAmt, err2] = await this.chaindata.getBondedAmount(stash);
+      if (err2) {
+        return [false, `${name} ${err2}`];
+      }
+
+      if (bondedAmt < this.minSelfStake) {
+        return [
+          false,
+          `${name} has less then fifty KSM bonded: ${
+            bondedAmt / 10 ** 12
+          } KSM is bonded.`,
+        ];
+      }
     }
 
-    if (bondedAmt < FIFTY_KSM) {
-      return [
-        false,
-        `${name} has less then fifty KSM bonded: ${
-          bondedAmt / 10 ** 12
-        } KSM is bonded.`,
-      ];
+    if (!!kusamaStash) {
+      const res = await axios.get(
+        KOTVBackendEnpoint + "/candidate/" + kusamaStash
+      );
+
+      const json = JSON.parse(res.data);
+      if (Number(json.rank) < 25) {
+        return [
+          false,
+          `${name} has a Kusama stash with lower than 25 rank in the Kusama OTV programme.`,
+        ];
+      }
     }
 
     return [true, ""];
@@ -240,7 +262,7 @@ export class OTV implements Constraints {
     const bad: Set<{ candidate: CandidateData; reason: string }> = new Set();
 
     for (const candidate of candidates) {
-      const { name, offlineSince, stash } = candidate;
+      const { name, offlineSince, stash, skipSelfStake } = candidate;
       /// Ensure the commission wasn't raised/
       const [commission, err] = await this.chaindata.getCommission(stash);
       /// If it errors we assume that a validator removed their validator status.
@@ -258,18 +280,20 @@ export class OTV implements Constraints {
         continue;
       }
 
-      const [bondedAmt, err2] = await this.chaindata.getBondedAmount(stash);
-      if (err2) {
-        const reason = `${name} ${err2}`;
-        logger.info(reason);
-        bad.add({ candidate, reason });
-        continue;
-      }
-      if (bondedAmt < FIFTY_KSM) {
-        const reason = `${name} has less then fifty KSM bonded: ${bondedAmt}`;
-        logger.info(reason);
-        bad.add({ candidate, reason });
-        continue;
+      if (!skipSelfStake) {
+        const [bondedAmt, err2] = await this.chaindata.getBondedAmount(stash);
+        if (err2) {
+          const reason = `${name} ${err2}`;
+          logger.info(reason);
+          bad.add({ candidate, reason });
+          continue;
+        }
+        if (bondedAmt < this.minSelfStake) {
+          const reason = `${name} has less then fifty KSM bonded: ${bondedAmt}`;
+          logger.info(reason);
+          bad.add({ candidate, reason });
+          continue;
+        }
       }
 
       // Ensure the candidate is online.

@@ -52,7 +52,12 @@ export default class Db {
   }
 
   // Adds a new candidate from the configuration file data.
-  async addCandidate(name: string, stash: string): Promise<boolean> {
+  async addCandidate(
+    name: string,
+    stash: string,
+    kusamaStash: string,
+    skipSelfStake: boolean
+  ): Promise<boolean> {
     logger.info(`(Db::addCandidate) name: ${name} stash: ${stash}`);
 
     // Check to see if the candidate has already been added as a node.
@@ -65,6 +70,8 @@ export default class Db {
       const candidate = new this.candidateModel({
         name,
         stash,
+        kusamaStash,
+        skipSelfStake,
       });
       return candidate.save();
     }
@@ -77,6 +84,8 @@ export default class Db {
       },
       {
         stash,
+        kusamaStash,
+        skipSelfStake,
       }
     );
   }

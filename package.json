@@ -1,6 +1,6 @@
 {
   "name": "1k-validators-be",
-  "version": "2.0.2",
+  "version": "2.0.4",
   "description": "Services for running the Thousand Validator Program.",
   "main": "index.js",
   "scripts": {
@@ -18,7 +18,7 @@
   "license": "GPL-3.0",
   "dependencies": {
     "@koa/router": "^10.0.0",
-    "@octokit/rest": "^18.0.9",
+    "@octokit/rest": "^18.0.10",
     "@polkadot/api": "^2.9.1",
     "@polkadot/keyring": "^4.2.1",
     "@types/cron": "^1.7.1",
@@ -41,10 +41,10 @@
     "matrix-js-sdk": "^9.2.0",
     "mongodb": "^3.6.3",
     "mongodb-memory-server": "^6.9.2",
-    "mongoose": "^5.11.0",
+    "mongoose": "^5.11.1",
     "prettier": "^2.2.1",
     "reconnecting-websocket": "^4.4.0",
-    "semver": "^7.3.2",
+    "semver": "^7.3.4",
     "ts-node": "^9.0.0",
     "typescript": "^4.1.2",
     "winston": "^3.3.3",

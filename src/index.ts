@@ -106,8 +106,11 @@ const start = async (cmd: Command) => {
         continue;
       } else {
         const { name, stash } = candidate;
+        // Polkadot only options.
+        const kusamaStash = candidate.kusamaStash || "";
+        const skipSelfStake = candidate.skipSelfStake || false;
 
-        await db.addCandidate(name, stash);
+        await db.addCandidate(name, stash, kusamaStash, skipSelfStake);
       }
     }
   }
@@ -127,5 +130,5 @@ program
   .option("--config <directory>", "The path to the config directory.", "config")
   .action((cmd: Command) => catchAndQuit(start(cmd)));
 
-program.version("2.0.2");
+program.version("2.0.4");
 program.parse(process.argv);

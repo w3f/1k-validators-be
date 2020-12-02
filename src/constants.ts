@@ -4,6 +4,9 @@ export const TEN_PERCENT = 100000000;
 /// 50 KSM with decimals.
 export const FIFTY_KSM: number = 50 * 10 ** 12;
 
+/// 10_000 DOT with decimals.
+export const TEN_THOUSAND_DOT: number = 10 * 1000 * 10 ** 10;
+
 /// One week in milliseconds.
 export const WEEK = 7 * 24 * 60 * 60 * 1000;
 
@@ -33,3 +36,6 @@ export const PolkadotEndpoints = [
   "wss://cc1-4.polkadot.network",
   "wss://cc1-5.polkadot.network",
 ];
+
+/// Endpoint of the Kusama Thousand Validators backend. Used for the Polkadot program.
+export const KOTVBackendEnpoint = "https://kusama.w3f.community";

@@ -42,7 +42,7 @@ test.serial(
     const candidates = await db.allCandidates();
     t.deepEqual(candidates, []);
 
-    await db.addCandidate("One", "stashOne");
+    await db.addCandidate("One", "stashOne", "", false);
 
     const candidatesAfter = await db.allCandidates();
 
@@ -140,7 +140,7 @@ test.serial(
     t.is(nodeTwoAfter.onlineSince, now);
     t.is(nodeTwoAfter.stash, undefined);
 
-    await db.addCandidate("nodeTwo", "stashTwo");
+    await db.addCandidate("nodeTwo", "stashTwo", "", false);
 
     const nodeTwoLatest = await db.getNodeByName("nodeTwo");
     t.is(nodeTwoLatest.stash, "stashTwo");

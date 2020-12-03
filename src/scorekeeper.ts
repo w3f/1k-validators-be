@@ -123,13 +123,6 @@ export default class ScoreKeeper {
 
   async begin(): Promise<void> {
     setInterval(async () => {
-      // Return if currently locked.
-      if (this.lock) {
-        logger.info(`Stopping POPULATING HASH TABLE - SK is locked`);
-        return;
-      }
-      this.lock = true;
-
       const allCandidates = await this.db.allCandidates();
 
       const identityHashTable = await this.constraints.populateIdentityHashTable(
@@ -155,8 +148,6 @@ export default class ScoreKeeper {
         const { stash } = v;
         await this.db.setInvalidityReason(stash, "");
       }
-
-      this.lock = false;
     }, 7 * 60 * 1000);
 
     // If `forceRound` is on - start immediately.

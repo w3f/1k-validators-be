@@ -26,9 +26,6 @@ export default class ScoreKeeper {
   public db: Db;
 
   private nominatorGroups: Array<SpawnedNominatorGroup> = [];
-  // A lock that tells whether the Scorekeeper is currently doing something,
-  // and prevents it from starting a new action.
-  private lock: boolean;
 
   constructor(handler: ApiHandler, db: Db, config: Config, bot: any = false) {
     this.handler = handler;
@@ -156,13 +153,6 @@ export default class ScoreKeeper {
     }
 
     setInterval(async () => {
-      // Return if currently locked.
-      if (this.lock) {
-        logger.info(`Stopping END / START ROUND - SK is locked`);
-        return;
-      }
-      this.lock = true;
-
       const [activeEra, err] = await this.chaindata.getActiveEraIndex();
       if (err) {
         logger.info(`CRITICAL: ${err}`);
@@ -195,9 +185,7 @@ export default class ScoreKeeper {
           await this.startRound();
         }
       }
-
-      this.lock = false;
-    }, 5 * 60 * 1000);
+    }, 10 * 60 * 1000);
   }
 
   /// Handles the beginning of a new round.

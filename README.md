@@ -1,19 +1,39 @@
 # [Thousand Validator Program][thousand]
 
-**To apply to the Thousand Validator Program - sign up [here][form]**
+**To apply to the Kusama Thousand Validator Program - sign up [here][form]**
+**To apply to the Polkadot Thousand Validator Program - sign up [here][polkadot form]**
 
 The Thousand Validator Program is a joint initiative between Web3 Foundation
 and Parity to help prospective validators achieve nominations to join the 
-active set.
+active set. 
 
-Requirements for prospective validators:
- - 50 KSM.
+The Thousand Validators Programme operates on both the Kusama and the Polkadot
+networks. In order to start validating on the Polkadot network, you should start
+on the Kusama network first.
+
+## Kusama Thousand Validators Programme
+
+Requirements for prospective validators on the Kusama network:
+
+ - 50 KSM self-stake.
  - Signed up on the [form][form] and has received approval.
- - Connection to the private telemetry.
+ - Connected to the private telemetry.
  - Seven days of online validator infrastructure.
+ - Must have an identity set and verified by a registrar ([instructions](https://wiki.polkadot.network/docs/en/learn-registrar)).
 
 Please see the [blog post][thousand] for more information and requirements for
 entering the program.
+
+## Polkadot Thousand Validators Programme
+
+Requirements for prospective validators on the Polkadot network:
+
+- 10,000 DOT self-stake.
+- Preferences set to pay rewards to "Staked" (rewards must be automatically bonded).
+- Rank 25 or above in the Kusama programme.
+- Signed up on the [form][polkadot form] and has received approval.
+- Connected to the private telemetry.
+- Must have an identity set and verified by a registrar ([instructions](https://wiki.polkadot.network/docs/en/learn-registrar)).
 
 ## What is this repository?
 
@@ -48,16 +68,20 @@ the dependencies, run `yarn test` to run the unit tests.
 
 ### Docker
 
+> Warning: The custom "fast" build of Polkadot is currently __very__ outdated.
+
 The entire system can be spun up using a custom "fast" build of Polkadot
 that starts a new Era every 6 minutes. Move the `config.sample.json` to `config.json`
 and start the proccesses using `yarn docker`.
 
 ### Matrix Bot
 
-To enable the matrix bot you will need to create an account on Riot.im or a similar
+To enable the matrix bot you will need to create an account on Element or a similar
 service and acquire an access token. Enter the access token in the configuration
 file and specify the room that the bot should send the messages in. Make sure you
 invite the bot to the room before you start the services.
 
 [thousand]: https://polkadot.network/join-kusamas-thousand-validators-programme/
 [form]: https://docs.google.com/forms/d/e/1FAIpQLSewhltQOcmkIlE7Wftn0NTVuyEs6Wk8Qpx6ssCAo2BO4oQH0w/viewform
+[polkadot form]: https://docs.google.com/forms/d/e/1FAIpQLSdS-alI-J2wgIRCQVjQC7ZbFiTnf36hYBdmO-1ARMjKbC7H9w/viewform
+

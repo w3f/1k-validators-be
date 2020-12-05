@@ -1,4 +1,5 @@
-import { textChangeRangeIsUnchanged } from "typescript";
+import { CronJob } from "cron";
+
 import ApiHandler from "./ApiHandler";
 import ChainData from "./chaindata";
 import { Config } from "./config";
@@ -119,7 +120,12 @@ export default class ScoreKeeper {
   }
 
   async begin(): Promise<void> {
-    setInterval(async () => {
+    // If `forceRound` is on - start immediately.
+    if (this.config.scorekeeper.forceRound) {
+      await this.startRound();
+    }
+
+    const validityCron = new CronJob("0 0-59/7 * * * *", async () => {
       const allCandidates = await this.db.allCandidates();
 
       const identityHashTable = await this.constraints.populateIdentityHashTable(
@@ -145,14 +151,9 @@ export default class ScoreKeeper {
         const { stash } = v;
         await this.db.setInvalidityReason(stash, "");
       }
-    }, 7 * 60 * 1000);
+    });
 
-    // If `forceRound` is on - start immediately.
-    if (this.config.scorekeeper.forceRound) {
-      await this.startRound();
-    }
-
-    setInterval(async () => {
+    const mainCron = new CronJob("0 0-59/10 * * * *", async () => {
       const [activeEra, err] = await this.chaindata.getActiveEraIndex();
       if (err) {
         logger.info(`CRITICAL: ${err}`);
@@ -185,7 +186,10 @@ export default class ScoreKeeper {
           await this.startRound();
         }
       }
-    }, 10 * 60 * 1000);
+    });
+
+    validityCron.start();
+    mainCron.start();
   }
 
   /// Handles the beginning of a new round.

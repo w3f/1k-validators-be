@@ -25,6 +25,12 @@ const FaultEventSchema = new Schema({
   reason: String,
 });
 
+const DelayedTxSchema = new Schema({
+  number: Number,
+  controller: String,
+  targets: [String],
+});
+
 const CandidateSchema = new Schema({
   // The inherited telemetry ID.
   telemetryId: Number,
@@ -76,4 +82,10 @@ const NominatorSchema = new Schema({
   createdAt: { type: Number, default: 0 },
 });
 
-export { AccountingSchema, CandidateSchema, EraSchema, NominatorSchema };
+export {
+  AccountingSchema,
+  CandidateSchema,
+  EraSchema,
+  NominatorSchema,
+  DelayedTxSchema,
+};

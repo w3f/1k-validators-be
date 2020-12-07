@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import {
   AccountingSchema,
   CandidateSchema,
+  DelayedTxSchema,
   EraSchema,
   NominatorSchema,
 } from "./models";
@@ -17,12 +18,14 @@ export type NodeDetails = [string, string, string, string, string];
 export default class Db {
   private accountingModel;
   private candidateModel;
+  private delayedTxModel;
   private eraModel;
   private nominatorModel;
 
   constructor() {
     this.accountingModel = mongoose.model("Accounting", AccountingSchema);
     this.candidateModel = mongoose.model("Candidate", CandidateSchema);
+    this.delayedTxModel = mongoose.model("DelayedTx", DelayedTxSchema);
     this.eraModel = mongoose.model("Era", EraSchema);
     this.nominatorModel = mongoose.model("Nominator", NominatorSchema);
   }
@@ -49,6 +52,28 @@ export default class Db {
         reject(err);
       });
     });
+  }
+
+  async addDelayedTx(
+    number: number,
+    controller: string,
+    targets: string[]
+  ): Promise<boolean> {
+    const delayedTx = new this.delayedTxModel({
+      number,
+      controller,
+      targets,
+    });
+
+    return delayedTx.save();
+  }
+
+  async getAllDelayedTxs(): Promise<any[]> {
+    return this.delayedTxModel.find({ controller: /.*/ }).exec();
+  }
+
+  async deleteDelayedTx(number: number, controller: string): Promise<boolean> {
+    return this.delayedTxModel.deleteOne({ number, controller }).exec();
   }
 
   // Adds a new candidate from the configuration file data.

@@ -9,7 +9,7 @@ import Db from "./db";
 import logger from "./logger";
 import Nominator from "./nominator";
 import { CandidateData, Stash } from "./types";
-import { getNow } from "./util";
+import { getNow, sleep } from "./util";
 
 type NominatorGroup = NominatorConfig[];
 
@@ -259,6 +259,10 @@ export default class ScoreKeeper {
           targets,
           dryRun || this.config.global.dryRun
         );
+
+        // Wait some time between each transaction to avoid nonce issues.
+        await sleep(8000);
+
         this.botLog(
           `Nominator ${curNominator.controller} nominated ${targets.join(" ")}`
         );

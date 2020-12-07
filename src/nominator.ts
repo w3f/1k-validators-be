@@ -84,33 +84,50 @@ export default class Nominator {
       let tx: SubmittableExtrinsic<"promise">;
       if (this._isProxy) {
         const innerTx = api.tx.staking.nominate(targets);
-        tx = api.tx.proxy.proxy(this.controller, "Staking", innerTx);
+
+        const currentBlock = await api.rpc.chain.getBlock();
+        const { number } = currentBlock.block.header;
+
+        tx = api.tx.proxy.announce(this.controller, innerTx.hash);
+        await this.db.addDelayedTx(number.toNumber(), this.controller, targets);
+
+        await tx.signAndSend(this.signer);
       } else {
         logger.info(
           `(Nominator::nominate) Creating extrinsic Staking::nominate from ${this.address} to targets ${targets} at ${now}`
         );
         tx = api.tx.staking.nominate(targets);
+        logger.info("(Nominator::nominate} Sending extrinsic to network...");
+        await this.sendStakingTx(tx, targets);
       }
-
-      logger.info("(Nominator::nominate} Sending extrinsic to network...");
-      const unsub = await tx.signAndSend(this.signer, async (result: any) => {
-        const { status } = result;
-
-        logger.info(`(Nominator::nominate) Status now: ${status.type}`);
-        if (status.isFinalized) {
-          logger.info(
-            `(Nominator::nominate) Included in block ${status.asFinalized}`
-          );
-          this.currentlyNominating = targets;
-          for (const stash of targets) {
-            await this.db.setTarget(this.controller, stash, now);
-            await this.db.setLastNomination(this.controller, now);
-          }
-          unsub();
-        }
-      });
     }
 
     return true;
   }
+
+  sendStakingTx = async (
+    tx: SubmittableExtrinsic<"promise">,
+    targets: string[]
+  ): Promise<boolean> => {
+    const now = new Date().getTime();
+
+    const unsub = await tx.signAndSend(this.signer, async (result: any) => {
+      const { status } = result;
+
+      logger.info(`(Nominator::nominate) Status now: ${status.type}`);
+      if (status.isFinalized) {
+        logger.info(
+          `(Nominator::nominate) Included in block ${status.asFinalized}`
+        );
+        this.currentlyNominating = targets;
+        for (const stash of targets) {
+          await this.db.setTarget(this.controller, stash, now);
+          await this.db.setLastNomination(this.controller, now);
+        }
+        unsub();
+      }
+    });
+
+    return true;
+  };
 }

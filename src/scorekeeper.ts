@@ -143,6 +143,36 @@ export default class ScoreKeeper {
       }
     });
 
+    const executionCron = new CronJob("0 0-59/15 * * * *", async () => {
+      const api = await this.handler.getApi();
+      const currentBlock = await api.rpc.chain.getBlock();
+      const { number } = currentBlock.block.header;
+
+      const allDelayed = await this.db.getAllDelayedTxs();
+
+      for (const data of allDelayed) {
+        const { number: dataNum, controller, targets } = data;
+        if (dataNum + 10850 <= number.toNumber()) {
+          // time to execute
+          // find the nominator
+          const nomGroup = this.nominatorGroups.find((nomGroup) => {
+            return !!nomGroup.find((nom) => {
+              nom.controller == controller;
+            });
+          });
+
+          const nominator = nomGroup.find(
+            (nom) => nom.controller == controller
+          );
+
+          const innerTx = api.tx.staking.nominate(targets);
+          const tx = api.tx.proxy.proxy(controller, "Staking", innerTx);
+          await this.db.deleteDelayedTx(dataNum, controller);
+          await nominator.sendStakingTx(tx, targets);
+        }
+      }
+    });
+
     const mainCron = new CronJob("0 0-59/10 * * * *", async () => {
       const [activeEra, err] = await this.chaindata.getActiveEraIndex();
       if (err) {
@@ -179,6 +209,7 @@ export default class ScoreKeeper {
     });
 
     validityCron.start();
+    executionCron.start();
     mainCron.start();
   }
 

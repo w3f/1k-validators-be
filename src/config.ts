@@ -9,6 +9,13 @@ type CandidateConfig = {
   skipSelfStake?: boolean;
 };
 
+export type NominatorConfig = {
+  seed: string;
+  maxNominations: number;
+  isProxy?: boolean;
+  proxyFor?: string;
+};
+
 export type Config = {
   constraints: {
     skipConnectionTime: boolean;
@@ -35,7 +42,7 @@ export type Config = {
     candidates: CandidateConfig[];
     forceRound: boolean;
     nominating: boolean;
-    nominators: any[];
+    nominators: NominatorConfig[][];
   };
   server: {
     port: number;

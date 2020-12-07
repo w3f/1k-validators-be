@@ -2,7 +2,7 @@ import { CronJob } from "cron";
 
 import ApiHandler from "./ApiHandler";
 import ChainData from "./chaindata";
-import { Config } from "./config";
+import { Config, NominatorConfig } from "./config";
 import { FIFTY_KSM, TEN_THOUSAND_DOT } from "./constants";
 import { OTV } from "./constraints";
 import Db from "./db";
@@ -11,8 +11,7 @@ import Nominator from "./nominator";
 import { CandidateData, Stash } from "./types";
 import { getNow } from "./util";
 
-type NominatorSeed = { seed: string };
-type NominatorGroup = NominatorSeed[];
+type NominatorGroup = NominatorConfig[];
 
 type SpawnedNominatorGroup = Nominator[];
 
@@ -84,24 +83,15 @@ export default class ScoreKeeper {
   }
 
   /// Spawns a new nominator.
-  _spawn(seed: string, maxNominations = 1, networkPrefix = 2): Nominator {
-    return new Nominator(
-      this.handler,
-      this.db,
-      { seed, maxNominations },
-      networkPrefix
-    );
+  _spawn(cfg: NominatorConfig, networkPrefix = 2): Nominator {
+    return new Nominator(this.handler, this.db, cfg, networkPrefix);
   }
 
   async addNominatorGroup(nominatorGroup: NominatorGroup): Promise<boolean> {
     const group = [];
     const now = getNow();
-    for (const nominator of nominatorGroup) {
-      const nom = this._spawn(
-        nominator.seed,
-        16,
-        this.config.global.networkPrefix
-      );
+    for (const nomCfg of nominatorGroup) {
+      const nom = this._spawn(nomCfg, this.config.global.networkPrefix);
       await this.db.addNominator(nom.controller, now);
       // Create a new accounting record in case one doesn't exist.
       const stash = await nom.stash();

@@ -28,3 +28,4 @@ releases:
     {{ end }} 
     values:
     - ./config/polkadot/otv-backend.yaml.gotmpl
+

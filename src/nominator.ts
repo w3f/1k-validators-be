@@ -84,7 +84,7 @@ export default class Nominator {
       let tx: SubmittableExtrinsic<"promise">;
       if (this._isProxy) {
         const innerTx = api.tx.staking.nominate(targets);
-        tx = api.tx.proxy.proxy(this.controller, "None", innerTx);
+        tx = api.tx.proxy.proxy(this.controller, "Staking", innerTx);
       } else {
         logger.info(
           `(Nominator::nominate) Creating extrinsic Staking::nominate from ${this.address} to targets ${targets} at ${now}`

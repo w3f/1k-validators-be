@@ -157,7 +157,7 @@ export default class ScoreKeeper {
           // find the nominator
           const nomGroup = this.nominatorGroups.find((nomGroup) => {
             return !!nomGroup.find((nom) => {
-              nom.controller == controller;
+              return nom.controller == controller;
             });
           });
 

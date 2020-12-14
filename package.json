@@ -32,7 +32,7 @@
     "commander": "^6.2.0",
     "cron": "^1.8.2",
     "eslint-config-prettier": "^7.0.0",
-    "eslint-plugin-prettier": "^3.2.0",
+    "eslint-plugin-prettier": "^3.3.0",
     "eventemitter3": "^4.0.7",
     "hash.js": "^1.1.7",
     "koa": "^2.13.0",

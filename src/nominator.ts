@@ -1,5 +1,7 @@
 import { SubmittableExtrinsic } from "@polkadot/api/types";
 import Keyring from "@polkadot/keyring";
+import { blake2AsHex } from "@polkadot/util-crypto";
+
 import { KeyringPair } from "@polkadot/keyring/types";
 import ApiHandler from "./ApiHandler";
 
@@ -88,7 +90,10 @@ export default class Nominator {
         const currentBlock = await api.rpc.chain.getBlock();
         const { number } = currentBlock.block.header;
 
-        tx = api.tx.proxy.announce(this.controller, innerTx.hash);
+        tx = api.tx.proxy.announce(
+          this.controller,
+          blake2AsHex(innerTx.method.toU8a())
+        );
         await this.db.addDelayedTx(number.toNumber(), this.controller, targets);
 
         await tx.signAndSend(this.signer);

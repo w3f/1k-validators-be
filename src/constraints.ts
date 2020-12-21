@@ -2,7 +2,7 @@ import { blake2AsHex } from "@polkadot/util-crypto";
 
 import ApiHandler from "./ApiHandler";
 import ChainData from "./chaindata";
-import { WEEK, KOTVBackendEnpoint } from "./constants";
+import { WEEK, KOTVBackendEndpoint } from "./constants";
 import logger from "./logger";
 import { CandidateData } from "./types";
 import axios from "axios";
@@ -205,14 +205,11 @@ export class OTV implements Constraints {
 
     try {
       if (!!kusamaStash) {
-        const url = `${KOTVBackendEnpoint}/candidate/${kusamaStash}`;
-        console.log("fetching url:", url);
+        const url = `${KOTVBackendEndpoint}/candidate/${kusamaStash}`;
 
         const res = await axios.get(url);
-        console.log(JSON.stringify(res));
 
-        const json = JSON.parse(res.data);
-        if (Number(json.rank) < 25) {
+        if (Number(res.data.rank) < 25) {
           return [
             false,
             `${name} has a Kusama stash with lower than 25 rank in the Kusama OTV programme.`,

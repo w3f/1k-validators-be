@@ -41,4 +41,4 @@ export const PolkadotEndpoints = [
 ];
 
 /// Endpoint of the Kusama Thousand Validators backend. Used for the Polkadot program.
-export const KOTVBackendEnpoint = "https://kusama.w3f.community";
+export const KOTVBackendEndpoint = "https://kusama.w3f.community";

@@ -191,7 +191,7 @@ export default class ScoreKeeper {
         lastNominatedEraIndex,
       } = await this.db.getLastNominatedEraIndex();
 
-      const eraBuffer = this.config.global.networkPrefix == 0 ? 1 : 1; // TODO change for Kusama
+      const eraBuffer = this.config.global.networkPrefix == 0 ? 1 : 4;
 
       if (Number(lastNominatedEraIndex) <= activeEra - eraBuffer) {
         if (!this.nominatorGroups) {

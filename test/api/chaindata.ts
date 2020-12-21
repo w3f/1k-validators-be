@@ -88,7 +88,7 @@ import { blake2AsHex } from "@polkadot/util-crypto";
     throw new Error("identity hashes should match");
   }
 
-  const constraints = new OTV(handler, false, false, 0);
+  const constraints = new OTV(handler, false, false, false, 0, 0);
 
   const candidates = [
     {

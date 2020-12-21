@@ -19,11 +19,17 @@ export interface Constraints {
 
 export class OTV implements Constraints {
   private chaindata: ChainData;
+
+  // Constraint configurations
   private skipConnectionTime: boolean;
   private skipIdentity: boolean;
+  private skipStakedDesitnation: boolean;
+
+  // configurable constants
   private minSelfStake: number;
   private commission: number;
 
+  // caches
   private validCache: CandidateData[] = [];
   private invalidCache: string[] = [];
 
@@ -31,12 +37,16 @@ export class OTV implements Constraints {
     handler: ApiHandler,
     skipConnectionTime = false,
     skipIdentity = false,
+    skipStakedDestination = false,
     minSelfStake = 0,
     commission = 0
   ) {
     this.chaindata = new ChainData(handler);
+
     this.skipConnectionTime = skipConnectionTime;
     this.skipIdentity = skipIdentity;
+    this.skipStakedDesitnation = skipStakedDestination;
+
     this.minSelfStake = minSelfStake;
     this.commission = commission;
   }
@@ -158,6 +168,14 @@ export class OTV implements Constraints {
           offlineAccumulated / 1000 / 60
         } minutes this week.`,
       ];
+    }
+
+    if (!this.skipStakedDesitnation) {
+      const isStaked = await this.chaindata.destinationIsStaked(stash);
+      if (!isStaked) {
+        const reason = `${name} does not have reward destination set to Staked`;
+        return [false, reason];
+      }
     }
 
     const [commission, err] = await this.chaindata.getCommission(stash);
@@ -292,6 +310,15 @@ export class OTV implements Constraints {
         if (bondedAmt < this.minSelfStake) {
           const reason = `${name} has less then fifty KSM bonded: ${bondedAmt}`;
           logger.info(reason);
+          bad.add({ candidate, reason });
+          continue;
+        }
+      }
+
+      if (!this.skipStakedDesitnation) {
+        const isStaked = await this.chaindata.destinationIsStaked(stash);
+        if (!isStaked) {
+          const reason = `${name} does not have reward destination set to Staked`;
           bad.add({ candidate, reason });
           continue;
         }

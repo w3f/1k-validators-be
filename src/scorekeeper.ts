@@ -64,6 +64,7 @@ export default class ScoreKeeper {
       this.handler,
       this.config.constraints.skipConnectionTime,
       this.config.constraints.skipIdentity,
+      this.config.constraints.skipStakedDestination,
       this.config.global.networkPrefix == 2 ? FIFTY_KSM : TEN_THOUSAND_DOT,
       this.config.global.networkPrefix == 2 ? TEN_PERCENT : THREE_PERCENT
     );

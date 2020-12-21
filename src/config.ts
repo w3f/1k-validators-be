@@ -20,6 +20,7 @@ export type Config = {
   constraints: {
     skipConnectionTime: boolean;
     skipIdentity: boolean;
+    skipStakedDestination: boolean;
   };
   db: {
     mongo: {

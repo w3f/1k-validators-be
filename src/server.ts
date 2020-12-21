@@ -63,7 +63,7 @@ export default class Server {
 
     router.get(API.Health, (ctx) => {
       const network = config.global.networkPrefix == 2 ? "Kusama" : "Polkadot";
-      ctx.body = `${network} Thousand Validators v2.2.0`;
+      ctx.body = `${network} Thousand Validators v2.2.1`;
       ctx.status = 200;
     });
 

@@ -1,6 +1,9 @@
 /// 10% in per billion type.
 export const TEN_PERCENT = 100000000;
 
+/// 3% in per billion type.
+export const THREE_PERCENT = 30000000;
+
 /// 50 KSM with decimals.
 export const FIFTY_KSM: number = 50 * 10 ** 12;
 

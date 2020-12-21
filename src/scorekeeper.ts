@@ -3,7 +3,12 @@ import { CronJob } from "cron";
 import ApiHandler from "./ApiHandler";
 import ChainData from "./chaindata";
 import { Config, NominatorConfig } from "./config";
-import { FIFTY_KSM, TEN_THOUSAND_DOT } from "./constants";
+import {
+  FIFTY_KSM,
+  TEN_PERCENT,
+  TEN_THOUSAND_DOT,
+  THREE_PERCENT,
+} from "./constants";
 import { OTV } from "./constraints";
 import Db from "./db";
 import logger from "./logger";
@@ -59,7 +64,8 @@ export default class ScoreKeeper {
       this.handler,
       this.config.constraints.skipConnectionTime,
       this.config.constraints.skipIdentity,
-      this.config.global.networkPrefix == 2 ? FIFTY_KSM : TEN_THOUSAND_DOT
+      this.config.global.networkPrefix == 2 ? FIFTY_KSM : TEN_THOUSAND_DOT,
+      this.config.global.networkPrefix == 2 ? TEN_PERCENT : THREE_PERCENT
     );
   }
 

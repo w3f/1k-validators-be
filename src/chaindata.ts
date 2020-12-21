@@ -32,6 +32,12 @@ class ChainData {
     return [prefs.commission.toNumber(), null];
   };
 
+  destinationIsStaked = async (validatorStash: string): Promise<boolean> => {
+    const api = await this.handler.getApi();
+    const payee = await api.query.staking.payee(validatorStash);
+    return payee.isStaked;
+  };
+
   getCommissionInEra = async (
     eraIndex: number,
     validator: string

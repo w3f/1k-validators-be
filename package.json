@@ -19,8 +19,8 @@
   "dependencies": {
     "@koa/router": "^10.0.0",
     "@octokit/rest": "^18.0.12",
-    "@polkadot/api": "^3.0.1",
-    "@polkadot/keyring": "^5.0.1",
+    "@polkadot/api": "^3.1.1",
+    "@polkadot/keyring": "^5.1.1",
     "@types/cron": "^1.7.1",
     "@types/koa": "^2.11.6",
     "@types/koa-bodyparser": "^4.3.0",
@@ -31,7 +31,7 @@
     "bs58": "^4.0.1",
     "commander": "^6.2.1",
     "cron": "^1.8.2",
-    "eslint-config-prettier": "^7.0.0",
+    "eslint-config-prettier": "^7.1.0",
     "eslint-plugin-prettier": "^3.3.0",
     "eventemitter3": "^4.0.7",
     "hash.js": "^1.1.7",
@@ -55,7 +55,7 @@
     "@typescript-eslint/eslint-plugin": "^4.10.0",
     "@typescript-eslint/parser": "^4.10.0",
     "ava": "^3.14.0",
-    "eslint": "^7.15.0",
+    "eslint": "^7.16.0",
     "eslint-plugin-security": "^1.4.0"
   },
   "config": {

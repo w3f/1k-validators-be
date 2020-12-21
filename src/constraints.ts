@@ -2,7 +2,7 @@ import { blake2AsHex } from "@polkadot/util-crypto";
 
 import ApiHandler from "./ApiHandler";
 import ChainData from "./chaindata";
-import { WEEK, TEN_PERCENT, KOTVBackendEnpoint } from "./constants";
+import { WEEK, KOTVBackendEnpoint } from "./constants";
 import logger from "./logger";
 import { CandidateData } from "./types";
 import axios from "axios";
@@ -19,10 +19,17 @@ export interface Constraints {
 
 export class OTV implements Constraints {
   private chaindata: ChainData;
+
+  // Constraint configurations
   private skipConnectionTime: boolean;
   private skipIdentity: boolean;
-  private minSelfStake: number;
+  private skipStakedDesitnation: boolean;
 
+  // configurable constants
+  private minSelfStake: number;
+  private commission: number;
+
+  // caches
   private validCache: CandidateData[] = [];
   private invalidCache: string[] = [];
 
@@ -30,12 +37,18 @@ export class OTV implements Constraints {
     handler: ApiHandler,
     skipConnectionTime = false,
     skipIdentity = false,
-    minSelfStake = 0
+    skipStakedDestination = false,
+    minSelfStake = 0,
+    commission = 0
   ) {
     this.chaindata = new ChainData(handler);
+
     this.skipConnectionTime = skipConnectionTime;
     this.skipIdentity = skipIdentity;
+    this.skipStakedDesitnation = skipStakedDestination;
+
     this.minSelfStake = minSelfStake;
+    this.commission = commission;
   }
 
   get validCandidateCache(): CandidateData[] {
@@ -157,14 +170,22 @@ export class OTV implements Constraints {
       ];
     }
 
+    if (!this.skipStakedDesitnation) {
+      const isStaked = await this.chaindata.destinationIsStaked(stash);
+      if (!isStaked) {
+        const reason = `${name} does not have reward destination set to Staked`;
+        return [false, reason];
+      }
+    }
+
     const [commission, err] = await this.chaindata.getCommission(stash);
     if (err) {
       return [false, `${name} ${err}`];
     }
-    if (commission > TEN_PERCENT) {
+    if (commission > this.commission) {
       return [
         false,
-        `${name} commission is set higher than ten percent: ${commission}`,
+        `${name} commission is set higher than the maximum allowed. Set: ${commission} Allowed: ${this.commission}`,
       ];
     }
 
@@ -177,9 +198,7 @@ export class OTV implements Constraints {
       if (bondedAmt < this.minSelfStake) {
         return [
           false,
-          `${name} has less then fifty KSM bonded: ${
-            bondedAmt / 10 ** 12
-          } KSM is bonded.`,
+          `${name} has less than the minimum amount bonded: ${bondedAmt} is bonded.`,
         ];
       }
     }
@@ -273,7 +292,7 @@ export class OTV implements Constraints {
         continue;
       }
 
-      if (commission > TEN_PERCENT) {
+      if (commission > this.commission) {
         const reason = `${name} found commission higher than ten percent: ${commission}`;
         logger.info(reason);
         bad.add({ candidate, reason });
@@ -289,8 +308,17 @@ export class OTV implements Constraints {
           continue;
         }
         if (bondedAmt < this.minSelfStake) {
-          const reason = `${name} has less then fifty KSM bonded: ${bondedAmt}`;
+          const reason = `${name} has less than the minimum required amount bonded: ${bondedAmt}`;
           logger.info(reason);
+          bad.add({ candidate, reason });
+          continue;
+        }
+      }
+
+      if (!this.skipStakedDesitnation) {
+        const isStaked = await this.chaindata.destinationIsStaked(stash);
+        if (!isStaked) {
+          const reason = `${name} does not have reward destination set to Staked`;
           bad.add({ candidate, reason });
           continue;
         }

@@ -62,7 +62,8 @@ export default class Server {
     });
 
     router.get(API.Health, (ctx) => {
-      ctx.body = true;
+      const network = config.global.networkPrefix == 2 ? "Kusama" : "Polkadot";
+      ctx.body = `${network} Thousand Validators v2.1.20`;
       ctx.status = 200;
     });
 

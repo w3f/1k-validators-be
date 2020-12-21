@@ -203,18 +203,24 @@ export class OTV implements Constraints {
       }
     }
 
-    if (!!kusamaStash) {
-      const res = await axios.get(
-        KOTVBackendEnpoint + "/candidate/" + kusamaStash
-      );
+    try {
+      if (!!kusamaStash) {
+        const url = `${KOTVBackendEnpoint}/candidate/${kusamaStash}`;
+        console.log("fetching url:", url);
 
-      const json = JSON.parse(res.data);
-      if (Number(json.rank) < 25) {
-        return [
-          false,
-          `${name} has a Kusama stash with lower than 25 rank in the Kusama OTV programme.`,
-        ];
+        const res = await axios.get(url);
+        console.log(JSON.stringify(res));
+
+        const json = JSON.parse(res.data);
+        if (Number(json.rank) < 25) {
+          return [
+            false,
+            `${name} has a Kusama stash with lower than 25 rank in the Kusama OTV programme.`,
+          ];
+        }
       }
+    } catch (e) {
+      console.error(e);
     }
 
     return [true, ""];

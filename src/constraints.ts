@@ -308,7 +308,7 @@ export class OTV implements Constraints {
           continue;
         }
         if (bondedAmt < this.minSelfStake) {
-          const reason = `${name} has less then fifty KSM bonded: ${bondedAmt}`;
+          const reason = `${name} has less than the minimum required amount bonded: ${bondedAmt}`;
           logger.info(reason);
           bad.add({ candidate, reason });
           continue;

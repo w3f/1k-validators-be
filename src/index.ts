@@ -95,6 +95,9 @@ const start = async (cmd: Command) => {
     await scorekeeper.addNominatorGroup(nominatorGroup);
   }
 
+  const curControllers = scorekeeper.getAllNominatorControllers();
+  await db.removeStaleNominators(curControllers);
+
   // Wipe the candidates on every start-up and re-add the ones in config.
   logger.info(
     "Wiping old candidates data and intializing latest candidates from config."
@@ -130,5 +133,5 @@ program
   .option("--config <directory>", "The path to the config directory.", "config")
   .action((cmd: Command) => catchAndQuit(start(cmd)));
 
-program.version("2.2.1");
+program.version("2.2.2");
 program.parse(process.argv);

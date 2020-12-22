@@ -74,6 +74,15 @@ export default class ScoreKeeper {
     return this.nominatorGroups;
   }
 
+  getAllNominatorControllers(): string[] {
+    const controllers = [];
+    for (const group of this.nominatorGroups) {
+      controllers.push(...group.map((n) => n.controller));
+    }
+
+    return controllers;
+  }
+
   getNominatorGroupAtIndex(index: number): SpawnedNominatorGroup {
     if (index < 0 || index >= this.nominatorGroups.length) {
       throw new Error("Index out of bounds.");

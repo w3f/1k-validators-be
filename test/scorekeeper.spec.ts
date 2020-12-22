@@ -64,6 +64,9 @@ test.serial(
     t.is(nomGroupTwo.length, 4);
     const nomGroupThree = sk.getNominatorGroupAtIndex(2);
     t.is(nomGroupThree.length, 4);
+
+    const allControllers = sk.getAllNominatorControllers();
+    t.is(allControllers.length, 9);
   }
 );
 

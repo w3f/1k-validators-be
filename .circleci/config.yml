@@ -49,16 +49,16 @@ jobs:
           command: |
             /scripts/build-image.sh web3f/otv-backend .
 
-  integrationTests:
-    docker:
-      - image: web3f/ci-commons:v2.1.4
-    resource_class: xlarge
-    steps:
-      - checkout
-      - setup_remote_docker
-      - run:
-          command: |
-            /scripts/integration-tests.sh
+  # integrationTests:
+  #   docker:
+  #     - image: web3f/ci-commons:v2.1.4
+  #   resource_class: xlarge
+  #   steps:
+  #     - checkout
+  #     - setup_remote_docker
+  #     - run:
+  #         command: |
+  #           /scripts/integration-tests.sh
 
   publishImage:
     docker:
@@ -117,29 +117,29 @@ workflows:
               only: /.*/
           requires:
             - unitTests
-      - integrationTests:
-          filters:
-            tags:
-              only: /.*/
-          requires:
-            - helmLint
-            - buildImage
+      # - integrationTests:
+      #     filters:
+      #       tags:
+      #         only: /.*/
+      #     requires:
+      #       - helmLint
+      #       - buildImage
       - publishImage:
           filters:
             branches:
               ignore: /.*/
             tags:
               only: /v[0-9]+(\.[0-9]+)*/
-          requires:
-            - integrationTests
+          # requires:
+          #   - integrationTests
       - publishChart:
           filters:
             branches:
               ignore: /.*/
             tags:
               only: /v[0-9]+(\.[0-9]+)*/
-          requires:
-            - integrationTests
+          # requires:
+          #   - integrationTests
       - deploy:
           filters:
             branches:

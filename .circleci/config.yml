@@ -130,16 +130,16 @@ workflows:
               ignore: /.*/
             tags:
               only: /v[0-9]+(\.[0-9]+)*/
-          requires:
-            - integrationTests
+          # requires:
+          #   - integrationTests
       - publishChart:
           filters:
             branches:
               ignore: /.*/
             tags:
               only: /v[0-9]+(\.[0-9]+)*/
-          requires:
-            - integrationTests
+          # requires:
+          #   - integrationTests
       - deploy:
           filters:
             branches:

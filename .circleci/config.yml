@@ -117,13 +117,13 @@ workflows:
               only: /.*/
           requires:
             - unitTests
-      - integrationTests:
-          filters:
-            tags:
-              only: /.*/
-          requires:
-            - helmLint
-            - buildImage
+      # - integrationTests:
+      #     filters:
+      #       tags:
+      #         only: /.*/
+      #     requires:
+      #       - helmLint
+      #       - buildImage
       - publishImage:
           filters:
             branches:

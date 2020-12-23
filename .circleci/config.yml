@@ -130,7 +130,9 @@ workflows:
               ignore: /.*/
             tags:
               only: /v[0-9]+(\.[0-9]+)*/
-          # requires:
+          requires:
+            - helmLint
+            - buildImage
           #   - integrationTests
       - publishChart:
           filters:
@@ -138,7 +140,9 @@ workflows:
               ignore: /.*/
             tags:
               only: /v[0-9]+(\.[0-9]+)*/
-          # requires:
+          requires:
+            - helmLint
+            - buildImage
           #   - integrationTests
       - deploy:
           filters:

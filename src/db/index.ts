@@ -157,6 +157,25 @@ export default class Db {
     return true;
   }
 
+  /**
+   * Removes any stale nominator data from the database.
+   * @param controllers Active controller accounts for nominators.
+   */
+  async removeStaleNominators(controllers: string[]): Promise<boolean> {
+    const nominators = await this.allNominators();
+    const addresses = nominators.map((n) => n.address);
+    // for each address
+    for (const address of addresses) {
+      // if it's not found in the active controllers
+      if (controllers.indexOf(address) === -1) {
+        // remove the stale item from the DB
+        await this.nominatorModel.deleteOne({ address }).exec();
+      }
+    }
+
+    return true;
+  }
+
   // Sets an invalidityReason for a candidate.
   async setInvalidityReason(stash: string, reason: string): Promise<boolean> {
     await this.candidateModel

@@ -182,7 +182,12 @@ export default class ScoreKeeper {
           );
 
           const innerTx = api.tx.staking.nominate(targets);
-          const tx = api.tx.proxy.proxy(controller, "Staking", innerTx);
+          const tx = api.tx.proxy.proxyAnnounced(
+            nominator.address,
+            controller,
+            "Staking",
+            innerTx
+          );
           await this.db.deleteDelayedTx(dataNum, controller);
           await nominator.sendStakingTx(tx, targets);
         }

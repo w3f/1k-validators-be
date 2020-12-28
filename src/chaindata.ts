@@ -166,6 +166,10 @@ class ChainData {
     while (true) {
       const blockHash = await api.rpc.chain.getBlockHash(testBlockNumber);
       const testEra = await api.query.staking.activeEra.at(blockHash);
+      if (testEra.isNone) {
+        logger.info(`Test era is none`);
+        return [null, "Test era is none"];
+      }
       const testIndex = testEra.unwrap().index.toNumber();
       if (era == testIndex) {
         return [blockHash.toString(), null];
@@ -250,6 +254,9 @@ class ChainData {
       const superOf = await api.query.identity.superOf(account);
       if (superOf.isSome) {
         const id = await api.query.identity.identityOf(superOf.unwrap()[0]);
+        if (id.isNone) {
+          return null;
+        }
         return id.unwrap().info.toString();
       }
     }

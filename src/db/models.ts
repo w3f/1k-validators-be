@@ -7,7 +7,7 @@ const RewardRecordScheme = new Schema({
   reward: String,
 });
 
-const AccountingSchema = new Schema({
+export const AccountingSchema = new Schema({
   // The nominator's stash account.
   stash: String,
   // The nominator's controller account.
@@ -25,13 +25,22 @@ const FaultEventSchema = new Schema({
   reason: String,
 });
 
-const DelayedTxSchema = new Schema({
+const RankEventSchema = new Schema({
+  // Timestamp when this event happened.
+  when: Number,
+  // Start era for this rank event.
+  startEra: Number,
+  // Active era (end era) for this rank event.
+  activeEra: Number,
+});
+
+export const DelayedTxSchema = new Schema({
   number: Number,
   controller: String,
   targets: [String],
 });
 
-const CandidateSchema = new Schema({
+export const CandidateSchema = new Schema({
   // The inherited telemetry ID.
   telemetryId: Number,
   // The network identifier derived from the networking key.
@@ -67,25 +76,19 @@ const CandidateSchema = new Schema({
   invalidityReasons: { type: String, default: "" },
   // If a validator has faults, this will contain the details.
   faultEvents: { type: [FaultEventSchema], default: [] },
+  // If a validator had its rank increased, this will contian details.
+  rankEvents: { type: [RankEventSchema], default: [] },
   // Polkadot specific: Kusama Stash
   kusamaStash: String,
 });
 
-const EraSchema = new Schema({
+export const EraSchema = new Schema({
   lastNominatedEraIndex: { type: String, default: "0" },
 });
 
-const NominatorSchema = new Schema({
+export const NominatorSchema = new Schema({
   address: String,
   current: [],
   lastNomination: { type: Number, default: 0 },
   createdAt: { type: Number, default: 0 },
 });
-
-export {
-  AccountingSchema,
-  CandidateSchema,
-  EraSchema,
-  NominatorSchema,
-  DelayedTxSchema,
-};

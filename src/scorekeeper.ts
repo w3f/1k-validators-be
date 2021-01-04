@@ -30,6 +30,7 @@ export default class ScoreKeeper {
   public currentTargets: string[];
   public db: Db;
 
+  private ending = false;
   private nominatorGroups: Array<SpawnedNominatorGroup> = [];
 
   constructor(handler: ApiHandler, db: Db, config: Config, bot: any = false) {
@@ -195,6 +196,11 @@ export default class ScoreKeeper {
     });
 
     const mainCron = new CronJob("0 0-59/10 * * * *", async () => {
+      if (this.ending) {
+        logger.info(`ROUND IS CURRENTLY ENDING.`);
+        return;
+      }
+
       const [activeEra, err] = await this.chaindata.getActiveEraIndex();
       if (err) {
         logger.info(`CRITICAL: ${err}`);
@@ -344,6 +350,7 @@ export default class ScoreKeeper {
    * Handles the ending of a Nomination round.
    */
   async endRound(): Promise<void> {
+    this.ending = true;
     logger.info("Ending round");
 
     // The targets that have already been processed for this round.
@@ -352,6 +359,7 @@ export default class ScoreKeeper {
     const {
       lastNominatedEraIndex: startEra,
     } = await this.db.getLastNominatedEraIndex();
+
     const [activeEra, err] = await this.chaindata.getActiveEraIndex();
     if (err) {
       throw new Error(`Error getting active era: ${err}`);
@@ -407,6 +415,7 @@ export default class ScoreKeeper {
         continue;
       }
 
+      await this.db.pushRankEvent(stash, startEra, activeEra);
       await this.addPoint(stash);
     }
 
@@ -416,6 +425,8 @@ export default class ScoreKeeper {
       await this.db.pushFaultEvent(stash, reason);
       await this.dockPoints(stash);
     }
+
+    this.ending = false;
   }
 
   /// Handles the docking of points from bad behaving validators.

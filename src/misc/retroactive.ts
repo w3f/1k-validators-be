@@ -1,10 +1,7 @@
 import ApiHandler from "../ApiHandler";
 import ChainData from "../chaindata";
-// import { KusamaEndpoints } from "../constants";
 import Db from "../db";
 import { CandidateData } from "../types";
-
-// import kusama from "./kusama.json";
 
 /**
  * Retroactively increases validators ranks based on their activity between

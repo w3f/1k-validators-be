@@ -31,6 +31,7 @@ export type Config = {
     dryRun: boolean;
     networkPrefix: 0 | 2;
     test: boolean;
+    retroactive: boolean;
   };
   matrix: {
     accessToken: string;

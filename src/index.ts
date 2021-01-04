@@ -40,6 +40,10 @@ const start = async (cmd: Command) => {
   // Delete the old candidate fields.
   await db.deleteOldCandidateFields();
 
+  if (config.global.retroactive) {
+    await retroactiveRanks(config.scorekeeper.candidates as any, handler, db);
+  }
+
   // Clear node refs and delete old fields from all nodes before starting new
   // telemetry client.
   const allNodes = await db.allNodes();
@@ -135,5 +139,5 @@ program
   .option("--config <directory>", "The path to the config directory.", "config")
   .action((cmd: Command) => catchAndQuit(start(cmd)));
 
-program.version("2.2.11");
+program.version("2.2.12");
 program.parse(process.argv);

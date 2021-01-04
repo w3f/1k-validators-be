@@ -13,6 +13,8 @@ import Server from "./server";
 import TelemetryClient from "./telemetry";
 import { sleep } from "./util";
 
+import { retroactiveRanks } from "./misc/retroactive";
+
 const catchAndQuit = async (fn: any) => {
   try {
     await fn;

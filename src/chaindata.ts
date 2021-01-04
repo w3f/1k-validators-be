@@ -175,8 +175,6 @@ class ChainData {
         return [blockHash.toString(), null];
       }
 
-      console.log("testIndex", testIndex, "era", era);
-
       if (testIndex > era) {
         testBlockNumber =
           testBlockNumber - KUSAMA_APPROX_ERA_LENGTH_IN_BLOCKS / 3;

@@ -1,9 +1,10 @@
 import ApiHandler from "../ApiHandler";
 import ChainData from "../chaindata";
-import { KusamaEndpoints } from "../constants";
+// import { KusamaEndpoints } from "../constants";
+import Db from "../db";
 import { CandidateData } from "../types";
 
-import kusama from "./kusama.json";
+// import kusama from "./kusama.json";
 
 /**
  * Retroactively increases validators ranks based on their activity between
@@ -11,8 +12,9 @@ import kusama from "./kusama.json";
  */
 export const retroactiveRanks = async (
   candidates: CandidateData[],
-  handler: ApiHandler
-): Promise<void> => {
+  handler: ApiHandler,
+  db?: Db
+): Promise<boolean> => {
   const chaindata = new ChainData(handler);
 
   const startEra = 1588;
@@ -56,16 +58,24 @@ export const retroactiveRanks = async (
 
   for (const [c, v] of result) {
     console.log(`${c.name} +${v}`);
+    for (let i = 0; i < v; i++) {
+      console.log("adding point", c.name, i);
+      if (db) {
+        await db.addPoint(c.stash);
+      }
+    }
   }
+
+  return true;
 };
 
-const main = async () => {
-  const handler = await ApiHandler.create(KusamaEndpoints);
-  retroactiveRanks(kusama.scorekeeper.candidates as any, handler);
-};
+// const main = async () => {
+//   const handler = await ApiHandler.create(KusamaEndpoints);
+//   retroactiveRanks(kusama.scorekeeper.candidates as any, handler);
+// };
 
-try {
-  main();
-} catch (err) {
-  console.error(err);
-}
+// try {
+//   main();
+// } catch (err) {
+//   console.error(err);
+// }

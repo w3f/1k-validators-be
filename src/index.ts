@@ -15,15 +15,6 @@ import { sleep } from "./util";
 
 import { retroactiveRanks } from "./misc/retroactive";
 
-const catchAndQuit = async (fn: any) => {
-  try {
-    await fn;
-  } catch (e) {
-    console.error(e.toString());
-    process.exit(1);
-  }
-};
-
 const start = async (cmd: Command) => {
   const config = loadConfigDir(cmd.config);
 
@@ -141,7 +132,14 @@ const start = async (cmd: Command) => {
 
 program
   .option("--config <directory>", "The path to the config directory.", "config")
-  .action((cmd: Command) => catchAndQuit(start(cmd)));
+  .action((cmd: Command) => {
+    try {
+      start(cmd);
+    } catch (err) {
+      console.error(err);
+      process.exit(1);
+    }
+  });
 
 program.version("2.2.12");
 program.parse(process.argv);

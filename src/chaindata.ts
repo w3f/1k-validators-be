@@ -176,11 +176,12 @@ class ChainData {
       }
 
       if (testIndex > era) {
-        testBlockNumber = testBlockNumber + 25;
+        testBlockNumber =
+          testBlockNumber - KUSAMA_APPROX_ERA_LENGTH_IN_BLOCKS / 3;
       }
 
       if (testIndex < era) {
-        testBlockNumber = testBlockNumber - 25;
+        testBlockNumber = testBlockNumber + KUSAMA_APPROX_ERA_LENGTH_IN_BLOCKS;
       }
     }
   };

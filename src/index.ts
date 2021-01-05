@@ -120,7 +120,7 @@ const start = async (cmd: Command) => {
 
   // Start the scorekeeper
   if (config.global.retroactive) {
-    retroactiveRanks(config.scorekeeper.candidates as any, handler, db);
+    // retroactiveRanks(config.scorekeeper.candidates as any, handler, db);
   } else {
     scorekeeper.begin();
   }

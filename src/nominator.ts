@@ -12,7 +12,7 @@ import { NominatorConfig, Stash } from "./types";
 
 export default class Nominator {
   public currentlyNominating: Stash[] = [];
-  public maxNominations: number;
+  public maxNominations: number | "auto";
 
   private _controller: string;
   private db: Database;

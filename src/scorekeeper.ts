@@ -1,4 +1,5 @@
 import { CronJob } from "cron";
+import { bnToBn } from "@polkadot/util";
 
 import ApiHandler from "./ApiHandler";
 import ChainData from "./chaindata";
@@ -292,11 +293,32 @@ export default class ScoreKeeper {
           await this.db.clearCurrent(nominator.controller);
         }
 
-        const targets = allTargets.slice(
-          counter,
-          counter + nominator.maxNominations
-        );
-        counter = counter + nominator.maxNominations;
+        const numNominations =
+          nominator.maxNominations == "auto"
+            ? await (async () => {
+                const api = await this.chaindata.handler.getApi();
+                const stash = await nominator.stash();
+                const stashAccount = await api.query.system.account(stash);
+                const stashBal = stashAccount.data.free.toBn();
+                const validators = await api.derive.staking.electedInfo();
+                const sorted = validators.info.sort(
+                  (a, b) =>
+                    a.stakingLedger.total.toNumber() -
+                    b.stakingLedger.total.toNumber()
+                );
+
+                return Math.floor(
+                  stashBal
+                    .div(validators.info[0].stakingLedger.total.toBn())
+                    .mul(bnToBn(1.05))
+                    .div(bnToBn(10 ** 10))
+                    .toNumber()
+                );
+              })()
+            : nominator.maxNominations;
+
+        const targets = allTargets.slice(counter, counter + numNominations);
+        counter = counter + numNominations;
 
         await nominator.nominate(targets, dryRun || this.config.global.dryRun);
 

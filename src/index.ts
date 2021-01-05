@@ -124,11 +124,11 @@ const start = async (cmd: Command) => {
   sleep(3000);
 
   // Start the scorekeeper
-  if (config.global.retroactive && !process.env.CI) {
-    retroactiveRanks(config.scorekeeper.candidates as any, handler, db);
-  } else {
-    scorekeeper.begin();
-  }
+  // if (config.global.retroactive && !process.env.CI) {
+  //   retroactiveRanks(config.scorekeeper.candidates as any, handler, db);
+  // } else {
+  scorekeeper.begin();
+  // }
 
   // Start the API server.
   const server = new Server(db, config, scorekeeper);

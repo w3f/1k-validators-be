@@ -40,10 +40,6 @@ const start = async (cmd: Command) => {
   // Delete the old candidate fields.
   await db.deleteOldCandidateFields();
 
-  if (config.global.retroactive) {
-    await retroactiveRanks(config.scorekeeper.candidates as any, handler, db);
-  }
-
   // Clear node refs and delete old fields from all nodes before starting new
   // telemetry client.
   const allNodes = await db.allNodes();
@@ -128,7 +124,7 @@ const start = async (cmd: Command) => {
   sleep(3000);
 
   // Start the scorekeeper
-  if (config.global.retroactive) {
+  if (config.global.retroactive && !process.env.CI) {
     retroactiveRanks(config.scorekeeper.candidates as any, handler, db);
   } else {
     scorekeeper.begin();

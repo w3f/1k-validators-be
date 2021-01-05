@@ -602,6 +602,13 @@ export default class Db {
     logger.info(`Adding a point to ${stash}.`);
 
     const data = await this.candidateModel.findOne({ stash });
+    if (!data) {
+      logger.info(
+        `Tried adding a point to ${stash} but was not found in the DB.`
+      );
+      return false;
+    }
+
     await this.candidateModel
       .findOneAndUpdate(
         {

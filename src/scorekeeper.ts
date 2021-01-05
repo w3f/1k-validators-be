@@ -301,7 +301,7 @@ export default class ScoreKeeper {
                 const stashAccount = await api.query.system.account(stash);
                 const stashBal = stashAccount.data.free.toBn();
                 const validators = await api.derive.staking.electedInfo();
-                const sorted = validators.info.sort(
+                validators.info.sort(
                   (a, b) =>
                     a.stakingLedger.total.toNumber() -
                     b.stakingLedger.total.toNumber()

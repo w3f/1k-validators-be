@@ -49,8 +49,12 @@ test.serial(
       (i) => "0x" + "00".repeat(31) + "0" + i.toString()
     );
 
-    const groupOne = seeds.slice(0, 4).map((seed) => ({ seed }));
-    const groupTwo = seeds.slice(4).map((seed) => ({ seed }));
+    const groupOne = seeds
+      .slice(0, 4)
+      .map((seed) => ({ seed, maxNominations: 16 }));
+    const groupTwo = seeds
+      .slice(4)
+      .map((seed) => ({ seed, maxNominations: 16 }));
 
     t.assert(
       (await sk.addNominatorGroup(groupOne as any)) &&

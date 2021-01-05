@@ -296,7 +296,7 @@ export default class ScoreKeeper {
           counter,
           counter + nominator.maxNominations
         );
-        counter = nominator.maxNominations;
+        counter = counter + nominator.maxNominations;
 
         await nominator.nominate(targets, dryRun || this.config.global.dryRun);
 

@@ -111,6 +111,10 @@ const start = async (cmd: Command) => {
     }
   }
 
+  // Start the API server.
+  const server = new Server(db, config, scorekeeper);
+  server.start();
+
   // Buffer more time.
   sleep(3000);
 
@@ -120,10 +124,6 @@ const start = async (cmd: Command) => {
   } else {
     scorekeeper.begin();
   }
-
-  // Start the API server.
-  const server = new Server(db, config, scorekeeper);
-  server.start();
 };
 
 program

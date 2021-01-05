@@ -96,7 +96,6 @@ test.serial(
 
     const totalTargets = await sk._doNominations(
       candidates,
-      16,
       nominatorGroups,
       true
     );

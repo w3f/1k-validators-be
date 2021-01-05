@@ -266,7 +266,6 @@ export default class ScoreKeeper {
 
     const targets = await this._doNominations(
       validCandidates,
-      10, //setSize
       this.nominatorGroups
     );
 
@@ -277,65 +276,44 @@ export default class ScoreKeeper {
 
   async _doNominations(
     candidates: CandidateData[],
-    setSize: number,
     nominatorGroups: SpawnedNominatorGroup[] = [],
     dryRun = false
   ): Promise<string[]> {
-    // A "subset" is a group of 16 validators since this is the max that can
-    // be nominated by a single account.
-    const subsets = [];
-    for (let i = 0; i < candidates.length; i += setSize) {
-      subsets.push(candidates.slice(i, i + setSize));
-    }
-
-    const totalTargets: string[] = [];
-    let count = 0;
-    for (const subset of subsets) {
-      const targets = subset.map((candidate) => candidate.stash);
-      totalTargets.push(...subset.map((candidate) => candidate.name));
-
-      for (const nomGroup of nominatorGroups) {
-        // eslint-disable-next-line security/detect-object-injection
-        const curNominator = nomGroup[count];
-        if (curNominator === undefined) {
-          logger.info("More targets than nominators!");
-          continue;
-        }
-        logger.info(
-          `(SK::_doNominations) targets = ${JSON.stringify(targets)}`
+    const allTargets = candidates.map((c) => c.stash);
+    for (const nomGroup of nominatorGroups) {
+      let counter = 0;
+      for (const nominator of nomGroup) {
+        const currentTargets = await this.db.getCurrentTargets(
+          nominator.controller
         );
 
-        const current = await this.db.getCurrentTargets(
-          curNominator.controller
-        );
-        if (!!current.length) {
+        if (!!currentTargets.length) {
           logger.info("Wiping the old targets before making new nominations.");
-          await this.db.clearCurrent(curNominator.controller);
+          await this.db.clearCurrent(nominator.controller);
         }
 
-        await curNominator.nominate(
-          targets,
-          dryRun || this.config.global.dryRun
+        const targets = allTargets.slice(
+          counter,
+          counter + nominator.maxNominations
         );
+        counter = nominator.maxNominations;
+
+        await nominator.nominate(targets, dryRun || this.config.global.dryRun);
 
         // Wait some time between each transaction to avoid nonce issues.
         await sleep(8000);
 
         this.botLog(
-          `Nominator ${curNominator.controller} nominated ${targets.join(" ")}`
+          `Nominator ${nominator.controller} nominated ${targets.join(" ")}`
         );
       }
-      count++;
     }
-
-    this.currentTargets = totalTargets;
+    this.currentTargets = allTargets;
     this.botLog(
-      `Next targets: \n${totalTargets
-        .map((target) => `- ${target}`)
-        .join("\n")}`
+      `Next targets: \n${allTargets.map((target) => `- ${target}`).join("\n")}`
     );
 
-    return totalTargets;
+    return allTargets;
   }
 
   async _getCurrentEra(): Promise<number> {

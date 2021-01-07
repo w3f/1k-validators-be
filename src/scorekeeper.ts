@@ -1,4 +1,5 @@
 import { CronJob } from "cron";
+import { ApiPromise } from "@polkadot/api";
 import { bnToBn } from "@polkadot/util";
 
 import ApiHandler from "./ApiHandler";
@@ -20,6 +21,29 @@ import { getNow, sleep } from "./util";
 type NominatorGroup = NominatorConfig[];
 
 type SpawnedNominatorGroup = Nominator[];
+
+export const autoNumNominations = async (
+  api: ApiPromise,
+  nominator: Nominator
+): Promise<number> => {
+  const stash = await nominator.stash();
+  const stashAccount = await api.query.system.account(stash);
+  const stashBal = stashAccount.data.free.toBn();
+  const validators = await api.derive.staking.electedInfo();
+  validators.info.sort((a, b) =>
+    a.exposure.total.toBn().sub(b.exposure.total.toBn()).isNeg() ? -1 : 1
+  );
+
+  return Math.min(
+    Math.floor(
+      stashBal
+        .div(validators.info[0].exposure.total.toBn())
+        .mul(bnToBn(1.05))
+        .toNumber()
+    ),
+    16
+  );
+};
 
 export default class ScoreKeeper {
   public handler: ApiHandler;
@@ -297,23 +321,7 @@ export default class ScoreKeeper {
           nominator.maxNominations == "auto"
             ? await (async () => {
                 const api = await this.chaindata.handler.getApi();
-                const stash = await nominator.stash();
-                const stashAccount = await api.query.system.account(stash);
-                const stashBal = stashAccount.data.free.toBn();
-                const validators = await api.derive.staking.electedInfo();
-                validators.info.sort(
-                  (a, b) =>
-                    a.stakingLedger.total.toNumber() -
-                    b.stakingLedger.total.toNumber()
-                );
-
-                return Math.floor(
-                  stashBal
-                    .div(validators.info[0].stakingLedger.total.toBn())
-                    .mul(bnToBn(1.05))
-                    .div(bnToBn(10 ** 10))
-                    .toNumber()
-                );
+                return autoNumNominations(api, nominator);
               })()
             : nominator.maxNominations;
 

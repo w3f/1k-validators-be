@@ -1,4 +1,6 @@
 import { CronJob } from "cron";
+import { ApiPromise } from "@polkadot/api";
+import { bnToBn } from "@polkadot/util";
 
 import ApiHandler from "./ApiHandler";
 import ChainData from "./chaindata";
@@ -19,6 +21,29 @@ import { getNow, sleep } from "./util";
 type NominatorGroup = NominatorConfig[];
 
 type SpawnedNominatorGroup = Nominator[];
+
+export const autoNumNominations = async (
+  api: ApiPromise,
+  nominator: Nominator
+): Promise<number> => {
+  const stash = await nominator.stash();
+  const stashAccount = await api.query.system.account(stash);
+  const stashBal = stashAccount.data.free.toBn();
+  const validators = await api.derive.staking.electedInfo();
+  validators.info.sort((a, b) =>
+    a.exposure.total.toBn().sub(b.exposure.total.toBn()).isNeg() ? -1 : 1
+  );
+
+  return Math.min(
+    Math.floor(
+      stashBal
+        .div(validators.info[0].exposure.total.toBn())
+        .mul(bnToBn(1.05))
+        .toNumber()
+    ),
+    16
+  );
+};
 
 export default class ScoreKeeper {
   public handler: ApiHandler;
@@ -266,7 +291,6 @@ export default class ScoreKeeper {
 
     const targets = await this._doNominations(
       validCandidates,
-      10, //setSize
       this.nominatorGroups
     );
 
@@ -277,65 +301,49 @@ export default class ScoreKeeper {
 
   async _doNominations(
     candidates: CandidateData[],
-    setSize: number,
     nominatorGroups: SpawnedNominatorGroup[] = [],
     dryRun = false
   ): Promise<string[]> {
-    // A "subset" is a group of 16 validators since this is the max that can
-    // be nominated by a single account.
-    const subsets = [];
-    for (let i = 0; i < candidates.length; i += setSize) {
-      subsets.push(candidates.slice(i, i + setSize));
-    }
-
-    const totalTargets: string[] = [];
-    let count = 0;
-    for (const subset of subsets) {
-      const targets = subset.map((candidate) => candidate.stash);
-      totalTargets.push(...subset.map((candidate) => candidate.name));
-
-      for (const nomGroup of nominatorGroups) {
-        // eslint-disable-next-line security/detect-object-injection
-        const curNominator = nomGroup[count];
-        if (curNominator === undefined) {
-          logger.info("More targets than nominators!");
-          continue;
-        }
-        logger.info(
-          `(SK::_doNominations) targets = ${JSON.stringify(targets)}`
+    const allTargets = candidates.map((c) => c.stash);
+    for (const nomGroup of nominatorGroups) {
+      let counter = 0;
+      for (const nominator of nomGroup) {
+        const currentTargets = await this.db.getCurrentTargets(
+          nominator.controller
         );
 
-        const current = await this.db.getCurrentTargets(
-          curNominator.controller
-        );
-        if (!!current.length) {
+        if (!!currentTargets.length) {
           logger.info("Wiping the old targets before making new nominations.");
-          await this.db.clearCurrent(curNominator.controller);
+          await this.db.clearCurrent(nominator.controller);
         }
 
-        await curNominator.nominate(
-          targets,
-          dryRun || this.config.global.dryRun
-        );
+        const numNominations =
+          nominator.maxNominations == "auto"
+            ? await (async () => {
+                const api = await this.chaindata.handler.getApi();
+                return autoNumNominations(api, nominator);
+              })()
+            : nominator.maxNominations;
+
+        const targets = allTargets.slice(counter, counter + numNominations);
+        counter = counter + numNominations;
+
+        await nominator.nominate(targets, dryRun || this.config.global.dryRun);
 
         // Wait some time between each transaction to avoid nonce issues.
         await sleep(8000);
 
         this.botLog(
-          `Nominator ${curNominator.controller} nominated ${targets.join(" ")}`
+          `Nominator ${nominator.controller} nominated ${targets.join(" ")}`
         );
       }
-      count++;
     }
-
-    this.currentTargets = totalTargets;
+    this.currentTargets = allTargets;
     this.botLog(
-      `Next targets: \n${totalTargets
-        .map((target) => `- ${target}`)
-        .join("\n")}`
+      `Next targets: \n${allTargets.map((target) => `- ${target}`).join("\n")}`
     );
 
-    return totalTargets;
+    return allTargets;
   }
 
   async _getCurrentEra(): Promise<number> {

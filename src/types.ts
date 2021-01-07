@@ -3,7 +3,7 @@ export type Stash = string;
 
 export type NominatorConfig = {
   seed: string;
-  maxNominations: number;
+  maxNominations: number | "auto";
   isProxy?: boolean;
   proxyFor?: string;
 };

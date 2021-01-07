@@ -12,7 +12,7 @@ import { NominatorConfig, Stash } from "./types";
 
 export default class Nominator {
   public currentlyNominating: Stash[] = [];
-  public maxNominations: number;
+  public maxNominations: number | "auto";
 
   private _controller: string;
   private db: Database;
@@ -30,7 +30,7 @@ export default class Nominator {
   ) {
     this.handler = handler;
     this.db = db;
-    this.maxNominations = cfg.maxNominations;
+    this.maxNominations = cfg.maxNominations || 16;
     this._isProxy = cfg.isProxy || false;
 
     const keyring = new Keyring({

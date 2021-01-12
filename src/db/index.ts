@@ -231,23 +231,11 @@ export default class Db {
         .exec();
     }
 
-    // Update to the latest version.
-    if (data.version !== version) {
-      await this.candidateModel
-        .findOneAndUpdate(
-          {
-            name,
-          },
-          {
-            version,
-          }
-        )
-        .exec();
-    }
-
-    // update the nodeRefs
+    // Always
+    //  - Update the version
+    //  - Update the node refs
     await this.candidateModel
-      .findOneAndUpdate({ name }, { $inc: { nodeRefs: 1 } })
+      .findOneAndUpdate({ name }, { version, $inc: { nodeRefs: 1 } })
       .exec();
 
     if (data.offlineSince && data.offlineSince !== 0) {

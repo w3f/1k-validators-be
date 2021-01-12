@@ -102,8 +102,11 @@ export default class TelemetryClient {
           const waitUntilFree = async (name: string): Promise<void> => {
             if (this.beingReported.get(name)) {
               return new Promise((resolve) => {
-                setInterval(() => {
-                  if (!this.beingReported.get(name)) resolve();
+                const intervalId = setInterval(() => {
+                  if (!this.beingReported.get(name)) {
+                    clearInterval(intervalId);
+                    resolve();
+                  }
                 }, 1000);
               });
             }

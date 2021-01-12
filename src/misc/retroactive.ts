@@ -5,7 +5,7 @@ import { CandidateData } from "../types";
 
 /**
  * Retroactively increases validators ranks based on their activity between
- * era 1588 to era 1728, roughly between December 1 and Jan 4.
+ * era 1728 to era 1760, roughly between 4 Jan and Jan 12.
  */
 export const retroactiveRanks = async (
   candidates: CandidateData[],
@@ -14,8 +14,8 @@ export const retroactiveRanks = async (
 ): Promise<boolean> => {
   const chaindata = new ChainData(handler);
 
-  const startEra = 1588;
-  const endEra = 1728;
+  const startEra = 1728;
+  const endEra = 1760;
   const step = 4; // every 4 eras (kusama)
 
   const result = new Map();
@@ -28,7 +28,6 @@ export const retroactiveRanks = async (
       currentEra + 4
     );
 
-    console.log("here");
     if (err) {
       // end early
       throw new Error(err);

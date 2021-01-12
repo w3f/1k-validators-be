@@ -15,6 +15,8 @@ import { sleep } from "./util";
 
 import { retroactiveRanks } from "./misc/retroactive";
 
+const isCI = process.env.CI;
+
 const catchAndQuit = async (fn: any) => {
   try {
     await fn;
@@ -55,7 +57,7 @@ const start = async (cmd: Command) => {
 
   // Create the matrix bot if enabled.
   let maybeBot: any = false;
-  if (config.matrix.enabled) {
+  if (config.matrix.enabled || !isCI) {
     const { accessToken, baseUrl, userId } = config.matrix;
     maybeBot = new MatrixBot(baseUrl, accessToken, userId, db, config);
     maybeBot.start();
@@ -124,11 +126,11 @@ const start = async (cmd: Command) => {
   sleep(3000);
 
   // Start the scorekeeper
-  // if (config.global.retroactive && !process.env.CI) {
-  //   retroactiveRanks(config.scorekeeper.candidates as any, handler, db);
-  // } else {
-  scorekeeper.begin();
-  // }
+  if (config.global.retroactive && !isCI) {
+    retroactiveRanks(config.scorekeeper.candidates as any, handler, db);
+  } else {
+    scorekeeper.begin();
+  }
 
   // Start the API server.
   const server = new Server(db, config, scorekeeper);

@@ -23,22 +23,10 @@ export const UP_TIME = 0.02;
 export const KUSAMA_APPROX_ERA_LENGTH_IN_BLOCKS = 3600;
 
 /// List of Kusama endpoints we can switch between.
-export const KusamaEndpoints = [
-  "wss://cc3-1.kusama.network",
-  "wss://cc3-2.kusama.network",
-  "wss://cc3-3.kusama.network",
-  "wss://cc3-4.kusama.network",
-  "wss://cc3-5.kusama.network",
-];
+export const KusamaEndpoints = ["wss://kusama-rpc.polkadot.io"];
 
 /// List of Polkadot endpoints we can switch between.
-export const PolkadotEndpoints = [
-  "wss://cc1-1.polkadot.network",
-  "wss://cc1-2.polkadot.network",
-  "wss://cc1-3.polkadot.network",
-  "wss://cc1-4.polkadot.network",
-  "wss://cc1-5.polkadot.network",
-];
+export const PolkadotEndpoints = ["wss://rpc.polkadot.io"];
 
 /// Endpoint of the Kusama Thousand Validators backend. Used for the Polkadot program.
 export const KOTVBackendEndpoint = "https://kusama.w3f.community";

@@ -125,6 +125,7 @@ workflows:
             - helmLint
             - buildImage
       - publishImage:
+          context: dockerhub-bot
           filters:
             branches:
               ignore: /.*/

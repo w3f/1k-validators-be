@@ -1,5 +1,5 @@
 import { CronJob } from "cron";
-import program, { Command } from "commander";
+import program from "commander";
 
 import ApiHandler from "./ApiHandler";
 import { loadConfigDir } from "./config";
@@ -26,7 +26,7 @@ const catchAndQuit = async (fn: any) => {
   }
 };
 
-const start = async (cmd: Command) => {
+const start = async (cmd: { config: string }) => {
   const config = loadConfigDir(cmd.config);
 
   logger.info(`Starting the backend services.`);
@@ -139,7 +139,7 @@ const start = async (cmd: Command) => {
 
 program
   .option("--config <directory>", "The path to the config directory.", "config")
-  .action((cmd: Command) => catchAndQuit(start(cmd)));
+  .action((cmd: { config: string }) => catchAndQuit(start(cmd)));
 
 program.version("2.2.23");
 program.parse(process.argv);

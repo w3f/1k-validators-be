@@ -86,7 +86,7 @@ test.serial(
         networkId: item.toString(),
         name: item.toString(),
         details: [],
-        connectedAt: 0,
+        discoveredAt: 0,
         nominatedAt: 0,
         offlineSince: 0,
         offlineAccumulated: 0,

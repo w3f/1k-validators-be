@@ -23,7 +23,7 @@ export type CandidateData = {
   /// The name registered on telemetry or on the candidates list.
   name: string;
   details: any[];
-  connectedAt: number;
+  discoveredAt: number;
   nominatedAt: number;
   offlineSince: number;
   offlineAccumulated: number;

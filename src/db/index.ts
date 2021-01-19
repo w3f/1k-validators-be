@@ -234,8 +234,12 @@ export default class Db {
     // Always
     //  - Update the version
     //  - Update the node refs
+    //  - Update that the node is online
     await this.candidateModel
-      .findOneAndUpdate({ name }, { version, $inc: { nodeRefs: 1 } })
+      .findOneAndUpdate(
+        { name },
+        { onlineSince: now, version, $inc: { nodeRefs: 1 } }
+      )
       .exec();
 
     if (data.offlineSince && data.offlineSince !== 0) {
@@ -252,7 +256,6 @@ export default class Db {
           {
             offlineSince: 0,
             offlineAccumulated: accumulated,
-            onlineSince: now,
           }
         )
         .exec();

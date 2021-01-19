@@ -112,6 +112,7 @@ workflows:
             tags:
               only: /.*/
       - buildImage:
+          context: dockerhub-bot
           filters:
             tags:
               only: /.*/
@@ -125,6 +126,7 @@ workflows:
             - helmLint
             - buildImage
       - publishImage:
+          context: dockerhub-bot
           filters:
             branches:
               ignore: /.*/

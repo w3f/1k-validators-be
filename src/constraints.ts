@@ -106,7 +106,7 @@ export class OTV implements Constraints {
     identityHashTable: Map<string, number>
   ): Promise<[boolean, string]> {
     const {
-      connectedAt,
+      discoveredAt,
       updated,
       name,
       offlineAccumulated,
@@ -130,7 +130,7 @@ export class OTV implements Constraints {
     // Ensure the node has been connected for a minimum of one week.
     if (!this.skipConnectionTime) {
       const now = new Date().getTime();
-      if (now - connectedAt < WEEK) {
+      if (now - discoveredAt < WEEK) {
         return [false, `${name} hasn't been connected for minimum length.`];
       }
     }
@@ -249,7 +249,7 @@ export class OTV implements Constraints {
     // Sort by earliest connected.
     validCandidates = validCandidates.sort(
       (a: CandidateData, b: CandidateData) => {
-        return a.connectedAt - b.connectedAt;
+        return a.discoveredAt - b.discoveredAt;
       }
     );
 

@@ -57,7 +57,7 @@ const start = async (cmd: { config: string }) => {
 
   // Create the matrix bot if enabled.
   let maybeBot: any = false;
-  if (config.matrix.enabled || !isCI) {
+  if (config.matrix.enabled && !isCI) {
     const { accessToken, baseUrl, userId } = config.matrix;
     maybeBot = new MatrixBot(baseUrl, accessToken, userId, db, config);
     maybeBot.start();
@@ -141,5 +141,5 @@ program
   .option("--config <directory>", "The path to the config directory.", "config")
   .action((cmd: { config: string }) => catchAndQuit(start(cmd)));
 
-program.version("2.2.24");
+program.version("2.2.25");
 program.parse(process.argv);

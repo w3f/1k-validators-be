@@ -2866,10 +2866,10 @@ matcher@^3.0.0:
   dependencies:
     escape-string-regexp "^4.0.0"
 
-matrix-js-sdk@^9.5.0:
-  version "9.5.0"
-  resolved "https://registry.yarnpkg.com/matrix-js-sdk/-/matrix-js-sdk-9.5.0.tgz#2f54e73b0fbb03e85b3f81f41da9d33b028c4b30"
-  integrity sha512-Fg1SGrZ4N2WAtgbK5mEoOfDwTGV83noJ3VUJ9z3rparbQCBr8Rd8ppHBD8RgshVWGdJMPJ4EQBwhQUgHeyhz9g==
+matrix-js-sdk@^9.5.1:
+  version "9.5.1"
+  resolved "https://registry.yarnpkg.com/matrix-js-sdk/-/matrix-js-sdk-9.5.1.tgz#f2e27b7131a8d1a75fd2a803434e63fe672415ef"
+  integrity sha512-01YbRuU50BDYytTZ5fdmdoQLqOGDT2F7X6vDBrYHpdaRN2jWuLCspQlOKFJKgv73gNhw9V9jfoZN+NxuwuUpUQ==
   dependencies:
     "@babel/runtime" "^7.12.5"
     another-json "^0.2.0"

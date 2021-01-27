@@ -126,11 +126,11 @@ const start = async (cmd: { config: string }) => {
   sleep(3000);
 
   // Start the scorekeeper
-  // if (config.global.retroactive && !isCI) {
-  //   retroactiveRanks(config.scorekeeper.candidates as any, handler, db);
-  // } else {
-  scorekeeper.begin();
-  // }
+  if (config.global.retroactive && !isCI) {
+    retroactiveRanks(config.scorekeeper.candidates as any, handler, db);
+  } else {
+    scorekeeper.begin();
+  }
 
   // Start the API server.
   const server = new Server(db, config, scorekeeper);
@@ -141,5 +141,5 @@ program
   .option("--config <directory>", "The path to the config directory.", "config")
   .action((cmd: { config: string }) => catchAndQuit(start(cmd)));
 
-program.version("2.2.26");
+program.version("2.2.27");
 program.parse(process.argv);

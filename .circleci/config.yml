@@ -135,6 +135,7 @@ workflows:
           requires:
             - integrationTests
       - publishChart:
+          context: github-bot
           filters:
             branches:
               ignore: /.*/

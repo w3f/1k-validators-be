@@ -7,6 +7,7 @@ type CandidateConfig = {
   riotHandle: string;
   kusamaStash?: string;
   skipSelfStake?: boolean;
+  bio?: string;
 };
 
 export type NominatorConfig = {

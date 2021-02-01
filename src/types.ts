@@ -38,4 +38,5 @@ export type CandidateData = {
   stash: string | null;
   kusamaStash: string;
   skipSelfStake: boolean;
+  bio: string;
 };

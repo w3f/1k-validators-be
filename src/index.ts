@@ -113,11 +113,12 @@ const start = async (cmd: { config: string }) => {
         continue;
       } else {
         const { name, stash } = candidate;
+        const bio = candidate.bio || "";
         // Polkadot only options.
         const kusamaStash = candidate.kusamaStash || "";
         const skipSelfStake = candidate.skipSelfStake || false;
 
-        await db.addCandidate(name, stash, kusamaStash, skipSelfStake);
+        await db.addCandidate(name, stash, kusamaStash, skipSelfStake, bio);
       }
     }
   }

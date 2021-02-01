@@ -80,6 +80,8 @@ export const CandidateSchema = new Schema({
   rankEvents: { type: [RankEventSchema], default: [] },
   // Polkadot specific: Kusama Stash
   kusamaStash: String,
+  // Polkadot specific: Case for good intentions
+  bio: String,
 });
 
 export const EraSchema = new Schema({

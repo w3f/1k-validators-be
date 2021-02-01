@@ -81,7 +81,8 @@ export default class Db {
     name: string,
     stash: string,
     kusamaStash: string,
-    skipSelfStake: boolean
+    skipSelfStake: boolean,
+    bio: string
   ): Promise<boolean> {
     logger.info(`(Db::addCandidate) name: ${name} stash: ${stash}`);
 
@@ -97,6 +98,7 @@ export default class Db {
         stash,
         kusamaStash,
         skipSelfStake,
+        bio,
       });
       return candidate.save();
     }
@@ -111,6 +113,7 @@ export default class Db {
         stash,
         kusamaStash,
         skipSelfStake,
+        bio,
       }
     );
   }

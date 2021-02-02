@@ -135,6 +135,7 @@ workflows:
           requires:
             - integrationTests
       - publishChart:
+          context: github-bot
           filters:
             branches:
               ignore: /.*/
@@ -143,6 +144,7 @@ workflows:
           requires:
             - integrationTests
       - deploy:
+          context: digital_ocean_access
           filters:
             branches:
               ignore: /.*/

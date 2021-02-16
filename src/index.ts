@@ -128,9 +128,9 @@ const start = async (cmd: { config: string }) => {
 
   // Start the scorekeeper
   // if (config.global.retroactive && !isCI) {
-  retroactiveRanks(config.scorekeeper.candidates as any, handler, db);
+  //  retroactiveRanks(config.scorekeeper.candidates as any, handler, db);
   // } else {
-    // scorekeeper.begin();
+  scorekeeper.begin();
   // }
 
   // Start the API server.

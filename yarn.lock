@@ -2873,10 +2873,10 @@ matcher@^3.0.0:
   dependencies:
     escape-string-regexp "^4.0.0"
 
-matrix-js-sdk@^9.5.1:
-  version "9.5.1"
-  resolved "https://registry.yarnpkg.com/matrix-js-sdk/-/matrix-js-sdk-9.5.1.tgz#f2e27b7131a8d1a75fd2a803434e63fe672415ef"
-  integrity sha512-01YbRuU50BDYytTZ5fdmdoQLqOGDT2F7X6vDBrYHpdaRN2jWuLCspQlOKFJKgv73gNhw9V9jfoZN+NxuwuUpUQ==
+matrix-js-sdk@^9.7.0:
+  version "9.7.0"
+  resolved "https://registry.yarnpkg.com/matrix-js-sdk/-/matrix-js-sdk-9.7.0.tgz#fbd03c188546f9733b28ea1752476b22ca63d2f2"
+  integrity sha512-cVBHhQVGk2WWQ2kv0Ov8CTcgZVJhMuZBejXZnKqp6qEgSpmb4xQRxewbxjF53ixO7uRUzGFtAlDiW4BeHZnN/g==
   dependencies:
     "@babel/runtime" "^7.12.5"
     another-json "^0.2.0"
@@ -2884,7 +2884,7 @@ matrix-js-sdk@^9.5.1:
     bs58 "^4.0.1"
     content-type "^1.0.4"
     loglevel "^1.7.1"
-    qs "^6.9.4"
+    qs "^6.9.6"
     request "^2.88.2"
     unhomoglyph "^1.0.6"
 
@@ -3479,7 +3479,7 @@ pupa@^2.1.1:
   dependencies:
     escape-goat "^2.0.0"
 
-qs@^6.5.2, qs@^6.9.4:
+qs@^6.5.2, qs@^6.9.6:
   version "6.9.6"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.9.6.tgz#26ed3c8243a431b2924aca84cc90471f35d5a0ee"
   integrity sha512-TIRk4aqYLNoJUbd+g2lEdz5kLWIuTMRagAXxl78Q0RiVjAOugHmeKNGdd3cwo/ktpf9aL9epCfFqWDEKysUlLQ==

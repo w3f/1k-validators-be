@@ -25,10 +25,20 @@ export default class Monitor {
   public async getLatestTaggedRelease(): Promise<TaggedRelease> {
     logger.info("(Monitor::getLatestTaggedRelease) Fetching latest release");
 
+    try{
+      const latestRelease = await this.ghApi.repos.getLatestRelease({
+        owner: "paritytech",
+        repo: "polkadot",
+      });
+    }catch {
+        logger.info('------------------------- this is an error----------------------------');
+    }
+
     const latestRelease = await this.ghApi.repos.getLatestRelease({
       owner: "paritytech",
       repo: "polkadot",
     });
+
 
     const { tag_name, published_at } = latestRelease.data;
 

@@ -30,7 +30,7 @@ export type Config = {
   };
   global: {
     dryRun: boolean;
-    networkPrefix: 0 | 2;
+    networkPrefix: 0 | 2 | 3;
     test: boolean;
     retroactive: boolean;
   };

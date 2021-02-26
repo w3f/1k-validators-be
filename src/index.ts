@@ -3,7 +3,7 @@ import program from "commander";
 
 import ApiHandler from "./ApiHandler";
 import { loadConfigDir } from "./config";
-import { SIXTEEN_HOURS, KusamaEndpoints, PolkadotEndpoints } from "./constants";
+import { SIXTEEN_HOURS, KusamaEndpoints, PolkadotEndpoints, LocalEndpoints } from "./constants";
 import Database from "./db";
 import logger from "./logger";
 import MatrixBot from "./matrix";
@@ -12,6 +12,7 @@ import Scorekeeper from "./scorekeeper";
 import Server from "./server";
 import TelemetryClient from "./telemetry";
 import { sleep } from "./util";
+import { startTestSetup } from "./setup";
 
 import { retroactiveRanks } from "./misc/retroactive";
 
@@ -33,8 +34,14 @@ const start = async (cmd: { config: string }) => {
 
   // Create the API handler.
   const endpoints =
-    config.global.networkPrefix == 2 ? KusamaEndpoints : PolkadotEndpoints;
+    config.global.networkPrefix == 2 ? KusamaEndpoints 
+    :  config.global.networkPrefix == 0 ? PolkadotEndpoints
+    : LocalEndpoints;
   const handler = await ApiHandler.create(endpoints);
+
+  if (config.global.networkPrefix === 3){
+    // startTestSetup();
+  }
 
   // Create the Database.
   const db = await Database.create(config.db.mongo.uri);

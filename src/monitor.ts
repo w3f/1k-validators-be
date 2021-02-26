@@ -31,7 +31,7 @@ export default class Monitor {
         repo: "polkadot",
       });
     }catch {
-        logger.info('------------------------- this is an error----------------------------');
+        logger.info('Could not get latest release.');
     }
 
     const latestRelease = await this.ghApi.repos.getLatestRelease({

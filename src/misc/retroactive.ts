@@ -14,8 +14,8 @@ export const retroactiveRanks = async (
 ): Promise<boolean> => {
   const chaindata = new ChainData(handler);
 
-  const startEra = 1860;
-  const endEra = 1900;
+  const startEra = 1900;
+  const endEra = 1940;
   const step = 4; // every 4 eras (kusama)
 
   const result = new Map();

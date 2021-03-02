@@ -18,7 +18,7 @@
   "license": "GPL-3.0",
   "dependencies": {
     "@koa/router": "^10.0.0",
-    "@octokit/rest": "^18.2.1",
+    "@octokit/rest": "^18.3.1",
     "@polkadot/api": "^3.10.2",
     "@polkadot/keyring": "^5.8.1",
     "@types/cron": "^1.7.1",

@@ -146,9 +146,11 @@ export const startTestSetup = async () => {
   await sleep(6000);
 
   // Set Alice as a registrar
-  const reg = api.tx.identity.addRegistrar('5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY');
+  const reg = api.tx.identity.addRegistrar(
+    "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY"
+  );
   const su = api.tx.sudo.sudo(reg);
-  await su.signAndSend(keyring.addFromUri('//Alice'));
+  await su.signAndSend(keyring.addFromUri("//Alice"));
   await sleep(6000);
 
   // For each node:
@@ -164,10 +166,13 @@ export const startTestSetup = async () => {
     console.log(`{TestSetup::${node.name}} setting up ${node.name}`);
     node.keyring = keyring.addFromUri(node.derivation);
 
-
-    try{
-      console.log(`{TestSetup::${node.name}} setting identity for ${node.name} ${node.address}`);
-      const identity = api.tx.identity.setIdentity({"display": {"Raw": `${node.name}`}});
+    try {
+      console.log(
+        `{TestSetup::${node.name}} setting identity for ${node.name} ${node.address}`
+      );
+      const identity = api.tx.identity.setIdentity({
+        display: { Raw: `${node.name}` },
+      });
       const identityTx = await identity.signAndSend(node.keyring);
       await sleep(3000);
     } catch {
@@ -176,17 +181,28 @@ export const startTestSetup = async () => {
 
     await sleep(3000);
 
-    try{
-      console.log(`{TestSetup::${node.name}} verifying identity for ${node.name}`);
-      const verify = api.tx.identity.provideJudgement(0, node.address, 'Reasonable');
-      await verify.signAndSend(keyring.addFromUri('//Alice'));
+    try {
+      console.log(
+        `{TestSetup::${node.name}} verifying identity for ${node.name}`
+      );
+      const verify = api.tx.identity.provideJudgement(
+        0,
+        node.address,
+        "Reasonable"
+      );
+      await verify.signAndSend(keyring.addFromUri("//Alice"));
       await sleep(3000);
     } catch {
       console.log(`{TestSetup:${node.name}} verify identity failed...`);
     }
 
-
-    if (node.name === "alice" || node.name == "alice stash" || node.name === "bob" || node.name === "bob stash") continue;
+    if (
+      node.name === "alice" ||
+      node.name == "alice stash" ||
+      node.name === "bob" ||
+      node.name === "bob stash"
+    )
+      continue;
 
     const handler = await ApiHandler.create([node.endpoint]);
     const nodeApi = await handler.getApi();
@@ -201,7 +217,6 @@ export const startTestSetup = async () => {
     const bondTx = await bond.signAndSend(
       node.keyring,
       ({ events = [], status }) => {
-
         events.forEach(async ({ event: { data, method, section }, phase }) => {
           if (method == "ExtrinsicSuccess") {
             console.log(
@@ -241,10 +256,10 @@ export const startTestSetup = async () => {
                                   `{TestSetup::${node.name}} Disconnecting from api endpoint: ${node.endpoint}`
                                 );
                                 await sleep(6000);
-                                try{
+                                try {
                                   nodeApi.disconnect();
-                                }catch {
-                                  console.log('disconnected');
+                                } catch {
+                                  console.log("disconnected");
                                 }
                               }
                             }
@@ -261,13 +276,10 @@ export const startTestSetup = async () => {
       }
     );
 
-
     console.log(`{TestSetup::${node.name}} setup done`);
     await sleep(6000);
   }
 };
-
-
 
 const logTx = (events, status) => {
   console.log("Transaction status:", status.type);

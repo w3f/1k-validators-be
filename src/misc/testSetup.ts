@@ -1,11 +1,7 @@
 import  ApiHandler  from './../ApiHandler';
 const { Keyring } = require('@polkadot/keyring');
-import type { Keys } from '@polkadot/types/interfaces';
 import { mnemonicGenerate } from '@polkadot/util-crypto';
 import { sleep } from '../util';
-
-
-
 
 export const startTestSetup = async () => {
     const handler = await ApiHandler.create(['ws://172.28.1.1:9944']);
@@ -92,23 +88,20 @@ export const startTestSetup = async () => {
         },
     ]
 
-    for (let i = 0; i <= 10; i++){
-      const mnemonic = mnemonicGenerate();
-      // console.log(mnemonic);
-    }
-
+    // For each nominator:
+    // - Transfer some balance into the account from Alice
+    // - Bond it to itself
     for (const nominator of nominators) {
-    // Create a extrinsic, transferring 12345 units to Bob
-      console.log(`Sending funds to nominator account: ${nominator.address}`);
+      console.log(`{TestSetup::${nominator.name}} Sending funds to nominator account: ${nominator.address}`);
       const transfer = api.tx.balances.transfer(nominator.address, 1234567891234567);
       try {
         const hash = await transfer.signAndSend(keyring.addFromUri('//Alice'));
       } catch {
-        console.log('transfer tx failed...');
+        console.log('{TestSetup::${nominator.name}} transfer tx failed...');
       }
   
       
-      console.log(`Bonding nominator account: ${nominator.address}`);
+      console.log(`{TestSetup::${nominator.name}} Bonding nominator account: ${nominator.address}`);
       await sleep(3000);
 
 
@@ -117,7 +110,7 @@ export const startTestSetup = async () => {
       try {
         const bondTx = await bond.signAndSend(key);
       } catch {
-        console.log('bond tx failed');
+        console.log('{TestSetup::${nominator.name}} bond tx failed');
       }
 
     }

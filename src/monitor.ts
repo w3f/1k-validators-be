@@ -26,15 +26,16 @@ export default class Monitor {
     logger.info("(Monitor::getLatestTaggedRelease) Fetching latest release");
     let latestRelease;
 
-    try{
+    try {
       latestRelease = await this.ghApi.repos.getLatestRelease({
         owner: "paritytech",
         repo: "polkadot",
       });
     } catch {
-        logger.info('${Monitor::getLatestTaggedRelease} Could not get latest release.');
+      logger.info(
+        "${Monitor::getLatestTaggedRelease} Could not get latest release."
+      );
     }
-
 
     const { tag_name, published_at } = latestRelease.data;
 

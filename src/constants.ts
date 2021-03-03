@@ -29,7 +29,7 @@ export const KusamaEndpoints = ["wss://kusama-rpc.polkadot.io"];
 export const PolkadotEndpoints = ["wss://rpc.polkadot.io"];
 
 // List of Local endpoints we can switch between.
-export const LocalEndpoints = ['ws://172.28.1.1:9944']
+export const LocalEndpoints = ["ws://172.28.1.1:9944"];
 
 /// Endpoint of the Kusama Thousand Validators backend. Used for the Polkadot program.
 export const KOTVBackendEndpoint = "https://kusama.w3f.community";

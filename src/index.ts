@@ -3,7 +3,12 @@ import program from "commander";
 
 import ApiHandler from "./ApiHandler";
 import { loadConfigDir } from "./config";
-import { SIXTEEN_HOURS, KusamaEndpoints, PolkadotEndpoints, LocalEndpoints } from "./constants";
+import {
+  SIXTEEN_HOURS,
+  KusamaEndpoints,
+  PolkadotEndpoints,
+  LocalEndpoints,
+} from "./constants";
 import Database from "./db";
 import logger from "./logger";
 import MatrixBot from "./matrix";
@@ -36,17 +41,23 @@ const start = async (cmd: { config: string }) => {
 
   // Create the API handler.
   const endpoints =
-    config.global.networkPrefix == 2 ? KusamaEndpoints 
-    :  config.global.networkPrefix == 0 ? PolkadotEndpoints
-    : LocalEndpoints;
+    config.global.networkPrefix == 2
+      ? KusamaEndpoints
+      : config.global.networkPrefix == 0
+      ? PolkadotEndpoints
+      : LocalEndpoints;
   const handler = await ApiHandler.create(endpoints);
 
   // If the chain is a test chain, init some test chain conditions
-  if (config.global.networkPrefix === 3){
-    logger.info(`{Start::testSetup} chain index is ${config.global.networkPrefix}, starting init script...`);
+  if (config.global.networkPrefix === 3) {
+    logger.info(
+      `{Start::testSetup} chain index is ${config.global.networkPrefix}, starting init script...`
+    );
     await startTestSetup();
     await sleep(1500);
-    logger.info(`{Start::testSetup} init script done ----------------------------------------------------`);
+    logger.info(
+      `{Start::testSetup} init script done ----------------------------------------------------`
+    );
     await sleep(15000);
   }
 

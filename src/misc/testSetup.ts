@@ -59,11 +59,25 @@ export const startTestSetup = async () => {
       endpoint: "ws://172.28.1.1:9944",
     },
     {
+      name: "alice stash",
+      keyring: null,
+      address: "5GNJqTPyNqANBkUVMN1LPPrxXnFouWXoe2wNSmmEoLctxiZY",
+      derivation: "//Alice//stash",
+      endpoint: "ws://172.28.1.1:9944",
+    },
+    {
       name: "bob",
       keyring: null,
       address: "5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty",
       derivation: "//Bob",
       endpoint: "ws://172.28.1.2:9945",
+    },
+    {
+      name: "bob stash",
+      keyring: null,
+      address: "5HpG9w8EBLe5XCrbczpwq5TSXvedjrBGCwqxK1iQ7qUsSWFc",
+      derivation: "//Bob//stash",
+      endpoint: "ws://172.28.1.1:9944",
     },
     {
       name: "charlie",
@@ -129,20 +143,56 @@ export const startTestSetup = async () => {
       console.log("{TestSetup::${nominator.name}} bond tx failed");
     }
   }
+  await sleep(6000);
+
+  // Set Alice as a registrar
+  const reg = api.tx.identity.addRegistrar('5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY');
+  const su = api.tx.sudo.sudo(reg);
+  await su.signAndSend(keyring.addFromUri('//Alice'));
+  await sleep(6000);
 
   // For each node:
   // - add the keyring
+  // - set an identity
+  // - verify the identity
   // - bond the account
   // - generate session keys
   // - set session keys on chain
   for (const node of nodes) {
-    if (node.name === "alice" || node.name === "bob") continue;
+    await sleep(6000);
+
     console.log(`{TestSetup::${node.name}} setting up ${node.name}`);
     node.keyring = keyring.addFromUri(node.derivation);
+
+
+    try{
+      console.log(`{TestSetup::${node.name}} setting identity for ${node.name} ${node.address}`);
+      const identity = api.tx.identity.setIdentity({"display": {"Raw": `${node.name}`}});
+      const identityTx = await identity.signAndSend(node.keyring);
+      await sleep(3000);
+    } catch {
+      console.log(`{TestSetup:${node.name}} set identity failed...`);
+    }
+
+    await sleep(3000);
+
+    try{
+      console.log(`{TestSetup::${node.name}} verifying identity for ${node.name}`);
+      const verify = api.tx.identity.provideJudgement(0, node.address, 'Reasonable');
+      await verify.signAndSend(keyring.addFromUri('//Alice'));
+      await sleep(3000);
+    } catch {
+      console.log(`{TestSetup:${node.name}} verify identity failed...`);
+    }
+
+
+    if (node.name === "alice" || node.name == "alice stash" || node.name === "bob" || node.name === "bob stash") continue;
 
     const handler = await ApiHandler.create([node.endpoint]);
     const nodeApi = await handler.getApi();
 
+    await sleep(16000);
+    console.log(`{TestSetup:${node.name}} Bonding Stash...`);
     const bond = api.tx.staking.bond(
       node.address,
       "1000000000000000",
@@ -151,12 +201,14 @@ export const startTestSetup = async () => {
     const bondTx = await bond.signAndSend(
       node.keyring,
       ({ events = [], status }) => {
+
         events.forEach(async ({ event: { data, method, section }, phase }) => {
           if (method == "ExtrinsicSuccess") {
             console.log(
-              "{TestSetup::${node.name}} Bond Successful, generating session keys..."
+              `{TestSetup::${node.name}} Bond Successful, generating session keys...`
             );
 
+            await sleep(6000);
             const sessionKeys = await nodeApi.rpc.author.rotateKeys();
             const setKeys = nodeApi.tx.session.setKeys(
               // @ts-ignore
@@ -170,7 +222,7 @@ export const startTestSetup = async () => {
                   async ({ event: { data, method, section }, phase }) => {
                     if (method == "ExtrinsicSuccess") {
                       console.log(
-                        "{TestSetup::${node.name}} Setting Session Keys Successful, setting intent to validate...."
+                        `{TestSetup::${node.name}} Setting Session Keys Successful, setting intent to validate....`
                       );
                       const validate = nodeApi.tx.staking.validate("0x10");
                       await validate.signAndSend(
@@ -183,12 +235,17 @@ export const startTestSetup = async () => {
                             }) => {
                               if (method == "ExtrinsicSuccess") {
                                 console.log(
-                                  "{TestSetup::${node.name}} Validate tx successful"
+                                  `{TestSetup::${node.name}} Validate tx successful`
                                 );
                                 console.log(
                                   `{TestSetup::${node.name}} Disconnecting from api endpoint: ${node.endpoint}`
                                 );
-                                nodeApi.disconnect();
+                                await sleep(6000);
+                                try{
+                                  nodeApi.disconnect();
+                                }catch {
+                                  console.log('disconnected');
+                                }
                               }
                             }
                           );
@@ -203,10 +260,14 @@ export const startTestSetup = async () => {
         });
       }
     );
+
+
     console.log(`{TestSetup::${node.name}} setup done`);
-    sleep(6000);
+    await sleep(6000);
   }
 };
+
+
 
 const logTx = (events, status) => {
   console.log("Transaction status:", status.type);

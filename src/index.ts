@@ -32,7 +32,7 @@ const start = async (cmd: { config: string }) => {
 
   logger.info(`{Start} Starting the backend services.`);
 
-  logger.info(`Network prefix: ${config.global.networkPrefix}`);
+  logger.info(`{Start} Network prefix: ${config.global.networkPrefix}`);
 
   // Create the API handler.
   const endpoints =
@@ -46,8 +46,7 @@ const start = async (cmd: { config: string }) => {
     logger.info(`{Start::testSetup} chain index is ${config.global.networkPrefix}, starting init script...`);
     await startTestSetup();
     await sleep(1500);
-    logger.info(`{Start::testSetup} init script done.`);
-    logger.info(`{Start::testSetup} ---------------------------------------------------------------------`);
+    logger.info(`{Start::testSetup} init script done ----------------------------------------------------`);
     await sleep(15000);
   }
 
@@ -89,7 +88,7 @@ const start = async (cmd: { config: string }) => {
 
   const monitorCron = new CronJob(monitorFrequency, async () => {
     logger.info(
-      `Monitoring the node version by polling latst GitHub releases every ${
+      `{Start} Monitoring the node version by polling latst GitHub releases every ${
         config.global.test ? "three" : "fifteen"
       } minutes.`
     );
@@ -119,7 +118,7 @@ const start = async (cmd: { config: string }) => {
 
   // Wipe the candidates on every start-up and re-add the ones in config.
   logger.info(
-    "Wiping old candidates data and intializing latest candidates from config."
+    "{Start} Wiping old candidates data and intializing latest candidates from config."
   );
   await db.clearCandidates();
   if (config.scorekeeper.candidates.length) {

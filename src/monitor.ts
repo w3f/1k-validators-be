@@ -32,7 +32,7 @@ export default class Monitor {
         repo: "polkadot",
       });
     } catch {
-        logger.info('Could not get latest release.');
+        logger.info('${Monitor::getLatestTaggedRelease} Could not get latest release.');
     }
 
 

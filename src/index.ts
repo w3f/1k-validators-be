@@ -12,7 +12,7 @@ import Scorekeeper from "./scorekeeper";
 import Server from "./server";
 import TelemetryClient from "./telemetry";
 import { sleep } from "./util";
-import { startTestSetup } from "./setup";
+import { startTestSetup } from "./misc/testSetup";
 
 import { retroactiveRanks } from "./misc/retroactive";
 
@@ -30,7 +30,9 @@ const catchAndQuit = async (fn: any) => {
 const start = async (cmd: { config: string }) => {
   const config = loadConfigDir(cmd.config);
 
-  logger.info(`Starting the backend services.`);
+  logger.info(`{Start} Starting the backend services.`);
+
+  logger.info(`Network prefix: ${config.global.networkPrefix}`);
 
   // Create the API handler.
   const endpoints =
@@ -39,8 +41,14 @@ const start = async (cmd: { config: string }) => {
     : LocalEndpoints;
   const handler = await ApiHandler.create(endpoints);
 
+  // If the chain is a test chain, init some test chain conditions
   if (config.global.networkPrefix === 3){
-    // startTestSetup();
+    logger.info(`{Start::testSetup} chain index is ${config.global.networkPrefix}, starting init script...`);
+    await startTestSetup();
+    await sleep(1500);
+    logger.info(`{Start::testSetup} init script done.`);
+    logger.info(`{Start::testSetup} ---------------------------------------------------------------------`);
+    await sleep(15000);
   }
 
   // Create the Database.

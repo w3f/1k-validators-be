@@ -89,6 +89,7 @@ export default class Nominator {
 
         const currentBlock = await api.rpc.chain.getBlock();
         const { number } = currentBlock.block.header;
+        
 
         tx = api.tx.proxy.announce(
           this.controller,
@@ -104,6 +105,9 @@ export default class Nominator {
         tx = api.tx.staking.nominate(targets);
         logger.info("(Nominator::nominate} Sending extrinsic to network...");
         await this.sendStakingTx(tx, targets);
+
+        const era = (await api.query.staking.activeEra()).toJSON()['index'];
+        await this.db.setNomination(this.address, era, targets);
       }
     }
 

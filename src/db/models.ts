@@ -94,3 +94,15 @@ export const NominatorSchema = new Schema({
   lastNomination: { type: Number, default: 0 },
   createdAt: { type: Number, default: 0 },
 });
+
+
+export const NominationSchema = new Schema({
+  // Nominator address
+  address: String,
+  // The era the nomination took place
+  era: Number,
+  // The validators in the nomination
+  validators: [String],
+  // The timestamp of the nomination
+  timestamp: Number
+})

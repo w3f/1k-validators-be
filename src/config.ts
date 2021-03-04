@@ -22,6 +22,7 @@ export type Config = {
     skipConnectionTime: boolean;
     skipIdentity: boolean;
     skipStakedDestination: boolean;
+    skipClientUpgrade: boolean;
   };
   db: {
     mongo: {

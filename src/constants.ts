@@ -19,6 +19,12 @@ export const SIXTEEN_HOURS = 16 * 60 * 60 * 1000;
 /// Percentage of one week that a validator could be offline.
 export const UP_TIME = 0.02;
 
+/// Number of Eras in 4 days that a validator should have claimed all previous rewards except
+export const KUSAMA_FOUR_DAYS_ERAS = 16;
+
+/// Number of Eras in 4 days that a validator should have claimed all previous rewards except
+export const POLKADOT_FOUR_DAYS_ERAS = 4;
+
 /// On Kusama eras are 6 hours with 6 second blocks.
 export const KUSAMA_APPROX_ERA_LENGTH_IN_BLOCKS = 3600;
 

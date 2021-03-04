@@ -52,7 +52,7 @@ const start = async (cmd: { config: string }) => {
   // Create the Database.
   const db = await Database.create(config.db.mongo.uri);
 
-  const chainMetadata = db.getChainMetadata();
+  const chainMetadata = await db.getChainMetadata();
 
   // If the chain is a test chain, init some test chain conditions
   if (config.global.networkPrefix === 3 && !chainMetadata) {

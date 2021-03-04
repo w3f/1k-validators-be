@@ -9,6 +9,7 @@ import Database from "./db";
 import logger from "./logger";
 
 import { NominatorConfig, Stash } from "./types";
+import {toDecimals} from "./util";
 
 export default class Nominator {
   public currentlyNominating: Stash[] = [];
@@ -107,7 +108,9 @@ export default class Nominator {
         await this.sendStakingTx(tx, targets);
 
         const era = (await api.query.staking.activeEra()).toJSON()['index'];
-        await this.db.setNomination(this.address, era, targets);
+        const decimals = (await this.db.getChainMetadata()).decimals;
+        const bonded = toDecimals((await api.query.staking.ledger(this.address)).toJSON()['total'], decimals);
+        await this.db.setNomination(this.address, era, targets, bonded);
       }
     }
 

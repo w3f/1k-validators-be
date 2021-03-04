@@ -48,8 +48,14 @@ const start = async (cmd: { config: string }) => {
       : LocalEndpoints;
   const handler = await ApiHandler.create(endpoints);
 
+
+  // Create the Database.
+  const db = await Database.create(config.db.mongo.uri);
+
+  const chainMetadata = db.getChainMetadata();
+
   // If the chain is a test chain, init some test chain conditions
-  if (config.global.networkPrefix === 3) {
+  if (config.global.networkPrefix === 3 && !chainMetadata) {
     logger.info(
       `{Start::testSetup} chain index is ${config.global.networkPrefix}, starting init script...`
     );
@@ -61,8 +67,7 @@ const start = async (cmd: { config: string }) => {
     await sleep(15000);
   }
 
-  // Create the Database.
-  const db = await Database.create(config.db.mongo.uri);
+  await db.setChainMetadata(config.global.networkPrefix, handler);
 
   // Delete the old candidate fields.
   await db.deleteOldCandidateFields();

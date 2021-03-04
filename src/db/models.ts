@@ -90,6 +90,7 @@ export const EraSchema = new Schema({
 
 export const NominatorSchema = new Schema({
   address: String,
+  bonded: Number,
   current: [],
   lastNomination: { type: Number, default: 0 },
   createdAt: { type: Number, default: 0 },
@@ -104,5 +105,14 @@ export const NominationSchema = new Schema({
   // The validators in the nomination
   validators: [String],
   // The timestamp of the nomination
-  timestamp: Number
+  timestamp: Number,
+  // The amount of funds bonded in the account
+  bonded: Number
+})
+
+export const ChainMetadataSchema = new Schema({
+  // Number of decimals
+  decimals: Number,
+  // Chain name
+  name: String
 })

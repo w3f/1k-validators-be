@@ -7,6 +7,7 @@ import {
   EraSchema,
   NominatorSchema,
   NominationSchema,
+  ChainMetadataSchema
 } from "./models";
 import logger from "../logger";
 
@@ -23,6 +24,7 @@ export default class Db {
   private eraModel;
   private nominatorModel;
   private nominationModel;
+  private chainMetadataModel;
 
   constructor() {
     this.accountingModel = mongoose.model("Accounting", AccountingSchema);
@@ -31,6 +33,7 @@ export default class Db {
     this.eraModel = mongoose.model("Era", EraSchema);
     this.nominatorModel = mongoose.model("Nominator", NominatorSchema);
     this.nominationModel = mongoose.model("Nomination", NominationSchema);
+    this.chainMetadataModel = mongoose.model("ChainMetadata", ChainMetadataSchema);
   }
 
   static async create(uri = "mongodb://localhost:27017/otv"): Promise<Db> {
@@ -553,14 +556,15 @@ export default class Db {
     return true;
   }
 
-  async setNomination(address: string, era:number, targets:string[]): Promise<boolean> {
-    logger.info(`(Db::setNomination) Setting nomination for ${address} for era ${era} to the following validators: ${targets}`);
+  async setNomination(address: string, era:number, targets:string[], bonded: number): Promise<boolean> {
+    logger.info(`(Db::setNomination) Setting nomination for ${address} bonded with ${bonded} for era ${era} to the following validators: ${targets}`);
 
     const nomination = new this.nominationModel({
       address: address,
       era: era,
       validators: targets,
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      bonded: bonded
     });
 
     return nomination.save();
@@ -732,6 +736,10 @@ export default class Db {
     return this.nominatorModel.find({ address: /.*/ }).exec();
   }
 
+  async allNominations(): Promise<any[]>{
+  return this.nominationModel.find({address: /.*/ }).exec();
+  }
+
   /**
    * Gets a candidate by its stash address.
    * @param stashOrName The DOT / KSM address or the name of the validator.
@@ -756,5 +764,40 @@ export default class Db {
 
   async getLastNominatedEraIndex(): Promise<any> {
     return this.eraModel.findOne({ lastNominatedEraIndex: /[0-9]+/ }).exec();
+  }
+
+  async setChainMetadata(networkPrefix: number, handler): Promise<any> {
+    const networkName =
+      networkPrefix == 2
+        ? 'Kusama'
+        : networkPrefix == 0
+        ? 'Polkadot'
+        : 'Local Testnet';
+    const decimals = 
+      networkPrefix == 2
+        ? 12
+        : networkPrefix == 0
+        ? 10
+        : 12;
+
+    logger.info(`(Db::setChainMetadata) Setting chain metadata: ${networkName} with ${decimals} decimals`);
+
+    const data = await this.chainMetadataModel.findOne({ name: /.*/ });
+      if (!data) {
+        const chainMetadata = new this.chainMetadataModel({
+          name: networkName,
+          decimals: decimals
+        });
+        return chainMetadata.save();
+      }
+
+      this.chainMetadataModel.findOneAndUpdate({
+        name: networkName,
+        decimals: decimals
+      });
+  }
+
+  async getChainMetadata(): Promise<any> {
+    return this.chainMetadataModel.findOne({ name: /.*/ }).exec();
   }
 }

@@ -6,6 +6,7 @@ import {
   DelayedTxSchema,
   EraSchema,
   NominatorSchema,
+  NominationSchema,
 } from "./models";
 import logger from "../logger";
 
@@ -21,6 +22,7 @@ export default class Db {
   private delayedTxModel;
   private eraModel;
   private nominatorModel;
+  private nominationModel;
 
   constructor() {
     this.accountingModel = mongoose.model("Accounting", AccountingSchema);
@@ -28,6 +30,7 @@ export default class Db {
     this.delayedTxModel = mongoose.model("DelayedTx", DelayedTxSchema);
     this.eraModel = mongoose.model("Era", EraSchema);
     this.nominatorModel = mongoose.model("Nominator", NominatorSchema);
+    this.nominationModel = mongoose.model("Nomination", NominationSchema);
   }
 
   static async create(uri = "mongodb://localhost:27017/otv"): Promise<Db> {
@@ -548,6 +551,19 @@ export default class Db {
       .exec();
 
     return true;
+  }
+
+  async setNomination(address: string, era:number, targets:string[]): Promise<boolean> {
+    logger.info(`(Db::setNomination) Setting nomination for ${address} for era ${era} to the following validators: ${targets}`);
+
+    const nomination = new this.nominationModel({
+      address: address,
+      era: era,
+      validators: targets,
+      timestamp: Date.now()
+    });
+
+    return nomination.save();
   }
 
   async setLastNomination(address: string, now: number): Promise<boolean> {

@@ -7,6 +7,8 @@ import ChainData from "./chaindata";
 import { Config, NominatorConfig } from "./config";
 import {
   FIFTY_KSM,
+  KUSAMA_FOUR_DAYS_ERAS,
+  POLKADOT_FOUR_DAYS_ERAS,
   TEN_PERCENT,
   TEN_THOUSAND_DOT,
   THREE_PERCENT,
@@ -91,8 +93,10 @@ export default class ScoreKeeper {
       this.config.constraints.skipConnectionTime,
       this.config.constraints.skipIdentity,
       this.config.constraints.skipStakedDestination,
+      this.config.constraints.skipClientUpgrade,
       this.config.global.networkPrefix == 2 ? FIFTY_KSM : TEN_THOUSAND_DOT,
-      this.config.global.networkPrefix == 2 ? TEN_PERCENT : THREE_PERCENT
+      this.config.global.networkPrefix == 2 ? TEN_PERCENT : THREE_PERCENT,
+      this.config.global.networkPrefix == 2 ? KUSAMA_FOUR_DAYS_ERAS : POLKADOT_FOUR_DAYS_ERAS
     );
   }
 

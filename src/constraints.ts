@@ -24,10 +24,12 @@ export class OTV implements Constraints {
   private skipConnectionTime: boolean;
   private skipIdentity: boolean;
   private skipStakedDesitnation: boolean;
+  private skipClientUpgrade: boolean;
 
   // configurable constants
   private minSelfStake: number;
   private commission: number;
+  private unclaimedEraThreshold: number;
 
   // caches
   private validCache: CandidateData[] = [];
@@ -38,17 +40,21 @@ export class OTV implements Constraints {
     skipConnectionTime = false,
     skipIdentity = false,
     skipStakedDestination = false,
+    skipClientUpgrade = false,
     minSelfStake = 0,
-    commission = 0
+    commission = 0,
+    unclaimedEraThreshold = 0
   ) {
     this.chaindata = new ChainData(handler);
 
     this.skipConnectionTime = skipConnectionTime;
     this.skipIdentity = skipIdentity;
     this.skipStakedDesitnation = skipStakedDestination;
+    this.skipClientUpgrade = skipClientUpgrade;
 
     this.minSelfStake = minSelfStake;
     this.commission = commission;
+    this.unclaimedEraThreshold = unclaimedEraThreshold;
   }
 
   get validCandidateCache(): CandidateData[] {
@@ -123,7 +129,7 @@ export class OTV implements Constraints {
     }
 
     // Only take nodes that have been upgraded to latest versions.
-    if (!updated) {
+    if (!updated && !this.skipClientUpgrade) {
       return [false, `${name} is not running the latest client code.`];
     }
 

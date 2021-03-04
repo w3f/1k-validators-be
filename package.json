@@ -4,12 +4,16 @@
   "description": "Services for running the Thousand Validator Program.",
   "main": "index.js",
   "scripts": {
+    "open:polkadot-apps": "open-cli https://polkadot.js.org/apps/?rpc=ws%3A%2F%2F127.0.0.1%3A9944#/staking",
+    "open:telemetry": "open-cli http://localhost:3000",
     "build": "tsc",
-    "docker": "docker-compose rm -f; docker-compose build --no-cache; docker-compose up",
+    "docker": "docker-compose rm -f; docker-compose build --no-cache; docker-compose up -d",
     "clean": "rm validator.db",
     "lint": "tsc --noEmit && eslint 'src/**/*.{js,ts,tsx}' --quiet",
     "lint:fix": "tsc --noEmit && eslint 'src/**/*.{js,ts,tsx}' --quiet --fix",
     "start": "NODE_OPTIONS='--max-old-space-size=4096' ts-node src/index.ts start",
+    "start:watch": "NODE_OPTIONS='--max-old-space-size=4096' nodemon --watch build --exec node build/index.js",
+    "start:dev": "concurrently \"tsc -w\"  \"yarn start:watch\"",
     "js:start": "NODE_OPTIONS='--max-old-space-size=4096' node build/index.js start",
     "test": "ava test/*.spec.ts --timeout=10m",
     "test:api": "ts-node test/api/chaindata.ts"
@@ -55,8 +59,11 @@
     "@typescript-eslint/eslint-plugin": "^4.15.2",
     "@typescript-eslint/parser": "^4.15.2",
     "ava": "^3.15.0",
-    "eslint": "^7.20.0",
-    "eslint-plugin-security": "^1.4.0"
+    "concurrently": "^6.0.0",
+    "eslint": "^7.19.0",
+    "eslint-plugin-security": "^1.4.0",
+    "nodemon": "^2.0.7",
+    "open-cli": "^6.0.1"
   },
   "config": {
     "mongodbMemoryServer": {

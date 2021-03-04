@@ -3,7 +3,12 @@ import program from "commander";
 
 import ApiHandler from "./ApiHandler";
 import { loadConfigDir } from "./config";
-import { SIXTEEN_HOURS, KusamaEndpoints, PolkadotEndpoints } from "./constants";
+import {
+  SIXTEEN_HOURS,
+  KusamaEndpoints,
+  PolkadotEndpoints,
+  LocalEndpoints,
+} from "./constants";
 import Database from "./db";
 import logger from "./logger";
 import MatrixBot from "./matrix";
@@ -12,6 +17,7 @@ import Scorekeeper from "./scorekeeper";
 import Server from "./server";
 import TelemetryClient from "./telemetry";
 import { sleep } from "./util";
+import { startTestSetup } from "./misc/testSetup";
 
 import { retroactiveRanks } from "./misc/retroactive";
 
@@ -29,12 +35,31 @@ const catchAndQuit = async (fn: any) => {
 const start = async (cmd: { config: string }) => {
   const config = loadConfigDir(cmd.config);
 
-  logger.info(`Starting the backend services.`);
+  logger.info(`{Start} Starting the backend services.`);
+
+  logger.info(`{Start} Network prefix: ${config.global.networkPrefix}`);
 
   // Create the API handler.
   const endpoints =
-    config.global.networkPrefix == 2 ? KusamaEndpoints : PolkadotEndpoints;
+    config.global.networkPrefix == 2
+      ? KusamaEndpoints
+      : config.global.networkPrefix == 0
+      ? PolkadotEndpoints
+      : LocalEndpoints;
   const handler = await ApiHandler.create(endpoints);
+
+  // If the chain is a test chain, init some test chain conditions
+  if (config.global.networkPrefix === 3) {
+    logger.info(
+      `{Start::testSetup} chain index is ${config.global.networkPrefix}, starting init script...`
+    );
+    await startTestSetup();
+    await sleep(1500);
+    logger.info(
+      `{Start::testSetup} init script done ----------------------------------------------------`
+    );
+    await sleep(15000);
+  }
 
   // Create the Database.
   const db = await Database.create(config.db.mongo.uri);
@@ -74,7 +99,7 @@ const start = async (cmd: { config: string }) => {
 
   const monitorCron = new CronJob(monitorFrequency, async () => {
     logger.info(
-      `Monitoring the node version by polling latst GitHub releases every ${
+      `{Start} Monitoring the node version by polling latst GitHub releases every ${
         config.global.test ? "three" : "fifteen"
       } minutes.`
     );
@@ -104,7 +129,7 @@ const start = async (cmd: { config: string }) => {
 
   // Wipe the candidates on every start-up and re-add the ones in config.
   logger.info(
-    "Wiping old candidates data and intializing latest candidates from config."
+    "{Start} Wiping old candidates data and intializing latest candidates from config."
   );
   await db.clearCandidates();
   if (config.scorekeeper.candidates.length) {

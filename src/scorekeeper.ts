@@ -18,7 +18,7 @@ import Db from "./db";
 import logger from "./logger";
 import Nominator from "./nominator";
 import { CandidateData, Stash } from "./types";
-import { getNow, sleep } from "./util";
+import { getNow, sleep, toDecimals } from "./util";
 
 type NominatorGroup = NominatorConfig[];
 
@@ -227,6 +227,14 @@ export default class ScoreKeeper {
           );
           await this.db.deleteDelayedTx(dataNum, controller);
           await nominator.sendStakingTx(tx, targets);
+
+          const era = (await api.query.staking.activeEra()).toJSON()["index"];
+          const decimals = (await this.db.getChainMetadata()).decimals;
+          const bonded = toDecimals(
+            (await api.query.staking.ledger(controller)).toJSON()["active"],
+            decimals
+          );
+          await this.db.setNomination(controller, era, targets, bonded);
         }
       }
     });

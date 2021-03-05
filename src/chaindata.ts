@@ -1,6 +1,10 @@
 import ApiHandler from "./ApiHandler";
 
-import { KUSAMA_APPROX_ERA_LENGTH_IN_BLOCKS, POLKADOT_APPROX_ERA_LENGTH_IN_BLOCKS, TESTNET_APPROX_ERA_LENGTH_IN_BLOCKS } from "./constants";
+import {
+  KUSAMA_APPROX_ERA_LENGTH_IN_BLOCKS,
+  POLKADOT_APPROX_ERA_LENGTH_IN_BLOCKS,
+  TESTNET_APPROX_ERA_LENGTH_IN_BLOCKS,
+} from "./constants";
 import logger from "./logger";
 import { BooleanResult, NumberResult, StringResult } from "./types";
 
@@ -141,16 +145,19 @@ class ChainData {
   /**
    * Finds the block hash for a particular era index. Used to determine the
    * active validators within an era in `getActiveValidators`.
-   * 
+   *
    * @param chainType: either 'Polkadot', 'Kusama', or 'Local Testnet'
    */
-  findEraBlockHash = async (era: number, chainType: string): Promise<StringResult> => {
-    const eraBlockLength = 
-      chainType == 'Kusama' 
+  findEraBlockHash = async (
+    era: number,
+    chainType: string
+  ): Promise<StringResult> => {
+    const eraBlockLength =
+      chainType == "Kusama"
         ? KUSAMA_APPROX_ERA_LENGTH_IN_BLOCKS
-        : chainType == 'Polkadot'
+        : chainType == "Polkadot"
         ? POLKADOT_APPROX_ERA_LENGTH_IN_BLOCKS
-        : TESTNET_APPROX_ERA_LENGTH_IN_BLOCKS; 
+        : TESTNET_APPROX_ERA_LENGTH_IN_BLOCKS;
 
     const api = await this.handler.getApi();
     const [activeEraIndex, err] = await this.getActiveEraIndex();
@@ -185,8 +192,7 @@ class ChainData {
       }
 
       if (testIndex > era) {
-        testBlockNumber =
-          testBlockNumber - eraBlockLength / 3;
+        testBlockNumber = testBlockNumber - eraBlockLength / 3;
       }
 
       if (testIndex < era) {
@@ -278,7 +284,9 @@ class ChainData {
     return null;
   };
 
-  getStashFromController = async (controller:string): Promise<string | null> => {
+  getStashFromController = async (
+    controller: string
+  ): Promise<string | null> => {
     const api = await this.handler.getApi();
 
     const ledger: JSON = await api.query.staking.ledger(controller);
@@ -287,7 +295,7 @@ class ChainData {
     }
 
     return ledger.toJSON().stash;
-  }
+  };
 }
 
 export default ChainData;

@@ -49,7 +49,6 @@ const start = async (cmd: { config: string }) => {
       : LocalEndpoints;
   const handler = await ApiHandler.create(endpoints);
 
-
   // Create the Database.
   const db = await Database.create(config.db.mongo.uri);
 
@@ -165,7 +164,6 @@ const start = async (cmd: { config: string }) => {
   // }
 
   writeHistoricNominations(handler, db);
-
 
   // Start the API server.
   const server = new Server(db, config, scorekeeper);

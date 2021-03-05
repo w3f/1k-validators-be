@@ -221,11 +221,7 @@ export const startTestSetup = async () => {
 
     await sleep(16000);
     console.log(`{TestSetup:${node.name}} Bonding Stash...`);
-    const bond = api.tx.staking.bond(
-      node.address,
-      "100000000000000",
-      "Staked"
-    );
+    const bond = api.tx.staking.bond(node.address, "100000000000000", "Staked");
     const bondTx = await bond.signAndSend(
       node.keyring,
       ({ events = [], status }) => {
@@ -268,7 +264,7 @@ export const startTestSetup = async () => {
                                   `{TestSetup::${node.name}} Disconnecting from api endpoint: ${node.endpoint}`
                                 );
                                 try {
-                                  if (nodeApi.isConnected){
+                                  if (nodeApi.isConnected) {
                                     await sleep(12000);
                                     nodeApi.disconnect();
                                   }

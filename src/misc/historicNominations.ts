@@ -10,7 +10,10 @@ export const writeHistoricNominations = async (
 ): Promise<boolean> => {
   const api = await handler.getApi();
 
-  const START_ERA = 0;
+  const chainType = (await db.getChainMetadata()).name;
+
+  const START_ERA =
+    chainType == "Kusama" ? 1400 : chainType == "Polkadot" ? 175 : 0;
 
   const chaindata = new ChainData(handler);
   const [activeEra, err] = await chaindata.getActiveEraIndex();

@@ -109,7 +109,7 @@ export default class Nominator {
 
         const era = (await api.query.staking.activeEra()).toJSON()['index'];
         const decimals = (await this.db.getChainMetadata()).decimals;
-        const bonded = toDecimals((await api.query.staking.ledger(this.address)).toJSON()['total'], decimals);
+        const bonded = toDecimals((await api.query.staking.ledger(this.address)).toJSON()['active'], decimals);
         await this.db.setNomination(this.address, era, targets, bonded);
       }
     }

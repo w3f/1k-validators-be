@@ -28,6 +28,12 @@ export const POLKADOT_FOUR_DAYS_ERAS = 4;
 /// On Kusama eras are 6 hours with 6 second blocks.
 export const KUSAMA_APPROX_ERA_LENGTH_IN_BLOCKS = 3600;
 
+/// On Polkadot eras are 24 hours with 6 second blocks.
+export const POLKADOT_APPROX_ERA_LENGTH_IN_BLOCKS = 14400;
+
+/// On a Local Testnet eras are 3 minutes with 3 second blocks.
+export const TESTNET_APPROX_ERA_LENGTH_IN_BLOCKS = 60;
+
 /// List of Kusama endpoints we can switch between.
 export const KusamaEndpoints = ["wss://kusama-rpc.polkadot.io"];
 

@@ -32,8 +32,14 @@ export const autoNumNominations = async (
   const stashAccount = await api.query.system.account(stash);
   const stashBal = stashAccount.data.free.toBn();
   const validators = await api.derive.staking.electedInfo();
-  validators.info.sort((a, b) =>
-    a.exposure.total.toBn().sub(b.exposure.total.toBn()).isNeg() ? -1 : 1
+  validators.info.sort((a, b) => { 
+    if (a.exposure.total && b.exposure.total){
+      a.exposure.total.toBn().sub(b.exposure.total.toBn()).isNeg() ? -1 : 1
+    } else {
+      logger.warn(`{autoNominations} error, no exposure for ${a} or ${b}`);
+      return 1;
+      }
+    }
   );
 
   return Math.min(
@@ -377,12 +383,15 @@ export default class ScoreKeeper {
       throw new Error(`Error getting active era: ${err}`);
     }
 
+    const chainType = await this.db.getChainMetadata();
+
     const [
       activeValidators,
       err2,
     ] = await this.chaindata.activeValidatorsInPeriod(
       Number(startEra),
-      activeEra
+      activeEra,
+      chainType.name
     );
     if (err2) {
       throw new Error(`Error getting active validators: ${err2}`);

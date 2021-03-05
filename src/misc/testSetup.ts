@@ -118,7 +118,7 @@ export const startTestSetup = async () => {
     );
     const transfer = api.tx.balances.transfer(
       nominator.address,
-      1234567891234567
+      "123456789123456789"
     );
     try {
       const hash = await transfer.signAndSend(keyring.addFromUri("//Alice"));
@@ -223,7 +223,7 @@ export const startTestSetup = async () => {
     console.log(`{TestSetup:${node.name}} Bonding Stash...`);
     const bond = api.tx.staking.bond(
       node.address,
-      "1000000000000000",
+      "100000000000000",
       "Staked"
     );
     const bondTx = await bond.signAndSend(

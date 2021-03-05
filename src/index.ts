@@ -18,6 +18,7 @@ import Server from "./server";
 import TelemetryClient from "./telemetry";
 import { sleep } from "./util";
 import { startTestSetup } from "./misc/testSetup";
+import { writeHistoricNominations } from "./misc/historicNominations";
 
 import { retroactiveRanks } from "./misc/retroactive";
 
@@ -162,6 +163,9 @@ const start = async (cmd: { config: string }) => {
   // } else {
   scorekeeper.begin();
   // }
+
+  writeHistoricNominations(handler, db);
+
 
   // Start the API server.
   const server = new Server(db, config, scorekeeper);

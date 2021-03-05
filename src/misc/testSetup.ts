@@ -134,7 +134,7 @@ export const startTestSetup = async () => {
     const key = keyring.addFromUri(nominator.seed);
     const bond = api.tx.staking.bond(
       nominator.address,
-      "1000000000000000",
+      "10000000000000000",
       "Staked"
     );
     try {
@@ -151,6 +151,18 @@ export const startTestSetup = async () => {
   );
   const su = api.tx.sudo.sudo(reg);
   await su.signAndSend(keyring.addFromUri("//Alice"));
+  await sleep(6000);
+
+  // Set Force New Era Always
+  const forceEra = api.tx.staking.forceNewEraAlways();
+  const su2 = api.tx.sudo.sudo(forceEra);
+  await su2.signAndSend(keyring.addFromUri("//Alice"));
+  await sleep(6000);
+
+  // Increase Validator Set Size to 5
+  const increaseSet = api.tx.staking.increaseValidatorCount(3);
+  const su3 = api.tx.sudo.sudo(increaseSet);
+  await su3.signAndSend(keyring.addFromUri("//Alice"));
   await sleep(6000);
 
   // For each node:
@@ -255,9 +267,11 @@ export const startTestSetup = async () => {
                                 console.log(
                                   `{TestSetup::${node.name}} Disconnecting from api endpoint: ${node.endpoint}`
                                 );
-                                await sleep(6000);
                                 try {
-                                  nodeApi.disconnect();
+                                  if (nodeApi.isConnected){
+                                    await sleep(12000);
+                                    nodeApi.disconnect();
+                                  }
                                 } catch {
                                   console.log("disconnected");
                                 }

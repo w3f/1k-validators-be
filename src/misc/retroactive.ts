@@ -14,6 +14,8 @@ export const retroactiveRanks = async (
 ): Promise<boolean> => {
   const chaindata = new ChainData(handler);
 
+  const chainType = await db.getChainMetadata();
+
   const startEra = 1900;
   const endEra = 1940;
   const step = 4; // every 4 eras (kusama)
@@ -25,7 +27,8 @@ export const retroactiveRanks = async (
     console.log("working for ", currentEra, currentEra + 4);
     const [activeValidators, err] = await chaindata.activeValidatorsInPeriod(
       currentEra,
-      currentEra + 4
+      currentEra + 4,
+      chainType.name
     );
 
     if (err) {

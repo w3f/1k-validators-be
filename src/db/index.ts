@@ -559,7 +559,23 @@ export default class Db {
   async setNomination(address: string, era:number, targets:string[], bonded: number): Promise<boolean> {
     logger.info(`(Db::setNomination) Setting nomination for ${address} bonded with ${bonded} for era ${era} to the following validators: ${targets}`);
 
-    const nomination = new this.nominationModel({
+    const data = await this.nominationModel.findOne({
+      address: address,
+      era: era
+    });
+    if (!data){
+      const nomination = new this.nominationModel({
+        address: address,
+        era: era,
+        validators: targets,
+        timestamp: Date.now(),
+        bonded: bonded
+      });
+  
+      return nomination.save();
+    }
+
+    this.nominationModel.findOneAndUpdate({
       address: address,
       era: era,
       validators: targets,
@@ -567,7 +583,7 @@ export default class Db {
       bonded: bonded
     });
 
-    return nomination.save();
+
   }
 
   async setLastNomination(address: string, now: number): Promise<boolean> {

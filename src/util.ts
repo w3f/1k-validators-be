@@ -49,6 +49,6 @@ export function mapToObj(inputMap: Map<string, number>): any {
 //     - Test Net: 10 Decimals
 //     - Polkadot: 10 Decimals
 //     - Kusama: 12 Decimals
-export const toDecimals = (raw: number, networkDecimals):number => {
+export const toDecimals = (raw: number, networkDecimals): number => {
   return raw / Math.pow(10, networkDecimals);
-}
+};

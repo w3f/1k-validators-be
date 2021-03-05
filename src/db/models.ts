@@ -96,7 +96,6 @@ export const NominatorSchema = new Schema({
   createdAt: { type: Number, default: 0 },
 });
 
-
 export const NominationSchema = new Schema({
   // Nominator address
   address: String,
@@ -107,12 +106,12 @@ export const NominationSchema = new Schema({
   // The timestamp of the nomination
   timestamp: Number,
   // The amount of funds bonded in the account
-  bonded: Number
-})
+  bonded: Number,
+});
 
 export const ChainMetadataSchema = new Schema({
   // Number of decimals
   decimals: Number,
   // Chain name
-  name: String
-})
+  name: String,
+});

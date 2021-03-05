@@ -32,15 +32,14 @@ export const autoNumNominations = async (
   const stashAccount = await api.query.system.account(stash);
   const stashBal = stashAccount.data.free.toBn();
   const validators = await api.derive.staking.electedInfo();
-  validators.info.sort((a, b) => { 
-    if (a.exposure.total && b.exposure.total){
-      a.exposure.total.toBn().sub(b.exposure.total.toBn()).isNeg() ? -1 : 1
+  validators.info.sort((a, b) => {
+    if (a.exposure.total && b.exposure.total) {
+      a.exposure.total.toBn().sub(b.exposure.total.toBn()).isNeg() ? -1 : 1;
     } else {
       logger.warn(`{autoNominations} error, no exposure for ${a} or ${b}`);
       return 1;
-      }
     }
-  );
+  });
 
   return Math.min(
     Math.floor(
@@ -102,7 +101,9 @@ export default class ScoreKeeper {
       this.config.constraints.skipClientUpgrade,
       this.config.global.networkPrefix == 2 ? FIFTY_KSM : TEN_THOUSAND_DOT,
       this.config.global.networkPrefix == 2 ? TEN_PERCENT : THREE_PERCENT,
-      this.config.global.networkPrefix == 2 ? KUSAMA_FOUR_DAYS_ERAS : POLKADOT_FOUR_DAYS_ERAS
+      this.config.global.networkPrefix == 2
+        ? KUSAMA_FOUR_DAYS_ERAS
+        : POLKADOT_FOUR_DAYS_ERAS
     );
   }
 

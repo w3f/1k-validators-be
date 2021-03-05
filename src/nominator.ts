@@ -9,7 +9,7 @@ import Database from "./db";
 import logger from "./logger";
 
 import { NominatorConfig, Stash } from "./types";
-import {toDecimals} from "./util";
+import { toDecimals } from "./util";
 
 export default class Nominator {
   public currentlyNominating: Stash[] = [];
@@ -90,7 +90,6 @@ export default class Nominator {
 
         const currentBlock = await api.rpc.chain.getBlock();
         const { number } = currentBlock.block.header;
-        
 
         tx = api.tx.proxy.announce(
           this.controller,
@@ -107,9 +106,12 @@ export default class Nominator {
         logger.info("(Nominator::nominate} Sending extrinsic to network...");
         await this.sendStakingTx(tx, targets);
 
-        const era = (await api.query.staking.activeEra()).toJSON()['index'];
+        const era = (await api.query.staking.activeEra()).toJSON()["index"];
         const decimals = (await this.db.getChainMetadata()).decimals;
-        const bonded = toDecimals((await api.query.staking.ledger(this.address)).toJSON()['active'], decimals);
+        const bonded = toDecimals(
+          (await api.query.staking.ledger(this.address)).toJSON()["active"],
+          decimals
+        );
         await this.db.setNomination(this.address, era, targets, bonded);
       }
     }

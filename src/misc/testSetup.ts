@@ -2,6 +2,7 @@ import ApiHandler from "./../ApiHandler";
 import { Keyring } from "@polkadot/keyring";
 import { mnemonicGenerate } from "@polkadot/util-crypto";
 import { sleep } from "../util";
+import { nodeModuleNameResolver } from "typescript";
 
 export const startTestSetup = async () => {
   const handler = await ApiHandler.create(["ws://172.28.1.1:9944"]);
@@ -18,8 +19,12 @@ export const startTestSetup = async () => {
       address: "5F6h9fXgSjPdmZDZQSsFyKUL1sPbuzTRn3TwbhGuSvPecB7d",
       seed:
         "van theme secret toddler rapid skirt pigeon hedgehog exhibit address guilt motor",
-        controllerAddress: "5DvJnBAoDs1DibZ2pAsVA6FK42sDjA7P1vjEXaDBq7UwuMbZ",
-        controllerSeed: "assault melt verify taste issue unfold peasant fee surprise weasel cliff middle",
+      controllerAddress: "5DvJnBAoDs1DibZ2pAsVA6FK42sDjA7P1vjEXaDBq7UwuMbZ",
+      controllerSeed:
+        "assault melt verify taste issue unfold peasant fee surprise weasel cliff middle",
+      proxyAddress: "5Dr3JRGyhWUm6g7iHgs4byoUTyis1xShkZpAL6Ju4DFak7ti",
+      proxySeed:
+        "raw security lady smoke fit video flat miracle change hurdle potato apple",
       keyring: "",
     },
     {
@@ -27,8 +32,12 @@ export const startTestSetup = async () => {
       address: "5Gc2R35GvWAJ2uSHcLUceJudMJftbVp6Y788xzRpv8qy86sD",
       seed:
         "prevent mushroom elevator thumb stable unfair alcohol find leg fly couple deny",
-        controllerAddress: "5HGULWbEMfFeD1c5nqQbzZa1gTrVdHAv396J2UHmmMpbdd3x",
-        controllerSeed: "audit cotton absorb throw reduce bachelor chat gesture client mango derive note",
+      controllerAddress: "5HGULWbEMfFeD1c5nqQbzZa1gTrVdHAv396J2UHmmMpbdd3x",
+      controllerSeed:
+        "audit cotton absorb throw reduce bachelor chat gesture client mango derive note",
+      proxyAddress: "5F3nCQmgWSX3Fr1SqNGaEGzr71EckarUP5Rf8ufQmRReEoJV",
+      proxySeed:
+        "correct essay panda fence olympic control sorry post ski hurt athlete ritual",
       keyring: "",
     },
     {
@@ -36,8 +45,9 @@ export const startTestSetup = async () => {
       address: "5H1payfDS728ksrRi9D88RPQmyQFsZVdEFHYM4BKEiwfVJY9",
       seed:
         "panda party toe child advance lawsuit meadow burden access below brown lift",
-        controllerAddress: "5D85XirtLYnQW5juD5PvdEM2ZPVpDbja6k6CGapouv2P3weK",
-        controllerSeed: "neither seminar equip split horn city weapon bike brown muscle coast ski",
+      controllerAddress: "5D85XirtLYnQW5juD5PvdEM2ZPVpDbja6k6CGapouv2P3weK",
+      controllerSeed:
+        "neither seminar equip split horn city weapon bike brown muscle coast ski",
       keyring: "",
     },
     {
@@ -45,8 +55,9 @@ export const startTestSetup = async () => {
       address: "5FkQP1FCvGVRX9QXu4oyxW9EjroC8eaTbJ8GLRbbQXv7AZfj",
       seed:
         "physical glance describe mandate consider cricket detail excuse steak artwork broccoli diesel",
-        controllerAddress: "5Fv2wTeevGBNEJNZMWEhedEsZG41i9Fy9QeyN9mvZ4gYGahA",
-        controllerSeed: "bar exhaust category dilemma feature furnace fetch useless beach burst narrow nest",
+      controllerAddress: "5Fv2wTeevGBNEJNZMWEhedEsZG41i9Fy9QeyN9mvZ4gYGahA",
+      controllerSeed:
+        "bar exhaust category dilemma feature furnace fetch useless beach burst narrow nest",
       keyring: "",
     },
     {
@@ -54,8 +65,9 @@ export const startTestSetup = async () => {
       address: "5CXru9Vt1fPCnwyxqqcXwyvB6ibybjkAWBwzqaRgH5MV66Ax",
       seed:
         "cruel join arch wrap stereo cement roast frame fog drill mandate loyal",
-        controllerAddress: "5GdrmHHQzZFfwbU2okRHwLeuF5V88gAvsaQdyjp1qBPpXNZe",
-        controllerSeed: "milk snake bracket tomato little peanut claim cook gate decide crystal luggage",
+      controllerAddress: "5GdrmHHQzZFfwbU2okRHwLeuF5V88gAvsaQdyjp1qBPpXNZe",
+      controllerSeed:
+        "milk snake bracket tomato little peanut claim cook gate decide crystal luggage",
       keyring: "",
     },
   ];
@@ -67,6 +79,7 @@ export const startTestSetup = async () => {
       address: "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY",
       derivation: "//Alice",
       endpoint: "ws://172.28.1.1:9944",
+      initialized: false,
     },
     {
       name: "alice stash",
@@ -74,6 +87,7 @@ export const startTestSetup = async () => {
       address: "5GNJqTPyNqANBkUVMN1LPPrxXnFouWXoe2wNSmmEoLctxiZY",
       derivation: "//Alice//stash",
       endpoint: "ws://172.28.1.1:9944",
+      initialized: false,
     },
     {
       name: "bob",
@@ -81,6 +95,7 @@ export const startTestSetup = async () => {
       address: "5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty",
       derivation: "//Bob",
       endpoint: "ws://172.28.1.2:9945",
+      initialized: false,
     },
     {
       name: "bob stash",
@@ -88,6 +103,7 @@ export const startTestSetup = async () => {
       address: "5HpG9w8EBLe5XCrbczpwq5TSXvedjrBGCwqxK1iQ7qUsSWFc",
       derivation: "//Bob//stash",
       endpoint: "ws://172.28.1.1:9944",
+      initialized: false,
     },
     {
       name: "charlie",
@@ -95,6 +111,7 @@ export const startTestSetup = async () => {
       address: "5FLSigC9HGRKVhB9FiEo4Y3koPsNmBmLJbpXg2mp1hXcS59Y",
       derivation: "//Charlie",
       endpoint: "ws://172.28.1.3:9946",
+      initialized: false,
     },
     {
       name: "dave",
@@ -102,6 +119,7 @@ export const startTestSetup = async () => {
       address: "5DAAnrj7VHTznn2AWBemMuyBwZWs6FNFjdyVXUeYum3PTXFy",
       derivation: "//Dave",
       endpoint: "ws://172.28.1.4:9947",
+      initialized: false,
     },
     {
       name: "eve",
@@ -116,13 +134,17 @@ export const startTestSetup = async () => {
       address: "5CiPPseXPECbkjWCa6MnjNokrgYjMqmKndv2rSnekmSK2DjL",
       derivation: "//Ferdie",
       endpoint: "ws://172.28.1.6:9949",
+      initialized: false,
     },
   ];
 
   // For each nominator:
   // - Transfer some balance into the stash account from Alice
-  // - Bond it to itself
+  // - Transfer some balance into the controller account from Alice
+  // - Transfer some balance into the proxy account from Alice
+  // - Bond to controller
   for (const nominator of nominators) {
+    // Send funds to the Nominator Stash
     console.log(
       `{TestSetup::${nominator.name}} Sending funds to nominator stash account: ${nominator.address}`
     );
@@ -137,6 +159,7 @@ export const startTestSetup = async () => {
     }
     await sleep(3000);
 
+    // Send funds to the Nominator Controller
     console.log(
       `{TestSetup::${nominator.name}} Sending funds to nominator controller account: ${nominator.address}`
     );
@@ -145,18 +168,50 @@ export const startTestSetup = async () => {
       "12345678912345"
     );
     try {
-      const hash = await transferController.signAndSend(keyring.addFromUri("//Alice"));
+      const hash = await transferController.signAndSend(
+        keyring.addFromUri("//Alice")
+      );
     } catch {
       console.log("{TestSetup::${nominator.name}} transfer tx failed...");
     }
     await sleep(3000);
 
+    // Transfer to Proxy Address, and set Proxy account as a proxy to the Controller
+    if (nominator.proxyAddress) {
+      console.log(
+        `{TestSetup::${nominator.name}} Sending funds to nominator proxy account: ${nominator.address}`
+      );
+      const transferProxy = api.tx.balances.transfer(
+        nominator.proxyAddress,
+        "123456789123456"
+      );
+      try {
+        const hash = await transferProxy.signAndSend(
+          keyring.addFromUri("//Alice")
+        );
+      } catch {
+        console.log("{TestSetup::${nominator.name}} transfer tx failed...");
+      }
+      await sleep(3000);
 
+      const setProxy = api.tx.proxy.addProxy(
+        nominator.proxyAddress,
+        "Any",
+        300
+      );
+      try {
+        const hash = await setProxy.signAndSend(
+          keyring.addFromUri(nominator.controllerSeed)
+        );
+      } catch {
+        console.log(`{TestSETUP::${nominator.name} set proxy failed...`);
+      }
+    }
 
+    // Bond the Nominator stash to the Nominator controller
     console.log(
       `{TestSetup::${nominator.name}} Bonding nominator account: ${nominator.address}`
     );
-
     const key = keyring.addFromUri(nominator.seed);
     const bond = api.tx.staking.bond(
       nominator.controllerAddress,
@@ -172,6 +227,7 @@ export const startTestSetup = async () => {
   await sleep(6000);
 
   // Set Alice as a registrar
+  console.log(`{TestSetup} Setting Alice as a Registrar`);
   const reg = api.tx.identity.addRegistrar(
     "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY"
   );
@@ -180,12 +236,14 @@ export const startTestSetup = async () => {
   await sleep(6000);
 
   // Set Force New Era Always
+  console.log(`{TestSetup} set Force New Era Always`);
   const forceEra = api.tx.staking.forceNewEraAlways();
   const su2 = api.tx.sudo.sudo(forceEra);
   await su2.signAndSend(keyring.addFromUri("//Alice"));
   await sleep(6000);
 
   // Increase Validator Set Size to 5
+  console.log(`{TestSetup} Increase validator set size to 5`);
   const increaseSet = api.tx.staking.increaseValidatorCount(3);
   const su3 = api.tx.sudo.sudo(increaseSet);
   await su3.signAndSend(keyring.addFromUri("//Alice"));
@@ -269,37 +327,27 @@ export const startTestSetup = async () => {
               ({ events = [], status }) => {
                 events.forEach(
                   async ({ event: { data, method, section }, phase }) => {
-                    if (method == "ExtrinsicSuccess") {
+                    if (status.isFinalized && method == "ExtrinsicSuccess") {
                       console.log(
                         `{TestSetup::${node.name}} Setting Session Keys Successful, setting intent to validate....`
                       );
                       const validate = nodeApi.tx.staking.validate("0x10");
                       await validate.signAndSend(
                         node.keyring,
-                        ({ events = [], status }) => {
-                          events.forEach(
-                            async ({
-                              event: { data, method, section },
-                              phase,
-                            }) => {
-                              if (method == "ExtrinsicSuccess") {
-                                console.log(
-                                  `{TestSetup::${node.name}} Validate tx successful`
-                                );
-                                console.log(
-                                  `{TestSetup::${node.name}} Disconnecting from api endpoint: ${node.endpoint}`
-                                );
-                                try {
-                                  if (nodeApi.isConnected) {
-                                    await sleep(12000);
-                                    nodeApi.disconnect();
-                                  }
-                                } catch {
-                                  console.log("disconnected");
-                                }
-                              }
+                        async ({ events = [], status }) => {
+                          if (status.isFinalized && !node.initialized) {
+                            console.log(
+                              `{TestSetup::${node.name}} Validate tx successful`
+                            );
+                            console.log(
+                              `{TestSetup::${node.name}} Disconnecting from api endpoint: ${node.endpoint}`
+                            );
+
+                            if (nodeApi.isConnected) {
+                              nodeApi.disconnect();
+                              node.initialized = true;
                             }
-                          );
+                          }
                         }
                       );
                     }

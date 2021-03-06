@@ -18,6 +18,8 @@ export const startTestSetup = async () => {
       address: "5F6h9fXgSjPdmZDZQSsFyKUL1sPbuzTRn3TwbhGuSvPecB7d",
       seed:
         "van theme secret toddler rapid skirt pigeon hedgehog exhibit address guilt motor",
+        controllerAddress: "5DvJnBAoDs1DibZ2pAsVA6FK42sDjA7P1vjEXaDBq7UwuMbZ",
+        controllerSeed: "assault melt verify taste issue unfold peasant fee surprise weasel cliff middle",
       keyring: "",
     },
     {
@@ -25,6 +27,8 @@ export const startTestSetup = async () => {
       address: "5Gc2R35GvWAJ2uSHcLUceJudMJftbVp6Y788xzRpv8qy86sD",
       seed:
         "prevent mushroom elevator thumb stable unfair alcohol find leg fly couple deny",
+        controllerAddress: "5HGULWbEMfFeD1c5nqQbzZa1gTrVdHAv396J2UHmmMpbdd3x",
+        controllerSeed: "audit cotton absorb throw reduce bachelor chat gesture client mango derive note",
       keyring: "",
     },
     {
@@ -32,6 +36,8 @@ export const startTestSetup = async () => {
       address: "5H1payfDS728ksrRi9D88RPQmyQFsZVdEFHYM4BKEiwfVJY9",
       seed:
         "panda party toe child advance lawsuit meadow burden access below brown lift",
+        controllerAddress: "5D85XirtLYnQW5juD5PvdEM2ZPVpDbja6k6CGapouv2P3weK",
+        controllerSeed: "neither seminar equip split horn city weapon bike brown muscle coast ski",
       keyring: "",
     },
     {
@@ -39,6 +45,8 @@ export const startTestSetup = async () => {
       address: "5FkQP1FCvGVRX9QXu4oyxW9EjroC8eaTbJ8GLRbbQXv7AZfj",
       seed:
         "physical glance describe mandate consider cricket detail excuse steak artwork broccoli diesel",
+        controllerAddress: "5Fv2wTeevGBNEJNZMWEhedEsZG41i9Fy9QeyN9mvZ4gYGahA",
+        controllerSeed: "bar exhaust category dilemma feature furnace fetch useless beach burst narrow nest",
       keyring: "",
     },
     {
@@ -46,6 +54,8 @@ export const startTestSetup = async () => {
       address: "5CXru9Vt1fPCnwyxqqcXwyvB6ibybjkAWBwzqaRgH5MV66Ax",
       seed:
         "cruel join arch wrap stereo cement roast frame fog drill mandate loyal",
+        controllerAddress: "5GdrmHHQzZFfwbU2okRHwLeuF5V88gAvsaQdyjp1qBPpXNZe",
+        controllerSeed: "milk snake bracket tomato little peanut claim cook gate decide crystal luggage",
       keyring: "",
     },
   ];
@@ -110,11 +120,11 @@ export const startTestSetup = async () => {
   ];
 
   // For each nominator:
-  // - Transfer some balance into the account from Alice
+  // - Transfer some balance into the stash account from Alice
   // - Bond it to itself
   for (const nominator of nominators) {
     console.log(
-      `{TestSetup::${nominator.name}} Sending funds to nominator account: ${nominator.address}`
+      `{TestSetup::${nominator.name}} Sending funds to nominator stash account: ${nominator.address}`
     );
     const transfer = api.tx.balances.transfer(
       nominator.address,
@@ -125,15 +135,31 @@ export const startTestSetup = async () => {
     } catch {
       console.log("{TestSetup::${nominator.name}} transfer tx failed...");
     }
+    await sleep(3000);
+
+    console.log(
+      `{TestSetup::${nominator.name}} Sending funds to nominator controller account: ${nominator.address}`
+    );
+    const transferController = api.tx.balances.transfer(
+      nominator.controllerAddress,
+      "12345678912345"
+    );
+    try {
+      const hash = await transferController.signAndSend(keyring.addFromUri("//Alice"));
+    } catch {
+      console.log("{TestSetup::${nominator.name}} transfer tx failed...");
+    }
+    await sleep(3000);
+
+
 
     console.log(
       `{TestSetup::${nominator.name}} Bonding nominator account: ${nominator.address}`
     );
-    await sleep(3000);
 
     const key = keyring.addFromUri(nominator.seed);
     const bond = api.tx.staking.bond(
-      nominator.address,
+      nominator.controllerAddress,
       "10000000000000000",
       "Staked"
     );

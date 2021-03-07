@@ -19,7 +19,7 @@ import logger from "./logger";
 import Nominator from "./nominator";
 import { CandidateData, Stash } from "./types";
 import { getNow, sleep, toDecimals } from "./util";
-import { startValidatityJob } from "./cron";
+import { startExecutionJob, startValidatityJob } from "./cron";
 
 type NominatorGroup = NominatorConfig[];
 
@@ -169,41 +169,6 @@ export default class ScoreKeeper {
       await this.startRound();
     }
 
-    const executionCron = new CronJob("0 0-59/15 * * * *", async () => {
-      const api = await this.handler.getApi();
-      const currentBlock = await api.rpc.chain.getBlock();
-      const { number } = currentBlock.block.header;
-
-      const allDelayed = await this.db.getAllDelayedTxs();
-
-      for (const data of allDelayed) {
-        const { number: dataNum, controller, targets } = data;
-        if (dataNum + 10850 <= number.toNumber()) {
-          // time to execute
-          // find the nominator
-          const nomGroup = this.nominatorGroups.find((nomGroup) => {
-            return !!nomGroup.find((nom) => {
-              return nom.controller == controller;
-            });
-          });
-
-          const nominator = nomGroup.find(
-            (nom) => nom.controller == controller
-          );
-
-          const innerTx = api.tx.staking.nominate(targets);
-          const tx = api.tx.proxy.proxyAnnounced(
-            nominator.address,
-            controller,
-            "Staking",
-            innerTx
-          );
-          await this.db.deleteDelayedTx(dataNum, controller);
-          await nominator.sendStakingTx(tx, targets);
-        }
-      }
-    });
-
     const mainCron = new CronJob("0 0-59/10 * * * *", async () => {
       if (this.ending) {
         logger.info(`ROUND IS CURRENTLY ENDING.`);
@@ -245,7 +210,13 @@ export default class ScoreKeeper {
     });
 
     startValidatityJob(this.config, this.db, this.constraints);
-    executionCron.start();
+    startExecutionJob(
+      this.handler,
+      this.nominatorGroups,
+      this.config,
+      this.db,
+      this.constraints
+    );
     mainCron.start();
   }
 

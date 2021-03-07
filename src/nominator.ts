@@ -140,7 +140,9 @@ export default class Nominator {
           const era = (await api.query.staking.activeEra()).toJSON()["index"];
           const decimals = (await this.db.getChainMetadata()).decimals;
           const bonded = toDecimals(
-            (await api.query.staking.ledger(this.address)).toJSON()["active"],
+            (await api.query.staking.ledger(this.controller)).toJSON()[
+              "active"
+            ],
             decimals
           );
           await this.db.setNomination(

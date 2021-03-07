@@ -44,7 +44,9 @@ export default class Nominator {
     this.signer = keyring.createFromUri(cfg.seed);
     this._controller = this._isProxy ? cfg.proxyFor : this.signer.address;
     logger.info(
-      `(Nominator::constructor) Nominator signer spawned: ${this.address} | ${this._isProxy ? 'Proxy' : 'Controller'}`
+      `(Nominator::constructor) Nominator signer spawned: ${this.address} | ${
+        this._isProxy ? "Proxy" : "Controller"
+      }`
     );
   }
 
@@ -106,7 +108,6 @@ export default class Nominator {
         tx = api.tx.staking.nominate(targets);
         logger.info("(Nominator::nominate} Sending extrinsic to network...");
         await this.sendStakingTx(tx, targets);
-
       }
     }
 
@@ -120,10 +121,10 @@ export default class Nominator {
     const now = new Date().getTime();
     const api = await this.handler.getApi();
 
-    try{
+    try {
       const unsub = await tx.signAndSend(this.signer, async (result: any) => {
         const { status } = result;
-  
+
         logger.info(`(Nominator::nominate) Status now: ${status.type}`);
         if (status.isFinalized) {
           const finalizedBlockHash = status.asFinalized;
@@ -135,24 +136,29 @@ export default class Nominator {
             await this.db.setTarget(this.controller, stash, now);
             await this.db.setLastNomination(this.controller, now);
           }
-  
+
           const era = (await api.query.staking.activeEra()).toJSON()["index"];
           const decimals = (await this.db.getChainMetadata()).decimals;
           const bonded = toDecimals(
             (await api.query.staking.ledger(this.address)).toJSON()["active"],
             decimals
           );
-          await this.db.setNomination(this.address, era, targets, bonded, finalizedBlockHash);
-          
+          await this.db.setNomination(
+            this.address,
+            era,
+            targets,
+            bonded,
+            finalizedBlockHash
+          );
+
           unsub();
         }
       });
-  
+
       return true;
-    } catch(err){
+    } catch (err) {
       logger.warn(`Nominate tx failed: ${err}`);
       return false;
     }
-
   };
 }

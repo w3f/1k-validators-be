@@ -108,7 +108,7 @@ export const NominationSchema = new Schema({
   // The amount of funds bonded in the account
   bonded: Number,
   // The block has the tx was finalized in
-  blockHash: String
+  blockHash: String,
 });
 
 export const ChainMetadataSchema = new Schema({

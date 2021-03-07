@@ -21,6 +21,7 @@ import { startTestSetup } from "./misc/testSetup";
 import { writeHistoricNominations } from "./misc/historicNominations";
 
 import { retroactiveRanks } from "./misc/retroactive";
+import { startMonitorJob } from "./cron";
 
 const isCI = process.env.CI;
 
@@ -97,24 +98,7 @@ const start = async (cmd: { config: string }) => {
   // Buffer some time for set up.
   await sleep(1500);
 
-  // Monitors the latest GitHub releases and ensures nodes have upgraded
-  // within a timely period.
-  const monitor = new Monitor(db, SIXTEEN_HOURS);
-  const monitorFrequency = "0 */15 * * * *"; // Every 15 minutes.
-
-  const monitorCron = new CronJob(monitorFrequency, async () => {
-    logger.info(
-      `{Start} Monitoring the node version by polling latst GitHub releases every ${
-        config.global.test ? "three" : "fifteen"
-      } minutes.`
-    );
-    await monitor.getLatestTaggedRelease();
-    await monitor.ensureUpgrades();
-  });
-
-  await monitor.getLatestTaggedRelease();
-  await monitor.ensureUpgrades();
-  monitorCron.start();
+  await startMonitorJob(config, db);
 
   // Once a week reset the offline accumulations of nodes.
   const clearFrequency = "* 0 * * * *";

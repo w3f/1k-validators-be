@@ -9,8 +9,11 @@
         "skipConnectionTime": true,
         "skipIdentity": false,
         "skipStakedDestination": true,
-        "skipClientUPgrade": true
-    }, 
+        "skipClientUpgrade": true
+    },
+    "cron": {
+        "monitor": "0 */15 * * * *"
+    },
     "db": {
         "migrate": false,
         "mongo": {

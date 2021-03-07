@@ -45,3 +45,6 @@ export const LocalEndpoints = ["ws://172.28.1.1:9944"];
 
 /// Endpoint of the Kusama Thousand Validators backend. Used for the Polkadot program.
 export const KOTVBackendEndpoint = "https://kusama.w3f.community";
+
+// Monitor Cron job for checking if clients have upgraded. This runs ever 15 minutes by default
+export const MONITOR_CRON = "0 */15 * * * *";

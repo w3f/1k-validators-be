@@ -48,3 +48,6 @@ export const KOTVBackendEndpoint = "https://kusama.w3f.community";
 
 // Monitor Cron job for checking if clients have upgraded. This runs ever 15 minutes by default
 export const MONITOR_CRON = "0 */15 * * * *";
+
+// Clear Offline Time Cron Job. This runs once every sunday  by default
+export const CLEAR_OFFLINE_CRON = "0 0 0 * * 0";

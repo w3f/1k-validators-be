@@ -21,7 +21,7 @@ import { startTestSetup } from "./misc/testSetup";
 import { writeHistoricNominations } from "./misc/historicNominations";
 
 import { retroactiveRanks } from "./misc/retroactive";
-import { startMonitorJob } from "./cron";
+import { startClearAccumulatedOfflineTimeJob, startMonitorJob } from "./cron";
 
 const isCI = process.env.CI;
 
@@ -99,13 +99,8 @@ const start = async (cmd: { config: string }) => {
   await sleep(1500);
 
   await startMonitorJob(config, db);
+  await startClearAccumulatedOfflineTimeJob(config, db);
 
-  // Once a week reset the offline accumulations of nodes.
-  const clearFrequency = "* 0 * * * *";
-  const clearCron = new CronJob(clearFrequency, () => {
-    db.clearAccumulated();
-  });
-  clearCron.start();
 
   // Set up the nominators in the scorekeeper.
   const scorekeeper = new Scorekeeper(handler, db, config, maybeBot);

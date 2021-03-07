@@ -51,3 +51,6 @@ export const MONITOR_CRON = "0 */15 * * * *";
 
 // Clear Offline Time Cron Job. This runs once every sunday  by default
 export const CLEAR_OFFLINE_CRON = "0 0 0 * * 0";
+
+// Validity Cron Job. This runs every 7 minutes by default
+export const VALIDITY_CRON = "0 0-59/7 * * * *";

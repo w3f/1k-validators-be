@@ -35,8 +35,11 @@ const RankEventSchema = new Schema({
 });
 
 export const DelayedTxSchema = new Schema({
+  // The block number the transaction was announced in
   number: Number,
+  // The controller address
   controller: String,
+  // The validators to nominate
   targets: [String],
 });
 

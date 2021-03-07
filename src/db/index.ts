@@ -129,7 +129,7 @@ export default class Db {
 
   // Unsets old candidate fields.
   async deleteOldCandidateFields(): Promise<boolean> {
-    await this.candidateModel.collection.findOneAndUpdate(
+    await this.candidateModel.collection.update(
       {},
       {
         $unset: {

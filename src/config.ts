@@ -28,6 +28,7 @@ export type Config = {
     monitor: string;
     clearOffline: string;
     validity: string;
+    execution: string;
   };
   db: {
     mongo: {
@@ -46,6 +47,9 @@ export type Config = {
     enabled: boolean;
     room: string;
     userId: string;
+  };
+  proxy: {
+    timeDelayBlocks: number;
   };
   scorekeeper: {
     candidates: CandidateConfig[];

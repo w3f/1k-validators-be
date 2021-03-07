@@ -196,8 +196,8 @@ export const startTestSetup = async () => {
 
       const setProxy = api.tx.proxy.addProxy(
         nominator.proxyAddress,
-        "Any",
-        300
+        "Staking",
+        30
       );
       try {
         const hash = await setProxy.signAndSend(

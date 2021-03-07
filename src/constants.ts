@@ -46,6 +46,9 @@ export const LocalEndpoints = ["ws://172.28.1.1:9944"];
 /// Endpoint of the Kusama Thousand Validators backend. Used for the Polkadot program.
 export const KOTVBackendEndpoint = "https://kusama.w3f.community";
 
+// The number of blocks for a time delay proxy. Default is 10850, or ~18 hours
+export const TIME_DELAY_BLOCKS = 10850;
+
 // Monitor Cron job for checking if clients have upgraded. This runs ever 15 minutes by default
 export const MONITOR_CRON = "0 */15 * * * *";
 
@@ -54,3 +57,6 @@ export const CLEAR_OFFLINE_CRON = "0 0 0 * * 0";
 
 // Validity Cron Job. This runs every 7 minutes by default
 export const VALIDITY_CRON = "0 0-59/7 * * * *";
+
+// Execution Cron Job. this runs every 15 minutes by default
+export const EXECUTION_CRON = "0 0-59/15 * * * *";

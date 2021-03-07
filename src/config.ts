@@ -24,6 +24,11 @@ export type Config = {
     skipStakedDestination: boolean;
     skipClientUpgrade: boolean;
   };
+  cron: {
+    monitor: string;
+    clearOffline: string;
+    validity: string;
+  };
   db: {
     mongo: {
       uri: string;

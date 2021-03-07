@@ -101,7 +101,6 @@ const start = async (cmd: { config: string }) => {
   await startMonitorJob(config, db);
   await startClearAccumulatedOfflineTimeJob(config, db);
 
-
   // Set up the nominators in the scorekeeper.
   const scorekeeper = new Scorekeeper(handler, db, config, maybeBot);
   for (const nominatorGroup of config.scorekeeper.nominators) {

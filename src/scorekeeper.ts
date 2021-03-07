@@ -19,6 +19,7 @@ import logger from "./logger";
 import Nominator from "./nominator";
 import { CandidateData, Stash } from "./types";
 import { getNow, sleep, toDecimals } from "./util";
+import { startValidatityJob } from "./cron";
 
 type NominatorGroup = NominatorConfig[];
 
@@ -168,34 +169,6 @@ export default class ScoreKeeper {
       await this.startRound();
     }
 
-    const validityCron = new CronJob("0 0-59/7 * * * *", async () => {
-      const allCandidates = await this.db.allCandidates();
-
-      const identityHashTable = await this.constraints.populateIdentityHashTable(
-        allCandidates
-      );
-
-      // set invalidityReason for stashes
-      const invalid = await this.constraints.getInvalidCandidates(
-        allCandidates,
-        identityHashTable
-      );
-      for (const i of invalid) {
-        const { stash, reason } = i;
-        await this.db.setInvalidityReason(stash, reason);
-      }
-
-      // set invalidityReason as empty for valid candidates
-      const valid = await this.constraints.getValidCandidates(
-        allCandidates,
-        identityHashTable
-      );
-      for (const v of valid) {
-        const { stash } = v;
-        await this.db.setInvalidityReason(stash, "");
-      }
-    });
-
     const executionCron = new CronJob("0 0-59/15 * * * *", async () => {
       const api = await this.handler.getApi();
       const currentBlock = await api.rpc.chain.getBlock();
@@ -271,7 +244,7 @@ export default class ScoreKeeper {
       }
     });
 
-    validityCron.start();
+    startValidatityJob(this.config, this.db, this.constraints);
     executionCron.start();
     mainCron.start();
   }

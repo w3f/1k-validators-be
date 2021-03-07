@@ -581,7 +581,7 @@ export default class Db {
         validators: targets,
         timestamp: Date.now(),
         bonded: bonded,
-        blockHash: blockHash
+        blockHash: blockHash,
       });
 
       return nomination.save();
@@ -593,7 +593,7 @@ export default class Db {
       validators: targets,
       timestamp: Date.now(),
       bonded: bonded,
-      blockHash: blockHash
+      blockHash: blockHash,
     });
   }
 

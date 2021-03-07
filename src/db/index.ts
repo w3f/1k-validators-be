@@ -563,7 +563,8 @@ export default class Db {
     address: string,
     era: number,
     targets: string[],
-    bonded: number
+    bonded: number,
+    blockHash: string
   ): Promise<boolean> {
     logger.info(
       `(Db::setNomination) Setting nomination for ${address} bonded with ${bonded} for era ${era} to the following validators: ${targets}`
@@ -580,6 +581,7 @@ export default class Db {
         validators: targets,
         timestamp: Date.now(),
         bonded: bonded,
+        blockHash: blockHash
       });
 
       return nomination.save();
@@ -591,6 +593,7 @@ export default class Db {
       validators: targets,
       timestamp: Date.now(),
       bonded: bonded,
+      blockHash: blockHash
     });
   }
 

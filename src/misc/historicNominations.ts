@@ -76,7 +76,7 @@ export const writeHistoricNominations = async (
         decimals
       );
 
-      await db.setNomination(nominator.address, submittedIn, targets, bonded);
+      await db.setNomination(nominator.address, submittedIn, targets, bonded, '');
     }
   }
 

@@ -161,7 +161,7 @@ export const startTestSetup = async () => {
 
     // Send funds to the Nominator Controller
     console.log(
-      `{TestSetup::${nominator.name}} Sending funds to nominator controller account: ${nominator.address}`
+      `{TestSetup::${nominator.name}} Sending funds to nominator controller account: ${nominator.controllerAddress}`
     );
     const transferController = api.tx.balances.transfer(
       nominator.controllerAddress,
@@ -221,7 +221,7 @@ export const startTestSetup = async () => {
     try {
       const bondTx = await bond.signAndSend(key);
     } catch {
-      console.log("{TestSetup::${nominator.name}} bond tx failed");
+      console.log(`{TestSetup::${nominator.name}} bond tx failed`);
     }
   }
   await sleep(6000);
@@ -310,7 +310,7 @@ export const startTestSetup = async () => {
       node.keyring,
       ({ events = [], status }) => {
         events.forEach(async ({ event: { data, method, section }, phase }) => {
-          if (method == "ExtrinsicSuccess") {
+          if (status.isFinalized && method == "ExtrinsicSuccess") {
             console.log(
               `{TestSetup::${node.name}} Bond Successful, generating session keys...`
             );

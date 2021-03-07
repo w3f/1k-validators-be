@@ -10,6 +10,7 @@ import logger from "./logger";
 
 import { NominatorConfig, Stash } from "./types";
 import { toDecimals } from "./util";
+import { Transform } from "node:stream";
 
 export default class Nominator {
   public currentlyNominating: Stash[] = [];
@@ -43,7 +44,7 @@ export default class Nominator {
     this.signer = keyring.createFromUri(cfg.seed);
     this._controller = this._isProxy ? cfg.proxyFor : this.signer.address;
     logger.info(
-      `(Nominator::constructor) Nominator signer spawned: ${this.address}`
+      `(Nominator::constructor) Nominator signer spawned: ${this.address} | ${this._isProxy ? 'Proxy' : 'Controller'}`
     );
   }
 
@@ -106,13 +107,6 @@ export default class Nominator {
         logger.info("(Nominator::nominate} Sending extrinsic to network...");
         await this.sendStakingTx(tx, targets);
 
-        const era = (await api.query.staking.activeEra()).toJSON()["index"];
-        const decimals = (await this.db.getChainMetadata()).decimals;
-        const bonded = toDecimals(
-          (await api.query.staking.ledger(this.address)).toJSON()["active"],
-          decimals
-        );
-        await this.db.setNomination(this.address, era, targets, bonded);
       }
     }
 
@@ -124,24 +118,41 @@ export default class Nominator {
     targets: string[]
   ): Promise<boolean> => {
     const now = new Date().getTime();
+    const api = await this.handler.getApi();
 
-    const unsub = await tx.signAndSend(this.signer, async (result: any) => {
-      const { status } = result;
-
-      logger.info(`(Nominator::nominate) Status now: ${status.type}`);
-      if (status.isFinalized) {
-        logger.info(
-          `(Nominator::nominate) Included in block ${status.asFinalized}`
-        );
-        this.currentlyNominating = targets;
-        for (const stash of targets) {
-          await this.db.setTarget(this.controller, stash, now);
-          await this.db.setLastNomination(this.controller, now);
+    try{
+      const unsub = await tx.signAndSend(this.signer, async (result: any) => {
+        const { status } = result;
+  
+        logger.info(`(Nominator::nominate) Status now: ${status.type}`);
+        if (status.isFinalized) {
+          const finalizedBlockHash = status.asFinalized;
+          logger.info(
+            `(Nominator::nominate) Included in block ${finalizedBlockHash}`
+          );
+          this.currentlyNominating = targets;
+          for (const stash of targets) {
+            await this.db.setTarget(this.controller, stash, now);
+            await this.db.setLastNomination(this.controller, now);
+          }
+  
+          const era = (await api.query.staking.activeEra()).toJSON()["index"];
+          const decimals = (await this.db.getChainMetadata()).decimals;
+          const bonded = toDecimals(
+            (await api.query.staking.ledger(this.address)).toJSON()["active"],
+            decimals
+          );
+          await this.db.setNomination(this.address, era, targets, bonded, finalizedBlockHash);
+          
+          unsub();
         }
-        unsub();
-      }
-    });
+      });
+  
+      return true;
+    } catch(err){
+      logger.warn(`Nominate tx failed: ${err}`);
+      return false;
+    }
 
-    return true;
   };
 }

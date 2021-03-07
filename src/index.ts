@@ -117,7 +117,7 @@ const start = async (cmd: { config: string }) => {
   monitorCron.start();
 
   // Once a week reset the offline accumulations of nodes.
-  const clearFrequency = "* * * * * 0";
+  const clearFrequency = "* 0 * * * *";
   const clearCron = new CronJob(clearFrequency, () => {
     db.clearAccumulated();
   });

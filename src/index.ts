@@ -141,7 +141,10 @@ const start = async (cmd: { config: string }) => {
   scorekeeper.begin();
   // }
 
-  writeHistoricNominations(handler, db);
+  if (config.global.historicalNominations && !isCI) {
+    writeHistoricNominations(handler, db);
+  }
+
 
   // Start the API server.
   const server = new Server(db, config, scorekeeper);

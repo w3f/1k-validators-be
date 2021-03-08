@@ -1,5 +1,7 @@
+import Keyring from "@polkadot/keyring";
 import * as bs58 from "bs58";
 import * as hash from "hash.js";
+import { Config } from "./config";
 
 export const sleep = (ms: number): Promise<void> =>
   new Promise((resolve) => {
@@ -52,3 +54,12 @@ export function mapToObj(inputMap: Map<string, number>): any {
 export const toDecimals = (raw: number, networkDecimals): number => {
   return raw / Math.pow(10, networkDecimals);
 };
+
+
+export const formatAddress = (address: string, config: Config): string =>{
+  const keyring = new Keyring();
+  const ss58Prefix = 
+    config.global.networkPrefix == 2 ? 2 
+    : 0;
+  return keyring.encodeAddress(address, ss58Prefix);
+}

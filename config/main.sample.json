@@ -3,7 +3,8 @@
         "test": true,
         "dryRun": false,
         "networkPrefix": 3,
-        "retroactive": false
+        "retroactive": false,
+        "historicalNominations": false
     },
     "constraints": {
         "skipConnectionTime": true,
@@ -15,7 +16,8 @@
         "monitor": "0 */15 * * * *",
         "clearOffline": "0 0 0 * * 0",
         "validity": "0 0-59/7 * * * *",
-        "execution": "0 0-59/1 * * * *"
+        "execution": "0 0-59/1 * * * *",
+        "scorekeeper": "0 0-59/1 * * * *"
     },
     "db": {
         "migrate": false,
@@ -62,7 +64,7 @@
             }
         ],
         "nominators": [],
-        "forceRound": true,
+        "forceRound": false,
         "nominating": true
     },
     "server": {

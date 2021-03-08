@@ -88,6 +88,7 @@ export const CandidateSchema = new Schema({
 });
 
 export const EraSchema = new Schema({
+  // The last era a nomination took place
   lastNominatedEraIndex: { type: String, default: "0" },
 });
 

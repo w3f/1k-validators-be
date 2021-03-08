@@ -93,6 +93,7 @@ const start = async (cmd: { config: string }) => {
     maybeBot = new MatrixBot(baseUrl, accessToken, userId, db, config);
     maybeBot.start();
     maybeBot.sendMessage(`Backend services (re)-started!`);
+    maybeBot.sendMessage(`CI env: ${isCI}`);
   }
 
   // Buffer some time for set up.

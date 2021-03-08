@@ -145,7 +145,6 @@ const start = async (cmd: { config: string }) => {
     writeHistoricNominations(handler, db);
   }
 
-
   // Start the API server.
   const server = new Server(db, config, scorekeeper);
   server.start();

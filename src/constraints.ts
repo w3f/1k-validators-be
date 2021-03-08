@@ -346,8 +346,6 @@ export class OTV implements Constraints {
 
       // TODO: Add constraint for checking claimed rewards
 
-
-
       // Checking for slashing should be temporarily removed - since slashes can be cancelled by governance they should be handled manually.
 
       // const [hasSlashes, err3] = await this.chaindata.hasUnappliedSlashes(

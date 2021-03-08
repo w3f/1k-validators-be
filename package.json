@@ -23,7 +23,7 @@
   "dependencies": {
     "@koa/router": "^10.0.0",
     "@octokit/rest": "^18.3.4",
-    "@polkadot/api": "^4.0.1",
+    "@polkadot/api": "^3.11.1",
     "@polkadot/keyring": "^6.0.4",
     "@types/cron": "^1.7.1",
     "@types/koa": "^2.13.1",
@@ -43,7 +43,7 @@
     "koa-bodyparser": "^4.3.0",
     "koa2-cors": "^2.0.6",
     "matrix-js-sdk": "^9.8.0",
-    "mongodb": "^3.6.4",
+    "mongodb": "3.6.3",
     "mongodb-memory-server": "^6.9.6",
     "mongoose": "^5.11.19",
     "prettier": "^2.2.1",

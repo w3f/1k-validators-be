@@ -123,6 +123,10 @@ export default class Nominator {
 
     try {
       const unsub = await tx.signAndSend(this.signer, async (result: any) => {
+
+        // TODO: Check result of Tx - either 'ExtrinsicSuccess' or 'ExtrinsicFail'
+        //  - If the extrinsic fails, this needs some error handling / logging added
+
         const { status } = result;
 
         logger.info(`(Nominator::nominate) Status now: ${status.type}`);
@@ -132,6 +136,18 @@ export default class Nominator {
             `(Nominator::nominate) Included in block ${finalizedBlockHash}`
           );
           this.currentlyNominating = targets;
+
+        // Get the current nominations of an address
+        const currentTargets = await this.db.getCurrentTargets(
+          this.controller
+        );
+        // if the current targets is populated, clear it
+        if (!!currentTargets.length) {
+          logger.info("(Nominator::nominate) Wiping old targets");
+          await this.db.clearCurrent(this.controller);
+        }
+
+
           for (const stash of targets) {
             await this.db.setTarget(this.controller, stash, now);
             await this.db.setLastNomination(this.controller, now);

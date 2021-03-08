@@ -29,6 +29,7 @@ export type Config = {
     clearOffline: string;
     validity: string;
     execution: string;
+    scorekeeper: string;
   };
   db: {
     mongo: {
@@ -40,6 +41,7 @@ export type Config = {
     networkPrefix: 0 | 2 | 3;
     test: boolean;
     retroactive: boolean;
+    historicalNominations: boolean;
   };
   matrix: {
     accessToken: string;

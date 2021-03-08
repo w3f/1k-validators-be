@@ -23,7 +23,7 @@ import { writeHistoricNominations } from "./misc/historicNominations";
 import { retroactiveRanks } from "./misc/retroactive";
 import { startClearAccumulatedOfflineTimeJob, startMonitorJob } from "./cron";
 
-const isCI = process.env.CIRCLE_JOB;
+const isCI = process.env.CIRCLECI;
 
 const catchAndQuit = async (fn: any) => {
   try {

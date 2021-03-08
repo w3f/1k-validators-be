@@ -172,14 +172,20 @@ export default class ScoreKeeper {
 
     // If `forceRound` is on - start immediately.
     if (this.config.scorekeeper.forceRound) {
-      logger.info(`(Scorekeeper::begin) Force Round: ${this.config.scorekeeper.forceRound} starting round....`);
+      logger.info(
+        `(Scorekeeper::begin) Force Round: ${this.config.scorekeeper.forceRound} starting round....`
+      );
       await this.startRound();
     }
 
     // Main cron job for starting rounds and ending rounds of the scorekeeper
-    const scoreKeeperFrequency = this.config.cron.scorekeeper ? this.config.cron.scorekeeper : SCOREKEEPER_CRON;
+    const scoreKeeperFrequency = this.config.cron.scorekeeper
+      ? this.config.cron.scorekeeper
+      : SCOREKEEPER_CRON;
     const mainCron = new CronJob(scoreKeeperFrequency, async () => {
-      logger.info(`(Scorekeeper::mainCron) Running mainCron of Scorekeeper with frequency ${scoreKeeperFrequency}`);
+      logger.info(
+        `(Scorekeeper::mainCron) Running mainCron of Scorekeeper with frequency ${scoreKeeperFrequency}`
+      );
 
       if (this.ending) {
         logger.info(`(Scorekeeper::mainCron) ROUND IS CURRENTLY ENDING.`);
@@ -200,12 +206,17 @@ export default class ScoreKeeper {
       // For Polkadot, Nominations will happen every era
       const eraBuffer = this.config.global.networkPrefix == 0 ? 1 : 4;
 
-      const isNominationRound = (Number(lastNominatedEraIndex) <= activeEra - eraBuffer);
+      const isNominationRound =
+        Number(lastNominatedEraIndex) <= activeEra - eraBuffer;
 
-      if  (isNominationRound){
-        logger.info(`(Scorekeeper::mainCron) Last nomination was in era ${lastNominatedEraIndex}. Current era is ${activeEra}. This is a nomination round.`);
+      if (isNominationRound) {
+        logger.info(
+          `(Scorekeeper::mainCron) Last nomination was in era ${lastNominatedEraIndex}. Current era is ${activeEra}. This is a nomination round.`
+        );
         if (!this.nominatorGroups) {
-          logger.info("(Scorekeeper::mainCron) No nominators spawned. Skipping round.");
+          logger.info(
+            "(Scorekeeper::mainCron) No nominators spawned. Skipping round."
+          );
           return;
         }
 
@@ -217,7 +228,7 @@ export default class ScoreKeeper {
         }
 
         // Get all the current targets to check if this should just be a starting round or if the round needs ending
-        let allCurrentTargets = [];
+        const allCurrentTargets = [];
         for (const nomGroup of this.nominatorGroups) {
           for (const nominator of nomGroup) {
             // Get the current nominations of an address
@@ -227,13 +238,17 @@ export default class ScoreKeeper {
             allCurrentTargets.push(currentTargets);
           }
         }
-        this.currentTargets= allCurrentTargets;
+        this.currentTargets = allCurrentTargets;
 
         if (!this.currentTargets) {
-          logger.info("(Scorekeeper::mainCron) Current Targets is empty. Starting round.");
+          logger.info(
+            "(Scorekeeper::mainCron) Current Targets is empty. Starting round."
+          );
           await this.startRound();
         } else {
-          logger.info(`(Scorekeeper::mainCron) Current Targets: ${this.currentTargets}. Ending round.`);
+          logger.info(
+            `(Scorekeeper::mainCron) Current Targets: ${this.currentTargets}. Ending round.`
+          );
           await this.endRound();
           await this.startRound();
         }
@@ -263,7 +278,9 @@ export default class ScoreKeeper {
     this.currentEra = await this._getCurrentEra();
 
     logger.info(
-      `(Scorekeeper::startRound) New round starting at ${now} for next Era ${this.currentEra + 1}`
+      `(Scorekeeper::startRound) New round starting at ${now} for next Era ${
+        this.currentEra + 1
+      }`
     );
     this.botLog(
       `New round is starting! Era ${this.currentEra} will begin new nominations.`
@@ -301,9 +318,7 @@ export default class ScoreKeeper {
     const allTargets = candidates.map((c) => c.stash);
     let counter = 0;
     for (const nomGroup of nominatorGroups) {
-
       for (const nominator of nomGroup) {
-
         // The number of nominations to do per nominator account
         // This is either hard coded, or set to "auto", meaning it will find a dynamic amount of validators
         //    to nominate based on the lowest staked validator in the validator set
@@ -329,19 +344,30 @@ export default class ScoreKeeper {
         );
       }
     }
-    logger.info(`(Scorekeeper::_doNominations) Number of Validators nominated this round: ${counter}`); 
-    this.botLog(
-      `${counter} Validators nominated this round`
+    logger.info(
+      `(Scorekeeper::_doNominations) Number of Validators nominated this round: ${counter}`
     );
-
+    this.botLog(`${counter} Validators nominated this round`);
 
     this.currentTargets = allTargets.slice(0, counter);
     const nextTargets = allTargets.slice(counter, allTargets.length);
 
-    logger.info(`Next targets: \n${nextTargets.map(async (target) => `- ${target} (${(await this.db.getCandidate(target)).name})`).join("\n")}`);
+    logger.info(
+      `Next targets: \n${nextTargets
+        .map(
+          async (target) =>
+            `- ${target} (${(await this.db.getCandidate(target)).name})`
+        )
+        .join("\n")}`
+    );
 
     this.botLog(
-      `Next targets: \n${nextTargets.map(async (target) => `- ${target} (${(await this.db.getCandidate(target)).name})`).join("\n")}`
+      `Next targets: \n${nextTargets
+        .map(
+          async (target) =>
+            `- ${target} (${(await this.db.getCandidate(target)).name})`
+        )
+        .join("\n")}`
     );
 
     return allTargets;
@@ -376,8 +402,9 @@ export default class ScoreKeeper {
 
     const chainType = await this.db.getChainMetadata();
 
-
-    logger.info(`(Scorekeeper::endRound) finding validators that were active from era ${startEra} to ${activeEra}`);
+    logger.info(
+      `(Scorekeeper::endRound) finding validators that were active from era ${startEra} to ${activeEra}`
+    );
     const [
       activeValidators,
       err2,
@@ -424,7 +451,8 @@ export default class ScoreKeeper {
     //     - If they were active, increase their rank
     for (const goodOne of good.values()) {
       const { stash } = goodOne;
-      const wasActive = activeValidators.indexOf(formatAddress(stash, this.config)) !== -1;
+      const wasActive =
+        activeValidators.indexOf(formatAddress(stash, this.config)) !== -1;
 
       // if it wasn't active we will not increase the point
       if (!wasActive) {
@@ -452,7 +480,9 @@ export default class ScoreKeeper {
 
   /// Handles the docking of points from bad behaving validators.
   async dockPoints(stash: Stash): Promise<boolean> {
-    logger.info(`(Scorekeeper::dockPoints) Stash ${stash} did BAD, docking points`);
+    logger.info(
+      `(Scorekeeper::dockPoints) Stash ${stash} did BAD, docking points`
+    );
 
     await this.db.dockPoints(stash);
 
@@ -464,7 +494,9 @@ export default class ScoreKeeper {
 
   /// Handles the adding of points to successful validators.
   async addPoint(stash: Stash): Promise<boolean> {
-    logger.info(`(Scorekeeper::addPoint) Stash ${stash} did GOOD, adding points`);
+    logger.info(
+      `(Scorekeeper::addPoint) Stash ${stash} did GOOD, adding points`
+    );
 
     await this.db.addPoint(stash);
 

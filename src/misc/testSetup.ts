@@ -1,8 +1,6 @@
 import ApiHandler from "./../ApiHandler";
 import { Keyring } from "@polkadot/keyring";
-import { mnemonicGenerate } from "@polkadot/util-crypto";
 import { sleep } from "../util";
-import { nodeModuleNameResolver } from "typescript";
 
 export const startTestSetup = async () => {
   const handler = await ApiHandler.create(["ws://172.28.1.1:9944"]);

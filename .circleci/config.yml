@@ -56,12 +56,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
-      - run: 
-          name: "Setup CI variable"
-          command: echo 'export IS_CI="true"' >> $BASH_ENV
       - run:
-          command: |
-            echo 'export IS_CI="true"' >> $BASH_ENV
             /scripts/integration-tests.sh
 
 

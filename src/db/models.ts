@@ -35,8 +35,11 @@ const RankEventSchema = new Schema({
 });
 
 export const DelayedTxSchema = new Schema({
+  // The block number the transaction was announced in
   number: Number,
+  // The controller address
   controller: String,
+  // The validators to nominate
   targets: [String],
 });
 
@@ -85,12 +88,36 @@ export const CandidateSchema = new Schema({
 });
 
 export const EraSchema = new Schema({
+  // The last era a nomination took place
   lastNominatedEraIndex: { type: String, default: "0" },
 });
 
 export const NominatorSchema = new Schema({
   address: String,
+  bonded: Number,
   current: [],
   lastNomination: { type: Number, default: 0 },
   createdAt: { type: Number, default: 0 },
+});
+
+export const NominationSchema = new Schema({
+  // Nominator address
+  address: String,
+  // The era the nomination took place
+  era: Number,
+  // The validators in the nomination
+  validators: [String],
+  // The timestamp of the nomination
+  timestamp: Number,
+  // The amount of funds bonded in the account
+  bonded: Number,
+  // The block has the tx was finalized in
+  blockHash: String,
+});
+
+export const ChainMetadataSchema = new Schema({
+  // Number of decimals
+  decimals: Number,
+  // Chain name
+  name: String,
 });

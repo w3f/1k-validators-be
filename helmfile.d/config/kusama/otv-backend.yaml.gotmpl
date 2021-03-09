@@ -21,12 +21,17 @@ config: |
       "dryRun": false,
       "networkPrefix": 2,
       "test": false,
-      "retroactive": false
+      "retroactive": false,
+      "historicalNominations": true
     },
     "constraints": {
       "skipConnectionTime": false,
       "skipIdentity": false,
-      "skipStakedDestination": true
+      "skipStakedDestination": true,
+      "skipClientUpgrade": false
+    },
+    "cron": {
+      "monitor": "0 */15 * * * *"
     },
     "db": {
       "mongo": {
@@ -38,6 +43,9 @@ config: |
       "baseUrl": "https://matrix.org",
       "room": "!mdugGIKqSTweIOpTlA:web3.foundation",
       "userId": "@1kv-stats:matrix.org"
+    },
+    "proxy": {
+        "timeDelayBlocks": "10850"
     },
     "scorekeeper": {
       "candidates": [

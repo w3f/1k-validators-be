@@ -18,8 +18,10 @@ import Server from "./server";
 import TelemetryClient from "./telemetry";
 import { sleep } from "./util";
 import { startTestSetup } from "./misc/testSetup";
+import { writeHistoricNominations } from "./misc/historicNominations";
 
 import { retroactiveRanks } from "./misc/retroactive";
+import { startClearAccumulatedOfflineTimeJob, startMonitorJob } from "./cron";
 
 const isCI = process.env.CI;
 
@@ -48,8 +50,13 @@ const start = async (cmd: { config: string }) => {
       : LocalEndpoints;
   const handler = await ApiHandler.create(endpoints);
 
+  // Create the Database.
+  const db = await Database.create(config.db.mongo.uri);
+
+  const chainMetadata = await db.getChainMetadata();
+
   // If the chain is a test chain, init some test chain conditions
-  if (config.global.networkPrefix === 3) {
+  if (config.global.networkPrefix === 3 && !chainMetadata) {
     logger.info(
       `{Start::testSetup} chain index is ${config.global.networkPrefix}, starting init script...`
     );
@@ -61,8 +68,7 @@ const start = async (cmd: { config: string }) => {
     await sleep(15000);
   }
 
-  // Create the Database.
-  const db = await Database.create(config.db.mongo.uri);
+  await db.setChainMetadata(config.global.networkPrefix, handler);
 
   // Delete the old candidate fields.
   await db.deleteOldCandidateFields();
@@ -92,31 +98,8 @@ const start = async (cmd: { config: string }) => {
   // Buffer some time for set up.
   await sleep(1500);
 
-  // Monitors the latest GitHub releases and ensures nodes have upgraded
-  // within a timely period.
-  const monitor = new Monitor(db, SIXTEEN_HOURS);
-  const monitorFrequency = "0 */15 * * * *"; // Every 15 minutes.
-
-  const monitorCron = new CronJob(monitorFrequency, async () => {
-    logger.info(
-      `{Start} Monitoring the node version by polling latst GitHub releases every ${
-        config.global.test ? "three" : "fifteen"
-      } minutes.`
-    );
-    await monitor.getLatestTaggedRelease();
-    await monitor.ensureUpgrades();
-  });
-
-  await monitor.getLatestTaggedRelease();
-  await monitor.ensureUpgrades();
-  monitorCron.start();
-
-  // Once a week reset the offline accumulations of nodes.
-  const clearFrequency = "* * * * * 0";
-  const clearCron = new CronJob(clearFrequency, () => {
-    db.clearAccumulated();
-  });
-  clearCron.start();
+  await startMonitorJob(config, db);
+  await startClearAccumulatedOfflineTimeJob(config, db);
 
   // Set up the nominators in the scorekeeper.
   const scorekeeper = new Scorekeeper(handler, db, config, maybeBot);
@@ -158,6 +141,10 @@ const start = async (cmd: { config: string }) => {
   scorekeeper.begin();
   // }
 
+  if (config.global.historicalNominations && !isCI) {
+    writeHistoricNominations(handler, db);
+  }
+
   // Start the API server.
   const server = new Server(db, config, scorekeeper);
   server.start();
@@ -167,5 +154,5 @@ program
   .option("--config <directory>", "The path to the config directory.", "config")
   .action((cmd: { config: string }) => catchAndQuit(start(cmd)));
 
-program.version("2.2.45");
+program.version("2.2.46");
 program.parse(process.argv);

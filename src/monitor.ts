@@ -55,7 +55,7 @@ export default class Monitor {
     };
 
     logger.info(
-      `Latest release updated: ${tag_name} | Published at: ${publishedAt}`
+      `(Monitor::getLatestTaggedRelease) Latest release updated: ${tag_name} | Published at: ${publishedAt}`
     );
 
     return this.latestTaggedRelease;
@@ -77,7 +77,7 @@ export default class Monitor {
       const nodeVersion = semver.coerce(version);
       const latestVersion = semver.clean(this.latestTaggedRelease.name);
       logger.debug(
-        `${name} | version: ${nodeVersion} latest: ${latestVersion}`
+        `(Monitor::ensureUpgrades) ${name} | version: ${nodeVersion} latest: ${latestVersion}`
       );
 
       if (!nodeVersion) {

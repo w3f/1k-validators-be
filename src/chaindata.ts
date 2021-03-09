@@ -1,6 +1,10 @@
 import ApiHandler from "./ApiHandler";
 
-import { KUSAMA_APPROX_ERA_LENGTH_IN_BLOCKS } from "./constants";
+import {
+  KUSAMA_APPROX_ERA_LENGTH_IN_BLOCKS,
+  POLKADOT_APPROX_ERA_LENGTH_IN_BLOCKS,
+  TESTNET_APPROX_ERA_LENGTH_IN_BLOCKS,
+} from "./constants";
 import logger from "./logger";
 import { BooleanResult, NumberResult, StringResult } from "./types";
 
@@ -141,8 +145,20 @@ class ChainData {
   /**
    * Finds the block hash for a particular era index. Used to determine the
    * active validators within an era in `getActiveValidators`.
+   *
+   * @param chainType: either 'Polkadot', 'Kusama', or 'Local Testnet'
    */
-  findEraBlockHash = async (era: number): Promise<StringResult> => {
+  findEraBlockHash = async (
+    era: number,
+    chainType: string
+  ): Promise<StringResult> => {
+    const eraBlockLength =
+      chainType == "Kusama"
+        ? KUSAMA_APPROX_ERA_LENGTH_IN_BLOCKS
+        : chainType == "Polkadot"
+        ? POLKADOT_APPROX_ERA_LENGTH_IN_BLOCKS
+        : TESTNET_APPROX_ERA_LENGTH_IN_BLOCKS;
+
     const api = await this.handler.getApi();
     const [activeEraIndex, err] = await this.getActiveEraIndex();
     if (err) {
@@ -159,7 +175,7 @@ class ChainData {
     }
 
     const diff = activeEraIndex - era;
-    const approxBlocksAgo = diff * KUSAMA_APPROX_ERA_LENGTH_IN_BLOCKS;
+    const approxBlocksAgo = diff * eraBlockLength;
 
     let testBlockNumber =
       latestBlock.block.header.number.toNumber() - approxBlocksAgo;
@@ -176,26 +192,26 @@ class ChainData {
       }
 
       if (testIndex > era) {
-        testBlockNumber =
-          testBlockNumber - KUSAMA_APPROX_ERA_LENGTH_IN_BLOCKS / 3;
+        testBlockNumber = testBlockNumber - eraBlockLength / 3;
       }
 
       if (testIndex < era) {
-        testBlockNumber = testBlockNumber + KUSAMA_APPROX_ERA_LENGTH_IN_BLOCKS;
+        testBlockNumber = testBlockNumber + eraBlockLength;
       }
     }
   };
 
   activeValidatorsInPeriod = async (
     startEra: number,
-    endEra: number
+    endEra: number,
+    chainType: string
   ): Promise<[string[] | null, string | null]> => {
     const api = await this.handler.getApi();
 
     const allValidators: Set<string> = new Set();
     let testEra = startEra;
     while (testEra <= endEra) {
-      const [blockHash, err] = await this.findEraBlockHash(testEra);
+      const [blockHash, err] = await this.findEraBlockHash(testEra, chainType);
       if (err) {
         return [null, err];
       }
@@ -266,6 +282,19 @@ class ChainData {
     }
 
     return null;
+  };
+
+  getStashFromController = async (
+    controller: string
+  ): Promise<string | null> => {
+    const api = await this.handler.getApi();
+
+    const ledger: JSON = await api.query.staking.ledger(controller);
+    if (ledger.isNone) {
+      return null;
+    }
+
+    return ledger.toJSON().stash;
   };
 }
 

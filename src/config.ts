@@ -22,6 +22,14 @@ export type Config = {
     skipConnectionTime: boolean;
     skipIdentity: boolean;
     skipStakedDestination: boolean;
+    skipClientUpgrade: boolean;
+  };
+  cron: {
+    monitor: string;
+    clearOffline: string;
+    validity: string;
+    execution: string;
+    scorekeeper: string;
   };
   db: {
     mongo: {
@@ -33,6 +41,7 @@ export type Config = {
     networkPrefix: 0 | 2 | 3;
     test: boolean;
     retroactive: boolean;
+    historicalNominations: boolean;
   };
   matrix: {
     accessToken: string;
@@ -40,6 +49,9 @@ export type Config = {
     enabled: boolean;
     room: string;
     userId: string;
+  };
+  proxy: {
+    timeDelayBlocks: number;
   };
   scorekeeper: {
     candidates: CandidateConfig[];

@@ -163,6 +163,15 @@ export default class ScoreKeeper {
         .join(" ")}`
     );
 
+    await this.botLog(
+      `Nominator group added! Nominator addresses (Controller / Stash): \n${group
+        .map(
+          async (n) =>
+            `- ${n.controller} / ${await n.stash()}`
+        )
+        .join("\n")}`
+    )
+
     return true;
   }
 
@@ -340,7 +349,12 @@ export default class ScoreKeeper {
         await sleep(8000);
 
         this.botLog(
-          `Nominator ${nominator.controller} nominated ${targets.join(" ")}`
+          `Nominator ${nominator.controller} nominated: \n${targets
+            .map(
+              async (target) =>
+                `- ${target} (${(await this.db.getCandidate(target)).name})`
+            )
+            .join("\n")}`
         );
       }
     }
@@ -356,7 +370,7 @@ export default class ScoreKeeper {
       `Next targets: \n${nextTargets
         .map(
           async (target) =>
-            `- ${target} (${(await this.db.getCandidate(target)).name})`
+            `- ${(await this.db.getCandidate(target)).name} (${target})`
         )
         .join("\n")}`
     );
@@ -365,7 +379,7 @@ export default class ScoreKeeper {
       `Next targets: \n${nextTargets
         .map(
           async (target) =>
-            `- ${target} (${(await this.db.getCandidate(target)).name})`
+            `- ${(await this.db.getCandidate(target)).name} (${target})`
         )
         .join("\n")}`
     );

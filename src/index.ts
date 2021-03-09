@@ -88,12 +88,11 @@ const start = async (cmd: { config: string }) => {
 
   // Create the matrix bot if enabled.
   let maybeBot: any = false;
-  if (config.matrix.enabled) {
+  if (config.matrix.enabled && !isCI) {
     const { accessToken, baseUrl, userId } = config.matrix;
     maybeBot = new MatrixBot(baseUrl, accessToken, userId, db, config);
     maybeBot.start();
     maybeBot.sendMessage(`Backend services (re)-started!`);
-    maybeBot.sendMessage(`CI env: ${isCI}`);
   }
 
   // Buffer some time for set up.

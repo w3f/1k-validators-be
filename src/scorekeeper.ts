@@ -158,12 +158,6 @@ export default class ScoreKeeper {
     this.nominatorGroups.push(group);
 
     await this.botLog(
-      `Nominator group added! Nominator addresses: ${group
-        .map((n) => n.controller)
-        .join(" ")}`
-    );
-
-    await this.botLog(
       `Nominator group added! Nominator addresses (Controller / Stash): \n${group
         .map(async (n) => `- ${n.controller} / ${await n.stash()}`)
         .join("\n")}`

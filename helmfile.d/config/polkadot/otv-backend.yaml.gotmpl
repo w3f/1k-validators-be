@@ -26,7 +26,11 @@ config: |
     "constraints": {
       "skipConnectionTime": false,
       "skipIdentity": false,
-      "skipStakedDestination": false
+      "skipStakedDestination": false,
+      "skipClientUpgrade": false
+    },
+    "cron": {
+      "monitor": "0 */15 * * * *"
     },
     "db": {
       "mongo": {
@@ -38,6 +42,9 @@ config: |
       "baseUrl": "https://matrix.org",
       "room": "!ccXWsugXuoiHnkEhKa:web3.foundation",
       "userId": "@1kv-stats:matrix.org"
+    },
+    "proxy": {
+        "timeDelayBlocks": "10850"
     },
     "scorekeeper": {
       "candidates": [

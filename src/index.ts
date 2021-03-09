@@ -154,5 +154,5 @@ program
   .option("--config <directory>", "The path to the config directory.", "config")
   .action((cmd: { config: string }) => catchAndQuit(start(cmd)));
 
-program.version("2.2.44");
+program.version("2.2.45");
 program.parse(process.argv);

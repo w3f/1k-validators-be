@@ -51,6 +51,11 @@ spec:
             cpu: 300m
             memory: 400Mi
       {{- end }}
+      {{- if eq .Values.environment "ci" }}
+        env:
+        - name: CI
+          value: "true"
+      {{- end }}    
       volumes:
       - name: secret-config
         secret:

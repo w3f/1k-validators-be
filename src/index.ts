@@ -135,11 +135,11 @@ const start = async (cmd: { config: string }) => {
   sleep(3000);
 
   // Start the scorekeeper
-  // if (config.global.retroactive && !isCI) {
-  // retroactiveRanks(config.scorekeeper.candidates as any, handler, db);
-  // } else {
-  scorekeeper.begin();
-  // }
+  if (config.global.retroactive && !isCI) {
+    retroactiveRanks(config.scorekeeper.candidates as any, handler, db);
+  } else {
+    scorekeeper.begin();
+  }
 
   if (config.global.historicalNominations && !isCI) {
     writeHistoricNominations(handler, db);

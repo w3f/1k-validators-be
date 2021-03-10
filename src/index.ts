@@ -135,11 +135,11 @@ const start = async (cmd: { config: string }) => {
   sleep(3000);
 
   // Start the scorekeeper
-  // if (config.global.retroactive && !isCI) {
-  // retroactiveRanks(config.scorekeeper.candidates as any, handler, db);
-  // } else {
-  scorekeeper.begin();
-  // }
+  if (config.global.retroactive && !isCI) {
+    retroactiveRanks(config.scorekeeper.candidates as any, handler, db);
+  } else {
+    scorekeeper.begin();
+  }
 
   if (config.global.historicalNominations && !isCI) {
     writeHistoricNominations(handler, db);
@@ -154,5 +154,5 @@ program
   .option("--config <directory>", "The path to the config directory.", "config")
   .action((cmd: { config: string }) => catchAndQuit(start(cmd)));
 
-program.version("2.2.46");
+program.version("2.2.47");
 program.parse(process.argv);

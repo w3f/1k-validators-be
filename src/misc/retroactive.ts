@@ -16,8 +16,8 @@ export const retroactiveRanks = async (
 
   const chainType = await db.getChainMetadata();
 
-  const startEra = 1900;
-  const endEra = 1940;
+  const startEra = 1940;
+  const endEra = 1988;
   const step = 4; // every 4 eras (kusama)
 
   const result = new Map();

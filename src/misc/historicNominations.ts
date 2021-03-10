@@ -59,7 +59,7 @@ export const writeHistoricNominations = async (
         logger.info(
           `{writeHistoricNominations} There was no nominations for stash ${stash} in era ${i}.`
         );
-        continue; 
+        continue;
       }
       const submittedIn = nomination["submittedIn"];
       const targets = nomination["targets"];

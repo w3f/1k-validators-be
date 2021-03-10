@@ -157,11 +157,21 @@ export default class ScoreKeeper {
     }
     this.nominatorGroups.push(group);
 
-    await this.botLog(
-      `Nominator group added! Nominator addresses (Controller / Stash): \n${group
-        .map(async (n) => `- ${n.controller} / ${await n.stash()}`)
-        .join("\n")}`
+    logger.info(
+      `Nominator group added! Nominator addresses (Controller / Stash):`
     );
+    group.map(async (n) => {
+      const stash = await n.stash();
+      logger.info(`- ${n.controller} / ${stash}`);
+    });
+
+    await this.botLog(
+      `Nominator group added! Nominator addresses (Controller / Stash):`
+    );
+    group.map(async (n) => {
+      const stash = await n.stash();
+      await this.botLog(`- ${n.controller} / ${stash}`);
+    });
 
     return true;
   }
@@ -339,14 +349,17 @@ export default class ScoreKeeper {
         // Wait some time between each transaction to avoid nonce issues.
         await sleep(8000);
 
-        this.botLog(
-          `Nominator ${nominator.controller} nominated: \n${targets
-            .map(
-              async (target) =>
-                `- ${target} (${(await this.db.getCandidate(target)).name})`
-            )
-            .join("\n")}`
-        );
+        logger.info(`Nominator ${nominator.controller} nominated:`);
+        targets.map(async (target) => {
+          const name = (await this.db.getCandidate(target)).name;
+          logger.info(`- ${name} (${target})`);
+        });
+
+        this.botLog(`Nominator ${nominator.controller} nominated:`);
+        targets.map(async (target) => {
+          const name = (await this.db.getCandidate(target)).name;
+          await this.botLog(`- ${name} (${target})`);
+        });
       }
     }
     logger.info(
@@ -366,14 +379,19 @@ export default class ScoreKeeper {
         .join("\n")}`
     );
 
-    this.botLog(
-      `Next targets: \n${nextTargets
-        .map(
-          async (target) =>
-            `- ${(await this.db.getCandidate(target)).name} (${target})`
-        )
-        .join("\n")}`
-    );
+    this.botLog(`Next targets: \n`);
+
+    nextTargets.map(async (target) => {
+      const name = (await this.db.getCandidate(target)).name;
+      await this.botLog(`- ${name} (${target})`);
+    });
+
+    logger.info(`Next targets: \n`);
+
+    nextTargets.map(async (target) => {
+      const name = (await this.db.getCandidate(target)).name;
+      logger.info(`- ${name} (${target})`);
+    });
 
     return allTargets;
   }

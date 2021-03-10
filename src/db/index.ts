@@ -574,6 +574,9 @@ export default class Db {
       address: address,
       era: era,
     });
+
+    if (!!data && data.blockHash) return;
+
     if (!data) {
       const nomination = new this.nominationModel({
         address: address,

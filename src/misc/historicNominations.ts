@@ -49,7 +49,7 @@ export const writeHistoricNominations = async (
         logger.info(
           `{writeHistoricNominations} There was an error fetching the block hash for era ${i}`
         );
-        return false;
+        continue;
       }
 
       const nomination = (
@@ -57,9 +57,9 @@ export const writeHistoricNominations = async (
       ).toJSON();
       if (!nomination) {
         logger.info(
-          `{writeHistoricNominations} There was an error fetching nominations for stash ${stash}`
+          `{writeHistoricNominations} There was no nominations for stash ${stash} in era ${i}.`
         );
-        return false;
+        continue;
       }
       const submittedIn = nomination["submittedIn"];
       const targets = nomination["targets"];

@@ -91,7 +91,8 @@ export default class Db {
     stash: string,
     kusamaStash: string,
     skipSelfStake: boolean,
-    bio: string
+    bio: string,
+    bot?: any
   ): Promise<boolean> {
     logger.info(`(Db::addCandidate) name: ${name} stash: ${stash}`);
 
@@ -109,6 +110,11 @@ export default class Db {
         skipSelfStake,
         bio,
       });
+
+      if (!!bot) {
+        await bot.sendMessage(`Adding new candidate: ${name} (${stash})`);
+      }
+
       return candidate.save();
     }
 
@@ -574,6 +580,9 @@ export default class Db {
       address: address,
       era: era,
     });
+
+    if (!!data && data.blockHash) return;
+
     if (!data) {
       const nomination = new this.nominationModel({
         address: address,

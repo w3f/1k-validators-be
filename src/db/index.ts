@@ -606,6 +606,14 @@ export default class Db {
     });
   }
 
+  async getNomination(address: string, era: number): Promise<string[]> {
+    const data = await this.nominationModel.findOne({
+      address: address,
+      era: era,
+    });
+    return data;
+  }
+
   async setLastNomination(address: string, now: number): Promise<boolean> {
     logger.info(
       `(Db::setLastNomination) Setting ${address} last nomination to ${now}.`

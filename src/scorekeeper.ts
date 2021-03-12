@@ -165,17 +165,10 @@ export default class ScoreKeeper {
     logger.info(
       `Nominator group added! Nominator addresses (Controller / Stash):\n${nominatorGroupString}`
     );
-    // logger.info(nominatorGroupString);
-
-    // group.map(async (n) => {
-    //   const stash = await n.stash();
-    //   logger.info(`- ${n.controller} / ${stash}`);
-    // });
 
     await this.botLog(
       `Nominator group added! Nominator addresses (Controller / Stash):\n ${nominatorGroupString}`
     );
-    // await this.botLog(nominatorGroupString);
 
     return true;
   }

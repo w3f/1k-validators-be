@@ -368,7 +368,6 @@ export class OTV implements Constraints {
 
       good.add(candidate);
     }
-
     return [good, bad];
   }
 }

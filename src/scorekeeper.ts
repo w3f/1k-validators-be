@@ -157,21 +157,25 @@ export default class ScoreKeeper {
     }
     this.nominatorGroups.push(group);
 
-    logger.info(
-      `Nominator group added! Nominator addresses (Controller / Stash):`
-    );
-    group.map(async (n) => {
+
+    const nominatorGroupString = (await Promise.all(group.map(async (n) => {
       const stash = await n.stash();
-      logger.info(`- ${n.controller} / ${stash}`);
-    });
+      return `- ${n.controller} / ${stash}`;
+    }))).join('\n');
+    logger.info(
+      `Nominator group added! Nominator addresses (Controller / Stash):\n${nominatorGroupString}`
+    );
+    // logger.info(nominatorGroupString);
+
+    // group.map(async (n) => {
+    //   const stash = await n.stash();
+    //   logger.info(`- ${n.controller} / ${stash}`);
+    // });
 
     await this.botLog(
-      `Nominator group added! Nominator addresses (Controller / Stash):`
+      `Nominator group added! Nominator addresses (Controller / Stash):\n ${nominatorGroupString}`
     );
-    group.map(async (n) => {
-      const stash = await n.stash();
-      await this.botLog(`- ${n.controller} / ${stash}`);
-    });
+    // await this.botLog(nominatorGroupString);
 
     return true;
   }
@@ -370,21 +374,18 @@ export default class ScoreKeeper {
     this.currentTargets = allTargets.slice(0, counter);
     const nextTargets = allTargets.slice(counter, allTargets.length);
 
-    logger.info(
-      `Next targets: \n${nextTargets
-        .map(
-          async (target) =>
-            `- ${(await this.db.getCandidate(target)).name} (${target})`
-        )
-        .join("\n")}`
-    );
-
-    this.botLog(`Next targets: \n`);
-
-    nextTargets.map(async (target) => {
+    const nextTargetsString = (await Promise.all(nextTargets.map(async (target) => {
       const name = (await this.db.getCandidate(target)).name;
-      await this.botLog(`- ${name} (${target})`);
-    });
+      return `- ${name} (${target})`;
+    }))).join('\n');
+
+
+    logger.info(
+      `Next targets: \n${nextTargetsString}`
+    );
+    await this.botLog(`Next targets: \n${nextTargetsString}`);
+
+
 
     logger.info(`Next targets: \n`);
 

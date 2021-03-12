@@ -5,8 +5,10 @@ import {
   POLKADOT_APPROX_ERA_LENGTH_IN_BLOCKS,
   TESTNET_APPROX_ERA_LENGTH_IN_BLOCKS,
 } from "./constants";
+import Db from "./db";
 import logger from "./logger";
 import { BooleanResult, NumberResult, StringResult } from "./types";
+import { toDecimals } from "./util";
 
 type JSON = any;
 
@@ -295,6 +297,62 @@ class ChainData {
     }
 
     return ledger.toJSON().stash;
+  };
+
+  /**
+   * Gets Nominations for a nomiantor at a given era
+   * @param nominatorStash
+   * @param era
+   * @param chaindata
+   * @param chainType
+   * @returns
+   */
+  getNominationAt = async (nominatorStash: string, era: number, db: Db) => {
+    const api = await this.handler.getApi();
+    const chainMetadata = await db.getChainMetadata();
+    const chainType = chainMetadata.name;
+    const decimals = chainMetadata.decimals;
+
+    const [blockhash, error] = await this.findEraBlockHash(era, chainType);
+
+    if (error) {
+      logger.info(
+        `{queryNomination} There was an error fetching the block hash for era ${era}`
+      );
+      return;
+    }
+
+    const nomination = (
+      await api.query.staking.nominators.at(blockhash, nominatorStash)
+    ).toJSON();
+    if (!nomination) {
+      logger.info(
+        `{writeHistoricNominations} There was no nominations for stash ${nominatorStash} in era ${era}.`
+      );
+      return;
+    }
+    const submittedIn = nomination["submittedIn"];
+    const targets = nomination["targets"];
+
+    if (!submittedIn || !targets) {
+      return;
+    }
+
+    const controller = await api.query.staking.bonded(nominatorStash);
+    const bondedLedger = (
+      await api.query.staking.ledger.at(blockhash, controller.toString())
+    ).toJSON();
+    if (!bondedLedger) {
+      logger.info(`{getNominationAt} no bonded ledger`);
+      return;
+    }
+    const bonded = toDecimals(bondedLedger["active"], decimals);
+
+    return {
+      submittedIn: submittedIn,
+      targets: targets,
+      bonded: bonded,
+    };
   };
 }
 

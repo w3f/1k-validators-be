@@ -40,49 +40,35 @@ export const writeHistoricNominations = async (
       logger.info(
         `{writeHistoricNominations} fetching nominations for ${stash} for era ${i}`
       );
-      const [blockhash, error] = await chaindata.findEraBlockHash(
-        i,
-        "Local Testnet"
-      );
 
-      if (error) {
-        logger.info(
-          `{writeHistoricNominations} There was an error fetching the block hash for era ${i}`
+      const nom = await db.getNomination(stash, i);
+      if (nom) continue;
+
+      const nomination = await chaindata.getNominationAt(stash, i, db);
+      if (!nomination) continue;
+      if (i > nomination.submittedIn) {
+        const nominationSubmittedIn = await chaindata.getNominationAt(
+          stash,
+          nomination.submittedIn,
+          db
         );
-        continue;
-      }
-
-      const nomination = (
-        await api.query.staking.nominators.at(blockhash, stash)
-      ).toJSON();
-      if (!nomination) {
-        logger.info(
-          `{writeHistoricNominations} There was no nominations for stash ${stash} in era ${i}.`
+        await db.setNomination(
+          nominator.address,
+          nominationSubmittedIn.submittedIn,
+          nominationSubmittedIn.targets,
+          nominationSubmittedIn.bonded,
+          ""
         );
-        continue;
+        i = nomination.submittedIn;
+      } else {
+        await db.setNomination(
+          nominator.address,
+          nomination.submittedIn,
+          nomination.targets,
+          nomination.bonded,
+          ""
+        );
       }
-      const submittedIn = nomination["submittedIn"];
-      const targets = nomination["targets"];
-
-      if (!submittedIn || !targets) {
-        continue;
-      }
-
-      const decimals = (await db.getChainMetadata()).decimals;
-      const bonded = toDecimals(
-        (
-          await api.query.staking.ledger.at(blockhash, nominator.address)
-        ).toJSON()["active"],
-        decimals
-      );
-
-      await db.setNomination(
-        nominator.address,
-        submittedIn,
-        targets,
-        bonded,
-        ""
-      );
     }
   }
 

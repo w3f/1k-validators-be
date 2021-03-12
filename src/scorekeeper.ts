@@ -349,17 +349,21 @@ export default class ScoreKeeper {
         // Wait some time between each transaction to avoid nonce issues.
         await sleep(8000);
 
-        logger.info(`Nominator ${nominator.controller} nominated:`);
-        targets.map(async (target) => {
-          const name = (await this.db.getCandidate(target)).name;
-          logger.info(`- ${name} (${target})`);
-        });
+        const targetsString = (
+          await Promise.all(
+            targets.map(async (target) => {
+              const name = (await this.db.getCandidate(target)).name;
+              return `- ${name} (${target})`;
+            })
+          )
+        ).join("\n");
 
-        this.botLog(`Nominator ${nominator.controller} nominated:`);
-        targets.map(async (target) => {
-          const name = (await this.db.getCandidate(target)).name;
-          await this.botLog(`- ${name} (${target})`);
-        });
+        logger.info(
+          `Nominator ${nominator.controller} nominated:\n${targetsString}`
+        );
+        this.botLog(
+          `Nominator ${nominator.controller} nominated:\n${targetsString}`
+        );
       }
     }
     logger.info(

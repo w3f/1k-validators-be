@@ -122,7 +122,7 @@ const start = async (cmd: { config: string }) => {
       } else {
         const { name, stash } = candidate;
         const bio = candidate.bio || "";
-        // Polkadot only options. 
+        // Polkadot only options.
         const kusamaStash = candidate.kusamaStash || "";
         const skipSelfStake = candidate.skipSelfStake || false;
 

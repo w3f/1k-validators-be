@@ -358,8 +358,12 @@ export default class ScoreKeeper {
           )
         ).join("\n");
 
-        logger.info(`Nominator ${nominator.controller} nominated:\n${targetsString}`);
-        this.botLog(`Nominator ${nominator.controller} nominated:\n${targetsString}`);
+        logger.info(
+          `Nominator ${nominator.controller} nominated:\n${targetsString}`
+        );
+        this.botLog(
+          `Nominator ${nominator.controller} nominated:\n${targetsString}`
+        );
       }
     }
     logger.info(

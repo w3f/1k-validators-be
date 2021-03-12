@@ -157,11 +157,14 @@ export default class ScoreKeeper {
     }
     this.nominatorGroups.push(group);
 
-
-    const nominatorGroupString = (await Promise.all(group.map(async (n) => {
-      const stash = await n.stash();
-      return `- ${n.controller} / ${stash}`;
-    }))).join('\n');
+    const nominatorGroupString = (
+      await Promise.all(
+        group.map(async (n) => {
+          const stash = await n.stash();
+          return `- ${n.controller} / ${stash}`;
+        })
+      )
+    ).join("\n");
     logger.info(
       `Nominator group added! Nominator addresses (Controller / Stash):\n${nominatorGroupString}`
     );
@@ -367,18 +370,17 @@ export default class ScoreKeeper {
     this.currentTargets = allTargets.slice(0, counter);
     const nextTargets = allTargets.slice(counter, allTargets.length);
 
-    const nextTargetsString = (await Promise.all(nextTargets.map(async (target) => {
-      const name = (await this.db.getCandidate(target)).name;
-      return `- ${name} (${target})`;
-    }))).join('\n');
+    const nextTargetsString = (
+      await Promise.all(
+        nextTargets.map(async (target) => {
+          const name = (await this.db.getCandidate(target)).name;
+          return `- ${name} (${target})`;
+        })
+      )
+    ).join("\n");
 
-
-    logger.info(
-      `Next targets: \n${nextTargetsString}`
-    );
+    logger.info(`Next targets: \n${nextTargetsString}`);
     await this.botLog(`Next targets: \n${nextTargetsString}`);
-
-
 
     logger.info(`Next targets: \n`);
 

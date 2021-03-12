@@ -301,30 +301,27 @@ class ChainData {
 
   /**
    * Gets Nominations for a nomiantor at a given era
-   * @param nominatorStash 
-   * @param era 
-   * @param chaindata 
-   * @param chainType 
-   * @returns 
+   * @param nominatorStash
+   * @param era
+   * @param chaindata
+   * @param chainType
+   * @returns
    */
-  getNominationAt = async(nominatorStash: string, era: number, db: Db) => {
+  getNominationAt = async (nominatorStash: string, era: number, db: Db) => {
     const api = await this.handler.getApi();
     const chainMetadata = await db.getChainMetadata();
     const chainType = chainMetadata.name;
     const decimals = chainMetadata.decimals;
-    
-    const [blockhash, error] = await this.findEraBlockHash(
-      era,
-      chainType
-    );
-  
+
+    const [blockhash, error] = await this.findEraBlockHash(era, chainType);
+
     if (error) {
       logger.info(
         `{queryNomination} There was an error fetching the block hash for era ${era}`
       );
       return;
     }
-  
+
     const nomination = (
       await api.query.staking.nominators.at(blockhash, nominatorStash)
     ).toJSON();
@@ -336,11 +333,11 @@ class ChainData {
     }
     const submittedIn = nomination["submittedIn"];
     const targets = nomination["targets"];
-  
+
     if (!submittedIn || !targets) {
       return;
     }
-  
+
     const controller = await api.query.staking.bonded(nominatorStash);
     const bondedLedger = (
       await api.query.staking.ledger.at(blockhash, controller.toString())
@@ -348,22 +345,15 @@ class ChainData {
     if (!bondedLedger) {
       logger.info(`{getNominationAt} no bonded ledger`);
       return;
-    } 
-    const bonded = toDecimals(
-      bondedLedger["active"],
-      decimals
-    );
+    }
+    const bonded = toDecimals(bondedLedger["active"], decimals);
 
     return {
-      "submittedIn": submittedIn,
-      "targets": targets,
-      "bonded": bonded
-    }
-  }
-
-
-
-
+      submittedIn: submittedIn,
+      targets: targets,
+      bonded: bonded,
+    };
+  };
 }
 
 export default ChainData;

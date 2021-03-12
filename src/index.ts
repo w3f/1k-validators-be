@@ -137,7 +137,6 @@ const start = async (cmd: { config: string }) => {
   // Start the scorekeeper
   scorekeeper.begin();
 
-
   if (config.global.historicalNominations && !isCI) {
     writeHistoricNominations(handler, db);
   }

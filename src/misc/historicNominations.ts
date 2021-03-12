@@ -44,10 +44,14 @@ export const writeHistoricNominations = async (
       const nom = await db.getNomination(stash, i);
       if (nom) continue;
 
-      let nomination = await chaindata.getNominationAt(stash, i, db);
+      const nomination = await chaindata.getNominationAt(stash, i, db);
       if (!nomination) continue;
-      if (i > nomination.submittedIn){
-        const nominationSubmittedIn = await chaindata.getNominationAt(stash, nomination.submittedIn, db);
+      if (i > nomination.submittedIn) {
+        const nominationSubmittedIn = await chaindata.getNominationAt(
+          stash,
+          nomination.submittedIn,
+          db
+        );
         await db.setNomination(
           nominator.address,
           nominationSubmittedIn.submittedIn,
@@ -64,11 +68,9 @@ export const writeHistoricNominations = async (
           nomination.bonded,
           ""
         );
-      } 
+      }
     }
   }
 
   return true;
 };
-
-

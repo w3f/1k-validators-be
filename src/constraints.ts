@@ -176,6 +176,7 @@ export class OTV implements Constraints {
       ];
     }
 
+    // Ensure that the reward destination is set to 'Staked'
     if (!this.skipStakedDesitnation) {
       const isStaked = await this.chaindata.destinationIsStaked(stash);
       if (!isStaked) {
@@ -184,6 +185,7 @@ export class OTV implements Constraints {
       }
     }
 
+    // Ensure that the commission is in line with the network rules
     const [commission, err] = await this.chaindata.getCommission(stash);
     if (err) {
       return [false, `${name} ${err}`];
@@ -215,10 +217,17 @@ export class OTV implements Constraints {
 
         const res = await axios.get(url);
 
+        if (!!res.data.invalidityResasons){
+          return [
+            false,
+            `${name} has a kusama node that is invalid: ${res.data.invalidityReasons}`
+          ]
+        }
+
         if (Number(res.data.rank) < 25) {
           return [
             false,
-            `${name} has a Kusama stash with lower than 25 rank in the Kusama OTV programme.`,
+            `${name} has a Kusama stash with lower than 25 rank in the Kusama OTV programme: ${res.data.rank}.`,
           ];
         }
       }

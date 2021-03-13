@@ -217,11 +217,11 @@ export class OTV implements Constraints {
 
         const res = await axios.get(url);
 
-        if (!!res.data.invalidityResasons){
+        if (!!res.data.invalidityResasons) {
           return [
             false,
-            `${name} has a kusama node that is invalid: ${res.data.invalidityReasons}`
-          ]
+            `${name} has a kusama node that is invalid: ${res.data.invalidityReasons}`,
+          ];
         }
 
         if (Number(res.data.rank) < 25) {
@@ -238,6 +238,7 @@ export class OTV implements Constraints {
     return [true, ""];
   }
 
+  // Returns the list of valid candidates, ordered by the priority they should get nominated in
   async getValidCandidates(
     candidates: CandidateData[],
     identityHashTable: Map<string, number>
@@ -302,7 +303,13 @@ export class OTV implements Constraints {
     const bad: Set<{ candidate: CandidateData; reason: string }> = new Set();
 
     for (const candidate of candidates) {
-      const { name, offlineSince, stash, skipSelfStake } = candidate;
+      const {
+        name,
+        offlineSince,
+        stash,
+        skipSelfStake,
+        offlineAccumulated,
+      } = candidate;
       /// Ensure the commission wasn't raised/
       const [commission, err] = await this.chaindata.getCommission(stash);
       /// If it errors we assume that a validator removed their validator status.
@@ -345,9 +352,12 @@ export class OTV implements Constraints {
         }
       }
 
-      // Ensure the candidate is online.
-      if (offlineSince !== 0) {
-        const reason = `${name} offline. Offline since ${offlineSince}.`;
+      // Ensure the candidate doesn't have too much offline time
+      const totalOffline = offlineAccumulated / WEEK;
+      if (totalOffline > 0.02) {
+        const reason = `${name} has been offline ${
+          offlineAccumulated / 1000 / 60
+        } minutes this week.`;
         logger.info(reason);
         bad.add({ candidate, reason });
         continue;

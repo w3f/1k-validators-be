@@ -8,6 +8,7 @@ import {
   NominatorSchema,
   NominationSchema,
   ChainMetadataSchema,
+  BotClaimEventSchema
 } from "./models";
 import logger from "../logger";
 
@@ -25,6 +26,7 @@ export default class Db {
   private nominatorModel;
   private nominationModel;
   private chainMetadataModel;
+  private botClaimEventModel;
 
   constructor() {
     this.accountingModel = mongoose.model("Accounting", AccountingSchema);
@@ -37,6 +39,7 @@ export default class Db {
       "ChainMetadata",
       ChainMetadataSchema
     );
+    this.botClaimEventModel = mongoose.model("BotClaimEvent", BotClaimEventSchema);
   }
 
   static async create(uri = "mongodb://localhost:27017/otv"): Promise<Db> {
@@ -635,6 +638,34 @@ export default class Db {
     return data;
   }
 
+  async setBotClaimEvent(
+    address: string,
+    era: number,
+    blockHash: string
+  ): Promise<boolean> {
+    logger.info(
+      `(Db::setBotClaimEvent) Setting bot claim event for ${address} for era ${era}.`
+    );
+
+    const data = await this.botClaimEventModel.findOne({
+      address: address,
+      era: era,
+    });
+
+    if (!!data && data.blockHash) return;
+
+    if (!data) {
+      const botClaimEvent = new this.botClaimEventModel({
+        address: address,
+        era: era,
+        timestamp: Date.now(),
+        blockHash: blockHash,
+      });
+
+      return botClaimEvent.save();
+    }
+  }
+
   async setLastNomination(address: string, now: number): Promise<boolean> {
     logger.info(
       `(Db::setLastNomination) Setting ${address} last nomination to ${now}.`
@@ -707,6 +738,25 @@ export default class Db {
         {
           rank: Math.floor(data.rank / 2),
           faults: data.faults + 1,
+        }
+      )
+      .exec();
+
+    return true;
+  }
+
+  // Dock rank when an unclaimed reward is claimed by the bot
+  async dockPointsUnclaimedReward(stash: string): Promise<boolean> {
+    logger.info(`Docking points for ${stash}.`);
+
+    const data = await this.candidateModel.findOne({ stash });
+    await this.candidateModel
+      .findOneAndUpdate(
+        {
+          stash,
+        },
+        {
+          rank: data.rank - 5,
         }
       )
       .exec();

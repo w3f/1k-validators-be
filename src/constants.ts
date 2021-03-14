@@ -25,6 +25,9 @@ export const KUSAMA_FOUR_DAYS_ERAS = 16;
 /// Number of Eras in 4 days that a validator should have claimed all previous rewards except
 export const POLKADOT_FOUR_DAYS_ERAS = 4;
 
+// Number of eras that a validator can have unclaimed rewards for until the backend tries to claim them
+export const REWARD_CLAIMING_THRESHOLD = 64;
+
 /// On Kusama eras are 6 hours with 6 second blocks.
 export const KUSAMA_APPROX_ERA_LENGTH_IN_BLOCKS = 3600;
 
@@ -67,3 +70,6 @@ export const EXECUTION_CRON = "0 0-59/15 * * * *";
 
 // Scorekeeper Cron Job. This runs every 10 minutes by default
 export const SCOREKEEPER_CRON = "0 0-59/10 * * * *";
+
+// Reward claiming frequency. This runs every 30 minutes by default
+export const REWARD_CLAIMING_CRON = "0 0-59/30 * * * *";

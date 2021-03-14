@@ -9,6 +9,8 @@ import {
   TIME_DELAY_BLOCKS,
   VALIDITY_CRON,
   CANDIDATE_CHAINDATA_CRON,
+  REWARD_CLAIMING_THRESHOLD,
+  REWARD_CLAIMING_CRON,
 } from "./constants";
 import logger from "./logger";
 import Monitor from "./monitor";
@@ -17,6 +19,8 @@ import { OTV } from "./constraints";
 import ApiHandler from "./ApiHandler";
 import Nominator from "./nominator";
 import ChainData from "./chaindata";
+import Claimer from "./claimer";
+import { EraReward } from "./types";
 
 // Monitors the latest GitHub releases and ensures nodes have upgraded
 // within a timely period.
@@ -183,7 +187,6 @@ export const startCandidateChainDataJob = async (
   constraints: OTV,
   chaindata: ChainData
 ) => {
-  logger.info(`(cron::CandidateChainData) Running candidate chain data cron`);
 
   const chaindataFrequency = config.cron.candidateChainData
     ? config.cron.candidateChainData
@@ -211,4 +214,52 @@ export const startCandidateChainDataJob = async (
     }
   });
   chaindataCron.start();
+};
+
+// Chron job for claiming rewards
+export const startRewardClaimJob = async (
+  config: Config,
+  handler: ApiHandler,
+  db: Db,
+  claimer: Claimer,
+  chaindata: ChainData
+) => {
+
+  const rewardClaimingFrequency = config.cron.rewardClaiming
+    ? config.cron.rewardClaiming
+    : REWARD_CLAIMING_CRON;
+
+  logger.info(
+    `(cron::RewardClaiming) Running reward claiming cron with frequency: ${rewardClaimingFrequency}`
+  );
+
+  const api = await handler.getApi();
+
+  const rewardClaimingCron = new CronJob(rewardClaimingFrequency, async () => {
+    logger.info(
+      `{cron::CandidateChainData} running candidate chain data cron....`
+    );
+    
+    const erasToClaim = [];
+    const [currentEra, err] = await chaindata.getActiveEraIndex();
+    const rewardClaimThreshold = config.global.networkPrefix == 2 || config.global.networkPrefix == 0 ? REWARD_CLAIMING_THRESHOLD : 6;
+    const claimThreshold = currentEra - rewardClaimThreshold;
+
+    const allCandidates = await db.allCandidates();
+    for (const candidate of allCandidates) {
+      const unclaimedEras = await chaindata.getUnclaimedEras(candidate.stash);
+      for (const era of unclaimedEras) {
+        if (era < claimThreshold){
+          logger.info(`{cron::startRewardClaimJob} added era ${era} for validator ${candidate.stash} to be claimed.`);
+          const eraReward: EraReward = {era: era, stash: candidate.stash}
+          erasToClaim.push(eraReward);
+        }
+      }
+
+    }
+    if (erasToClaim.length > 0){
+      await claimer.claim(erasToClaim);
+    }
+  });
+  rewardClaimingCron.start();
 };

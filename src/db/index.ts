@@ -647,7 +647,7 @@ export default class Db {
     blockHash: string
   ): Promise<boolean> {
     logger.info(
-      `(Db::setBotClaimEvent) Setting bot claim event for ${address} for era ${era}.`
+      `(Db::setBotClaimEvent) Setting bot claim event for ${address} for era ${era} with blockhash: ${blockHash}.`
     );
 
     const data = await this.botClaimEventModel.findOne({
@@ -914,5 +914,9 @@ export default class Db {
 
   async getChainMetadata(): Promise<any> {
     return this.chainMetadataModel.findOne({ name: /.*/ }).exec();
+  }
+
+  async getBotClaimEvents(): Promise<any> {
+    return this.botClaimEventModel.find({ address: /.*/ }).exec();
   }
 }

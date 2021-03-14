@@ -20,7 +20,11 @@ import logger from "./logger";
 import Nominator from "./nominator";
 import { CandidateData, Stash } from "./types";
 import { formatAddress, getNow, sleep, toDecimals } from "./util";
-import { startCandidateChainDataJob, startExecutionJob, startValidatityJob } from "./cron";
+import {
+  startCandidateChainDataJob,
+  startExecutionJob,
+  startValidatityJob,
+} from "./cron";
 
 type NominatorGroup = NominatorConfig[];
 
@@ -266,7 +270,13 @@ export default class ScoreKeeper {
     });
 
     startValidatityJob(this.config, this.db, this.constraints);
-    startCandidateChainDataJob(this.config, this.handler, this.db, this.constraints, this.chaindata);
+    startCandidateChainDataJob(
+      this.config,
+      this.handler,
+      this.db,
+      this.constraints,
+      this.chaindata
+    );
     startExecutionJob(
       this.handler,
       this.nominatorGroups,

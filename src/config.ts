@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import path from "path";
+import { ClaimerConfig } from "./types";
 
 type CandidateConfig = {
   name: string;
@@ -31,6 +32,7 @@ export type Config = {
     execution: string;
     scorekeeper: string;
     candidateChainData: string;
+    rewardClaiming: string;
   };
   db: {
     mongo: {
@@ -59,6 +61,7 @@ export type Config = {
     forceRound: boolean;
     nominating: boolean;
     nominators: NominatorConfig[][];
+    claimer: ClaimerConfig;
   };
   server: {
     port: number;
@@ -86,6 +89,7 @@ export const loadConfigDir = (configDir: string): Config => {
 
   mainConf.matrix.accessToken = secretConf.matrix.accessToken;
   mainConf.scorekeeper.nominators = secretConf.scorekeeper.nominators;
+  mainConf.scorekeeper.claimer = secretConf.scorekeeper.claimer;
 
   return mainConf;
 };

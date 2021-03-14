@@ -18,13 +18,15 @@ import { OTV } from "./constraints";
 import Db from "./db";
 import logger from "./logger";
 import Nominator from "./nominator";
-import { CandidateData, Stash } from "./types";
+import { CandidateData, ClaimerConfig, Stash } from "./types";
 import { formatAddress, getNow, sleep, toDecimals } from "./util";
 import {
   startCandidateChainDataJob,
   startExecutionJob,
+  startRewardClaimJob,
   startValidatityJob,
 } from "./cron";
+import Claimer from "./claimer";
 
 type NominatorGroup = NominatorConfig[];
 
@@ -70,6 +72,7 @@ export default class ScoreKeeper {
 
   private ending = false;
   private nominatorGroups: Array<SpawnedNominatorGroup> = [];
+  private claimer: Claimer;
 
   constructor(handler: ApiHandler, db: Db, config: Config, bot: any = false) {
     this.handler = handler;
@@ -180,6 +183,13 @@ export default class ScoreKeeper {
     return true;
   }
 
+  // Adds a claimer from the config
+  async addClaimer(claimerCfg: ClaimerConfig): Promise<boolean> {
+    const claimer = new Claimer(this.handler, this.db, claimerCfg, this.config.global.networkPrefix, this.bot);
+    this.claimer = claimer;
+    return true;
+  }
+
   // Begin the main workflow of the scorekeeper
   async begin(): Promise<void> {
     logger.info(`(Scorekeeper::begin) Starting Scorekeeper.`);
@@ -277,6 +287,15 @@ export default class ScoreKeeper {
       this.constraints,
       this.chaindata
     );
+    if (this.claimer) {
+      startRewardClaimJob(
+        this.config,
+        this.handler,
+        this.db,
+        this.claimer,
+        this.chaindata
+      );
+    }
     startExecutionJob(
       this.handler,
       this.nominatorGroups,

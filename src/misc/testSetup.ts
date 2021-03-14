@@ -70,6 +70,8 @@ export const startTestSetup = async () => {
     },
   ];
 
+  const claimer = {seed:"card insect figure furnace better miracle lend monitor call inner half top", address: "15B4rygvyb1BdA33AatuT7btLiZSUfcAS14X1SLrDfpq8Eou"};
+
   const nodes = [
     {
       name: "alice",
@@ -135,6 +137,19 @@ export const startTestSetup = async () => {
       initialized: false,
     },
   ];
+
+  // Send funds to reward claimer:
+  console.log(`{TestSetup::RewardClaimer} Sending funds to reward claimer address: ${claimer.address}`);
+  const claimerTransfer = api.tx.balances.transfer(
+    claimer.address,
+    "12345678912345"
+  );
+  try {
+    const hash = await claimerTransfer.signAndSend(keyring.addFromUri("//Alice"));
+  } catch {
+    console.log(`{TestSetup::Reward::${claimer.address}} transfer tx failed...`);
+  }
+  await sleep(3000);
 
   // For each nominator:
   // - Transfer some balance into the stash account from Alice

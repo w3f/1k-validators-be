@@ -286,14 +286,12 @@ export class OTV implements Constraints {
       }
     );
 
+    // Sort so that validators with few unclaimed payouts are prioritized
     validCandidates = validCandidates.sort(
       (a: CandidateData, b: CandidateData) => {
-        // console.log(`Candidate a: ${a}`);
-        // console.log(`Candidate b: ${b}`);
         return a.unclaimedEras.length - b.unclaimedEras.length;
       }
     );
-    console.log(validCandidates);
 
     // Cache the value to return from the server.
     this.validCache = validCandidates;

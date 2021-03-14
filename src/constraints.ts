@@ -211,6 +211,16 @@ export class OTV implements Constraints {
       }
     }
 
+    const unclaimedEras = await this.chaindata.getUnclaimedEras(stash);
+    const [currentEra, err3] = await this.chaindata.getActiveEraIndex();
+    const threshold = currentEra - this.unclaimedEraThreshold; // Validators cannot have unclaimed rewards before this era
+    // If unclaimed eras contain an era below the recent threshold
+    if (!unclaimedEras.every(era => era => threshold)){
+      return [false,
+      `${stash} has unclaimed eras: ${unclaimedEras} prior to era: ${threshold}`,
+    ];
+    } 
+
     try {
       if (!!kusamaStash) {
         const url = `${KOTVBackendEndpoint}/candidate/${kusamaStash}`;
@@ -275,6 +285,15 @@ export class OTV implements Constraints {
         return a.nominatedAt - b.nominatedAt;
       }
     );
+
+    validCandidates = validCandidates.sort(
+      (a: CandidateData, b: CandidateData) => {
+        // console.log(`Candidate a: ${a}`);
+        // console.log(`Candidate b: ${b}`);
+        return a.unclaimedEras.length - b.unclaimedEras.length;
+      }
+    );
+    console.log(validCandidates);
 
     // Cache the value to return from the server.
     this.validCache = validCandidates;
@@ -363,7 +382,16 @@ export class OTV implements Constraints {
         continue;
       }
 
-      // TODO: Add constraint for checking claimed rewards
+      const unclaimedEras = await this.chaindata.getUnclaimedEras(stash);
+      const [currentEra, err2] = await this.chaindata.getActiveEraIndex();
+      const threshold = currentEra - (this.unclaimedEraThreshold * 2); // Validators cannot have unclaimed rewards before this era for polkadot
+      // If unclaimed eras contain an era below the recent threshold
+      if (!unclaimedEras.every(era => era => threshold)){
+        const reason = `${stash} has unclaimed eras: ${unclaimedEras} prior to: ${threshold} (era: ${currentEra})`;
+        bad.add({candidate, reason});
+        continue;
+      }
+
 
       // Checking for slashing should be temporarily removed - since slashes can be cancelled by governance they should be handled manually.
 

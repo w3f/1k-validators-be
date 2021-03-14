@@ -39,4 +39,5 @@ export type CandidateData = {
   kusamaStash: string;
   skipSelfStake: boolean;
   bio: string;
+  unclaimedEras: [number];
 };

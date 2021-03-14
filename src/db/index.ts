@@ -565,6 +565,27 @@ export default class Db {
     return true;
   }
 
+  async setUnclaimedEras(
+    stash: string,
+    unclaimedEras: number[]
+  ): Promise<boolean> {
+    logger.info(
+      `(Db::setNomination) Setting unclaimed eras for ${stash} to the following validators: ${unclaimedEras}`
+    );
+    await this.candidateModel
+      .findOneAndUpdate(
+        {
+          stash,
+        },
+        {
+          unclaimedEras: unclaimedEras,
+        }
+      )
+      .exec();
+
+    return true;
+  }
+
   async setNomination(
     address: string,
     era: number,

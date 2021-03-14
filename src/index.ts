@@ -107,12 +107,11 @@ const start = async (cmd: { config: string }) => {
     await scorekeeper.addNominatorGroup(nominatorGroup);
   }
 
-  if (config.scorekeeper.claimer){
+  if (config.scorekeeper.claimer) {
     logger.info(`Claimer in config. Adding to scorekeeper`);
     // Setup claimer in the scorekeeper
     await scorekeeper.addClaimer(config.scorekeeper.claimer);
   }
-
 
   const curControllers = scorekeeper.getAllNominatorControllers();
   await db.removeStaleNominators(curControllers);

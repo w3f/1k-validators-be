@@ -8,7 +8,7 @@ import {
   NominatorSchema,
   NominationSchema,
   ChainMetadataSchema,
-  BotClaimEventSchema
+  BotClaimEventSchema,
 } from "./models";
 import logger from "../logger";
 
@@ -39,7 +39,10 @@ export default class Db {
       "ChainMetadata",
       ChainMetadataSchema
     );
-    this.botClaimEventModel = mongoose.model("BotClaimEvent", BotClaimEventSchema);
+    this.botClaimEventModel = mongoose.model(
+      "BotClaimEvent",
+      BotClaimEventSchema
+    );
   }
 
   static async create(uri = "mongodb://localhost:27017/otv"): Promise<Db> {

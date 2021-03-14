@@ -82,7 +82,7 @@ export const CandidateSchema = new Schema({
   // If a validator had its rank increased, this will contian details.
   rankEvents: { type: [RankEventSchema], default: [] },
   // Unclaimed Era Rewards
-  unclaimedEras: {type:[Number], default: []},
+  unclaimedEras: { type: [Number], default: [] },
   // Polkadot specific: Kusama Stash
   kusamaStash: String,
   // Polkadot specific: Case for good intentions

@@ -299,11 +299,11 @@ class ChainData {
     return ledger.toJSON().stash;
   };
 
-  getControllerFromStash = async(stash:string): Promise<string | null> => {
+  getControllerFromStash = async (stash: string): Promise<string | null> => {
     const api = await this.handler.getApi();
     const controller = await api.query.staking.bonded(stash);
     return controller.toString();
-  }
+  };
 
   /**
    * Gets Nominations for a nomiantor at a given era
@@ -365,52 +365,60 @@ class ChainData {
    * Gets unclaimed eras for a validator
    * To check this, we query the ledger for claimedEras, which are the eras the validator has claiemd rewards for.
    * We then check for the history depth eras if they have earned era points for an era (which would indicate they are active)
-   * and check to see if that era is included in the claimedEras. If not, it is an unclaimed era, and pushed to an unclaimed era 
+   * and check to see if that era is included in the claimedEras. If not, it is an unclaimed era, and pushed to an unclaimed era
    * set that is returned.
-   * @param validatorStash 
-   * @returns 
+   * @param validatorStash
+   * @returns
    */
-  getUnclaimedEras = async(validatorStash: string) => {
+  getUnclaimedEras = async (validatorStash: string) => {
     const api = await this.handler.getApi();
     const controller = await this.getControllerFromStash(validatorStash);
     if (!controller) {
-      logger.info(`{Chaindata::getUnclaimedEras} ${validatorStash} does not have a controller`);
+      logger.info(
+        `{Chaindata::getUnclaimedEras} ${validatorStash} does not have a controller`
+      );
       return;
     }
 
-    const ledger:JSON = (await api.query.staking.ledger(controller)).toJSON();
+    const ledger: JSON = (await api.query.staking.ledger(controller)).toJSON();
     if (!ledger) {
-        logger.info(`{Chaindata::getUnclaimedRewards} ${validatorStash} and controller ${controller} doesn't have a ledger`);
-        return;
-    } 
+      logger.info(
+        `{Chaindata::getUnclaimedRewards} ${validatorStash} and controller ${controller} doesn't have a ledger`
+      );
+      return;
+    }
 
     const [currentEra, err] = await this.getActiveEraIndex();
-    const claimedEras = ledger ? ledger.claimedRewards: null;
-    let erasActive = [];
-    let unclaimedEras = [];
+    const claimedEras = ledger ? ledger.claimedRewards : null;
+    const erasActive = [];
+    const unclaimedEras = [];
 
     const startingEra = currentEra - 84 >= 0 ? currentEra - 84 : 0;
-    for (let i = startingEra; i < currentEra; i++){
-        const eraPoints:JSON = (await api.query.staking.erasRewardPoints(i)).toJSON().individual;
-        let eraPointsValue;
-        
-        for (const val in eraPoints){
-            if (val.toString() == validatorStash.toString() || val.toString() == controller.toString()) {
-                erasActive.push(i);
-                eraPointsValue = eraPoints[val];
-            }
+    for (let i = startingEra; i < currentEra; i++) {
+      const eraPoints: JSON = (
+        await api.query.staking.erasRewardPoints(i)
+      ).toJSON().individual;
+      let eraPointsValue;
+
+      for (const val in eraPoints) {
+        if (
+          val.toString() == validatorStash.toString() ||
+          val.toString() == controller.toString()
+        ) {
+          erasActive.push(i);
+          eraPointsValue = eraPoints[val];
         }
+      }
     }
 
-    for (const era of erasActive){
-        if (!claimedEras.includes(era)){
-            unclaimedEras.push(era);
-        }
+    for (const era of erasActive) {
+      if (!claimedEras.includes(era)) {
+        unclaimedEras.push(era);
+      }
     }
-  
+
     return unclaimedEras;
-  }
-
+  };
 }
 
 export default ChainData;

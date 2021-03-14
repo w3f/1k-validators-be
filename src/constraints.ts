@@ -213,12 +213,12 @@ export class OTV implements Constraints {
 
     const unclaimedEras = await this.chaindata.getUnclaimedEras(stash);
     const [currentEra, err3] = await this.chaindata.getActiveEraIndex();
-    const threshold = currentEra - this.unclaimedEraThreshold; // Validators cannot have unclaimed rewards before this era
+    const threshold = currentEra - this.unclaimedEraThreshold - 1; // Validators cannot have unclaimed rewards before this era
     // If unclaimed eras contain an era below the recent threshold
-    if (!unclaimedEras.every((era) => (era) => threshold)) {
+    if (!unclaimedEras.every((era) => (era) > threshold)) {
       return [
         false,
-        `${stash} has unclaimed eras: ${unclaimedEras} prior to era: ${threshold}`,
+        `${stash} has unclaimed eras: ${unclaimedEras} prior to era: ${threshold+1}`,
       ];
     }
 
@@ -383,10 +383,10 @@ export class OTV implements Constraints {
 
       const unclaimedEras = await this.chaindata.getUnclaimedEras(stash);
       const [currentEra, err2] = await this.chaindata.getActiveEraIndex();
-      const threshold = currentEra - this.unclaimedEraThreshold * 2; // Validators cannot have unclaimed rewards before this era for polkadot
+      const threshold = (currentEra - this.unclaimedEraThreshold * 2) - 1; // Validators cannot have unclaimed rewards before this era
       // If unclaimed eras contain an era below the recent threshold
-      if (!unclaimedEras.every((era) => (era) => threshold)) {
-        const reason = `${stash} has unclaimed eras: ${unclaimedEras} prior to: ${threshold} (era: ${currentEra})`;
+      if (!unclaimedEras.every((era) => (era) > threshold)) {
+        const reason = `${stash} has unclaimed eras: ${unclaimedEras} prior to: ${threshold+1} (era: ${currentEra})`;
         bad.add({ candidate, reason });
         continue;
       }

@@ -570,7 +570,7 @@ export default class Db {
     unclaimedEras: number[]
   ): Promise<boolean> {
     logger.info(
-      `(Db::setNomination) Setting unclaimed eras for ${stash} to the following validators: ${unclaimedEras}`
+      `(Db::setUnclaimedEras) Setting unclaimed eras for ${stash} to the following validators: ${unclaimedEras}`
     );
     await this.candidateModel
       .findOneAndUpdate(

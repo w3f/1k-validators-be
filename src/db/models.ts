@@ -134,4 +134,4 @@ export const BotClaimEventSchema = new Schema({
   timestamp: Number,
   // The finalized blockhash of the Claim tx
   blockhash: String,
-})
+});

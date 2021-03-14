@@ -9,13 +9,13 @@ export type NominatorConfig = {
 };
 
 export type ClaimerConfig = {
-  seed:string;
-}
+  seed: string;
+};
 
 export type EraReward = {
   stash: string;
   era: number;
-}
+};
 
 export type BooleanResult = [boolean | null, string | null];
 export type NumberResult = [number | null, string | null];

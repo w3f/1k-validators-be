@@ -185,7 +185,13 @@ export default class ScoreKeeper {
 
   // Adds a claimer from the config
   async addClaimer(claimerCfg: ClaimerConfig): Promise<boolean> {
-    const claimer = new Claimer(this.handler, this.db, claimerCfg, this.config.global.networkPrefix, this.bot);
+    const claimer = new Claimer(
+      this.handler,
+      this.db,
+      claimerCfg,
+      this.config.global.networkPrefix,
+      this.bot
+    );
     this.claimer = claimer;
     return true;
   }

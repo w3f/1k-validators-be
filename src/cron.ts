@@ -8,6 +8,7 @@ import {
   SIXTEEN_HOURS,
   TIME_DELAY_BLOCKS,
   VALIDITY_CRON,
+  CANDIDATE_CHAINDATA_CRON
 } from "./constants";
 import logger from "./logger";
 import Monitor from "./monitor";
@@ -15,6 +16,7 @@ import { Config } from "./config";
 import { OTV } from "./constraints";
 import ApiHandler from "./ApiHandler";
 import Nominator from "./nominator";
+import ChainData from "./chaindata";
 
 // Monitors the latest GitHub releases and ensures nodes have upgraded
 // within a timely period.
@@ -170,3 +172,41 @@ export const startExecutionJob = async (
   });
   executionCron.start();
 };
+
+// Chron job for writing chaindata for candidates to the db
+// This updates:
+//     - Unclaimed eras
+export const startCandidateChainDataJob = async(  config: Config,
+  handler: ApiHandler,
+  db: Db,
+  constraints: OTV, chaindata: ChainData) => {
+    logger.info(`(cron::CandidateChainData) Running candidate chain data cron`);
+
+    const chaindataFrequency = config.cron.candidateChainData
+    ? config.cron.candidateChainData
+    : CANDIDATE_CHAINDATA_CRON;
+  
+    logger.info(`(cron::CandidateChainData) Running candidate chain data cron with frequency: ${chaindataFrequency}`);
+  
+    const api = await handler.getApi();
+  
+    const chaindataCron = new CronJob(chaindataFrequency, async () => {
+      logger.info(`{cron::CandidateChainData} running candidate chain data cron....`);
+
+      const allCandidates = await db.allCandidates();
+      for (const candidate of allCandidates){
+
+        const unclaimedEras = await chaindata.getUnclaimedEras(candidate.stash);
+        await db.setUnclaimedEras(candidate.stash, unclaimedEras);
+
+        // TODO: add setting commission
+        // TODO add setting identity information
+        // TODO add setting eras data
+
+      }
+    });
+    chaindataCron.start();
+
+
+    
+  }

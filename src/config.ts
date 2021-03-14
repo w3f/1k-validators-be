@@ -30,6 +30,7 @@ export type Config = {
     validity: string;
     execution: string;
     scorekeeper: string;
+    candidateChainData: string;
   };
   db: {
     mongo: {

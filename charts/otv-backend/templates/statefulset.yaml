@@ -45,10 +45,10 @@ spec:
       {{- if ne .Values.environment "ci" }}
         resources:
           limits:
-            cpu: 600m
+            cpu: 1200m
             memory: 1Gi
           requests:
-            cpu: 300m
+            cpu: 600m
             memory: 400Mi
       {{- end }}
       {{- if eq .Values.environment "ci" }}

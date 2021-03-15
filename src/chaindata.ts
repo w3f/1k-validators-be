@@ -395,6 +395,7 @@ class ChainData {
 
     const startingEra = currentEra - 84 >= 0 ? currentEra - 84 : 0;
     for (let i = startingEra; i < currentEra; i++) {
+      if (claimedEras.includes(i)) continue;
       const eraPoints: JSON = (
         await api.query.staking.erasRewardPoints(i)
       ).toJSON().individual;

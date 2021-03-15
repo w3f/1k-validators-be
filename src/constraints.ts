@@ -121,6 +121,7 @@ export class OTV implements Constraints {
       stash,
       kusamaStash,
       skipSelfStake,
+      unclaimedEras,
     } = candidate;
 
     // Ensure the candidate is online.
@@ -211,7 +212,7 @@ export class OTV implements Constraints {
       }
     }
 
-    const unclaimedEras = await this.chaindata.getUnclaimedEras(stash);
+    // const unclaimedEras = await this.chaindata.getUnclaimedEras(stash);
     const [currentEra, err3] = await this.chaindata.getActiveEraIndex();
     const threshold = currentEra - this.unclaimedEraThreshold - 1; // Validators cannot have unclaimed rewards before this era
     // If unclaimed eras contain an era below the recent threshold
@@ -329,6 +330,7 @@ export class OTV implements Constraints {
         stash,
         skipSelfStake,
         offlineAccumulated,
+        unclaimedEras
       } = candidate;
       /// Ensure the commission wasn't raised/
       const [commission, err] = await this.chaindata.getCommission(stash);
@@ -383,7 +385,7 @@ export class OTV implements Constraints {
         continue;
       }
 
-      const unclaimedEras = await this.chaindata.getUnclaimedEras(stash);
+      // const unclaimedEras = await this.chaindata.getUnclaimedEras(stash);
       const [currentEra, err2] = await this.chaindata.getActiveEraIndex();
       const threshold = currentEra - this.unclaimedEraThreshold * 2 - 1; // Validators cannot have unclaimed rewards before this era
       // If unclaimed eras contain an era below the recent threshold

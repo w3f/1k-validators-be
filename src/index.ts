@@ -107,6 +107,12 @@ const start = async (cmd: { config: string }) => {
     await scorekeeper.addNominatorGroup(nominatorGroup);
   }
 
+  if (config.scorekeeper.claimer) {
+    logger.info(`Claimer in config. Adding to scorekeeper`);
+    // Setup claimer in the scorekeeper
+    await scorekeeper.addClaimer(config.scorekeeper.claimer);
+  }
+
   const curControllers = scorekeeper.getAllNominatorControllers();
   await db.removeStaleNominators(curControllers);
 
@@ -150,5 +156,5 @@ program
   .option("--config <directory>", "The path to the config directory.", "config")
   .action((cmd: { config: string }) => catchAndQuit(start(cmd)));
 
-program.version("2.2.49");
+program.version("2.2.50");
 program.parse(process.argv);

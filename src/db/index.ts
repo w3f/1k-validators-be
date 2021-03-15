@@ -8,6 +8,7 @@ import {
   NominatorSchema,
   NominationSchema,
   ChainMetadataSchema,
+  BotClaimEventSchema,
 } from "./models";
 import logger from "../logger";
 
@@ -25,6 +26,7 @@ export default class Db {
   private nominatorModel;
   private nominationModel;
   private chainMetadataModel;
+  private botClaimEventModel;
 
   constructor() {
     this.accountingModel = mongoose.model("Accounting", AccountingSchema);
@@ -36,6 +38,10 @@ export default class Db {
     this.chainMetadataModel = mongoose.model(
       "ChainMetadata",
       ChainMetadataSchema
+    );
+    this.botClaimEventModel = mongoose.model(
+      "BotClaimEvent",
+      BotClaimEventSchema
     );
   }
 
@@ -565,6 +571,27 @@ export default class Db {
     return true;
   }
 
+  async setUnclaimedEras(
+    stash: string,
+    unclaimedEras: number[]
+  ): Promise<boolean> {
+    logger.info(
+      `(Db::setUnclaimedEras) Setting unclaimed eras for ${stash} to the following validators: ${unclaimedEras}`
+    );
+    await this.candidateModel
+      .findOneAndUpdate(
+        {
+          stash,
+        },
+        {
+          unclaimedEras: unclaimedEras,
+        }
+      )
+      .exec();
+
+    return true;
+  }
+
   async setNomination(
     address: string,
     era: number,
@@ -612,6 +639,34 @@ export default class Db {
       era: era,
     });
     return data;
+  }
+
+  async setBotClaimEvent(
+    address: string,
+    era: number,
+    blockHash: string
+  ): Promise<boolean> {
+    logger.info(
+      `(Db::setBotClaimEvent) Setting bot claim event for ${address} for era ${era} with blockhash: ${blockHash}.`
+    );
+
+    const data = await this.botClaimEventModel.findOne({
+      address: address,
+      era: era,
+    });
+
+    if (!!data && data.blockHash) return;
+
+    if (!data) {
+      const botClaimEvent = new this.botClaimEventModel({
+        address: address,
+        era: era,
+        timestamp: Date.now(),
+        blockHash: blockHash,
+      });
+
+      return botClaimEvent.save();
+    }
   }
 
   async setLastNomination(address: string, now: number): Promise<boolean> {
@@ -686,6 +741,25 @@ export default class Db {
         {
           rank: Math.floor(data.rank / 2),
           faults: data.faults + 1,
+        }
+      )
+      .exec();
+
+    return true;
+  }
+
+  // Dock rank when an unclaimed reward is claimed by the bot
+  async dockPointsUnclaimedReward(stash: string): Promise<boolean> {
+    logger.info(`Docking points for ${stash}.`);
+
+    const data = await this.candidateModel.findOne({ stash });
+    await this.candidateModel
+      .findOneAndUpdate(
+        {
+          stash,
+        },
+        {
+          rank: data.rank - 5,
         }
       )
       .exec();
@@ -840,5 +914,9 @@ export default class Db {
 
   async getChainMetadata(): Promise<any> {
     return this.chainMetadataModel.findOne({ name: /.*/ }).exec();
+  }
+
+  async getBotClaimEvents(): Promise<any> {
+    return this.botClaimEventModel.find({ address: /.*/ }).exec();
   }
 }

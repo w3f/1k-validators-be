@@ -15,6 +15,7 @@ const API = {
   GetNodes: "/nodes",
   GetNominators: "/nominators",
   GetNominations: "/nominations",
+  GetBotClaimEvents: "/claims",
   Health: "/healthcheck",
   Invalid: "/invalid",
   ValidCandidates: "/valid",
@@ -64,6 +65,11 @@ export default class Server {
 
     router.get(API.GetNominations, async (ctx) => {
       const allNominations = await this.db.allNominations();
+      ctx.body = allNominations;
+    });
+
+    router.get(API.GetBotClaimEvents, async (ctx) => {
+      const allNominations = await this.db.getBotClaimEvents();
       ctx.body = allNominations;
     });
 

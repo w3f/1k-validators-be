@@ -15,9 +15,11 @@
     "cron": {
         "monitor": "0 */15 * * * *",
         "clearOffline": "0 0 0 * * 0",
-        "validity": "0 0-59/7 * * * *",
+        "validity": "0 0-59/1 * * * *",
         "execution": "0 0-59/1 * * * *",
-        "scorekeeper": "0 0-59/1 * * * *"
+        "scorekeeper": "0 0-59/1 * * * *",
+        "candidateChainData": "0 0-59/1 * * * *",
+        "rewardClaiming": "0 0-59/3 * * * *"
     },
     "db": {
         "migrate": false,

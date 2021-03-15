@@ -176,6 +176,7 @@ export class OTV implements Constraints {
       ];
     }
 
+    // Ensure that the reward destination is set to 'Staked'
     if (!this.skipStakedDesitnation) {
       const isStaked = await this.chaindata.destinationIsStaked(stash);
       if (!isStaked) {
@@ -184,6 +185,7 @@ export class OTV implements Constraints {
       }
     }
 
+    // Ensure that the commission is in line with the network rules
     const [commission, err] = await this.chaindata.getCommission(stash);
     if (err) {
       return [false, `${name} ${err}`];
@@ -209,16 +211,36 @@ export class OTV implements Constraints {
       }
     }
 
+    const unclaimedEras = await this.chaindata.getUnclaimedEras(stash);
+    const [currentEra, err3] = await this.chaindata.getActiveEraIndex();
+    const threshold = currentEra - this.unclaimedEraThreshold - 1; // Validators cannot have unclaimed rewards before this era
+    // If unclaimed eras contain an era below the recent threshold
+    if (!unclaimedEras.every((era) => era > threshold)) {
+      return [
+        false,
+        `${stash} has unclaimed eras: ${unclaimedEras} prior to era: ${
+          threshold + 1
+        }`,
+      ];
+    }
+
     try {
       if (!!kusamaStash) {
         const url = `${KOTVBackendEndpoint}/candidate/${kusamaStash}`;
 
         const res = await axios.get(url);
 
+        if (!!res.data.invalidityResasons) {
+          return [
+            false,
+            `${name} has a kusama node that is invalid: ${res.data.invalidityReasons}`,
+          ];
+        }
+
         if (Number(res.data.rank) < 25) {
           return [
             false,
-            `${name} has a Kusama stash with lower than 25 rank in the Kusama OTV programme.`,
+            `${name} has a Kusama stash with lower than 25 rank in the Kusama OTV programme: ${res.data.rank}.`,
           ];
         }
       }
@@ -229,6 +251,7 @@ export class OTV implements Constraints {
     return [true, ""];
   }
 
+  // Returns the list of valid candidates, ordered by the priority they should get nominated in
   async getValidCandidates(
     candidates: CandidateData[],
     identityHashTable: Map<string, number>
@@ -266,6 +289,13 @@ export class OTV implements Constraints {
       }
     );
 
+    // Sort so that validators with few unclaimed payouts are prioritized
+    validCandidates = validCandidates.sort(
+      (a: CandidateData, b: CandidateData) => {
+        return a.unclaimedEras.length - b.unclaimedEras.length;
+      }
+    );
+
     // Cache the value to return from the server.
     this.validCache = validCandidates;
 
@@ -293,7 +323,13 @@ export class OTV implements Constraints {
     const bad: Set<{ candidate: CandidateData; reason: string }> = new Set();
 
     for (const candidate of candidates) {
-      const { name, offlineSince, stash, skipSelfStake } = candidate;
+      const {
+        name,
+        offlineSince,
+        stash,
+        skipSelfStake,
+        offlineAccumulated,
+      } = candidate;
       /// Ensure the commission wasn't raised/
       const [commission, err] = await this.chaindata.getCommission(stash);
       /// If it errors we assume that a validator removed their validator status.
@@ -336,15 +372,28 @@ export class OTV implements Constraints {
         }
       }
 
-      // Ensure the candidate is online.
-      if (offlineSince !== 0) {
-        const reason = `${name} offline. Offline since ${offlineSince}.`;
+      // Ensure the candidate doesn't have too much offline time
+      const totalOffline = offlineAccumulated / WEEK;
+      if (totalOffline > 0.02) {
+        const reason = `${name} has been offline ${
+          offlineAccumulated / 1000 / 60
+        } minutes this week.`;
         logger.info(reason);
         bad.add({ candidate, reason });
         continue;
       }
 
-      // TODO: Add constraint for checking claimed rewards
+      const unclaimedEras = await this.chaindata.getUnclaimedEras(stash);
+      const [currentEra, err2] = await this.chaindata.getActiveEraIndex();
+      const threshold = currentEra - this.unclaimedEraThreshold * 2 - 1; // Validators cannot have unclaimed rewards before this era
+      // If unclaimed eras contain an era below the recent threshold
+      if (!unclaimedEras.every((era) => era > threshold)) {
+        const reason = `${stash} has unclaimed eras: ${unclaimedEras} prior to: ${
+          threshold + 1
+        } (era: ${currentEra})`;
+        bad.add({ candidate, reason });
+        continue;
+      }
 
       // Checking for slashing should be temporarily removed - since slashes can be cancelled by governance they should be handled manually.
 

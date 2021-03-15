@@ -81,6 +81,8 @@ export const CandidateSchema = new Schema({
   faultEvents: { type: [FaultEventSchema], default: [] },
   // If a validator had its rank increased, this will contian details.
   rankEvents: { type: [RankEventSchema], default: [] },
+  // Unclaimed Era Rewards
+  unclaimedEras: { type: [Number], default: [] },
   // Polkadot specific: Kusama Stash
   kusamaStash: String,
   // Polkadot specific: Case for good intentions
@@ -120,4 +122,16 @@ export const ChainMetadataSchema = new Schema({
   decimals: Number,
   // Chain name
   name: String,
+});
+
+// A historical event when the bot will claim a reward on behalf of a nominator
+export const BotClaimEventSchema = new Schema({
+  // Validator Address
+  address: String,
+  // The era the reward was claimed for
+  era: Number,
+  // The timestamp the event occured
+  timestamp: Number,
+  // The finalized blockhash of the Claim tx
+  blockHash: String,
 });

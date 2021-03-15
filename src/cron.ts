@@ -263,5 +263,5 @@ export const startRewardClaimJob = async (
       await claimer.claim(erasToClaim);
     }
   });
-  rewardClaimingCron.start();
+  // rewardClaimingCron.start();
 };

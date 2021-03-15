@@ -330,7 +330,7 @@ export class OTV implements Constraints {
         stash,
         skipSelfStake,
         offlineAccumulated,
-        unclaimedEras
+        unclaimedEras,
       } = candidate;
       /// Ensure the commission wasn't raised/
       const [commission, err] = await this.chaindata.getCommission(stash);

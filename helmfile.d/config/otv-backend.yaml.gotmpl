@@ -1,0 +1,23 @@
+environment: {{ .Environment.Name }}
+
+dataPath: "/data"
+
+backendPort: 3300
+
+image:
+  repo: web3f/otv-backend
+ {{ if eq .Environment.Name "production" }}
+  tag: {{ env "CIRCLE_TAG" }}
+ {{ else }}
+  tag: {{ env "CIRCLE_SHA1" }}
+ {{ end }}
+
+resources:
+  limits:
+    cpu: 1200m
+    memory: 1Gi
+  requests:
+    cpu: 600m
+    memory: 400Mi
+
+backendPort: 3300    

@@ -1,17 +1,4 @@
-environment: {{ .Environment.Name }}
-
 domain: polkadot.w3f.community
-dataPath: "/data"
-
-backendPort: 3300
-
-image:
-  repo: web3f/otv-backend
- {{ if eq .Environment.Name "production" }}
-  tag: {{ env "CIRCLE_TAG" }}
- {{ else }}
-  tag: {{ env "CIRCLE_SHA1" }}
- {{ end }}
 
 secret: {{ env "POLKADOT_OTV_BACKEND_SECRET" | default "{}" }}  
 

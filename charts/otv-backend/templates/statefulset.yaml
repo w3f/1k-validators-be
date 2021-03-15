@@ -44,12 +44,7 @@ spec:
           readOnly: true
       {{- if ne .Values.environment "ci" }}
         resources:
-          limits:
-            cpu: 600m
-            memory: 1Gi
-          requests:
-            cpu: 300m
-            memory: 400Mi
+{{ toYaml .Values.resources | indent 10 }}        
       {{- end }}
       {{- if eq .Values.environment "ci" }}
         env:

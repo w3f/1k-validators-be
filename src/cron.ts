@@ -21,6 +21,7 @@ import Nominator from "./nominator";
 import ChainData from "./chaindata";
 import Claimer from "./claimer";
 import { EraReward } from "./types";
+import { sleep } from "./util";
 
 // Monitors the latest GitHub releases and ensures nodes have upgraded
 // within a timely period.
@@ -206,6 +207,7 @@ export const startCandidateChainDataJob = async (
     for (const candidate of allCandidates) {
       const unclaimedEras = await chaindata.getUnclaimedEras(candidate.stash);
       await db.setUnclaimedEras(candidate.stash, unclaimedEras);
+      await sleep(3000);
 
       // TODO: add setting commission
       // TODO add setting identity information

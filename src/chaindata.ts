@@ -1,3 +1,4 @@
+import { ApiPromise } from "@polkadot/api";
 import ApiHandler from "./ApiHandler";
 
 import {
@@ -419,6 +420,20 @@ class ChainData {
     );
 
     return unclaimedEras;
+  };
+
+  /**
+   * Gets list of validators that have `validate` intentions
+   * @returns list of all validators
+   */
+  getValidators = async () => {
+    const api = await this.handler.getApi();
+    const keys = await api.query.staking.validators.keys();
+    const validators = keys.map(({ args: [validatorId] }) =>
+      validatorId.toString()
+    );
+
+    return validators;
   };
 }
 

@@ -324,8 +324,10 @@ export class OTV implements Constraints {
     const bad: Set<{ candidate: CandidateData; reason: string }> = new Set();
 
     for (const candidate of candidates) {
-      if (!candidate){
-        logger.info(`{Constraints::processCandidates} candidate is null. Skipping..`);
+      if (!candidate) {
+        logger.info(
+          `{Constraints::processCandidates} candidate is null. Skipping..`
+        );
         continue;
       }
       const {

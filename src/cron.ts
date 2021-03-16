@@ -215,9 +215,9 @@ export const startCandidateChainDataJob = async (
       const endLoop = Date.now();
 
       logger.info(
-        `{Chaindata::getUnclaimedRewards} ${candidate.stash} (${i}/${allCandidates.length}) done. Tooks ${
-          (endLoop - startLoop) / 1000
-        } seconds`
+        `{Chaindata::getUnclaimedRewards} ${candidate.stash} (${i}/${
+          allCandidates.length
+        }) done. Tooks ${(endLoop - startLoop) / 1000} seconds`
       );
       // TODO: add setting commission
       // TODO add setting identity information

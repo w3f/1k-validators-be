@@ -1,5 +1,13 @@
 domain: polkadot.w3f.community
 
+resources:
+  limits:
+    cpu: 1500m
+    memory: 1Gi
+  requests:
+    cpu: 600m
+    memory: 400Mi
+
 secret: {{ env "POLKADOT_OTV_BACKEND_SECRET" | default "{}" }}  
 
 config: |

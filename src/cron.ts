@@ -205,10 +205,20 @@ export const startCandidateChainDataJob = async (
     const start = Date.now();
 
     const allCandidates = await db.allCandidates();
-    for (const candidate of allCandidates) {
+
+    for (const [i, candidate] of allCandidates.entries()) {
+      const startLoop = Date.now();
+
       const unclaimedEras = await chaindata.getUnclaimedEras(candidate.stash);
       await db.setUnclaimedEras(candidate.stash, unclaimedEras);
 
+      const endLoop = Date.now();
+
+      logger.info(
+        `{Chaindata::getUnclaimedRewards} ${candidate.stash} (${i + 1}/${
+          allCandidates.length
+        }) done. Tooks ${(endLoop - startLoop) / 1000} seconds`
+      );
       // TODO: add setting commission
       // TODO add setting identity information
       // TODO add setting eras data

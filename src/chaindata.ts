@@ -371,6 +371,7 @@ class ChainData {
    * @returns
    */
   getUnclaimedEras = async (validatorStash: string) => {
+    const start = Date.now();
     const api = await this.handler.getApi();
     const controller = await this.getControllerFromStash(validatorStash);
     if (!controller) {
@@ -408,6 +409,10 @@ class ChainData {
         }
       }
     }
+
+    const end = Date.now();
+
+    logger.info(`{Chaindata::getUnclaimedRewards} ${validatorStash} done. Tooks ${(end - start) / 1000} seconds`);
 
     return unclaimedEras;
   };

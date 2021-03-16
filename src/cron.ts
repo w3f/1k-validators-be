@@ -202,6 +202,7 @@ export const startCandidateChainDataJob = async (
     logger.info(
       `{cron::CandidateChainData} running candidate chain data cron....`
     );
+    const start = Date.now();
 
     const allCandidates = await db.allCandidates();
     for (const candidate of allCandidates) {
@@ -212,6 +213,9 @@ export const startCandidateChainDataJob = async (
       // TODO add setting identity information
       // TODO add setting eras data
     }
+    const end = Date.now();
+
+    logger.info(`{cron::CandidateChainData} started at ${(new Date(start)).toString()} Done. Took ${(end - start) / 1000} seconds`);
   });
   chaindataCron.start();
 };

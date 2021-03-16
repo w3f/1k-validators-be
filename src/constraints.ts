@@ -6,6 +6,8 @@ import { WEEK, KOTVBackendEndpoint } from "./constants";
 import logger from "./logger";
 import { CandidateData } from "./types";
 import axios from "axios";
+import { formatAddress } from "./util";
+import { Config } from "./config";
 
 export interface Constraints {
   getValidCandidates(
@@ -31,6 +33,8 @@ export class OTV implements Constraints {
   private commission: number;
   private unclaimedEraThreshold: number;
 
+  private config: Config;
+
   // caches
   private validCache: CandidateData[] = [];
   private invalidCache: string[] = [];
@@ -43,7 +47,8 @@ export class OTV implements Constraints {
     skipClientUpgrade = false,
     minSelfStake = 0,
     commission = 0,
-    unclaimedEraThreshold = 0
+    unclaimedEraThreshold = 0,
+    config: Config
   ) {
     this.chaindata = new ChainData(handler);
 
@@ -55,6 +60,8 @@ export class OTV implements Constraints {
     this.minSelfStake = minSelfStake;
     this.commission = commission;
     this.unclaimedEraThreshold = unclaimedEraThreshold;
+
+    this.config = config;
   }
 
   get validCandidateCache(): CandidateData[] {
@@ -127,6 +134,12 @@ export class OTV implements Constraints {
     // Ensure the candidate is online.
     if (onlineSince === 0 || offlineSince !== 0) {
       return [false, `${name} offline. Offline since ${offlineSince}.`];
+    }
+
+    // Check that the validator has a validate intention
+    const validators = await this.chaindata.getValidators();
+    if (!validators.includes(formatAddress(stash, this.config))) {
+      return [false, `${name} does not have a validate intention`];
     }
 
     // Only take nodes that have been upgraded to latest versions.
@@ -219,7 +232,7 @@ export class OTV implements Constraints {
     if (!unclaimedEras.every((era) => era > threshold)) {
       return [
         false,
-        `${stash} has unclaimed eras: ${unclaimedEras} prior to era: ${
+        `${name} has unclaimed eras: ${unclaimedEras} prior to era: ${
           threshold + 1
         }`,
       ];

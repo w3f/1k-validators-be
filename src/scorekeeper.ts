@@ -53,7 +53,7 @@ export const autoNumNominations = async (
     Math.floor(
       stashBal
         .div(validators.info[0].exposure.total.toBn())
-        .mul(bnToBn(1.05))
+        .mul(bnToBn(0.95))
         .toNumber()
     ),
     16

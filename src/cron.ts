@@ -215,7 +215,7 @@ export const startCandidateChainDataJob = async (
       const endLoop = Date.now();
 
       logger.info(
-        `{Chaindata::getUnclaimedRewards} ${candidate.stash} (${i+1}/${
+        `{Chaindata::getUnclaimedRewards} ${candidate.stash} (${i + 1}/${
           allCandidates.length
         }) done. Tooks ${(endLoop - startLoop) / 1000} seconds`
       );

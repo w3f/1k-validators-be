@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/w3f/1k-validators-be.svg?style=svg)](https://circleci.com/gh/w3f/1k-validators-be)
+
 # [Thousand Validator Program][thousand]
 
 **To apply to the Kusama Thousand Validator Program - sign up [here][form]**

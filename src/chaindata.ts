@@ -412,7 +412,11 @@ class ChainData {
 
     const end = Date.now();
 
-    logger.info(`{Chaindata::getUnclaimedRewards} ${validatorStash} done. Tooks ${(end - start) / 1000} seconds`);
+    logger.info(
+      `{Chaindata::getUnclaimedRewards} ${validatorStash} done. Tooks ${
+        (end - start) / 1000
+      } seconds`
+    );
 
     return unclaimedEras;
   };

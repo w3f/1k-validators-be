@@ -215,7 +215,11 @@ export const startCandidateChainDataJob = async (
     }
     const end = Date.now();
 
-    logger.info(`{cron::CandidateChainData} started at ${(new Date(start)).toString()} Done. Took ${(end - start) / 1000} seconds`);
+    logger.info(
+      `{cron::CandidateChainData} started at ${new Date(
+        start
+      ).toString()} Done. Took ${(end - start) / 1000} seconds`
+    );
   });
   chaindataCron.start();
 };

@@ -207,7 +207,6 @@ export const startCandidateChainDataJob = async (
     for (const candidate of allCandidates) {
       const unclaimedEras = await chaindata.getUnclaimedEras(candidate.stash);
       await db.setUnclaimedEras(candidate.stash, unclaimedEras);
-      await sleep(3000);
 
       // TODO: add setting commission
       // TODO add setting identity information

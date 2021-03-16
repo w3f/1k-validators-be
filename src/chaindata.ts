@@ -390,7 +390,6 @@ class ChainData {
 
     const [currentEra, err] = await this.getActiveEraIndex();
     const claimedEras = ledger ? ledger.claimedRewards : null;
-    const erasActive = [];
     const unclaimedEras = [];
 
     const startingEra = currentEra - 84 >= 0 ? currentEra - 84 : 0;
@@ -399,22 +398,14 @@ class ChainData {
       const eraPoints: JSON = (
         await api.query.staking.erasRewardPoints(i)
       ).toJSON().individual;
-      let eraPointsValue;
 
       for (const val in eraPoints) {
         if (
           val.toString() == validatorStash.toString() ||
           val.toString() == controller.toString()
         ) {
-          erasActive.push(i);
-          eraPointsValue = eraPoints[val];
+          unclaimedEras.push(i);
         }
-      }
-    }
-
-    for (const era of erasActive) {
-      if (!claimedEras.includes(era)) {
-        unclaimedEras.push(era);
       }
     }
 

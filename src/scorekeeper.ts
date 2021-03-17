@@ -101,12 +101,21 @@ export default class ScoreKeeper {
       }
     );
 
+    // Handles offline event. Validators will be faulted for each session they are offline.
+    //     If they have already reaceived an offline fault for that session, it is skipped
     this.handler.on("someOffline", async (data: { offlineVals: string[] }) => {
       const { offlineVals } = data;
       const session = await this.chaindata.getSession();
       for (const val of offlineVals) {
         const candidate = await this.db.getCandidate(val);
         const reason = `${candidate.name} had an offline event in session ${session}`;
+        let alreadyFaulted = false;
+        for (const fault of candidate.faultEvents) {
+          if (fault.reason === reason) {
+            alreadyFaulted = true;
+          }
+        }
+        if (alreadyFaulted) continue;
 
         logger.info(`{ScoreKeeper::SomeOffline} ${reason}`);
         await this.botLog(reason);

@@ -11,6 +11,8 @@ import {
   BotClaimEventSchema,
 } from "./models";
 import logger from "../logger";
+import { formatAddress } from "../util";
+import { Keyring } from "@polkadot/keyring";
 
 // [name, client, version, null, networkId]
 export type NodeDetails = [string, string, string, string, string];
@@ -100,6 +102,10 @@ export default class Db {
     bio: string,
     bot?: any
   ): Promise<boolean> {
+    const network = (await this.getChainMetadata()).name;
+    const keyring = new Keyring();
+    const ss58Prefix = network == "Kusama" ? 2 : 0;
+    stash = keyring.encodeAddress(stash, ss58Prefix);
     logger.info(`(Db::addCandidate) name: ${name} stash: ${stash}`);
 
     // Check to see if the candidate has already been added as a node.

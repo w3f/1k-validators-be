@@ -101,6 +101,21 @@ export default class ScoreKeeper {
       }
     );
 
+    this.handler.on("someOffline", async (data: { offlineVals: string[] }) => {
+      const { offlineVals } = data;
+      const session = await this.chaindata.getSession();
+      for (const val of offlineVals) {
+        const candidate = await this.db.getCandidate(val);
+        const reason = `${candidate.name} had an offline event in session ${session}`;
+
+        logger.info(`{ScoreKeeper::SomeOffline} ${reason}`);
+        await this.botLog(reason);
+
+        await this.db.pushFaultEvent(candidate.stash, reason);
+        await this.dockPoints(candidate.stash);
+      }
+    });
+
     this.config = config;
     this.bot = bot;
     this.constraints = new OTV(

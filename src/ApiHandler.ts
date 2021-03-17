@@ -57,6 +57,14 @@ class ApiHandler extends EventEmitter {
             amount: amount.toString(),
           });
         }
+
+        if (event.section === "imOnline" && event.method === "SomeOffline") {
+          const offlineVals = event.data.toJSON()[0].map((val) => val[0]);
+
+          this.emit("someOffline", {
+            offlineVals: offlineVals,
+          });
+        }
       });
     });
   }

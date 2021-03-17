@@ -435,6 +435,16 @@ class ChainData {
 
     return validators;
   };
+
+  /**
+   * Gets the current session
+   * @returns session as number
+   */
+  getSession = async () => {
+    const api = await this.handler.getApi();
+    const session = await api.query.session.currentIndex();
+    return Number(session.toString());
+  };
 }
 
 export default ChainData;

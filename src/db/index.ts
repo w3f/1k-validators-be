@@ -402,6 +402,15 @@ export default class Db {
       return false;
     }
 
+    let alreadyRank = false;
+    for (const rank of record.rankEvents) {
+      if (rank.startEra == startEra) {
+        alreadyRank = true;
+      }
+    }
+
+    if (alreadyRank) return false;
+
     await this.candidateModel.findOneAndUpdate(
       {
         stash,
@@ -416,6 +425,7 @@ export default class Db {
         },
       }
     );
+    return true;
   }
 
   async pushFaultEvent(stash: string, reason: string): Promise<boolean> {
@@ -427,6 +437,14 @@ export default class Db {
     if (!record) {
       return false;
     }
+
+    let alreadyFault = false;
+    for (const fault of record.faultEvents) {
+      if (fault.reason == reason) {
+        alreadyFault = true;
+      }
+    }
+    if (alreadyFault) return false;
 
     await this.candidateModel.findOneAndUpdate(
       {
@@ -441,6 +459,7 @@ export default class Db {
         },
       }
     );
+    return true;
   }
 
   /**

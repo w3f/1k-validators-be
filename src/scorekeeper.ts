@@ -108,7 +108,9 @@ export default class ScoreKeeper {
       const session = await this.chaindata.getSession();
       for (const val of offlineVals) {
         const candidate = await this.db.getCandidate(val);
-        const reason = `${candidate.name} had an offline event in session ${session}`;
+        const reason = `${candidate.name} had an offline event in session ${
+          session - 1
+        }`;
         let alreadyFaulted = false;
         for (const fault of candidate.faultEvents) {
           if (fault.reason === reason) {
@@ -547,16 +549,16 @@ export default class ScoreKeeper {
       }
 
       // They were active - increase their rank and add a rank event
-      await this.db.pushRankEvent(stash, startEra, activeEra);
-      await this.addPoint(stash);
+      const didRank = await this.db.pushRankEvent(stash, startEra, activeEra);
+      if (didRank) await this.addPoint(stash);
     }
 
     // For all bad validators, dock their points and create a "Fault Event"
     for (const badOne of bad.values()) {
       const { candidate, reason } = badOne;
       const { stash } = candidate;
-      await this.db.pushFaultEvent(stash, reason);
-      await this.dockPoints(stash);
+      const didFault = await this.db.pushFaultEvent(stash, reason);
+      if (didFault) await this.dockPoints(stash);
     }
 
     this.ending = false;

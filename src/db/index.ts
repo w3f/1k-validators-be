@@ -11,6 +11,8 @@ import {
   BotClaimEventSchema,
 } from "./models";
 import logger from "../logger";
+import { formatAddress } from "../util";
+import { Keyring } from "@polkadot/keyring";
 
 // [name, client, version, null, networkId]
 export type NodeDetails = [string, string, string, string, string];
@@ -100,6 +102,10 @@ export default class Db {
     bio: string,
     bot?: any
   ): Promise<boolean> {
+    const network = (await this.getChainMetadata()).name;
+    const keyring = new Keyring();
+    const ss58Prefix = network == "Kusama" ? 2 : 0;
+    stash = keyring.encodeAddress(stash, ss58Prefix);
     logger.info(`(Db::addCandidate) name: ${name} stash: ${stash}`);
 
     // Check to see if the candidate has already been added as a node.
@@ -396,6 +402,15 @@ export default class Db {
       return false;
     }
 
+    let alreadyRank = false;
+    for (const rank of record.rankEvents) {
+      if (rank.startEra == startEra) {
+        alreadyRank = true;
+      }
+    }
+
+    if (alreadyRank) return false;
+
     await this.candidateModel.findOneAndUpdate(
       {
         stash,
@@ -410,6 +425,7 @@ export default class Db {
         },
       }
     );
+    return true;
   }
 
   async pushFaultEvent(stash: string, reason: string): Promise<boolean> {
@@ -421,6 +437,14 @@ export default class Db {
     if (!record) {
       return false;
     }
+
+    let alreadyFault = false;
+    for (const fault of record.faultEvents) {
+      if (fault.reason == reason) {
+        alreadyFault = true;
+      }
+    }
+    if (alreadyFault) return false;
 
     await this.candidateModel.findOneAndUpdate(
       {
@@ -435,6 +459,7 @@ export default class Db {
         },
       }
     );
+    return true;
   }
 
   /**

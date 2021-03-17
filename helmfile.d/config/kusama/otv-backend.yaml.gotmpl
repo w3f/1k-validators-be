@@ -3,10 +3,10 @@ domain: kusama.w3f.community
 resources:
   limits:
     cpu: 2000m
-    memory: 1Gi
+    memory: 2Gi
   requests:
     cpu: 1000m
-    memory: 400Mi
+    memory: 1.2Gi
 
 secret: {{ env "KUSAMA_OTV_BACKEND_SECRET" | default "{}" }}  
 

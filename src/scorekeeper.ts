@@ -51,11 +51,8 @@ export const autoNumNominations = async (
 
   return Math.min(
     Math.floor(
-      stashBal
-        .div(validators.info[0].exposure.total.toBn())
-        .mul(bnToBn(0.95))
-        .toNumber()
-    ),
+      stashBal.div(validators.info[0].exposure.total.toBn()).toNumber()
+    ) + 2,
     16
   );
 };

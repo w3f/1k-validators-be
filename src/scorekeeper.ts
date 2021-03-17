@@ -413,10 +413,20 @@ export default class ScoreKeeper {
               })()
             : nominator.maxNominations;
 
+        logger.info(
+          `{Scorekeepr::_doNominations} ${nominator.address} max nomindations: ${nominator.maxNominations}, number of nominations: ${numNominations}`
+        );
+
         // Get the target slice based on the amount of nominations to do and increment the counter.
         const targets = allTargets.slice(counter, counter + numNominations);
         counter = counter + numNominations;
 
+        if (targets.length == 0) {
+          logger.info(
+            `{ScoreKeeper::_doNominations} targets length was 0. Skipping nominations`
+          );
+          return;
+        }
         await nominator.nominate(targets, dryRun || this.config.global.dryRun);
 
         // Wait some time between each transaction to avoid nonce issues.

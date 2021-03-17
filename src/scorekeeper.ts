@@ -108,6 +108,7 @@ export default class ScoreKeeper {
       const session = await this.chaindata.getSession();
       for (const val of offlineVals) {
         const candidate = await this.db.getCandidate(val);
+        if (!candidate) return;
         const reason = `${candidate.name} had an offline event in session ${
           session - 1
         }`;

@@ -369,6 +369,10 @@ export default class ScoreKeeper {
       identityHashTable
     );
 
+    logger.info(
+      `{Scorekeeper::startRound} number of all candidates: ${allCandidates.length} valid candidates: ${validCandidates.length}`
+    );
+
     const targets = await this._doNominations(
       validCandidates,
       this.nominatorGroups
@@ -388,6 +392,12 @@ export default class ScoreKeeper {
     nominatorGroups: SpawnedNominatorGroup[] = [],
     dryRun = false
   ): Promise<string[]> {
+    if (candidates.length == 0) {
+      logger.info(
+        `{ScoreKeeper::_doNominations} Candidates length was 0. Skipping nominations`
+      );
+      return;
+    }
     const allTargets = candidates.map((c) => c.stash);
     let counter = 0;
     for (const nomGroup of nominatorGroups) {

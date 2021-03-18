@@ -332,7 +332,7 @@ export default class ScoreKeeper {
       this.nominatorGroups,
       this.config,
       this.db,
-      this.constraints
+      this.bot
     );
     mainCron.start();
   }

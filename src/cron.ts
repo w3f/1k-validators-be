@@ -129,7 +129,7 @@ export const startExecutionJob = async (
   nominatorGroups: Array<Nominator[]>,
   config: Config,
   db: Db,
-  constraints: OTV
+  bot: any
 ) => {
   const timeDelayBlocks = config.proxy.timeDelayBlocks
     ? Number(config.proxy.timeDelayBlocks)
@@ -176,8 +176,16 @@ export const startExecutionJob = async (
           "Staking", // TODO: Add dynamic check for  proxy type - if the proxy type isn't a "Staking" proxy, the tx will fail
           innerTx
         );
-        await nominator.sendStakingTx(tx, targets);
-        await db.deleteDelayedTx(dataNum, controller);
+        const didSend = await nominator.sendStakingTx(tx, targets);
+        if (didSend) {
+          logger.info(`Executed announcement`);
+          if (bot) {
+            await bot.sendMessage(
+              `${controller} executed announcement that was announced at ${dataNum}`
+            );
+          }
+          await db.deleteDelayedTx(dataNum, controller);
+        }
       }
     }
   });

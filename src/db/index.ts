@@ -775,7 +775,7 @@ export default class Db {
           stash,
         },
         {
-          rank: Math.floor(data.rank / 2),
+          rank: Math.floor(data.rank / 6),
           faults: data.faults + 1,
         }
       )

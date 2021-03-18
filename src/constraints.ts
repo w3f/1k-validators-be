@@ -404,18 +404,6 @@ export class OTV implements Constraints {
         continue;
       }
 
-      // const unclaimedEras = await this.chaindata.getUnclaimedEras(stash);
-      const [currentEra, err2] = await this.chaindata.getActiveEraIndex();
-      const threshold = currentEra - this.unclaimedEraThreshold * 2 - 1; // Validators cannot have unclaimed rewards before this era
-      // If unclaimed eras contain an era below the recent threshold
-      if (!unclaimedEras.every((era) => era > threshold)) {
-        const reason = `${stash} has unclaimed eras: ${unclaimedEras} prior to: ${
-          threshold + 1
-        } (era: ${currentEra})`;
-        bad.add({ candidate, reason });
-        continue;
-      }
-
       // Checking for slashing should be temporarily removed - since slashes can be cancelled by governance they should be handled manually.
 
       // const [hasSlashes, err3] = await this.chaindata.hasUnappliedSlashes(

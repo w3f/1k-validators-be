@@ -170,7 +170,6 @@ export default class Nominator {
           unsub();
         }
       });
-
       return true;
     } catch (err) {
       logger.warn(`Nominate tx failed: ${err}`);

@@ -522,7 +522,9 @@ export default class ScoreKeeper {
     }
 
     // Get all the candidates we want to process this round
-    // TODO: change this to all valid validators - not just ones that we nominated
+    // This includes both the candidates we have nominated as well as all valid candidates
+
+    // Gets adds candidates we nominated to the list
     for (const nomGroup of this.nominatorGroups) {
       for (const nominator of nomGroup) {
         const current = await this.db.getCurrentTargets(nominator.controller);
@@ -533,9 +535,6 @@ export default class ScoreKeeper {
           continue;
         }
 
-        // Wipe targets.
-        // await this.db.clearCurrent(nominator.controller);
-
         for (const stash of current) {
           const candidate = await this.db.getCandidate(stash);
 
@@ -544,6 +543,22 @@ export default class ScoreKeeper {
           toProcess.set(stash, candidate);
         }
       }
+    }
+
+    // Adds all other valid candidates to the list
+    const allCandidates = await this.db.allCandidates();
+    const identityHashTable = await this.constraints.populateIdentityHashTable(
+      allCandidates
+    );
+
+    const validCandidates = await this.constraints.getValidCandidates(
+      allCandidates,
+      identityHashTable
+    );
+
+    for (const candidate of validCandidates) {
+      if (toProcess.has(candidate.stash)) continue;
+      toProcess.set(candidate.stash, candidate);
     }
 
     // Get the set of Good Validators and get the set of Bad validators

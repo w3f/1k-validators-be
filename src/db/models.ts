@@ -143,7 +143,7 @@ export const EraPointsSchema = new Schema({
   // The Validator stash address
   address: String,
   // The amount of era points the validator received for the given era
-  eraPoints: Number
+  eraPoints: Number,
 });
 
 export const TotalEraPointsSchema = new Schema({
@@ -152,5 +152,5 @@ export const TotalEraPointsSchema = new Schema({
   // The era
   era: Number,
   // The array of validators and their era points
-  validatorsEraPoints: [EraPointsSchema]
+  validatorsEraPoints: [EraPointsSchema],
 });

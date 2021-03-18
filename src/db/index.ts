@@ -9,6 +9,8 @@ import {
   NominationSchema,
   ChainMetadataSchema,
   BotClaimEventSchema,
+  EraPointsSchema,
+  TotalEraPointsSchema,
 } from "./models";
 import logger from "../logger";
 import { formatAddress } from "../util";
@@ -25,6 +27,8 @@ export default class Db {
   private candidateModel;
   private delayedTxModel;
   private eraModel;
+  private eraPointsModel;
+  private totalEraPointsModel;
   private nominatorModel;
   private nominationModel;
   private chainMetadataModel;
@@ -35,6 +39,11 @@ export default class Db {
     this.candidateModel = mongoose.model("Candidate", CandidateSchema);
     this.delayedTxModel = mongoose.model("DelayedTx", DelayedTxSchema);
     this.eraModel = mongoose.model("Era", EraSchema);
+    this.eraPointsModel = mongoose.model("EraPoints", EraPointsSchema);
+    this.totalEraPointsModel = mongoose.model(
+      "TotalEraPoints",
+      TotalEraPointsSchema
+    );
     this.nominatorModel = mongoose.model("Nominator", NominatorSchema);
     this.nominationModel = mongoose.model("Nomination", NominationSchema);
     this.chainMetadataModel = mongoose.model(
@@ -648,14 +657,16 @@ export default class Db {
       return nomination.save();
     }
 
-    this.nominationModel.findOneAndUpdate({
-      address: address,
-      era: era,
-      validators: targets,
-      timestamp: Date.now(),
-      bonded: bonded,
-      blockHash: blockHash,
-    });
+    this.nominationModel
+      .findOneAndUpdate({
+        address: address,
+        era: era,
+        validators: targets,
+        timestamp: Date.now(),
+        bonded: bonded,
+        blockHash: blockHash,
+      })
+      .exec();
   }
 
   async getNomination(address: string, era: number): Promise<string[]> {
@@ -943,5 +954,100 @@ export default class Db {
 
   async getBotClaimEvents(): Promise<any> {
     return this.botClaimEventModel.find({ address: /.*/ }).exec();
+  }
+
+  // Create new Era Points records
+  async setEraPoints(
+    era: number,
+    points: number,
+    address: string
+  ): Promise<any> {
+    const data = await this.eraPointsModel.findOne({
+      address: address,
+      era: era,
+    });
+
+    // If the era points already exist and are the same as before, return
+    if (!!data && data.points == points) return;
+
+    // If they don't exist
+    if (!data) {
+      const eraPoints = new this.eraPointsModel({
+        address: address,
+        era: era,
+        eraPoints: points,
+      });
+
+      return eraPoints.save();
+    }
+
+    this.eraPointsModel
+      .findOneAndUpdate(
+        {
+          address: address,
+          era: era,
+        },
+        {
+          eraPoints: points,
+        }
+      )
+      .exec();
+  }
+
+  async getEraPoints(era: number, address: string): Promise<any> {
+    return await this.eraPointsModel.findOne({
+      address: address,
+      era: era,
+    });
+  }
+
+  // Creates new record of era points for all validators for an era
+  async setTotalEraPoints(
+    era: number,
+    total: number,
+    validators: { address: string; points: number }[]
+  ): Promise<any> {
+    for (const validator of validators) {
+      // Try setting the era points
+      await this.setEraPoints(era, validator.points, validator.address);
+    }
+
+    // Check if a record already exists
+    const data = await this.totalEraPointsModel.findOne({
+      era: era,
+    });
+
+    // If it exists and the total era points are the same, return
+    if (!!data && data.total == total) return;
+
+    // If it doesn't exist, create it
+    if (!data) {
+      const totalEraPoints = new this.totalEraPointsModel({
+        era: era,
+        totalEraPoints: total,
+        validatorsEraPoints: validators,
+      });
+
+      return totalEraPoints.save();
+    }
+
+    // It exists, update it
+    this.totalEraPointsModel
+      .findOneAndUpdate(
+        {
+          era: era,
+        },
+        {
+          totalEraPoints: total,
+          validatorsEraPoitns: validators,
+        }
+      )
+      .exec();
+  }
+
+  async getTotalEraPoints(era: number): Promise<any> {
+    return await this.totalEraPointsModel.findOne({
+      era: era,
+    });
   }
 }

@@ -371,7 +371,7 @@ class ChainData {
    * @param validatorStash
    * @returns
    */
-  getUnclaimedEras = async (validatorStash: string) => {
+  getUnclaimedEras = async (validatorStash: string, db: Db) => {
     const start = Date.now();
     const api = await this.handler.getApi();
     const controller = await this.getControllerFromStash(validatorStash);
@@ -394,21 +394,13 @@ class ChainData {
     const claimedEras = ledger ? ledger.claimedRewards : null;
     const unclaimedEras = [];
 
-    const startingEra = currentEra - 84 >= 0 ? currentEra - 84 : 0;
+    const startingEra = currentEra - 83 >= 0 ? currentEra - 83 : 0;
     for (let i = startingEra; i < currentEra; i++) {
       if (claimedEras.includes(i)) continue;
-      const eraPoints: JSON = (
-        await api.query.staking.erasRewardPoints(i)
-      ).toJSON().individual;
-
-      for (const val in eraPoints) {
-        if (
-          val.toString() == validatorStash.toString() ||
-          val.toString() == controller.toString()
-        ) {
-          unclaimedEras.push(i);
-        }
-      }
+      const dbPoints = await db.getEraPoints(i, validatorStash);
+      if (!dbPoints) continue;
+      const eraPoints = dbPoints.eraPoints;
+      if (eraPoints > 0 && !claimedEras.includes(i)) unclaimedEras.push(i);
     }
 
     const end = Date.now();
@@ -420,6 +412,26 @@ class ChainData {
     );
 
     return unclaimedEras;
+  };
+
+  getTotalEraPoints = async (era: number) => {
+    const api = await this.handler.getApi();
+    const erasRewardPoints = await api.query.staking.erasRewardPoints(era);
+    const total = erasRewardPoints.total;
+    const validators = erasRewardPoints.individual;
+    const vals = [];
+    for (const [address, points] of validators.entries()) {
+      vals.push({
+        era: era,
+        address: address.toString(),
+        points: Number(points),
+      });
+    }
+    return {
+      era: era,
+      total: Number(total),
+      validators: vals,
+    };
   };
 
   /**

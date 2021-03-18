@@ -975,7 +975,7 @@ export default class Db {
       const eraPoints = new this.eraPointsModel({
         address: address,
         era: era,
-        points: points,
+        eraPoints: points,
       });
 
       return eraPoints.save();
@@ -988,7 +988,7 @@ export default class Db {
           era: era,
         },
         {
-          points: points,
+          eraPoints: points,
         }
       )
       .exec();
@@ -1014,7 +1014,6 @@ export default class Db {
 
     // Check if a record already exists
     const data = await this.totalEraPointsModel.findOne({
-      total: total,
       era: era,
     });
 
@@ -1025,7 +1024,7 @@ export default class Db {
     if (!data) {
       const totalEraPoints = new this.totalEraPointsModel({
         era: era,
-        total: total,
+        totalEraPoints: total,
         validatorsEraPoints: validators,
       });
 
@@ -1039,7 +1038,7 @@ export default class Db {
           era: era,
         },
         {
-          total: total,
+          totalEraPoints: total,
           validatorsEraPoitns: validators,
         }
       )

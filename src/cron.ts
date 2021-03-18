@@ -22,6 +22,7 @@ import ChainData from "./chaindata";
 import Claimer from "./claimer";
 import { EraReward } from "./types";
 import { sleep } from "./util";
+import { exists } from "node:fs";
 
 // Monitors the latest GitHub releases and ensures nodes have upgraded
 // within a timely period.
@@ -204,12 +205,31 @@ export const startCandidateChainDataJob = async (
     );
     const start = Date.now();
 
+    logger.info(`{cron::CandidateChainData} setting era info`);
+    const [activeEra, err] = await chaindata.getActiveEraIndex();
+    for (let i = activeEra; i > activeEra - 84; i--) {
+      const erapoints = await db.getTotalEraPoints(i);
+
+      if (!!erapoints && erapoints.totalEraPoints) {
+        continue;
+      } else {
+        logger.info(
+          `{cron::CandidateChainData} era ${i} point data doesnt exist. Creating....`
+        );
+        const { era, total, validators } = await chaindata.getTotalEraPoints(i);
+        await db.setTotalEraPoints(era, total, validators);
+      }
+    }
+
     const allCandidates = await db.allCandidates();
 
     for (const [i, candidate] of allCandidates.entries()) {
       const startLoop = Date.now();
 
-      const unclaimedEras = await chaindata.getUnclaimedEras(candidate.stash);
+      const unclaimedEras = await chaindata.getUnclaimedEras(
+        candidate.stash,
+        db
+      );
       await db.setUnclaimedEras(candidate.stash, unclaimedEras);
 
       const endLoop = Date.now();
@@ -267,7 +287,10 @@ export const startRewardClaimJob = async (
 
     const allCandidates = await db.allCandidates();
     for (const candidate of allCandidates) {
-      const unclaimedEras = await chaindata.getUnclaimedEras(candidate.stash);
+      const unclaimedEras = await chaindata.getUnclaimedEras(
+        candidate.stash,
+        db
+      );
       for (const era of unclaimedEras) {
         if (era < claimThreshold) {
           logger.info(

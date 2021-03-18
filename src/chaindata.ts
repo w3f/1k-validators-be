@@ -76,12 +76,12 @@ class ChainData {
     if (controller.isNone) {
       return [null, "Not bonded to any account."];
     }
-    if (controller.toString() === stash) {
-      return [
-        null,
-        `Bonded to itself, please follow recommendations and bond to a different controller. Stash: ${stash} | Controller ${controller.toString()}`,
-      ];
-    }
+    // if (controller.toString() === stash) {
+    //   return [
+    //     null,
+    //     `Bonded to itself, please follow recommendations and bond to a different controller. Stash: ${stash} | Controller ${controller.toString()}`,
+    //   ];
+    // }
 
     const ledger: JSON = await api.query.staking.ledger(controller.toString());
     if (ledger.isNone) {
@@ -456,6 +456,12 @@ class ChainData {
     const api = await this.handler.getApi();
     const session = await api.query.session.currentIndex();
     return Number(session.toString());
+  };
+
+  getBalance = async (address: string) => {
+    const api = await this.handler.getApi();
+    const balance = api.query.system.account(address);
+    return (await balance).data.toJSON();
   };
 }
 

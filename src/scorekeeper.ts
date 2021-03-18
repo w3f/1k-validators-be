@@ -376,7 +376,8 @@ export default class ScoreKeeper {
       this.nominatorGroups
     );
 
-    await this.db.setLastNominatedEraIndex(this.currentEra);
+    if (!!targets && targets.length > 0)
+      await this.db.setLastNominatedEraIndex(this.currentEra);
 
     return targets;
   }
@@ -415,6 +416,21 @@ export default class ScoreKeeper {
           `{Scorekeepr::_doNominations} ${nominator.address} max nomindations: ${nominator.maxNominations}, number of nominations: ${numNominations}`
         );
 
+        // Check the free balance of the account. If it doesn't have a free balance, skip.
+        const balance = await this.chaindata.getBalance(nominator.address);
+        const metadata = await this.db.getChainMetadata();
+        const network = metadata.name.toLowerCase();
+        const free = toDecimals(Number(balance.free), metadata.decimals);
+        if (free < 0.5) {
+          logger.info(
+            `{Scorekeeper::_doNominations} Nominator has low free balance: ${free}`
+          );
+          this.botLog(
+            `Account [${nominator.address}](https://polkascan.io/${network}/account/${nominator.address}) has low free balane: ${free}`
+          );
+          continue;
+        }
+
         // Get the target slice based on the amount of nominations to do and increment the counter.
         const targets = allTargets.slice(counter, counter + numNominations);
         counter = counter + numNominations;
@@ -425,6 +441,7 @@ export default class ScoreKeeper {
           );
           return;
         }
+
         await nominator.nominate(targets, dryRun || this.config.global.dryRun);
 
         // Wait some time between each transaction to avoid nonce issues.
@@ -474,7 +491,7 @@ export default class ScoreKeeper {
       logger.info(`- ${name} (${target})`);
     });
 
-    return allTargets;
+    return this.currentTargets;
   }
 
   async _getCurrentEra(): Promise<number> {

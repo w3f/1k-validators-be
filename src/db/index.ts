@@ -994,6 +994,13 @@ export default class Db {
       .exec();
   }
 
+  async getEraPoints(era: number, address: string): Promise<any> {
+    return await this.eraPointsModel.findOne({
+      address: address,
+      era: era,
+    });
+  }
+
   // Creates new record of era points for all validators for an era
   async setTotalEraPoints(
     era: number,
@@ -1037,5 +1044,11 @@ export default class Db {
         }
       )
       .exec();
+  }
+
+  async getTotalEraPoints(era: number): Promise<any> {
+    return await this.totalEraPointsModel.findOne({
+      era: era,
+    });
   }
 }

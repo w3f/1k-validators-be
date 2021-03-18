@@ -25,6 +25,8 @@ import { startClearAccumulatedOfflineTimeJob, startMonitorJob } from "./cron";
 
 const isCI = process.env.CI;
 
+const version = "v2.2.73";
+
 const catchAndQuit = async (fn: any) => {
   try {
     await fn;
@@ -92,7 +94,9 @@ const start = async (cmd: { config: string }) => {
     const { accessToken, baseUrl, userId } = config.matrix;
     maybeBot = new MatrixBot(baseUrl, accessToken, userId, db, config);
     maybeBot.start();
-    maybeBot.sendMessage(`Backend services (re)-started!`);
+    maybeBot.sendMessage(
+      `<a href="https://github.com/w3f/1k-validators-be">Backend services (re)-started!<a/> Version: ${version}`
+    );
   }
 
   // Buffer some time for set up.
@@ -156,5 +160,5 @@ program
   .option("--config <directory>", "The path to the config directory.", "config")
   .action((cmd: { config: string }) => catchAndQuit(start(cmd)));
 
-program.version("2.2.73");
+program.version(version);
 program.parse(process.argv);

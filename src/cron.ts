@@ -115,7 +115,7 @@ export const startValidatityJob = async (
       const { stash } = v;
       await db.setInvalidityReason(stash, "");
     }
-    running  = false;
+    running = false;
   });
   validityCron.start();
 };
@@ -206,7 +206,9 @@ export const startCandidateChainDataJob = async (
   let running = false;
 
   const chaindataCron = new CronJob(chaindataFrequency, async () => {
-    if (running){return;}
+    if (running) {
+      return;
+    }
     running = true;
     logger.info(
       `{cron::CandidateChainData} running candidate chain data cron....`

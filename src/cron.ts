@@ -84,7 +84,11 @@ export const startValidatityJob = async (
     `(cron::startValidityJob) Starting Validity Job with frequency ${validityFrequency}`
   );
 
+  let running = false;
+
   const validityCron = new CronJob(validityFrequency, async () => {
+    if (running) return;
+    running = true;
     logger.info(`(cron::Validity) Running validity cron`);
     const allCandidates = await db.allCandidates();
 
@@ -111,6 +115,7 @@ export const startValidatityJob = async (
       const { stash } = v;
       await db.setInvalidityReason(stash, "");
     }
+    running = false;
   });
   validityCron.start();
 };
@@ -198,8 +203,13 @@ export const startCandidateChainDataJob = async (
   );
 
   const api = await handler.getApi();
+  let running = false;
 
   const chaindataCron = new CronJob(chaindataFrequency, async () => {
+    if (running) {
+      return;
+    }
+    running = true;
     logger.info(
       `{cron::CandidateChainData} running candidate chain data cron....`
     );
@@ -250,6 +260,7 @@ export const startCandidateChainDataJob = async (
         start
       ).toString()} Done. Took ${(end - start) / 1000} seconds`
     );
+    running = false;
   });
   chaindataCron.start();
 };

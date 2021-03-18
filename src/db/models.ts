@@ -135,3 +135,22 @@ export const BotClaimEventSchema = new Schema({
   // The finalized blockhash of the Claim tx
   blockHash: String,
 });
+
+// The individual era points a validator has earned for a given era
+export const EraPointsSchema = new Schema({
+  // The Era the era points are in
+  era: Number,
+  // The Validator stash address
+  address: String,
+  // The amount of era points the validator received for the given era
+  eraPoints: Number
+});
+
+export const TotalEraPointsSchema = new Schema({
+  // The total era points for all validators in the era
+  totalEraPoints: Number,
+  // The era
+  era: Number,
+  // The array of validators and their era points
+  validatorsEraPoints: [EraPointsSchema]
+});

@@ -59,10 +59,10 @@ export const MONITOR_CRON = "0 */15 * * * *";
 export const CLEAR_OFFLINE_CRON = "0 0 0 * * 0";
 
 // Validity Cron Job. This runs every 7 minutes by default
-export const VALIDITY_CRON = "0 0-59/7 * * * *";
+export const VALIDITY_CRON = "0 0-59/17 * * * *";
 
 // Candidate ChainData Cron Job. This runs ever 5 minutes by default
-export const CANDIDATE_CHAINDATA_CRON = "0 0-59/20 * * * *";
+export const CANDIDATE_CHAINDATA_CRON = "0 0-59/25 * * * *";
 
 // Execution Cron Job. This runs every 15 minutes by default
 export const EXECUTION_CRON = "0 0-59/15 * * * *";

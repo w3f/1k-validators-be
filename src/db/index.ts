@@ -956,6 +956,7 @@ export default class Db {
     return this.botClaimEventModel.find({ address: /.*/ }).exec();
   }
 
+  // Create new Era Points records
   async setEraPoints(
     era: number,
     points: number,
@@ -980,7 +981,7 @@ export default class Db {
       return eraPoints.save();
     }
 
-    this.nominationModel
+    this.eraPointsModel
       .findOneAndUpdate(
         {
           address: address,
@@ -988,6 +989,51 @@ export default class Db {
         },
         {
           points: points,
+        }
+      )
+      .exec();
+  }
+
+  // Creates new record of era points for all validators for an era
+  async setTotalEraPoints(
+    era: number,
+    total: number,
+    validators: { address: string; points: number }[]
+  ): Promise<any> {
+    for (const validator of validators) {
+      // Try setting the era points
+      await this.setEraPoints(era, validator.points, validator.address);
+    }
+
+    // Check if a record already exists
+    const data = await this.totalEraPointsModel.findOne({
+      total: total,
+      era: era,
+    });
+
+    // If it exists and the total era points are the same, return
+    if (!!data && data.total == total) return;
+
+    // If it doesn't exist, create it
+    if (!data) {
+      const totalEraPoints = new this.totalEraPointsModel({
+        era: era,
+        total: total,
+        validatorsEraPoints: validators,
+      });
+
+      return totalEraPoints.save();
+    }
+
+    // It exists, update it
+    this.totalEraPointsModel
+      .findOneAndUpdate(
+        {
+          era: era,
+        },
+        {
+          total: total,
+          validatorsEraPoitns: validators,
         }
       )
       .exec();

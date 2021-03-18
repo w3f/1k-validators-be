@@ -371,15 +371,15 @@ export default class ScoreKeeper {
       `{Scorekeeper::startRound} number of all candidates: ${allCandidates.length} valid candidates: ${validCandidates.length}`
     );
 
-    const targets = await this._doNominations(
+    const numValidatorsNominated = await this._doNominations(
       validCandidates,
       this.nominatorGroups
     );
 
-    if (!!targets && targets.length > 0)
+    if (numValidatorsNominated > 0)
       await this.db.setLastNominatedEraIndex(this.currentEra);
 
-    return targets;
+    return this.currentTargets;
   }
 
   // Start nominations for all nominator groups:
@@ -390,7 +390,7 @@ export default class ScoreKeeper {
     candidates: CandidateData[],
     nominatorGroups: SpawnedNominatorGroup[] = [],
     dryRun = false
-  ): Promise<string[]> {
+  ): Promise<any> {
     if (candidates.length == 0) {
       logger.info(
         `{ScoreKeeper::_doNominations} Candidates length was 0. Skipping nominations`
@@ -426,7 +426,7 @@ export default class ScoreKeeper {
             `{Scorekeeper::_doNominations} Nominator has low free balance: ${free}`
           );
           this.botLog(
-            `Account [${nominator.address}](https://polkascan.io/${network}/account/${nominator.address}) has low free balane: ${free}`
+            `Account <a href="https://polkascan.io/${network}/account/${nominator.address}">${nominator.address}</a> has low free balance: ${free}`
           );
           continue;
         }
@@ -491,7 +491,7 @@ export default class ScoreKeeper {
       logger.info(`- ${name} (${target})`);
     });
 
-    return this.currentTargets;
+    return counter;
   }
 
   async _getCurrentEra(): Promise<number> {

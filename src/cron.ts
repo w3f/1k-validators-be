@@ -181,7 +181,7 @@ export const startExecutionJob = async (
           logger.info(`Executed announcement`);
           if (bot) {
             await bot.sendMessage(
-              `${controller} executed announcement that was announced at ${dataNum}`
+              `${nominator.address} executed announcement that was announced at ${dataNum}`
             );
           }
           await db.deleteDelayedTx(dataNum, controller);

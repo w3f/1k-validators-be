@@ -390,12 +390,12 @@ export default class ScoreKeeper {
         `{Scorekeeper::startRound} ${numValidatorsNominated} nominated this round, setting last nominated era to ${this.currentEra}`
       );
       await this.db.setLastNominatedEraIndex(this.currentEra);
-      this.nominating = false;
     } else {
       logger.info(
         `{Scorekeeper::startRound} ${numValidatorsNominated} nominated this round, lastNominatedEra not set...`
       );
     }
+    this.nominating = false;
 
     return this.currentTargets;
   }
@@ -600,6 +600,10 @@ export default class ScoreKeeper {
     // Get the set of Good Validators and get the set of Bad validators
     const [good, bad] = await this.constraints.processCandidates(
       new Set(toProcess.values())
+    );
+
+    logger.info(
+      `{ScoreKeeper::endRound} Done processing Candidates. ${good.size} good ${bad.size} bad`
     );
 
     // For all the good validators, check if they were active in the set for the time period

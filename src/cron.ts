@@ -178,12 +178,21 @@ export const startExecutionJob = async (
         );
         const didSend = await nominator.sendStakingTx(tx, targets);
         if (didSend) {
-          logger.info(`Executed announcement`);
+          // Log Execution
+          const validatorsMessage = (
+            await Promise.all(
+              targets.map(async (n) => {
+                const name = await db.getCandidate(n);
+                return `- ${name.name} (${n})`;
+              })
+            )
+          ).join("\n");
+          const message = `${nominator.address} executed announcement that was announced at block $${dataNum} \n Validators Nominated:\n ${validatorsMessage}`;
+          logger.info(message);
           if (bot) {
-            await bot.sendMessage(
-              `${nominator.address} executed announcement that was announced at ${dataNum}`
-            );
+            await bot.sendMessage(message);
           }
+
           await db.deleteDelayedTx(dataNum, controller);
         }
       }

@@ -89,6 +89,8 @@ export const CandidateSchema = new Schema({
   kusamaStash: String,
   // Polkadot specific: Case for good intentions
   bio: String,
+  // Inclusion percentage - the percent of eras active of the last 84 eras
+  inclusion: { type: Number, default: 0.0 },
 });
 
 export const EraSchema = new Schema({

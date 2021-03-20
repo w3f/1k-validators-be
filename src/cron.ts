@@ -253,6 +253,16 @@ export const startCandidateChainDataJob = async (
     for (const [i, candidate] of allCandidates.entries()) {
       const startLoop = Date.now();
 
+      // Set inclusion Rate
+      const erasActive = await db.getHistoryDepthEraPoints(
+        candidate.stash,
+        activeEra
+      );
+      const filteredEras = erasActive.filter((era) => era.eraPoints > 0);
+      const inclusion = Number(filteredEras.length / 84);
+      await db.setInclusion(candidate.stash, inclusion);
+
+      // Set unclaimed eras
       const unclaimedEras = await chaindata.getUnclaimedEras(
         candidate.stash,
         db
@@ -268,7 +278,6 @@ export const startCandidateChainDataJob = async (
       );
       // TODO: add setting commission
       // TODO add setting identity information
-      // TODO add setting eras data
     }
     const end = Date.now();
 

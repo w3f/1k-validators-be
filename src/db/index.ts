@@ -1051,4 +1051,31 @@ export default class Db {
       era: era,
     });
   }
+
+  // Gets the era points for a validator for the past 84 eras from a current era
+  async getHistoryDepthEraPoints(
+    address: string,
+    currentEra: number
+  ): Promise<any> {
+    return await this.eraPointsModel
+      .find({ address: address, era: { $gte: currentEra - 84 } })
+      .exec();
+  }
+
+  async setInclusion(address: string, inclusion: number): Promise<boolean> {
+    logger.info(
+      `(Db::setInclusion) Setting ${address} inclusion to ${inclusion}.`
+    );
+
+    return this.candidateModel
+      .findOneAndUpdate(
+        {
+          stash: address,
+        },
+        {
+          $set: { inclusion: inclusion },
+        }
+      )
+      .exec();
+  }
 }

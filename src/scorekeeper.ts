@@ -386,8 +386,15 @@ export default class ScoreKeeper {
     );
 
     if (numValidatorsNominated > 0) {
+      logger.info(
+        `{Scorekeeper::startRound} ${numValidatorsNominated} nominated this round, setting last nominated era to ${this.currentEra}`
+      );
       await this.db.setLastNominatedEraIndex(this.currentEra);
       this.nominating = false;
+    } else {
+      logger.info(
+        `{Scorekeeper::startRound} ${numValidatorsNominated} nominated this round, lastNominatedEra not set...`
+      );
     }
 
     return this.currentTargets;

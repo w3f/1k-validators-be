@@ -717,7 +717,7 @@ export default class Db {
           address,
         },
         {
-          $set: { lastNomination: now },
+          $set: { lastNomination: now, when: Date.now() },
         }
       )
       .exec();

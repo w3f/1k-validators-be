@@ -19,6 +19,7 @@ const API = {
   Health: "/healthcheck",
   Invalid: "/invalid",
   ValidCandidates: "/valid",
+  EraPoints: "/erapoints/:stash",
 };
 
 export default class Server {
@@ -87,6 +88,17 @@ export default class Server {
     router.get(API.ValidCandidates, (ctx) => {
       const valid = scoreKeeper.constraints.validCandidateCache;
       ctx.body = valid;
+    });
+
+    router.get(API.EraPoints, async (ctx) => {
+      const { stash } = ctx.params;
+      const latestEra = (await this.db.getLastTotalEraPoints())[0].era;
+      console.log(latestEra);
+      const eraPoints = await this.db.getHistoryDepthEraPoints(
+        stash,
+        latestEra
+      );
+      ctx.body = eraPoints;
     });
 
     this.app.use(router.routes());

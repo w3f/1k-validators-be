@@ -314,9 +314,7 @@ export const startRewardClaimJob = async (
   const api = await handler.getApi();
 
   const rewardClaimingCron = new CronJob(rewardClaimingFrequency, async () => {
-    logger.info(
-      `{cron::CandidateChainData} running reward claiming cron....`
-    );
+    logger.info(`{cron::CandidateChainData} running reward claiming cron....`);
 
     const erasToClaim = [];
     const [currentEra, err] = await chaindata.getActiveEraIndex();

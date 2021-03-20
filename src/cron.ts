@@ -225,7 +225,7 @@ export const startCandidateChainDataJob = async (
 
     logger.info(`{cron::CandidateChainData} setting era info`);
     const [activeEra, err] = await chaindata.getActiveEraIndex();
-    for (let i = activeEra; i > activeEra - 84; i--) {
+    for (let i = activeEra; i > activeEra - 84 && i >= 0; i--) {
       const erapoints = await db.getTotalEraPoints(i);
 
       if (!!erapoints && erapoints.totalEraPoints) {

@@ -329,7 +329,8 @@ export default class ScoreKeeper {
         this.handler,
         this.db,
         this.claimer,
-        this.chaindata
+        this.chaindata,
+        this.bot
       );
     }
     startExecutionJob(

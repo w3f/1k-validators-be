@@ -21,7 +21,7 @@ import Nominator from "./nominator";
 import ChainData from "./chaindata";
 import Claimer from "./claimer";
 import { EraReward } from "./types";
-import { sleep } from "./util";
+import { sleep, toDecimals } from "./util";
 import { exists } from "node:fs";
 
 // Monitors the latest GitHub releases and ensures nodes have upgraded
@@ -288,7 +288,8 @@ export const startRewardClaimJob = async (
   handler: ApiHandler,
   db: Db,
   claimer: Claimer,
-  chaindata: ChainData
+  chaindata: ChainData,
+  bot: any
 ) => {
   const rewardClaimingFrequency = config.cron.rewardClaiming
     ? config.cron.rewardClaiming
@@ -297,6 +298,18 @@ export const startRewardClaimJob = async (
   logger.info(
     `(cron::RewardClaiming) Running reward claiming cron with frequency: ${rewardClaimingFrequency}`
   );
+
+  // Check the free balance of the account. If it doesn't have a free balance, skip.
+  const balance = await chaindata.getBalance(claimer.address);
+  const metadata = await db.getChainMetadata();
+  const network = metadata.name.toLowerCase();
+  const free = toDecimals(Number(balance.free), metadata.decimals);
+  // TODO Parameterize this as a constant
+  if (free < 0.5) {
+    logger.info(`{Cron::ClaimRewards} Claimer has low free balance: ${free}`);
+    bot.sendMessage(`Account ${claimer.address} has low free balance: ${free}`);
+    return;
+  }
 
   const api = await handler.getApi();
 
@@ -315,10 +328,7 @@ export const startRewardClaimJob = async (
 
     const allCandidates = await db.allCandidates();
     for (const candidate of allCandidates) {
-      const unclaimedEras = await chaindata.getUnclaimedEras(
-        candidate.stash,
-        db
-      );
+      const unclaimedEras = candidate.unclaimedEras;
       for (const era of unclaimedEras) {
         if (era < claimThreshold) {
           logger.info(
@@ -333,5 +343,5 @@ export const startRewardClaimJob = async (
       await claimer.claim(erasToClaim);
     }
   });
-  // rewardClaimingCron.start();
+  rewardClaimingCron.start();
 };

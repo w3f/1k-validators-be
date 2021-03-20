@@ -314,9 +314,7 @@ export const startRewardClaimJob = async (
   const api = await handler.getApi();
 
   const rewardClaimingCron = new CronJob(rewardClaimingFrequency, async () => {
-    logger.info(
-      `{cron::CandidateChainData} running candidate chain data cron....`
-    );
+    logger.info(`{cron::CandidateChainData} running reward claiming cron....`);
 
     const erasToClaim = [];
     const [currentEra, err] = await chaindata.getActiveEraIndex();
@@ -329,6 +327,7 @@ export const startRewardClaimJob = async (
     const allCandidates = await db.allCandidates();
     for (const candidate of allCandidates) {
       const unclaimedEras = candidate.unclaimedEras;
+      if (!unclaimedEras || unclaimedEras.length == 0) return;
       for (const era of unclaimedEras) {
         if (era < claimThreshold) {
           logger.info(

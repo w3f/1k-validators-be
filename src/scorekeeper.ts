@@ -197,12 +197,13 @@ export default class ScoreKeeper {
       await Promise.all(
         group.map(async (n) => {
           const stash = await n.stash();
-          return `- ${n.controller} / ${stash}`;
+          const proxy = (await n._isProxy) ? `/ ${n.address}` : "";
+          return `- ${n.controller} / ${stash} ${proxy}`;
         })
       )
     ).join("\n");
     logger.info(
-      `Nominator group added! Nominator addresses (Controller / Stash):\n${nominatorGroupString}`
+      `Nominator group added! Nominator addresses (Controller / Stash / Proxy):\n${nominatorGroupString}`
     );
 
     await this.botLog(

@@ -67,7 +67,11 @@ export default class ScoreKeeper {
   public currentTargets: string[];
   public db: Db;
 
+  // Set when the process is ending
   private ending = false;
+  // Set when in the process of nominating
+  private nominating = false;
+
   private nominatorGroups: Array<SpawnedNominatorGroup> = [];
   private claimer: Claimer;
 
@@ -343,6 +347,10 @@ export default class ScoreKeeper {
   // - Nominates valid candidates
   // - Sets this current era to the era a nomination round took place in.
   async startRound(): Promise<string[]> {
+    // If this is already in the process of nominating, skip
+    if (this.nominating) return;
+    this.nominating = true;
+
     const now = new Date().getTime();
 
     // The nominations sent now won't be active until the next era.
@@ -376,8 +384,10 @@ export default class ScoreKeeper {
       this.nominatorGroups
     );
 
-    if (numValidatorsNominated > 0)
+    if (numValidatorsNominated > 0) {
       await this.db.setLastNominatedEraIndex(this.currentEra);
+      this.nominating = false;
+    }
 
     return this.currentTargets;
   }
@@ -421,12 +431,13 @@ export default class ScoreKeeper {
         const metadata = await this.db.getChainMetadata();
         const network = metadata.name.toLowerCase();
         const free = toDecimals(Number(balance.free), metadata.decimals);
+        // TODO Parameterize this as a constant
         if (free < 0.5) {
           logger.info(
             `{Scorekeeper::_doNominations} Nominator has low free balance: ${free}`
           );
           this.botLog(
-            `Account <a href="https://polkascan.io/${network}/account/${nominator.address}">${nominator.address}</a> has low free balance: ${free}`
+            `Account ${nominator.address} has low free balance: ${free}`
           );
           continue;
         }
@@ -445,7 +456,7 @@ export default class ScoreKeeper {
         await nominator.nominate(targets, dryRun || this.config.global.dryRun);
 
         // Wait some time between each transaction to avoid nonce issues.
-        await sleep(8000);
+        await sleep(16000);
 
         const targetsString = (
           await Promise.all(

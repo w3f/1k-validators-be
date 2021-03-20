@@ -1040,7 +1040,7 @@ export default class Db {
         },
         {
           totalEraPoints: total,
-          validatorsEraPoitns: validators,
+          validatorsEraPoints: validators,
         }
       )
       .exec();
@@ -1050,6 +1050,10 @@ export default class Db {
     return await this.totalEraPointsModel.findOne({
       era: era,
     });
+  }
+
+  async getLastTotalEraPoints(): Promise<any> {
+    return await this.totalEraPointsModel.find({}).sort("-era").limit(1);
   }
 
   // Gets the era points for a validator for the past 84 eras from a current era

@@ -463,7 +463,8 @@ export default class Db {
         $push: {
           faultEvents: {
             when: Date.now(),
-            reason,
+            reason: reason,
+            prevRank: record.rank,
           },
         },
       }

@@ -23,6 +23,8 @@ const FaultEventSchema = new Schema({
   when: Number,
   // The reason the fault took place.
   reason: String,
+  // The previous rank before the deduction takes place
+  prevRank: Number,
 });
 
 const RankEventSchema = new Schema({

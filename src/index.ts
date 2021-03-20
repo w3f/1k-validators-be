@@ -94,9 +94,7 @@ const start = async (cmd: { config: string }) => {
     const { accessToken, baseUrl, userId } = config.matrix;
     maybeBot = new MatrixBot(baseUrl, accessToken, userId, db, config);
     maybeBot.start();
-    maybeBot.sendMessage(
-      `<a href="https://github.com/w3f/1k-validators-be">Backend services (re)-started!<a/> Version: ${version}`
-    );
+    maybeBot.sendMessage(`Backend services (re)-started! Version: ${version}`);
   }
 
   // Buffer some time for set up.

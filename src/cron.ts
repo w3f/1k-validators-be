@@ -187,7 +187,7 @@ export const startExecutionJob = async (
               })
             )
           ).join("\n");
-          const message = `${nominator.address} executed announcement that was announced at block $${dataNum} \n Validators Nominated:\n ${validatorsMessage}`;
+          const message = `${nominator.address} executed announcement that was announced at block #${dataNum} \n Validators Nominated:\n ${validatorsMessage}`;
           logger.info(message);
           if (bot) {
             await bot.sendMessage(message);

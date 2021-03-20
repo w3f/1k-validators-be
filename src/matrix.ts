@@ -72,6 +72,7 @@ export default class MatrixBot {
     const content = {
       body: msg,
       msgtype: "m.text",
+      format: "org.matrix.custom.html",
     };
 
     return new Promise((resolve: any, reject: any) => {

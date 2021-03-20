@@ -116,6 +116,9 @@ export const startTestSetup = async () => {
       derivation: "//Charlie",
       endpoint: "ws://172.28.1.3:9946",
       initialized: false,
+      controllerSeed:
+        "phrase rare become arm tip comic fall solar also chunk hip sister",
+      controllerAddress: "1c4yKdZVbCTRdnpcxAxXKc2DWBj7G5gFKaVGmqLkhQseCHG",
     },
     {
       name: "dave",
@@ -124,6 +127,9 @@ export const startTestSetup = async () => {
       derivation: "//Dave",
       endpoint: "ws://172.28.1.4:9947",
       initialized: false,
+      controllerSeed:
+        "motion pool scatter easy stuff announce blossom dolphin phone glimpse insane know",
+      controllerAddress: "12QfoJkNA2PEuHJ7S8fNA1KZd4TCDs1wJRVHnKYUYSBRJbwC",
     },
     {
       name: "eve",
@@ -131,6 +137,9 @@ export const startTestSetup = async () => {
       address: "5HGjWAeFDfFCWPsjFQdVV2Msvz2XtMktvgocEZcCj68kUMaw",
       derivation: "//Eve",
       endpoint: "ws://172.28.1.5:9948",
+      controllerSeed:
+        "game hire venture detect awake wheel cry car figure cost swap grab",
+      controllerAddress: "131VvQMevR7N1URBHzZzZS3jYLeU3nbpVc8hriyJe6UKHWyy",
     },
     {
       name: "ferdie",
@@ -139,6 +148,9 @@ export const startTestSetup = async () => {
       derivation: "//Ferdie",
       endpoint: "ws://172.28.1.6:9949",
       initialized: false,
+      controllerSeed:
+        "buzz forget chapter reveal enemy manage attend yellow merit fortune gas question",
+      controllerAddress: "12bREtMSCBAkTx7JJ1Q3QJdxAP6MPcizBRSQ8Japt6Dy8fUe",
     },
   ];
 
@@ -323,12 +335,24 @@ export const startTestSetup = async () => {
     )
       continue;
 
+    const controllerKeyring = keyring.addFromUri(node.controllerSeed);
+    console.log(`{TestSetup:${node.name}} Sending Funds to Controller...`);
+    const transfer = api.tx.balances.transfer(
+      node.controllerAddress,
+      "1234567891234"
+    );
+    await transfer.signAndSend(node.keyring);
+
     const handler = await ApiHandler.create([node.endpoint]);
     const nodeApi = await handler.getApi();
 
     await sleep(16000);
     console.log(`{TestSetup:${node.name}} Bonding Stash...`);
-    const bond = api.tx.staking.bond(node.address, "100000000000000", "Staked");
+    const bond = api.tx.staking.bond(
+      node.controllerAddress,
+      "100000000000000",
+      "Staked"
+    );
     const bondTx = await bond.signAndSend(
       node.keyring,
       ({ events = [], status }) => {
@@ -346,7 +370,7 @@ export const startTestSetup = async () => {
               "0x"
             );
             await setKeys.signAndSend(
-              node.keyring,
+              controllerKeyring,
               ({ events = [], status }) => {
                 events.forEach(
                   async ({ event: { data, method, section }, phase }) => {
@@ -356,7 +380,7 @@ export const startTestSetup = async () => {
                       );
                       const validate = nodeApi.tx.staking.validate("0x10");
                       await validate.signAndSend(
-                        node.keyring,
+                        controllerKeyring,
                         async ({ events = [], status }) => {
                           if (status.isFinalized && !node.initialized) {
                             console.log(

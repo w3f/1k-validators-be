@@ -45,6 +45,15 @@ export const DelayedTxSchema = new Schema({
   targets: [String],
 });
 
+export const Identity = new Schema({
+  // The Super Identity
+  name: String,
+  // The sub identity (if one exists)
+  sub: String,
+  // Whether or not the identity has been verified by a registrar
+  verified: Boolean,
+});
+
 export const CandidateSchema = new Schema({
   // The inherited telemetry ID.
   telemetryId: Number,
@@ -95,6 +104,8 @@ export const CandidateSchema = new Schema({
   lastValid: Number,
   // Validator's commission
   commission: Number,
+  // The validators identity,
+  identity: Identity,
 });
 
 export const EraSchema = new Schema({

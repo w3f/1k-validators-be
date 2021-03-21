@@ -60,3 +60,7 @@ export const formatAddress = (address: string, config: Config): string => {
   const ss58Prefix = config.global.networkPrefix == 2 ? 2 : 0;
   return keyring.encodeAddress(address, ss58Prefix);
 };
+
+export const hex2a = (hex) => {
+  return decodeURIComponent("%" + hex.match(/.{1,2}/g).join("%"));
+};

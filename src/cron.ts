@@ -179,7 +179,7 @@ export const startExecutionJob = async (
         );
         const didSend = await nominator.sendStakingTx(tx, targets);
         // Sleep to prevent usurped txs
-        await sleep(10000); 
+        await sleep(10000);
         if (didSend) {
           // Log Execution
           const validatorsMessage = (

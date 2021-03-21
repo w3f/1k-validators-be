@@ -93,6 +93,8 @@ export const CandidateSchema = new Schema({
   inclusion: { type: Number, default: 0.0 },
   // The last time the validator was deemed valid
   lastValid: Number,
+  // Validator's commission
+  commission: Number,
 });
 
 export const EraSchema = new Schema({

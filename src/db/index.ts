@@ -236,6 +236,13 @@ export default class Db {
     return true;
   }
 
+  async setCommission(stash: string, commission: number): Promise<boolean> {
+    await this.candidateModel
+      .findOneAndUpdate({ stash }, { commission: commission })
+      .exec();
+    return true;
+  }
+
   // Reports a node online that has joined telemetry.
   async reportOnline(
     telemetryId: number,

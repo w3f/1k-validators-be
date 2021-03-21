@@ -256,6 +256,10 @@ export const startCandidateChainDataJob = async (
     for (const [i, candidate] of allCandidates.entries()) {
       const startLoop = Date.now();
 
+      // Set Commission
+      const [commission, err] = await chaindata.getCommission(candidate.stash);
+      await db.setCommission(candidate.stash, commission / Math.pow(10, 7));
+
       // Set inclusion Rate
       const erasActive = await db.getHistoryDepthEraPoints(
         candidate.stash,

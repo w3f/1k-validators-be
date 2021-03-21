@@ -62,6 +62,10 @@ export default class Nominator {
     return this._controller;
   }
 
+  public get isProxy(): boolean {
+    return this._isProxy;
+  }
+
   public async stash(): Promise<any> {
     const api = await this.handler.getApi();
     const ledger = await api.query.staking.ledger(this.controller);
@@ -112,6 +116,41 @@ export default class Nominator {
     }
 
     return true;
+  }
+
+  public async cancelTx(announcement: {
+    real: string;
+    callHash: string;
+    height: number;
+  }): Promise<boolean> {
+    const api = await this.handler.getApi();
+    const tx = api.tx.proxy.removeAnnouncement(
+      announcement.real,
+      announcement.callHash
+    );
+
+    try {
+      const unsub = await tx.signAndSend(this.signer, async (result: any) => {
+        // TODO: Check result of Tx - either 'ExtrinsicSuccess' or 'ExtrinsicFail'
+        //  - If the extrinsic fails, this needs some error handling / logging added
+
+        const { status } = result;
+
+        logger.info(`(Nominator::cancel) Status now: ${status.type}`);
+        if (status.isFinalized) {
+          const finalizedBlockHash = status.asFinalized;
+          logger.info(
+            `(Nominator::cancel) Included in block ${finalizedBlockHash}`
+          );
+
+          unsub();
+        }
+      });
+      return true;
+    } catch (err) {
+      logger.warn(`Nominate tx failed: ${err}`);
+      return false;
+    }
   }
 
   sendStakingTx = async (

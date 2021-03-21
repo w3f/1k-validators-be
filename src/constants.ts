@@ -52,6 +52,9 @@ export const KOTVBackendEndpoint = "https://kusama.w3f.community";
 // The number of blocks for a time delay proxy. Default is 10850, or ~18 hours
 export const TIME_DELAY_BLOCKS = 10850;
 
+// The number of blocks after a time delay proxy call was announced that we want to cancel the tx. Should be 36 hours
+export const CANCEL_THRESHOLD = 21700;
+
 // Monitor Cron job for checking if clients have upgraded. This runs ever 15 minutes by default
 export const MONITOR_CRON = "0 */15 * * * *";
 
@@ -72,3 +75,6 @@ export const SCOREKEEPER_CRON = "0 0-59/10 * * * *";
 
 // Reward claiming frequency. This runs every 20 minutes by default
 export const REWARD_CLAIMING_CRON = "0 0-59/20 * * * *";
+
+// Cancel Frequency. This runs every 25 minutes by default
+export const CANCEL_CRON = "0 0-59/25 * * * *";

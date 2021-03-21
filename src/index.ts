@@ -25,7 +25,7 @@ import { startClearAccumulatedOfflineTimeJob, startMonitorJob } from "./cron";
 
 const isCI = process.env.CI;
 
-const version = "v2.2.87";
+const version = "v2.2.88";
 
 const catchAndQuit = async (fn: any) => {
   try {

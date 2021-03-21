@@ -9,7 +9,7 @@ import {
 import Db from "./db";
 import logger from "./logger";
 import { BooleanResult, NumberResult, StringResult } from "./types";
-import { toDecimals } from "./util";
+import { hex2a, toDecimals } from "./util";
 
 type JSON = any;
 
@@ -285,6 +285,38 @@ class ChainData {
     }
 
     return null;
+  };
+
+  getFormattedIdentity = async (addr) => {
+    console.log(addr);
+    const api = await this.handler.getApi();
+
+    let identity, verified, sub;
+    identity = await api.query.identity.identityOf(addr);
+    if (!identity.isSome) {
+      identity = await api.query.identity.superOf(addr);
+      if (!identity.isSome) return { name: addr, verified: false, sub: null };
+
+      const subRaw = identity.toJSON()[1].raw;
+      if (subRaw && subRaw.substring(0, 2) === "0x") {
+        sub = hex2a(subRaw.substring(2));
+      } else {
+        sub = subRaw;
+      }
+      const superAddress = identity.toJSON()[0];
+      identity = await api.query.identity.identityOf(superAddress);
+    }
+
+    const raw = identity.toJSON().info.display.raw;
+    const { judgements } = identity.unwrap();
+    for (const judgement of judgements) {
+      const status = judgement[1];
+      verified = status.isReasonable || status.isKnownGood;
+    }
+
+    if (raw && raw.substring(0, 2) === "0x") {
+      return { name: hex2a(raw.substring(2)), verified: verified, sub: sub };
+    } else return { name: raw, verified: verified, sub: sub };
   };
 
   getStashFromController = async (

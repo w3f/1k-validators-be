@@ -243,6 +243,16 @@ export default class Db {
     return true;
   }
 
+  async setIdentity(
+    stash: string,
+    identity: { name: string; sub: string; verified: boolean }
+  ): Promise<boolean> {
+    await this.candidateModel
+      .findOneAndUpdate({ stash }, { identity: identity })
+      .exec();
+    return true;
+  }
+
   // Reports a node online that has joined telemetry.
   async reportOnline(
     telemetryId: number,

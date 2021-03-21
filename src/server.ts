@@ -20,6 +20,7 @@ const API = {
   Invalid: "/invalid",
   ValidCandidates: "/valid",
   EraPoints: "/erapoints/:stash",
+  LastNomination: "/lastnomination",
 };
 
 export default class Server {
@@ -99,6 +100,11 @@ export default class Server {
         latestEra
       );
       ctx.body = eraPoints;
+    });
+
+    router.get(API.LastNomination, async (ctx) => {
+      const lastNomiation = await this.db.getLastNominatedEraIndex();
+      ctx.body = lastNomiation;
     });
 
     this.app.use(router.routes());

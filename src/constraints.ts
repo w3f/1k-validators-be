@@ -303,6 +303,12 @@ export class OTV implements Constraints {
       }
     );
 
+    validCandidates = validCandidates.sort(
+      (a: CandidateData, b: CandidateData) => {
+        return a.inclusion - b.inclusion;
+      }
+    );
+
     // Sort so that validators with few unclaimed payouts are prioritized
     validCandidates = validCandidates.sort(
       (a: CandidateData, b: CandidateData) => {

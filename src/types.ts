@@ -49,4 +49,5 @@ export type CandidateData = {
   skipSelfStake: boolean;
   bio: string;
   unclaimedEras: [number];
+  inclusion: number;
 };

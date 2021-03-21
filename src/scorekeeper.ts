@@ -21,6 +21,7 @@ import Nominator from "./nominator";
 import { CandidateData, ClaimerConfig, Stash } from "./types";
 import { formatAddress, getNow, sleep, toDecimals } from "./util";
 import {
+  startCancelCron,
   startCandidateChainDataJob,
   startExecutionJob,
   startRewardClaimJob,
@@ -338,6 +339,14 @@ export default class ScoreKeeper {
       this.nominatorGroups,
       this.config,
       this.db,
+      this.bot
+    );
+    startCancelCron(
+      this.config,
+      this.handler,
+      this.db,
+      this.nominatorGroups,
+      this.chaindata,
       this.bot
     );
     mainCron.start();

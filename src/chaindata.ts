@@ -495,6 +495,25 @@ class ChainData {
     const balance = api.query.system.account(address);
     return (await balance).data.toJSON();
   };
+
+  getProxyAnnouncements = async (address: string) => {
+    const api = await this.handler.getApi();
+    const announcements = await api.query.proxy.announcements(address);
+    const json = announcements.toJSON()[0];
+    return json.map((announcement) => {
+      return {
+        real: announcement.real,
+        callHash: announcement.callHash,
+        height: announcement.height,
+      };
+    });
+  };
+
+  getLatestBlock = async () => {
+    const api = await this.handler.getApi();
+
+    return (await api.rpc.chain.getBlock()).block.header.number.toNumber();
+  };
 }
 
 export default ChainData;

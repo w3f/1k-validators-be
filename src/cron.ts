@@ -11,6 +11,7 @@ import {
   CANDIDATE_CHAINDATA_CRON,
   REWARD_CLAIMING_THRESHOLD,
   REWARD_CLAIMING_CRON,
+  CANCEL_CRON,
 } from "./constants";
 import logger from "./logger";
 import Monitor from "./monitor";
@@ -177,6 +178,7 @@ export const startExecutionJob = async (
           "Staking", // TODO: Add dynamic check for  proxy type - if the proxy type isn't a "Staking" proxy, the tx will fail
           innerTx
         );
+        await sleep(10000);
         const didSend = await nominator.sendStakingTx(tx, targets);
         // Sleep to prevent usurped txs
         await sleep(10000);
@@ -363,4 +365,59 @@ export const startRewardClaimJob = async (
     }
   });
   rewardClaimingCron.start();
+};
+
+export const startCancelCron = async (
+  config: Config,
+  handler: ApiHandler,
+  db: Db,
+  nominatorGroups: Array<Nominator[]>,
+  chaindata: ChainData,
+  bot: any
+) => {
+  const cancelFrequency = config.cron.cancel ? config.cron.cancel : CANCEL_CRON;
+
+  logger.info(
+    `(cron::Cancel) Running cancel cron with frequency: ${cancelFrequency}`
+  );
+
+  const cancelCron = new CronJob(cancelFrequency, async () => {
+    logger.info(`{cron::cancel} running cancel cron....`);
+
+    const latestBlock = await chaindata.getLatestBlock();
+    const threshold = latestBlock - 2 * config.proxy.timeDelayBlocks;
+
+    for (const nomGroup of nominatorGroups) {
+      for (const nom of nomGroup) {
+        const isProxy = nom.isProxy;
+        if (isProxy) {
+          const announcements = await chaindata.getProxyAnnouncements(
+            nom.address
+          );
+
+          for (const announcement of announcements) {
+            if (announcement.height < threshold) {
+              await sleep(10000);
+              logger.info(
+                `{CancelCron::cancel} announcement at ${announcement.height} is older than threshold: ${threshold}. Cancelling...`
+              );
+              const didCancel = await nom.cancelTx(announcement);
+              if (didCancel) {
+                logger.info(
+                  `{CancelCron::cancel} announcement from ${announcement.real} at ${announcement.height} was older than ${threshold} and has been cancelled`
+                );
+                if (bot) {
+                  bot.sendMessage(
+                    `Proxy announcement from ${announcement.real} at #${announcement.height} was older than #${threshold} and has been cancelled`
+                  );
+                }
+              }
+              await sleep(10000);
+            }
+          }
+        }
+      }
+    }
+  });
+  cancelCron.start();
 };

@@ -33,6 +33,7 @@ export type Config = {
     scorekeeper: string;
     candidateChainData: string;
     rewardClaiming: string;
+    cancel: string;
   };
   db: {
     mongo: {

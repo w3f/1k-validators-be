@@ -114,6 +114,7 @@ export const startValidatityJob = async (
     for (const v of valid) {
       const { stash } = v;
       await db.setInvalidityReason(stash, "");
+      await db.setLastValid(stash);
     }
     running = false;
   });

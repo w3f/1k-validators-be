@@ -717,7 +717,7 @@ export default class Db {
           address,
         },
         {
-          $set: { lastNomination: now, when: Date.now() },
+          $set: { lastNomination: now },
         }
       )
       .exec();
@@ -728,6 +728,7 @@ export default class Db {
     if (!data) {
       const eraIndex = new this.eraModel({
         lastNominatedEraIndex: index.toString(),
+        when: Date.now(),
       });
       return eraIndex.save();
     }
@@ -736,7 +737,7 @@ export default class Db {
       .findOneAndUpdate(
         { lastNominatedEraIndex: /.*/ },
         {
-          $set: { lastNominatedEraIndex: index.toString() },
+          $set: { lastNominatedEraIndex: index.toString(), when: Date.now() },
         }
       )
       .exec();

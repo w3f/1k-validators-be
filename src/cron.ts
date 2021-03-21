@@ -114,6 +114,7 @@ export const startValidatityJob = async (
     for (const v of valid) {
       const { stash } = v;
       await db.setInvalidityReason(stash, "");
+      await db.setLastValid(stash);
     }
     running = false;
   });
@@ -177,6 +178,8 @@ export const startExecutionJob = async (
           innerTx
         );
         const didSend = await nominator.sendStakingTx(tx, targets);
+        // Sleep to prevent usurped txs
+        await sleep(10000);
         if (didSend) {
           // Log Execution
           const validatorsMessage = (

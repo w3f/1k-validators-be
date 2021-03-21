@@ -229,6 +229,13 @@ export default class Db {
     return true;
   }
 
+  async setLastValid(stash: string): Promise<boolean> {
+    await this.candidateModel
+      .findOneAndUpdate({ stash }, { lastValid: Date.now() })
+      .exec();
+    return true;
+  }
+
   // Reports a node online that has joined telemetry.
   async reportOnline(
     telemetryId: number,

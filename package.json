@@ -33,7 +33,7 @@
     "@types/ws": "^7.4.0",
     "axios": "^0.21.1",
     "bs58": "^4.0.1",
-    "commander": "^7.1.0",
+    "commander": "^7.2.0",
     "cron": "^1.8.2",
     "eslint-config-prettier": "^8.1.0",
     "eslint-plugin-prettier": "^3.3.1",

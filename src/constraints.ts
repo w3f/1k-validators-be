@@ -244,7 +244,7 @@ export class OTV implements Constraints {
 
         const res = await axios.get(url);
 
-        if (!!res.data.invalidityResasons) {
+        if (!!res.data.invalidityReasons) {
           return [
             false,
             `${name} has a kusama node that is invalid: ${res.data.invalidityReasons}`,
@@ -259,7 +259,7 @@ export class OTV implements Constraints {
         }
       }
     } catch (e) {
-      console.error(e);
+      logger.info(`Error trying to get kusama data...`);
     }
 
     return [true, ""];

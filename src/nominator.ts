@@ -103,7 +103,12 @@ export default class Nominator {
           this.controller,
           blake2AsHex(innerTx.method.toU8a())
         );
-        await this.db.addDelayedTx(number.toNumber(), this.controller, targets, callHash);
+        await this.db.addDelayedTx(
+          number.toNumber(),
+          this.controller,
+          targets,
+          callHash
+        );
 
         await tx.signAndSend(this.signer);
       } else {

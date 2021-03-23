@@ -84,13 +84,13 @@ export default class Db {
     number: number,
     controller: string,
     targets: string[],
-    callHash:string,
+    callHash: string
   ): Promise<boolean> {
     const delayedTx = new this.delayedTxModel({
       number,
       controller,
       targets,
-      callHash
+      callHash,
     });
 
     return delayedTx.save();

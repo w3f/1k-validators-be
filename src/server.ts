@@ -21,6 +21,7 @@ const API = {
   ValidCandidates: "/valid",
   EraPoints: "/erapoints/:stash",
   LastNomination: "/lastnomination",
+  ProxyTxs: "/proxytxs",
 };
 
 export default class Server {
@@ -105,6 +106,11 @@ export default class Server {
     router.get(API.LastNomination, async (ctx) => {
       const lastNomiation = await this.db.getLastNominatedEraIndex();
       ctx.body = lastNomiation;
+    });
+
+    router.get(API.ProxyTxs, async (ctx) => {
+      const proxyTxs = await this.db.getAllDelayedTxs();
+      ctx.body = proxyTxs;
     });
 
     this.app.use(router.routes());

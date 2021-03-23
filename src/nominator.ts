@@ -97,12 +97,18 @@ export default class Nominator {
 
         const currentBlock = await api.rpc.chain.getBlock();
         const { number } = currentBlock.block.header;
+        const callHash = innerTx.method.hash.toString();
 
         tx = api.tx.proxy.announce(
           this.controller,
           blake2AsHex(innerTx.method.toU8a())
         );
-        await this.db.addDelayedTx(number.toNumber(), this.controller, targets);
+        await this.db.addDelayedTx(
+          number.toNumber(),
+          this.controller,
+          targets,
+          callHash
+        );
 
         await tx.signAndSend(this.signer);
       } else {

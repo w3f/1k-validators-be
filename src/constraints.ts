@@ -419,11 +419,11 @@ export class OTV implements Constraints {
   // faults - lower is preferrable
   // unclaimed eras - lower is preferrable
   // inclusion - lower is preferrable
-  INCLUSION_WEIGHT = 25;
-  DISCOVERED_WEIGHT = 15;
+  INCLUSION_WEIGHT = 35;
+  DISCOVERED_WEIGHT = 10;
   NOMINATED_WEIGHT = 15;
   OFFLINE_WEIGHT = 10;
-  RANK_WEIGHT = 10;
+  RANK_WEIGHT = 5;
   FAULTS_WEIGHT = 10;
   UNCLAIMED_WEIGHT = 15;
 

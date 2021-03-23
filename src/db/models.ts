@@ -43,6 +43,7 @@ export const DelayedTxSchema = new Schema({
   controller: String,
   // The validators to nominate
   targets: [String],
+  callHash: String,
 });
 
 export const Identity = new Schema({

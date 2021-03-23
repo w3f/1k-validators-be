@@ -10,7 +10,8 @@
         "skipConnectionTime": true,
         "skipIdentity": false,
         "skipStakedDestination": true,
-        "skipClientUpgrade": true
+        "skipClientUpgrade": true,
+        "skipUnclaimed": true
     },
     "cron": {
         "monitor": "0 */15 * * * *",

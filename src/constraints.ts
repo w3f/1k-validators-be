@@ -419,13 +419,13 @@ export class OTV implements Constraints {
   // faults - lower is preferrable
   // unclaimed eras - lower is preferrable
   // inclusion - lower is preferrable
-  INCLUSION_WEIGHT = 8;
-  DISCOVERED_WEIGHT = 5;
-  NOMINATED_WEIGHT = 5;
-  OFFLINE_WEIGHT = 3;
-  RANK_WEIGHT = 3;
-  FAULTS_WEIGHT = 3;
-  UNCLAIMED_WEIGHT = 5;
+  INCLUSION_WEIGHT = 25;
+  DISCOVERED_WEIGHT = 15;
+  NOMINATED_WEIGHT = 15;
+  OFFLINE_WEIGHT = 10;
+  RANK_WEIGHT = 10;
+  FAULTS_WEIGHT = 10;
+  UNCLAIMED_WEIGHT = 15;
 
   scaleInclusion(candidateInclusion, minInclusion, maxInclusion) {
     if (minInclusion == maxInclusion) return 1;

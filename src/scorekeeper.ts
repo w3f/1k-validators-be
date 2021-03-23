@@ -138,12 +138,28 @@ export default class ScoreKeeper {
       this.config.constraints.skipIdentity,
       this.config.constraints.skipStakedDestination,
       this.config.constraints.skipClientUpgrade,
+      this.config.constraints.skipUnclaimed,
       this.config.global.networkPrefix == 2 ? FIFTY_KSM : TEN_THOUSAND_DOT,
       this.config.global.networkPrefix == 2 ? TEN_PERCENT : THREE_PERCENT,
       this.config.global.networkPrefix == 2
         ? KUSAMA_FOUR_DAYS_ERAS
         : POLKADOT_FOUR_DAYS_ERAS,
       this.config
+    );
+
+    this.populateValid();
+  }
+
+  // Populates the constraints valid cache
+  async populateValid(): Promise<void> {
+    const allCandidates = await this.db.allCandidates();
+    const identityHashTable = await this.constraints.populateIdentityHashTable(
+      allCandidates
+    );
+
+    const validCandidates = await this.constraints.getValidCandidates(
+      allCandidates,
+      identityHashTable
     );
   }
 

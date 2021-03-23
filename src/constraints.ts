@@ -27,6 +27,7 @@ export class OTV implements Constraints {
   private skipIdentity: boolean;
   private skipStakedDesitnation: boolean;
   private skipClientUpgrade: boolean;
+  private skipUnclaimed: boolean;
 
   // configurable constants
   private minSelfStake: number;
@@ -45,6 +46,7 @@ export class OTV implements Constraints {
     skipIdentity = false,
     skipStakedDestination = false,
     skipClientUpgrade = false,
+    skipUnclaimed = false,
     minSelfStake = 0,
     commission = 0,
     unclaimedEraThreshold = 0,
@@ -56,6 +58,7 @@ export class OTV implements Constraints {
     this.skipIdentity = skipIdentity;
     this.skipStakedDesitnation = skipStakedDestination;
     this.skipClientUpgrade = skipClientUpgrade;
+    this.skipUnclaimed = skipUnclaimed;
 
     this.minSelfStake = minSelfStake;
     this.commission = commission;
@@ -225,17 +228,18 @@ export class OTV implements Constraints {
       }
     }
 
-    // const unclaimedEras = await this.chaindata.getUnclaimedEras(stash);
-    const [currentEra, err3] = await this.chaindata.getActiveEraIndex();
-    const threshold = currentEra - this.unclaimedEraThreshold - 1; // Validators cannot have unclaimed rewards before this era
-    // If unclaimed eras contain an era below the recent threshold
-    if (!unclaimedEras.every((era) => era > threshold)) {
-      return [
-        false,
-        `${name} has unclaimed eras: ${unclaimedEras} prior to era: ${
-          threshold + 1
-        }`,
-      ];
+    if (!this.skipUnclaimed) {
+      const [currentEra, err3] = await this.chaindata.getActiveEraIndex();
+      const threshold = currentEra - this.unclaimedEraThreshold - 1; // Validators cannot have unclaimed rewards before this era
+      // If unclaimed eras contain an era below the recent threshold
+      if (!unclaimedEras.every((era) => era > threshold)) {
+        return [
+          false,
+          `${name} has unclaimed eras: ${unclaimedEras} prior to era: ${
+            threshold + 1
+          }`,
+        ];
+      }
     }
 
     try {
@@ -272,7 +276,8 @@ export class OTV implements Constraints {
   ): Promise<CandidateData[]> {
     logger.info(`(OTV::getValidCandidates) Getting candidates`);
 
-    let validCandidates = [];
+    const validCandidates = [];
+    let rankedCandidates = [];
     for (const candidate of candidates) {
       const [isValid, reason] = await this.checkSingleCandidate(
         candidate,
@@ -287,39 +292,176 @@ export class OTV implements Constraints {
       validCandidates.push(candidate);
     }
 
-    // When valid candidates are collected, now it sorts them in priority.
+    // Get Ranges of Parameters to normalize
 
-    // Sort by earliest connected.
-    validCandidates = validCandidates.sort(
-      (a: CandidateData, b: CandidateData) => {
-        return a.discoveredAt - b.discoveredAt;
-      }
+    const minInclusion = validCandidates.reduce((prev, curr) =>
+      prev.inclusion < curr.inclusion ? prev : curr
+    );
+    const maxInclusion = validCandidates.reduce((prev, curr) =>
+      prev.inclusion > curr.inclusion ? prev : curr
     );
 
-    // Sort so the ones who nominated most recently are less prioritized.
-    validCandidates = validCandidates.sort(
-      (a: CandidateData, b: CandidateData) => {
-        return a.nominatedAt - b.nominatedAt;
-      }
+    const minDiscoveredAt = validCandidates.reduce((prev, curr) =>
+      prev.discoveredAt < curr.discoveredAt ? prev : curr
+    );
+    const maxDiscoveredAt = validCandidates.reduce((prev, curr) =>
+      prev.discoveredAt > curr.discoveredAt ? prev : curr
     );
 
-    validCandidates = validCandidates.sort(
-      (a: CandidateData, b: CandidateData) => {
-        return a.inclusion - b.inclusion;
-      }
+    const minNominatedAt = validCandidates.reduce((prev, curr) =>
+      prev.nominatedAt < curr.nominatedAt ? prev : curr
+    );
+    const maxNominatedAt = validCandidates.reduce((prev, curr) =>
+      prev.nominatedAt > curr.nominatedAt ? prev : curr
     );
 
-    // Sort so that validators with few unclaimed payouts are prioritized
-    validCandidates = validCandidates.sort(
-      (a: CandidateData, b: CandidateData) => {
-        return a.unclaimedEras.length - b.unclaimedEras.length;
-      }
+    const minOffline = validCandidates.reduce((prev, curr) =>
+      prev.offlineAccumulated < curr.offlineAccumulated ? prev : curr
     );
+    const maxOffline = validCandidates.reduce((prev, curr) =>
+      prev.offlineAccumulated > curr.offlineAccumulated ? prev : curr
+    );
+
+    const minRank = validCandidates.reduce((prev, curr) =>
+      prev.rank < curr.rank ? prev : curr
+    );
+    const maxRank = validCandidates.reduce((prev, curr) =>
+      prev.rank > curr.rank ? prev : curr
+    );
+
+    const minUnclaimed = validCandidates.reduce((prev, curr) =>
+      prev.unclaimedEras.length < curr.unclaimedEras.length ? prev : curr
+    );
+    const maxUnclaimed = validCandidates.reduce((prev, curr) =>
+      prev.unclaimedEras.length > curr.unclaimedEras.length ? prev : curr
+    );
+
+    for (const candidate of validCandidates) {
+      const scaledInclusion = this.scaleInclusion(
+        candidate.inclusion,
+        minInclusion.inclusion,
+        maxInclusion.inclusion
+      );
+      const inclusionScore = scaledInclusion * this.INCLUSION_WEIGHT;
+
+      const scaledDiscovered = this.scaleDiscovered(
+        candidate.discoveredAt,
+        minDiscoveredAt.discoveredAt,
+        maxDiscoveredAt.discoveredAt
+      );
+      const discoveredScore = scaledDiscovered * this.DISCOVERED_WEIGHT;
+
+      const scaledNominated = this.scaleNominated(
+        candidate.nominatedAt,
+        minNominatedAt.nominatedAt,
+        maxNominatedAt.nominatedAt
+      );
+      const nominatedScore = scaledNominated * this.NOMINATED_WEIGHT;
+
+      const scaledOffline = this.scaleOffline(
+        candidate.offlineAccumulated,
+        minOffline.offlineAccumulated,
+        maxOffline.offlineAccumulated
+      );
+      const offlineScore = scaledOffline * this.OFFLINE_WEIGHT;
+
+      const scaledRank = this.scaleRank(
+        candidate.rank,
+        minRank.rank,
+        maxRank.rank
+      );
+      const rankScore = scaledRank * this.RANK_WEIGHT;
+
+      const scaledUnclaimed = this.scaleUnclaimed(
+        candidate.unclaimedEras.length,
+        minUnclaimed.unclaimedEras.length,
+        maxUnclaimed.unclaimedEras.length
+      );
+      const unclaimedScore = scaledUnclaimed * this.UNCLAIMED_WEIGHT;
+
+      const aggregate =
+        inclusionScore +
+        discoveredScore +
+        nominatedScore +
+        offlineScore +
+        rankScore +
+        unclaimedScore;
+
+      const rankedCandidate = {
+        aggregate: aggregate,
+        discoveredAt: candidate.discoveredAt,
+        offlineAccumulated: candidate.offlineAccumulated,
+        rank: candidate.rank,
+        unclaimedEras: candidate.unclaimedEras,
+        inclusion: candidate.inclusion,
+        name: candidate.name,
+        stash: candidate.stash,
+        identity: candidate.identity,
+      };
+      rankedCandidates.push(rankedCandidate);
+    }
+
+    rankedCandidates = rankedCandidates.sort((a, b) => {
+      return b.aggregate - a.aggregate;
+    });
 
     // Cache the value to return from the server.
-    this.validCache = validCandidates;
+    this.validCache = rankedCandidates;
 
-    return validCandidates;
+    return rankedCandidates;
+  }
+
+  // Weighted scores
+  // Discovered at - earlier is preferrable
+  // Nominated At - Not nominated in a while is preferrable
+  // offlineAccumulated - lower if prefferable
+  // rank - higher is preferrable
+  // faults - lower is preferrable
+  // unclaimed eras - lower is preferrable
+  // inclusion - lower is preferrable
+  INCLUSION_WEIGHT = 25;
+  DISCOVERED_WEIGHT = 15;
+  NOMINATED_WEIGHT = 15;
+  OFFLINE_WEIGHT = 10;
+  RANK_WEIGHT = 10;
+  FAULTS_WEIGHT = 10;
+  UNCLAIMED_WEIGHT = 15;
+
+  scaleInclusion(candidateInclusion, minInclusion, maxInclusion) {
+    if (minInclusion == maxInclusion) return 1;
+    return (maxInclusion - candidateInclusion) / (maxInclusion - minInclusion);
+  }
+
+  scaleDiscovered(candidateDiscovered, minDiscovered, maxDiscovered) {
+    if (minDiscovered == maxDiscovered) return 1;
+    return (
+      (maxDiscovered - candidateDiscovered) / (maxDiscovered - minDiscovered)
+    );
+  }
+
+  scaleNominated(candidateNominated, minNominated, maxNominated) {
+    if (minNominated == maxNominated) return 1;
+    return (maxNominated - candidateNominated) / (maxNominated - minNominated);
+  }
+
+  scaleOffline(candidateOffline, minOffline, maxOffline) {
+    if (minOffline == maxOffline) return 1;
+    return (maxOffline - candidateOffline) / (maxOffline - minOffline);
+  }
+
+  scaleRank(candidateRank, minRank, maxRank) {
+    if (minRank == maxRank) return 1;
+    return (candidateRank - minRank) / (maxRank - minRank);
+  }
+
+  scaleFaults(candidateFaults, minFaults, maxFaults) {
+    if (minFaults == maxFaults) return 1;
+    return (maxFaults - candidateFaults) / (maxFaults - minFaults);
+  }
+
+  scaleUnclaimed(candidateUnclaimed, minUnclaimed, maxUnclaimed) {
+    if (minUnclaimed == maxUnclaimed) return 1;
+    return (maxUnclaimed - candidateUnclaimed) / (maxUnclaimed - minUnclaimed);
   }
 
   /// At the end of a nomination round this is the logic that separates the

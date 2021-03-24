@@ -64,3 +64,13 @@ export const formatAddress = (address: string, config: Config): string => {
 export const hex2a = (hex) => {
   return decodeURIComponent("%" + hex.match(/.{1,2}/g).join("%"));
 };
+
+export const subscanUrl = (config: Config) => {
+  return config.global.networkPrefix == 2
+    ? "kusama.subscan.io"
+    : "polkadot.subscan.io";
+};
+
+export const addressUrl = (address: string, config: Config) => {
+  return `<a href="${subscanUrl(config)}/account/address">${address}</a>`;
+};

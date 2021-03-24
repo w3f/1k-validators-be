@@ -22,7 +22,7 @@ import Nominator from "./nominator";
 import ChainData from "./chaindata";
 import Claimer from "./claimer";
 import { EraReward } from "./types";
-import { sleep, toDecimals } from "./util";
+import { addressUrl, sleep, toDecimals } from "./util";
 import { exists } from "node:fs";
 
 // Monitors the latest GitHub releases and ensures nodes have upgraded
@@ -188,11 +188,22 @@ export const startExecutionJob = async (
             await Promise.all(
               targets.map(async (n) => {
                 const name = await db.getCandidate(n);
+                return `- ${name.name} (${addressUrl(n, config)})`;
+              })
+            )
+          ).join("<br>");
+          const validatorsHtml = (
+            await Promise.all(
+              targets.map(async (n) => {
+                const name = await db.getCandidate(n);
                 return `- ${name.name} (${n})`;
               })
             )
           ).join("\n");
-          const message = `${nominator.address} executed announcement that was announced at block #${dataNum} \n Validators Nominated:\n ${validatorsMessage}`;
+          const message = `${addressUrl(
+            nominator.address,
+            config
+          )} executed announcement that was announced at block #${dataNum} \n Validators Nominated:\n ${validatorsMessage}`;
           logger.info(message);
           if (bot) {
             await bot.sendMessage(message);
@@ -329,7 +340,12 @@ export const startRewardClaimJob = async (
   // TODO Parameterize this as a constant
   if (free < 0.5) {
     logger.info(`{Cron::ClaimRewards} Claimer has low free balance: ${free}`);
-    bot.sendMessage(`Account ${claimer.address} has low free balance: ${free}`);
+    bot.sendMessage(
+      `Reward Claiming Account ${addressUrl(
+        claimer.address,
+        config
+      )} has low free balance: ${free}`
+    );
     return;
   }
 
@@ -408,7 +424,12 @@ export const startCancelCron = async (
                 );
                 if (bot) {
                   bot.sendMessage(
-                    `Proxy announcement from ${announcement.real} at #${announcement.height} was older than #${threshold} and has been cancelled`
+                    `Proxy announcement from ${addressUrl(
+                      announcement.real,
+                      config
+                    )} at #${
+                      announcement.height
+                    } was older than #${threshold} and has been cancelled`
                   );
                 }
               }

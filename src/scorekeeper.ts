@@ -19,7 +19,7 @@ import Db from "./db";
 import logger from "./logger";
 import Nominator from "./nominator";
 import { CandidateData, ClaimerConfig, Stash } from "./types";
-import { formatAddress, getNow, sleep, toDecimals } from "./util";
+import { formatAddress, getNow, sleep, addressUrl, toDecimals } from "./util";
 import {
   startCancelCron,
   startCandidateChainDataJob,
@@ -219,12 +219,26 @@ export default class ScoreKeeper {
         })
       )
     ).join("\n");
+    const nominatorGroupStringHtml = (
+      await Promise.all(
+        group.map(async (n) => {
+          const stash = await n.stash();
+          const proxy = (await n._isProxy)
+            ? `/ ${addressUrl(n.address, this.config)}`
+            : "";
+          return `- ${addressUrl(n.controller, this.config)} / $${addressUrl(
+            stash,
+            this.config
+          )} ${proxy} <br>`;
+        })
+      )
+    ).join("<br>");
     logger.info(
       `Nominator group added! Nominator addresses (Controller / Stash / Proxy):\n${nominatorGroupString}`
     );
 
     await this.botLog(
-      `Nominator group added! Nominator addresses (Controller / Stash):\n ${nominatorGroupString}`
+      `Nominator group added! Nominator addresses (Controller / Stash / Proxy):<br> ${nominatorGroupStringHtml}`
     );
 
     return true;
@@ -471,7 +485,10 @@ export default class ScoreKeeper {
             `{Scorekeeper::_doNominations} Nominator has low free balance: ${free}`
           );
           this.botLog(
-            `Account ${nominator.address} has low free balance: ${free}`
+            `Nominator Account ${addressUrl(
+              nominator.address,
+              this.config
+            )} has low free balance: ${free}`
           );
           continue;
         }
@@ -500,12 +517,23 @@ export default class ScoreKeeper {
             })
           )
         ).join("\n");
+        const targetsHtml = (
+          await Promise.all(
+            targets.map(async (target) => {
+              const name = (await this.db.getCandidate(target)).name;
+              return `- ${name} (${addressUrl(target, this.config)})`;
+            })
+          )
+        ).join("<br>");
 
         logger.info(
           `Nominator ${nominator.controller} nominated:\n${targetsString}`
         );
         this.botLog(
-          `Nominator ${nominator.controller} nominated:\n${targetsString}`
+          `Nominator ${addressUrl(
+            nominator.controller,
+            this.config
+          )} nominated:\n${targetsHtml}`
         );
       }
     }
@@ -525,9 +553,17 @@ export default class ScoreKeeper {
         })
       )
     ).join("\n");
+    const nextTargetsHtml = (
+      await Promise.all(
+        nextTargets.map(async (target) => {
+          const name = (await this.db.getCandidate(target)).name;
+          return `- ${name} (${addressUrl(target, this.config)})`;
+        })
+      )
+    ).join("<br>");
 
     logger.info(`Next targets: \n${nextTargetsString}`);
-    await this.botLog(`Next targets: \n${nextTargetsString}`);
+    await this.botLog(`Next targets: <br> ${nextTargetsHtml}`);
 
     logger.info(`Next targets: \n`);
 

@@ -19,7 +19,7 @@ import Db from "./db";
 import logger from "./logger";
 import Nominator from "./nominator";
 import { CandidateData, ClaimerConfig, Stash } from "./types";
-import { formatAddress, getNow, sleep, subscanUrl, toDecimals } from "./util";
+import { formatAddress, getNow, sleep, addressUrl, toDecimals } from "./util";
 import {
   startCancelCron,
   startCandidateChainDataJob,
@@ -224,11 +224,11 @@ export default class ScoreKeeper {
         group.map(async (n) => {
           const stash = await n.stash();
           const proxy = (await n._isProxy)
-            ? `/ ${addressUrl(this.config, n.address)}`
+            ? `/ ${addressUrl(n.address, this.config)}`
             : "";
-          return `- ${addressUrl(this.config, n.controller)} / $${addressUrl(
-            this.config,
-            stash
+          return `- ${addressUrl(n.controller, this.config)} / $${addressUrl(
+            stash,
+            this.config
           )} ${proxy} <br>`;
         })
       )
@@ -485,9 +485,10 @@ export default class ScoreKeeper {
             `{Scorekeeper::_doNominations} Nominator has low free balance: ${free}`
           );
           this.botLog(
-            `Nominator Account ${subscanUrl(this.config)}/account/${
-              nominator.address
-            } has low free balance: ${free}`
+            `Nominator Account ${addressUrl(
+              nominator.address,
+              this.config
+            )} has low free balance: ${free}`
           );
           continue;
         }
@@ -520,7 +521,7 @@ export default class ScoreKeeper {
           await Promise.all(
             targets.map(async (target) => {
               const name = (await this.db.getCandidate(target)).name;
-              return `- ${name} (${addressUrl(this.config, target)})`;
+              return `- ${name} (${addressUrl(target, this.config)})`;
             })
           )
         ).join("<br>");
@@ -530,8 +531,8 @@ export default class ScoreKeeper {
         );
         this.botLog(
           `Nominator ${addressUrl(
-            this.config,
-            nominator.controller
+            nominator.controller,
+            this.config
           )} nominated:\n${targetsHtml}`
         );
       }
@@ -556,7 +557,7 @@ export default class ScoreKeeper {
       await Promise.all(
         nextTargets.map(async (target) => {
           const name = (await this.db.getCandidate(target)).name;
-          return `- ${name} (${addressUrl(this.config, target)})`;
+          return `- ${name} (${addressUrl(target, this.config)})`;
         })
       )
     ).join("<br>");
@@ -727,7 +728,4 @@ export default class ScoreKeeper {
 
     return true;
   }
-}
-function addressUrl(config: Config, address: any) {
-  throw new Error("Function not implemented.");
 }

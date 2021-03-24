@@ -52,7 +52,25 @@ export default class Server {
     });
 
     router.get(API.GetCandidates, async (ctx) => {
-      const allCandidates = await this.db.allCandidates();
+      let allCandidates = await this.db.allCandidates();
+      allCandidates = allCandidates.map((candidate) => {
+        return {
+          discoveredAt: candidate.discoveredAt,
+          nominatedAt: candidate.nominatedAt,
+          offlineSince: candidate.offlineSince,
+          offlineAccumulated: candidate.offlineAccumulated,
+          rank: candidate.rank,
+          faults: candidate.faults,
+          invalidityReasons: candidate.invalidityReasons,
+          unclaimedEras: candidate.unclaimedEras,
+          inclusion: candidate.inclusion,
+          name: candidate.name,
+          stash: candidate.stash,
+          kusamaStash: candidate.kusamaStash,
+          commission: candidate.commission,
+          identity: candidate.identity,
+        };
+      });
       ctx.body = allCandidates;
     });
 

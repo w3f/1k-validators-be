@@ -74,5 +74,5 @@ export const subscanUrl = (config: Config) => {
 export const addressUrl = (address: string, config: Config) => {
   return `<a href="https://${subscanUrl(
     config
-  )}/account/address">${address}</a>`;
+  )}/account/${address}">${address}</a>`;
 };

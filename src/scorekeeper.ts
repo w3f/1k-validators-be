@@ -223,13 +223,21 @@ export default class ScoreKeeper {
       await Promise.all(
         group.map(async (n) => {
           const stash = await n.stash();
+          const name = (await this.db.getChainMetadata).name;
+          const decimals = name == "kusama" ? 12 : 10;
+          const bal = toDecimals(
+            Number(await this.chaindata.getBondedAmount(stash)),
+            decimals
+          );
+          const sym = name == "kusama" ? "KSM" : "DOT";
+
           const proxy = (await n._isProxy)
             ? `/ ${addressUrl(n.address, this.config)}`
             : "";
-          return `- ${addressUrl(n.controller, this.config)} / $${addressUrl(
+          return `- ${addressUrl(n.controller, this.config)} / ${addressUrl(
             stash,
             this.config
-          )} ${proxy} <br>`;
+          )} (${bal} ${sym}) ${proxy}`;
         })
       )
     ).join("<br>");
@@ -238,7 +246,7 @@ export default class ScoreKeeper {
     );
 
     await this.botLog(
-      `Nominator group added! Nominator addresses (Controller / Stash / Proxy):<br> ${nominatorGroupStringHtml}`
+      `<h4>Nominator group added! Nominator addresses (Controller / Stash / Proxy):<h4><br> ${nominatorGroupStringHtml}`
     );
 
     return true;

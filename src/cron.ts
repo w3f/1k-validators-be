@@ -199,14 +199,19 @@ export const startExecutionJob = async (
                 return `- ${name.name} (${addressUrl(n, config)})`;
               })
             )
-          ).join("\n");
+          ).join("<br>");
           const message = `${addressUrl(
             nominator.address,
             config
           )} executed announcement that was announced at block #${dataNum} \n Validators Nominated:\n ${validatorsMessage}`;
           logger.info(message);
           if (bot) {
-            await bot.sendMessage(validatorsHtml);
+            await bot.sendMessage(
+              `${addressUrl(
+                nominator.address,
+                config
+              )} executed announcement that was announced at block #${dataNum} \n Validators Nominated:\n ${validatorsHtml}`
+            );
           }
 
           await db.deleteDelayedTx(dataNum, controller);

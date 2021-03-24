@@ -223,13 +223,11 @@ export default class ScoreKeeper {
       await Promise.all(
         group.map(async (n) => {
           const stash = await n.stash();
-          const name = (await this.db.getChainMetadata).name;
-          const decimals = name == "kusama" ? 12 : 10;
-          const bal = toDecimals(
-            Number(await this.chaindata.getBondedAmount(stash)),
-            decimals
-          );
-          const sym = name == "kusama" ? "KSM" : "DOT";
+          const name = (await this.db.getChainMetadata()).name;
+          const decimals = name == "Kusama" ? 12 : 10;
+          const [rawBal, err] = await this.chaindata.getBondedAmount(stash);
+          const bal = toDecimals(rawBal, decimals);
+          const sym = name == "Kusama" ? "KSM" : "DOT";
 
           const proxy = (await n._isProxy)
             ? `/ ${addressUrl(n.address, this.config)}`
@@ -246,7 +244,7 @@ export default class ScoreKeeper {
     );
 
     await this.botLog(
-      `<h4>Nominator group added! Nominator addresses (Controller / Stash / Proxy):<h4><br> ${nominatorGroupStringHtml}`
+      `<h4>Nominator group added! Nominator addresses (Controller / Stash / Proxy):</h4><br> ${nominatorGroupStringHtml}`
     );
 
     return true;
@@ -527,13 +525,11 @@ export default class ScoreKeeper {
         ).join("\n");
 
         const stash = await nominator.stash();
-        const name = (await this.db.getChainMetadata).name;
-        const decimals = name == "kusama" ? 12 : 10;
-        const bal = toDecimals(
-          Number(await this.chaindata.getBondedAmount(stash)),
-          decimals
-        );
-        const sym = name == "kusama" ? "KSM" : "DOT";
+        const name = (await this.db.getChainMetadata()).name;
+        const decimals = name == "Kusama" ? 12 : 10;
+        const [rawBal, err] = await this.chaindata.getBondedAmount(stash);
+        const bal = toDecimals(rawBal, decimals);
+        const sym = name == "Kusama" ? "KSM" : "DOT";
 
         const targetsHtml = (
           await Promise.all(

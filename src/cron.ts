@@ -196,7 +196,7 @@ export const startExecutionJob = async (
             await Promise.all(
               targets.map(async (n) => {
                 const name = await db.getCandidate(n);
-                return `- ${name.name} (${n})`;
+                return `- ${name.name} (${addressUrl(n, config)})`;
               })
             )
           ).join("\n");
@@ -206,7 +206,7 @@ export const startExecutionJob = async (
           )} executed announcement that was announced at block #${dataNum} \n Validators Nominated:\n ${validatorsMessage}`;
           logger.info(message);
           if (bot) {
-            await bot.sendMessage(message);
+            await bot.sendMessage(validatorsHtml);
           }
 
           await db.deleteDelayedTx(dataNum, controller);

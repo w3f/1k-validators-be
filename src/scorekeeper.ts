@@ -525,6 +525,16 @@ export default class ScoreKeeper {
             })
           )
         ).join("\n");
+
+        const stash = await nominator.stash();
+        const name = (await this.db.getChainMetadata).name;
+        const decimals = name == "kusama" ? 12 : 10;
+        const bal = toDecimals(
+          Number(await this.chaindata.getBondedAmount(stash)),
+          decimals
+        );
+        const sym = name == "kusama" ? "KSM" : "DOT";
+
         const targetsHtml = (
           await Promise.all(
             targets.map(async (target) => {
@@ -535,13 +545,14 @@ export default class ScoreKeeper {
         ).join("<br>");
 
         logger.info(
-          `Nominator ${nominator.controller} nominated:\n${targetsString}`
+          `Nominator ${stash} (${bal} ${sym}) / ${nominator.controller} nominated:\n${targetsString}`
         );
         this.botLog(
-          `Nominator ${addressUrl(
+          `Nominator ${addressUrl(stash, this.config)} (${bal} ${sym}) / 
+          ${addressUrl(
             nominator.controller,
             this.config
-          )} nominated:\n${targetsHtml}`
+          )} nominated:<br>${targetsHtml}`
         );
       }
     }

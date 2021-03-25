@@ -996,7 +996,7 @@ export default class Db {
     });
 
     // If the era points already exist and are the same as before, return
-    if (!!data && data.points == points) return;
+    if (!!data && data.eraPoints == points) return;
 
     // If they don't exist
     if (!data) {
@@ -1033,11 +1033,11 @@ export default class Db {
   async setTotalEraPoints(
     era: number,
     total: number,
-    validators: { address: string; points: number }[]
+    validators: { address: string; eraPoints: number }[]
   ): Promise<any> {
     for (const validator of validators) {
       // Try setting the era points
-      await this.setEraPoints(era, validator.points, validator.address);
+      await this.setEraPoints(era, validator.eraPoints, validator.address);
     }
 
     // Check if a record already exists

@@ -459,7 +459,7 @@ class ChainData {
       vals.push({
         era: era,
         address: address.toString(),
-        points: Number(points),
+        eraPoints: Number(points),
       });
     }
     return {

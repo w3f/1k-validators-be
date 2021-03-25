@@ -112,6 +112,8 @@ export const CandidateSchema = new Schema({
 export const EraSchema = new Schema({
   // The last era a nomination took place
   lastNominatedEraIndex: { type: String, default: "0" },
+  // ~ 24 hours from the last time a nomination occured.
+  nextNomination: Number,
   // The time that lastNominatedEraIndex was set
   when: Number,
 });

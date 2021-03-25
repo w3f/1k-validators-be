@@ -35,6 +35,7 @@ export type Config = {
     candidateChainData: string;
     rewardClaiming: string;
     cancel: string;
+    stale: string;
   };
   db: {
     mongo: {

@@ -78,3 +78,6 @@ export const REWARD_CLAIMING_CRON = "0 0-59/20 * * * *";
 
 // Cancel Frequency. This runs every 25 minutes by default
 export const CANCEL_CRON = "0 0-59/25 * * * *";
+
+// Stale Nomination Frequency. This runs every 45 minutes by default
+export const STALE_CRON = "0 0-59/45 * * * *";

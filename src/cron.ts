@@ -12,6 +12,7 @@ import {
   REWARD_CLAIMING_THRESHOLD,
   REWARD_CLAIMING_CRON,
   CANCEL_CRON,
+  STALE_CRON,
 } from "./constants";
 import logger from "./logger";
 import Monitor from "./monitor";
@@ -446,4 +447,46 @@ export const startCancelCron = async (
     }
   });
   cancelCron.start();
+};
+
+export const startStaleNominationCron = async (
+  config: Config,
+  handler: ApiHandler,
+  db: Db,
+  nominatorGroups: Array<Nominator[]>,
+  chaindata: ChainData,
+  bot: any
+) => {
+  const staleFrequency = config.cron.stale ? config.cron.stale : STALE_CRON;
+
+  logger.info(
+    `(cron::Stale) Running stale nomination cron with frequency: ${staleFrequency}`
+  );
+  const api = await handler.getApi();
+
+  // threshold for a stale nomination - 8 eras for kusama, 2 eras for polkadot
+  const threshold = config.global.networkPrefix == 2 ? 8 : 2;
+  const staleCron = new CronJob(staleFrequency, async () => {
+    logger.info(`{cron::stale} running stale cron....`);
+
+    const currentEra = await api.query.staking.currentEra();
+    for (const nomGroup of nominatorGroups) {
+      for (const nom of nomGroup) {
+        const stash = await nom.stash();
+        const nominators = await api.query.staking.nominators(stash);
+        if (!nominators) continue;
+
+        const submittedIn = nominators.toJSON()["submittedIn"];
+
+        if (submittedIn < Number(currentEra) - threshold) {
+          const message = `Nominator ${stash} has a stale nomination. Last nomination was in era ${submittedIn} (it is now era ${currentEra})`;
+          logger.info(message);
+          if (bot) {
+            bot.sendMessage(message);
+          }
+        }
+      }
+    }
+  });
+  staleCron.start();
 };

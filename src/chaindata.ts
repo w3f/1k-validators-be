@@ -311,7 +311,7 @@ class ChainData {
     const { judgements } = identity.unwrap();
     for (const judgement of judgements) {
       const status = judgement[1];
-      if (status.isReasonable || status.isKnownGood){
+      if (status.isReasonable || status.isKnownGood) {
         verified = status.isReasonable || status.isKnownGood;
         continue;
       }

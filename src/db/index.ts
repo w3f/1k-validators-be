@@ -1093,6 +1093,12 @@ export default class Db {
       .exec();
   }
 
+  async getHistoryDepthTotalEraPoints(currentEra: number): Promise<any> {
+    return await this.totalEraPointsModel
+      .find({ era: { $gte: currentEra - 84 } })
+      .exec();
+  }
+
   async setInclusion(address: string, inclusion: number): Promise<boolean> {
     logger.info(
       `(Db::setInclusion) Setting ${address} inclusion to ${inclusion}.`

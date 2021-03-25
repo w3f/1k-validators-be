@@ -288,7 +288,6 @@ class ChainData {
   };
 
   getFormattedIdentity = async (addr) => {
-    console.log(addr);
     const api = await this.handler.getApi();
 
     let identity, verified, sub;

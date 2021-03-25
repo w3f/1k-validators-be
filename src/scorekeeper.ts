@@ -25,6 +25,7 @@ import {
   startCandidateChainDataJob,
   startExecutionJob,
   startRewardClaimJob,
+  startStaleNominationCron,
   startValidatityJob,
 } from "./cron";
 import Claimer from "./claimer";
@@ -378,6 +379,14 @@ export default class ScoreKeeper {
       this.bot
     );
     startCancelCron(
+      this.config,
+      this.handler,
+      this.db,
+      this.nominatorGroups,
+      this.chaindata,
+      this.bot
+    );
+    startStaleNominationCron(
       this.config,
       this.handler,
       this.db,

@@ -21,7 +21,8 @@
         "scorekeeper": "0 0-59/1 * * * *",
         "candidateChainData": "0 0-59/1 * * * *",
         "rewardClaiming": "0 0-59/3 * * * *",
-        "cancel": "0 0-59/1 * * * *"
+        "cancel": "0 0-59/1 * * * *",
+        "stale": "0 0-59/1 * * * *"
     },
     "db": {
         "migrate": false,

@@ -39,7 +39,6 @@ export default class Claimer {
 
   public async claim(unclaimedEras: EraReward[]): Promise<boolean> {
     const api = await this.handler.getApi();
-    console.log(`eras to claim: ${unclaimedEras}`);
     for (const era of unclaimedEras) {
       const tx = api.tx.staking.payoutStakers(era.stash, era.era);
       await this.sendClaimTx(tx, era);

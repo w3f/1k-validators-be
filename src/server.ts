@@ -114,7 +114,6 @@ export default class Server {
     router.get(API.EraPoints, async (ctx) => {
       const { stash } = ctx.params;
       const latestEra = (await this.db.getLastTotalEraPoints())[0].era;
-      console.log(latestEra);
       const eraPoints = await this.db.getHistoryDepthEraPoints(
         stash,
         latestEra
@@ -124,7 +123,17 @@ export default class Server {
 
     router.get(API.TotalEraPoints, async (ctx) => {
       const latestEra = (await this.db.getLastTotalEraPoints())[0].era;
-      const eras = await this.db.getHistoryDepthTotalEraPoints(latestEra);
+      let eras = await this.db.getHistoryDepthTotalEraPoints(latestEra);
+      eras = eras.map((era) => {
+        return {
+          era: era.era,
+          totalEraPoints: era.totalEraPoints,
+          min: era.min,
+          max: era.max,
+          average: era.average,
+          median: era.median,
+        };
+      });
       ctx.body = eras;
     });
 

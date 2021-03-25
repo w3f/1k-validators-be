@@ -1046,7 +1046,46 @@ export default class Db {
     });
 
     // If it exists and the total era points are the same, return
-    if (!!data && data.total == total) return;
+    if (!!data && data.total == total && data.median) return;
+
+    const points = [];
+    for (const v of validators) {
+      points.push(v.eraPoints);
+    }
+
+    // Find median, max, and average era points
+    const getAverage = (list) =>
+      list.reduce((prev, curr) => prev + curr) / list.length;
+
+    // Calculate Median
+    const getMedian = (array) => {
+      // Check If Data Exists
+      if (array.length >= 1) {
+        // Sort Array
+        array = array.sort((a, b) => {
+          return a - b;
+        });
+
+        // Array Length: Even
+        if (array.length % 2 === 0) {
+          // Average Of Two Middle Numbers
+          return (array[array.length / 2 - 1] + array[array.length / 2]) / 2;
+        }
+        // Array Length: Odd
+        else {
+          // Middle Number
+          return array[(array.length - 1) / 2];
+        }
+      } else {
+        // Error
+        console.error("Error: Empty Array (calculateMedian)");
+      }
+    };
+
+    const max = Math.max(...points);
+    const min = Math.min(...points);
+    const avg = getAverage(points);
+    const median = getMedian(points);
 
     // If it doesn't exist, create it
     if (!data) {
@@ -1054,6 +1093,10 @@ export default class Db {
         era: era,
         totalEraPoints: total,
         validatorsEraPoints: validators,
+        median: median,
+        average: avg,
+        max: max,
+        min: min,
       });
 
       return totalEraPoints.save();
@@ -1068,6 +1111,10 @@ export default class Db {
         {
           totalEraPoints: total,
           validatorsEraPoints: validators,
+          median: median,
+          average: avg,
+          max: max,
+          min: min,
         }
       )
       .exec();

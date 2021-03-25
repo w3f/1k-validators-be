@@ -397,6 +397,7 @@ export class OTV implements Constraints {
         name: candidate.name,
         stash: candidate.stash,
         identity: candidate.identity,
+        nominatedAt: candidate.nominatedAt,
       };
       rankedCandidates.push(rankedCandidate);
     }

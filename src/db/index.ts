@@ -763,7 +763,11 @@ export default class Db {
       .findOneAndUpdate(
         { lastNominatedEraIndex: /.*/ },
         {
-          $set: { lastNominatedEraIndex: index.toString(), when: Date.now() },
+          $set: {
+            lastNominatedEraIndex: index.toString(),
+            when: Date.now(),
+            nextNomination: Date.now() + 86400000,
+          },
         }
       )
       .exec();

@@ -258,7 +258,7 @@ export const startCandidateChainDataJob = async (
     for (let i = activeEra; i > activeEra - 84 && i >= 0; i--) {
       const erapoints = await db.getTotalEraPoints(i);
 
-      if (!!erapoints && erapoints.totalEraPoints) {
+      if (!!erapoints && erapoints.totalEraPoints && erapoints.median) {
         continue;
       } else {
         logger.info(

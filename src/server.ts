@@ -20,6 +20,7 @@ const API = {
   Invalid: "/invalid",
   ValidCandidates: "/valid",
   EraPoints: "/erapoints/:stash",
+  TotalEraPoints: "/totalerapoints",
   LastNomination: "/lastnomination",
   ProxyTxs: "/proxytxs",
 };
@@ -113,12 +114,27 @@ export default class Server {
     router.get(API.EraPoints, async (ctx) => {
       const { stash } = ctx.params;
       const latestEra = (await this.db.getLastTotalEraPoints())[0].era;
-      console.log(latestEra);
       const eraPoints = await this.db.getHistoryDepthEraPoints(
         stash,
         latestEra
       );
       ctx.body = eraPoints;
+    });
+
+    router.get(API.TotalEraPoints, async (ctx) => {
+      const latestEra = (await this.db.getLastTotalEraPoints())[0].era;
+      let eras = await this.db.getHistoryDepthTotalEraPoints(latestEra);
+      eras = eras.map((era) => {
+        return {
+          era: era.era,
+          totalEraPoints: era.totalEraPoints,
+          min: era.min,
+          max: era.max,
+          average: era.average,
+          median: era.median,
+        };
+      });
+      ctx.body = eras;
     });
 
     router.get(API.LastNomination, async (ctx) => {

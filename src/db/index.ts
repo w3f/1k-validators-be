@@ -996,7 +996,7 @@ export default class Db {
     });
 
     // If the era points already exist and are the same as before, return
-    if (!!data && data.points == points) return;
+    if (!!data && data.eraPoints == points) return;
 
     // If they don't exist
     if (!data) {
@@ -1033,11 +1033,11 @@ export default class Db {
   async setTotalEraPoints(
     era: number,
     total: number,
-    validators: { address: string; points: number }[]
+    validators: { address: string; eraPoints: number }[]
   ): Promise<any> {
     for (const validator of validators) {
       // Try setting the era points
-      await this.setEraPoints(era, validator.points, validator.address);
+      await this.setEraPoints(era, validator.eraPoints, validator.address);
     }
 
     // Check if a record already exists
@@ -1046,7 +1046,46 @@ export default class Db {
     });
 
     // If it exists and the total era points are the same, return
-    if (!!data && data.total == total) return;
+    if (!!data && data.total == total && data.median) return;
+
+    const points = [];
+    for (const v of validators) {
+      points.push(v.eraPoints);
+    }
+
+    // Find median, max, and average era points
+    const getAverage = (list) =>
+      list.reduce((prev, curr) => prev + curr) / list.length;
+
+    // Calculate Median
+    const getMedian = (array) => {
+      // Check If Data Exists
+      if (array.length >= 1) {
+        // Sort Array
+        array = array.sort((a, b) => {
+          return a - b;
+        });
+
+        // Array Length: Even
+        if (array.length % 2 === 0) {
+          // Average Of Two Middle Numbers
+          return (array[array.length / 2 - 1] + array[array.length / 2]) / 2;
+        }
+        // Array Length: Odd
+        else {
+          // Middle Number
+          return array[(array.length - 1) / 2];
+        }
+      } else {
+        // Error
+        console.error("Error: Empty Array (calculateMedian)");
+      }
+    };
+
+    const max = Math.max(...points);
+    const min = Math.min(...points);
+    const avg = getAverage(points);
+    const median = getMedian(points);
 
     // If it doesn't exist, create it
     if (!data) {
@@ -1054,6 +1093,10 @@ export default class Db {
         era: era,
         totalEraPoints: total,
         validatorsEraPoints: validators,
+        median: median,
+        average: avg,
+        max: max,
+        min: min,
       });
 
       return totalEraPoints.save();
@@ -1068,6 +1111,10 @@ export default class Db {
         {
           totalEraPoints: total,
           validatorsEraPoints: validators,
+          median: median,
+          average: avg,
+          max: max,
+          min: min,
         }
       )
       .exec();
@@ -1090,6 +1137,12 @@ export default class Db {
   ): Promise<any> {
     return await this.eraPointsModel
       .find({ address: address, era: { $gte: currentEra - 84 } })
+      .exec();
+  }
+
+  async getHistoryDepthTotalEraPoints(currentEra: number): Promise<any> {
+    return await this.totalEraPointsModel
+      .find({ era: { $gte: currentEra - 84 } })
       .exec();
   }
 

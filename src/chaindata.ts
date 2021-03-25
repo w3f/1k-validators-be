@@ -311,7 +311,10 @@ class ChainData {
     const { judgements } = identity.unwrap();
     for (const judgement of judgements) {
       const status = judgement[1];
-      verified = status.isReasonable || status.isKnownGood;
+      if (status.isReasonable || status.isKnownGood) {
+        verified = status.isReasonable || status.isKnownGood;
+        continue;
+      }
     }
 
     if (raw && raw.substring(0, 2) === "0x") {
@@ -456,7 +459,7 @@ class ChainData {
       vals.push({
         era: era,
         address: address.toString(),
-        points: Number(points),
+        eraPoints: Number(points),
       });
     }
     return {

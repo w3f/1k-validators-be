@@ -173,6 +173,14 @@ export const TotalEraPointsSchema = new Schema({
   totalEraPoints: Number,
   // The era
   era: Number,
+  // Median Era points,
+  median: Number,
+  // average era points
+  average: Number,
+  // The max era points in the era
+  max: Number,
+  // the min era points in the era
+  min: Number,
   // The array of validators and their era points
   validatorsEraPoints: [EraPointsSchema],
 });

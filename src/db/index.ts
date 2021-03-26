@@ -1230,4 +1230,8 @@ export default class Db {
       )
       .exec();
   }
+
+  async getLatestEraStats(): Promise<any> {
+    return await this.eraStatsModel.find({}).sort("-era").limit(1)[0];
+  }
 }

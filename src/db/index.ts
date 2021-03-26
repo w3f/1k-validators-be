@@ -1170,6 +1170,19 @@ export default class Db {
       .exec();
   }
 
+  async setActive(address: string, active: boolean): Promise<boolean> {
+    return this.candidateModel
+      .findOneAndUpdate(
+        {
+          stash: address,
+        },
+        {
+          $set: { active: active },
+        }
+      )
+      .exec();
+  }
+
   async setEraStats(
     era: number,
     totalNodes: number,
@@ -1181,7 +1194,13 @@ export default class Db {
     });
 
     // If the era stats already exist and are the same as before, return
-    if (!!data && data.totalNodea == totalNodes) return;
+    if (
+      !!data &&
+      data.totalNodes == totalNodes &&
+      data.valid == valid &&
+      data.active == active
+    )
+      return;
 
     // If they don't exist
     if (!data) {

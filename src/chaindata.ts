@@ -232,6 +232,12 @@ class ChainData {
     return [Array.from(allValidators), null];
   };
 
+  currentValidators = async (): Promise<any> => {
+    const api = await this.handler.getApi();
+    const validators = await api.query.session.validators();
+    return validators.toJSON();
+  };
+
   /**
    * Checks if an account has an identity set.
    * @param account The account to check.

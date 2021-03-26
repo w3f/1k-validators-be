@@ -70,6 +70,7 @@ export default class Server {
           kusamaStash: candidate.kusamaStash,
           commission: candidate.commission,
           identity: candidate.identity,
+          active: candidate.active,
         };
       });
       ctx.body = allCandidates;

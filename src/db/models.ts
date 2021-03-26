@@ -107,6 +107,8 @@ export const CandidateSchema = new Schema({
   commission: Number,
   // The validators identity,
   identity: Identity,
+  // If the validator is currently active in the set
+  active: Boolean,
 });
 
 export const EraSchema = new Schema({

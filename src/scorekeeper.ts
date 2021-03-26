@@ -353,7 +353,7 @@ export default class ScoreKeeper {
       }
     });
 
-    startValidatityJob(this.config, this.db, this.constraints);
+    startValidatityJob(this.config, this.db, this.constraints, this.handler);
     startCandidateChainDataJob(
       this.config,
       this.handler,

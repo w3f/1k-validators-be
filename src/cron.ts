@@ -77,7 +77,8 @@ export const startClearAccumulatedOfflineTimeJob = async (
 export const startValidatityJob = async (
   config: Config,
   db: Db,
-  constraints: OTV
+  constraints: OTV,
+  handler: ApiHandler
 ) => {
   const validityFrequency = config.cron.validity
     ? config.cron.validity
@@ -93,6 +94,13 @@ export const startValidatityJob = async (
     running = true;
     logger.info(`(cron::Validity) Running validity cron`);
     const allCandidates = await db.allCandidates();
+
+    const api = await handler.getApi();
+    const currentEra = await api.query.staking.currentEra();
+
+    const activeCandidates = allCandidates.filter(
+      (candidate) => candidate.active
+    );
 
     const identityHashTable = await constraints.populateIdentityHashTable(
       allCandidates
@@ -118,6 +126,12 @@ export const startValidatityJob = async (
       await db.setInvalidityReason(stash, "");
       await db.setLastValid(stash);
     }
+    await db.setEraStats(
+      Number(currentEra),
+      allCandidates.length,
+      valid.length,
+      activeCandidates.length
+    );
     running = false;
   });
   validityCron.start();
@@ -272,6 +286,9 @@ export const startCandidateChainDataJob = async (
 
     const allCandidates = await db.allCandidates();
 
+    // The current active validators in the validator set.
+    const activeValidators = await chaindata.currentValidators();
+
     for (const [i, candidate] of allCandidates.entries()) {
       const startLoop = Date.now();
 
@@ -291,6 +308,10 @@ export const startCandidateChainDataJob = async (
       const filteredEras = erasActive.filter((era) => era.eraPoints > 0);
       const inclusion = Number(filteredEras.length / 84);
       await db.setInclusion(candidate.stash, inclusion);
+
+      // Set if the validator is active in the set
+      const active = activeValidators.includes(candidate.stash);
+      await db.setActive(candidate.stash, active);
 
       // Set unclaimed eras
       const unclaimedEras = await chaindata.getUnclaimedEras(

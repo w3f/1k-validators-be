@@ -107,6 +107,8 @@ export const CandidateSchema = new Schema({
   commission: Number,
   // The validators identity,
   identity: Identity,
+  // If the validator is currently active in the set
+  active: Boolean,
 });
 
 export const EraSchema = new Schema({
@@ -185,4 +187,17 @@ export const TotalEraPointsSchema = new Schema({
   min: Number,
   // The array of validators and their era points
   validatorsEraPoints: [EraPointsSchema],
+});
+
+export const EraStatsSchema = new Schema({
+  // When the record was created
+  when: Number,
+  // The era the stat is taken from
+  era: Number,
+  // The total number of validators in the programme
+  totalNodes: Number,
+  // The amount of valid nodes in the programme
+  valid: Number,
+  // the number of nodes active in the set
+  active: Number,
 });

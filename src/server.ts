@@ -23,6 +23,7 @@ const API = {
   TotalEraPoints: "/totalerapoints",
   LastNomination: "/lastnomination",
   ProxyTxs: "/proxytxs",
+  EraStats: "/erastats",
 };
 
 export default class Server {
@@ -70,6 +71,7 @@ export default class Server {
           kusamaStash: candidate.kusamaStash,
           commission: candidate.commission,
           identity: candidate.identity,
+          active: candidate.active,
         };
       });
       ctx.body = allCandidates;
@@ -145,6 +147,11 @@ export default class Server {
     router.get(API.ProxyTxs, async (ctx) => {
       const proxyTxs = await this.db.getAllDelayedTxs();
       ctx.body = proxyTxs;
+    });
+
+    router.get(API.EraStats, async (ctx) => {
+      const latestEraStats = await this.db.getLatestEraStats();
+      ctx.body = latestEraStats;
     });
 
     this.app.use(router.routes());

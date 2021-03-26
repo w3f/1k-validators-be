@@ -11,6 +11,7 @@ import {
   BotClaimEventSchema,
   EraPointsSchema,
   TotalEraPointsSchema,
+  EraStatsSchema,
 } from "./models";
 import logger from "../logger";
 import { formatAddress } from "../util";
@@ -33,6 +34,7 @@ export default class Db {
   private nominationModel;
   private chainMetadataModel;
   private botClaimEventModel;
+  private eraStatsModel;
 
   constructor() {
     this.accountingModel = mongoose.model("Accounting", AccountingSchema);
@@ -54,6 +56,7 @@ export default class Db {
       "BotClaimEvent",
       BotClaimEventSchema
     );
+    this.eraStatsModel = mongoose.model("EraStatsModel", EraStatsSchema);
   }
 
   static async create(uri = "mongodb://localhost:27017/otv"): Promise<Db> {
@@ -1162,6 +1165,48 @@ export default class Db {
         },
         {
           $set: { inclusion: inclusion },
+        }
+      )
+      .exec();
+  }
+
+  async setEraStats(
+    era: number,
+    totalNodes: number,
+    valid: number,
+    active: number
+  ): Promise<boolean> {
+    const data = await this.eraStatsModel.findOne({
+      era: era,
+    });
+
+    // If the era stats already exist and are the same as before, return
+    if (!!data && data.totalNodea == totalNodes) return;
+
+    // If they don't exist
+    if (!data) {
+      const eraStats = new this.eraStatsModel({
+        era: era,
+        when: Date.now(),
+        totalNodes: totalNodes,
+        valid: valid,
+        active: active,
+      });
+
+      return eraStats.save();
+    }
+
+    // It exists, but has a different value - update it
+    this.eraStatsModel
+      .findOneAndUpdate(
+        {
+          era: era,
+        },
+        {
+          when: Date.now(),
+          totalNodes: totalNodes,
+          valid: valid,
+          active: active,
         }
       )
       .exec();

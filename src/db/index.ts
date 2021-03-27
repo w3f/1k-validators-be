@@ -1232,6 +1232,6 @@ export default class Db {
   }
 
   async getLatestEraStats(): Promise<any> {
-    return await this.eraStatsModel.find({}).sort("-era").limit(1)[0];
+    return await this.eraStatsModel.find({}).sort("-era").limit(1);
   }
 }

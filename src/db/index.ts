@@ -248,6 +248,13 @@ export default class Db {
     return true;
   }
 
+  async setController(stash: string, controller: string): Promise<boolean> {
+    await this.candidateModel
+      .findOneAndUpdate({ stash }, { controller: controller })
+      .exec();
+    return true;
+  }
+
   async setIdentity(
     stash: string,
     identity: { name: string; sub: string; verified: boolean }

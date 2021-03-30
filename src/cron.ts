@@ -268,9 +268,10 @@ export const startCandidateChainDataJob = async (
     );
     const start = Date.now();
 
+    // Set Era Points
     logger.info(`{cron::CandidateChainData} setting era info`);
     const [activeEra, err] = await chaindata.getActiveEraIndex();
-    for (let i = activeEra; i > activeEra - 84 && i >= 0; i--) {
+    for (let i = activeEra - 1; i > activeEra - 84 && i >= 0; i--) {
       const erapoints = await db.getTotalEraPoints(i);
 
       if (!!erapoints && erapoints.totalEraPoints && erapoints.median) {
@@ -283,6 +284,10 @@ export const startCandidateChainDataJob = async (
         await db.setTotalEraPoints(era, total, validators);
       }
     }
+    const { era, total, validators } = await chaindata.getTotalEraPoints(
+      activeEra
+    );
+    await db.setTotalEraPoints(era, total, validators);
 
     const allCandidates = await db.allCandidates();
 

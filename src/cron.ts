@@ -225,7 +225,7 @@ export const startExecutionJob = async (
               `${addressUrl(
                 nominator.address,
                 config
-              )} executed announcement that was announced at block #${dataNum} \n Validators Nominated:\n ${validatorsHtml}`
+              )} executed announcement that was announced at block #${dataNum} <br> Validators Nominated:<br> ${validatorsHtml}`
             );
           }
 
@@ -319,6 +319,17 @@ export const startCandidateChainDataJob = async (
       const filteredEras = erasActive.filter((era) => era.eraPoints > 0);
       const inclusion = Number(filteredEras.length / 84);
       await db.setInclusion(candidate.stash, inclusion);
+
+      // Set span inclusion Rate
+      const spanErasActive = await db.getSpanEraPoints(
+        candidate.stash,
+        activeEra
+      );
+      const filteredSpanEras = spanErasActive.filter(
+        (era) => era.eraPoints > 0
+      );
+      const spanInclusion = Number(filteredSpanEras.length / 28);
+      await db.setSpanInclusion(candidate.stash, spanInclusion);
 
       // Set if the validator is active in the set
       const active = activeValidators.includes(candidate.stash);

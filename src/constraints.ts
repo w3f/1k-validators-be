@@ -295,10 +295,10 @@ export class OTV implements Constraints {
     // Get Ranges of Parameters to normalize
 
     const minInclusion = validCandidates.reduce((prev, curr) =>
-      prev.inclusion < curr.inclusion ? prev : curr
+      prev.spanInclusion < curr.spanInclusion ? prev : curr
     );
     const maxInclusion = validCandidates.reduce((prev, curr) =>
-      prev.inclusion > curr.inclusion ? prev : curr
+      prev.spanInclusion > curr.spanInclusion ? prev : curr
     );
 
     const minDiscoveredAt = validCandidates.reduce((prev, curr) =>
@@ -308,9 +308,12 @@ export class OTV implements Constraints {
       prev.discoveredAt > curr.discoveredAt ? prev : curr
     );
 
-    const minNominatedAt = validCandidates.reduce((prev, curr) =>
-      prev.nominatedAt < curr.nominatedAt ? prev : curr
-    );
+    const minNominatedAt = validCandidates
+      .filter((v) => v.nominatedAt > 0)
+      .reduce(
+        (prev, curr) => (prev.nominatedAt < curr.nominatedAt ? prev : curr),
+        0
+      );
     const maxNominatedAt = validCandidates.reduce((prev, curr) =>
       prev.nominatedAt > curr.nominatedAt ? prev : curr
     );
@@ -338,9 +341,9 @@ export class OTV implements Constraints {
 
     for (const candidate of validCandidates) {
       const scaledInclusion = this.scaleInclusion(
-        candidate.inclusion,
-        minInclusion.inclusion,
-        maxInclusion.inclusion
+        candidate.spanInclusion,
+        minInclusion.spanInclusion,
+        maxInclusion.spanInclusion
       );
       const inclusionScore = scaledInclusion * this.INCLUSION_WEIGHT;
 
@@ -351,19 +354,16 @@ export class OTV implements Constraints {
       );
       const discoveredScore = scaledDiscovered * this.DISCOVERED_WEIGHT;
 
+      // If the candidate was just added (their nominatedAt is 0), give them the full weight
       const scaledNominated = this.scaleNominated(
         candidate.nominatedAt,
         minNominatedAt.nominatedAt,
         maxNominatedAt.nominatedAt
       );
-      const nominatedScore = scaledNominated * this.NOMINATED_WEIGHT;
-
-      const scaledOffline = this.scaleOffline(
-        candidate.offlineAccumulated,
-        minOffline.offlineAccumulated,
-        maxOffline.offlineAccumulated
-      );
-      const offlineScore = scaledOffline * this.OFFLINE_WEIGHT;
+      const nominatedScore =
+        candidate.nominatedAt == 0
+          ? this.NOMINATED_WEIGHT
+          : scaledNominated * this.NOMINATED_WEIGHT;
 
       const scaledRank = this.scaleRank(
         candidate.rank,
@@ -383,17 +383,23 @@ export class OTV implements Constraints {
         inclusionScore +
         discoveredScore +
         nominatedScore +
-        offlineScore +
         rankScore +
         unclaimedScore;
 
       const rankedCandidate = {
-        aggregate: aggregate,
+        aggregate: {
+          total: aggregate,
+          inclusion: inclusionScore,
+          discovered: discoveredScore,
+          nominated: nominatedScore,
+          rank: rankScore,
+          unclaimed: unclaimedScore,
+        },
         discoveredAt: candidate.discoveredAt,
-        offlineAccumulated: candidate.offlineAccumulated,
         rank: candidate.rank,
         unclaimedEras: candidate.unclaimedEras,
         inclusion: candidate.inclusion,
+        spanInclusion: candidate.spanInclusion,
         name: candidate.name,
         stash: candidate.stash,
         identity: candidate.identity,
@@ -403,7 +409,7 @@ export class OTV implements Constraints {
     }
 
     rankedCandidates = rankedCandidates.sort((a, b) => {
-      return b.aggregate - a.aggregate;
+      return b.aggregate.total - a.aggregate.total;
     });
 
     // Cache the value to return from the server.
@@ -422,11 +428,11 @@ export class OTV implements Constraints {
   // inclusion - lower is preferrable
   INCLUSION_WEIGHT = 40;
   DISCOVERED_WEIGHT = 5;
-  NOMINATED_WEIGHT = 20;
-  OFFLINE_WEIGHT = 5;
+  NOMINATED_WEIGHT = 35;
   RANK_WEIGHT = 5;
-  FAULTS_WEIGHT = 10;
   UNCLAIMED_WEIGHT = 15;
+  // FAULTS_WEIGHT = 10;
+  // OFFLINE_WEIGHt = 5;
 
   scaleInclusion(candidateInclusion, minInclusion, maxInclusion) {
     if (minInclusion == maxInclusion) return 1;
@@ -443,11 +449,6 @@ export class OTV implements Constraints {
   scaleNominated(candidateNominated, minNominated, maxNominated) {
     if (minNominated == maxNominated) return 1;
     return (maxNominated - candidateNominated) / (maxNominated - minNominated);
-  }
-
-  scaleOffline(candidateOffline, minOffline, maxOffline) {
-    if (minOffline == maxOffline) return 1;
-    return (maxOffline - candidateOffline) / (maxOffline - minOffline);
   }
 
   scaleRank(candidateRank, minRank, maxRank) {

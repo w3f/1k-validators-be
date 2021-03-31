@@ -386,6 +386,8 @@ export class OTV implements Constraints {
         rankScore +
         unclaimedScore;
 
+      const randomness = 1 + Math.random() * 0.05;
+
       const rankedCandidate = {
         aggregate: {
           total: aggregate,
@@ -394,6 +396,7 @@ export class OTV implements Constraints {
           nominated: nominatedScore,
           rank: rankScore,
           unclaimed: unclaimedScore,
+          randomness: randomness,
         },
         discoveredAt: candidate.discoveredAt,
         rank: candidate.rank,

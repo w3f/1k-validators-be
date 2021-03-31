@@ -390,7 +390,8 @@ export class OTV implements Constraints {
 
       const rankedCandidate = {
         aggregate: {
-          total: aggregate,
+          total: aggregate * randomness,
+          aggregate: aggregate,
           inclusion: inclusionScore,
           discovered: discoveredScore,
           nominated: nominatedScore,
@@ -435,7 +436,7 @@ export class OTV implements Constraints {
   RANK_WEIGHT = 5;
   UNCLAIMED_WEIGHT = 15;
   // FAULTS_WEIGHT = 10;
-  // OFFLINE_WEIGHt = 5;
+  // OFFLINE_WEIGHT = 5;
 
   scaleInclusion(candidateInclusion, minInclusion, maxInclusion) {
     if (minInclusion == maxInclusion) return 1;

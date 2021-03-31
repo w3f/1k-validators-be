@@ -1144,6 +1144,12 @@ export default class Db {
     return await this.totalEraPointsModel.find({}).sort("-era").limit(1);
   }
 
+  async getSpanEraPoints(address: string, currentEra: number): Promise<any> {
+    return await this.eraPointsModel
+      .find({ address: address, era: { $gte: currentEra - 28 } })
+      .exec();
+  }
+
   // Gets the era points for a validator for the past 84 eras from a current era
   async getHistoryDepthEraPoints(
     address: string,
@@ -1172,6 +1178,26 @@ export default class Db {
         },
         {
           $set: { inclusion: inclusion },
+        }
+      )
+      .exec();
+  }
+
+  async setSpanInclusion(
+    address: string,
+    spanInclusion: number
+  ): Promise<boolean> {
+    logger.info(
+      `(Db::setInclusion) Setting ${address} span inclusion to ${spanInclusion}.`
+    );
+
+    return this.candidateModel
+      .findOneAndUpdate(
+        {
+          stash: address,
+        },
+        {
+          $set: { spanInclusion: spanInclusion },
         }
       )
       .exec();

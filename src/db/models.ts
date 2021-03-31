@@ -103,6 +103,8 @@ export const CandidateSchema = new Schema({
   bio: String,
   // Inclusion percentage - the percent of eras active of the last 84 eras
   inclusion: { type: Number, default: 0.0 },
+  // Span Inclusion percentage - the percent of eras active of the last 28 eras
+  spanInclusion: { type: Number, default: 0.0 },
   // The last time the validator was deemed valid
   lastValid: Number,
   // Validator's commission

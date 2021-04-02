@@ -203,6 +203,21 @@ export default class ScoreKeeper {
     const now = getNow();
     for (const nomCfg of nominatorGroup) {
       const nom = this._spawn(nomCfg, this.config.global.networkPrefix);
+
+      // try and get the ledger for the nominator - this means it is bonded. If not then don't add it.
+      try {
+        const api = await this.handler.getApi();
+        const ledger = await api.query.staking.ledger(nom.controller);
+        if (!ledger) {
+          logger.info(
+            `{Scorekeeper::addNominatorGroup} ${nom.controller} is not bonded, skipping...`
+          );
+          continue;
+        }
+      } catch (e) {
+        logger.info(e);
+      }
+
       await this.db.addNominator(nom.controller, now);
       // Create a new accounting record in case one doesn't exist.
       const stash = await nom.stash();

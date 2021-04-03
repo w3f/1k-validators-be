@@ -39,6 +39,7 @@ export const autoNumNominations = async (
   nominator: Nominator
 ): Promise<number> => {
   const stash = await nominator.stash();
+  if (!stash) return 0;
   const stashAccount = await api.query.system.account(stash);
   const stashBal = stashAccount.data.free.toBn();
   const validators = await api.derive.staking.electedInfo();
@@ -90,6 +91,7 @@ export default class ScoreKeeper {
         for (const nomGroup of this.nominatorGroups) {
           for (const nom of nomGroup) {
             const nomStash = await nom.stash();
+            if (!nomStash) continue;
             if (nomStash == stash) {
               const activeEra = await this.chaindata.getActiveEraIndex();
               await this.db.updateAccountingRecord(
@@ -205,24 +207,20 @@ export default class ScoreKeeper {
       const nom = this._spawn(nomCfg, this.config.global.networkPrefix);
 
       // try and get the ledger for the nominator - this means it is bonded. If not then don't add it.
-      try {
-        const api = await this.handler.getApi();
-        const ledger = await api.query.staking.ledger(nom.controller);
-        if (!ledger) {
-          logger.info(
-            `{Scorekeeper::addNominatorGroup} ${nom.controller} is not bonded, skipping...`
-          );
-          continue;
-        }
-      } catch (e) {
-        logger.info(e);
+      const api = await this.handler.getApi();
+      const ledger = await api.query.staking.ledger(nom.controller);
+      if (!ledger) {
+        logger.info(
+          `{Scorekeeper::addNominatorGroup} ${nom.controller} is not bonded, skipping...`
+        );
+        continue;
+      } else {
+        await this.db.addNominator(nom.controller, now);
+        // Create a new accounting record in case one doesn't exist.
+        const stash = await nom.stash();
+        await this.db.newAccountingRecord(stash, nom.controller);
+        group.push(nom);
       }
-
-      await this.db.addNominator(nom.controller, now);
-      // Create a new accounting record in case one doesn't exist.
-      const stash = await nom.stash();
-      await this.db.newAccountingRecord(stash, nom.controller);
-      group.push(nom);
     }
     this.nominatorGroups.push(group);
 
@@ -549,6 +547,7 @@ export default class ScoreKeeper {
         ).join("\n");
 
         const stash = await nominator.stash();
+        if (!stash) continue;
         const name = (await this.db.getChainMetadata()).name;
         const decimals = name == "Kusama" ? 12 : 10;
         const [rawBal, err] = await this.chaindata.getBondedAmount(stash);

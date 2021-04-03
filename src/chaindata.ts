@@ -346,6 +346,16 @@ class ChainData {
     return controller.toString();
   };
 
+  getRewardDestination = async (stash: string): Promise<string | null> => {
+    const api: JSON = await this.handler.getApi();
+    const rewardDestination = await api.query.staking.payee(stash);
+    if (rewardDestination.toJSON().Account) {
+      return rewardDestination.toJSON().Account;
+    } else {
+      return rewardDestination.toString();
+    }
+  };
+
   /**
    * Gets Nominations for a nomiantor at a given era
    * @param nominatorStash

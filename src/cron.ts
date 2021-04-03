@@ -516,6 +516,7 @@ export const startStaleNominationCron = async (
     for (const nomGroup of nominatorGroups) {
       for (const nom of nomGroup) {
         const stash = await nom.stash();
+        if (!stash) continue;
         const nominators = await api.query.staking.nominators(stash);
         if (!nominators) continue;
 

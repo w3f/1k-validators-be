@@ -1203,6 +1203,26 @@ export default class Db {
       .exec();
   }
 
+  async setRewardDestination(
+    address: string,
+    rewardDestination: string
+  ): Promise<boolean> {
+    logger.info(
+      `(Db::setRewardDestination) Setting ${address} reward destination to ${rewardDestination}.`
+    );
+
+    return this.candidateModel
+      .findOneAndUpdate(
+        {
+          stash: address,
+        },
+        {
+          $set: { rewardDestination: rewardDestination },
+        }
+      )
+      .exec();
+  }
+
   async setActive(address: string, active: boolean): Promise<boolean> {
     return this.candidateModel
       .findOneAndUpdate(

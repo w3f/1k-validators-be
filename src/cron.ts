@@ -297,7 +297,7 @@ export const startCandidateChainDataJob = async (
     for (const [i, candidate] of allCandidates.entries()) {
       const startLoop = Date.now();
 
-      // Set Idenitty
+      // Set Identity
       const identity = await chaindata.getFormattedIdentity(candidate.stash);
       await db.setIdentity(candidate.stash, identity);
 
@@ -341,6 +341,12 @@ export const startCandidateChainDataJob = async (
         db
       );
       await db.setUnclaimedEras(candidate.stash, unclaimedEras);
+
+      // Set reward destination
+      const rewardDestination = await chaindata.getRewardDestination(
+        candidate.stash
+      );
+      await db.setRewardDestination(candidate.stash, rewardDestination);
 
       const endLoop = Date.now();
 

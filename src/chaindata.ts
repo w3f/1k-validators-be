@@ -349,8 +349,9 @@ class ChainData {
   getRewardDestination = async (stash: string): Promise<string | null> => {
     const api: JSON = await this.handler.getApi();
     const rewardDestination = await api.query.staking.payee(stash);
-    if (rewardDestination.toJSON().Account) {
-      return rewardDestination.toJSON().Account;
+    console.log(rewardDestination.toJSON());
+    if (rewardDestination.toJSON().account) {
+      return rewardDestination.toJSON().account;
     } else {
       return rewardDestination.toString();
     }

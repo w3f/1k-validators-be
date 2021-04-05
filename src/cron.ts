@@ -359,6 +359,10 @@ export const startCandidateChainDataJob = async (
         }
       }
 
+      // Set Next Keys
+      const nextKeys = await chaindata.getNextKeys(candidate.stash);
+      await db.setNextKeys(candidate.stash, nextKeys);
+
       const endLoop = Date.now();
 
       logger.info(

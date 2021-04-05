@@ -1240,6 +1240,23 @@ export default class Db {
       .exec();
   }
 
+  async setNextKeys(address: string, nextKeys: string): Promise<boolean> {
+    logger.info(
+      `(Db::setNextKeys) Setting ${address} next keys to ${nextKeys}.`
+    );
+
+    return this.candidateModel
+      .findOneAndUpdate(
+        {
+          stash: address,
+        },
+        {
+          $set: { nextKeys: nextKeys },
+        }
+      )
+      .exec();
+  }
+
   async setActive(address: string, active: boolean): Promise<boolean> {
     return this.candidateModel
       .findOneAndUpdate(

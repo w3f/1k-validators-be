@@ -115,8 +115,10 @@ export const CandidateSchema = new Schema({
   active: Boolean,
   // The destination rewards go to
   rewardDestination: String,
-  // The queued keys
+  // The queued session keys
   queuedKeys: String,
+  // Next Session Keys
+  nextKeys: String,
 });
 
 export const EraSchema = new Schema({

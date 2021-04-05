@@ -347,8 +347,8 @@ class ChainData {
   };
 
   getRewardDestination = async (stash: string): Promise<string | null> => {
-    const api: JSON = await this.handler.getApi();
-    const rewardDestination = await api.query.staking.payee(stash);
+    const api = await this.handler.getApi();
+    const rewardDestination: JSON = await api.query.staking.payee(stash);
     if (rewardDestination.toJSON().account) {
       return rewardDestination.toJSON().account;
     } else {
@@ -357,7 +357,7 @@ class ChainData {
   };
 
   getQueuedKeys = async (): Promise<any> => {
-    const api: JSON = await this.handler.getApi();
+    const api = await this.handler.getApi();
     const queuedKeys = await api.query.session.queuedKeys();
     const keys = queuedKeys.map(([validator, keys]) => {
       return {
@@ -366,6 +366,12 @@ class ChainData {
       };
     });
     return keys;
+  };
+
+  getNextKeys = async (stash: string): Promise<string> => {
+    const api = await this.handler.getApi();
+    const nextKeys = await api.query.session.nextKeys(stash);
+    return nextKeys.toHex();
   };
 
   /**

@@ -294,6 +294,10 @@ export const startCandidateChainDataJob = async (
     // The current active validators in the validator set.
     const activeValidators = await chaindata.currentValidators();
 
+    // All queued keyes
+    const queuedKeys = await chaindata.getQueuedKeys();
+    console.log(queuedKeys);
+
     for (const [i, candidate] of allCandidates.entries()) {
       const startLoop = Date.now();
 
@@ -347,6 +351,13 @@ export const startCandidateChainDataJob = async (
         candidate.stash
       );
       await db.setRewardDestination(candidate.stash, rewardDestination);
+
+      // Set queued keys
+      for (const key of queuedKeys) {
+        if (key.address == candidate.stash) {
+          await db.setQueuedKeys(candidate.stash, key.keys);
+        }
+      }
 
       const endLoop = Date.now();
 

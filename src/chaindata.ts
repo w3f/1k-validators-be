@@ -356,6 +356,18 @@ class ChainData {
     }
   };
 
+  getQueuedKeys = async (): Promise<any> => {
+    const api: JSON = await this.handler.getApi();
+    const queuedKeys = await api.query.session.queuedKeys();
+    const keys = queuedKeys.map(([validator, keys]) => {
+      return {
+        address: validator.toString(),
+        keys: keys.toHex(),
+      };
+    });
+    return keys;
+  };
+
   /**
    * Gets Nominations for a nomiantor at a given era
    * @param nominatorStash

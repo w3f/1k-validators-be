@@ -1223,6 +1223,23 @@ export default class Db {
       .exec();
   }
 
+  async setQueuedKeys(address: string, queuedKeys: string): Promise<boolean> {
+    logger.info(
+      `(Db::setQueuedKeys) Setting ${address} queued keys to ${queuedKeys}.`
+    );
+
+    return this.candidateModel
+      .findOneAndUpdate(
+        {
+          stash: address,
+        },
+        {
+          $set: { queuedKeys: queuedKeys },
+        }
+      )
+      .exec();
+  }
+
   async setActive(address: string, active: boolean): Promise<boolean> {
     return this.candidateModel
       .findOneAndUpdate(

@@ -294,6 +294,9 @@ export const startCandidateChainDataJob = async (
     // The current active validators in the validator set.
     const activeValidators = await chaindata.currentValidators();
 
+    // All queued keyes
+    const queuedKeys = await chaindata.getQueuedKeys();
+
     for (const [i, candidate] of allCandidates.entries()) {
       const startLoop = Date.now();
 
@@ -303,7 +306,9 @@ export const startCandidateChainDataJob = async (
 
       // Set Commission
       const [commission, err] = await chaindata.getCommission(candidate.stash);
-      await db.setCommission(candidate.stash, commission / Math.pow(10, 7));
+      const formattedCommission =
+        commission == 0 ? 0 : commission / Math.pow(10, 7);
+      await db.setCommission(candidate.stash, formattedCommission);
 
       // Set Controller
       const controller = await chaindata.getControllerFromStash(
@@ -347,6 +352,17 @@ export const startCandidateChainDataJob = async (
         candidate.stash
       );
       await db.setRewardDestination(candidate.stash, rewardDestination);
+
+      // Set queued keys
+      for (const key of queuedKeys) {
+        if (key.address == candidate.stash) {
+          await db.setQueuedKeys(candidate.stash, key.keys);
+        }
+      }
+
+      // Set Next Keys
+      const nextKeys = await chaindata.getNextKeys(candidate.stash);
+      await db.setNextKeys(candidate.stash, nextKeys);
 
       const endLoop = Date.now();
 

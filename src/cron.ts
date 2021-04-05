@@ -296,7 +296,6 @@ export const startCandidateChainDataJob = async (
 
     // All queued keyes
     const queuedKeys = await chaindata.getQueuedKeys();
-    console.log(queuedKeys);
 
     for (const [i, candidate] of allCandidates.entries()) {
       const startLoop = Date.now();
@@ -307,7 +306,9 @@ export const startCandidateChainDataJob = async (
 
       // Set Commission
       const [commission, err] = await chaindata.getCommission(candidate.stash);
-      await db.setCommission(candidate.stash, commission / Math.pow(10, 7));
+      const formattedCommission =
+        commission == 0 ? 0 : commission / Math.pow(10, 7);
+      await db.setCommission(candidate.stash, formattedCommission);
 
       // Set Controller
       const controller = await chaindata.getControllerFromStash(

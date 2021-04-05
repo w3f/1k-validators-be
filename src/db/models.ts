@@ -113,6 +113,8 @@ export const CandidateSchema = new Schema({
   identity: Identity,
   // If the validator is currently active in the set
   active: Boolean,
+  // The destination rewards go to
+  rewardDestination: String,
 });
 
 export const EraSchema = new Schema({

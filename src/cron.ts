@@ -535,14 +535,31 @@ export const startStaleNominationCron = async (
     logger.info(`{cron::stale} running stale cron....`);
 
     const currentEra = await api.query.staking.currentEra();
+    const allCandidates = await db.allCandidates();
+
     for (const nomGroup of nominatorGroups) {
       for (const nom of nomGroup) {
         const stash = await nom.stash();
-        if (!stash) continue;
+        if (!stash || stash == "0x") continue;
         const nominators = await api.query.staking.nominators(stash);
-        if (!nominators) continue;
+        if (!nominators.toJSON()) continue;
 
         const submittedIn = nominators.toJSON()["submittedIn"];
+        const targets = nominators.toJSON()["targets"];
+
+        for (const target of targets) {
+          const isCandidate = allCandidates.filter(
+            (candidate) => candidate.stash == target
+          );
+
+          if (!isCandidate) {
+            const message = `Nominator ${stash} is nominating ${target}, which is not a 1kv candidate`;
+            logger.info(message);
+            if (bot) {
+              bot.sendMessage(message);
+            }
+          }
+        }
 
         if (submittedIn < Number(currentEra) - threshold) {
           const message = `Nominator ${stash} has a stale nomination. Last nomination was in era ${submittedIn} (it is now era ${currentEra})`;

@@ -1156,7 +1156,7 @@ export default class Db {
     currentEra: number
   ): Promise<any> {
     return await this.eraPointsModel
-      .find({ address: address, era: { $gte: currentEra - 84 } })
+      .find({ address: address, era: { $gte: currentEra - 83 } })
       .exec();
   }
 

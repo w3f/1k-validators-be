@@ -1162,7 +1162,7 @@ export default class Db {
 
   async getHistoryDepthTotalEraPoints(currentEra: number): Promise<any> {
     return await this.totalEraPointsModel
-      .find({ era: { $gte: currentEra - 84 } })
+      .find({ era: { $gte: currentEra - 83 } })
       .exec();
   }
 

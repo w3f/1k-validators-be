@@ -1146,7 +1146,7 @@ export default class Db {
 
   async getSpanEraPoints(address: string, currentEra: number): Promise<any> {
     return await this.eraPointsModel
-      .find({ address: address, era: { $gte: currentEra - 28 } })
+      .find({ address: address, era: { $gte: currentEra - 27 } })
       .exec();
   }
 

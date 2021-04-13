@@ -19,6 +19,7 @@ const API = {
   Health: "/healthcheck",
   Invalid: "/invalid",
   ValidCandidates: "/valid",
+  ValidCandidate: "/valid/:stash",
   EraPoints: "/erapoints/:stash",
   TotalEraPoints: "/totalerapoints",
   LastNomination: "/lastnomination",
@@ -111,6 +112,14 @@ export default class Server {
     router.get(API.ValidCandidates, (ctx) => {
       const valid = scoreKeeper.constraints.validCandidateCache;
       ctx.body = valid;
+    });
+
+    router.get(API.ValidCandidate, async (ctx) => {
+      const { stash } = ctx.params;
+      console.log(`trying to find: ${stash}`);
+      const valid = scoreKeeper.constraints.validCandidateCache;
+      const validator = valid.find((candidate) => candidate.stash === stash);
+      ctx.body = validator;
     });
 
     router.get(API.EraPoints, async (ctx) => {

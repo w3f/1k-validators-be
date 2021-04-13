@@ -591,24 +591,7 @@ export default class ScoreKeeper {
         })
       )
     ).join("\n");
-    const nextTargetsHtml = (
-      await Promise.all(
-        nextTargets.map(async (target) => {
-          const name = (await this.db.getCandidate(target)).name;
-          return `- ${name} (${addressUrl(target, this.config)})`;
-        })
-      )
-    ).join("<br>");
-
     logger.info(`Next targets: \n${nextTargetsString}`);
-    await this.botLog(`Next targets: <br> ${nextTargetsHtml}`);
-
-    logger.info(`Next targets: \n`);
-
-    nextTargets.map(async (target) => {
-      const name = (await this.db.getCandidate(target)).name;
-      logger.info(`- ${name} (${target})`);
-    });
 
     return counter;
   }

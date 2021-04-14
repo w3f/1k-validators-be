@@ -1410,4 +1410,10 @@ export default class Db {
       )
       .exec();
   }
+
+  async getValidatorScore(address: string): Promise<any> {
+    return await this.validatorScoreModel.findOne({
+      address: address,
+    });
+  }
 }

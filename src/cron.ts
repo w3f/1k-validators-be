@@ -119,7 +119,8 @@ export const startValidatityJob = async (
     // set invalidityReason as empty for valid candidates
     const valid = await constraints.getValidCandidates(
       allCandidates,
-      identityHashTable
+      identityHashTable,
+      db
     );
     for (const v of valid) {
       const { stash } = v;

@@ -162,7 +162,8 @@ export default class ScoreKeeper {
 
     const validCandidates = await this.constraints.getValidCandidates(
       allCandidates,
-      identityHashTable
+      identityHashTable,
+      this.db
     );
   }
 
@@ -441,7 +442,8 @@ export default class ScoreKeeper {
 
     const validCandidates = await this.constraints.getValidCandidates(
       allCandidates,
-      identityHashTable
+      identityHashTable,
+      this.db
     );
 
     logger.info(
@@ -672,7 +674,8 @@ export default class ScoreKeeper {
 
     const validCandidates = await this.constraints.getValidCandidates(
       allCandidates,
-      identityHashTable
+      identityHashTable,
+      this.db
     );
 
     for (const candidate of validCandidates) {

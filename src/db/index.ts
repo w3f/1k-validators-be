@@ -12,6 +12,7 @@ import {
   EraPointsSchema,
   TotalEraPointsSchema,
   EraStatsSchema,
+  ValidatorScoreSchema,
 } from "./models";
 import logger from "../logger";
 import { formatAddress } from "../util";
@@ -35,6 +36,7 @@ export default class Db {
   private chainMetadataModel;
   private botClaimEventModel;
   private eraStatsModel;
+  private validatorScoreModel;
 
   constructor() {
     this.accountingModel = mongoose.model("Accounting", AccountingSchema);
@@ -57,6 +59,10 @@ export default class Db {
       BotClaimEventSchema
     );
     this.eraStatsModel = mongoose.model("EraStatsModel", EraStatsSchema);
+    this.validatorScoreModel = mongoose.model(
+      "ValidatorScore",
+      ValidatorScoreSchema
+    );
   }
 
   static async create(uri = "mongodb://localhost:27017/otv"): Promise<Db> {
@@ -1335,5 +1341,73 @@ export default class Db {
 
   async getLatestEraStats(): Promise<any> {
     return await this.eraStatsModel.find({}).sort("-era").limit(1);
+  }
+
+  async setValidatorScore(
+    address: string,
+    updated: number,
+    total: number,
+    aggregate: number,
+    inclusion: number,
+    discovered: number,
+    nominated: number,
+    rank: number,
+    unclaimed: number,
+    bonded: number,
+    faults: number,
+    offline: number,
+    randomness: number
+  ): Promise<boolean> {
+    logger.info(
+      `(Db::setNomination) Setting validator score for ${address} with total: ${total}`
+    );
+
+    const data = await this.validatorScoreModel.findOne({
+      address: address,
+    });
+
+    if (!!data && data.total) return;
+
+    if (!data) {
+      const score = new this.validatorScoreModel({
+        address,
+        updated,
+        total,
+        aggregate,
+        inclusion,
+        discovered,
+        nominated,
+        rank,
+        unclaimed,
+        bonded,
+        faults,
+        offline,
+        randomness,
+      });
+
+      return score.save();
+    }
+
+    this.validatorScoreModel
+      .findOneAndUpdate(
+        {
+          address: address,
+        },
+        {
+          updated,
+          total,
+          aggregate,
+          inclusion,
+          discovered,
+          nominated,
+          rank,
+          unclaimed,
+          bonded,
+          faults,
+          offline,
+          randomness,
+        }
+      )
+      .exec();
   }
 }

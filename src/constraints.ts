@@ -8,11 +8,13 @@ import { CandidateData } from "./types";
 import axios from "axios";
 import { formatAddress } from "./util";
 import { Config } from "./config";
+import Db from "./db";
 
 export interface Constraints {
   getValidCandidates(
     candidates: any[],
-    identityHashTable: Map<string, number>
+    identityHashTable: Map<string, number>,
+    db: Db
   ): Promise<any[]>;
   processCandidates(
     candidates: Set<CandidateData>
@@ -272,7 +274,8 @@ export class OTV implements Constraints {
   // Returns the list of valid candidates, ordered by the priority they should get nominated in
   async getValidCandidates(
     candidates: CandidateData[],
-    identityHashTable: Map<string, number>
+    identityHashTable: Map<string, number>,
+    db: Db
   ): Promise<CandidateData[]> {
     logger.info(`(OTV::getValidCandidates) Getting candidates`);
 
@@ -432,21 +435,39 @@ export class OTV implements Constraints {
 
       const randomness = 1 + Math.random() * 0.05;
 
+      const score = {
+        total: aggregate * randomness,
+        aggregate: aggregate,
+        inclusion: inclusionScore,
+        discovered: discoveredScore,
+        nominated: nominatedScore,
+        rank: rankScore,
+        unclaimed: unclaimedScore,
+        bonded: bondedScore,
+        faults: faultsScore,
+        offline: offlineScore,
+        randomness: randomness,
+        updated: Date.now(),
+      };
+
+      await db.setValidatorScore(
+        candidate.stash,
+        score.updated,
+        score.total,
+        score.aggregate,
+        score.inclusion,
+        score.discovered,
+        score.nominated,
+        score.rank,
+        score.unclaimed,
+        score.bonded,
+        score.faults,
+        score.offline,
+        score.randomness
+      );
+
       const rankedCandidate = {
-        aggregate: {
-          total: aggregate * randomness,
-          aggregate: aggregate,
-          inclusion: inclusionScore,
-          discovered: discoveredScore,
-          nominated: nominatedScore,
-          rank: rankScore,
-          unclaimed: unclaimedScore,
-          bonded: bondedScore,
-          faults: faultsScore,
-          offline: offlineScore,
-          randomness: randomness,
-          updated: Date.now(),
-        },
+        aggregate: score,
         discoveredAt: candidate.discoveredAt,
         rank: candidate.rank,
         unclaimedEras: candidate.unclaimedEras,

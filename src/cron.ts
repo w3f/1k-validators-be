@@ -368,6 +368,10 @@ export const startCandidateChainDataJob = async (
       const nextKeys = await chaindata.getNextKeys(candidate.stash);
       await db.setNextKeys(candidate.stash, nextKeys);
 
+      // set bonded amount
+      const [bonded, err2] = await chaindata.getBondedAmount(candidate.stash);
+      await db.setBonded(candidate.stash, bonded);
+
       const endLoop = Date.now();
 
       logger.info(

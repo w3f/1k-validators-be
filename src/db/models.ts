@@ -119,6 +119,8 @@ export const CandidateSchema = new Schema({
   queuedKeys: String,
   // Next Session Keys
   nextKeys: String,
+  // the amount of funds the validator has bonded
+  bonded: Number,
 });
 
 export const EraSchema = new Schema({

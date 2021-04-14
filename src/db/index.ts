@@ -1203,6 +1203,21 @@ export default class Db {
       .exec();
   }
 
+  async setBonded(address: string, bonded: number): Promise<boolean> {
+    logger.info(`(Db::setBonded) Setting ${address} bonded to ${bonded}.`);
+
+    return this.candidateModel
+      .findOneAndUpdate(
+        {
+          stash: address,
+        },
+        {
+          $set: { bonded: bonded },
+        }
+      )
+      .exec();
+  }
+
   async setRewardDestination(
     address: string,
     rewardDestination: string

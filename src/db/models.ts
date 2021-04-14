@@ -119,6 +119,8 @@ export const CandidateSchema = new Schema({
   queuedKeys: String,
   // Next Session Keys
   nextKeys: String,
+  // the amount of funds the validator has bonded
+  bonded: Number,
 });
 
 export const EraSchema = new Schema({
@@ -210,4 +212,33 @@ export const EraStatsSchema = new Schema({
   valid: Number,
   // the number of nodes active in the set
   active: Number,
+});
+
+export const ValidatorScoreSchema = new Schema({
+  // The last time a score was updated
+  updated: Number,
+  // The validator stash
+  address: String,
+  // total score (including randomness)
+  total: Number,
+  // aggregate score
+  aggregate: Number,
+  // span inclusion score
+  inclusion: Number,
+  // discovered at score
+  discovered: Number,
+  // nominated at score
+  nominated: Number,
+  // rank score
+  rank: Number,
+  // unclaimed eras score
+  unclaimed: Number,
+  // bonded score
+  bonded: Number,
+  // faults score
+  faults: Number,
+  // offline score
+  offline: Number,
+  // The randomness factor used to buffer the total
+  randomness: Number,
 });

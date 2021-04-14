@@ -25,6 +25,7 @@ const API = {
   LastNomination: "/lastnomination",
   ProxyTxs: "/proxytxs",
   EraStats: "/erastats",
+  Score: "/score/:stash",
 };
 
 export default class Server {
@@ -161,6 +162,12 @@ export default class Server {
     router.get(API.EraStats, async (ctx) => {
       const latestEraStats = await this.db.getLatestEraStats();
       ctx.body = latestEraStats;
+    });
+
+    router.get(API.Score, async (ctx) => {
+      const { stash } = ctx.params;
+      const score = await this.db.getValidatorScore(stash);
+      ctx.body = score;
     });
 
     this.app.use(router.routes());

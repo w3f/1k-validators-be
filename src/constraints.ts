@@ -8,11 +8,13 @@ import { CandidateData } from "./types";
 import axios from "axios";
 import { formatAddress } from "./util";
 import { Config } from "./config";
+import Db from "./db";
 
 export interface Constraints {
   getValidCandidates(
     candidates: any[],
-    identityHashTable: Map<string, number>
+    identityHashTable: Map<string, number>,
+    db: Db
   ): Promise<any[]>;
   processCandidates(
     candidates: Set<CandidateData>
@@ -272,7 +274,8 @@ export class OTV implements Constraints {
   // Returns the list of valid candidates, ordered by the priority they should get nominated in
   async getValidCandidates(
     candidates: CandidateData[],
-    identityHashTable: Map<string, number>
+    identityHashTable: Map<string, number>,
+    db: Db
   ): Promise<CandidateData[]> {
     logger.info(`(OTV::getValidCandidates) Getting candidates`);
 
@@ -292,8 +295,26 @@ export class OTV implements Constraints {
       validCandidates.push(candidate);
     }
 
-    // Get Ranges of Parameters to normalize
+    // Get Ranges of Parameters
+    //    A validators individual parameter is then scaled to how it compares to others that are also deemd valid
 
+    // Bonded
+    const minBonded = validCandidates.reduce((prev, curr) =>
+      prev.bonded < curr.bonded ? prev : curr
+    );
+    const maxBonded = validCandidates.reduce((prev, curr) =>
+      prev.bonded > curr.bonded ? prev : curr
+    );
+
+    // Faults
+    const minFaults = validCandidates.reduce((prev, curr) =>
+      prev.faults < curr.faults ? prev : curr
+    );
+    const maxFaults = validCandidates.reduce((prev, curr) =>
+      prev.faults > curr.faults ? prev : curr
+    );
+
+    // Span Inclusion
     const minInclusion = validCandidates.reduce((prev, curr) =>
       prev.spanInclusion < curr.spanInclusion ? prev : curr
     );
@@ -301,6 +322,7 @@ export class OTV implements Constraints {
       prev.spanInclusion > curr.spanInclusion ? prev : curr
     );
 
+    // Discovered At
     const minDiscoveredAt = validCandidates.reduce((prev, curr) =>
       prev.discoveredAt < curr.discoveredAt ? prev : curr
     );
@@ -308,6 +330,7 @@ export class OTV implements Constraints {
       prev.discoveredAt > curr.discoveredAt ? prev : curr
     );
 
+    // Nominated At
     const minNominatedAt = validCandidates
       .filter((v) => v.nominatedAt > 0)
       .reduce(
@@ -318,6 +341,7 @@ export class OTV implements Constraints {
       prev.nominatedAt > curr.nominatedAt ? prev : curr
     );
 
+    // Downtime
     const minOffline = validCandidates.reduce((prev, curr) =>
       prev.offlineAccumulated < curr.offlineAccumulated ? prev : curr
     );
@@ -325,6 +349,7 @@ export class OTV implements Constraints {
       prev.offlineAccumulated > curr.offlineAccumulated ? prev : curr
     );
 
+    // Rank
     const minRank = validCandidates.reduce((prev, curr) =>
       prev.rank < curr.rank ? prev : curr
     );
@@ -332,6 +357,7 @@ export class OTV implements Constraints {
       prev.rank > curr.rank ? prev : curr
     );
 
+    // Unclaimed Rewards
     const minUnclaimed = validCandidates.reduce((prev, curr) =>
       prev.unclaimedEras.length < curr.unclaimedEras.length ? prev : curr
     );
@@ -379,6 +405,27 @@ export class OTV implements Constraints {
       );
       const unclaimedScore = scaledUnclaimed * this.UNCLAIMED_WEIGHT;
 
+      const scaledBonded = this.scaleBonded(
+        candidate.bonded,
+        minBonded.bonded,
+        maxBonded.bonded
+      );
+      const bondedScore = scaledBonded * this.BONDED_WEIGHT;
+
+      const scaledOffline = this.scaleOffline(
+        candidate.offlineAccumulated,
+        minOffline.offlineAccumulated,
+        maxOffline.offlineAccumulated
+      );
+      const offlineScore = scaledOffline * this.OFFLINE_WEIGHT;
+
+      const scaledFaults = this.scaleFaults(
+        candidate.faults,
+        minFaults.faults,
+        maxFaults.faults
+      );
+      const faultsScore = scaledFaults * this.FAULTS_WEIGHT;
+
       const aggregate =
         inclusionScore +
         discoveredScore +
@@ -388,17 +435,39 @@ export class OTV implements Constraints {
 
       const randomness = 1 + Math.random() * 0.05;
 
+      const score = {
+        total: aggregate * randomness,
+        aggregate: aggregate,
+        inclusion: inclusionScore,
+        discovered: discoveredScore,
+        nominated: nominatedScore,
+        rank: rankScore,
+        unclaimed: unclaimedScore,
+        bonded: bondedScore,
+        faults: faultsScore,
+        offline: offlineScore,
+        randomness: randomness,
+        updated: Date.now(),
+      };
+
+      await db.setValidatorScore(
+        candidate.stash,
+        score.updated,
+        score.total,
+        score.aggregate,
+        score.inclusion,
+        score.discovered,
+        score.nominated,
+        score.rank,
+        score.unclaimed,
+        score.bonded,
+        score.faults,
+        score.offline,
+        score.randomness
+      );
+
       const rankedCandidate = {
-        aggregate: {
-          total: aggregate * randomness,
-          aggregate: aggregate,
-          inclusion: inclusionScore,
-          discovered: discoveredScore,
-          nominated: nominatedScore,
-          rank: rankScore,
-          unclaimed: unclaimedScore,
-          randomness: randomness,
-        },
+        aggregate: score,
         discoveredAt: candidate.discoveredAt,
         rank: candidate.rank,
         unclaimedEras: candidate.unclaimedEras,
@@ -430,13 +499,25 @@ export class OTV implements Constraints {
   // faults - lower is preferrable
   // unclaimed eras - lower is preferrable
   // inclusion - lower is preferrable
+  // bonded - higher is preferrable
   INCLUSION_WEIGHT = 40;
   DISCOVERED_WEIGHT = 5;
   NOMINATED_WEIGHT = 35;
   RANK_WEIGHT = 5;
   UNCLAIMED_WEIGHT = 15;
-  // FAULTS_WEIGHT = 10;
-  // OFFLINE_WEIGHT = 5;
+  BONDED_WEIGHT = 5;
+  FAULTS_WEIGHT = 10;
+  OFFLINE_WEIGHT = 5;
+
+  scaleBonded(candidateBonded, minBonded, maxBonded) {
+    if (minBonded == maxBonded) return 1;
+    return (maxBonded - candidateBonded) / (maxBonded - minBonded);
+  }
+
+  scaleOffline(candidateOffline, minOffline, maxOffline) {
+    if (minOffline == maxOffline) return 1;
+    return (maxOffline - candidateOffline) / (maxOffline - minOffline);
+  }
 
   scaleInclusion(candidateInclusion, minInclusion, maxInclusion) {
     if (minInclusion == maxInclusion) return 1;

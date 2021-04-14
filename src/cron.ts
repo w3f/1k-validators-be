@@ -119,7 +119,8 @@ export const startValidatityJob = async (
     // set invalidityReason as empty for valid candidates
     const valid = await constraints.getValidCandidates(
       allCandidates,
-      identityHashTable
+      identityHashTable,
+      db
     );
     for (const v of valid) {
       const { stash } = v;
@@ -367,6 +368,10 @@ export const startCandidateChainDataJob = async (
       // Set Next Keys
       const nextKeys = await chaindata.getNextKeys(candidate.stash);
       await db.setNextKeys(candidate.stash, nextKeys);
+
+      // set bonded amount
+      const [bonded, err2] = await chaindata.getBondedAmount(candidate.stash);
+      await db.setBonded(candidate.stash, bonded);
 
       const endLoop = Date.now();
 

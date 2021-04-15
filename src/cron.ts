@@ -270,6 +270,10 @@ export const startCandidateChainDataJob = async (
     const start = Date.now();
 
     // Set Era Points
+    //    - get the current active era
+    //    - iterate through the previous 84 eras
+    //    - if a record for era points for that era already exists, skip it
+    //    - if a record doesn't exist, create it
     logger.info(`{cron::CandidateChainData} setting era info`);
     const [activeEra, err] = await chaindata.getActiveEraIndex();
     for (let i = activeEra - 1; i > activeEra - 84 && i >= 0; i--) {
@@ -302,6 +306,16 @@ export const startCandidateChainDataJob = async (
     // All queued keyes
     const queuedKeys = await chaindata.getQueuedKeys();
 
+    // For all candidates:
+    //     - set their identity
+    //     - set their commission
+    //     - set the controller
+    //     - set their 84 era and 28 era inclusion rate
+    //     - set if they're active in the validator set
+    //     - set their unclaimed rewards
+    //     - set their reward destination
+    //     - set their next and queued session keys
+    //     - set their bonded amount
     for (const [i, candidate] of allCandidates.entries()) {
       const startLoop = Date.now();
 
@@ -380,8 +394,6 @@ export const startCandidateChainDataJob = async (
           allCandidates.length
         }) done. Tooks ${(endLoop - startLoop) / 1000} seconds`
       );
-      // TODO: add setting commission
-      // TODO add setting identity information
     }
     const end = Date.now();
 

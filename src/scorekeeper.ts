@@ -88,6 +88,27 @@ export default class ScoreKeeper {
       "reward",
       async (data: { stash: string; amount: string }) => {
         const { stash, amount } = data;
+
+        // check if the address was a candidate, and if so, update their unclaimed eras
+        const allCandidates = await db.allCandidates();
+        for (const candidate of allCandidates) {
+          if (
+            stash == candidate.stash ||
+            stash == candidate.controller ||
+            stash == candidate.rewardDestination
+          ) {
+            logger.info(
+              `{scorekeeper::reward} ${candidate.name} claimed reward of ${amount}. Updating eras....`
+            );
+            const unclaimedEras = await this.chaindata.getUnclaimedEras(
+              candidate.stash,
+              db
+            );
+            await db.setUnclaimedEras(candidate.stash, unclaimedEras);
+          }
+        }
+
+        // check if it was a nominator address that earned the reward
         for (const nomGroup of this.nominatorGroups) {
           for (const nom of nomGroup) {
             const nomStash = await nom.stash();

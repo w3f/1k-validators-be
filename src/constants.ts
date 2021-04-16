@@ -10,6 +10,9 @@ export const FIFTY_KSM: number = 50 * 10 ** 12;
 /// 10_000 DOT with decimals.
 export const TEN_THOUSAND_DOT: number = 10 * 1000 * 10 ** 10;
 
+/// 5_000 DOT with decimals.
+export const FIVE_THOUSAND_DOT: number = 5 * 1000 * 10 ** 10;
+
 /// One week in milliseconds.
 export const WEEK = 7 * 24 * 60 * 60 * 1000;
 

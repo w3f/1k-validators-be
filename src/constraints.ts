@@ -431,7 +431,8 @@ export class OTV implements Constraints {
         discoveredScore +
         nominatedScore +
         rankScore +
-        unclaimedScore;
+        unclaimedScore +
+        bondedScore;
 
       const randomness = 1 + Math.random() * 0.05;
 
@@ -477,6 +478,7 @@ export class OTV implements Constraints {
         stash: candidate.stash,
         identity: candidate.identity,
         nominatedAt: candidate.nominatedAt,
+        bonded: candidate.bonded,
       };
       rankedCandidates.push(rankedCandidate);
     }

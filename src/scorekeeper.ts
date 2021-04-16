@@ -12,6 +12,7 @@ import {
   SCOREKEEPER_CRON,
   TEN_PERCENT,
   TEN_THOUSAND_DOT,
+  FIVE_THOUSAND_DOT,
   THREE_PERCENT,
 } from "./constants";
 import { OTV } from "./constraints";
@@ -159,7 +160,7 @@ export default class ScoreKeeper {
       this.config.constraints.skipStakedDestination,
       this.config.constraints.skipClientUpgrade,
       this.config.constraints.skipUnclaimed,
-      this.config.global.networkPrefix == 2 ? FIFTY_KSM : TEN_THOUSAND_DOT,
+      this.config.global.networkPrefix == 2 ? FIFTY_KSM : FIVE_THOUSAND_DOT,
       this.config.global.networkPrefix == 2 ? TEN_PERCENT : THREE_PERCENT,
       this.config.global.networkPrefix == 2
         ? KUSAMA_FOUR_DAYS_ERAS

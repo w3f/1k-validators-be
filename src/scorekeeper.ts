@@ -70,6 +70,9 @@ export default class ScoreKeeper {
   public currentTargets: string[];
   public db: Db;
 
+  // cacheing all the possible reward destinations for all candidates
+  private rewardDestinationCache: string[];
+
   // Set when the process is ending
   private ending = false;
   // Set when in the process of nominating
@@ -90,22 +93,15 @@ export default class ScoreKeeper {
         const { stash, amount } = data;
 
         // check if the address was a candidate, and if so, update their unclaimed eras
-        const allCandidates = await db.allCandidates();
-        for (const candidate of allCandidates) {
-          if (
-            stash == candidate.stash ||
-            stash == candidate.controller ||
-            stash == candidate.rewardDestination
-          ) {
-            logger.info(
-              `{scorekeeper::reward} ${candidate.name} claimed reward of ${amount}. Updating eras....`
-            );
-            const unclaimedEras = await this.chaindata.getUnclaimedEras(
-              candidate.stash,
-              db
-            );
-            await db.setUnclaimedEras(candidate.stash, unclaimedEras);
-          }
+        if (this.rewardDestinationCache.includes(stash)) {
+          logger.info(
+            `{scorekeeper::reward} ${stash} claimed reward of ${amount}. Updating eras....`
+          );
+          const unclaimedEras = await this.chaindata.getUnclaimedEras(
+            stash,
+            db
+          );
+          await db.setUnclaimedEras(stash, unclaimedEras);
         }
 
         // check if it was a nominator address that earned the reward
@@ -172,6 +168,7 @@ export default class ScoreKeeper {
     );
 
     this.populateValid();
+    this.populateRewardDestinationCache();
   }
 
   // Populates the constraints valid cache
@@ -186,6 +183,21 @@ export default class ScoreKeeper {
       identityHashTable,
       this.db
     );
+  }
+
+  async populateRewardDestinationCache(): Promise<void> {
+    const allCandidates = await this.db.allCandidates();
+    const rewardAddresses = [];
+    for (const candidate of allCandidates) {
+      if (candidate.rewardDestination.length == 48) {
+        rewardAddresses.push(candidate.rewardDestination);
+        continue;
+      }
+      rewardAddresses.push(candidate.stash);
+      rewardAddresses.push(candidate.controller);
+    }
+
+    this.rewardDestinationCache = rewardAddresses;
   }
 
   getAllNominatorGroups(): SpawnedNominatorGroup[] {

@@ -26,6 +26,7 @@ const API = {
   ProxyTxs: "/proxytxs",
   EraStats: "/erastats",
   Score: "/score/:stash",
+  ScoreMetadata: "/scoremetadata",
 };
 
 export default class Server {
@@ -167,6 +168,11 @@ export default class Server {
     router.get(API.Score, async (ctx) => {
       const { stash } = ctx.params;
       const score = await this.db.getValidatorScore(stash);
+      ctx.body = score;
+    });
+
+    router.get(API.ScoreMetadata, async (ctx) => {
+      const score = await this.db.getValidatorScoreMetadata();
       ctx.body = score;
     });
 

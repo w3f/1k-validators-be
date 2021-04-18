@@ -1524,7 +1524,7 @@ export default class Db {
       .exec();
   }
 
-  async getValidatorScoreMetadata(address: string): Promise<any> {
+  async getValidatorScoreMetadata(): Promise<any> {
     return await this.validatorScoreMetadataModel
       .find({
         updated: { $gte: 0 },

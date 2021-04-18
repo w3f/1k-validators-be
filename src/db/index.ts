@@ -1372,8 +1372,6 @@ export default class Db {
       address: address,
     });
 
-    if (!!data && data.total) return;
-
     if (!data) {
       const score = new this.validatorScoreModel({
         address,

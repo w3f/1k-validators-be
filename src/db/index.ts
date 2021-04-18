@@ -1448,14 +1448,17 @@ export default class Db {
     unclaimedWeight: number,
     updated: number
   ): Promise<boolean> {
+    logger.info(`(Db::SetScoreMetadata) Setting validator score metadata`);
     const data = await this.validatorScoreMetadataModel
-      .find({
+      .findOne({
         updated: { $gte: 0 },
       })
       .exec();
 
+    console.log(data);
     // If they don't exist
     if (!data) {
+      logger.info(`score metadata doesn't exist... creating...`);
       const validatorScoreMetadata = new this.validatorScoreMetadataModel({
         minBonded,
         maxBonded,
@@ -1524,7 +1527,7 @@ export default class Db {
 
   async getValidatorScoreMetadata(): Promise<any> {
     return await this.validatorScoreMetadataModel
-      .find({
+      .findOne({
         updated: { $gte: 0 },
       })
       .exec();

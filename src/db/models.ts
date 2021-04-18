@@ -276,4 +276,6 @@ export const ValidatorScoreMetadataSchema = new Schema({
   minUnclaimed: Number,
   maxUnclaimed: Number,
   unclaimedWeight: Number,
+  // The last time one was updated
+  updated: Number,
 });

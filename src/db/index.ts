@@ -13,6 +13,7 @@ import {
   TotalEraPointsSchema,
   EraStatsSchema,
   ValidatorScoreSchema,
+  ValidatorScoreMetadataSchema,
 } from "./models";
 import logger from "../logger";
 import { formatAddress } from "../util";
@@ -37,6 +38,7 @@ export default class Db {
   private botClaimEventModel;
   private eraStatsModel;
   private validatorScoreModel;
+  private validatorScoreMetadataModel;
 
   constructor() {
     this.accountingModel = mongoose.model("Accounting", AccountingSchema);
@@ -62,6 +64,10 @@ export default class Db {
     this.validatorScoreModel = mongoose.model(
       "ValidatorScore",
       ValidatorScoreSchema
+    );
+    this.validatorScoreMetadataModel = mongoose.model(
+      "ValidatorScoreMetadata",
+      ValidatorScoreMetadataSchema
     );
   }
 
@@ -1415,5 +1421,114 @@ export default class Db {
     return await this.validatorScoreModel.findOne({
       address: address,
     });
+  }
+
+  async setValidatorScoreMetadata(
+    minBonded: number,
+    maxBonded: number,
+    bondedWeight: number,
+    minFaults: number,
+    maxFaults: number,
+    faultWeight: number,
+    minInclusion: number,
+    maxInclusion: number,
+    inclusionWeight: number,
+    minDiscoveredAt: number,
+    maxDiscoveredAt: number,
+    discoveredAtWeight: number,
+    minNominatedAt: number,
+    maxNominatedAt: number,
+    nominatedAtWeight: number,
+    minOffline: number,
+    maxOffline: number,
+    offlineWeight: number,
+    minRank: number,
+    maxRank: number,
+    rankWeight: number,
+    minUnclaimed: number,
+    maxUnclaimed: number,
+    unclaimedWeight: number,
+    updated: number
+  ): Promise<boolean> {
+    const data = await this.validatorScoreMetadataModel
+      .find({
+        updated: { $gte: 0 },
+      })
+      .exec();
+
+    // If they don't exist
+    if (!data) {
+      const validatorScoreMetadata = new this.validatorScoreMetadataModel({
+        minBonded,
+        maxBonded,
+        bondedWeight,
+        minFaults,
+        maxFaults,
+        faultWeight,
+        minInclusion,
+        maxInclusion,
+        inclusionWeight,
+        minDiscoveredAt,
+        maxDiscoveredAt,
+        discoveredAtWeight,
+        minNominatedAt,
+        maxNominatedAt,
+        nominatedAtWeight,
+        minOffline,
+        maxOffline,
+        offlineWeight,
+        minRank,
+        maxRank,
+        rankWeight,
+        minUnclaimed,
+        maxUnclaimed,
+        unclaimedWeight,
+        updated,
+      });
+
+      return validatorScoreMetadata.save();
+    }
+
+    // It exists, but has a different value - update it
+    this.validatorScoreMetadataModel
+      .findOneAndUpdate(
+        { updated: { $gte: 0 } },
+        {
+          minBonded,
+          maxBonded,
+          bondedWeight,
+          minFaults,
+          maxFaults,
+          faultWeight,
+          minInclusion,
+          maxInclusion,
+          inclusionWeight,
+          minDiscoveredAt,
+          maxDiscoveredAt,
+          discoveredAtWeight,
+          minNominatedAt,
+          maxNominatedAt,
+          nominatedAtWeight,
+          minOffline,
+          maxOffline,
+          offlineWeight,
+          minRank,
+          maxRank,
+          rankWeight,
+          minUnclaimed,
+          maxUnclaimed,
+          unclaimedWeight,
+          updated,
+        }
+      )
+      .exec();
+  }
+
+  async getValidatorScoreMetadata(): Promise<any> {
+    return await this.validatorScoreMetadataModel
+      .find({
+        updated: { $gte: 0 },
+      })
+      .exec();
   }
 }

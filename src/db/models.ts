@@ -242,3 +242,40 @@ export const ValidatorScoreSchema = new Schema({
   // The randomness factor used to buffer the total
   randomness: Number,
 });
+
+export const ValidatorScoreMetadataSchema = new Schema({
+  // Bonded Metadata
+  minBonded: Number,
+  maxBonded: Number,
+  bondedWeight: Number,
+  // Fault Metadata
+  minFaults: Number,
+  maxFaults: Number,
+  faultWeight: Number,
+  // Span Inclusion Metadata
+  minInclusion: Number,
+  maxInclusion: Number,
+  inclusionWeight: Number,
+  // Discovered At Metadata
+  minDiscoveredAt: Number,
+  maxDiscoveredAt: Number,
+  discoveredAtWeight: Number,
+  // Nominated At Metadata
+  minNominatedAt: Number,
+  maxNominatedAt: Number,
+  nominatedAtWeight: Number,
+  // Offline Metadata
+  minOffline: Number,
+  maxOffline: Number,
+  offlineWeight: Number,
+  // Rank Metadata
+  minRank: Number,
+  maxRank: Number,
+  rankWeight: Number,
+  // Unclaimed Metadata
+  minUnclaimed: Number,
+  maxUnclaimed: Number,
+  unclaimedWeight: Number,
+  // The last time one was updated
+  updated: Number,
+});

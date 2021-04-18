@@ -365,6 +365,35 @@ export class OTV implements Constraints {
       prev.unclaimedEras.length > curr.unclaimedEras.length ? prev : curr
     );
 
+    // Create DB entry for Validator Score Metadata
+    await db.setValidatorScoreMetadata(
+      minBonded.bonded,
+      maxBonded.bonded,
+      this.BONDED_WEIGHT,
+      minFaults.faults,
+      maxFaults.faults,
+      this.FAULTS_WEIGHT,
+      minInclusion.spanInclusion,
+      maxInclusion.spanInclusion,
+      this.INCLUSION_WEIGHT,
+      minDiscoveredAt.discoveredAt,
+      maxDiscoveredAt.discoveredAt,
+      this.DISCOVERED_WEIGHT,
+      minNominatedAt.nominatedAt,
+      maxNominatedAt.nominatedAt,
+      this.NOMINATED_WEIGHT,
+      minOffline.offlineAccumulated,
+      maxOffline.offlineAccumulated,
+      this.OFFLINE_WEIGHT,
+      minRank.rank,
+      maxRank.rank,
+      this.RANK_WEIGHT,
+      minUnclaimed.unclaimedEras.length,
+      maxUnclaimed.unclaimedEras.length,
+      this.UNCLAIMED_WEIGHT,
+      Date.now()
+    );
+
     for (const candidate of validCandidates) {
       const scaledInclusion = this.scaleInclusion(
         candidate.spanInclusion,

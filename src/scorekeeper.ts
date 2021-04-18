@@ -190,7 +190,7 @@ export default class ScoreKeeper {
     const allCandidates = await this.db.allCandidates();
     const rewardAddresses = [];
     for (const candidate of allCandidates) {
-      if (candidate.rewardDestination.length == 48) {
+      if (!! candidate.rewardDestination && candidate.rewardDestination.length == 48) {
         rewardAddresses.push(candidate.rewardDestination);
         continue;
       }

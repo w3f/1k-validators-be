@@ -461,16 +461,18 @@ export const startRewardClaimJob = async (
       // console.log(candidate);
       // const unclaimedEras = candidate.unclaimedEras;
       // if (!unclaimedEras || unclaimedEras.length == 0) return;
-      for (const era of candidate.unclaimedEras) {
-        logger.info(
-          `{cron::RewardClaiming} checking era ${era} for ${candidate.name} if it's before era ${claimThreshold}...`
-        );
-        if (era < claimThreshold) {
+      if (candidate.unclaimedEras) {
+        for (const era of candidate.unclaimedEras) {
           logger.info(
-            `{cron::startRewardClaimJob} added era ${era} for validator ${candidate.stash} to be claimed.`
+            `{cron::RewardClaiming} checking era ${era} for ${candidate.name} if it's before era ${claimThreshold}...`
           );
-          const eraReward: EraReward = { era: era, stash: candidate.stash };
-          erasToClaim.push(eraReward);
+          if (era < claimThreshold) {
+            logger.info(
+              `{cron::startRewardClaimJob} added era ${era} for validator ${candidate.stash} to be claimed.`
+            );
+            const eraReward: EraReward = { era: era, stash: candidate.stash };
+            erasToClaim.push(eraReward);
+          }
         }
       }
     }

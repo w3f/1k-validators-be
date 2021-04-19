@@ -431,7 +431,7 @@ export const startRewardClaimJob = async (
   const free = toDecimals(Number(balance.free), metadata.decimals);
   // TODO Parameterize this as a constant
   if (free < 0.5) {
-    logger.info(`{Cron::ClaimRewards} Claimer has low free balance: ${free}`);
+    logger.info(`{Cron::RewardClaiming} Claimer has low free balance: ${free}`);
     bot.sendMessage(
       `Reward Claiming Account ${addressUrl(
         claimer.address,
@@ -444,8 +444,6 @@ export const startRewardClaimJob = async (
   const api = await handler.getApi();
 
   const rewardClaimingCron = new CronJob(rewardClaimingFrequency, async () => {
-    logger.info(`{cron::CandidateChainData} running reward claiming cron....`);
-
     const erasToClaim = [];
     const [currentEra, err] = await chaindata.getActiveEraIndex();
     const rewardClaimThreshold =
@@ -453,6 +451,10 @@ export const startRewardClaimJob = async (
         ? REWARD_CLAIMING_THRESHOLD
         : 6;
     const claimThreshold = currentEra - rewardClaimThreshold;
+
+    logger.info(
+      `{cron::RewardClaiming} running reward claiming cron with threshold of ${rewardClaimThreshold} eras. Going to try to claim rewards before era ${claimThreshold} (current era: ${currentEra})....`
+    );
 
     const allCandidates = await db.allCandidates();
     for (const candidate of allCandidates) {

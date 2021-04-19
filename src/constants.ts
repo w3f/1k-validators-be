@@ -77,7 +77,7 @@ export const EXECUTION_CRON = "0 0-59/15 * * * *";
 export const SCOREKEEPER_CRON = "0 0-59/30 * * * *";
 
 // Reward claiming frequency. This runs every 20 minutes by default
-export const REWARD_CLAIMING_CRON = "0 0-59/20 * * * *";
+export const REWARD_CLAIMING_CRON = "0 0-59/10 * * * *";
 
 // Cancel Frequency. This runs every 25 minutes by default
 export const CANCEL_CRON = "0 0-59/25 * * * *";

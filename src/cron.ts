@@ -450,7 +450,7 @@ export const startRewardClaimJob = async (
       config.global.networkPrefix == 2 || config.global.networkPrefix == 0
         ? REWARD_CLAIMING_THRESHOLD
         : 6;
-    const claimThreshold = currentEra - rewardClaimThreshold;
+    const claimThreshold = Number(currentEra - rewardClaimThreshold);
 
     logger.info(
       `{cron::RewardClaiming} running reward claiming cron with threshold of ${rewardClaimThreshold} eras. Going to try to claim rewards before era ${claimThreshold} (current era: ${currentEra})....`
@@ -458,9 +458,13 @@ export const startRewardClaimJob = async (
 
     const allCandidates = await db.allCandidates();
     for (const candidate of allCandidates) {
-      const unclaimedEras = candidate.unclaimedEras;
-      if (!unclaimedEras || unclaimedEras.length == 0) return;
-      for (const era of unclaimedEras) {
+      // console.log(candidate);
+      // const unclaimedEras = candidate.unclaimedEras;
+      // if (!unclaimedEras || unclaimedEras.length == 0) return;
+      for (const era of candidate.unclaimedEras) {
+        logger.info(
+          `{cron::RewardClaiming} checking era ${era} for ${candidate.name} if it's before era ${claimThreshold}...`
+        );
         if (era < claimThreshold) {
           logger.info(
             `{cron::startRewardClaimJob} added era ${era} for validator ${candidate.stash} to be claimed.`

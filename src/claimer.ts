@@ -23,6 +23,7 @@ export default class Claimer {
   ) {
     this.handler = handler;
     this.db = db;
+    this.bot = bot;
 
     const keyring = new Keyring({
       type: "sr25519",
@@ -42,7 +43,13 @@ export default class Claimer {
     for (const era of unclaimedEras) {
       const tx = api.tx.staking.payoutStakers(era.stash, era.era);
       await this.sendClaimTx(tx, era);
-      await sleep(4000);
+      const name = await this.db.getCandidate(era.stash);
+      if (this.bot) {
+        this.bot.sendMessage(
+          `Claimer claimed era ${era.era} for validator ${name} - ${era.stash}`
+        );
+      }
+      await sleep(12000);
     }
     return true;
   }

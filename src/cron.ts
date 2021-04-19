@@ -453,7 +453,7 @@ export const startRewardClaimJob = async (
     const claimThreshold = currentEra - rewardClaimThreshold;
 
     logger.info(
-      `{cron::RewardClaiming} running reward claiming cron with threshold ${rewardClaimThreshold} eras. Going to try to claim rewards before era ${claimThreshold}....`
+      `{cron::RewardClaiming} running reward claiming cron with threshold of ${rewardClaimThreshold} eras. Going to try to claim rewards before era ${claimThreshold} (current era: ${currentEra})....`
     );
 
     const allCandidates = await db.allCandidates();

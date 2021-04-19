@@ -1455,7 +1455,6 @@ export default class Db {
       })
       .exec();
 
-    console.log(data);
     // If they don't exist
     if (!data) {
       logger.info(`score metadata doesn't exist... creating...`);

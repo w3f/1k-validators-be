@@ -542,7 +542,7 @@ export class OTV implements Constraints {
 
   scaleBonded(candidateBonded, minBonded, maxBonded) {
     if (minBonded == maxBonded) return 1;
-    return (maxBonded - candidateBonded) / (maxBonded - minBonded);
+    return (candidateBonded - minBonded) / (maxBonded - minBonded);
   }
 
   scaleOffline(candidateOffline, minOffline, maxOffline) {

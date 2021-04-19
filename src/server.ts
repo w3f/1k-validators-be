@@ -118,7 +118,6 @@ export default class Server {
 
     router.get(API.ValidCandidate, async (ctx) => {
       const { stash } = ctx.params;
-      console.log(`trying to find: ${stash}`);
       const valid = scoreKeeper.constraints.validCandidateCache;
       const validator = valid.find((candidate) => candidate.stash === stash);
       ctx.body = validator;

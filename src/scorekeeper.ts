@@ -312,6 +312,9 @@ export default class ScoreKeeper {
       this.bot
     );
     this.claimer = claimer;
+    await this.botLog(
+      `<h4>Added Reward Claimer:</h4><br> - ${this.claimer.address}`
+    );
     return true;
   }
 

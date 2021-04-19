@@ -49,7 +49,7 @@ export default class Claimer {
           `Claimer claimed era ${era.era} for validator ${name} - ${era.stash}`
         );
       }
-      await sleep(6000);
+      await sleep(8000);
     }
     return true;
   }

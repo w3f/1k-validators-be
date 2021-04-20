@@ -7,6 +7,7 @@ import { Config } from "./config";
 import Database from "./db";
 import logger from "./logger";
 import ScoreKeeper from "./scorekeeper";
+import { job } from "cron";
 
 const API = {
   Accounting: "/accounting/:stashOrController",
@@ -14,8 +15,9 @@ const API = {
   GetCandidates: "/candidates",
   GetNodes: "/nodes",
   GetNominators: "/nominators",
+  GetNominator: "/nominator/:stash",
   GetNominations: "/nominations",
-  GetNominatorNominations: "./nominations/:stashOrController",
+  GetNominatorNominations: "/nominations/:address/:last",
   GetBotClaimEvents: "/claims",
   Health: "/healthcheck",
   Invalid: "/invalid",
@@ -91,9 +93,22 @@ export default class Server {
       ctx.body = allNominators;
     });
 
+    router.get(API.GetNominator, async (ctx) => {
+      const { stash } = ctx.params;
+      const nominator = await this.db.getNominator(stash);
+      ctx.body = nominator;
+    });
+
     router.get(API.GetNominations, async (ctx) => {
       const allNominations = await this.db.allNominations();
       ctx.body = allNominations;
+    });
+
+    router.get(API.GetNominatorNominations, async (ctx) => {
+      const { address, last } = ctx.params;
+      last ? Number(last) : 30;
+      const nominations = await this.db.getLastNominations(address, last);
+      ctx.body = nominations;
     });
 
     router.get(API.GetBotClaimEvents, async (ctx) => {

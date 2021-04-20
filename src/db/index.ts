@@ -735,6 +735,15 @@ export default class Db {
     return data;
   }
 
+  async getLastNominations(address: string, eras: number): Promise<string[]> {
+    // Returns the last nominations for a given nominator controller
+    const data = await this.nominationModel
+      .find({ address })
+      .sort("-era")
+      .limit(Number(eras));
+    return data;
+  }
+
   async setBotClaimEvent(
     address: string,
     era: number,
@@ -975,8 +984,8 @@ export default class Db {
     return this.candidateModel.findOne({ name }).exec();
   }
 
-  async getNominator(address: string): Promise<any> {
-    return this.nominatorModel.findOne({ address }).exec();
+  async getNominator(stash: string): Promise<any> {
+    return this.nominatorModel.findOne({ stash: stash }).exec();
   }
 
   async getLastNominatedEraIndex(): Promise<any> {

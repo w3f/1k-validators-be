@@ -428,6 +428,7 @@ export default class Db {
   async addNominator(
     address: string,
     stash: string,
+    proxy: string,
     bonded: number,
     now: number
   ): Promise<boolean> {
@@ -438,6 +439,7 @@ export default class Db {
       const nominator = new this.nominatorModel({
         address,
         stash,
+        proxy,
         bonded,
         current: [],
         lastNomination: 0,
@@ -453,6 +455,7 @@ export default class Db {
       {
         createdAt: now,
         stash,
+        proxy,
         bonded,
       }
     );

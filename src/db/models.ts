@@ -137,6 +137,8 @@ export const NominatorSchema = new Schema({
   address: String,
   // The Stash address
   stash: String,
+  // The nominator proxy account
+  proxy: String,
   // The amount bonded
   bonded: Number,
   current: [],

@@ -299,71 +299,120 @@ export class OTV implements Constraints {
     //    A validators individual parameter is then scaled to how it compares to others that are also deemd valid
 
     // Bonded
-    const minBonded = validCandidates.reduce((prev, curr) =>
-      prev.bonded < curr.bonded ? prev : curr
-    );
-    const maxBonded = validCandidates.reduce((prev, curr) =>
-      prev.bonded > curr.bonded ? prev : curr
-    );
+    const minBonded =
+      validCandidates.length > 0
+        ? validCandidates.reduce((prev, curr) =>
+            prev.bonded < curr.bonded ? prev : curr
+          )
+        : 0;
+    const maxBonded =
+      validCandidates.length > 0
+        ? validCandidates.reduce((prev, curr) =>
+            prev.bonded > curr.bonded ? prev : curr
+          )
+        : 0;
 
     // Faults
-    const minFaults = validCandidates.reduce((prev, curr) =>
-      prev.faults < curr.faults ? prev : curr
-    );
-    const maxFaults = validCandidates.reduce((prev, curr) =>
-      prev.faults > curr.faults ? prev : curr
-    );
+    const minFaults =
+      validCandidates.length > 0
+        ? validCandidates.reduce((prev, curr) =>
+            prev.faults < curr.faults ? prev : curr
+          )
+        : 0;
+    const maxFaults =
+      validCandidates.length > 0
+        ? validCandidates.reduce((prev, curr) =>
+            prev.faults > curr.faults ? prev : curr
+          )
+        : 0;
 
     // Span Inclusion
-    const minInclusion = validCandidates.reduce((prev, curr) =>
-      prev.spanInclusion < curr.spanInclusion ? prev : curr
-    );
-    const maxInclusion = validCandidates.reduce((prev, curr) =>
-      prev.spanInclusion > curr.spanInclusion ? prev : curr
-    );
+    const minInclusion =
+      validCandidates.length > 0
+        ? validCandidates.reduce((prev, curr) =>
+            prev.spanInclusion < curr.spanInclusion ? prev : curr
+          )
+        : 0;
+    const maxInclusion =
+      validCandidates.length > 0
+        ? validCandidates.reduce((prev, curr) =>
+            prev.spanInclusion > curr.spanInclusion ? prev : curr
+          )
+        : 0;
 
     // Discovered At
-    const minDiscoveredAt = validCandidates.reduce((prev, curr) =>
-      prev.discoveredAt < curr.discoveredAt ? prev : curr
-    );
-    const maxDiscoveredAt = validCandidates.reduce((prev, curr) =>
-      prev.discoveredAt > curr.discoveredAt ? prev : curr
-    );
+    const minDiscoveredAt =
+      validCandidates.length > 0
+        ? validCandidates.reduce((prev, curr) =>
+            prev.discoveredAt < curr.discoveredAt ? prev : curr
+          )
+        : 0;
+    const maxDiscoveredAt =
+      validCandidates.length > 0
+        ? validCandidates.reduce((prev, curr) =>
+            prev.discoveredAt > curr.discoveredAt ? prev : curr
+          )
+        : 0;
 
     // Nominated At
-    const minNominatedAt = validCandidates
-      .filter((v) => v.nominatedAt > 0)
-      .reduce(
-        (prev, curr) => (prev.nominatedAt < curr.nominatedAt ? prev : curr),
-        0
-      );
-    const maxNominatedAt = validCandidates.reduce((prev, curr) =>
-      prev.nominatedAt > curr.nominatedAt ? prev : curr
-    );
+    const minNominatedAt =
+      validCandidates.length > 0
+        ? validCandidates
+            .filter((v) => v.nominatedAt > 0)
+            .reduce(
+              (prev, curr) =>
+                prev.nominatedAt < curr.nominatedAt ? prev : curr,
+              0
+            )
+        : 0;
+    const maxNominatedAt =
+      validCandidates.length > 0
+        ? validCandidates.reduce((prev, curr) =>
+            prev.nominatedAt > curr.nominatedAt ? prev : curr
+          )
+        : 0;
 
     // Downtime
-    const minOffline = validCandidates.reduce((prev, curr) =>
-      prev.offlineAccumulated < curr.offlineAccumulated ? prev : curr
-    );
-    const maxOffline = validCandidates.reduce((prev, curr) =>
-      prev.offlineAccumulated > curr.offlineAccumulated ? prev : curr
-    );
+    const minOffline =
+      validCandidates.length > 0
+        ? validCandidates.reduce((prev, curr) =>
+            prev.offlineAccumulated < curr.offlineAccumulated ? prev : curr
+          )
+        : 0;
+    const maxOffline =
+      validCandidates.length > 0
+        ? validCandidates.reduce((prev, curr) =>
+            prev.offlineAccumulated > curr.offlineAccumulated ? prev : curr
+          )
+        : 0;
 
     // Rank
-    const minRank = validCandidates.reduce((prev, curr) =>
-      prev.rank < curr.rank ? prev : curr
-    );
-    const maxRank = validCandidates.reduce((prev, curr) =>
-      prev.rank > curr.rank ? prev : curr
-    );
+    const minRank =
+      validCandidates.length > 0
+        ? validCandidates.reduce((prev, curr) =>
+            prev.rank < curr.rank ? prev : curr
+          )
+        : 0;
+    const maxRank =
+      validCandidates.length > 0
+        ? validCandidates.reduce((prev, curr) =>
+            prev.rank > curr.rank ? prev : curr
+          )
+        : 0;
 
     // Unclaimed Rewards
-    const minUnclaimed = validCandidates.reduce((prev, curr) =>
-      prev.unclaimedEras.length < curr.unclaimedEras.length ? prev : curr
-    );
-    const maxUnclaimed = validCandidates.reduce((prev, curr) =>
-      prev.unclaimedEras.length > curr.unclaimedEras.length ? prev : curr
-    );
+    const minUnclaimed =
+      validCandidates.length > 0
+        ? validCandidates.reduce((prev, curr) =>
+            prev.unclaimedEras.length < curr.unclaimedEras.length ? prev : curr
+          )
+        : 0;
+    const maxUnclaimed =
+      validCandidates.length > 0
+        ? validCandidates.reduce((prev, curr) =>
+            prev.unclaimedEras.length > curr.unclaimedEras.length ? prev : curr
+          )
+        : 0;
 
     // Create DB entry for Validator Score Metadata
     await db.setValidatorScoreMetadata(
@@ -388,8 +437,8 @@ export class OTV implements Constraints {
       minRank.rank,
       maxRank.rank,
       this.RANK_WEIGHT,
-      minUnclaimed.unclaimedEras.length,
-      maxUnclaimed.unclaimedEras.length,
+      minUnclaimed.unclaimedEras ? minUnclaimed.unclaimedEras.length : 0,
+      maxUnclaimed.unclaimedEras ? maxUnclaimed.unclaimedEras.length : 0,
       this.UNCLAIMED_WEIGHT,
       Date.now()
     );

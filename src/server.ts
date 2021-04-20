@@ -15,6 +15,7 @@ const API = {
   GetNodes: "/nodes",
   GetNominators: "/nominators",
   GetNominations: "/nominations",
+  GetNominatorNominations: "./nominations/:stashOrController",
   GetBotClaimEvents: "/claims",
   Health: "/healthcheck",
   Invalid: "/invalid",

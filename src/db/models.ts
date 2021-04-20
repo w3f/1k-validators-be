@@ -133,7 +133,11 @@ export const EraSchema = new Schema({
 });
 
 export const NominatorSchema = new Schema({
+  // The controller address
   address: String,
+  // The Stash address
+  stash: String,
+  // The amount bonded
   bonded: Number,
   current: [],
   lastNomination: { type: Number, default: 0 },

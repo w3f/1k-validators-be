@@ -425,13 +425,20 @@ export default class Db {
   }
 
   /** Nominator accessor functions */
-  async addNominator(address: string, now: number): Promise<boolean> {
+  async addNominator(
+    address: string,
+    stash: string,
+    bonded: number,
+    now: number
+  ): Promise<boolean> {
     logger.info(`(Db::addNominator) Adding ${address} at ${now}.`);
 
     const data = await this.nominatorModel.findOne({ address });
     if (!data) {
       const nominator = new this.nominatorModel({
         address,
+        stash,
+        bonded,
         current: [],
         lastNomination: 0,
         createdAt: now,
@@ -445,6 +452,8 @@ export default class Db {
       },
       {
         createdAt: now,
+        stash,
+        bonded,
       }
     );
   }

@@ -253,9 +253,11 @@ export default class ScoreKeeper {
         );
         continue;
       } else {
-        await this.db.addNominator(nom.controller, now);
-        // Create a new accounting record in case one doesn't exist.
         const stash = await nom.stash();
+        const [bonded, err] = await this.chaindata.getBondedAmount(stash);
+        const proxy = nom.isProxy ? nom.address : "";
+        await this.db.addNominator(nom.controller, stash, proxy, bonded, now);
+        // Create a new accounting record in case one doesn't exist.
         await this.db.newAccountingRecord(stash, nom.controller);
         group.push(nom);
       }

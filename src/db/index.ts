@@ -425,13 +425,22 @@ export default class Db {
   }
 
   /** Nominator accessor functions */
-  async addNominator(address: string, now: number): Promise<boolean> {
+  async addNominator(
+    address: string,
+    stash: string,
+    proxy: string,
+    bonded: number,
+    now: number
+  ): Promise<boolean> {
     logger.info(`(Db::addNominator) Adding ${address} at ${now}.`);
 
     const data = await this.nominatorModel.findOne({ address });
     if (!data) {
       const nominator = new this.nominatorModel({
         address,
+        stash,
+        proxy,
+        bonded,
         current: [],
         lastNomination: 0,
         createdAt: now,
@@ -445,6 +454,9 @@ export default class Db {
       },
       {
         createdAt: now,
+        stash,
+        proxy,
+        bonded,
       }
     );
   }
@@ -726,6 +738,15 @@ export default class Db {
     return data;
   }
 
+  async getLastNominations(address: string, eras: number): Promise<string[]> {
+    // Returns the last nominations for a given nominator controller
+    const data = await this.nominationModel
+      .find({ address })
+      .sort("-era")
+      .limit(Number(eras));
+    return data;
+  }
+
   async setBotClaimEvent(
     address: string,
     era: number,
@@ -966,8 +987,8 @@ export default class Db {
     return this.candidateModel.findOne({ name }).exec();
   }
 
-  async getNominator(address: string): Promise<any> {
-    return this.nominatorModel.findOne({ address }).exec();
+  async getNominator(stash: string): Promise<any> {
+    return this.nominatorModel.findOne({ stash: stash }).exec();
   }
 
   async getLastNominatedEraIndex(): Promise<any> {

@@ -635,13 +635,23 @@ export default class Db {
       )
       .exec();
 
+    const candidate = await this.getCandidate(target);
+    const currentCandidate = {
+      name: candidate.name,
+      rank: candidate.rank,
+      stash: candidate.stash,
+      controller: candidate.controller,
+      active: candidate.active,
+      bonded: candidate.bonded,
+    };
+
     await this.nominatorModel
       .findOneAndUpdate(
         {
           address,
         },
         {
-          $push: { current: target },
+          $push: { current: currentCandidate },
         }
       )
       .exec();

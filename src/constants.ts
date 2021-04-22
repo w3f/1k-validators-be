@@ -42,7 +42,7 @@ export const TESTNET_APPROX_ERA_LENGTH_IN_BLOCKS = 60;
 
 /// List of Kusama endpoints we can switch between.
 export const KusamaEndpoints = [
-  //   "wss://kusama-rpc.polkadot.io",
+  "wss://kusama-rpc.polkadot.io",
   "wss://cc3-0.kusama.network",
   "wss://kusama.api.onfinality.io/public-ws",
   "wss://kusama.elara.patract.io",
@@ -50,7 +50,7 @@ export const KusamaEndpoints = [
 
 /// List of Polkadot endpoints we can switch between.
 export const PolkadotEndpoints = [
-  //   "wss://rpc.polkadot.io",
+  "wss://rpc.polkadot.io",
   "wss://cc1-0.polkadot.network",
   "wss://polkadot.api.onfinality.io/public-ws",
   "wss://polkadot.elara.patract.io",

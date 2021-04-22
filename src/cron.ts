@@ -459,9 +459,6 @@ export const startRewardClaimJob = async (
 
     const allCandidates = await db.allCandidates();
     for (const candidate of allCandidates) {
-      // console.log(candidate);
-      // const unclaimedEras = candidate.unclaimedEras;
-      // if (!unclaimedEras || unclaimedEras.length == 0) return;
       if (candidate.unclaimedEras) {
         for (const era of candidate.unclaimedEras) {
           logger.info(

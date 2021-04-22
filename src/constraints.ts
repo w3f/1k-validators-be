@@ -9,6 +9,20 @@ import axios from "axios";
 import { formatAddress } from "./util";
 import { Config } from "./config";
 import Db from "./db";
+import {
+  absMax,
+  absMin,
+  asc,
+  getStats,
+  mean,
+  median,
+  q10,
+  q25,
+  q75,
+  q90,
+  scaled,
+  std,
+} from "./score";
 
 export interface Constraints {
   getValidCandidates(
@@ -299,218 +313,133 @@ export class OTV implements Constraints {
     //    A validators individual parameter is then scaled to how it compares to others that are also deemd valid
 
     // Bonded
-    const minBonded =
-      validCandidates.length > 0
-        ? validCandidates.reduce((prev, curr) =>
-            prev.bonded < curr.bonded ? prev : curr
-          )
-        : 0;
-    const maxBonded =
-      validCandidates.length > 0
-        ? validCandidates.reduce((prev, curr) =>
-            prev.bonded > curr.bonded ? prev : curr
-          )
-        : 0;
+    const bondedValues = validCandidates.map((candidate) => {
+      return candidate.bonded;
+    });
+    const bondedStats = getStats(bondedValues);
 
     // Faults
-    const minFaults =
-      validCandidates.length > 0
-        ? validCandidates.reduce((prev, curr) =>
-            prev.faults < curr.faults ? prev : curr
-          )
-        : 0;
-    const maxFaults =
-      validCandidates.length > 0
-        ? validCandidates.reduce((prev, curr) =>
-            prev.faults > curr.faults ? prev : curr
-          )
-        : 0;
+    const faultsValues = validCandidates.map((candidate) => {
+      return candidate.faults;
+    });
+    const faultsStats = getStats(faultsValues);
+
+    //  Inclusion
+    const inclusionValues = validCandidates.map((candidate) => {
+      return candidate.inclusion;
+    });
+    const inclusionStats = getStats(inclusionValues);
 
     // Span Inclusion
-    const minInclusion =
-      validCandidates.length > 0
-        ? validCandidates.reduce((prev, curr) =>
-            prev.spanInclusion < curr.spanInclusion ? prev : curr
-          )
-        : 0;
-    const maxInclusion =
-      validCandidates.length > 0
-        ? validCandidates.reduce((prev, curr) =>
-            prev.spanInclusion > curr.spanInclusion ? prev : curr
-          )
-        : 0;
+    const spanInclusionValues = validCandidates.map((candidate) => {
+      return candidate.spanInclusion;
+    });
+    const spanInclusionStats = getStats(spanInclusionValues);
 
     // Discovered At
-    const minDiscoveredAt =
-      validCandidates.length > 0
-        ? validCandidates.reduce((prev, curr) =>
-            prev.discoveredAt < curr.discoveredAt ? prev : curr
-          )
-        : 0;
-    const maxDiscoveredAt =
-      validCandidates.length > 0
-        ? validCandidates.reduce((prev, curr) =>
-            prev.discoveredAt > curr.discoveredAt ? prev : curr
-          )
-        : 0;
+    const discoveredAtValues = validCandidates.map((candidate) => {
+      return candidate.discoveredAt;
+    });
+    const discoveredAtStats = getStats(discoveredAtValues);
 
     // Nominated At
-    const minNominatedAt =
-      validCandidates.length > 0
-        ? validCandidates
-            .filter((v) => v.nominatedAt > 0)
-            .reduce(
-              (prev, curr) =>
-                prev.nominatedAt < curr.nominatedAt ? prev : curr,
-              0
-            )
-        : 0;
-    const maxNominatedAt =
-      validCandidates.length > 0
-        ? validCandidates.reduce((prev, curr) =>
-            prev.nominatedAt > curr.nominatedAt ? prev : curr
-          )
-        : 0;
+    const nominatedAtValues = validCandidates.map((candidate) => {
+      return candidate.nominatedAt;
+    });
+    const nominatedAtStats = getStats(nominatedAtValues);
 
     // Downtime
-    const minOffline =
-      validCandidates.length > 0
-        ? validCandidates.reduce((prev, curr) =>
-            prev.offlineAccumulated < curr.offlineAccumulated ? prev : curr
-          )
-        : 0;
-    const maxOffline =
-      validCandidates.length > 0
-        ? validCandidates.reduce((prev, curr) =>
-            prev.offlineAccumulated > curr.offlineAccumulated ? prev : curr
-          )
-        : 0;
+    const offlineValues = validCandidates.map((candidate) => {
+      return candidate.offlineAccumulated;
+    });
+    const offlineStats = getStats(offlineValues);
 
     // Rank
-    const minRank =
-      validCandidates.length > 0
-        ? validCandidates.reduce((prev, curr) =>
-            prev.rank < curr.rank ? prev : curr
-          )
-        : 0;
-    const maxRank =
-      validCandidates.length > 0
-        ? validCandidates.reduce((prev, curr) =>
-            prev.rank > curr.rank ? prev : curr
-          )
-        : 0;
+    const rankValues = validCandidates.map((candidate) => {
+      return candidate.rank;
+    });
+    const rankStats = getStats(rankValues);
 
     // Unclaimed Rewards
-    const minUnclaimed =
-      validCandidates.length > 0
-        ? validCandidates.reduce((prev, curr) =>
-            prev.unclaimedEras.length < curr.unclaimedEras.length ? prev : curr
-          )
-        : 0;
-    const maxUnclaimed =
-      validCandidates.length > 0
-        ? validCandidates.reduce((prev, curr) =>
-            prev.unclaimedEras.length > curr.unclaimedEras.length ? prev : curr
-          )
-        : 0;
+    const unclaimedValues = validCandidates.map((candidate) => {
+      return candidate.unclaimedEras.length;
+    });
+    const unclaimedStats = getStats(unclaimedValues);
 
     // Create DB entry for Validator Score Metadata
     await db.setValidatorScoreMetadata(
-      minBonded.bonded,
-      maxBonded.bonded,
+      bondedStats,
       this.BONDED_WEIGHT,
-      minFaults.faults,
-      maxFaults.faults,
+      faultsStats,
       this.FAULTS_WEIGHT,
-      minInclusion.spanInclusion,
-      maxInclusion.spanInclusion,
+      inclusionStats,
       this.INCLUSION_WEIGHT,
-      minDiscoveredAt.discoveredAt,
-      maxDiscoveredAt.discoveredAt,
+      spanInclusionStats,
+      this.SPAN_INCLUSION_WEIGHT,
+      discoveredAtStats,
       this.DISCOVERED_WEIGHT,
-      minNominatedAt.nominatedAt,
-      maxNominatedAt.nominatedAt,
+      nominatedAtStats,
       this.NOMINATED_WEIGHT,
-      minOffline.offlineAccumulated,
-      maxOffline.offlineAccumulated,
+      offlineStats,
       this.OFFLINE_WEIGHT,
-      minRank.rank,
-      maxRank.rank,
+      rankStats,
       this.RANK_WEIGHT,
-      minUnclaimed.unclaimedEras ? minUnclaimed.unclaimedEras.length : 0,
-      maxUnclaimed.unclaimedEras ? maxUnclaimed.unclaimedEras.length : 0,
+      unclaimedStats,
       this.UNCLAIMED_WEIGHT,
       Date.now()
     );
 
     for (const candidate of validCandidates) {
-      const scaledInclusion = this.scaleInclusion(
+      const scaledInclusion = scaled(
         candidate.spanInclusion,
-        minInclusion.spanInclusion,
-        maxInclusion.spanInclusion
+        spanInclusionValues
       );
-      const inclusionScore = scaledInclusion * this.INCLUSION_WEIGHT;
+      const inclusionScore = (1 - scaledInclusion) * this.INCLUSION_WEIGHT;
 
-      const scaledDiscovered = this.scaleDiscovered(
+      const scaledSpanInclusion = scaled(
+        candidate.spanInclusion,
+        spanInclusionValues
+      );
+      const spanInclusionScore =
+        (1 - scaledSpanInclusion) * this.INCLUSION_WEIGHT;
+
+      const scaledDiscovered = scaled(
         candidate.discoveredAt,
-        minDiscoveredAt.discoveredAt,
-        maxDiscoveredAt.discoveredAt
+        discoveredAtValues
       );
-      const discoveredScore = scaledDiscovered * this.DISCOVERED_WEIGHT;
+      const discoveredScore = (1 - scaledDiscovered) * this.DISCOVERED_WEIGHT;
 
-      // If the candidate was just added (their nominatedAt is 0), give them the full weight
-      const scaledNominated = this.scaleNominated(
-        candidate.nominatedAt,
-        minNominatedAt.nominatedAt,
-        maxNominatedAt.nominatedAt
-      );
-      const nominatedScore =
-        candidate.nominatedAt == 0
-          ? this.NOMINATED_WEIGHT
-          : scaledNominated * this.NOMINATED_WEIGHT;
+      const scaledNominated = scaled(candidate.nominatedAt, nominatedAtValues);
+      const nominatedScore = scaledNominated * this.NOMINATED_WEIGHT;
 
-      const scaledRank = this.scaleRank(
-        candidate.rank,
-        minRank.rank,
-        maxRank.rank
-      );
+      const scaledRank = scaled(candidate.rank, rankValues);
       const rankScore = scaledRank * this.RANK_WEIGHT;
 
-      const scaledUnclaimed = this.scaleUnclaimed(
+      const scaledUnclaimed = scaled(
         candidate.unclaimedEras.length,
-        minUnclaimed.unclaimedEras.length,
-        maxUnclaimed.unclaimedEras.length
+        unclaimedValues
       );
-      const unclaimedScore = scaledUnclaimed * this.UNCLAIMED_WEIGHT;
+      const unclaimedScore = (1 - scaledUnclaimed) * this.UNCLAIMED_WEIGHT;
 
-      const scaledBonded = this.scaleBonded(
-        candidate.bonded,
-        minBonded.bonded,
-        maxBonded.bonded
-      );
+      const scaledBonded = scaled(candidate.bonded, bondedValues);
       const bondedScore = scaledBonded * this.BONDED_WEIGHT;
 
-      const scaledOffline = this.scaleOffline(
-        candidate.offlineAccumulated,
-        minOffline.offlineAccumulated,
-        maxOffline.offlineAccumulated
-      );
-      const offlineScore = scaledOffline * this.OFFLINE_WEIGHT;
+      const scaledOffline = scaled(candidate.offlineAccumulated, offlineValues);
+      const offlineScore = (1 - scaledOffline) * this.OFFLINE_WEIGHT;
 
-      const scaledFaults = this.scaleFaults(
-        candidate.faults,
-        minFaults.faults,
-        maxFaults.faults
-      );
-      const faultsScore = scaledFaults * this.FAULTS_WEIGHT;
+      const scaledFaults = scaled(candidate.faults, faultsValues);
+      const faultsScore = (1 - scaledFaults) * this.FAULTS_WEIGHT;
 
       const aggregate =
         inclusionScore +
+        spanInclusionScore +
+        faultsScore +
         discoveredScore +
         nominatedScore +
         rankScore +
         unclaimedScore +
-        bondedScore;
+        bondedScore +
+        offlineScore;
 
       const randomness = 1 + Math.random() * 0.05;
 
@@ -518,6 +447,7 @@ export class OTV implements Constraints {
         total: aggregate * randomness,
         aggregate: aggregate,
         inclusion: inclusionScore,
+        spanInclusion: spanInclusionScore,
         discovered: discoveredScore,
         nominated: nominatedScore,
         rank: rankScore,
@@ -535,6 +465,7 @@ export class OTV implements Constraints {
         score.total,
         score.aggregate,
         score.inclusion,
+        score.spanInclusion,
         score.discovered,
         score.nominated,
         score.rank,
@@ -580,56 +511,15 @@ export class OTV implements Constraints {
   // unclaimed eras - lower is preferrable
   // inclusion - lower is preferrable
   // bonded - higher is preferrable
-  INCLUSION_WEIGHT = 40;
+  INCLUSION_WEIGHT = 5;
+  SPAN_INCLUSION_WEIGHT = 40;
   DISCOVERED_WEIGHT = 5;
   NOMINATED_WEIGHT = 35;
   RANK_WEIGHT = 5;
   UNCLAIMED_WEIGHT = 15;
-  BONDED_WEIGHT = 5;
-  FAULTS_WEIGHT = 10;
-  OFFLINE_WEIGHT = 5;
-
-  scaleBonded(candidateBonded, minBonded, maxBonded) {
-    if (minBonded == maxBonded) return 1;
-    return (candidateBonded - minBonded) / (maxBonded - minBonded);
-  }
-
-  scaleOffline(candidateOffline, minOffline, maxOffline) {
-    if (minOffline == maxOffline) return 1;
-    return (maxOffline - candidateOffline) / (maxOffline - minOffline);
-  }
-
-  scaleInclusion(candidateInclusion, minInclusion, maxInclusion) {
-    if (minInclusion == maxInclusion) return 1;
-    return (maxInclusion - candidateInclusion) / (maxInclusion - minInclusion);
-  }
-
-  scaleDiscovered(candidateDiscovered, minDiscovered, maxDiscovered) {
-    if (minDiscovered == maxDiscovered) return 1;
-    return (
-      (maxDiscovered - candidateDiscovered) / (maxDiscovered - minDiscovered)
-    );
-  }
-
-  scaleNominated(candidateNominated, minNominated, maxNominated) {
-    if (minNominated == maxNominated) return 1;
-    return (maxNominated - candidateNominated) / (maxNominated - minNominated);
-  }
-
-  scaleRank(candidateRank, minRank, maxRank) {
-    if (minRank == maxRank) return 1;
-    return (candidateRank - minRank) / (maxRank - minRank);
-  }
-
-  scaleFaults(candidateFaults, minFaults, maxFaults) {
-    if (minFaults == maxFaults) return 1;
-    return (maxFaults - candidateFaults) / (maxFaults - minFaults);
-  }
-
-  scaleUnclaimed(candidateUnclaimed, minUnclaimed, maxUnclaimed) {
-    if (minUnclaimed == maxUnclaimed) return 1;
-    return (maxUnclaimed - candidateUnclaimed) / (maxUnclaimed - minUnclaimed);
-  }
+  BONDED_WEIGHT = 13;
+  FAULTS_WEIGHT = 5;
+  OFFLINE_WEIGHT = 2;
 
   /// At the end of a nomination round this is the logic that separates the
   /// candidates that did good from the ones that did badly.

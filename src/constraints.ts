@@ -391,8 +391,8 @@ export class OTV implements Constraints {
 
     for (const candidate of validCandidates) {
       const scaledInclusion = scaled(
-        candidate.spanInclusion,
-        spanInclusionValues
+        candidate.inclusion,
+        inclusionValues
       );
       const inclusionScore = (1 - scaledInclusion) * this.INCLUSION_WEIGHT;
 
@@ -401,7 +401,7 @@ export class OTV implements Constraints {
         spanInclusionValues
       );
       const spanInclusionScore =
-        (1 - scaledSpanInclusion) * this.INCLUSION_WEIGHT;
+        (1 - scaledSpanInclusion) * this.SPAN_INCLUSION_WEIGHT;
 
       const scaledDiscovered = scaled(
         candidate.discoveredAt,

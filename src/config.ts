@@ -25,6 +25,7 @@ export type Config = {
     skipStakedDestination: boolean;
     skipClientUpgrade: boolean;
     skipUnclaimed: boolean;
+    skipClaiming: boolean;
   };
   cron: {
     monitor: string;

@@ -698,12 +698,12 @@ export default class ScoreKeeper {
           continue;
         }
 
-        for (const stash of current) {
-          const candidate = await this.db.getCandidate(stash);
+        for (const val of current) {
+          const candidate = await this.db.getCandidate(val.stash);
 
           // if we already have, don't add it again
-          if (toProcess.has(stash)) continue;
-          toProcess.set(stash, candidate);
+          if (toProcess.has(candidate.stash)) continue;
+          toProcess.set(candidate.stash, candidate);
         }
       }
     }

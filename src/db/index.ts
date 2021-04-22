@@ -643,6 +643,7 @@ export default class Db {
       controller: candidate.controller,
       active: candidate.active,
       bonded: candidate.bonded,
+      identity: candidate.identity,
     };
 
     await this.nominatorModel
@@ -826,7 +827,7 @@ export default class Db {
       .exec();
   }
 
-  async getCurrentTargets(address: string): Promise<string[]> {
+  async getCurrentTargets(address: string): Promise<any[]> {
     return (await this.nominatorModel.findOne({ address })).current;
   }
 

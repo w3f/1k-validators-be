@@ -416,6 +416,7 @@ export const startRewardClaimJob = async (
   chaindata: ChainData,
   bot: any
 ) => {
+  if (config.constraints.skipClaiming) return;
   const rewardClaimingFrequency = config.cron.rewardClaiming
     ? config.cron.rewardClaiming
     : REWARD_CLAIMING_CRON;

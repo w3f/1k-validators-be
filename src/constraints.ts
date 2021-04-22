@@ -410,7 +410,7 @@ export class OTV implements Constraints {
       const discoveredScore = (1 - scaledDiscovered) * this.DISCOVERED_WEIGHT;
 
       const scaledNominated = scaled(candidate.nominatedAt, nominatedAtValues);
-      const nominatedScore = scaledNominated * this.NOMINATED_WEIGHT;
+      const nominatedScore = (1 - scaledNominated) * this.NOMINATED_WEIGHT;
 
       const scaledRank = scaled(candidate.rank, rankValues);
       const rankScore = scaledRank * this.RANK_WEIGHT;

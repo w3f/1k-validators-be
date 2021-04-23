@@ -43,10 +43,10 @@ export default class Claimer {
     for (const era of unclaimedEras) {
       const tx = api.tx.staking.payoutStakers(era.stash, era.era);
       await this.sendClaimTx(tx, era);
-      const name = await this.db.getCandidate(era.stash);
+      const candidate = await this.db.getCandidate(era.stash);
       if (this.bot) {
         this.bot.sendMessage(
-          `Claimer claimed era ${era.era} for validator ${name} - ${era.stash}`
+          `Claimer claimed era ${era.era} for validator ${candidate.name} - ${era.stash}`
         );
       }
       await sleep(12000);

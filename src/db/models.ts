@@ -293,7 +293,7 @@ export const ValidatorScoreMetadataSchema = new Schema({
     mean: Number,
     standardDeviation: Number,
   },
-  InclusionWeight: Number,
+  inclusionWeight: Number,
   // Span Inclusion Metadata
   spanInclusionStats: {
     values: [Number],

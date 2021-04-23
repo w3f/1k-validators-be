@@ -76,14 +76,16 @@ export default class Claimer {
             `(Claimer::sendClaimTx) Included in block ${finalizedBlockHash}`
           );
           const faultReason = `Era ${unclaimedEras.era} had to be claimed`;
-          await this.db.pushFaultEvent(unclaimedEras.stash, faultReason);
-          await this.dockPoints(unclaimedEras.stash, unclaimedEras.era);
+          const faultExists = await this.db.pushFaultEvent(unclaimedEras.stash, faultReason);
+          if (!faultExists){
+            await this.dockPoints(unclaimedEras.stash, unclaimedEras.era);
 
-          await this.db.setBotClaimEvent(
-            unclaimedEras.stash,
-            unclaimedEras.era,
-            finalizedBlockHash
-          );
+            await this.db.setBotClaimEvent(
+              unclaimedEras.stash,
+              unclaimedEras.era,
+              finalizedBlockHash
+            );
+          }
 
           unsub();
         }

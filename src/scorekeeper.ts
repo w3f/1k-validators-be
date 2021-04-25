@@ -307,11 +307,14 @@ export default class ScoreKeeper {
           const stash = await n.stash();
 
           const nominations = await this.db.getNominator(stash);
+          const current = nominations.current.map((val) => {
+            return `- ${val.name}<br>`;
+          });
 
           return `- ${addressUrl(n.controller, this.config)} / ${addressUrl(
             stash,
             this.config
-          )} <br> Current Nominations:<br> ${nominations.current}`;
+          )} <br> Current Nominations:<br> ${current}`;
         })
       )
     ).join("<br>");

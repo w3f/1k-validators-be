@@ -30,7 +30,7 @@ entering the program.
 
 Requirements for prospective validators on the Polkadot network:
 
-- 10,000 DOT self-stake.
+- 5,000 DOT self-stake.
 - Preferences set to pay rewards to "Staked" (rewards must be automatically bonded).
 - Rank 25 or above in the Kusama programme.
 - Signed up on the [form][polkadot form] and has received approval.

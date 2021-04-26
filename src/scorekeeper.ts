@@ -301,6 +301,26 @@ export default class ScoreKeeper {
       `<h4>Nominator group added! Nominator addresses (Controller / Stash / Proxy):</h4><br> ${nominatorGroupStringHtml}`
     );
 
+    const currentNominationsGroupStringHtml = (
+      await Promise.all(
+        group.map(async (n) => {
+          const stash = await n.stash();
+
+          const nominations = await this.db.getNominator(stash);
+          const current = nominations.current.map((val) => {
+            return `- ${val.name}<br>`;
+          });
+
+          return `- ${addressUrl(n.controller, this.config)} / ${addressUrl(
+            stash,
+            this.config
+          )} <br> Current Nominations:<br> ${current}`;
+        })
+      )
+    ).join("<br>");
+
+    await this.botLog(currentNominationsGroupStringHtml);
+
     return true;
   }
 

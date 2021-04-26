@@ -256,7 +256,6 @@ export const startCandidateChainDataJob = async (
     `(cron::CandidateChainData) Running candidate chain data cron with frequency: ${chaindataFrequency}`
   );
 
-  const api = await handler.getApi();
   let running = false;
 
   const chaindataCron = new CronJob(chaindataFrequency, async () => {

@@ -1397,9 +1397,9 @@ export default class Db {
     offline: number,
     randomness: number
   ): Promise<boolean> {
-    logger.info(
-      `(Db::setNomination) Setting validator score for ${address} with total: ${total}`
-    );
+    // logger.info(
+    // `(Db::setNomination) Setting validator score for ${address} with total: ${total}`
+    // );
 
     const data = await this.validatorScoreModel.findOne({
       address: address,

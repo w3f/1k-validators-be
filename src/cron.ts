@@ -137,9 +137,10 @@ export const startValidatityJob = async (
     const end = Date.now();
 
     logger.info(
-      `{cron::validity} started at ${new Date(
-        start
-      ).toString()} Done. Took ${(end - start) / 1000} seconds`);
+      `{cron::validity} started at ${new Date(start).toString()} Done. Took ${
+        (end - start) / 1000
+      } seconds`
+    );
 
     running = false;
   });

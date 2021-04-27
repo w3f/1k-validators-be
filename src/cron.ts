@@ -90,6 +90,7 @@ export const startValidatityJob = async (
   let running = false;
 
   const validityCron = new CronJob(validityFrequency, async () => {
+    const start = Date.now();
     if (running) return;
     running = true;
     logger.info(`(cron::Validity) Running validity cron`);
@@ -133,6 +134,14 @@ export const startValidatityJob = async (
       valid.length,
       activeCandidates.length
     );
+    const end = Date.now();
+
+    logger.info(
+      `{cron::validity} started at ${new Date(start).toString()} Done. Took ${
+        (end - start) / 1000
+      } seconds`
+    );
+
     running = false;
   });
   validityCron.start();

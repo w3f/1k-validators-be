@@ -103,6 +103,7 @@ export default class ScoreKeeper {
             db
           );
           await db.setUnclaimedEras(stash, unclaimedEras);
+          this.populateValid();
         }
 
         // check if it was a nominator address that earned the reward

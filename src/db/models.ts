@@ -121,6 +121,8 @@ export const CandidateSchema = new Schema({
   nextKeys: String,
   // the amount of funds the validator has bonded
   bonded: Number,
+  // case for good intentions
+  skipSelfStake: Boolean,
 });
 
 export const EraSchema = new Schema({

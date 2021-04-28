@@ -116,10 +116,15 @@ export default class ScoreKeeper {
           );
           if (this.isUpdatingEras) return;
           this.isUpdatingEras = true;
+
+          // wait 12 seconds in case there are multiple eras claimed in a batch
+          await sleep(12000);
+
           const unclaimedEras = await this.chaindata.getUnclaimedEras(
             stash,
             db
           );
+
           await db.setUnclaimedEras(stash, unclaimedEras);
           this.populateValid();
           this.isUpdatingEras = false;

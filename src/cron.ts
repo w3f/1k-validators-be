@@ -91,13 +91,14 @@ export const startValidatityJob = async (
   config: Config,
   db: Db,
   constraints: OTV,
-  handler: ApiHandler
+  chaindata: ChainData,
+  allCandidates: any[]
 ) => {
   const validityFrequency = config.cron.validity
     ? config.cron.validity
     : VALIDITY_CRON;
   logger.info(
-    `(cron::startValidityJob) Starting Validity Job with frequency ${validityFrequency}`
+    `(cron::startValidityJob::init) Starting Validity Job with frequency ${validityFrequency}`
   );
 
   let running = false;
@@ -106,11 +107,9 @@ export const startValidatityJob = async (
     const start = Date.now();
     if (running) return;
     running = true;
-    logger.info(`(cron::Validity) Running validity cron`);
-    const allCandidates = await db.allCandidates();
+    logger.info(`(cron::Validity::start) Running validity cron`);
 
-    const api = await handler.getApi();
-    const currentEra = await api.query.staking.currentEra();
+    const currentEra = await chaindata.getCurrentEra();
 
     const activeCandidates = allCandidates.filter(
       (candidate) => candidate.active
@@ -150,9 +149,9 @@ export const startValidatityJob = async (
     const end = Date.now();
 
     logger.info(
-      `{cron::validity} started at ${new Date(start).toString()} Done. Took ${
-        (end - start) / 1000
-      } seconds`
+      `{cron::Validity::ExecutionTime} started at ${new Date(
+        start
+      ).toString()} Done. Took ${(end - start) / 1000} seconds`
     );
 
     running = false;

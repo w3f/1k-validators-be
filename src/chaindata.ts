@@ -33,6 +33,12 @@ class ChainData {
     return [activeEra.unwrap().index.toNumber(), null];
   };
 
+  getCurrentEra = async () => {
+    const api = await this.handler.getApi();
+    const currentEra = await api.query.staking.currentEra();
+    return Number(currentEra);
+  };
+
   getCommission = async (validator: string): Promise<NumberResult> => {
     const api = await this.handler.getApi();
     const prefs = await api.query.staking.validators(validator);

@@ -443,7 +443,13 @@ export default class ScoreKeeper {
       }
     });
 
-    startValidatityJob(this.config, this.db, this.constraints, this.handler);
+    startValidatityJob(
+      this.config,
+      this.db,
+      this.constraints,
+      this.chaindata,
+      this.candidateCache
+    );
 
     startEraPointsJob(this.config, this.db, this.chaindata);
     startActiveValidatorJob(

@@ -463,6 +463,7 @@ export default class ScoreKeeper {
     await validatorPrefJob(this.db, this.chaindata, this.candidateCache);
     await unclaimedErasJob(this.db, this.chaindata, this.candidateCache);
 
+    // Start all Cron Jobs
     startValidatityJob(
       this.config,
       this.db,

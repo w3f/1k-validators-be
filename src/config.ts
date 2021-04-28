@@ -33,10 +33,16 @@ export type Config = {
     validity: string;
     execution: string;
     scorekeeper: string;
-    candidateChainData: string;
     rewardClaiming: string;
     cancel: string;
     stale: string;
+    // chain querying crons
+    eraPoints: string;
+    activeValidator: string;
+    inclusion: string;
+    sessionKey: string;
+    unclaimedEras: string;
+    validatorPref: string;
   };
   db: {
     mongo: {

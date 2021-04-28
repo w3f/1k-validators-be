@@ -77,9 +77,6 @@ export const CLEAR_OFFLINE_CRON = "0 0 0 * * 0";
 // Validity Cron Job. This runs every 7 minutes by default
 export const VALIDITY_CRON = "0 0-59/7 * * * *";
 
-// Candidate ChainData Cron Job. This runs ever 5 minutes by default
-export const CANDIDATE_CHAINDATA_CRON = "0 0-59/30 * * * *";
-
 // Execution Cron Job. This runs every 15 minutes by default
 export const EXECUTION_CRON = "0 0-59/15 * * * *";
 
@@ -94,3 +91,23 @@ export const CANCEL_CRON = "0 0-59/25 * * * *";
 
 // Stale Nomination Frequency. This runs every 45 minutes by default
 export const STALE_CRON = "0 0-59/45 * * * *";
+
+// Chain Querying Cron Jobs:
+
+// Era Points Cron Job. This runs ever 5 minutes by default
+export const ERA_POINTS_CRON = "0 0-59/30 * * * *";
+
+// Active Validator Cron Job. This runs ever 5 minutes by default
+export const ACTIVE_VALIDATOR_CRON = "0 0-59/5 * * * *";
+
+// Inclusion Cron Job. This runs ever 5 minutes by default
+export const INCLUSION_CRON = "0 0-59/15 * * * *";
+
+// Inclusion Cron Job. This runs ever 5 minutes by default
+export const UNCLAIMED_ERAS_CRON = "0 0-59/30 * * * *";
+
+// Inclusion Cron Job. This runs ever 5 minutes by default
+export const VALIDATOR_PREF_CRON = "0 0-59/45 * * * *";
+
+// Inclusion Cron Job. This runs ever 5 minutes by default
+export const SESSION_KEY_CRON = "0 0-59/45 * * * *";

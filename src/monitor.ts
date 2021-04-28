@@ -37,6 +37,7 @@ export default class Monitor {
       );
     }
 
+    if (!latestRelease) return;
     const { tag_name, published_at } = latestRelease.data;
 
     if (

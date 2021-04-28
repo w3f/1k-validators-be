@@ -8,11 +8,16 @@ import {
   SIXTEEN_HOURS,
   TIME_DELAY_BLOCKS,
   VALIDITY_CRON,
-  CANDIDATE_CHAINDATA_CRON,
   REWARD_CLAIMING_THRESHOLD,
   REWARD_CLAIMING_CRON,
   CANCEL_CRON,
   STALE_CRON,
+  ERA_POINTS_CRON,
+  ACTIVE_VALIDATOR_CRON,
+  INCLUSION_CRON,
+  UNCLAIMED_ERAS_CRON,
+  VALIDATOR_PREF_CRON,
+  SESSION_KEY_CRON,
 } from "./constants";
 import logger from "./logger";
 import Monitor from "./monitor";
@@ -22,9 +27,17 @@ import ApiHandler from "./ApiHandler";
 import Nominator from "./nominator";
 import ChainData from "./chaindata";
 import Claimer from "./claimer";
-import { EraReward } from "./types";
+import { CandidateData, EraReward } from "./types";
 import { addressUrl, sleep, toDecimals } from "./util";
 import { exists } from "node:fs";
+import {
+  activeValidatorJob,
+  eraPointsJob,
+  inclusionJob,
+  sessionKeyJob,
+  unclaimedErasJob,
+  validatorPrefJob,
+} from "./jobs";
 
 // Monitors the latest GitHub releases and ensures nodes have upgraded
 // within a timely period.
@@ -78,13 +91,14 @@ export const startValidatityJob = async (
   config: Config,
   db: Db,
   constraints: OTV,
-  handler: ApiHandler
+  chaindata: ChainData,
+  allCandidates: any[]
 ) => {
   const validityFrequency = config.cron.validity
     ? config.cron.validity
     : VALIDITY_CRON;
   logger.info(
-    `(cron::startValidityJob) Starting Validity Job with frequency ${validityFrequency}`
+    `(cron::startValidityJob::init) Starting Validity Job with frequency ${validityFrequency}`
   );
 
   let running = false;
@@ -93,11 +107,9 @@ export const startValidatityJob = async (
     const start = Date.now();
     if (running) return;
     running = true;
-    logger.info(`(cron::Validity) Running validity cron`);
-    const allCandidates = await db.allCandidates();
+    logger.info(`(cron::Validity::start) Running validity cron`);
 
-    const api = await handler.getApi();
-    const currentEra = await api.query.staking.currentEra();
+    const currentEra = await chaindata.getCurrentEra();
 
     const activeCandidates = allCandidates.filter(
       (candidate) => candidate.active
@@ -137,9 +149,9 @@ export const startValidatityJob = async (
     const end = Date.now();
 
     logger.info(
-      `{cron::validity} started at ${new Date(start).toString()} Done. Took ${
-        (end - start) / 1000
-      } seconds`
+      `{cron::Validity::ExecutionTime} started at ${new Date(
+        start
+      ).toString()} Done. Took ${(end - start) / 1000} seconds`
     );
 
     running = false;
@@ -245,174 +257,6 @@ export const startExecutionJob = async (
     }
   });
   executionCron.start();
-};
-
-// Chron job for writing chaindata for candidates to the db
-// This updates:
-//     - Unclaimed eras
-export const startCandidateChainDataJob = async (
-  config: Config,
-  handler: ApiHandler,
-  db: Db,
-  constraints: OTV,
-  chaindata: ChainData
-) => {
-  const chaindataFrequency = config.cron.candidateChainData
-    ? config.cron.candidateChainData
-    : CANDIDATE_CHAINDATA_CRON;
-
-  logger.info(
-    `(cron::CandidateChainData) Running candidate chain data cron with frequency: ${chaindataFrequency}`
-  );
-
-  let running = false;
-
-  const chaindataCron = new CronJob(chaindataFrequency, async () => {
-    if (running) {
-      return;
-    }
-    running = true;
-    logger.info(
-      `{cron::CandidateChainData} running candidate chain data cron....`
-    );
-    const start = Date.now();
-
-    // Set Era Points
-    //    - get the current active era
-    //    - iterate through the previous 84 eras
-    //    - if a record for era points for that era already exists, skip it
-    //    - if a record doesn't exist, create it
-    logger.info(`{cron::CandidateChainData} setting era info`);
-    const [activeEra, err] = await chaindata.getActiveEraIndex();
-    for (let i = activeEra - 1; i > activeEra - 84 && i >= 0; i--) {
-      const erapoints = await db.getTotalEraPoints(i);
-
-      if (
-        !!erapoints &&
-        erapoints.totalEraPoints >= 70000 &&
-        erapoints.median
-      ) {
-        continue;
-      } else {
-        logger.info(
-          `{cron::CandidateChainData} era ${i} point data doesnt exist. Creating....`
-        );
-        const { era, total, validators } = await chaindata.getTotalEraPoints(i);
-        await db.setTotalEraPoints(era, total, validators);
-      }
-    }
-    const { era, total, validators } = await chaindata.getTotalEraPoints(
-      activeEra
-    );
-    await db.setTotalEraPoints(era, total, validators);
-
-    const allCandidates = await db.allCandidates();
-
-    // The current active validators in the validator set.
-    const activeValidators = await chaindata.currentValidators();
-
-    // All queued keyes
-    const queuedKeys = await chaindata.getQueuedKeys();
-
-    // For all candidates:
-    //     - set their identity
-    //     - set their commission
-    //     - set the controller
-    //     - set their 84 era and 28 era inclusion rate
-    //     - set if they're active in the validator set
-    //     - set their unclaimed rewards
-    //     - set their reward destination
-    //     - set their next and queued session keys
-    //     - set their bonded amount
-    for (const [i, candidate] of allCandidates.entries()) {
-      const startLoop = Date.now();
-
-      // Set Identity
-      const identity = await chaindata.getFormattedIdentity(candidate.stash);
-      await db.setIdentity(candidate.stash, identity);
-
-      // Set Commission
-      const [commission, err] = await chaindata.getCommission(candidate.stash);
-      const formattedCommission =
-        commission == 0 ? 0 : commission / Math.pow(10, 7);
-      await db.setCommission(candidate.stash, formattedCommission);
-
-      // Set Controller
-      const controller = await chaindata.getControllerFromStash(
-        candidate.stash
-      );
-      await db.setController(candidate.stash, controller);
-
-      // Set inclusion Rate
-      const erasActive = await db.getHistoryDepthEraPoints(
-        candidate.stash,
-        activeEra
-      );
-      const filteredEras = erasActive.filter((era) => era.eraPoints > 0);
-      const inclusion = Number(filteredEras.length / 84);
-      await db.setInclusion(candidate.stash, inclusion);
-
-      // Set span inclusion Rate
-      const spanErasActive = await db.getSpanEraPoints(
-        candidate.stash,
-        activeEra
-      );
-      const filteredSpanEras = spanErasActive.filter(
-        (era) => era.eraPoints > 0
-      );
-      const spanInclusion = Number(filteredSpanEras.length / 28);
-      await db.setSpanInclusion(candidate.stash, spanInclusion);
-
-      // Set if the validator is active in the set
-      const active = activeValidators.includes(candidate.stash);
-      await db.setActive(candidate.stash, active);
-
-      // Set unclaimed eras
-      const unclaimedEras = await chaindata.getUnclaimedEras(
-        candidate.stash,
-        db
-      );
-      await db.setUnclaimedEras(candidate.stash, unclaimedEras);
-
-      // Set reward destination
-      const rewardDestination = await chaindata.getRewardDestination(
-        candidate.stash
-      );
-      await db.setRewardDestination(candidate.stash, rewardDestination);
-
-      // Set queued keys
-      for (const key of queuedKeys) {
-        if (key.address == candidate.stash) {
-          await db.setQueuedKeys(candidate.stash, key.keys);
-        }
-      }
-
-      // Set Next Keys
-      const nextKeys = await chaindata.getNextKeys(candidate.stash);
-      await db.setNextKeys(candidate.stash, nextKeys);
-
-      // set bonded amount
-      const [bonded, err2] = await chaindata.getBondedAmount(candidate.stash);
-      await db.setBonded(candidate.stash, bonded);
-
-      const endLoop = Date.now();
-
-      logger.info(
-        `{Chaindata::getUnclaimedRewards} ${candidate.stash} (${i + 1}/${
-          allCandidates.length
-        }) done. Tooks ${(endLoop - startLoop) / 1000} seconds`
-      );
-    }
-    const end = Date.now();
-
-    logger.info(
-      `{cron::CandidateChainData} started at ${new Date(
-        start
-      ).toString()} Done. Took ${(end - start) / 1000} seconds`
-    );
-    running = false;
-  });
-  chaindataCron.start();
 };
 
 // Chron job for claiming rewards
@@ -607,4 +451,200 @@ export const startStaleNominationCron = async (
     }
   });
   staleCron.start();
+};
+
+// Chain data querying cron jobs
+
+// Chron job for writing era points
+export const startEraPointsJob = async (
+  config: Config,
+  db: Db,
+  chaindata: ChainData
+) => {
+  const eraPointsFrequency = config.cron.eraPoints
+    ? config.cron.eraPoints
+    : ERA_POINTS_CRON;
+
+  logger.info(
+    `(cron::EraPointsJob::init) Running era points job with frequency: ${eraPointsFrequency}`
+  );
+
+  let running = false;
+
+  const eraPointsCron = new CronJob(eraPointsFrequency, async () => {
+    if (running) {
+      return;
+    }
+    running = true;
+    logger.info(`{cron::EraPointsJob::start} running era points job....`);
+
+    // Run the Era Points job
+    await eraPointsJob(db, chaindata);
+    running = false;
+  });
+  eraPointsCron.start();
+};
+
+// Chron job for writing the active validators in the set
+export const startActiveValidatorJob = async (
+  config: Config,
+  db: Db,
+  chaindata: ChainData,
+  candidates: any[]
+) => {
+  const activeValidatorFrequency = config.cron.activeValidator
+    ? config.cron.activeValidator
+    : ACTIVE_VALIDATOR_CRON;
+
+  logger.info(
+    `(cron::ActiveValidatorJob::init) Running active validator job with frequency: ${activeValidatorFrequency}`
+  );
+
+  let running = false;
+
+  const activeValidatorCron = new CronJob(
+    activeValidatorFrequency,
+    async () => {
+      if (running) {
+        return;
+      }
+      running = true;
+      logger.info(
+        `{cron::ActiveValidatorJob::start} running era points job....`
+      );
+
+      // Run the active validators job
+      await activeValidatorJob(db, chaindata, candidates);
+      running = false;
+    }
+  );
+  activeValidatorCron.start();
+};
+
+// Chron job for updating inclusion rates
+export const startInclusionJob = async (
+  config: Config,
+  db: Db,
+  chaindata: ChainData,
+  candidates: any[]
+) => {
+  const inclusionFrequency = config.cron.inclusion
+    ? config.cron.inclusion
+    : INCLUSION_CRON;
+
+  logger.info(
+    `(cron::InclusionJob::init) Running inclusion job with frequency: ${inclusionFrequency}`
+  );
+
+  let running = false;
+
+  const inclusionCron = new CronJob(inclusionFrequency, async () => {
+    if (running) {
+      return;
+    }
+    running = true;
+    logger.info(`{cron::InclusionJob::start} running inclusion job....`);
+
+    // Run the active validators job
+    await inclusionJob(db, chaindata, candidates);
+    running = false;
+  });
+  inclusionCron.start();
+};
+
+// Chron job for updating session keys
+export const startSessionKeyJob = async (
+  config: Config,
+  db: Db,
+  chaindata: ChainData,
+  candidates: any[]
+) => {
+  const sessionKeyFrequency = config.cron.sessionKey
+    ? config.cron.sessionKey
+    : SESSION_KEY_CRON;
+
+  logger.info(
+    `(cron::SessionKeyJob::init) Running sesion key job with frequency: ${sessionKeyFrequency}`
+  );
+
+  let running = false;
+
+  const sessionKeyCron = new CronJob(sessionKeyFrequency, async () => {
+    if (running) {
+      return;
+    }
+    running = true;
+    logger.info(`{cron::SessionKeyJob::start} running session key job....`);
+
+    // Run the active validators job
+    await sessionKeyJob(db, chaindata, candidates);
+    running = false;
+  });
+  sessionKeyCron.start();
+};
+
+// Chron job for updating unclaimed eras
+export const startUnclaimedEraJob = async (
+  config: Config,
+  db: Db,
+  chaindata: ChainData,
+  candidates: any[]
+) => {
+  const unclaimedErasFrequency = config.cron.unclaimedEras
+    ? config.cron.unclaimedEras
+    : UNCLAIMED_ERAS_CRON;
+
+  logger.info(
+    `(cron::UnclaimedEraJob::init) Running unclaimed era job with frequency: ${unclaimedErasFrequency}`
+  );
+
+  let running = false;
+
+  const unclaimedErasCron = new CronJob(unclaimedErasFrequency, async () => {
+    if (running) {
+      return;
+    }
+    running = true;
+    logger.info(
+      `{cron::UnclaimedEraJob::start} running unclaimed eras job....`
+    );
+
+    // Run the active validators job
+    await unclaimedErasJob(db, chaindata, candidates);
+    running = false;
+  });
+  unclaimedErasCron.start();
+};
+
+// Chron job for updating validator preferences
+export const startValidatorPrefJob = async (
+  config: Config,
+  db: Db,
+  chaindata: ChainData,
+  candidates: any[]
+) => {
+  const validatorPrefFrequency = config.cron.validatorPref
+    ? config.cron.validatorPref
+    : VALIDATOR_PREF_CRON;
+
+  logger.info(
+    `(cron::ValidatorPrefJob::init) Running validator pref cron with frequency: ${validatorPrefFrequency}`
+  );
+
+  let running = false;
+
+  const validatorPrefCron = new CronJob(validatorPrefFrequency, async () => {
+    if (running) {
+      return;
+    }
+    running = true;
+    logger.info(
+      `{cron::ValidatorPrefJob::start} running validator pref job....`
+    );
+
+    // Run the active validators job
+    await validatorPrefJob(db, chaindata, candidates);
+    running = false;
+  });
+  validatorPrefCron.start();
 };

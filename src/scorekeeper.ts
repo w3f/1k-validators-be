@@ -22,12 +22,17 @@ import Nominator from "./nominator";
 import { CandidateData, ClaimerConfig, Stash } from "./types";
 import { formatAddress, getNow, sleep, addressUrl, toDecimals } from "./util";
 import {
+  startActiveValidatorJob,
   startCancelCron,
-  startCandidateChainDataJob,
+  startEraPointsJob,
   startExecutionJob,
+  startInclusionJob,
   startRewardClaimJob,
+  startSessionKeyJob,
   startStaleNominationCron,
+  startUnclaimedEraJob,
   startValidatityJob,
+  startValidatorPrefJob,
 } from "./cron";
 import Claimer from "./claimer";
 
@@ -71,8 +76,10 @@ export default class ScoreKeeper {
   public currentTargets: string[];
   public db: Db;
 
-  // cacheing all the possible reward destinations for all candidates
+  // caches all the possible reward destinations for all candidates
   private rewardDestinationCache: string[];
+  // caches all candidates
+  private candidateCache: any[];
 
   // Set when the process is ending
   private ending = false;
@@ -169,6 +176,7 @@ export default class ScoreKeeper {
       this.config
     );
 
+    this.populateCandidates();
     this.populateValid();
     this.populateRewardDestinationCache();
   }
@@ -185,6 +193,11 @@ export default class ScoreKeeper {
       identityHashTable,
       this.db
     );
+  }
+
+  // Populates the candidate  cache
+  async populateCandidates(): Promise<void> {
+    this.candidateCache = await this.db.allCandidates();
   }
 
   async populateRewardDestinationCache(): Promise<void> {
@@ -430,13 +443,44 @@ export default class ScoreKeeper {
       }
     });
 
-    startValidatityJob(this.config, this.db, this.constraints, this.handler);
-    startCandidateChainDataJob(
+    startValidatityJob(
       this.config,
-      this.handler,
       this.db,
       this.constraints,
-      this.chaindata
+      this.chaindata,
+      this.candidateCache
+    );
+
+    startEraPointsJob(this.config, this.db, this.chaindata);
+    startActiveValidatorJob(
+      this.config,
+      this.db,
+      this.chaindata,
+      this.candidateCache
+    );
+    startInclusionJob(
+      this.config,
+      this.db,
+      this.chaindata,
+      this.candidateCache
+    );
+    startSessionKeyJob(
+      this.config,
+      this.db,
+      this.chaindata,
+      this.candidateCache
+    );
+    startUnclaimedEraJob(
+      this.config,
+      this.db,
+      this.chaindata,
+      this.candidateCache
+    );
+    startValidatorPrefJob(
+      this.config,
+      this.db,
+      this.chaindata,
+      this.candidateCache
     );
     if (this.claimer) {
       startRewardClaimJob(

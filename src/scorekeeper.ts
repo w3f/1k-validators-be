@@ -81,6 +81,7 @@ export default class ScoreKeeper {
   // caches all candidates
   private candidateCache: any[];
 
+  private isUpdatingEras = false;
   // Set when the process is ending
   private ending = false;
   // Set when in the process of nominating
@@ -105,12 +106,15 @@ export default class ScoreKeeper {
           logger.info(
             `{scorekeeper::reward} ${stash} claimed reward of ${amount}. Updating eras....`
           );
+          if (this.isUpdatingEras) return;
+          this.isUpdatingEras = true;
           const unclaimedEras = await this.chaindata.getUnclaimedEras(
             stash,
             db
           );
           await db.setUnclaimedEras(stash, unclaimedEras);
           this.populateValid();
+          this.isUpdatingEras = false;
         }
 
         // check if it was a nominator address that earned the reward

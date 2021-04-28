@@ -80,7 +80,7 @@ export const VALIDITY_CRON = "0 0-59/7 * * * *";
 // Execution Cron Job. This runs every 15 minutes by default
 export const EXECUTION_CRON = "0 0-59/15 * * * *";
 
-// Scorekeeper Cron Job. This runs every 10 minutes by default
+// Scorekeeper Cron Job. This runs every 30 minutes by default
 export const SCOREKEEPER_CRON = "0 0-59/30 * * * *";
 
 // Reward claiming frequency. This runs every 45 minutes by default
@@ -94,20 +94,20 @@ export const STALE_CRON = "0 0-59/45 * * * *";
 
 // Chain Querying Cron Jobs:
 
-// Era Points Cron Job. This runs ever 5 minutes by default
+// Era Points Cron Job. This runs ever 30 minutes by default
 export const ERA_POINTS_CRON = "0 0-59/30 * * * *";
 
 // Active Validator Cron Job. This runs ever 5 minutes by default
 export const ACTIVE_VALIDATOR_CRON = "0 0-59/5 * * * *";
 
-// Inclusion Cron Job. This runs ever 5 minutes by default
+// Inclusion Cron Job. This runs ever 15 minutes by default
 export const INCLUSION_CRON = "0 0-59/15 * * * *";
 
-// Inclusion Cron Job. This runs ever 5 minutes by default
+// Unclaimed Era Cron Job. This runs ever 30 minutes by default
 export const UNCLAIMED_ERAS_CRON = "0 0-59/30 * * * *";
 
-// Inclusion Cron Job. This runs ever 5 minutes by default
+// Validator Pref Cron Job. This runs ever 45 minutes by default
 export const VALIDATOR_PREF_CRON = "0 0-59/45 * * * *";
 
-// Inclusion Cron Job. This runs ever 5 minutes by default
+// Sesion Key Cron Job. This runs ever 45 minutes by default
 export const SESSION_KEY_CRON = "0 0-59/45 * * * *";

@@ -35,6 +35,14 @@ import {
   startValidatorPrefJob,
 } from "./cron";
 import Claimer from "./claimer";
+import {
+  activeValidatorJob,
+  eraPointsJob,
+  inclusionJob,
+  sessionKeyJob,
+  unclaimedErasJob,
+  validatorPrefJob,
+} from "./jobs";
 
 type NominatorGroup = NominatorConfig[];
 
@@ -81,6 +89,7 @@ export default class ScoreKeeper {
   // caches all candidates
   private candidateCache: any[];
 
+  private isUpdatingEras = false;
   // Set when the process is ending
   private ending = false;
   // Set when in the process of nominating
@@ -105,12 +114,20 @@ export default class ScoreKeeper {
           logger.info(
             `{scorekeeper::reward} ${stash} claimed reward of ${amount}. Updating eras....`
           );
+          if (this.isUpdatingEras) return;
+          this.isUpdatingEras = true;
+
+          // wait 12 seconds in case there are multiple eras claimed in a batch
+          await sleep(12000);
+
           const unclaimedEras = await this.chaindata.getUnclaimedEras(
             stash,
             db
           );
+
           await db.setUnclaimedEras(stash, unclaimedEras);
           this.populateValid();
+          this.isUpdatingEras = false;
         }
 
         // check if it was a nominator address that earned the reward
@@ -157,6 +174,16 @@ export default class ScoreKeeper {
         await this.db.pushFaultEvent(candidate.stash, reason);
         await this.dockPoints(candidate.stash);
       }
+    });
+
+    this.handler.on("newSession", async (data: { sessionIndex: string }) => {
+      const { sessionIndex } = data;
+      logger.info(`{Session::NewSession} New Session Event: ${sessionIndex}`);
+
+      await sessionKeyJob(this.db, this.chaindata, this.candidateCache);
+      await inclusionJob(this.db, this.chaindata, this.candidateCache);
+      await validatorPrefJob(this.db, this.chaindata, this.candidateCache);
+      await unclaimedErasJob(this.db, this.chaindata, this.candidateCache);
     });
 
     this.config = config;
@@ -443,6 +470,15 @@ export default class ScoreKeeper {
       }
     });
 
+    // Run chain data jobs once on startup
+    await activeValidatorJob(this.db, this.chaindata, this.candidateCache);
+    await sessionKeyJob(this.db, this.chaindata, this.candidateCache);
+    await inclusionJob(this.db, this.chaindata, this.candidateCache);
+    await eraPointsJob(this.db, this.chaindata);
+    await validatorPrefJob(this.db, this.chaindata, this.candidateCache);
+    await unclaimedErasJob(this.db, this.chaindata, this.candidateCache);
+
+    // Start all Cron Jobs
     startValidatityJob(
       this.config,
       this.db,

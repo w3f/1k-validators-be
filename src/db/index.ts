@@ -638,11 +638,7 @@ export default class Db {
     const candidate = await this.getCandidate(target);
     const currentCandidate = {
       name: candidate.name,
-      rank: candidate.rank,
       stash: candidate.stash,
-      controller: candidate.controller,
-      active: candidate.active,
-      bonded: candidate.bonded,
       identity: candidate.identity,
     };
 

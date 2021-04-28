@@ -35,6 +35,14 @@ import {
   startValidatorPrefJob,
 } from "./cron";
 import Claimer from "./claimer";
+import {
+  activeValidatorJob,
+  eraPointsJob,
+  inclusionJob,
+  sessionKeyJob,
+  unclaimedErasJob,
+  validatorPrefJob,
+} from "./jobs";
 
 type NominatorGroup = NominatorConfig[];
 
@@ -446,6 +454,14 @@ export default class ScoreKeeper {
         }
       }
     });
+
+    // Run chain data jobs once on startup
+    await activeValidatorJob(this.db, this.chaindata, this.candidateCache);
+    await sessionKeyJob(this.db, this.chaindata, this.candidateCache);
+    await inclusionJob(this.db, this.chaindata, this.candidateCache);
+    await eraPointsJob(this.db, this.chaindata);
+    await validatorPrefJob(this.db, this.chaindata, this.candidateCache);
+    await unclaimedErasJob(this.db, this.chaindata, this.candidateCache);
 
     startValidatityJob(
       this.config,

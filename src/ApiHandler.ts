@@ -49,6 +49,14 @@ class ApiHandler extends EventEmitter {
         // Extract the phase, event and the event types
         const { event } = record;
 
+        if (event.section == "session" && event.method == "NewSession") {
+          const [session_index] = event.data;
+
+          this.emit("newSession", {
+            sessionIndex: session_index.toString(),
+          });
+        }
+
         if (event.section == "staking" && event.method == "Reward") {
           const [stash, amount] = event.data;
 

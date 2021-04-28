@@ -171,6 +171,16 @@ export default class ScoreKeeper {
       }
     });
 
+    this.handler.on("newSession", async (data: { sessionIndex: string }) => {
+      const { sessionIndex } = data;
+      logger.info(`{Session::NewSession} New Session Event: ${sessionIndex}`);
+
+      await sessionKeyJob(this.db, this.chaindata, this.candidateCache);
+      await inclusionJob(this.db, this.chaindata, this.candidateCache);
+      await validatorPrefJob(this.db, this.chaindata, this.candidateCache);
+      await unclaimedErasJob(this.db, this.chaindata, this.candidateCache);
+    });
+
     this.config = config;
     this.bot = bot;
     this.constraints = new OTV(

@@ -53,16 +53,16 @@ export const scaled = (value, arr) => {
 };
 
 export const getStats = (arr) => {
-  const arrSorted = asc(arr);
-  const arrAbsMin = absMin(arr);
-  const arrAbsMax = absMax(arr);
-  const arrQ10 = q10(arr);
-  const arrQ25 = q25(arr);
-  const arrQ50 = q50(arr);
-  const arrQ75 = q75(arr);
-  const arrQ90 = q90(arr);
-  const arrMean = mean(arr);
-  const arrStd = std(arr);
+  const arrSorted = arr.length != 0 ? asc(arr) : [];
+  const arrAbsMin = arr.length != 0 ? absMin(arr) : 0;
+  const arrAbsMax = arr.length != 0 ? absMax(arr) : 0;
+  const arrQ10 = arr.length != 0 ? q10(arr) : 0;
+  const arrQ25 = arr.length != 0 ? q25(arr) : 0;
+  const arrQ50 = arr.length != 0 ? q50(arr) : 0;
+  const arrQ75 = arr.length != 0 ? q75(arr) : 0;
+  const arrQ90 = arr.length != 0 ? q90(arr) : 0;
+  const arrMean = arr.length != 0 ? mean(arr) : 0;
+  const arrStd = arr.length != 0 ? std(arr) : 0;
   return {
     values: arrSorted,
     absoluteMin: arrAbsMin,

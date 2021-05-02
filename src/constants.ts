@@ -101,7 +101,7 @@ export const ERA_POINTS_CRON = "0 0-59/30 * * * *";
 export const ACTIVE_VALIDATOR_CRON = "0 0-59/5 * * * *";
 
 // Inclusion Cron Job. This runs ever 15 minutes by default
-export const INCLUSION_CRON = "0 0-59/15 * * * *";
+export const INCLUSION_CRON = "0 0-59/30 * * * *";
 
 // Unclaimed Era Cron Job. This runs ever 30 minutes by default
 export const UNCLAIMED_ERAS_CRON = "0 0-59/30 * * * *";

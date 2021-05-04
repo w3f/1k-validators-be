@@ -314,55 +314,57 @@ export class OTV implements Constraints {
 
     // Bonded
     const bondedValues = validCandidates.map((candidate) => {
-      return candidate.bonded;
+      return candidate.bonded ? candidate.bonded : 0;
     });
     const bondedStats = getStats(bondedValues);
 
     // Faults
     const faultsValues = validCandidates.map((candidate) => {
-      return candidate.faults;
+      return candidate.faults ? candidate.faults : 0;
     });
     const faultsStats = getStats(faultsValues);
 
     //  Inclusion
     const inclusionValues = validCandidates.map((candidate) => {
-      return candidate.inclusion;
+      return candidate.inclusion ? candidate.inclusion : 0;
     });
     const inclusionStats = getStats(inclusionValues);
 
     // Span Inclusion
     const spanInclusionValues = validCandidates.map((candidate) => {
-      return candidate.spanInclusion;
+      return candidate.spanInclusion ? candidate.spanInclusion : 0;
     });
     const spanInclusionStats = getStats(spanInclusionValues);
 
     // Discovered At
     const discoveredAtValues = validCandidates.map((candidate) => {
-      return candidate.discoveredAt;
+      return candidate.discoveredAt ? candidate.discoveredAt : 0;
     });
     const discoveredAtStats = getStats(discoveredAtValues);
 
     // Nominated At
     const nominatedAtValues = validCandidates.map((candidate) => {
-      return candidate.nominatedAt;
+      return candidate.nominatedAt ? candidate.nominatedAt : 0;
     });
     const nominatedAtStats = getStats(nominatedAtValues);
 
     // Downtime
     const offlineValues = validCandidates.map((candidate) => {
-      return candidate.offlineAccumulated;
+      return candidate.offlineAccumulated ? candidate.offlineAccumulated : 0;
     });
     const offlineStats = getStats(offlineValues);
 
     // Rank
     const rankValues = validCandidates.map((candidate) => {
-      return candidate.rank;
+      return candidate.rank ? candidate.rank : 0;
     });
     const rankStats = getStats(rankValues);
 
     // Unclaimed Rewards
     const unclaimedValues = validCandidates.map((candidate) => {
-      return candidate.unclaimedEras.length;
+      return candidate.unclaimedEras.length
+        ? candidate.unclaimedEras.length
+        : 0;
     });
     const unclaimedStats = getStats(unclaimedValues);
 
@@ -419,7 +421,7 @@ export class OTV implements Constraints {
       const unclaimedScore = (1 - scaledUnclaimed) * this.UNCLAIMED_WEIGHT;
 
       const scaledBonded = scaled(candidate.bonded, bondedValues);
-      const bondedScore = scaledBonded * this.BONDED_WEIGHT;
+      const bondedScore = scaledBonded ? scaledBonded * this.BONDED_WEIGHT : 0;
 
       const scaledOffline = scaled(candidate.offlineAccumulated, offlineValues);
       const offlineScore = (1 - scaledOffline) * this.OFFLINE_WEIGHT;

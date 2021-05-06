@@ -1,6 +1,64 @@
 import Db from "./db";
 import ChainData from "./chaindata";
 import logger from "./logger";
+import { OTV } from "./constraints";
+
+// Runs Validity Job
+export const validityJob = async (
+  db: Db,
+  chaindata: ChainData,
+  allCandidates: any[],
+  constraints: OTV
+) => {
+  const start = Date.now();
+
+  logger.info(`(cron::Validity::start) Running validity cron`);
+
+  const currentEra = await chaindata.getCurrentEra();
+
+  const activeCandidates = allCandidates.filter(
+    (candidate) => candidate.active
+  );
+
+  const identityHashTable = await constraints.populateIdentityHashTable(
+    allCandidates
+  );
+
+  // set invalidityReason for stashes
+  const invalid = await constraints.getInvalidCandidates(
+    allCandidates,
+    identityHashTable
+  );
+  for (const i of invalid) {
+    const { stash, reason } = i;
+    await db.setInvalidityReason(stash, reason);
+  }
+
+  // set invalidityReason as empty for valid candidates
+  const valid = await constraints.getValidCandidates(
+    allCandidates,
+    identityHashTable,
+    db
+  );
+  for (const v of valid) {
+    const { stash } = v;
+    await db.setInvalidityReason(stash, "");
+    await db.setLastValid(stash);
+  }
+  await db.setEraStats(
+    Number(currentEra),
+    allCandidates.length,
+    valid.length,
+    activeCandidates.length
+  );
+  const end = Date.now();
+
+  logger.info(
+    `{cron::Validity::ExecutionTime} started at ${new Date(
+      start
+    ).toString()} Done. Took ${(end - start) / 1000} seconds`
+  );
+};
 
 // Updates Era Point data for all validators
 export const eraPointsJob = async (db: Db, chaindata: ChainData) => {

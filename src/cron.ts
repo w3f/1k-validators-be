@@ -35,6 +35,7 @@ import {
   sessionKeyJob,
   unclaimedErasJob,
   validatorPrefJob,
+  validityJob,
 } from "./jobs";
 
 // Monitors the latest GitHub releases and ensures nodes have upgraded
@@ -102,56 +103,11 @@ export const startValidatityJob = async (
   let running = false;
 
   const validityCron = new CronJob(validityFrequency, async () => {
-    const start = Date.now();
-    if (running) return;
-    running = true;
-    logger.info(`(cron::Validity::start) Running validity cron`);
-
-    const currentEra = await chaindata.getCurrentEra();
-
-    const activeCandidates = allCandidates.filter(
-      (candidate) => candidate.active
-    );
-
-    const identityHashTable = await constraints.populateIdentityHashTable(
-      allCandidates
-    );
-
-    // set invalidityReason for stashes
-    const invalid = await constraints.getInvalidCandidates(
-      allCandidates,
-      identityHashTable
-    );
-    for (const i of invalid) {
-      const { stash, reason } = i;
-      await db.setInvalidityReason(stash, reason);
+    if (running) {
+      return;
     }
 
-    // set invalidityReason as empty for valid candidates
-    const valid = await constraints.getValidCandidates(
-      allCandidates,
-      identityHashTable,
-      db
-    );
-    for (const v of valid) {
-      const { stash } = v;
-      await db.setInvalidityReason(stash, "");
-      await db.setLastValid(stash);
-    }
-    await db.setEraStats(
-      Number(currentEra),
-      allCandidates.length,
-      valid.length,
-      activeCandidates.length
-    );
-    const end = Date.now();
-
-    logger.info(
-      `{cron::Validity::ExecutionTime} started at ${new Date(
-        start
-      ).toString()} Done. Took ${(end - start) / 1000} seconds`
-    );
-
+    await validityJob(db, chaindata, allCandidates, constraints);
     running = false;
   });
   validityCron.start();

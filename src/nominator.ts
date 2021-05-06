@@ -10,7 +10,6 @@ import logger from "./logger";
 
 import { NominatorConfig, Stash } from "./types";
 import { toDecimals } from "./util";
-import { Transform } from "node:stream";
 
 export default class Nominator {
   public currentlyNominating: Stash[] = [];

@@ -1,6 +1,5 @@
 import { CronJob } from "cron";
 import Db from "./db";
-import { config } from "node:process";
 import {
   CLEAR_OFFLINE_CRON,
   EXECUTION_CRON,
@@ -29,7 +28,6 @@ import ChainData from "./chaindata";
 import Claimer from "./claimer";
 import { CandidateData, EraReward } from "./types";
 import { addressUrl, sleep, toDecimals } from "./util";
-import { exists } from "node:fs";
 import {
   activeValidatorJob,
   eraPointsJob,
@@ -479,7 +477,15 @@ export const startEraPointsJob = async (
     logger.info(`{cron::EraPointsJob::start} running era points job....`);
 
     // Run the Era Points job
-    await eraPointsJob(db, chaindata);
+    const retries = 0;
+    try {
+      await eraPointsJob(db, chaindata);
+    } catch (e) {
+      logger.warn(
+        `(cron::EraPointsJob::warn) There was an error running. retries: ${retries}`
+      );
+    }
+
     running = false;
   });
   eraPointsCron.start();

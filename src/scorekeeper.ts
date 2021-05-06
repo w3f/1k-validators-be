@@ -478,7 +478,12 @@ export default class ScoreKeeper {
     await eraPointsJob(this.db, this.chaindata);
     await validatorPrefJob(this.db, this.chaindata, this.candidateCache);
     await unclaimedErasJob(this.db, this.chaindata, this.candidateCache);
-    await validityJob(this.db, this.chaindata, this.candidateCache, this.constraints);
+    await validityJob(
+      this.db,
+      this.chaindata,
+      this.candidateCache,
+      this.constraints
+    );
 
     // Start all Cron Jobs
     try {

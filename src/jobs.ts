@@ -4,7 +4,12 @@ import logger from "./logger";
 import { OTV } from "./constraints";
 
 // Runs Validity Job
-export const validityJob = async(db: Db, chaindata: ChainData, allCandidates: any[], constraints: OTV) => {
+export const validityJob = async (
+  db: Db,
+  chaindata: ChainData,
+  allCandidates: any[],
+  constraints: OTV
+) => {
   const start = Date.now();
 
   logger.info(`(cron::Validity::start) Running validity cron`);
@@ -53,10 +58,7 @@ export const validityJob = async(db: Db, chaindata: ChainData, allCandidates: an
       start
     ).toString()} Done. Took ${(end - start) / 1000} seconds`
   );
-
-
-}
-
+};
 
 // Updates Era Point data for all validators
 export const eraPointsJob = async (db: Db, chaindata: ChainData) => {

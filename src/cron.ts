@@ -35,7 +35,7 @@ import {
   sessionKeyJob,
   unclaimedErasJob,
   validatorPrefJob,
-  validityJob
+  validityJob,
 } from "./jobs";
 
 // Monitors the latest GitHub releases and ensures nodes have upgraded

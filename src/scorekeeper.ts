@@ -42,6 +42,7 @@ import {
   sessionKeyJob,
   unclaimedErasJob,
   validatorPrefJob,
+  validityJob,
 } from "./jobs";
 
 type NominatorGroup = NominatorConfig[];
@@ -477,80 +478,88 @@ export default class ScoreKeeper {
     await eraPointsJob(this.db, this.chaindata);
     await validatorPrefJob(this.db, this.chaindata, this.candidateCache);
     await unclaimedErasJob(this.db, this.chaindata, this.candidateCache);
+    await validityJob(this.db, this.chaindata, this.candidateCache, this.constraints);
 
     // Start all Cron Jobs
-    startValidatityJob(
-      this.config,
-      this.db,
-      this.constraints,
-      this.chaindata,
-      this.candidateCache
-    );
+    try {
+      startValidatityJob(
+        this.config,
+        this.db,
+        this.constraints,
+        this.chaindata,
+        this.candidateCache
+      );
 
-    startEraPointsJob(this.config, this.db, this.chaindata);
-    startActiveValidatorJob(
-      this.config,
-      this.db,
-      this.chaindata,
-      this.candidateCache
-    );
-    startInclusionJob(
-      this.config,
-      this.db,
-      this.chaindata,
-      this.candidateCache
-    );
-    startSessionKeyJob(
-      this.config,
-      this.db,
-      this.chaindata,
-      this.candidateCache
-    );
-    startUnclaimedEraJob(
-      this.config,
-      this.db,
-      this.chaindata,
-      this.candidateCache
-    );
-    startValidatorPrefJob(
-      this.config,
-      this.db,
-      this.chaindata,
-      this.candidateCache
-    );
-    if (this.claimer) {
-      startRewardClaimJob(
+      startEraPointsJob(this.config, this.db, this.chaindata);
+      startActiveValidatorJob(
+        this.config,
+        this.db,
+        this.chaindata,
+        this.candidateCache
+      );
+      startInclusionJob(
+        this.config,
+        this.db,
+        this.chaindata,
+        this.candidateCache
+      );
+      startSessionKeyJob(
+        this.config,
+        this.db,
+        this.chaindata,
+        this.candidateCache
+      );
+      startUnclaimedEraJob(
+        this.config,
+        this.db,
+        this.chaindata,
+        this.candidateCache
+      );
+      startValidatorPrefJob(
+        this.config,
+        this.db,
+        this.chaindata,
+        this.candidateCache
+      );
+      if (this.claimer) {
+        startRewardClaimJob(
+          this.config,
+          this.handler,
+          this.db,
+          this.claimer,
+          this.chaindata,
+          this.bot
+        );
+      }
+      startExecutionJob(
+        this.handler,
+        this.nominatorGroups,
+        this.config,
+        this.db,
+        this.bot
+      );
+      startCancelCron(
         this.config,
         this.handler,
         this.db,
-        this.claimer,
+        this.nominatorGroups,
         this.chaindata,
         this.bot
       );
+      startStaleNominationCron(
+        this.config,
+        this.handler,
+        this.db,
+        this.nominatorGroups,
+        this.chaindata,
+        this.bot
+      );
+    } catch (e) {
+      logger.info(
+        `{Scorekeeper::RunCron} There was an error running some cron jobs...`
+      );
+      console.log(e);
     }
-    startExecutionJob(
-      this.handler,
-      this.nominatorGroups,
-      this.config,
-      this.db,
-      this.bot
-    );
-    startCancelCron(
-      this.config,
-      this.handler,
-      this.db,
-      this.nominatorGroups,
-      this.chaindata,
-      this.bot
-    );
-    startStaleNominationCron(
-      this.config,
-      this.handler,
-      this.db,
-      this.nominatorGroups,
-      this.chaindata,
-      this.bot
-    );
     mainCron.start();
   }
 

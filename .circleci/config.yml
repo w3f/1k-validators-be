@@ -95,10 +95,10 @@ workflows:
   version: 2
   test_and_deploy:
     jobs:
-      - checkDependencies:
-          filters:
-            tags:
-              only: /.*/
+      # - checkDependencies:
+          # filters:
+            # tags:
+              # only: /.*/
       - checkESLint:
           filters:
             tags:

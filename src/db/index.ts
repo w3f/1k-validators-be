@@ -14,7 +14,7 @@ import {
   EraStatsSchema,
   ValidatorScoreSchema,
   ValidatorScoreMetadataSchema,
-  ReleaseSchema
+  ReleaseSchema,
 } from "./models";
 import logger from "../logger";
 import { formatAddress } from "../util";
@@ -1547,7 +1547,6 @@ export default class Db {
       })
       .exec();
   }
-
 
   async setRelease(name: string, publishedAt: number): Promise<any> {
     logger.info(`{DB::Release} setting reelase for ${name}`);

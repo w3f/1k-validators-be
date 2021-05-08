@@ -22,10 +22,10 @@ class ChainData {
 
   getActiveEraIndex = async (): Promise<NumberResult> => {
     const api = await this.handler.getApi();
-    if (!api.isConnected){
-      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`)
+    if (!api.isConnected) {
+      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
       return;
-    } 
+    }
 
     const activeEra = await api.query.staking.activeEra();
     if (activeEra.isNone) {
@@ -40,10 +40,10 @@ class ChainData {
 
   getCurrentEra = async () => {
     const api = await this.handler.getApi();
-    if (!api.isConnected){
-      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`)
+    if (!api.isConnected) {
+      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
       return;
-    } 
+    }
 
     const currentEra = await api.query.staking.currentEra();
     return Number(currentEra);
@@ -51,10 +51,10 @@ class ChainData {
 
   getCommission = async (validator: string): Promise<NumberResult> => {
     const api = await this.handler.getApi();
-    if (!api.isConnected){
-      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`)
+    if (!api.isConnected) {
+      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
       return;
-    } 
+    }
 
     const prefs = await api.query.staking.validators(validator);
     return [prefs.commission.toNumber(), null];
@@ -62,10 +62,10 @@ class ChainData {
 
   destinationIsStaked = async (validatorStash: string): Promise<boolean> => {
     const api = await this.handler.getApi();
-    if (!api.isConnected){
-      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`)
+    if (!api.isConnected) {
+      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
       return;
-    } 
+    }
 
     const payee = await api.query.staking.payee(validatorStash);
     return payee.isStaked;
@@ -76,10 +76,10 @@ class ChainData {
     validator: string
   ): Promise<NumberResult> => {
     const api = await this.handler.getApi();
-    if (!api.isConnected){
-      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`)
+    if (!api.isConnected) {
+      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
       return;
-    } 
+    }
 
     const prefs = await api.query.staking.erasValidatorPrefs(
       eraIndex,
@@ -97,10 +97,10 @@ class ChainData {
 
   getBalanceOf = async (validator: string): Promise<NumberResult> => {
     const api = await this.handler.getApi();
-    if (!api.isConnected){
-      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`)
+    if (!api.isConnected) {
+      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
       return;
-    } 
+    }
 
     const account = await api.query.system.account(validator);
     return [account.data.free.toNumber(), null];
@@ -108,10 +108,10 @@ class ChainData {
 
   getBondedAmount = async (stash: string): Promise<NumberResult> => {
     const api = await this.handler.getApi();
-    if (!api.isConnected){
-      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`)
+    if (!api.isConnected) {
+      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
       return;
-    } 
+    }
 
     const controller = await api.query.staking.bonded(stash);
     if (controller.isNone) {
@@ -137,10 +137,10 @@ class ChainData {
     validator: string
   ): Promise<NumberResult> => {
     const api = await this.handler.getApi();
-    if (!api.isConnected){
-      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`)
+    if (!api.isConnected) {
+      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
       return;
-    } 
+    }
 
     const exposure = await api.query.staking.erasStakers(eraIndex, validator);
     if (exposure.isEmpty) {
@@ -159,10 +159,10 @@ class ChainData {
     validator: string
   ): Promise<BooleanResult> => {
     const api = await this.handler.getApi();
-    if (!api.isConnected){
-      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`)
+    if (!api.isConnected) {
+      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
       return;
-    } 
+    }
 
     const earliestUnapplied = await api.query.staking.earliestUnappliedSlash();
     if (earliestUnapplied.isNone) {
@@ -214,10 +214,10 @@ class ChainData {
         : TESTNET_APPROX_ERA_LENGTH_IN_BLOCKS;
 
     const api = await this.handler.getApi();
-    if (!api.isConnected){
-      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`)
+    if (!api.isConnected) {
+      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
       return;
-    } 
+    }
 
     const [activeEraIndex, err] = await this.getActiveEraIndex();
     if (err) {
@@ -266,10 +266,10 @@ class ChainData {
     chainType: string
   ): Promise<[string[] | null, string | null]> => {
     const api = await this.handler.getApi();
-    if (!api.isConnected){
-      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`)
+    if (!api.isConnected) {
+      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
       return;
-    } 
+    }
 
     const allValidators: Set<string> = new Set();
     let testEra = startEra;
@@ -294,10 +294,10 @@ class ChainData {
 
   currentValidators = async (): Promise<any> => {
     const api = await this.handler.getApi();
-    if (!api.isConnected){
-      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`)
+    if (!api.isConnected) {
+      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
       return;
-    } 
+    }
 
     const validators = await api.query.session.validators();
     return validators.toJSON();
@@ -310,11 +310,10 @@ class ChainData {
    */
   hasIdentity = async (account: string): Promise<[boolean, boolean]> => {
     const api = await this.handler.getApi();
-    if (!api.isConnected){
-      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`)
+    if (!api.isConnected) {
+      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
       return;
-    } 
-
+    }
 
     let identity = await api.query.identity.identityOf(account);
     if (!identity.isSome) {
@@ -344,11 +343,10 @@ class ChainData {
    */
   getIdentity = async (account: string): Promise<string | null> => {
     const api = await this.handler.getApi();
-    if (!api.isConnected){
-      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`)
+    if (!api.isConnected) {
+      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
       return;
-    } 
-
+    }
 
     const identitiy = await api.query.identity.identityOf(account);
     if (!identitiy.isSome) {
@@ -370,10 +368,10 @@ class ChainData {
 
   getFormattedIdentity = async (addr) => {
     const api = await this.handler.getApi();
-    if (!api.isConnected){
-      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`)
+    if (!api.isConnected) {
+      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
       return;
-    } 
+    }
 
     let identity, verified, sub;
     identity = await api.query.identity.identityOf(addr);
@@ -410,10 +408,10 @@ class ChainData {
     controller: string
   ): Promise<string | null> => {
     const api = await this.handler.getApi();
-    if (!api.isConnected){
-      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`)
+    if (!api.isConnected) {
+      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
       return;
-    } 
+    }
 
     const ledger: JSON = await api.query.staking.ledger(controller);
     if (ledger.isNone) {
@@ -425,10 +423,10 @@ class ChainData {
 
   getControllerFromStash = async (stash: string): Promise<string | null> => {
     const api = await this.handler.getApi();
-    if (!api.isConnected){
-      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`)
+    if (!api.isConnected) {
+      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
       return;
-    } 
+    }
 
     const controller = await api.query.staking.bonded(stash);
     return controller.toString();
@@ -446,10 +444,10 @@ class ChainData {
 
   getQueuedKeys = async (): Promise<any> => {
     const api = await this.handler.getApi();
-    if (!api.isConnected){
-      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`)
+    if (!api.isConnected) {
+      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
       return;
-    } 
+    }
 
     const queuedKeys = await api.query.session.queuedKeys();
     const keys = queuedKeys.map(([validator, keys]) => {
@@ -463,10 +461,10 @@ class ChainData {
 
   getNextKeys = async (stash: string): Promise<string> => {
     const api = await this.handler.getApi();
-    if (!api.isConnected){
-      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`)
+    if (!api.isConnected) {
+      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
       return;
-    } 
+    }
 
     const nextKeys = await api.query.session.nextKeys(stash);
     return nextKeys.toHex();
@@ -482,10 +480,10 @@ class ChainData {
    */
   getNominationAt = async (nominatorStash: string, era: number, db: Db) => {
     const api = await this.handler.getApi();
-    if (!api.isConnected){
-      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`)
+    if (!api.isConnected) {
+      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
       return;
-    } 
+    }
 
     const chainMetadata = await db.getChainMetadata();
     const chainType = chainMetadata.name;
@@ -545,10 +543,10 @@ class ChainData {
   getUnclaimedEras = async (validatorStash: string, db: Db) => {
     const start = Date.now();
     const api = await this.handler.getApi();
-    if (!api.isConnected){
-      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`)
+    if (!api.isConnected) {
+      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
       return;
-    } 
+    }
 
     const controller = await this.getControllerFromStash(validatorStash);
     if (!controller) {
@@ -592,10 +590,10 @@ class ChainData {
 
   getTotalEraPoints = async (era: number) => {
     const api = await this.handler.getApi();
-    if (!api.isConnected){
-      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`)
+    if (!api.isConnected) {
+      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
       return;
-    } 
+    }
 
     const erasRewardPoints = await api.query.staking.erasRewardPoints(era);
     const total = erasRewardPoints.total;
@@ -621,10 +619,10 @@ class ChainData {
    */
   getValidators = async () => {
     const api = await this.handler.getApi();
-    if (!api.isConnected){
-      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`)
+    if (!api.isConnected) {
+      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
       return;
-    } 
+    }
 
     const keys = await api.query.staking.validators.keys();
     const validators = keys.map(({ args: [validatorId] }) =>
@@ -640,10 +638,10 @@ class ChainData {
    */
   getSession = async () => {
     const api = await this.handler.getApi();
-    if (!api.isConnected){
-      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`)
+    if (!api.isConnected) {
+      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
       return;
-    } 
+    }
 
     const session = await api.query.session.currentIndex();
     return Number(session.toString());
@@ -651,10 +649,10 @@ class ChainData {
 
   getBalance = async (address: string) => {
     const api = await this.handler.getApi();
-    if (!api.isConnected){
-      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`)
+    if (!api.isConnected) {
+      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
       return;
-    } 
+    }
 
     const balance = api.query.system.account(address);
     return (await balance).data.toJSON();
@@ -662,10 +660,10 @@ class ChainData {
 
   getProxyAnnouncements = async (address: string) => {
     const api = await this.handler.getApi();
-    if (!api.isConnected){
-      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`)
+    if (!api.isConnected) {
+      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
       return;
-    } 
+    }
 
     const announcements = await api.query.proxy.announcements(address);
     const json = announcements.toJSON()[0];
@@ -680,11 +678,10 @@ class ChainData {
 
   getLatestBlock = async () => {
     const api = await this.handler.getApi();
-    if (!api.isConnected){
-      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`)
+    if (!api.isConnected) {
+      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
       return;
-    } 
-
+    }
 
     return (await api.rpc.chain.getBlock()).block.header.number.toNumber();
   };

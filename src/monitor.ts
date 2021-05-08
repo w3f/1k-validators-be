@@ -40,7 +40,7 @@ export default class Monitor {
     if (!latestRelease) return;
     const { tag_name, published_at } = latestRelease.data;
     const publishedAt = new Date(published_at).getTime();
-    
+
     await this.db.setRelease(tag_name, publishedAt);
 
     if (

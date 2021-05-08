@@ -32,6 +32,7 @@ import {
   activeValidatorJob,
   eraPointsJob,
   inclusionJob,
+  monitorJob,
   sessionKeyJob,
   unclaimedErasJob,
   validatorPrefJob,
@@ -40,7 +41,11 @@ import {
 
 // Monitors the latest GitHub releases and ensures nodes have upgraded
 // within a timely period.
-export const startMonitorJob = async (config: Config, db: Db) => {
+export const startMonitorJob = async (
+  config: Config,
+  db: Db,
+  monitor: Monitor
+) => {
   const monitorFrequency = config.cron.monitor
     ? config.cron.monitor
     : MONITOR_CRON;
@@ -49,21 +54,15 @@ export const startMonitorJob = async (config: Config, db: Db) => {
     `(cron::startMonitorJob) Starting Monitor Cron Job with frequency ${monitorFrequency}`
   );
 
-  // TODO: Change this to be determined by upgrade priority
-  const monitor = new Monitor(db, SIXTEEN_HOURS);
-
   const monitorCron = new CronJob(monitorFrequency, async () => {
     logger.info(
       `{Start} Monitoring the node version by polling latst GitHub releases every ${
         config.global.test ? "three" : "fifteen"
       } minutes.`
     );
-    await monitor.getLatestTaggedRelease();
-    // await monitor.ensureUpgrades();
+    await monitorJob(db, monitor);
   });
 
-  await monitor.getLatestTaggedRelease();
-  // await monitor.ensureUpgrades();
   monitorCron.start();
 };
 

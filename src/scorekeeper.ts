@@ -14,6 +14,7 @@ import {
   TEN_THOUSAND_DOT,
   FIVE_THOUSAND_DOT,
   THREE_PERCENT,
+  SIXTEEN_HOURS,
 } from "./constants";
 import { OTV } from "./constraints";
 import Db from "./db";
@@ -27,6 +28,7 @@ import {
   startEraPointsJob,
   startExecutionJob,
   startInclusionJob,
+  startMonitorJob,
   startRewardClaimJob,
   startSessionKeyJob,
   startStaleNominationCron,
@@ -39,11 +41,13 @@ import {
   activeValidatorJob,
   eraPointsJob,
   inclusionJob,
+  monitorJob,
   sessionKeyJob,
   unclaimedErasJob,
   validatorPrefJob,
   validityJob,
 } from "./jobs";
+import Monitor from "./monitor";
 
 type NominatorGroup = NominatorConfig[];
 
@@ -98,6 +102,7 @@ export default class ScoreKeeper {
 
   private nominatorGroups: Array<SpawnedNominatorGroup> = [];
   private claimer: Claimer;
+  private monitor: Monitor;
 
   constructor(handler: ApiHandler, db: Db, config: Config, bot: any = false) {
     this.handler = handler;
@@ -204,6 +209,7 @@ export default class ScoreKeeper {
       this.config,
       this.db
     );
+    this.monitor = new Monitor(db, SIXTEEN_HOURS);
 
     this.populateCandidates();
     this.populateValid();
@@ -472,22 +478,24 @@ export default class ScoreKeeper {
       }
     });
 
-    // Run chain data jobs once on startup
-    await activeValidatorJob(this.db, this.chaindata, this.candidateCache);
-    await sessionKeyJob(this.db, this.chaindata, this.candidateCache);
-    await inclusionJob(this.db, this.chaindata, this.candidateCache);
-    await eraPointsJob(this.db, this.chaindata);
-    await validatorPrefJob(this.db, this.chaindata, this.candidateCache);
-    await unclaimedErasJob(this.db, this.chaindata, this.candidateCache);
-    await validityJob(
-      this.db,
-      this.chaindata,
-      this.candidateCache,
-      this.constraints
-    );
+    // Run jobs once at startup
+    // await monitorJob(this.db, this.monitor);
+    // await activeValidatorJob(this.db, this.chaindata, this.candidateCache);
+    // await sessionKeyJob(this.db, this.chaindata, this.candidateCache);
+    // await inclusionJob(this.db, this.chaindata, this.candidateCache);
+    // await eraPointsJob(this.db, this.chaindata);
+    // await validatorPrefJob(this.db, this.chaindata, this.candidateCache);
+    // await unclaimedErasJob(this.db, this.chaindata, this.candidateCache);
+    // await validityJob(
+    //   this.db,
+    //   this.chaindata,
+    //   this.candidateCache,
+    //   this.constraints
+    // );
 
     // Start all Cron Jobs
     try {
+      await startMonitorJob(this.config, this.db, this.monitor);
       startValidatityJob(
         this.config,
         this.db,

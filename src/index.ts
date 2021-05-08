@@ -25,7 +25,7 @@ import { startClearAccumulatedOfflineTimeJob, startMonitorJob } from "./cron";
 
 const isCI = process.env.CI;
 
-const version = "v2.3.72";
+const version = "v2.3.73";
 
 const catchAndQuit = async (fn: any) => {
   try {
@@ -102,7 +102,6 @@ const start = async (cmd: { config: string }) => {
   // Buffer some time for set up.
   await sleep(1500);
 
-  await startMonitorJob(config, db);
   await startClearAccumulatedOfflineTimeJob(config, db);
 
   // Set up the nominators in the scorekeeper.

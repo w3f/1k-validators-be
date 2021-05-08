@@ -50,4 +50,5 @@ export type CandidateData = {
   bio: string;
   unclaimedEras: [number];
   inclusion: number;
+  version: string;
 };

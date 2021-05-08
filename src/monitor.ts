@@ -39,6 +39,9 @@ export default class Monitor {
 
     if (!latestRelease) return;
     const { tag_name, published_at } = latestRelease.data;
+    const publishedAt = new Date(published_at).getTime();
+
+    await this.db.setRelease(tag_name, publishedAt);
 
     if (
       this.latestTaggedRelease &&
@@ -47,8 +50,6 @@ export default class Monitor {
       logger.info("(Monitor::getLatestTaggedRelease) No new release found");
       return;
     }
-
-    const publishedAt = new Date(published_at).getTime();
 
     this.latestTaggedRelease = {
       name: tag_name,

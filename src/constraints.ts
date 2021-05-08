@@ -9,6 +9,8 @@ import axios from "axios";
 import { formatAddress } from "./util";
 import { Config } from "./config";
 import Db from "./db";
+import Database from "./db";
+import semver from "semver";
 import {
   absMax,
   absMin,
@@ -51,6 +53,7 @@ export class OTV implements Constraints {
   private unclaimedEraThreshold: number;
 
   private config: Config;
+  private db: Database;
 
   // caches
   private validCache: CandidateData[] = [];
@@ -66,7 +69,8 @@ export class OTV implements Constraints {
     minSelfStake = 0,
     commission = 0,
     unclaimedEraThreshold = 0,
-    config: Config
+    config: Config,
+    db: Database
   ) {
     this.chaindata = new ChainData(handler);
 
@@ -81,6 +85,7 @@ export class OTV implements Constraints {
     this.unclaimedEraThreshold = unclaimedEraThreshold;
 
     this.config = config;
+    this.db = db;
   }
 
   get validCandidateCache(): CandidateData[] {
@@ -162,7 +167,11 @@ export class OTV implements Constraints {
     }
 
     // Only take nodes that have been upgraded to latest versions.
-    if (!updated && !this.skipClientUpgrade) {
+    const latestRelease = await this.db.getLatestRelease();
+    const nodeVersion = semver.coerce(candidate.version);
+    const latestVersion = semver.clean(latestRelease[0].name);
+    const isUpgraded = semver.gte(nodeVersion, latestVersion);
+    if (!isUpgraded && !this.skipClientUpgrade) {
       return [false, `${name} is not running the latest client code.`];
     }
 

@@ -59,11 +59,11 @@ export const startMonitorJob = async (config: Config, db: Db) => {
       } minutes.`
     );
     await monitor.getLatestTaggedRelease();
-    await monitor.ensureUpgrades();
+    // await monitor.ensureUpgrades();
   });
 
   await monitor.getLatestTaggedRelease();
-  await monitor.ensureUpgrades();
+  // await monitor.ensureUpgrades();
   monitorCron.start();
 };
 
@@ -106,7 +106,7 @@ export const startValidatityJob = async (
     if (running) {
       return;
     }
-
+    running = true;
     await validityJob(db, chaindata, allCandidates, constraints);
     running = false;
   });

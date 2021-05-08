@@ -383,3 +383,8 @@ export const ValidatorScoreMetadataSchema = new Schema({
   // The last time one was updated
   updated: Number,
 });
+
+export const ReleaseSchema = new Schema({
+  name: String,
+  publishedAt: Number,
+});

@@ -59,11 +59,11 @@ export const startMonitorJob = async (config: Config, db: Db) => {
       } minutes.`
     );
     await monitor.getLatestTaggedRelease();
-    await monitor.ensureUpgrades();
+    // await monitor.ensureUpgrades();
   });
 
   await monitor.getLatestTaggedRelease();
-  await monitor.ensureUpgrades();
+  // await monitor.ensureUpgrades();
   monitorCron.start();
 };
 

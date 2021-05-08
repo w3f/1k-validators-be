@@ -106,7 +106,7 @@ export const startValidatityJob = async (
     if (running) {
       return;
     }
-
+    running = true;
     await validityJob(db, chaindata, allCandidates, constraints);
     running = false;
   });

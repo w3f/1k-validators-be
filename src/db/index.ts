@@ -14,6 +14,7 @@ import {
   EraStatsSchema,
   ValidatorScoreSchema,
   ValidatorScoreMetadataSchema,
+  ReleaseSchema
 } from "./models";
 import logger from "../logger";
 import { formatAddress } from "../util";
@@ -39,6 +40,7 @@ export default class Db {
   private eraStatsModel;
   private validatorScoreModel;
   private validatorScoreMetadataModel;
+  private releaseModel;
 
   constructor() {
     this.accountingModel = mongoose.model("Accounting", AccountingSchema);
@@ -69,6 +71,7 @@ export default class Db {
       "ValidatorScoreMetadata",
       ValidatorScoreMetadataSchema
     );
+    this.releaseModel = mongoose.model("Release", ReleaseSchema);
   }
 
   static async create(uri = "mongodb://localhost:27017/otv"): Promise<Db> {
@@ -1543,5 +1546,22 @@ export default class Db {
         updated: { $gte: 0 },
       })
       .exec();
+  }
+
+
+  async setRelease(name: string, publishedAt: number): Promise<any> {
+    logger.info(`{DB::Release} setting reelase for ${name}`);
+    let data = await this.releaseModel.findOne({ name: name }).exec();
+
+    if (!data) {
+      data = new this.releaseModel({ name: name, publishedAt: publishedAt });
+      return data.save();
+    }
+
+    return data;
+  }
+
+  async getLatestRelease(): Promise<any> {
+    return await this.releaseModel.find({}).sort("-publishedAt").limit(1);
   }
 }

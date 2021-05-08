@@ -201,7 +201,8 @@ export default class ScoreKeeper {
       this.config.global.networkPrefix == 2
         ? KUSAMA_FOUR_DAYS_ERAS
         : POLKADOT_FOUR_DAYS_ERAS,
-      this.config
+      this.config,
+      this.db
     );
 
     this.populateCandidates();

@@ -23,7 +23,7 @@ releases:
     namespace: polkadot
     {{ if eq .Environment.Name "production" }}
     chart: w3f/otv-backend
-    version: v2.3.70
+    version: v2.3.71
     {{ else }}
     chart: ../charts/otv-backend
     {{ end }} 

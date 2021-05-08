@@ -2,6 +2,7 @@ import { ApiPromise, WsProvider } from "@polkadot/api";
 import EventEmitter from "eventemitter3";
 
 import logger from "./logger";
+import { sleep } from "./util";
 
 /**
  * A higher level handler for the Polkadot-Js API that can handle reconnecting
@@ -12,6 +13,8 @@ class ApiHandler extends EventEmitter {
   private _endpoints: string[];
   private _reconnectLock: boolean;
   private _reconnectTries = 0;
+  static isConnected: any;
+  static _reconnect: any;
 
   constructor(api: ApiPromise, endpoints: string[]) {
     super();
@@ -20,12 +23,37 @@ class ApiHandler extends EventEmitter {
     this._registerEventHandlers(api);
   }
 
-  static async create(endpoints: string[]): Promise<ApiHandler> {
-    const api = await ApiPromise.create({
+  static async createApi(endpoints) {
+    const api = new ApiPromise({
       provider: new WsProvider(endpoints),
+      // throwOnConnect: true,
     });
+    api
+      .on("connected", () => {
+        logger.info(`Connected to chain`);
+      })
+      .on("disconnected", async () => {
+        logger.warn(`Disconnected from chain`);
+      })
+      .on("ready", () => {
+        logger.info(`API connection ready`);
+      })
+      .on("error", (error) => {
+        logger.warn("The API has an error");
+        console.log(error);
+      });
+    await api.isReadyOrError;
+    return api;
+  }
 
-    return new ApiHandler(api, endpoints);
+  static async create(endpoints: string[]): Promise<ApiHandler> {
+    try {
+      const api = await this.createApi(endpoints);
+      return new ApiHandler(api, endpoints);
+    } catch (e) {
+      logger.info(`there was an error: `);
+      console.log(e);
+    }
   }
 
   isConnected(): boolean {

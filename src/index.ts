@@ -102,7 +102,6 @@ const start = async (cmd: { config: string }) => {
   // Buffer some time for set up.
   await sleep(1500);
 
-  await startMonitorJob(config, db);
   await startClearAccumulatedOfflineTimeJob(config, db);
 
   // Set up the nominators in the scorekeeper.

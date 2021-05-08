@@ -2,6 +2,23 @@ import Db from "./db";
 import ChainData from "./chaindata";
 import logger from "./logger";
 import { OTV } from "./constraints";
+import Monitor from "./monitor";
+
+// Runs Monitor Job
+export const monitorJob = async (db: Db, monitor: Monitor) => {
+  const start = Date.now();
+
+  logger.info(`(cron::Monitor::start) Running Monitor job`);
+  await monitor.getLatestTaggedRelease();
+
+  const end = Date.now();
+
+  logger.info(
+    `{cron::Monitor::ExecutionTime} started at ${new Date(
+      start
+    ).toString()} Done. Took ${(end - start) / 1000} seconds`
+  );
+};
 
 // Runs Validity Job
 export const validityJob = async (

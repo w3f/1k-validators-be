@@ -280,14 +280,41 @@ export default class Db {
     return true;
   }
 
+  async reportBestBlock(
+    telemetryId: number,
+    details: NodeDetails,
+    now: number
+  ): Promise<boolean> {
+    const block = details[0];
+    const data = await this.candidateModel.findOne({
+      telemetryId: telemetryId,
+    });
+
+    if (!data) return false;
+
+    // If the node was previously deemed offline
+    if (data.offlineSince && data.offlineSince !== 0) {
+      const timeOffline = now - data.offlineSince;
+      const accumulated = (data.offlineAccumulated || 0) + timeOffline;
+
+      await this.candidateModel
+        .findOneAndUpdate(
+          { telemetryId: telemetryId },
+          { offlineSince: 0, onlineSince: now, offlineAccumulated: accumulated }
+        )
+        .exec();
+    }
+    return true;
+  }
+
   // Reports a node online that has joined telemetry.
   async reportOnline(
     telemetryId: number,
     details: NodeDetails,
     now: number
   ): Promise<boolean> {
-    const [name, , version] = details;
-    logger.info(JSON.stringify(details));
+    const name = details[0];
+    const version = details[2];
 
     logger.info(`(Db::reportOnline) Reporting ${name} ONLINE.`);
 
@@ -333,7 +360,9 @@ export default class Db {
       .exec();
 
     if (data.offlineSince && data.offlineSince !== 0) {
-      logger.debug(`Offline since: ${data.offlineSince}`);
+      logger.debug(
+        `Online node ${data.name} was offline since: ${data.offlineSince}`
+      );
       // The node was previously offline.
       const timeOffline = now - data.offlineSince;
       const accumulated = (data.offlineAccumulated || 0) + timeOffline;
@@ -1561,6 +1590,6 @@ export default class Db {
   }
 
   async getLatestRelease(): Promise<any> {
-    return await this.releaseModel.find({}).sort("-publishedAt").limit(1);
+    return (await this.releaseModel.find({}).sort("-publishedAt").limit(1))[0];
   }
 }

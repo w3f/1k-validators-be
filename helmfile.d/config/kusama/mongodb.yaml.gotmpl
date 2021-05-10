@@ -63,10 +63,10 @@ containerSecurityContext:
 {{ if eq .Environment.Name "production" }}
 resources:
   limits: 
-    cpu: 800m
+    cpu: 2000m
     memory: "1Gi"
   requests: 
-    cpu: 500m
+    cpu: 1000m
     memory: "1Gi"
 {{ else }}
 resources:

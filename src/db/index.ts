@@ -286,9 +286,11 @@ export default class Db {
     now: number
   ): Promise<boolean> {
     const block = details[0];
-    const data = await this.candidateModel.findOne({
-      telemetryId: telemetryId,
-    });
+    const data = await this.candidateModel
+      .findOne({
+        telemetryId,
+      })
+      .exec();
 
     if (!data) return false;
 
@@ -298,10 +300,11 @@ export default class Db {
       const accumulated = (data.offlineAccumulated || 0) + timeOffline;
 
       await this.candidateModel
-        .findOneAndUpdate(
-          { telemetryId: telemetryId },
-          { offlineSince: 0, onlineSince: now, offlineAccumulated: accumulated }
-        )
+        .findOneAndUpdate(telemetryId, {
+          offlineSince: 0,
+          onlineSince: now,
+          offlineAccumulated: accumulated,
+        })
         .exec();
     }
     return true;
@@ -313,8 +316,8 @@ export default class Db {
     details: NodeDetails,
     now: number
   ): Promise<boolean> {
-    const name = details[0];
-    const version = details[2];
+    const name = details[0].toString();
+    const version = details[2].toString();
 
     logger.info(`(Db::reportOnline) Reporting ${name} ONLINE.`);
 

@@ -156,7 +156,7 @@ export class OTV implements Constraints {
     } = candidate;
 
     // Ensure the candidate is online.
-    if (onlineSince === 0 || offlineSince !== 0) {
+    if (Number(onlineSince) === 0 || Number(offlineSince) !== 0) {
       return [false, `${name} offline. Offline since ${offlineSince}.`];
     }
 

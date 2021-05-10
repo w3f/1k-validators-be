@@ -100,7 +100,7 @@ export default class TelemetryClient {
       case TelemetryMessage.AddedNode:
         {
           const [id, details] = payload;
-          const now = new Date().getTime();
+          const now = Date.now();
 
           MemNodes[parseInt(id)] = details;
 
@@ -125,7 +125,7 @@ export default class TelemetryClient {
       case TelemetryMessage.RemovedNode:
         {
           const id = parseInt(payload);
-          const now = new Date().getTime();
+          const now = Date.now();
 
           //this is to get around security warning vvv
           const details = MemNodes[parseInt(String(id))];
@@ -145,7 +145,7 @@ export default class TelemetryClient {
       case TelemetryMessage.ImportedBlock:
         {
           const [id, details] = payload;
-          const now = new Date().getTime();
+          const now = Date.now();
 
           MemNodes[parseInt(id)] = details;
 

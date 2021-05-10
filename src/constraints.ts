@@ -168,12 +168,15 @@ export class OTV implements Constraints {
 
     // Only take nodes that have been upgraded to latest versions.
     const latestRelease = await this.db.getLatestRelease();
-    const nodeVersion = semver.coerce(candidate.version);
-    const latestVersion = semver.clean(latestRelease[0].name);
-    const isUpgraded = semver.gte(nodeVersion, latestVersion);
-    if (!isUpgraded && !this.skipClientUpgrade) {
-      return [false, `${name} is not running the latest client code.`];
+    if (latestRelease){
+      const nodeVersion = semver.coerce(candidate.version);
+      const latestVersion = semver.clean(latestRelease.name);
+      const isUpgraded = semver.gte(nodeVersion, latestVersion);
+      if (!isUpgraded && !this.skipClientUpgrade) {
+        return [false, `${name} is not running the latest client code.`];
+      }
     }
+
 
     // Ensure the node has been connected for a minimum of one week.
     if (!this.skipConnectionTime) {

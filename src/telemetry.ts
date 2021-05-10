@@ -11,6 +11,12 @@ enum TelemetryMessage {
   BestFinalized = 0x02,
   AddedNode = 0x03,
   RemovedNode = 0x04,
+  LocatedNode = 0x05,
+  ImportedBlock = 0x06,
+  FinalizedBlock = 0x07,
+  NodeStats = 0x08,
+  NodeHardware = 0x09,
+  TimeSync  = 0x10,
 }
 
 const DEFAULT_HOST = "ws://localhost:8000/feed";
@@ -134,6 +140,31 @@ export default class TelemetryClient {
           this.beingReported.set(name, true);
           await this.db.reportOffline(id, name, now);
           this.beingReported.set(name, false);
+        }
+        break;
+      case TelemetryMessage.ImportedBlock:
+        {
+          const [id, details] = payload;
+          const now = new Date().getTime();
+
+          MemNodes[parseInt(id)] = details;
+
+          // a mutex that will only update after its free to avoid race conditions
+          const waitUntilFree = async (name: string): Promise<void> => {
+            if (this.beingReported.get(name)) {
+              return new Promise((resolve) => {
+                const intervalId = setInterval(() => {
+                  if (!this.beingReported.get(name)) {
+                    clearInterval(intervalId);
+                    resolve();
+                  }
+                }, 1000);
+              });
+            }
+          };
+
+          await waitUntilFree(details[0]);
+          await this.db.reportBestBlock(id, details, now);
         }
         break;
     }

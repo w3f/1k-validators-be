@@ -16,7 +16,7 @@ enum TelemetryMessage {
   FinalizedBlock = 0x07,
   NodeStats = 0x08,
   NodeHardware = 0x09,
-  TimeSync  = 0x10,
+  TimeSync = 0x10,
 }
 
 const DEFAULT_HOST = "ws://localhost:8000/feed";

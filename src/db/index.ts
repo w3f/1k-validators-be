@@ -286,17 +286,23 @@ export default class Db {
     now: number
   ): Promise<boolean> {
     const block = details[0];
-    const data = await this.candidateModel.findOne({telemetryId: telemetryId});
+    const data = await this.candidateModel.findOne({
+      telemetryId: telemetryId,
+    });
 
     if (!data) return false;
 
     // If the node was previously deemed offline
-    if (data.offlineSince && data.offlineSince !== 0){
+    if (data.offlineSince && data.offlineSince !== 0) {
       const timeOffline = now - data.offlineSince;
       const accumulated = (data.offlineAccumulated || 0) + timeOffline;
 
-      await this.candidateModel.findOneAndUpdate({telemetryId: telemetryId}, {offlineSince: 0, onlineSince: now, offlineAccumulated: accumulated}).exec();
-    
+      await this.candidateModel
+        .findOneAndUpdate(
+          { telemetryId: telemetryId },
+          { offlineSince: 0, onlineSince: now, offlineAccumulated: accumulated }
+        )
+        .exec();
     }
     return true;
   }
@@ -354,7 +360,9 @@ export default class Db {
       .exec();
 
     if (data.offlineSince && data.offlineSince !== 0) {
-      logger.debug(`Online node ${data.name} was offline since: ${data.offlineSince}`);
+      logger.debug(
+        `Online node ${data.name} was offline since: ${data.offlineSince}`
+      );
       // The node was previously offline.
       const timeOffline = now - data.offlineSince;
       const accumulated = (data.offlineAccumulated || 0) + timeOffline;

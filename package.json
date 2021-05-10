@@ -46,7 +46,7 @@
     "mongodb": "3.6.6",
     "mongodb-memory-server": "^6.9.6",
     "mongoose": "^5.12.7",
-    "prettier": "^2.2.1",
+    "prettier": "^2.3.0",
     "reconnecting-websocket": "^4.4.0",
     "semver": "^7.3.5",
     "ts-node": "^9.1.1",

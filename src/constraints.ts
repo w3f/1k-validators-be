@@ -259,7 +259,7 @@ export class OTV implements Constraints {
       const [currentEra, err3] = await this.chaindata.getActiveEraIndex();
       const threshold = currentEra - this.unclaimedEraThreshold - 1; // Validators cannot have unclaimed rewards before this era
       // If unclaimed eras contain an era below the recent threshold
-      if (!unclaimedEras.every((era) => era > threshold)) {
+      if (unclaimedEras && !unclaimedEras.every((era) => era > threshold)) {
         return [
           false,
           `${name} has unclaimed eras: ${unclaimedEras} prior to era: ${

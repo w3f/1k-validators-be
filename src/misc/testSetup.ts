@@ -15,8 +15,7 @@ export const startTestSetup = async () => {
     {
       name: "Nom 1",
       address: "5F6h9fXgSjPdmZDZQSsFyKUL1sPbuzTRn3TwbhGuSvPecB7d",
-      seed:
-        "van theme secret toddler rapid skirt pigeon hedgehog exhibit address guilt motor",
+      seed: "van theme secret toddler rapid skirt pigeon hedgehog exhibit address guilt motor",
       controllerAddress: "5DvJnBAoDs1DibZ2pAsVA6FK42sDjA7P1vjEXaDBq7UwuMbZ",
       controllerSeed:
         "assault melt verify taste issue unfold peasant fee surprise weasel cliff middle",
@@ -28,8 +27,7 @@ export const startTestSetup = async () => {
     {
       name: "Nom 2",
       address: "5Gc2R35GvWAJ2uSHcLUceJudMJftbVp6Y788xzRpv8qy86sD",
-      seed:
-        "prevent mushroom elevator thumb stable unfair alcohol find leg fly couple deny",
+      seed: "prevent mushroom elevator thumb stable unfair alcohol find leg fly couple deny",
       controllerAddress: "5HGULWbEMfFeD1c5nqQbzZa1gTrVdHAv396J2UHmmMpbdd3x",
       controllerSeed:
         "audit cotton absorb throw reduce bachelor chat gesture client mango derive note",
@@ -41,8 +39,7 @@ export const startTestSetup = async () => {
     {
       name: "Nom 3",
       address: "5H1payfDS728ksrRi9D88RPQmyQFsZVdEFHYM4BKEiwfVJY9",
-      seed:
-        "panda party toe child advance lawsuit meadow burden access below brown lift",
+      seed: "panda party toe child advance lawsuit meadow burden access below brown lift",
       controllerAddress: "5D85XirtLYnQW5juD5PvdEM2ZPVpDbja6k6CGapouv2P3weK",
       controllerSeed:
         "neither seminar equip split horn city weapon bike brown muscle coast ski",
@@ -51,8 +48,7 @@ export const startTestSetup = async () => {
     {
       name: "Nom 4",
       address: "5FkQP1FCvGVRX9QXu4oyxW9EjroC8eaTbJ8GLRbbQXv7AZfj",
-      seed:
-        "physical glance describe mandate consider cricket detail excuse steak artwork broccoli diesel",
+      seed: "physical glance describe mandate consider cricket detail excuse steak artwork broccoli diesel",
       controllerAddress: "5Fv2wTeevGBNEJNZMWEhedEsZG41i9Fy9QeyN9mvZ4gYGahA",
       controllerSeed:
         "bar exhaust category dilemma feature furnace fetch useless beach burst narrow nest",
@@ -61,8 +57,7 @@ export const startTestSetup = async () => {
     {
       name: "Nom 5",
       address: "5CXru9Vt1fPCnwyxqqcXwyvB6ibybjkAWBwzqaRgH5MV66Ax",
-      seed:
-        "cruel join arch wrap stereo cement roast frame fog drill mandate loyal",
+      seed: "cruel join arch wrap stereo cement roast frame fog drill mandate loyal",
       controllerAddress: "5GdrmHHQzZFfwbU2okRHwLeuF5V88gAvsaQdyjp1qBPpXNZe",
       controllerSeed:
         "milk snake bracket tomato little peanut claim cook gate decide crystal luggage",
@@ -71,8 +66,7 @@ export const startTestSetup = async () => {
   ];
 
   const claimer = {
-    seed:
-      "card insect figure furnace better miracle lend monitor call inner half top",
+    seed: "card insect figure furnace better miracle lend monitor call inner half top",
     address: "15B4rygvyb1BdA33AatuT7btLiZSUfcAS14X1SLrDfpq8Eou",
   };
 

@@ -421,9 +421,8 @@ export default class ScoreKeeper {
         return;
       }
 
-      const {
-        lastNominatedEraIndex,
-      } = await this.db.getLastNominatedEraIndex();
+      const { lastNominatedEraIndex } =
+        await this.db.getLastNominatedEraIndex();
 
       // For Kusama, Nominations will happen every 4 eras
       // For Polkadot, Nominations will happen every era
@@ -782,9 +781,8 @@ export default class ScoreKeeper {
     // The targets that have already been processed for this round.
     const toProcess: Map<Stash, CandidateData> = new Map();
 
-    const {
-      lastNominatedEraIndex: startEra,
-    } = await this.db.getLastNominatedEraIndex();
+    const { lastNominatedEraIndex: startEra } =
+      await this.db.getLastNominatedEraIndex();
 
     const [activeEra, err] = await this.chaindata.getActiveEraIndex();
     if (err) {
@@ -796,14 +794,12 @@ export default class ScoreKeeper {
     logger.info(
       `(Scorekeeper::endRound) finding validators that were active from era ${startEra} to ${activeEra}`
     );
-    const [
-      activeValidators,
-      err2,
-    ] = await this.chaindata.activeValidatorsInPeriod(
-      Number(startEra),
-      activeEra,
-      chainType.name
-    );
+    const [activeValidators, err2] =
+      await this.chaindata.activeValidatorsInPeriod(
+        Number(startEra),
+        activeEra,
+        chainType.name
+      );
     if (err2) {
       throw new Error(`Error getting active validators: ${err2}`);
     }

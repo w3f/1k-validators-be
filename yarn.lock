@@ -3096,10 +3096,10 @@ matcher@^3.0.0:
   dependencies:
     escape-string-regexp "^4.0.0"
 
-matrix-js-sdk@^10.0.0:
-  version "10.0.0"
-  resolved "https://registry.yarnpkg.com/matrix-js-sdk/-/matrix-js-sdk-10.0.0.tgz#571e97c8d8351715ac609ccedd38cad79d0b752e"
-  integrity sha512-40QN9HITqWBSYi/e8QQidDL6UOhWBpst437i+lHIqQ8a7SQtbcquDSRXWR22BjM2qbssR+02zfrLI/Kez7IoBQ==
+matrix-js-sdk@^10.1.0:
+  version "10.1.0"
+  resolved "https://registry.yarnpkg.com/matrix-js-sdk/-/matrix-js-sdk-10.1.0.tgz#11a78e0330530f78498847c52d390d2a599b029b"
+  integrity sha512-VR1bwSKOf7jZa9+0UoAsYvyvLsNGBhT/BdxHMgQKuwx34GwZucp3Tqg/Ng2oTK+0b991xkEk4nRvJoCKK++Ulg==
   dependencies:
     "@babel/runtime" "^7.12.5"
     another-json "^0.2.0"

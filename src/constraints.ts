@@ -373,7 +373,7 @@ export class OTV implements Constraints {
 
     // Unclaimed Rewards
     const unclaimedValues = validCandidates.map((candidate) => {
-      return candidate.unclaimedEras.length
+      return candidate.unclaimedEras && candidate.unclaimedEras.length
         ? candidate.unclaimedEras.length
         : 0;
     });

@@ -425,10 +425,9 @@ export class OTV implements Constraints {
       const scaledRank = scaled(candidate.rank, rankValues);
       const rankScore = scaledRank * this.RANK_WEIGHT;
 
-      const scaledUnclaimed = scaled(
-        candidate.unclaimedEras.length,
-        unclaimedValues
-      );
+      const scaledUnclaimed = candidate.unclaimedEras
+        ? scaled(candidate.unclaimedEras.length, unclaimedValues)
+        : 0;
       const unclaimedScore = (1 - scaledUnclaimed) * this.UNCLAIMED_WEIGHT;
 
       const scaledBonded = scaled(candidate.bonded, bondedValues);

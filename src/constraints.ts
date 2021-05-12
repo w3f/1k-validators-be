@@ -166,14 +166,16 @@ export class OTV implements Constraints {
       return [false, `${name} does not have a validate intention`];
     }
 
-    // Only take nodes that have been upgraded to latest versions.
-    const latestRelease = await this.db.getLatestRelease();
-    if (latestRelease) {
-      const nodeVersion = semver.coerce(candidate.version);
-      const latestVersion = semver.clean(latestRelease.name);
-      const isUpgraded = semver.gte(nodeVersion, latestVersion);
-      if (!isUpgraded && !this.skipClientUpgrade) {
-        return [false, `${name} is not running the latest client code.`];
+    if (!this.config.constraints.skipClientUpgrade) {
+      // Only take nodes that have been upgraded to latest versions.
+      const latestRelease = await this.db.getLatestRelease();
+      if (latestRelease) {
+        const nodeVersion = semver.coerce(candidate.version);
+        const latestVersion = semver.clean(latestRelease.name);
+        const isUpgraded = semver.gte(nodeVersion, latestVersion);
+        if (!isUpgraded && !this.skipClientUpgrade) {
+          return [false, `${name} is not running the latest client code.`];
+        }
       }
     }
 

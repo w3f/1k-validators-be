@@ -21,6 +21,28 @@ export type BooleanResult = [boolean | null, string | null];
 export type NumberResult = [number | null, string | null];
 export type StringResult = [string | null, string | null];
 
+export enum InvalidityType {
+  Online,
+  ValidateIntention,
+  ClientUpgrade,
+  ConnectionTime,
+  Identity,
+  MultipleIdentities,
+  AccumulatedOfflineTime,
+  RewardDestination,
+  Commission,
+  SelfStake,
+  UnclaimedRewards,
+  KusamaRank,
+}
+
+export type InvalidityReason = {
+  valid: boolean;
+  type: InvalidityType;
+  details: string;
+  updated: number;
+};
+
 /// The data for a candidate that's kept in the DB.
 export type CandidateData = {
   /// The ID inherited from telemetry, null when no node has been connected.

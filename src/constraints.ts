@@ -306,6 +306,7 @@ export class OTV implements Constraints {
         await db.setInvalidityReason(candidate.stash, reason);
         continue;
       }
+      await db.setInvalidityReason(candidate.stash, "");
 
       validCandidates.push(candidate);
     }

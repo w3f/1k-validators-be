@@ -75,7 +75,7 @@ export const autoNumNominations = async (
     Math.floor(
       stashBal.div(validators.info[0].exposure.total.toBn()).toNumber()
     ) + 2,
-    16
+    24
   );
 };
 

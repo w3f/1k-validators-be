@@ -1,6 +1,6 @@
 {
   "name": "1k-validators-be",
-  "version": "2.3.84",
+  "version": "2.3.85",
   "description": "Services for running the Thousand Validator Program.",
   "main": "index.js",
   "scripts": {
@@ -32,6 +32,7 @@
     "@types/semver": "^7.3.5",
     "@types/ws": "^7.4.4",
     "axios": "^0.21.1",
+    "bree": "^6.2.0",
     "bs58": "^4.0.1",
     "commander": "^7.2.0",
     "cron": "^1.8.2",

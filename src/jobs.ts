@@ -37,26 +37,19 @@ export const validityJob = async (
     (candidate) => candidate.active
   );
 
-  const identityHashTable = await constraints.populateIdentityHashTable(
-    allCandidates
-  );
+  // const identityHashTable = await constraints.populateIdentityHashTable(
+  //   allCandidates
+  // );
 
   // set invalidityReason for stashes
-  const invalid = await constraints.getInvalidCandidates(
-    allCandidates,
-    identityHashTable
-  );
+  const invalid = await constraints.getInvalidCandidates(allCandidates);
   for (const i of invalid) {
     const { stash, reason } = i;
     await db.setInvalidityReason(stash, reason);
   }
 
   // set invalidityReason as empty for valid candidates
-  const valid = await constraints.getValidCandidates(
-    allCandidates,
-    identityHashTable,
-    db
-  );
+  const valid = await constraints.getValidCandidates(allCandidates, db);
   for (const v of valid) {
     const { stash } = v;
     await db.setInvalidityReason(stash, "");

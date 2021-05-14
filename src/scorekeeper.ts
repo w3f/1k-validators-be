@@ -219,13 +219,9 @@ export default class ScoreKeeper {
   // Populates the constraints valid cache
   async populateValid(): Promise<void> {
     const allCandidates = await this.db.allCandidates();
-    const identityHashTable = await this.constraints.populateIdentityHashTable(
-      allCandidates
-    );
 
     const validCandidates = await this.constraints.getValidCandidates(
       allCandidates,
-      identityHashTable,
       this.db
     );
   }
@@ -601,13 +597,9 @@ export default class ScoreKeeper {
     );
 
     const allCandidates = await this.db.allCandidates();
-    const identityHashTable = await this.constraints.populateIdentityHashTable(
-      allCandidates
-    );
 
     const validCandidates = await this.constraints.getValidCandidates(
       allCandidates,
-      identityHashTable,
       this.db
     );
 
@@ -830,13 +822,9 @@ export default class ScoreKeeper {
 
     // Adds all other valid candidates to the list
     const allCandidates = await this.db.allCandidates();
-    const identityHashTable = await this.constraints.populateIdentityHashTable(
-      allCandidates
-    );
 
     const validCandidates = await this.constraints.getValidCandidates(
       allCandidates,
-      identityHashTable,
       this.db
     );
 

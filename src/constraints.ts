@@ -27,11 +27,7 @@ import {
 } from "./score";
 
 export interface Constraints {
-  getValidCandidates(
-    candidates: any[],
-    identityHashTable: Map<string, number>,
-    db: Db
-  ): Promise<any[]>;
+  getValidCandidates(candidates: any[], db: Db): Promise<any[]>;
   processCandidates(
     candidates: Set<CandidateData>
   ): Promise<[Set<any>, Set<any>]>;
@@ -115,16 +111,12 @@ export class OTV implements Constraints {
 
   /// Returns true if it's a valid candidate or [false, "reason"] otherwise.
   async getInvalidCandidates(
-    candidates: CandidateData[],
-    identityHashTable: Map<string, number>
+    candidates: CandidateData[]
   ): Promise<{ stash: string; reason: string }[]> {
     let invalid = await Promise.all(
       candidates.map(async (candidate) => {
         const { stash } = candidate;
-        const [isValid, reason] = await this.checkSingleCandidate(
-          candidate,
-          identityHashTable
-        );
+        const [isValid, reason] = await this.checkSingleCandidate(candidate);
         if (!isValid) return { stash, reason };
       })
     );
@@ -139,8 +131,7 @@ export class OTV implements Constraints {
 
   /// Returns true if it's a valid candidate or [false, "reason"] otherwise.
   async checkSingleCandidate(
-    candidate: CandidateData,
-    identityHashTable: Map<string, number>
+    candidate: CandidateData
   ): Promise<[boolean, string]> {
     const {
       discoveredAt,
@@ -166,8 +157,8 @@ export class OTV implements Constraints {
       return [false, `${name} does not have a validate intention`];
     }
 
+    // Only take nodes that have been upgraded to latest versions.
     if (!this.config.constraints.skipClientUpgrade) {
-      // Only take nodes that have been upgraded to latest versions.
       const latestRelease = await this.db.getLatestRelease();
       if (latestRelease) {
         const nodeVersion = semver.coerce(candidate.version);
@@ -200,15 +191,15 @@ export class OTV implements Constraints {
         ];
       }
 
-      const idString = await this.chaindata.getIdentity(stash);
-      const idHash = blake2AsHex(idString);
-      const numIds = identityHashTable.get(idHash) || 0;
-      if (!numIds || numIds > 2) {
-        return [
-          false,
-          `${name} has too many candidates in the set with same identity. Number: ${numIds} Hash: ${idHash}`,
-        ];
-      }
+      // const idString = await this.chaindata.getIdentity(stash);
+      // const idHash = blake2AsHex(idString);
+      // const numIds = identityHashTable.get(idHash) || 0;
+      // if (!numIds || numIds > 2) {
+      //   return [
+      //     false,
+      //     `${name} has too many candidates in the set with same identity. Number: ${numIds} Hash: ${idHash}`,
+      //   ];
+      // }
     }
 
     // Ensures node has 98% up time.
@@ -301,7 +292,6 @@ export class OTV implements Constraints {
   // Returns the list of valid candidates, ordered by the priority they should get nominated in
   async getValidCandidates(
     candidates: CandidateData[],
-    identityHashTable: Map<string, number>,
     db: Db
   ): Promise<CandidateData[]> {
     logger.info(`(OTV::getValidCandidates) Getting candidates`);
@@ -309,15 +299,14 @@ export class OTV implements Constraints {
     const validCandidates = [];
     let rankedCandidates = [];
     for (const candidate of candidates) {
-      const [isValid, reason] = await this.checkSingleCandidate(
-        candidate,
-        identityHashTable
-      );
+      const [isValid, reason] = await this.checkSingleCandidate(candidate);
 
       if (!isValid) {
         logger.info(reason);
+        await db.setInvalidityReason(candidate.stash, reason);
         continue;
       }
+      await db.setInvalidityReason(candidate.stash, "");
 
       validCandidates.push(candidate);
     }

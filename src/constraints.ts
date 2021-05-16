@@ -147,13 +147,19 @@ export class OTV implements Constraints {
     } = candidate;
 
     // Ensure the candidate is online.
+    await checkOnline(this.db, candidate);
     if (Number(onlineSince) === 0 || Number(offlineSince) !== 0) {
       return [false, `${name} offline. Offline since ${offlineSince}.`];
     }
-    await checkOnline(this.db, candidate);
 
     // Check that the validator has a validate intention
     const validators = await this.chaindata.getValidators();
+    await checkValidateIntention(
+      this.config,
+      this.chaindata,
+      this.db,
+      candidate
+    );
     if (!validators.includes(formatAddress(stash, this.config))) {
       return [false, `${name} does not have a validate intention`];
     }
@@ -636,6 +642,7 @@ export class OTV implements Constraints {
   }
 }
 
+// Checks the online validity of a node
 export const checkOnline = async (db: Db, candidate: any) => {
   if (
     (candidate && Number(candidate.onlineSince) === 0) ||
@@ -646,5 +653,39 @@ export const checkOnline = async (db: Db, candidate: any) => {
   } else {
     await db.setOnlineValidity(candidate.stash, true);
     return true;
+  }
+};
+
+// Check the validate intention for a single validator
+export const checkValidateIntention = async (
+  config: Config,
+  chaindata: ChainData,
+  db: Db,
+  candidate: any
+) => {
+  const validators = await chaindata.getValidators();
+  if (!validators.includes(formatAddress(candidate.stash, config))) {
+    db.setValidateIntentionValidity(candidate.stash, false);
+    return false;
+  } else {
+    db.setValidateIntentionValidity(candidate.stash, true);
+    return true;
+  }
+};
+
+// checks the validate intention for all validators
+export const checkAllValidateIntentions = async (
+  config: Config,
+  chaindata: ChainData,
+  db: Db,
+  candidates: any
+) => {
+  const validators = await chaindata.getValidators();
+  for (const candidate of candidates) {
+    if (!validators.includes(formatAddress(candidate.stash, config))) {
+      db.setValidateIntentionValidity(candidate.stash, false);
+    } else {
+      db.setValidateIntentionValidity(candidate.stash, true);
+    }
   }
 };

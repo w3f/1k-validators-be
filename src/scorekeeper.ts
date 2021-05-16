@@ -16,7 +16,7 @@ import {
   THREE_PERCENT,
   SIXTEEN_HOURS,
 } from "./constants";
-import { OTV } from "./constraints";
+import { checkAllValidateIntentions, OTV } from "./constraints";
 import Db from "./db";
 import logger from "./logger";
 import Nominator from "./nominator";
@@ -186,10 +186,17 @@ export default class ScoreKeeper {
       const { sessionIndex } = data;
       logger.info(`{Session::NewSession} New Session Event: ${sessionIndex}`);
 
-      await sessionKeyJob(this.db, this.chaindata, this.candidateCache);
-      await inclusionJob(this.db, this.chaindata, this.candidateCache);
-      await validatorPrefJob(this.db, this.chaindata, this.candidateCache);
-      await unclaimedErasJob(this.db, this.chaindata, this.candidateCache);
+      await checkAllValidateIntentions(
+        this.config,
+        this.chaindata,
+        this.db,
+        this.candidateCache
+      );
+
+      // await sessionKeyJob(this.db, this.chaindata, this.candidateCache);
+      // await inclusionJob(this.db, this.chaindata, this.candidateCache);
+      // await validatorPrefJob(this.db, this.chaindata, this.candidateCache);
+      // await unclaimedErasJob(this.db, this.chaindata, this.candidateCache);
     });
 
     this.config = config;

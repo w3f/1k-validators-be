@@ -1659,7 +1659,6 @@ export default class Db {
       stash: address,
     });
 
-    // If the era points already exist and are the same as before, return
     if (!data) {
       console.log("NO CANDIDATE DATA FOUND");
       return;
@@ -1684,6 +1683,46 @@ export default class Db {
               details: validity
                 ? ""
                 : `${data.name} offline. Offline since ${data.offlineSince}.`,
+            },
+          ],
+        }
+      )
+      .exec();
+  }
+
+  // Set Validate Intention Status
+  async setValidateIntentionValidity(
+    address: string,
+    validity: boolean
+  ): Promise<any> {
+    const data = await this.candidateModel.findOne({
+      stash: address,
+    });
+
+    if (!data) {
+      console.log("NO CANDIDATE DATA FOUND");
+      return;
+    }
+
+    const invalidityReasons = data.invalidity.filter((invalidityReason) => {
+      return invalidityReason.type !== "VALIDATE_INTENTION";
+    });
+
+    this.candidateModel
+      .findOneAndUpdate(
+        {
+          stash: address,
+        },
+        {
+          invalidity: [
+            ...invalidityReasons,
+            {
+              valid: validity,
+              type: "VALIDATE_INTENTION",
+              updated: Date.now(),
+              details: validity
+                ? ""
+                : `${data.name} does not have a validate intention.`,
             },
           ],
         }

@@ -1653,7 +1653,7 @@ export default class Db {
     return (await this.releaseModel.find({}).sort("-publishedAt").limit(1))[0];
   }
 
-  // Create new Era Points records
+  // Set Online Validity Status
   async setOnlineValidity(address: string, validity: boolean): Promise<any> {
     const data = await this.candidateModel.findOne({
       stash: address,

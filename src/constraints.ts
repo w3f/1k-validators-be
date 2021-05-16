@@ -165,6 +165,7 @@ export class OTV implements Constraints {
     }
 
     // Only take nodes that have been upgraded to latest versions.
+    await checkLatestClientVersion(this.config, this.db, candidate);
     if (!this.config.constraints.skipClientUpgrade) {
       const latestRelease = await this.db.getLatestRelease();
       if (latestRelease) {
@@ -686,6 +687,29 @@ export const checkAllValidateIntentions = async (
       db.setValidateIntentionValidity(candidate.stash, false);
     } else {
       db.setValidateIntentionValidity(candidate.stash, true);
+    }
+  }
+};
+
+// checks that the validator is on the latest client version
+export const checkLatestClientVersion = async (
+  config: Config,
+  db: Db,
+  candidate: any
+) => {
+  if (!config.constraints.skipClientUpgrade) {
+    const latestRelease = await db.getLatestRelease();
+    if (latestRelease) {
+      const nodeVersion = semver.coerce(candidate.version);
+      const latestVersion = semver.clean(latestRelease.name);
+      const isUpgraded = semver.gte(nodeVersion, latestVersion);
+      if (!isUpgraded) {
+        db.setLatestClientReleaseValidity(candidate.stash, false);
+        return false;
+      } else {
+        db.setLatestClientReleaseValidity(candidate.stash, true);
+        return true;
+      }
     }
   }
 };

@@ -117,7 +117,7 @@ export default class TelemetryClient {
               });
             }
           };
-          
+
           await waitUntilFree(details[0]);
           await this.db.reportOnline(id, details, now);
         }

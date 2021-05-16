@@ -150,6 +150,7 @@ export class OTV implements Constraints {
     if (Number(onlineSince) === 0 || Number(offlineSince) !== 0) {
       return [false, `${name} offline. Offline since ${offlineSince}.`];
     }
+    await checkOnline(this.db, candidate);
 
     // Check that the validator has a validate intention
     const validators = await this.chaindata.getValidators();
@@ -634,3 +635,16 @@ export class OTV implements Constraints {
     return [good, bad];
   }
 }
+
+export const checkOnline = async (db: Db, candidate: any) => {
+  if (
+    (candidate && Number(candidate.onlineSince) === 0) ||
+    Number(candidate.offlineSince) !== 0
+  ) {
+    await db.setOnlineValidity(candidate.stash, false);
+    return false;
+  } else {
+    await db.setOnlineValidity(candidate.stash, true);
+    return true;
+  }
+};

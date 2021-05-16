@@ -1729,4 +1729,44 @@ export default class Db {
       )
       .exec();
   }
+
+  // Set Client Version Validity Status
+  async setLatestClientReleaseValidity(
+    address: string,
+    validity: boolean
+  ): Promise<any> {
+    const data = await this.candidateModel.findOne({
+      stash: address,
+    });
+
+    if (!data) {
+      console.log("NO CANDIDATE DATA FOUND");
+      return;
+    }
+
+    const invalidityReasons = data.invalidity.filter((invalidityReason) => {
+      return invalidityReason.type !== "CLIENT_UPGRADE";
+    });
+
+    this.candidateModel
+      .findOneAndUpdate(
+        {
+          stash: address,
+        },
+        {
+          invalidity: [
+            ...invalidityReasons,
+            {
+              valid: validity,
+              type: "CLIENT_UPGRADE",
+              updated: Date.now(),
+              details: validity
+                ? ""
+                : `${data.name} is not on the latest client version`,
+            },
+          ],
+        }
+      )
+      .exec();
+  }
 }

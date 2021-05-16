@@ -55,6 +55,30 @@ export const Identity = new Schema({
   verified: Boolean,
 });
 
+export const InvalidityReason = new Schema({
+  valid: Boolean,
+  type: {
+    type: String,
+    enum: [
+      "ONLINE",
+      "VALIDATE_INTENTION",
+      "CLIENT_UPGRADE",
+      "CONNECTION_TIME",
+      "IDENTITY",
+      "MULTIPLE_IDENTITIES",
+      "ACCUMULATED_OFFLINE_TIME",
+      "REWARD_DESTINATION",
+      "COMMISION",
+      "SELF_STAKE",
+      "UNCLAIMED_REWARDS",
+      "KUSAMA_RANK",
+    ],
+    default: "NEW",
+  },
+  details: {},
+  updated: Number,
+});
+
 export const CandidateSchema = new Schema({
   // The inherited telemetry ID.
   telemetryId: Number,
@@ -123,6 +147,8 @@ export const CandidateSchema = new Schema({
   bonded: Number,
   // case for good intentions
   skipSelfStake: Boolean,
+  //
+  invalidity: [InvalidityReason],
 });
 
 export const EraSchema = new Schema({

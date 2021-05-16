@@ -164,7 +164,7 @@ export default class TelemetryClient {
           };
 
           await waitUntilFree(details[0]);
-          // await this.db.reportBestBlock(id, details, now);
+          await this.db.reportBestBlock(id, details, now);
         }
         break;
     }

@@ -183,6 +183,7 @@ export default class Db {
           sentryId: 1,
           sentryOnlineSince: 1,
           sentryOfflineSince: 1,
+          telemetryid: 1,
         },
       },
       { multi: true, safe: true }
@@ -338,14 +339,29 @@ export default class Db {
       return candidate.save();
     }
 
+    // Get the list of all other validtity reasons besides online
+    const invalidityReasons = data.invalidity.filter((invalidityReason) => {
+      return invalidityReason.type !== "ONLINE";
+    });
+
     if (!data.discoveredAt) {
       await this.candidateModel
         .findOneAndUpdate(
           { name },
           {
+            telemetryId,
             discoveredAt: now,
             onlineSince: now,
             offlineSince: 0,
+            invalidity: [
+              ...invalidityReasons,
+              {
+                valid: true,
+                type: "ONLINE",
+                updated: Date.now(),
+                details: ``,
+              },
+            ],
           }
         )
         .exec();
@@ -353,17 +369,32 @@ export default class Db {
 
     // Always
     //  - Update the version
+    //  - Telemetry Id
     //  - Update the node refs
     //  - Update that the node is online
     await this.candidateModel
       .findOneAndUpdate(
         { name },
-        { onlineSince: now, version, $inc: { nodeRefs: 1 } }
+        {
+          telemetryId,
+          onlineSince: now,
+          version,
+          invalidity: [
+            ...invalidityReasons,
+            {
+              valid: true,
+              type: "ONLINE",
+              updated: Date.now(),
+              details: ``,
+            },
+          ],
+          $inc: { nodeRefs: 1 },
+        }
       )
       .exec();
 
     if (data.offlineSince && data.offlineSince !== 0) {
-      logger.debug(
+      logger.info(
         `Online node ${data.name} was offline since: ${data.offlineSince}`
       );
       // The node was previously offline.
@@ -400,33 +431,59 @@ export default class Db {
       `(Db::reportOffline) Reporting ${name} with telemetry id ${telemetryId} offline at ${now}.`
     );
 
-    const data = await this.candidateModel.findOne({ name });
+    const data = await this.candidateModel.findOne({ telemetryId });
 
     if (!data) {
       logger.info(`(Db::reportOffline) No data for node named ${name}.`);
       return false;
     }
 
+    // Get the list of all other validtity reasons besides online
+    const invalidityReasons = data.invalidity.filter((invalidityReason) => {
+      return invalidityReason.type !== "ONLINE";
+    });
+
     // If more than one node has this name, we assume the validator is updating.
     // Only decrement the nodeRefs, don't mark offline.
     if (data.nodeRefs > 1) {
       return this.candidateModel.findOneAndUpdate(
-        { name },
+        { telemetryId },
         {
           $inc: {
             nodeRefs: -1,
           },
+          invalidity: [
+            ...invalidityReasons,
+            {
+              valid: false,
+              type: "ONLINE",
+              updated: Date.now(),
+              details: `${data.name} offline. Offline since ${data.offlineSince}.`,
+            },
+          ],
         }
       );
     }
 
     return this.candidateModel.findOneAndUpdate(
       {
-        name,
+        telemetryId,
       },
       {
         offlineSince: now,
         onlineSince: 0,
+        $inc: {
+          nodeRefs: -1,
+        },
+        invalidity: [
+          ...invalidityReasons,
+          {
+            valid: false,
+            type: "ONLINE",
+            updated: Date.now(),
+            details: `${data.name} offline. Offline since ${data.offlineSince}.`,
+          },
+        ],
       }
     );
   }
@@ -1594,5 +1651,43 @@ export default class Db {
 
   async getLatestRelease(): Promise<any> {
     return (await this.releaseModel.find({}).sort("-publishedAt").limit(1))[0];
+  }
+
+  // Set Online Validity Status
+  async setOnlineValidity(address: string, validity: boolean): Promise<any> {
+    const data = await this.candidateModel.findOne({
+      stash: address,
+    });
+
+    // If the era points already exist and are the same as before, return
+    if (!data) {
+      console.log("NO CANDIDATE DATA FOUND");
+      return;
+    }
+
+    const invalidityReasons = data.invalidity.filter((invalidityReason) => {
+      return invalidityReason.type !== "ONLINE";
+    });
+
+    this.candidateModel
+      .findOneAndUpdate(
+        {
+          stash: address,
+        },
+        {
+          invalidity: [
+            ...invalidityReasons,
+            {
+              valid: validity,
+              type: "ONLINE",
+              updated: Date.now(),
+              details: validity
+                ? ""
+                : `${data.name} offline. Offline since ${data.offlineSince}.`,
+            },
+          ],
+        }
+      )
+      .exec();
   }
 }

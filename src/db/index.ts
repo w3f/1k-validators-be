@@ -1660,7 +1660,9 @@ export default class Db {
     });
 
     if (!data) {
-      console.log("NO CANDIDATE DATA FOUND");
+      console.log(
+        `{Validate Intention} NO CANDIDATE DATA FOUND FOR ${address}`
+      );
       return;
     }
 
@@ -1700,7 +1702,9 @@ export default class Db {
     });
 
     if (!data) {
-      console.log("NO CANDIDATE DATA FOUND");
+      console.log(
+        `{Validate Intention} NO CANDIDATE DATA FOUND FOR ${address}`
+      );
       return;
     }
 
@@ -1740,7 +1744,7 @@ export default class Db {
     });
 
     if (!data) {
-      console.log("NO CANDIDATE DATA FOUND");
+      console.log(`{Latest Client} NO CANDIDATE DATA FOUND FOR ${address}`);
       return;
     }
 
@@ -1780,7 +1784,7 @@ export default class Db {
     });
 
     if (!data) {
-      console.log("NO CANDIDATE DATA FOUND");
+      console.log(`{Connection Time} NO CANDIDATE DATA FOUND FOR ${address}`);
       return;
     }
 
@@ -1821,7 +1825,7 @@ export default class Db {
     });
 
     if (!data) {
-      console.log("NO CANDIDATE DATA FOUND");
+      console.log(`{Identity} NO CANDIDATE DATA FOUND FOR ${address}`);
       return;
     }
 
@@ -1863,7 +1867,9 @@ export default class Db {
     });
 
     if (!data) {
-      console.log("NO CANDIDATE DATA FOUND");
+      console.log(
+        `{Offline Accumulated} NO CANDIDATE DATA FOUND FOR ${address}`
+      );
       return;
     }
 
@@ -1905,7 +1911,9 @@ export default class Db {
     });
 
     if (!data) {
-      console.log("NO CANDIDATE DATA FOUND");
+      console.log(
+        `{Reward Destination} NO CANDIDATE DATA FOUND FOR ${address}`
+      );
       return;
     }
 
@@ -1946,7 +1954,7 @@ export default class Db {
     });
 
     if (!data) {
-      console.log("NO CANDIDATE DATA FOUND");
+      console.log(`{Commission} NO CANDIDATE DATA FOUND FOR ${address}`);
       return;
     }
 
@@ -1965,6 +1973,49 @@ export default class Db {
             {
               valid: validity,
               type: "COMMISION",
+              updated: Date.now(),
+              details: validity
+                ? ""
+                : details
+                ? details
+                : `${data.name} has not properly set their commission`,
+            },
+          ],
+        }
+      )
+      .exec();
+  }
+
+  // Set Self STake Validity Status
+  async setSelfStakeInvalidity(
+    address: string,
+    validity: boolean,
+    details?: string
+  ): Promise<any> {
+    const data = await this.candidateModel.findOne({
+      stash: address,
+    });
+
+    if (!data) {
+      console.log(`{Self Stake} NO CANDIDATE DATA FOUND FOR ${address}`);
+      return;
+    }
+
+    const invalidityReasons = data.invalidity.filter((invalidityReason) => {
+      return invalidityReason.type !== "SELF_STAKE";
+    });
+
+    this.candidateModel
+      .findOneAndUpdate(
+        {
+          stash: address,
+        },
+        {
+          invalidity: [
+            ...invalidityReasons,
+            {
+              valid: validity,
+              type: "SELF_STAKE",
               updated: Date.now(),
               details: validity
                 ? ""

@@ -247,6 +247,7 @@ export class OTV implements Constraints {
       ];
     }
 
+    await checkSelfStake(this.db, this.chaindata, this.minSelfStake, candidate);
     if (!skipSelfStake) {
       const [bondedAmt, err2] = await this.chaindata.getBondedAmount(stash);
       if (err2) {
@@ -805,4 +806,29 @@ export const checkCommission = async (
     db.setCommissionInvalidity(candidate.stash, true);
     return true;
   }
+};
+
+export const checkSelfStake = async (
+  db: Db,
+  chaindata: ChainData,
+  targetSelfStake: number,
+  candidate: any
+) => {
+  if (!candidate.skipSelfStake) {
+    const [bondedAmt, err2] = await chaindata.getBondedAmount(candidate.stash);
+    let invalidityString;
+    if (err2) {
+      invalidityString = `${candidate.name} ${err2}`;
+      await db.setSelfStakeInvalidity(candidate.stash, false, invalidityString);
+      return false;
+    }
+
+    if (bondedAmt < targetSelfStake) {
+      invalidityString = `${candidate.name} has less than the minimum amount bonded: ${bondedAmt} is bonded.`;
+      await db.setSelfStakeInvalidity(candidate.stash, false, invalidityString);
+      return false;
+    }
+  }
+  await db.setSelfStakeInvalidity(candidate.stash, true);
+  return true;
 };

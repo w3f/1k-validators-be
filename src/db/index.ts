@@ -1769,4 +1769,44 @@ export default class Db {
       )
       .exec();
   }
+
+  // Set Client Version Validity Status
+  async setConnectionTimeInvalidity(
+    address: string,
+    validity: boolean
+  ): Promise<any> {
+    const data = await this.candidateModel.findOne({
+      stash: address,
+    });
+
+    if (!data) {
+      console.log("NO CANDIDATE DATA FOUND");
+      return;
+    }
+
+    const invalidityReasons = data.invalidity.filter((invalidityReason) => {
+      return invalidityReason.type !== "CONNECTION_TIME";
+    });
+
+    this.candidateModel
+      .findOneAndUpdate(
+        {
+          stash: address,
+        },
+        {
+          invalidity: [
+            ...invalidityReasons,
+            {
+              valid: validity,
+              type: "CONNECTION_TIME",
+              updated: Date.now(),
+              details: validity
+                ? ""
+                : `${data.name} has not been connected for minimum length`,
+            },
+          ],
+        }
+      )
+      .exec();
+  }
 }

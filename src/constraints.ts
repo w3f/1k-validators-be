@@ -179,6 +179,7 @@ export class OTV implements Constraints {
     }
 
     // Ensure the node has been connected for a minimum of one week.
+    await checkConnectionTime(this.config, this.db, candidate);
     if (!this.skipConnectionTime) {
       const now = new Date().getTime();
       if (now - discoveredAt < WEEK) {
@@ -710,6 +711,23 @@ export const checkLatestClientVersion = async (
         db.setLatestClientReleaseValidity(candidate.stash, true);
         return true;
       }
+    }
+  }
+};
+
+export const checkConnectionTime = async (
+  config: Config,
+  db: Db,
+  candidate: any
+) => {
+  if (!config.constraints.skipConnectionTime) {
+    const now = new Date().getTime();
+    if (now - candidate.discoveredAt < WEEK) {
+      db.setConnectionTimeInvalidity(candidate.stash, false);
+      return false;
+    } else {
+      db.setConnectionTimeInvalidity(candidate.stash, true);
+      return true;
     }
   }
 };

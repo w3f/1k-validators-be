@@ -1,6 +1,6 @@
 {
   "name": "1k-validators-be",
-  "version": "2.3.88",
+  "version": "2.3.89",
   "description": "Services for running the Thousand Validator Program.",
   "main": "index.js",
   "scripts": {

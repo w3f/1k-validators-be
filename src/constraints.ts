@@ -213,6 +213,7 @@ export class OTV implements Constraints {
     }
 
     // Ensures node has 98% up time.
+    await checkOffline(this.db, candidate);
     const totalOffline = offlineAccumulated / WEEK;
     if (totalOffline > 0.02) {
       return [
@@ -225,6 +226,7 @@ export class OTV implements Constraints {
 
     // Ensure that the reward destination is set to 'Staked'
     if (!this.skipStakedDesitnation) {
+      await checkRewardDestination(this.db, this.chaindata, candidate);
       const isStaked = await this.chaindata.destinationIsStaked(stash);
       if (!isStaked) {
         const reason = `${name} does not have reward destination set to Staked`;
@@ -751,4 +753,30 @@ export const checkIdentity = async (
   }
   db.setIdentityInvalidity(candidate.stash, true);
   return true;
+};
+
+export const checkOffline = async (db: Db, candidate: any) => {
+  const totalOffline = candidate.offlineAccumulated / WEEK;
+  if (totalOffline > 0.02) {
+    db.setOfflineAccumulatedInvalidity(candidate.stash, false);
+    return false;
+  } else {
+    db.setOfflineAccumulatedInvalidity(candidate.stash, true);
+    return true;
+  }
+};
+
+export const checkRewardDestination = async (
+  db: Db,
+  chaindata: ChainData,
+  candidate: any
+) => {
+  const isStaked = await chaindata.destinationIsStaked(candidate.stash);
+  if (!isStaked) {
+    await db.setRewardDestinationInvalidity(candidate.stash, false);
+    return false;
+  } else {
+    await db.setRewardDestinationInvalidity(candidate.stash, true);
+    return true;
+  }
 };

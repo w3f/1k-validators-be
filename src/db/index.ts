@@ -1852,4 +1852,86 @@ export default class Db {
       )
       .exec();
   }
+
+  // Set Identity Validity Status
+  async setOfflineAccumulatedInvalidity(
+    address: string,
+    validity: boolean
+  ): Promise<any> {
+    const data = await this.candidateModel.findOne({
+      stash: address,
+    });
+
+    if (!data) {
+      console.log("NO CANDIDATE DATA FOUND");
+      return;
+    }
+
+    const invalidityReasons = data.invalidity.filter((invalidityReason) => {
+      return invalidityReason.type !== "ACCUMULATED_OFFLINE_TIME";
+    });
+
+    this.candidateModel
+      .findOneAndUpdate(
+        {
+          stash: address,
+        },
+        {
+          invalidity: [
+            ...invalidityReasons,
+            {
+              valid: validity,
+              type: "ACCUMULATED_OFFLINE_TIME",
+              updated: Date.now(),
+              details: validity
+                ? ""
+                : `${data.name} has been offline ${
+                    data.offlineAccumulated / 1000 / 60
+                  } minutes this week.`,
+            },
+          ],
+        }
+      )
+      .exec();
+  }
+
+  // Set Identity Validity Status
+  async setRewardDestinationInvalidity(
+    address: string,
+    validity: boolean
+  ): Promise<any> {
+    const data = await this.candidateModel.findOne({
+      stash: address,
+    });
+
+    if (!data) {
+      console.log("NO CANDIDATE DATA FOUND");
+      return;
+    }
+
+    const invalidityReasons = data.invalidity.filter((invalidityReason) => {
+      return invalidityReason.type !== "REWARD_DESTINATION";
+    });
+
+    this.candidateModel
+      .findOneAndUpdate(
+        {
+          stash: address,
+        },
+        {
+          invalidity: [
+            ...invalidityReasons,
+            {
+              valid: validity,
+              type: "REWARD_DESTINATION",
+              updated: Date.now(),
+              details: validity
+                ? ""
+                : `${data.name} does not have reward destination as Staked`,
+            },
+          ],
+        }
+      )
+      .exec();
+  }
 }

@@ -1986,7 +1986,7 @@ export default class Db {
       .exec();
   }
 
-  // Set Self STake Validity Status
+  // Set Self Stake Validity Status
   async setSelfStakeInvalidity(
     address: string,
     validity: boolean,
@@ -2021,7 +2021,93 @@ export default class Db {
                 ? ""
                 : details
                 ? details
-                : `${data.name} has not properly set their commission`,
+                : `${data.name} has not properly bonded enough self stake`,
+            },
+          ],
+        }
+      )
+      .exec();
+  }
+
+  // Set Unclaimed Era Validity Status
+  async setUnclaimedInvalidity(
+    address: string,
+    validity: boolean,
+    details?: string
+  ): Promise<any> {
+    const data = await this.candidateModel.findOne({
+      stash: address,
+    });
+
+    if (!data) {
+      console.log(`{Self Stake} NO CANDIDATE DATA FOUND FOR ${address}`);
+      return;
+    }
+
+    const invalidityReasons = data.invalidity.filter((invalidityReason) => {
+      return invalidityReason.type !== "UNCLAIMED_REWARDS";
+    });
+
+    this.candidateModel
+      .findOneAndUpdate(
+        {
+          stash: address,
+        },
+        {
+          invalidity: [
+            ...invalidityReasons,
+            {
+              valid: validity,
+              type: "UNCLAIMED_REWARDS",
+              updated: Date.now(),
+              details: validity
+                ? ""
+                : details
+                ? details
+                : `${data.name} has not properly claimed era rewards`,
+            },
+          ],
+        }
+      )
+      .exec();
+  }
+
+  // Set Kusama Rank Validity Status
+  async setKusamaRankInvalidity(
+    address: string,
+    validity: boolean,
+    details?: string
+  ): Promise<any> {
+    const data = await this.candidateModel.findOne({
+      stash: address,
+    });
+
+    if (!data) {
+      console.log(`{Self Stake} NO CANDIDATE DATA FOUND FOR ${address}`);
+      return;
+    }
+
+    const invalidityReasons = data.invalidity.filter((invalidityReason) => {
+      return invalidityReason.type !== "KUSAMA_RANK";
+    });
+
+    this.candidateModel
+      .findOneAndUpdate(
+        {
+          stash: address,
+        },
+        {
+          invalidity: [
+            ...invalidityReasons,
+            {
+              valid: validity,
+              type: "KUSAMA_RANK",
+              updated: Date.now(),
+              details: validity
+                ? ""
+                : details
+                ? details
+                : `${data.name} has not properly claimed era rewards`,
             },
           ],
         }

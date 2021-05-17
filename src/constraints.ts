@@ -263,6 +263,12 @@ export class OTV implements Constraints {
     }
 
     if (!this.skipUnclaimed) {
+      await checkUnclaimed(
+        this.db,
+        this.chaindata,
+        this.unclaimedEraThreshold,
+        candidate
+      );
       const [currentEra, err3] = await this.chaindata.getActiveEraIndex();
       const threshold = currentEra - this.unclaimedEraThreshold - 1; // Validators cannot have unclaimed rewards before this era
       // If unclaimed eras contain an era below the recent threshold
@@ -278,6 +284,7 @@ export class OTV implements Constraints {
 
     try {
       if (!!kusamaStash) {
+        await checkKusamaRank(this.db, candidate);
         const url = `${KOTVBackendEndpoint}/candidate/${kusamaStash}`;
 
         const res = await axios.get(url);
@@ -332,7 +339,7 @@ export class OTV implements Constraints {
     const bondedValues = validCandidates.map((candidate) => {
       return candidate.bonded ? candidate.bonded : 0;
     });
-    const bondedStats = getStats(bondedValues);
+    const bondedStats = bondedValues.length > 0 ? getStats(bondedValues) : [];
 
     // Faults
     const faultsValues = validCandidates.map((candidate) => {
@@ -831,4 +838,62 @@ export const checkSelfStake = async (
   }
   await db.setSelfStakeInvalidity(candidate.stash, true);
   return true;
+};
+
+export const checkUnclaimed = async (
+  db: Db,
+  chaindata: ChainData,
+  unclaimedEraThreshold: number,
+  candidate: any
+) => {
+  const [currentEra, err3] = await chaindata.getActiveEraIndex();
+  const threshold = currentEra - unclaimedEraThreshold - 1; // Validators cannot have unclaimed rewards before this era
+  // If unclaimed eras contain an era below the recent threshold
+  if (
+    candidate.unclaimedEras &&
+    !candidate.unclaimedEras.every((era) => era > threshold)
+  ) {
+    const invalidityString = `${candidate.name} has unclaimed eras: ${
+      candidate.unclaimedEras
+    } prior to era: ${threshold + 1}`;
+    await db.setUnclaimedInvalidity(candidate.stash, false, invalidityString);
+    return false;
+  } else {
+    await db.setUnclaimedInvalidity(candidate.stash, true);
+    return true;
+  }
+};
+
+export const checkKusamaRank = async (db: Db, candidate: any) => {
+  try {
+    if (!!candidate.kusamaStash) {
+      const url = `${KOTVBackendEndpoint}/candidate/${candidate.kusamaStash}`;
+
+      const res = await axios.get(url);
+
+      if (!!res.data.invalidityReasons) {
+        const invalidityReason = `${candidate.name} has a kusama node that is invalid: ${res.data.invalidityReasons}`;
+        await db.setKusamaRankInvalidity(
+          candidate.stash,
+          false,
+          invalidityReason
+        );
+        return false;
+      }
+
+      if (Number(res.data.rank) < 25) {
+        const invalidityReason = `${candidate.name} has a Kusama stash with lower than 25 rank in the Kusama OTV programme: ${res.data.rank}.`;
+        await db.setKusamaRankInvalidity(
+          candidate.stash,
+          false,
+          invalidityReason
+        );
+        return false;
+      }
+    }
+    await db.setKusamaRankInvalidity(candidate.stash, true);
+    return true;
+  } catch (e) {
+    logger.info(`Error trying to get kusama data...`);
+  }
 };

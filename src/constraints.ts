@@ -179,6 +179,7 @@ export class OTV implements Constraints {
     }
 
     // Ensure the node has been connected for a minimum of one week.
+    await checkConnectionTime(this.config, this.db, candidate);
     if (!this.skipConnectionTime) {
       const now = new Date().getTime();
       if (now - discoveredAt < WEEK) {
@@ -188,6 +189,7 @@ export class OTV implements Constraints {
 
     // Ensure the validator stash has an identity set.
     if (!this.skipIdentity) {
+      await checkIdentity(this.chaindata, this.db, candidate);
       const [hasIdentity, verified] = await this.chaindata.hasIdentity(stash);
       if (!hasIdentity) {
         return [false, `${name} does not have an identity set.`];
@@ -211,6 +213,7 @@ export class OTV implements Constraints {
     }
 
     // Ensures node has 98% up time.
+    await checkOffline(this.db, candidate);
     const totalOffline = offlineAccumulated / WEEK;
     if (totalOffline > 0.02) {
       return [
@@ -223,6 +226,7 @@ export class OTV implements Constraints {
 
     // Ensure that the reward destination is set to 'Staked'
     if (!this.skipStakedDesitnation) {
+      await checkRewardDestination(this.db, this.chaindata, candidate);
       const isStaked = await this.chaindata.destinationIsStaked(stash);
       if (!isStaked) {
         const reason = `${name} does not have reward destination set to Staked`;
@@ -231,6 +235,7 @@ export class OTV implements Constraints {
     }
 
     // Ensure that the commission is in line with the network rules
+    await checkCommission(this.db, this.chaindata, this.commission, candidate);
     const [commission, err] = await this.chaindata.getCommission(stash);
     if (err) {
       return [false, `${name} ${err}`];
@@ -242,6 +247,7 @@ export class OTV implements Constraints {
       ];
     }
 
+    await checkSelfStake(this.db, this.chaindata, this.minSelfStake, candidate);
     if (!skipSelfStake) {
       const [bondedAmt, err2] = await this.chaindata.getBondedAmount(stash);
       if (err2) {
@@ -257,6 +263,12 @@ export class OTV implements Constraints {
     }
 
     if (!this.skipUnclaimed) {
+      await checkUnclaimed(
+        this.db,
+        this.chaindata,
+        this.unclaimedEraThreshold,
+        candidate
+      );
       const [currentEra, err3] = await this.chaindata.getActiveEraIndex();
       const threshold = currentEra - this.unclaimedEraThreshold - 1; // Validators cannot have unclaimed rewards before this era
       // If unclaimed eras contain an era below the recent threshold
@@ -272,6 +284,7 @@ export class OTV implements Constraints {
 
     try {
       if (!!kusamaStash) {
+        await checkKusamaRank(this.db, candidate);
         const url = `${KOTVBackendEndpoint}/candidate/${kusamaStash}`;
 
         const res = await axios.get(url);
@@ -326,7 +339,7 @@ export class OTV implements Constraints {
     const bondedValues = validCandidates.map((candidate) => {
       return candidate.bonded ? candidate.bonded : 0;
     });
-    const bondedStats = getStats(bondedValues);
+    const bondedStats = bondedValues.length > 0 ? getStats(bondedValues) : [];
 
     // Faults
     const faultsValues = validCandidates.map((candidate) => {
@@ -711,5 +724,176 @@ export const checkLatestClientVersion = async (
         return true;
       }
     }
+  }
+};
+
+export const checkConnectionTime = async (
+  config: Config,
+  db: Db,
+  candidate: any
+) => {
+  if (!config.constraints.skipConnectionTime) {
+    const now = new Date().getTime();
+    if (now - candidate.discoveredAt < WEEK) {
+      db.setConnectionTimeInvalidity(candidate.stash, false);
+      return false;
+    } else {
+      db.setConnectionTimeInvalidity(candidate.stash, true);
+      return true;
+    }
+  }
+};
+
+export const checkIdentity = async (
+  chaindata: ChainData,
+  db: Db,
+  candidate: any
+) => {
+  const [hasIdentity, verified] = await chaindata.hasIdentity(candidate.stash);
+  if (!hasIdentity) {
+    const invalidityString = `${candidate.name} does not have an identity set.`;
+    db.setIdentityInvalidity(candidate.stash, false, invalidityString);
+    return false;
+  }
+  if (!verified) {
+    const invalidityString = `${candidate.name} has an identity but is not verified by registrar.`;
+    db.setIdentityInvalidity(candidate.stash, false, invalidityString);
+    return false;
+  }
+  db.setIdentityInvalidity(candidate.stash, true);
+  return true;
+};
+
+export const checkOffline = async (db: Db, candidate: any) => {
+  const totalOffline = candidate.offlineAccumulated / WEEK;
+  if (totalOffline > 0.02) {
+    db.setOfflineAccumulatedInvalidity(candidate.stash, false);
+    return false;
+  } else {
+    db.setOfflineAccumulatedInvalidity(candidate.stash, true);
+    return true;
+  }
+};
+
+export const checkRewardDestination = async (
+  db: Db,
+  chaindata: ChainData,
+  candidate: any
+) => {
+  const isStaked = await chaindata.destinationIsStaked(candidate.stash);
+  if (!isStaked) {
+    await db.setRewardDestinationInvalidity(candidate.stash, false);
+    return false;
+  } else {
+    await db.setRewardDestinationInvalidity(candidate.stash, true);
+    return true;
+  }
+};
+
+export const checkCommission = async (
+  db: Db,
+  chaindata: ChainData,
+  targetCommission: number,
+  candidate: any
+) => {
+  const [commission, err] = await chaindata.getCommission(candidate.stash);
+  if (err) {
+    logger.warn(`{CheckComssion} there was an error: ${err}`);
+    return false;
+  }
+  if (commission > targetCommission) {
+    const invalidityString = `${
+      candidate.name
+    } commission is set higher than the maximum allowed. Set: ${
+      commission / Math.pow(10, 7)
+    }% Allowed: ${targetCommission / Math.pow(10, 7)}%`;
+    db.setCommissionInvalidity(candidate.stash, false, invalidityString);
+    return false;
+  } else {
+    db.setCommissionInvalidity(candidate.stash, true);
+    return true;
+  }
+};
+
+export const checkSelfStake = async (
+  db: Db,
+  chaindata: ChainData,
+  targetSelfStake: number,
+  candidate: any
+) => {
+  if (!candidate.skipSelfStake) {
+    const [bondedAmt, err2] = await chaindata.getBondedAmount(candidate.stash);
+    let invalidityString;
+    if (err2) {
+      invalidityString = `${candidate.name} ${err2}`;
+      await db.setSelfStakeInvalidity(candidate.stash, false, invalidityString);
+      return false;
+    }
+
+    if (bondedAmt < targetSelfStake) {
+      invalidityString = `${candidate.name} has less than the minimum amount bonded: ${bondedAmt} is bonded.`;
+      await db.setSelfStakeInvalidity(candidate.stash, false, invalidityString);
+      return false;
+    }
+  }
+  await db.setSelfStakeInvalidity(candidate.stash, true);
+  return true;
+};
+
+export const checkUnclaimed = async (
+  db: Db,
+  chaindata: ChainData,
+  unclaimedEraThreshold: number,
+  candidate: any
+) => {
+  const [currentEra, err3] = await chaindata.getActiveEraIndex();
+  const threshold = currentEra - unclaimedEraThreshold - 1; // Validators cannot have unclaimed rewards before this era
+  // If unclaimed eras contain an era below the recent threshold
+  if (
+    candidate.unclaimedEras &&
+    !candidate.unclaimedEras.every((era) => era > threshold)
+  ) {
+    const invalidityString = `${candidate.name} has unclaimed eras: ${
+      candidate.unclaimedEras
+    } prior to era: ${threshold + 1}`;
+    await db.setUnclaimedInvalidity(candidate.stash, false, invalidityString);
+    return false;
+  } else {
+    await db.setUnclaimedInvalidity(candidate.stash, true);
+    return true;
+  }
+};
+
+export const checkKusamaRank = async (db: Db, candidate: any) => {
+  try {
+    if (!!candidate.kusamaStash) {
+      const url = `${KOTVBackendEndpoint}/candidate/${candidate.kusamaStash}`;
+
+      const res = await axios.get(url);
+
+      if (!!res.data.invalidityReasons) {
+        const invalidityReason = `${candidate.name} has a kusama node that is invalid: ${res.data.invalidityReasons}`;
+        await db.setKusamaRankInvalidity(
+          candidate.stash,
+          false,
+          invalidityReason
+        );
+        return false;
+      }
+
+      if (Number(res.data.rank) < 25) {
+        const invalidityReason = `${candidate.name} has a Kusama stash with lower than 25 rank in the Kusama OTV programme: ${res.data.rank}.`;
+        await db.setKusamaRankInvalidity(
+          candidate.stash,
+          false,
+          invalidityReason
+        );
+        return false;
+      }
+    }
+    await db.setKusamaRankInvalidity(candidate.stash, true);
+    return true;
+  } catch (e) {
+    logger.info(`Error trying to get kusama data...`);
   }
 };

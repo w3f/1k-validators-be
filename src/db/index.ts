@@ -1660,7 +1660,9 @@ export default class Db {
     });
 
     if (!data) {
-      console.log("NO CANDIDATE DATA FOUND");
+      console.log(
+        `{Validate Intention} NO CANDIDATE DATA FOUND FOR ${address}`
+      );
       return;
     }
 
@@ -1700,7 +1702,9 @@ export default class Db {
     });
 
     if (!data) {
-      console.log("NO CANDIDATE DATA FOUND");
+      console.log(
+        `{Validate Intention} NO CANDIDATE DATA FOUND FOR ${address}`
+      );
       return;
     }
 
@@ -1740,7 +1744,7 @@ export default class Db {
     });
 
     if (!data) {
-      console.log("NO CANDIDATE DATA FOUND");
+      console.log(`{Latest Client} NO CANDIDATE DATA FOUND FOR ${address}`);
       return;
     }
 
@@ -1763,6 +1767,347 @@ export default class Db {
               details: validity
                 ? ""
                 : `${data.name} is not on the latest client version`,
+            },
+          ],
+        }
+      )
+      .exec();
+  }
+
+  // Set Connection Time Validity Status
+  async setConnectionTimeInvalidity(
+    address: string,
+    validity: boolean
+  ): Promise<any> {
+    const data = await this.candidateModel.findOne({
+      stash: address,
+    });
+
+    if (!data) {
+      console.log(`{Connection Time} NO CANDIDATE DATA FOUND FOR ${address}`);
+      return;
+    }
+
+    const invalidityReasons = data.invalidity.filter((invalidityReason) => {
+      return invalidityReason.type !== "CONNECTION_TIME";
+    });
+
+    this.candidateModel
+      .findOneAndUpdate(
+        {
+          stash: address,
+        },
+        {
+          invalidity: [
+            ...invalidityReasons,
+            {
+              valid: validity,
+              type: "CONNECTION_TIME",
+              updated: Date.now(),
+              details: validity
+                ? ""
+                : `${data.name} has not been connected for minimum length`,
+            },
+          ],
+        }
+      )
+      .exec();
+  }
+
+  // Set Identity Validity Status
+  async setIdentityInvalidity(
+    address: string,
+    validity: boolean,
+    details?: string
+  ): Promise<any> {
+    const data = await this.candidateModel.findOne({
+      stash: address,
+    });
+
+    if (!data) {
+      console.log(`{Identity} NO CANDIDATE DATA FOUND FOR ${address}`);
+      return;
+    }
+
+    const invalidityReasons = data.invalidity.filter((invalidityReason) => {
+      return invalidityReason.type !== "IDENTITY";
+    });
+
+    this.candidateModel
+      .findOneAndUpdate(
+        {
+          stash: address,
+        },
+        {
+          invalidity: [
+            ...invalidityReasons,
+            {
+              valid: validity,
+              type: "IDENTITY",
+              updated: Date.now(),
+              details: validity
+                ? ""
+                : details
+                ? details
+                : `${data.name} has not properly set their identity`,
+            },
+          ],
+        }
+      )
+      .exec();
+  }
+
+  // Set Identity Validity Status
+  async setOfflineAccumulatedInvalidity(
+    address: string,
+    validity: boolean
+  ): Promise<any> {
+    const data = await this.candidateModel.findOne({
+      stash: address,
+    });
+
+    if (!data) {
+      console.log(
+        `{Offline Accumulated} NO CANDIDATE DATA FOUND FOR ${address}`
+      );
+      return;
+    }
+
+    const invalidityReasons = data.invalidity.filter((invalidityReason) => {
+      return invalidityReason.type !== "ACCUMULATED_OFFLINE_TIME";
+    });
+
+    this.candidateModel
+      .findOneAndUpdate(
+        {
+          stash: address,
+        },
+        {
+          invalidity: [
+            ...invalidityReasons,
+            {
+              valid: validity,
+              type: "ACCUMULATED_OFFLINE_TIME",
+              updated: Date.now(),
+              details: validity
+                ? ""
+                : `${data.name} has been offline ${
+                    data.offlineAccumulated / 1000 / 60
+                  } minutes this week.`,
+            },
+          ],
+        }
+      )
+      .exec();
+  }
+
+  // Set Identity Validity Status
+  async setRewardDestinationInvalidity(
+    address: string,
+    validity: boolean
+  ): Promise<any> {
+    const data = await this.candidateModel.findOne({
+      stash: address,
+    });
+
+    if (!data) {
+      console.log(
+        `{Reward Destination} NO CANDIDATE DATA FOUND FOR ${address}`
+      );
+      return;
+    }
+
+    const invalidityReasons = data.invalidity.filter((invalidityReason) => {
+      return invalidityReason.type !== "REWARD_DESTINATION";
+    });
+
+    this.candidateModel
+      .findOneAndUpdate(
+        {
+          stash: address,
+        },
+        {
+          invalidity: [
+            ...invalidityReasons,
+            {
+              valid: validity,
+              type: "REWARD_DESTINATION",
+              updated: Date.now(),
+              details: validity
+                ? ""
+                : `${data.name} does not have reward destination as Staked`,
+            },
+          ],
+        }
+      )
+      .exec();
+  }
+
+  // Set Identity Validity Status
+  async setCommissionInvalidity(
+    address: string,
+    validity: boolean,
+    details?: string
+  ): Promise<any> {
+    const data = await this.candidateModel.findOne({
+      stash: address,
+    });
+
+    if (!data) {
+      console.log(`{Commission} NO CANDIDATE DATA FOUND FOR ${address}`);
+      return;
+    }
+
+    const invalidityReasons = data.invalidity.filter((invalidityReason) => {
+      return invalidityReason.type !== "COMMISION";
+    });
+
+    this.candidateModel
+      .findOneAndUpdate(
+        {
+          stash: address,
+        },
+        {
+          invalidity: [
+            ...invalidityReasons,
+            {
+              valid: validity,
+              type: "COMMISION",
+              updated: Date.now(),
+              details: validity
+                ? ""
+                : details
+                ? details
+                : `${data.name} has not properly set their commission`,
+            },
+          ],
+        }
+      )
+      .exec();
+  }
+
+  // Set Self Stake Validity Status
+  async setSelfStakeInvalidity(
+    address: string,
+    validity: boolean,
+    details?: string
+  ): Promise<any> {
+    const data = await this.candidateModel.findOne({
+      stash: address,
+    });
+
+    if (!data) {
+      console.log(`{Self Stake} NO CANDIDATE DATA FOUND FOR ${address}`);
+      return;
+    }
+
+    const invalidityReasons = data.invalidity.filter((invalidityReason) => {
+      return invalidityReason.type !== "SELF_STAKE";
+    });
+
+    this.candidateModel
+      .findOneAndUpdate(
+        {
+          stash: address,
+        },
+        {
+          invalidity: [
+            ...invalidityReasons,
+            {
+              valid: validity,
+              type: "SELF_STAKE",
+              updated: Date.now(),
+              details: validity
+                ? ""
+                : details
+                ? details
+                : `${data.name} has not properly bonded enough self stake`,
+            },
+          ],
+        }
+      )
+      .exec();
+  }
+
+  // Set Unclaimed Era Validity Status
+  async setUnclaimedInvalidity(
+    address: string,
+    validity: boolean,
+    details?: string
+  ): Promise<any> {
+    const data = await this.candidateModel.findOne({
+      stash: address,
+    });
+
+    if (!data) {
+      console.log(`{Self Stake} NO CANDIDATE DATA FOUND FOR ${address}`);
+      return;
+    }
+
+    const invalidityReasons = data.invalidity.filter((invalidityReason) => {
+      return invalidityReason.type !== "UNCLAIMED_REWARDS";
+    });
+
+    this.candidateModel
+      .findOneAndUpdate(
+        {
+          stash: address,
+        },
+        {
+          invalidity: [
+            ...invalidityReasons,
+            {
+              valid: validity,
+              type: "UNCLAIMED_REWARDS",
+              updated: Date.now(),
+              details: validity
+                ? ""
+                : details
+                ? details
+                : `${data.name} has not properly claimed era rewards`,
+            },
+          ],
+        }
+      )
+      .exec();
+  }
+
+  // Set Kusama Rank Validity Status
+  async setKusamaRankInvalidity(
+    address: string,
+    validity: boolean,
+    details?: string
+  ): Promise<any> {
+    const data = await this.candidateModel.findOne({
+      stash: address,
+    });
+
+    if (!data) {
+      console.log(`{Self Stake} NO CANDIDATE DATA FOUND FOR ${address}`);
+      return;
+    }
+
+    const invalidityReasons = data.invalidity.filter((invalidityReason) => {
+      return invalidityReason.type !== "KUSAMA_RANK";
+    });
+
+    this.candidateModel
+      .findOneAndUpdate(
+        {
+          stash: address,
+        },
+        {
+          invalidity: [
+            ...invalidityReasons,
+            {
+              valid: validity,
+              type: "KUSAMA_RANK",
+              updated: Date.now(),
+              details: validity
+                ? ""
+                : details
+                ? details
+                : `${data.name} has not properly claimed era rewards`,
             },
           ],
         }

@@ -235,6 +235,7 @@ export class OTV implements Constraints {
     }
 
     // Ensure that the commission is in line with the network rules
+    await checkCommission(this.db, this.chaindata, this.commission, candidate);
     const [commission, err] = await this.chaindata.getCommission(stash);
     if (err) {
       return [false, `${name} ${err}`];
@@ -777,6 +778,31 @@ export const checkRewardDestination = async (
     return false;
   } else {
     await db.setRewardDestinationInvalidity(candidate.stash, true);
+    return true;
+  }
+};
+
+export const checkCommission = async (
+  db: Db,
+  chaindata: ChainData,
+  targetCommission: number,
+  candidate: any
+) => {
+  const [commission, err] = await chaindata.getCommission(candidate.stash);
+  if (err) {
+    logger.warn(`{CheckComssion} there was an error: ${err}`);
+    return false;
+  }
+  if (commission > targetCommission) {
+    const invalidityString = `${
+      candidate.name
+    } commission is set higher than the maximum allowed. Set: ${
+      commission / Math.pow(10, 7)
+    }% Allowed: ${targetCommission / Math.pow(10, 7)}%`;
+    db.setCommissionInvalidity(candidate.stash, false, invalidityString);
+    return false;
+  } else {
+    db.setCommissionInvalidity(candidate.stash, true);
     return true;
   }
 };

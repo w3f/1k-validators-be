@@ -189,6 +189,7 @@ export class OTV implements Constraints {
 
     // Ensure the validator stash has an identity set.
     if (!this.skipIdentity) {
+      await checkIdentity(this.chaindata, this.db, candidate);
       const [hasIdentity, verified] = await this.chaindata.hasIdentity(stash);
       if (!hasIdentity) {
         return [false, `${name} does not have an identity set.`];
@@ -730,4 +731,24 @@ export const checkConnectionTime = async (
       return true;
     }
   }
+};
+
+export const checkIdentity = async (
+  chaindata: ChainData,
+  db: Db,
+  candidate: any
+) => {
+  const [hasIdentity, verified] = await chaindata.hasIdentity(candidate.stash);
+  if (!hasIdentity) {
+    const invalidityString = `${candidate.name} does not have an identity set.`;
+    db.setIdentityInvalidity(candidate.stash, false, invalidityString);
+    return false;
+  }
+  if (!verified) {
+    const invalidityString = `${candidate.name} has an identity but is not verified by registrar.`;
+    db.setIdentityInvalidity(candidate.stash, false, invalidityString);
+    return false;
+  }
+  db.setIdentityInvalidity(candidate.stash, true);
+  return true;
 };

@@ -1770,7 +1770,7 @@ export default class Db {
       .exec();
   }
 
-  // Set Client Version Validity Status
+  // Set Connection Time Validity Status
   async setConnectionTimeInvalidity(
     address: string,
     validity: boolean
@@ -1803,6 +1803,49 @@ export default class Db {
               details: validity
                 ? ""
                 : `${data.name} has not been connected for minimum length`,
+            },
+          ],
+        }
+      )
+      .exec();
+  }
+
+  // Set Identity Validity Status
+  async setIdentityInvalidity(
+    address: string,
+    validity: boolean,
+    details?: string
+  ): Promise<any> {
+    const data = await this.candidateModel.findOne({
+      stash: address,
+    });
+
+    if (!data) {
+      console.log("NO CANDIDATE DATA FOUND");
+      return;
+    }
+
+    const invalidityReasons = data.invalidity.filter((invalidityReason) => {
+      return invalidityReason.type !== "IDENTITY";
+    });
+
+    this.candidateModel
+      .findOneAndUpdate(
+        {
+          stash: address,
+        },
+        {
+          invalidity: [
+            ...invalidityReasons,
+            {
+              valid: validity,
+              type: "IDENTITY",
+              updated: Date.now(),
+              details: validity
+                ? ""
+                : details
+                ? details
+                : `${data.name} has not properly set their identity`,
             },
           ],
         }

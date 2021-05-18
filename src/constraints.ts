@@ -165,7 +165,7 @@ export class OTV implements Constraints {
     }
 
     // Only take nodes that have been upgraded to latest versions.
-    await checkLatestClientVersion(this.config, this.db, candidate);
+    // await checkLatestClientVersion(this.config, this.db, candidate);
     if (!this.config.constraints.skipClientUpgrade) {
       const latestRelease = await this.db.getLatestRelease();
       if (latestRelease) {

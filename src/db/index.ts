@@ -183,7 +183,7 @@ export default class Db {
           sentryId: 1,
           sentryOnlineSince: 1,
           sentryOfflineSince: 1,
-          telemetryid: 1,
+          telemetryId: 1,
         },
       },
       { multi: true, safe: true }
@@ -201,6 +201,7 @@ export default class Db {
             sentryId: 1,
             sentryOnlineSince: 1,
             sentryOfflineSince: 1,
+            telemetryId: 1,
           },
         }
       )

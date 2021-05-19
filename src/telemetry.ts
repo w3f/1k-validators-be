@@ -147,24 +147,24 @@ export default class TelemetryClient {
           const [id, details] = payload;
           const now = Date.now();
 
-          MemNodes[parseInt(id)] = details;
+          // MemNodes[parseInt(id)] = details;
 
-          // a mutex that will only update after its free to avoid race conditions
-          const waitUntilFree = async (name: string): Promise<void> => {
-            if (this.beingReported.get(name)) {
-              return new Promise((resolve) => {
-                const intervalId = setInterval(() => {
-                  if (!this.beingReported.get(name)) {
-                    clearInterval(intervalId);
-                    resolve();
-                  }
-                }, 1000);
-              });
-            }
-          };
+          // // a mutex that will only update after its free to avoid race conditions
+          // const waitUntilFree = async (name: string): Promise<void> => {
+          //   if (this.beingReported.get(name)) {
+          //     return new Promise((resolve) => {
+          //       const intervalId = setInterval(() => {
+          //         if (!this.beingReported.get(name)) {
+          //           clearInterval(intervalId);
+          //           resolve();
+          //         }
+          //       }, 1000);
+          //     });
+          //   }
+          // };
 
-          await waitUntilFree(details[0]);
-          // await this.db.reportBestBlock(id, details, now);
+          // await waitUntilFree(details[0]);
+          await this.db.reportBestBlock(id, details, now);
         }
         break;
     }

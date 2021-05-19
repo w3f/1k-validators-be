@@ -288,11 +288,7 @@ export default class Db {
     now: number
   ): Promise<boolean> {
     const block = details[0];
-    const data = await this.candidateModel
-      .findOne({
-        telemetryId,
-      })
-      .exec();
+    const data = await this.candidateModel.findOne({ telemetryId });
 
     if (!data) return false;
 

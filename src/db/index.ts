@@ -294,6 +294,11 @@ export default class Db {
 
     // If the node was previously deemed offline
     if (data.offlineSince && data.offlineSince !== 0) {
+      // Get the list of all other validtity reasons besides online
+      const invalidityReasons = data.invalidity.filter((invalidityReason) => {
+        return invalidityReason.type !== "ONLINE";
+      });
+
       const timeOffline = now - data.offlineSince;
       const accumulated = (data.offlineAccumulated || 0) + timeOffline;
 
@@ -302,6 +307,15 @@ export default class Db {
           offlineSince: 0,
           onlineSince: now,
           offlineAccumulated: accumulated,
+          invalidity: [
+            ...invalidityReasons,
+            {
+              valid: true,
+              type: "ONLINE",
+              updated: Date.now(),
+              details: ``,
+            },
+          ],
         })
         .exec();
     }

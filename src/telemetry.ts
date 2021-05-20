@@ -31,6 +31,8 @@ export default class TelemetryClient {
   // map of name -> boolean
   private beingReported: Map<string, boolean> = new Map();
 
+  private offlineNodes: Map<number, boolean> = new Map();
+
   constructor(config: Config, db: Database) {
     this.config = config;
     this.db = db;
@@ -120,6 +122,12 @@ export default class TelemetryClient {
 
           await waitUntilFree(details[0]);
           await this.db.reportOnline(id, details, now);
+          const wasOffline = this.offlineNodes.has(id);
+          if (wasOffline) {
+            // TODO:
+
+            this.offlineNodes.delete(id);
+          }
         }
         break;
       case TelemetryMessage.RemovedNode:
@@ -140,6 +148,12 @@ export default class TelemetryClient {
           this.beingReported.set(name, true);
           await this.db.reportOffline(id, name, now);
           this.beingReported.set(name, false);
+
+          const wasOffline = this.offlineNodes.has(id);
+          if (!wasOffline) {
+            this.offlineNodes.set(id, true);
+            // TODO:
+          }
         }
         break;
       case TelemetryMessage.ImportedBlock:
@@ -147,24 +161,11 @@ export default class TelemetryClient {
           const [id, details] = payload;
           const now = Date.now();
 
-          // MemNodes[parseInt(id)] = details;
-
-          // // a mutex that will only update after its free to avoid race conditions
-          // const waitUntilFree = async (name: string): Promise<void> => {
-          //   if (this.beingReported.get(name)) {
-          //     return new Promise((resolve) => {
-          //       const intervalId = setInterval(() => {
-          //         if (!this.beingReported.get(name)) {
-          //           clearInterval(intervalId);
-          //           resolve();
-          //         }
-          //       }, 1000);
-          //     });
-          //   }
-          // };
-
-          // await waitUntilFree(details[0]);
-          await this.db.reportBestBlock(id, details, now);
+          const wasOffline = this.offlineNodes.has(id);
+          if (wasOffline) {
+            this.offlineNodes.delete(id);
+            await this.db.reportBestBlock(id, details, now);
+          }
         }
         break;
     }

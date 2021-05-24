@@ -2,7 +2,7 @@ import { blake2AsHex } from "@polkadot/util-crypto";
 
 import ApiHandler from "./ApiHandler";
 import ChainData from "./chaindata";
-import { WEEK, KOTVBackendEndpoint } from "./constants";
+import { WEEK, KOTVBackendEndpoint, SIXTEEN_HOURS } from "./constants";
 import logger from "./logger";
 import { CandidateData } from "./types";
 import axios from "axios";
@@ -170,7 +170,10 @@ export class OTV implements Constraints {
     await checkLatestClientVersion(this.config, this.db, freshCandidate);
     if (!this.config.constraints.skipClientUpgrade) {
       const latestRelease = await this.db.getLatestRelease();
-      if (latestRelease) {
+      if (
+        latestRelease &&
+        Date.now > latestRelease.publishedAt + SIXTEEN_HOURS
+      ) {
         const nodeVersion = semver.coerce(freshCandidate.version);
         const latestVersion = semver.clean(latestRelease.name);
         const isUpgraded = semver.gte(nodeVersion, latestVersion);

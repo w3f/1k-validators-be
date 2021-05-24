@@ -133,6 +133,8 @@ export class OTV implements Constraints {
   async checkSingleCandidate(
     candidate: CandidateData
   ): Promise<[boolean, string]> {
+    const freshCandidate = await this.db.getCandidate(candidate.name);
+
     const {
       discoveredAt,
       updated,
@@ -144,10 +146,10 @@ export class OTV implements Constraints {
       kusamaStash,
       skipSelfStake,
       unclaimedEras,
-    } = candidate;
+    } = freshCandidate;
 
     // Ensure the candidate is online.
-    await checkOnline(this.db, candidate);
+    await checkOnline(this.db, freshCandidate);
     if (Number(onlineSince) === 0 || Number(offlineSince) !== 0) {
       return [false, `${name} offline. Offline since ${offlineSince}.`];
     }
@@ -157,7 +159,7 @@ export class OTV implements Constraints {
       this.config,
       this.chaindata,
       this.db,
-      candidate
+      freshCandidate
     );
     const validators = await this.chaindata.getValidators();
     if (!validators.includes(formatAddress(stash, this.config))) {
@@ -165,11 +167,11 @@ export class OTV implements Constraints {
     }
 
     // Only take nodes that have been upgraded to latest versions.
-    await checkLatestClientVersion(this.config, this.db, candidate);
+    await checkLatestClientVersion(this.config, this.db, freshCandidate);
     if (!this.config.constraints.skipClientUpgrade) {
       const latestRelease = await this.db.getLatestRelease();
       if (latestRelease) {
-        const nodeVersion = semver.coerce(candidate.version);
+        const nodeVersion = semver.coerce(freshCandidate.version);
         const latestVersion = semver.clean(latestRelease.name);
         const isUpgraded = semver.gte(nodeVersion, latestVersion);
         if (!isUpgraded && !this.skipClientUpgrade) {
@@ -179,7 +181,7 @@ export class OTV implements Constraints {
     }
 
     // Ensure the node has been connected for a minimum of one week.
-    await checkConnectionTime(this.config, this.db, candidate);
+    await checkConnectionTime(this.config, this.db, freshCandidate);
     if (!this.skipConnectionTime) {
       const now = new Date().getTime();
       if (now - discoveredAt < WEEK) {
@@ -189,7 +191,7 @@ export class OTV implements Constraints {
 
     // Ensure the validator stash has an identity set.
     if (!this.skipIdentity) {
-      await checkIdentity(this.chaindata, this.db, candidate);
+      await checkIdentity(this.chaindata, this.db, freshCandidate);
       const [hasIdentity, verified] = await this.chaindata.hasIdentity(stash);
       if (!hasIdentity) {
         return [false, `${name} does not have an identity set.`];
@@ -213,7 +215,7 @@ export class OTV implements Constraints {
     }
 
     // Ensures node has 98% up time.
-    await checkOffline(this.db, candidate);
+    await checkOffline(this.db, freshCandidate);
     const totalOffline = offlineAccumulated / WEEK;
     if (totalOffline > 0.02) {
       return [
@@ -226,7 +228,7 @@ export class OTV implements Constraints {
 
     // Ensure that the reward destination is set to 'Staked'
     if (!this.skipStakedDesitnation) {
-      await checkRewardDestination(this.db, this.chaindata, candidate);
+      await checkRewardDestination(this.db, this.chaindata, freshCandidate);
       const isStaked = await this.chaindata.destinationIsStaked(stash);
       if (!isStaked) {
         const reason = `${name} does not have reward destination set to Staked`;
@@ -235,7 +237,12 @@ export class OTV implements Constraints {
     }
 
     // Ensure that the commission is in line with the network rules
-    await checkCommission(this.db, this.chaindata, this.commission, candidate);
+    await checkCommission(
+      this.db,
+      this.chaindata,
+      this.commission,
+      freshCandidate
+    );
     const [commission, err] = await this.chaindata.getCommission(stash);
     if (err) {
       return [false, `${name} ${err}`];
@@ -247,7 +254,12 @@ export class OTV implements Constraints {
       ];
     }
 
-    await checkSelfStake(this.db, this.chaindata, this.minSelfStake, candidate);
+    await checkSelfStake(
+      this.db,
+      this.chaindata,
+      this.minSelfStake,
+      freshCandidate
+    );
     if (!skipSelfStake) {
       const [bondedAmt, err2] = await this.chaindata.getBondedAmount(stash);
       if (err2) {
@@ -267,7 +279,7 @@ export class OTV implements Constraints {
         this.db,
         this.chaindata,
         this.unclaimedEraThreshold,
-        candidate
+        freshCandidate
       );
       const [currentEra, err3] = await this.chaindata.getActiveEraIndex();
       const threshold = currentEra - this.unclaimedEraThreshold - 1; // Validators cannot have unclaimed rewards before this era

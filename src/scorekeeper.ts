@@ -538,14 +538,14 @@ export default class ScoreKeeper {
         this.candidateCache
       );
       if (this.claimer) {
-        startRewardClaimJob(
-          this.config,
-          this.handler,
-          this.db,
-          this.claimer,
-          this.chaindata,
-          this.bot
-        );
+        // startRewardClaimJob(
+        //   this.config,
+        //   this.handler,
+        //   this.db,
+        //   this.claimer,
+        //   this.chaindata,
+        //   this.bot
+        // );
       }
       startExecutionJob(
         this.handler,

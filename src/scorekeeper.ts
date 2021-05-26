@@ -508,36 +508,11 @@ export default class ScoreKeeper {
       );
 
       startEraPointsJob(this.config, this.db, this.chaindata);
-      startActiveValidatorJob(
-        this.config,
-        this.db,
-        this.chaindata,
-        candidates
-      );
-      startInclusionJob(
-        this.config,
-        this.db,
-        this.chaindata,
-        candidates
-      );
-      startSessionKeyJob(
-        this.config,
-        this.db,
-        this.chaindata,
-        candidates
-      );
-      startUnclaimedEraJob(
-        this.config,
-        this.db,
-        this.chaindata,
-        candidates
-      );
-      startValidatorPrefJob(
-        this.config,
-        this.db,
-        this.chaindata,
-        candidates
-      );
+      startActiveValidatorJob(this.config, this.db, this.chaindata, candidates);
+      startInclusionJob(this.config, this.db, this.chaindata, candidates);
+      startSessionKeyJob(this.config, this.db, this.chaindata, candidates);
+      startUnclaimedEraJob(this.config, this.db, this.chaindata, candidates);
+      startValidatorPrefJob(this.config, this.db, this.chaindata, candidates);
       if (this.claimer) {
         // startRewardClaimJob(
         //   this.config,

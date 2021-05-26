@@ -480,6 +480,7 @@ export default class ScoreKeeper {
       }
     });
 
+    const candidates = await this.db.allCandidates();
     // Run jobs once at startup
     // await monitorJob(this.db, this.monitor);
     // await activeValidatorJob(this.db, this.chaindata, this.candidateCache);
@@ -503,40 +504,15 @@ export default class ScoreKeeper {
         this.db,
         this.constraints,
         this.chaindata,
-        this.candidateCache
+        candidates
       );
 
       startEraPointsJob(this.config, this.db, this.chaindata);
-      startActiveValidatorJob(
-        this.config,
-        this.db,
-        this.chaindata,
-        this.candidateCache
-      );
-      startInclusionJob(
-        this.config,
-        this.db,
-        this.chaindata,
-        this.candidateCache
-      );
-      startSessionKeyJob(
-        this.config,
-        this.db,
-        this.chaindata,
-        this.candidateCache
-      );
-      startUnclaimedEraJob(
-        this.config,
-        this.db,
-        this.chaindata,
-        this.candidateCache
-      );
-      startValidatorPrefJob(
-        this.config,
-        this.db,
-        this.chaindata,
-        this.candidateCache
-      );
+      startActiveValidatorJob(this.config, this.db, this.chaindata, candidates);
+      startInclusionJob(this.config, this.db, this.chaindata, candidates);
+      startSessionKeyJob(this.config, this.db, this.chaindata, candidates);
+      startUnclaimedEraJob(this.config, this.db, this.chaindata, candidates);
+      startValidatorPrefJob(this.config, this.db, this.chaindata, candidates);
       if (this.claimer) {
         // startRewardClaimJob(
         //   this.config,

@@ -135,7 +135,7 @@ export class OTV implements Constraints {
   ): Promise<[boolean, string]> {
     const freshCandidate = await this.db.getCandidate(candidate.stash);
 
-    if (!freshCandidate) return;
+    if (!freshCandidate) return [true, `${candidate.name} has no candidate data`];
 
     const {
       discoveredAt,

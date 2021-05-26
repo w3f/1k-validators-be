@@ -133,7 +133,10 @@ export class OTV implements Constraints {
   async checkSingleCandidate(
     candidate: CandidateData
   ): Promise<[boolean, string]> {
-    const freshCandidate = await this.db.getCandidate(candidate.name);
+    const freshCandidate = await this.db.getCandidate(candidate.stash);
+
+    if (!freshCandidate)
+      return [true, `${candidate.name} has no candidate data`];
 
     const {
       discoveredAt,

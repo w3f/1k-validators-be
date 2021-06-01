@@ -514,14 +514,14 @@ export default class ScoreKeeper {
       startUnclaimedEraJob(this.config, this.db, this.chaindata, candidates);
       startValidatorPrefJob(this.config, this.db, this.chaindata, candidates);
       if (this.claimer) {
-        // startRewardClaimJob(
-        //   this.config,
-        //   this.handler,
-        //   this.db,
-        //   this.claimer,
-        //   this.chaindata,
-        //   this.bot
-        // );
+        startRewardClaimJob(
+          this.config,
+          this.handler,
+          this.db,
+          this.claimer,
+          this.chaindata,
+          this.bot
+        );
       }
       startExecutionJob(
         this.handler,

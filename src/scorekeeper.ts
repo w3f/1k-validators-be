@@ -226,7 +226,6 @@ export default class ScoreKeeper {
     this.populateRewardDestinationCache();
   }
 
-
   // Populates the candidate  cache
   async populateCandidates(): Promise<void> {
     this.candidateCache = await this.db.allCandidates();
@@ -581,17 +580,21 @@ export default class ScoreKeeper {
 
     await sleep(6000);
 
-    let validCandidates = allCandidates
-      .filter((candidate) => candidate.valid);
-      validCandidates = await Promise.all(validCandidates.map(async (candidate) => {
+    let validCandidates = allCandidates.filter((candidate) => candidate.valid);
+    validCandidates = await Promise.all(
+      validCandidates.map(async (candidate) => {
         const score = await this.db.getValidatorScore(candidate.stash);
-        const scoredCandidate = {name: candidate.name, stash: candidate.stash, total: score.total};
+        const scoredCandidate = {
+          name: candidate.name,
+          stash: candidate.stash,
+          total: score.total,
+        };
         return scoredCandidate;
-      }));
-      validCandidates = validCandidates
-      .sort((a, b) => {
-        return b.total - a.total;
-      });
+      })
+    );
+    validCandidates = validCandidates.sort((a, b) => {
+      return b.total - a.total;
+    });
 
     logger.info(
       `{Scorekeeper::startRound} number of all candidates: ${allCandidates.length} valid candidates: ${validCandidates.length}`

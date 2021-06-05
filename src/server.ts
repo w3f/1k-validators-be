@@ -79,7 +79,7 @@ export default class Server {
           identity: candidate.identity,
           active: candidate.active,
           valid: candidate.valid,
-          validity: candidate.invalidity
+          validity: candidate.invalidity,
         };
       });
       ctx.body = allCandidates;

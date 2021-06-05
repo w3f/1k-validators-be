@@ -45,9 +45,7 @@ export const validityJob = async (
 };
 
 // Runs Score Candidate Job
-export const scoreJob = async (
-  constraints: OTV
-) => {
+export const scoreJob = async (constraints: OTV) => {
   const start = Date.now();
 
   logger.info(`(cron::Score::start) Running score cron`);

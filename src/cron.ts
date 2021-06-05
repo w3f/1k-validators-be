@@ -120,13 +120,8 @@ export const startValidatityJob = async (
 };
 
 // Runs job that updates scores of all validators
-export const startScoreJob = async (
-  config: Config,
-  constraints: OTV,
-) => {
-  const scoreFrequency = config.cron.score
-    ? config.cron.score
-    : SCORE_CRON;
+export const startScoreJob = async (config: Config, constraints: OTV) => {
+  const scoreFrequency = config.cron.score ? config.cron.score : SCORE_CRON;
   logger.info(
     `(cron::startScoreJob::init) Starting Score Job with frequency ${scoreFrequency}`
   );
@@ -149,7 +144,6 @@ export const startEraStatsJob = async (
   db: Db,
   config: Config,
   chaindata: ChainData
-
 ) => {
   const eraStatsFrequency = config.cron.eraStats
     ? config.cron.eraStats
@@ -511,7 +505,7 @@ export const startEraPointsJob = async (
 export const startActiveValidatorJob = async (
   config: Config,
   db: Db,
-  chaindata: ChainData,
+  chaindata: ChainData
 ) => {
   const activeValidatorFrequency = config.cron.activeValidator
     ? config.cron.activeValidator
@@ -635,7 +629,10 @@ export const startUnclaimedEraJob = async (
     const candidates = await db.allCandidates();
 
     // Run the active validators job
-    const unclaimedEraThreshold = config.global.networkPrefix == 2 ? KUSAMA_FOUR_DAYS_ERAS : POLKADOT_FOUR_DAYS_ERAS;
+    const unclaimedEraThreshold =
+      config.global.networkPrefix == 2
+        ? KUSAMA_FOUR_DAYS_ERAS
+        : POLKADOT_FOUR_DAYS_ERAS;
     await unclaimedErasJob(db, chaindata, candidates, unclaimedEraThreshold);
     running = false;
   });

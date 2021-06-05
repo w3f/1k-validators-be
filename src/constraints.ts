@@ -98,7 +98,7 @@ export class OTV implements Constraints {
 
   // Add candidate to valid cache and remove them from invalid cache
   addToValidCache(address: string, candidate: CandidateData) {
-    if (this.invalidMapCache.has(address)){
+    if (this.invalidMapCache.has(address)) {
       this.invalidMapCache.delete(address);
     }
 
@@ -111,7 +111,7 @@ export class OTV implements Constraints {
 
   // Add candidate to valid cache and remove them from invalid cache
   addToInvalidCache(address: string, candidate: CandidateData) {
-    if (this.validMapCache.has(address)){
+    if (this.validMapCache.has(address)) {
       this.validMapCache.delete(address);
     }
 
@@ -125,7 +125,6 @@ export class OTV implements Constraints {
   async checkCandidateStash(address: string): Promise<boolean> {
     const candidate = await this.db.getCandidate(address);
     return await this.checkCandidate(candidate);
-
   }
 
   // Check the candidate and set any invalidity fields
@@ -221,7 +220,7 @@ export class OTV implements Constraints {
       this.db.setLastValid(candidate.stash);
     } else {
       this.addToInvalidCache(candidate.stash, candidate);
-    } 
+    }
 
     return valid;
   }
@@ -231,10 +230,7 @@ export class OTV implements Constraints {
     await this.scoreCandidates(candidates, this.db);
   }
 
-  async scoreCandidates(
-    candidates: CandidateData[],
-    db: Db
-  ) {
+  async scoreCandidates(candidates: CandidateData[], db: Db) {
     let rankedCandidates = [];
     const validCandidates = candidates.filter((candidate) => candidate.valid);
     if (validCandidates.length < 2) return;
@@ -329,7 +325,8 @@ export class OTV implements Constraints {
         candidate.spanInclusion,
         spanInclusionValues
       );
-      const spanInclusionScore = (1 - scaledSpanInclusion) * this.SPAN_INCLUSION_WEIGHT;
+      const spanInclusionScore =
+        (1 - scaledSpanInclusion) * this.SPAN_INCLUSION_WEIGHT;
 
       const scaledDiscovered = scaled(
         candidate.discoveredAt,
@@ -338,24 +335,24 @@ export class OTV implements Constraints {
       const discoveredScore = (1 - scaledDiscovered) * this.DISCOVERED_WEIGHT;
 
       const scaledNominated = scaled(candidate.nominatedAt, nominatedAtValues);
-      const nominatedScore = (1 - scaledNominated) * this.NOMINATED_WEIGHT ;
+      const nominatedScore = (1 - scaledNominated) * this.NOMINATED_WEIGHT;
 
       const scaledRank = scaled(candidate.rank, rankValues);
-      const rankScore =  scaledRank * this.RANK_WEIGHT ;
+      const rankScore = scaledRank * this.RANK_WEIGHT;
 
       const scaledUnclaimed = candidate.unclaimedEras
         ? scaled(candidate.unclaimedEras.length, unclaimedValues)
         : 0;
-      const unclaimedScore = (1 - scaledUnclaimed) * this.UNCLAIMED_WEIGHT ;
+      const unclaimedScore = (1 - scaledUnclaimed) * this.UNCLAIMED_WEIGHT;
 
       const scaledBonded = scaled(candidate.bonded, bondedValues);
-      const bondedScore = scaledBonded * this.BONDED_WEIGHT ;
+      const bondedScore = scaledBonded * this.BONDED_WEIGHT;
 
       const scaledOffline = scaled(candidate.offlineAccumulated, offlineValues);
-      const offlineScore = (1 - scaledOffline) * this.OFFLINE_WEIGHT ;
+      const offlineScore = (1 - scaledOffline) * this.OFFLINE_WEIGHT;
 
       const scaledFaults = scaled(candidate.faults, faultsValues);
-      const faultsScore = (1 - scaledFaults) * this.FAULTS_WEIGHT ;
+      const faultsScore = (1 - scaledFaults) * this.FAULTS_WEIGHT;
 
       const aggregate =
         inclusionScore +

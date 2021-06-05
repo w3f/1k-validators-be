@@ -97,6 +97,12 @@ export const CANCEL_CRON = "0 0-59/25 * * * *";
 // Stale Nomination Frequency. This runs every 45 minutes by default
 export const STALE_CRON = "0 0-59/45 * * * *";
 
+// Score Cron Job. This runs ever 5 minutes by default
+export const SCORE_CRON = "0 0-59/5 * * * *";
+
+// Era Stats Cron Job. This runs ever 5 minutes by default
+export const ERA_STATS_CRON = "0 0-59/5 * * * *";
+
 // Chain Querying Cron Jobs:
 
 // Era Points Cron Job. This runs ever 30 minutes by default

@@ -43,6 +43,12 @@ export type InvalidityReason = {
   updated: number;
 };
 
+export type Identity = {
+  name: string;
+  sub: string;
+  verified: boolean;
+};
+
 /// The data for a candidate that's kept in the DB.
 export type CandidateData = {
   /// The ID inherited from telemetry, null when no node has been connected.
@@ -71,6 +77,11 @@ export type CandidateData = {
   skipSelfStake: boolean;
   bio: string;
   unclaimedEras: [number];
-  inclusion: number;
   version: string;
+  valid: boolean;
+  bonded: number;
+  faults: number;
+  inclusion: number;
+  spanInclusion: number;
+  identity: Identity;
 };

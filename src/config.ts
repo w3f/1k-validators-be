@@ -36,6 +36,8 @@ export type Config = {
     rewardClaiming: string;
     cancel: string;
     stale: string;
+    score: string;
+    eraStats: string;
     // chain querying crons
     eraPoints: string;
     activeValidator: string;

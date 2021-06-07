@@ -23,7 +23,7 @@
   "dependencies": {
     "@koa/router": "^10.0.0",
     "@octokit/rest": "^18.5.5",
-    "@polkadot/api": "^4.12.1",
+    "@polkadot/api": "^4.13.1",
     "@polkadot/keyring": "^6.6.1",
     "@types/cron": "^1.7.1",
     "@types/koa": "^2.13.3",

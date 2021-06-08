@@ -184,6 +184,8 @@ export default class Db {
           sentryOnlineSince: 1,
           sentryOfflineSince: 1,
           telemetryId: 1,
+          valid: 1,
+          invalidityReasons: 1,
         },
       },
       { multi: true, safe: true }

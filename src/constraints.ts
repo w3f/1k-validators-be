@@ -652,6 +652,8 @@ export const checkLatestClientVersion = async (
         db.setLatestClientReleaseValidity(candidate.stash, true);
         return true;
       }
+    } else {
+      return true;
     }
   } else {
     db.setLatestClientReleaseValidity(candidate.stash, true);

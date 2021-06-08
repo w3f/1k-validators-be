@@ -78,6 +78,8 @@ export default class Server {
           commission: candidate.commission,
           identity: candidate.identity,
           active: candidate.active,
+          valid: candidate.valid,
+          validity: candidate.invalidity,
         };
       });
       ctx.body = allCandidates;

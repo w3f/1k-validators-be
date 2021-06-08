@@ -129,6 +129,8 @@ export const CandidateSchema = new Schema({
   inclusion: { type: Number, default: 0.0 },
   // Span Inclusion percentage - the percent of eras active of the last 28 eras
   spanInclusion: { type: Number, default: 0.0 },
+  // whether the node is valid or not
+  valid: Boolean,
   // The last time the validator was deemed valid
   lastValid: Number,
   // Validator's commission
@@ -147,7 +149,7 @@ export const CandidateSchema = new Schema({
   bonded: Number,
   // case for good intentions
   skipSelfStake: Boolean,
-  //
+  // array of invalidity reasons
   invalidity: [InvalidityReason],
 });
 

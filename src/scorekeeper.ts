@@ -26,10 +26,12 @@ import {
   startActiveValidatorJob,
   startCancelCron,
   startEraPointsJob,
+  startEraStatsJob,
   startExecutionJob,
   startInclusionJob,
   startMonitorJob,
   startRewardClaimJob,
+  startScoreJob,
   startSessionKeyJob,
   startStaleNominationCron,
   startUnclaimedEraJob,
@@ -120,11 +122,11 @@ export default class ScoreKeeper {
           logger.info(
             `{scorekeeper::reward} ${stash} claimed reward of ${amount}. Updating eras....`
           );
-          if (this.isUpdatingEras) return;
+          // if (this.isUpdatingEras) return;
           this.isUpdatingEras = true;
 
           // wait 12 seconds in case there are multiple eras claimed in a batch
-          await sleep(12000);
+          // await sleep(12000);
 
           const unclaimedEras = await this.chaindata.getUnclaimedEras(
             stash,
@@ -132,7 +134,9 @@ export default class ScoreKeeper {
           );
 
           await db.setUnclaimedEras(stash, unclaimedEras);
-          this.populateValid();
+          await sleep(2000);
+          await this.constraints.checkCandidateStash(stash);
+          await this.constraints.scoreAllCandidates();
           this.isUpdatingEras = false;
         }
 
@@ -219,18 +223,7 @@ export default class ScoreKeeper {
     this.monitor = new Monitor(db, SIXTEEN_HOURS);
 
     this.populateCandidates();
-    this.populateValid();
     this.populateRewardDestinationCache();
-  }
-
-  // Populates the constraints valid cache
-  async populateValid(): Promise<void> {
-    const allCandidates = await this.db.allCandidates();
-
-    const validCandidates = await this.constraints.getValidCandidates(
-      allCandidates,
-      this.db
-    );
   }
 
   // Populates the candidate  cache
@@ -508,11 +501,11 @@ export default class ScoreKeeper {
       );
 
       startEraPointsJob(this.config, this.db, this.chaindata);
-      startActiveValidatorJob(this.config, this.db, this.chaindata, candidates);
-      startInclusionJob(this.config, this.db, this.chaindata, candidates);
-      startSessionKeyJob(this.config, this.db, this.chaindata, candidates);
-      startUnclaimedEraJob(this.config, this.db, this.chaindata, candidates);
-      startValidatorPrefJob(this.config, this.db, this.chaindata, candidates);
+      startActiveValidatorJob(this.config, this.db, this.chaindata);
+      startInclusionJob(this.config, this.db, this.chaindata);
+      startSessionKeyJob(this.config, this.db, this.chaindata);
+      startUnclaimedEraJob(this.config, this.db, this.chaindata);
+      startValidatorPrefJob(this.config, this.db, this.chaindata);
       if (this.claimer) {
         startRewardClaimJob(
           this.config,
@@ -546,6 +539,8 @@ export default class ScoreKeeper {
         this.chaindata,
         this.bot
       );
+      startScoreJob(this.config, this.constraints);
+      startEraStatsJob(this.db, this.config, this.chaindata);
     } catch (e) {
       logger.info(
         `{Scorekeeper::RunCron} There was an error running some cron jobs...`
@@ -581,10 +576,25 @@ export default class ScoreKeeper {
 
     const allCandidates = await this.db.allCandidates();
 
-    const validCandidates = await this.constraints.getValidCandidates(
-      allCandidates,
-      this.db
+    await this.constraints.scoreCandidates(allCandidates, this.db);
+
+    await sleep(6000);
+
+    let validCandidates = allCandidates.filter((candidate) => candidate.valid);
+    validCandidates = await Promise.all(
+      validCandidates.map(async (candidate) => {
+        const score = await this.db.getValidatorScore(candidate.stash);
+        const scoredCandidate = {
+          name: candidate.name,
+          stash: candidate.stash,
+          total: score.total,
+        };
+        return scoredCandidate;
+      })
     );
+    validCandidates = validCandidates.sort((a, b) => {
+      return b.total - a.total;
+    });
 
     logger.info(
       `{Scorekeeper::startRound} number of all candidates: ${allCandidates.length} valid candidates: ${validCandidates.length}`
@@ -717,6 +727,7 @@ export default class ScoreKeeper {
         );
       }
     }
+
     logger.info(
       `(Scorekeeper::_doNominations) Number of Validators nominated this round: ${counter}`
     );
@@ -806,9 +817,8 @@ export default class ScoreKeeper {
     // Adds all other valid candidates to the list
     const allCandidates = await this.db.allCandidates();
 
-    const validCandidates = await this.constraints.getValidCandidates(
-      allCandidates,
-      this.db
+    const validCandidates = allCandidates.filter(
+      (candidate) => candidate.valid
     );
 
     for (const candidate of validCandidates) {

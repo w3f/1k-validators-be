@@ -2125,4 +2125,27 @@ export default class Db {
       )
       .exec();
   }
+
+  // Sets valid boolean for node
+  async setValid(address: string, validity: boolean): Promise<any> {
+    const data = await this.candidateModel.findOne({
+      stash: address,
+    });
+
+    if (!data) {
+      console.log(`{Valid} NO CANDIDATE DATA FOUND FOR ${address}`);
+      return;
+    }
+
+    this.candidateModel
+      .findOneAndUpdate(
+        {
+          stash: address,
+        },
+        {
+          valid: validity,
+        }
+      )
+      .exec();
+  }
 }

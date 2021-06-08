@@ -1,7 +1,7 @@
 import Db from "./db";
 import ChainData from "./chaindata";
 import logger from "./logger";
-import { OTV } from "./constraints";
+import { checkUnclaimed, OTV } from "./constraints";
 import Monitor from "./monitor";
 
 // Runs Monitor Job
@@ -31,40 +31,62 @@ export const validityJob = async (
 
   logger.info(`(cron::Validity::start) Running validity cron`);
 
-  const currentEra = await chaindata.getCurrentEra();
-
-  const activeCandidates = allCandidates.filter(
-    (candidate) => candidate.active
-  );
-
-  // const identityHashTable = await constraints.populateIdentityHashTable(
-  //   allCandidates
-  // );
-
-  // set invalidityReason for stashes
-  const invalid = await constraints.getInvalidCandidates(allCandidates);
-  for (const i of invalid) {
-    const { stash, reason } = i;
-    await db.setInvalidityReason(stash, reason);
+  for (const candidate of allCandidates) {
+    await constraints.checkCandidate(candidate);
   }
 
-  // set invalidityReason as empty for valid candidates
-  const valid = await constraints.getValidCandidates(allCandidates, db);
-  for (const v of valid) {
-    const { stash } = v;
-    await db.setInvalidityReason(stash, "");
-    await db.setLastValid(stash);
-  }
-  await db.setEraStats(
-    Number(currentEra),
-    allCandidates.length,
-    valid.length,
-    activeCandidates.length
-  );
   const end = Date.now();
 
   logger.info(
     `{cron::Validity::ExecutionTime} started at ${new Date(
+      start
+    ).toString()} Done. Took ${(end - start) / 1000} seconds`
+  );
+};
+
+// Runs Score Candidate Job
+export const scoreJob = async (constraints: OTV) => {
+  const start = Date.now();
+
+  logger.info(`(cron::Score::start) Running score cron`);
+
+  constraints.scoreAllCandidates();
+
+  const end = Date.now();
+
+  logger.info(
+    `{cron::Score::ExecutionTime} started at ${new Date(
+      start
+    ).toString()} Done. Took ${(end - start) / 1000} seconds`
+  );
+};
+
+// Updates the era stats
+export const eraStatsJob = async (
+  db: Db,
+  chaindata: ChainData,
+  allCandidates: any[]
+) => {
+  const start = Date.now();
+
+  logger.info(`(cron::eraStats::start) Running era stats cron`);
+
+  const currentEra = await chaindata.getCurrentEra();
+
+  const valid = allCandidates.filter((candidate) => candidate.valid);
+  const active = allCandidates.filter((candidate) => candidate.active);
+
+  await db.setEraStats(
+    Number(currentEra),
+    allCandidates.length,
+    valid.length,
+    active.length
+  );
+
+  const end = Date.now();
+
+  logger.info(
+    `{cron::eraStats::ExecutionTime} started at ${new Date(
       start
     ).toString()} Done. Took ${(end - start) / 1000} seconds`
   );
@@ -155,7 +177,8 @@ export const validatorPrefJob = async (
 export const unclaimedErasJob = async (
   db: Db,
   chaindata: ChainData,
-  candidates: any[]
+  candidates: any[],
+  unclaimedEraThreshold: number
 ) => {
   const start = Date.now();
 
@@ -163,6 +186,7 @@ export const unclaimedErasJob = async (
     // Set unclaimed eras
     const unclaimedEras = await chaindata.getUnclaimedEras(candidate.stash, db);
     await db.setUnclaimedEras(candidate.stash, unclaimedEras);
+    await checkUnclaimed(db, chaindata, unclaimedEraThreshold, candidate);
   }
 
   const end = Date.now();

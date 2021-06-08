@@ -27,7 +27,6 @@ import {
 } from "./score";
 
 export interface Constraints {
-  getValidCandidates(candidates: any[], db: Db): Promise<any[]>;
   processCandidates(
     candidates: Set<CandidateData>
   ): Promise<[Set<any>, Set<any>]>;
@@ -52,8 +51,13 @@ export class OTV implements Constraints {
   private db: Database;
 
   // caches
+  // TODO: Remove
   private validCache: CandidateData[] = [];
-  private invalidCache: string[] = [];
+  private invalidCache: CandidateData[] = [];
+
+  // Caches - keyed by stash address
+  private validMapCache: Map<string, CandidateData> = new Map();
+  private invalidMapCache: Map<string, CandidateData> = new Map();
 
   constructor(
     handler: ApiHandler,
@@ -88,267 +92,148 @@ export class OTV implements Constraints {
     return this.validCache;
   }
 
-  get invalidCandidateCache(): string[] {
+  get invalidCandidateCache(): CandidateData[] {
     return this.invalidCache;
   }
 
-  async populateIdentityHashTable(
-    candidates: CandidateData[]
-  ): Promise<Map<string, number>> {
-    logger.info(`(OTV::populateIdentityHashTable) Populating hash table`);
-    const map = new Map();
-
-    for (const candidate of candidates) {
-      const { stash } = candidate;
-      const identityString = await this.chaindata.getIdentity(stash);
-      const identityHash = blake2AsHex(identityString);
-      const prevValue = map.get(identityHash) || 0;
-      map.set(identityHash, prevValue + 1);
+  // Add candidate to valid cache and remove them from invalid cache
+  addToValidCache(address: string, candidate: CandidateData) {
+    if (this.invalidMapCache.has(address)) {
+      this.invalidMapCache.delete(address);
     }
 
-    return map;
+    if (this.validMapCache.has(address)) {
+      return;
+    } else {
+      this.validMapCache.set(address, candidate);
+    }
   }
 
-  /// Returns true if it's a valid candidate or [false, "reason"] otherwise.
-  async getInvalidCandidates(
-    candidates: CandidateData[]
-  ): Promise<{ stash: string; reason: string }[]> {
-    let invalid = await Promise.all(
-      candidates.map(async (candidate) => {
-        const { stash } = candidate;
-        const [isValid, reason] = await this.checkSingleCandidate(candidate);
-        if (!isValid) return { stash, reason };
-      })
-    );
-
-    // filter out any `undefined` results.
-    invalid = invalid.filter((i) => !!i);
-
-    this.invalidCache = invalid.map((i) => i.reason);
-
-    return invalid;
-  }
-
-  /// Returns true if it's a valid candidate or [false, "reason"] otherwise.
-  async checkSingleCandidate(
-    candidate: CandidateData
-  ): Promise<[boolean, string]> {
-    const freshCandidate = await this.db.getCandidate(candidate.stash);
-
-    if (!freshCandidate)
-      return [true, `${candidate.name} has no candidate data`];
-
-    const {
-      discoveredAt,
-      updated,
-      name,
-      offlineAccumulated,
-      offlineSince,
-      onlineSince,
-      stash,
-      kusamaStash,
-      skipSelfStake,
-      unclaimedEras,
-    } = freshCandidate;
-
-    // Ensure the candidate is online.
-    await checkOnline(this.db, freshCandidate);
-    if (Number(onlineSince) === 0 || Number(offlineSince) !== 0) {
-      return [false, `${name} offline. Offline since ${offlineSince}.`];
+  // Add candidate to valid cache and remove them from invalid cache
+  addToInvalidCache(address: string, candidate: CandidateData) {
+    if (this.validMapCache.has(address)) {
+      this.validMapCache.delete(address);
     }
 
-    // Check that the validator has a validate intention
-    await checkValidateIntention(
+    if (this.invalidMapCache.has(address)) {
+      return;
+    } else {
+      this.invalidMapCache.set(address, candidate);
+    }
+  }
+
+  async checkCandidateStash(address: string): Promise<boolean> {
+    const candidate = await this.db.getCandidate(address);
+    return await this.checkCandidate(candidate);
+  }
+
+  // Check the candidate and set any invalidity fields
+  async checkCandidate(candidate: CandidateData): Promise<boolean> {
+    let valid = false;
+
+    const onlineValid = await checkOnline(this.db, candidate);
+
+    const validateValid = await checkValidateIntention(
       this.config,
       this.chaindata,
       this.db,
-      freshCandidate
+      candidate
     );
-    const validators = await this.chaindata.getValidators();
-    if (!validators.includes(formatAddress(stash, this.config))) {
-      return [false, `${name} does not have a validate intention`];
-    }
 
-    // Only take nodes that have been upgraded to latest versions.
-    await checkLatestClientVersion(this.config, this.db, freshCandidate);
-    if (!this.config.constraints.skipClientUpgrade) {
-      const latestRelease = await this.db.getLatestRelease();
-      if (
-        latestRelease &&
-        Date.now > latestRelease.publishedAt + SIXTEEN_HOURS
-      ) {
-        const nodeVersion = semver.coerce(freshCandidate.version);
-        const latestVersion = semver.clean(latestRelease.name);
-        const isUpgraded = semver.gte(nodeVersion, latestVersion);
-        if (!isUpgraded && !this.skipClientUpgrade) {
-          return [false, `${name} is not running the latest client code.`];
-        }
-      }
-    }
+    const versionValid = await checkLatestClientVersion(
+      this.config,
+      this.db,
+      candidate
+    );
 
-    // Ensure the node has been connected for a minimum of one week.
-    await checkConnectionTime(this.config, this.db, freshCandidate);
-    if (!this.skipConnectionTime) {
-      const now = new Date().getTime();
-      if (now - discoveredAt < WEEK) {
-        return [false, `${name} hasn't been connected for minimum length.`];
-      }
-    }
+    const monitoringWeekValid = await checkConnectionTime(
+      this.config,
+      this.db,
+      candidate
+    );
 
-    // Ensure the validator stash has an identity set.
-    if (!this.skipIdentity) {
-      await checkIdentity(this.chaindata, this.db, freshCandidate);
-      const [hasIdentity, verified] = await this.chaindata.hasIdentity(stash);
-      if (!hasIdentity) {
-        return [false, `${name} does not have an identity set.`];
-      }
-      if (!verified) {
-        return [
-          false,
-          `${name} has an identity but is not verified by registrar.`,
-        ];
-      }
+    const identityValid = await checkIdentity(
+      this.chaindata,
+      this.db,
+      candidate
+    );
 
-      // const idString = await this.chaindata.getIdentity(stash);
-      // const idHash = blake2AsHex(idString);
-      // const numIds = identityHashTable.get(idHash) || 0;
-      // if (!numIds || numIds > 2) {
-      //   return [
-      //     false,
-      //     `${name} has too many candidates in the set with same identity. Number: ${numIds} Hash: ${idHash}`,
-      //   ];
-      // }
-    }
+    const offlineValid = await checkOffline(this.db, candidate);
 
-    // Ensures node has 98% up time.
-    await checkOffline(this.db, freshCandidate);
-    const totalOffline = offlineAccumulated / WEEK;
-    if (totalOffline > 0.02) {
-      return [
-        false,
-        `${name} has been offline ${
-          offlineAccumulated / 1000 / 60
-        } minutes this week.`,
-      ];
-    }
-
-    // Ensure that the reward destination is set to 'Staked'
+    let rewardDestinationValid = true;
     if (!this.skipStakedDesitnation) {
-      await checkRewardDestination(this.db, this.chaindata, freshCandidate);
-      const isStaked = await this.chaindata.destinationIsStaked(stash);
-      if (!isStaked) {
-        const reason = `${name} does not have reward destination set to Staked`;
-        return [false, reason];
-      }
+      rewardDestinationValid =
+        (await checkRewardDestination(this.db, this.chaindata, candidate)) ||
+        false;
     }
 
-    // Ensure that the commission is in line with the network rules
-    await checkCommission(
-      this.db,
-      this.chaindata,
-      this.commission,
-      freshCandidate
-    );
-    const [commission, err] = await this.chaindata.getCommission(stash);
-    if (err) {
-      return [false, `${name} ${err}`];
-    }
-    if (commission > this.commission) {
-      return [
-        false,
-        `${name} commission is set higher than the maximum allowed. Set: ${commission} Allowed: ${this.commission}`,
-      ];
-    }
+    const commissionValid =
+      (await checkCommission(
+        this.db,
+        this.chaindata,
+        this.commission,
+        candidate
+      )) || false;
 
-    await checkSelfStake(
-      this.db,
-      this.chaindata,
-      this.minSelfStake,
-      freshCandidate
-    );
-    if (!skipSelfStake) {
-      const [bondedAmt, err2] = await this.chaindata.getBondedAmount(stash);
-      if (err2) {
-        return [false, `${name} ${err2}`];
-      }
+    const selfStakeValid =
+      (await checkSelfStake(
+        this.db,
+        this.chaindata,
+        this.minSelfStake,
+        candidate
+      )) || false;
 
-      if (bondedAmt < this.minSelfStake) {
-        return [
-          false,
-          `${name} has less than the minimum amount bonded: ${bondedAmt} is bonded.`,
-        ];
-      }
-    }
-
-    if (!this.skipUnclaimed) {
-      await checkUnclaimed(
+    const unclaimedValid =
+      (await checkUnclaimed(
         this.db,
         this.chaindata,
         this.unclaimedEraThreshold,
-        freshCandidate
-      );
-      const [currentEra, err3] = await this.chaindata.getActiveEraIndex();
-      const threshold = currentEra - this.unclaimedEraThreshold - 1; // Validators cannot have unclaimed rewards before this era
-      // If unclaimed eras contain an era below the recent threshold
-      if (unclaimedEras && !unclaimedEras.every((era) => era > threshold)) {
-        return [
-          false,
-          `${name} has unclaimed eras: ${unclaimedEras} prior to era: ${
-            threshold + 1
-          }`,
-        ];
-      }
-    }
+        candidate
+      )) || false;
 
+    let kusamaValid = true;
     try {
-      if (!!kusamaStash) {
-        await checkKusamaRank(this.db, candidate);
-        const url = `${KOTVBackendEndpoint}/candidate/${kusamaStash}`;
-
-        const res = await axios.get(url);
-
-        if (!!res.data.invalidityReasons) {
-          return [
-            false,
-            `${name} has a kusama node that is invalid: ${res.data.invalidityReasons}`,
-          ];
-        }
-
-        if (Number(res.data.rank) < 25) {
-          return [
-            false,
-            `${name} has a Kusama stash with lower than 25 rank in the Kusama OTV programme: ${res.data.rank}.`,
-          ];
-        }
+      if (!!candidate.kusamaStash) {
+        kusamaValid = (await checkKusamaRank(this.db, candidate)) || false;
       }
     } catch (e) {
       logger.info(`Error trying to get kusama data...`);
     }
 
-    return [true, ""];
+    valid =
+      onlineValid &&
+      validateValid &&
+      versionValid &&
+      monitoringWeekValid &&
+      identityValid &&
+      offlineValid &&
+      rewardDestinationValid &&
+      commissionValid &&
+      selfStakeValid &&
+      unclaimedValid &&
+      kusamaValid;
+
+    await this.db.setValid(candidate.stash, valid);
+
+    if (valid) {
+      this.addToValidCache(candidate.stash, candidate);
+      this.db.setLastValid(candidate.stash);
+    } else {
+      this.addToInvalidCache(candidate.stash, candidate);
+    }
+
+    return valid;
   }
 
-  // Returns the list of valid candidates, ordered by the priority they should get nominated in
-  async getValidCandidates(
-    candidates: CandidateData[],
-    db: Db
-  ): Promise<CandidateData[]> {
-    logger.info(`(OTV::getValidCandidates) Getting candidates`);
+  async scoreAllCandidates() {
+    const candidates = await this.db.allCandidates();
+    await this.scoreCandidates(candidates, this.db);
+  }
 
-    const validCandidates = [];
+  async scoreCandidates(candidates: CandidateData[], db: Db) {
     let rankedCandidates = [];
-    for (const candidate of candidates) {
-      const [isValid, reason] = await this.checkSingleCandidate(candidate);
-
-      if (!isValid) {
-        logger.info(reason);
-        await db.setInvalidityReason(candidate.stash, reason);
-        continue;
-      }
-      await db.setInvalidityReason(candidate.stash, "");
-
-      validCandidates.push(candidate);
-    }
+    const validCandidates = candidates.filter((candidate) => candidate.valid);
+    if (validCandidates.length < 2) return;
 
     // Get Ranges of Parameters
     //    A validators individual parameter is then scaled to how it compares to others that are also deemd valid
@@ -461,7 +346,7 @@ export class OTV implements Constraints {
       const unclaimedScore = (1 - scaledUnclaimed) * this.UNCLAIMED_WEIGHT;
 
       const scaledBonded = scaled(candidate.bonded, bondedValues);
-      const bondedScore = scaledBonded ? scaledBonded * this.BONDED_WEIGHT : 0;
+      const bondedScore = scaledBonded * this.BONDED_WEIGHT;
 
       const scaledOffline = scaled(candidate.offlineAccumulated, offlineValues);
       const offlineScore = (1 - scaledOffline) * this.OFFLINE_WEIGHT;
@@ -648,26 +533,6 @@ export class OTV implements Constraints {
         continue;
       }
 
-      // Checking for slashing should be temporarily removed - since slashes can be cancelled by governance they should be handled manually.
-
-      // const [hasSlashes, err3] = await this.chaindata.hasUnappliedSlashes(
-      //   activeEraIndex - 2,
-      //   activeEraIndex,
-      //   stash
-      // );
-      // if (err3) {
-      //   const reason = `${name} ${err3}`;
-      //   logger.info(reason);
-      //   bad.add({ candidate, reason });
-      //   continue;
-      // }
-      // if (hasSlashes) {
-      //   const reason = `${name} has slashes.`;
-      //   logger.info(reason);
-      //   bad.add({ candidate, reason });
-      //   continue;
-      // }
-
       good.add(candidate);
     }
     return [good, bad];
@@ -696,7 +561,7 @@ export const checkValidateIntention = async (
   candidate: any
 ) => {
   const validators = await chaindata.getValidators();
-  if (!validators.includes(formatAddress(candidate.stash, config))) {
+  if (!validators.includes(formatAddress(candidate?.stash, config))) {
     db.setValidateIntentionValidity(candidate.stash, false);
     return false;
   } else {
@@ -730,7 +595,7 @@ export const checkLatestClientVersion = async (
 ) => {
   if (!config.constraints.skipClientUpgrade) {
     const latestRelease = await db.getLatestRelease();
-    if (latestRelease) {
+    if (latestRelease && Date.now > latestRelease.publishedAt + SIXTEEN_HOURS) {
       const nodeVersion = semver.coerce(candidate.version);
       const latestVersion = semver.clean(latestRelease.name);
       const isUpgraded = semver.gte(nodeVersion, latestVersion);
@@ -742,6 +607,9 @@ export const checkLatestClientVersion = async (
         return true;
       }
     }
+  } else {
+    db.setLatestClientReleaseValidity(candidate.stash, true);
+    return true;
   }
 };
 
@@ -759,6 +627,9 @@ export const checkConnectionTime = async (
       db.setConnectionTimeInvalidity(candidate.stash, true);
       return true;
     }
+  } else {
+    db.setConnectionTimeInvalidity(candidate.stash, true);
+    return true;
   }
 };
 

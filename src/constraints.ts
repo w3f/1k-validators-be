@@ -213,6 +213,8 @@ export class OTV implements Constraints {
       unclaimedValid &&
       kusamaValid;
 
+    logger.info(`{checkCandidate} ${candidate.name} is ${valid}`);
+
     await this.db.setValid(candidate.stash, valid);
 
     if (valid) {

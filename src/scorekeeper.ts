@@ -576,6 +576,10 @@ export default class ScoreKeeper {
 
     const allCandidates = await this.db.allCandidates();
 
+    for (const candidate of allCandidates) {
+      await this.constraints.checkCandidate(candidate);
+    }
+
     await this.constraints.scoreCandidates(allCandidates, this.db);
 
     await sleep(6000);

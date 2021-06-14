@@ -618,7 +618,7 @@ export default class Db {
         alreadyFault = true;
       }
     }
-    if (alreadyFault) return false;
+    if (alreadyFault) return true;
 
     await this.candidateModel.findOneAndUpdate(
       {
@@ -634,7 +634,7 @@ export default class Db {
         },
       }
     );
-    return true;
+    return false;
   }
 
   /**

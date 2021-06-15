@@ -20,9 +20,6 @@ const API = {
   GetNominatorNominations: "/nominations/:address/:last",
   GetBotClaimEvents: "/claims",
   Health: "/healthcheck",
-  Invalid: "/invalid",
-  ValidCandidates: "/valid",
-  ValidCandidate: "/valid/:stash",
   EraPoints: "/erapoints/:stash",
   TotalEraPoints: "/totalerapoints",
   LastNomination: "/lastnomination",
@@ -61,26 +58,34 @@ export default class Server {
 
     router.get(API.GetCandidates, async (ctx) => {
       let allCandidates = await this.db.allCandidates();
-      allCandidates = allCandidates.map((candidate) => {
-        return {
-          discoveredAt: candidate.discoveredAt,
-          nominatedAt: candidate.nominatedAt,
-          offlineSince: candidate.offlineSince,
-          offlineAccumulated: candidate.offlineAccumulated,
-          rank: candidate.rank,
-          faults: candidate.faults,
-          invalidityReasons: candidate.invalidityReasons,
-          unclaimedEras: candidate.unclaimedEras,
-          inclusion: candidate.inclusion,
-          name: candidate.name,
-          stash: candidate.stash,
-          kusamaStash: candidate.kusamaStash,
-          commission: candidate.commission,
-          identity: candidate.identity,
-          active: candidate.active,
-          valid: candidate.valid,
-          validity: candidate.invalidity,
-        };
+      allCandidates = await Promise.all(
+        allCandidates.map(async (candidate) => {
+          const score = await this.db.getValidatorScore(candidate.stash);
+          return {
+            discoveredAt: candidate.discoveredAt,
+            nominatedAt: candidate.nominatedAt,
+            offlineSince: candidate.offlineSince,
+            offlineAccumulated: candidate.offlineAccumulated,
+            rank: candidate.rank,
+            faults: candidate.faults,
+            invalidityReasons: candidate.invalidityReasons,
+            unclaimedEras: candidate.unclaimedEras,
+            inclusion: candidate.inclusion,
+            name: candidate.name,
+            stash: candidate.stash,
+            kusamaStash: candidate.kusamaStash,
+            commission: candidate.commission,
+            identity: candidate.identity,
+            active: candidate.active,
+            valid: candidate.valid,
+            validity: candidate.invalidity,
+            score: score,
+            total: score.total,
+          };
+        })
+      );
+      allCandidates = allCandidates.sort((a, b) => {
+        return b.total - a.total;
       });
       ctx.body = allCandidates;
     });
@@ -122,23 +127,6 @@ export default class Server {
       const network = config.global.networkPrefix == 2 ? "Kusama" : "Polkadot";
       ctx.body = `${network} Thousand Validators v2.2.5`;
       ctx.status = 200;
-    });
-
-    router.get(API.Invalid, (ctx) => {
-      const result = scoreKeeper.constraints.invalidCandidateCache;
-      ctx.body = result.filter((item) => !!item).join("\n");
-    });
-
-    router.get(API.ValidCandidates, (ctx) => {
-      const valid = scoreKeeper.constraints.validCandidateCache;
-      ctx.body = valid;
-    });
-
-    router.get(API.ValidCandidate, async (ctx) => {
-      const { stash } = ctx.params;
-      const valid = scoreKeeper.constraints.validCandidateCache;
-      const validator = valid.find((candidate) => candidate.stash === stash);
-      ctx.body = validator;
     });
 
     router.get(API.EraPoints, async (ctx) => {

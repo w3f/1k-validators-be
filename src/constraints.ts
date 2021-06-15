@@ -133,9 +133,9 @@ export class OTV implements Constraints {
 
     const onlineValid = await checkOnline(this.db, candidate);
 
-    logger.info(
-      `{checkCandidate} ${candidate.name} online valid: ${onlineValid}`
-    );
+    // logger.info(
+    //   `{checkCandidate} ${candidate.name} online valid: ${onlineValid}`
+    // );
 
     const validateValid = await checkValidateIntention(
       this.config,
@@ -144,9 +144,9 @@ export class OTV implements Constraints {
       candidate
     );
 
-    logger.info(
-      `{checkCandidate} ${candidate.name} validate valid: ${validateValid}`
-    );
+    // logger.info(
+    //   `{checkCandidate} ${candidate.name} validate valid: ${validateValid}`
+    // );
 
     const versionValid = await checkLatestClientVersion(
       this.config,
@@ -154,9 +154,9 @@ export class OTV implements Constraints {
       candidate
     );
 
-    logger.info(
-      `{checkCandidate} ${candidate.name} versionValid: ${versionValid}`
-    );
+    // logger.info(
+    //   `{checkCandidate} ${candidate.name} versionValid: ${versionValid}`
+    // );
 
     const monitoringWeekValid = await checkConnectionTime(
       this.config,
@@ -164,9 +164,9 @@ export class OTV implements Constraints {
       candidate
     );
 
-    logger.info(
-      `{checkCandidate} ${candidate.name} monitoringWeekValid: ${monitoringWeekValid}`
-    );
+    // logger.info(
+    //   `{checkCandidate} ${candidate.name} monitoringWeekValid: ${monitoringWeekValid}`
+    // );
 
     const identityValid = await checkIdentity(
       this.chaindata,
@@ -174,15 +174,15 @@ export class OTV implements Constraints {
       candidate
     );
 
-    logger.info(
-      `{checkCandidate} ${candidate.name} identityValid: ${identityValid}`
-    );
+    // logger.info(
+    //   `{checkCandidate} ${candidate.name} identityValid: ${identityValid}`
+    // );
 
     const offlineValid = await checkOffline(this.db, candidate);
 
-    logger.info(
-      `{checkCandidate} ${candidate.name} offlineValid: ${offlineValid}`
-    );
+    // logger.info(
+    //   `{checkCandidate} ${candidate.name} offlineValid: ${offlineValid}`
+    // );
 
     let rewardDestinationValid = true;
     if (!this.skipStakedDesitnation) {
@@ -191,9 +191,9 @@ export class OTV implements Constraints {
         false;
     }
 
-    logger.info(
-      `{checkCandidate} ${candidate.name} rewardDestinationValid: ${rewardDestinationValid}`
-    );
+    // logger.info(
+    //   `{checkCandidate} ${candidate.name} rewardDestinationValid: ${rewardDestinationValid}`
+    // );
 
     const commissionValid =
       (await checkCommission(
@@ -203,9 +203,9 @@ export class OTV implements Constraints {
         candidate
       )) || false;
 
-    logger.info(
-      `{checkCandidate} ${candidate.name} commissionValid: ${commissionValid}`
-    );
+    // logger.info(
+    //   `{checkCandidate} ${candidate.name} commissionValid: ${commissionValid}`
+    // );
 
     const selfStakeValid =
       (await checkSelfStake(
@@ -215,9 +215,9 @@ export class OTV implements Constraints {
         candidate
       )) || false;
 
-    logger.info(
-      `{checkCandidate} ${candidate.name} selfStakeValid: ${selfStakeValid}`
-    );
+    // logger.info(
+    //   `{checkCandidate} ${candidate.name} selfStakeValid: ${selfStakeValid}`
+    // );
 
     const unclaimedValid =
       (await checkUnclaimed(
@@ -227,9 +227,9 @@ export class OTV implements Constraints {
         candidate
       )) || false;
 
-    logger.info(
-      `{checkCandidate} ${candidate.name} unclaimedValid: ${unclaimedValid}`
-    );
+    // logger.info(
+    //   `{checkCandidate} ${candidate.name} unclaimedValid: ${unclaimedValid}`
+    // );
 
     let kusamaValid = true;
     try {
@@ -240,9 +240,9 @@ export class OTV implements Constraints {
       logger.info(`Error trying to get kusama data...`);
     }
 
-    logger.info(
-      `{checkCandidate} ${candidate.name} kusamaValid: ${kusamaValid}`
-    );
+    // logger.info(
+    //   `{checkCandidate} ${candidate.name} kusamaValid: ${kusamaValid}`
+    // );
 
     valid =
       onlineValid &&
@@ -257,7 +257,7 @@ export class OTV implements Constraints {
       unclaimedValid &&
       kusamaValid;
 
-    logger.info(`{checkCandidate} ${candidate.name} is ${valid}`);
+    // logger.info(`{checkCandidate} ${candidate.name} is ${valid}`);
 
     await this.db.setValid(candidate.stash, valid);
 

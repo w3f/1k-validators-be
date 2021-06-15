@@ -17,7 +17,7 @@ resources:
 
 image:
   repo: web3f/otv-backend
-  tag: v2.4.24
+  tag: v2.4.25
 
 certificate:
   enabled: true

@@ -80,7 +80,7 @@ export default class Server {
             valid: candidate.valid,
             validity: candidate.invalidity,
             score: score,
-            total: score.total,
+            total: score && score.total ? score.total : 0,
           };
         })
       );

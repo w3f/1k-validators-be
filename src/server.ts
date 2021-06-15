@@ -20,9 +20,8 @@ const API = {
   GetNominatorNominations: "/nominations/:address/:last",
   GetBotClaimEvents: "/claims",
   Health: "/healthcheck",
-  Invalid: "/invalid",
-  ValidCandidates: "/valid",
-  ValidCandidate: "/valid/:stash",
+  ValidCandidates: "/validity",
+  ValidCandidate: "/validity/:stash",
   EraPoints: "/erapoints/:stash",
   TotalEraPoints: "/totalerapoints",
   LastNomination: "/lastnomination",
@@ -122,11 +121,6 @@ export default class Server {
       const network = config.global.networkPrefix == 2 ? "Kusama" : "Polkadot";
       ctx.body = `${network} Thousand Validators v2.2.5`;
       ctx.status = 200;
-    });
-
-    router.get(API.Invalid, (ctx) => {
-      const result = scoreKeeper.constraints.invalidCandidateCache;
-      ctx.body = result.filter((item) => !!item).join("\n");
     });
 
     router.get(API.ValidCandidates, (ctx) => {

@@ -162,10 +162,10 @@ export default class TelemetryClient {
           const now = Date.now();
 
           const wasOffline = this.offlineNodes.has(id);
-          if (wasOffline) {
-            this.offlineNodes.delete(id);
-            await this.db.reportBestBlock(id, details, now);
-          }
+          // if (wasOffline) {
+          // this.offlineNodes.delete(id);
+          await this.db.reportBestBlock(id, details, now);
+          // }
         }
         break;
     }

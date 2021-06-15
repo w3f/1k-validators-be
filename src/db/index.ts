@@ -982,7 +982,7 @@ export default class Db {
           stash,
         },
         {
-          rank: data.rank - 5,
+          rank: data.rank - 3,
         }
       )
       .exec();

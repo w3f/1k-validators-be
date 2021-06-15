@@ -29,7 +29,7 @@ export const KUSAMA_FOUR_DAYS_ERAS = 16;
 export const POLKADOT_FOUR_DAYS_ERAS = 4;
 
 // Number of eras that a validator can have unclaimed rewards for until the backend tries to claim them
-export const REWARD_CLAIMING_THRESHOLD = 28;
+export const REWARD_CLAIMING_THRESHOLD = 27;
 
 /// On Kusama eras are 6 hours with 6 second blocks.
 export const KUSAMA_APPROX_ERA_LENGTH_IN_BLOCKS = 3600;
@@ -77,7 +77,8 @@ export const CANCEL_THRESHOLD = 21700;
 export const MONITOR_CRON = "0 */15 * * * *";
 
 // Clear Offline Time Cron Job. This runs once every sunday  by default
-export const CLEAR_OFFLINE_CRON = "0 0 0 * * 0";
+// export const CLEAR_OFFLINE_CRON = "0 0 0 * * 0";
+export const CLEAR_OFFLINE_CRON = "0 0 * * * *";
 
 // Validity Cron Job. This runs every 7 minutes by default
 export const VALIDITY_CRON = "0 0-59/7 * * * *";

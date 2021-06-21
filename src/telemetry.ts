@@ -122,10 +122,9 @@ export default class TelemetryClient {
 
           await waitUntilFree(details[0]);
           await this.db.reportOnline(id, details, now);
+
           const wasOffline = this.offlineNodes.has(id);
           if (wasOffline) {
-            // TODO:
-
             this.offlineNodes.delete(id);
           }
         }
@@ -149,11 +148,7 @@ export default class TelemetryClient {
           await this.db.reportOffline(id, name, now);
           this.beingReported.set(name, false);
 
-          const wasOffline = this.offlineNodes.has(id);
-          if (!wasOffline) {
-            this.offlineNodes.set(id, true);
-            // TODO:
-          }
+          this.offlineNodes.set(id, true);
         }
         break;
       case TelemetryMessage.ImportedBlock:
@@ -162,10 +157,10 @@ export default class TelemetryClient {
           const now = Date.now();
 
           const wasOffline = this.offlineNodes.has(id);
-          // if (wasOffline) {
-          // this.offlineNodes.delete(id);
-          await this.db.reportBestBlock(id, details, now);
-          // }
+          if (wasOffline) {
+            this.offlineNodes.delete(id);
+            await this.db.reportBestBlock(id, details, now);
+          }
         }
         break;
     }

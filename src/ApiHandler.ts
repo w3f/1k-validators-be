@@ -28,22 +28,24 @@ class ApiHandler extends EventEmitter {
       provider: new WsProvider(endpoints),
       // throwOnConnect: true,
     });
-    api
-      .on("connected", () => {
-        logger.info(`Connected to chain`);
-      })
-      .on("disconnected", async () => {
-        logger.warn(`Disconnected from chain`);
-      })
-      .on("ready", () => {
-        logger.info(`API connection ready`);
-      })
-      .on("error", (error) => {
-        logger.warn("The API has an error");
-        console.log(error);
-      });
-    await api.isReadyOrError;
-    return api;
+    if (api) {
+      api
+        .on("connected", () => {
+          logger.info(`Connected to chain`);
+        })
+        .on("disconnected", async () => {
+          logger.warn(`Disconnected from chain`);
+        })
+        .on("ready", () => {
+          logger.info(`API connection ready`);
+        })
+        .on("error", (error) => {
+          logger.warn("The API has an error");
+          console.log(error);
+        });
+      await api.isReadyOrError;
+      return api;
+    }
   }
 
   static async create(endpoints: string[]): Promise<ApiHandler> {

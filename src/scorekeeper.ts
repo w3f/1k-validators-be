@@ -118,7 +118,10 @@ export default class ScoreKeeper {
         const { stash, amount } = data;
 
         // check if the address was a candidate, and if so, update their unclaimed eras
-        if (this.rewardDestinationCache && this.rewardDestinationCache.includes(stash)) {
+        if (
+          this.rewardDestinationCache &&
+          this.rewardDestinationCache.includes(stash)
+        ) {
           logger.info(
             `{scorekeeper::reward} ${stash} claimed reward of ${amount}. Updating eras....`
           );

@@ -653,6 +653,7 @@ export const checkLatestClientVersion = async (
         return true;
       }
     } else {
+      logger.warn(`{latestRelease} Could not set release validatity for ${candidate.name}. Latest release: ${latestRelease}`);
       return true;
     }
   } else {

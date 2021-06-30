@@ -101,10 +101,10 @@ export default class Server {
       ctx.body = allNominators;
     });
 
-    router.get(API.Release, async(ctx) => {
+    router.get(API.Release, async (ctx) => {
       const release = await this.db.getLatestRelease();
       ctx.body = release;
-    })
+    });
 
     router.get(API.GetNominator, async (ctx) => {
       const { stash } = ctx.params;

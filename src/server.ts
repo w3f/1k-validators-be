@@ -27,6 +27,7 @@ const API = {
   EraStats: "/erastats",
   Score: "/score/:stash",
   ScoreMetadata: "/scoremetadata",
+  Release: "/release",
 };
 
 export default class Server {
@@ -98,6 +99,11 @@ export default class Server {
     router.get(API.GetNominators, async (ctx) => {
       const allNominators = await this.db.allNominators();
       ctx.body = allNominators;
+    });
+
+    router.get(API.Release, async (ctx) => {
+      const release = await this.db.getLatestRelease();
+      ctx.body = release;
     });
 
     router.get(API.GetNominator, async (ctx) => {

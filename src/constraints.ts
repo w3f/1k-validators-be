@@ -641,7 +641,10 @@ export const checkLatestClientVersion = async (
 ) => {
   if (!config.constraints.skipClientUpgrade) {
     const latestRelease = await db.getLatestRelease();
-    if (latestRelease && Date.now > latestRelease.publishedAt + SIXTEEN_HOURS) {
+    if (
+      latestRelease &&
+      Date.now() > latestRelease.publishedAt + SIXTEEN_HOURS
+    ) {
       const nodeVersion = semver.coerce(candidate.version);
       const latestVersion = semver.clean(latestRelease.name);
       const isUpgraded = semver.gte(nodeVersion, latestVersion);
@@ -654,7 +657,9 @@ export const checkLatestClientVersion = async (
       }
     } else {
       logger.warn(
-        `{latestRelease} Could not set release validatity for ${candidate.name}. Latest release: ${latestRelease}`
+        `{latestRelease} Could not set release validatity for ${
+          candidate.name
+        }. Latest release: ${latestRelease} now: ${Date.now()}`
       );
       return true;
     }

@@ -654,7 +654,7 @@ export const checkLatestClientVersion = async (
       }
     } else {
       logger.warn(
-        `{latestRelease} Could not set release validatity for ${candidate.name}. Latest release: ${latestRelease}`
+        `{latestRelease} Could not set release validatity for ${candidate.name}. Latest release: ${latestRelease} now: ${Date.now()}`
       );
       return true;
     }

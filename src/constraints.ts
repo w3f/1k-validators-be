@@ -642,6 +642,7 @@ export const checkLatestClientVersion = async (
   if (!config.constraints.skipClientUpgrade) {
     const latestRelease = await db.getLatestRelease();
     if (
+      candidate.version &&
       latestRelease &&
       Date.now() > latestRelease.publishedAt + SIXTEEN_HOURS
     ) {
@@ -659,7 +660,9 @@ export const checkLatestClientVersion = async (
       logger.warn(
         `{latestRelease} Could not set release validatity for ${
           candidate.name
-        }. Latest release: ${latestRelease} now: ${Date.now()}`
+        } - version: ${
+          candidate.version
+        } Latest release: ${latestRelease} now: ${Date.now()}`
       );
       return true;
     }

@@ -63,22 +63,26 @@ export const autoNumNominations = async (
   if (!stash) return 0;
   const stashAccount = await api.query.system.account(stash);
   const stashBal = stashAccount.data.free.toBn();
-  const validators = await api.derive.staking.electedInfo();
-  validators.info.sort((a, b) => {
-    if (a.exposure.total && b.exposure.total) {
-      a.exposure.total.toBn().sub(b.exposure.total.toBn()).isNeg() ? -1 : 1;
-    } else {
-      logger.warn(`{autoNominations} error, no exposure for ${a} or ${b}`);
-      return 1;
-    }
-  });
 
-  return Math.min(
-    Math.floor(
-      stashBal.div(validators.info[0].exposure.total.toBn()).toNumber()
-    ) + 2,
-    24
-  );
+  const era = await api.query.staking.currentEra();
+  const exposures = await api.query.staking.erasStakers.entries(era.toString());
+  const stakedAmounts = [];
+  exposures.forEach(([key, exposure]) => {
+    // @ts-ignore
+    const denom = exposure.toHuman().total.slice(7, 8) == "M" ? 1000000 : 1000;
+    // @ts-ignore
+    const amount = exposure.toHuman().total.slice(0, -5);
+    const numAmount = parseFloat(amount) * denom;
+    stakedAmounts.push(numAmount);
+  });
+  const min = Math.min(...stakedAmounts);
+  logger.info(`{autoNom} lowest staked in set: ${min}`);
+
+  const nominationNum = Math.min(Math.floor(stashBal.toNumber() / min) + 2, 24);
+
+  logger.info(`{autoNom} number of nominations: ${nominationNum}`);
+
+  return nominationNum;
 };
 
 export default class ScoreKeeper {

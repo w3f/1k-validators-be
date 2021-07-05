@@ -1,5 +1,5 @@
 import { CronJob } from "cron";
-import program from "commander";
+import { Command } from "commander";
 
 import ApiHandler from "./ApiHandler";
 import { loadConfigDir } from "./config";
@@ -25,7 +25,7 @@ import { startClearAccumulatedOfflineTimeJob, startMonitorJob } from "./cron";
 
 const isCI = process.env.CI;
 
-const version = "v2.4.37";
+const version = "v2.4.38";
 
 const catchAndQuit = async (fn: any) => {
   try {
@@ -154,6 +154,8 @@ const start = async (cmd: { config: string }) => {
   const server = new Server(db, config, scorekeeper);
   server.start();
 };
+
+const program = new Command();
 
 program
   .option("--config <directory>", "The path to the config directory.", "config")

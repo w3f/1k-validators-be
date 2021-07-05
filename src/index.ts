@@ -1,5 +1,5 @@
 import { CronJob } from "cron";
-import program from "commander";
+import { Command } from "commander";
 
 import ApiHandler from "./ApiHandler";
 import { loadConfigDir } from "./config";
@@ -154,6 +154,8 @@ const start = async (cmd: { config: string }) => {
   const server = new Server(db, config, scorekeeper);
   server.start();
 };
+
+const program = new Command();
 
 program
   .option("--config <directory>", "The path to the config directory.", "config")

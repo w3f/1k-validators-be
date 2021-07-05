@@ -62,7 +62,10 @@ export const autoNumNominations = async (
   const stash = await nominator.stash();
   if (!stash) return 0;
   const stashAccount = await api.query.system.account(stash);
-  const stashBal = stashAccount.data.free.toBn();
+  const stashDenom =
+    stashAccount.data.free.toHuman().slice(7, 8) == "M" ? 1000000 : 1000;
+  // @ts-ignore
+  const stashBal = stashAccount.data.free.toHuman().slice(0, -5) * stashDenom;
 
   const era = await api.query.staking.currentEra();
   const exposures = await api.query.staking.erasStakers.entries(era.toString());
@@ -78,7 +81,7 @@ export const autoNumNominations = async (
   const min = Math.min(...stakedAmounts);
   logger.info(`{autoNom} lowest staked in set: ${min}`);
 
-  const nominationNum = Math.min(Math.floor(stashBal.toNumber() / min) + 2, 24);
+  const nominationNum = Math.min(Math.floor(stashBal / min) + 2, 24);
 
   logger.info(`{autoNom} number of nominations: ${nominationNum}`);
 

@@ -61,11 +61,15 @@ export const autoNumNominations = async (
 ): Promise<number> => {
   const stash = await nominator.stash();
   if (!stash) return 0;
-  const stashAccount = await api.query.system.account(stash);
+  const stashAccount = (
+    await api.query.system.account(stash)
+  ).data.free.toHuman();
   const stashDenom =
-    stashAccount.data.free.toHuman().slice(7, 8) == "M" ? 1000000 : 1000;
+    stashAccount.slice(stashAccount.length - 4, stashAccount.length - 3) == "M"
+      ? 1000000
+      : 1000;
   // @ts-ignore
-  const stashBal = stashAccount.data.free.toHuman().slice(0, -5) * stashDenom;
+  const stashBal = stashAccount.slice(0, -5) * stashDenom;
 
   const era = await api.query.staking.currentEra();
   const exposures = await api.query.staking.erasStakers.entries(era.toString());

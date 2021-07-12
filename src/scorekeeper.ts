@@ -85,7 +85,7 @@ export const autoNumNominations = async (
   const min = Math.min(...stakedAmounts);
   logger.info(`{autoNom} lowest staked in set: ${min}`);
 
-  const nominationNum = Math.min(Math.floor(stashBal / min) + 2, 24);
+  const nominationNum = Math.min(Math.floor(stashBal / min) + 1, 24);
 
   logger.info(`{autoNom} number of nominations: ${nominationNum}`);
 

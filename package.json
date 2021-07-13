@@ -63,7 +63,7 @@
     "concurrently": "^6.2.0",
     "eslint": "^7.30.0",
     "eslint-plugin-security": "^1.4.0",
-    "nodemon": "^2.0.10",
+    "nodemon": "^2.0.12",
     "open-cli": "^7.0.0"
   },
   "config": {

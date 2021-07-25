@@ -76,6 +76,7 @@ export default class Db {
 
   static async create(uri = "mongodb://localhost:27017/otv"): Promise<Db> {
     mongoose.connect(uri, {
+      //@ts-ignore
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });

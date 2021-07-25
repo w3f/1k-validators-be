@@ -7,7 +7,8 @@ import {
   SIXTEEN_HOURS,
   TIME_DELAY_BLOCKS,
   VALIDITY_CRON,
-  REWARD_CLAIMING_THRESHOLD,
+  KUSAMA_REWARD_THRESHOLD,
+  POLKADOT_REWARD_THRESHOLD,
   REWARD_CLAIMING_CRON,
   CANCEL_CRON,
   STALE_CRON,
@@ -308,9 +309,9 @@ export const startRewardClaimJob = async (
     const erasToClaim = [];
     const [currentEra, err] = await chaindata.getActiveEraIndex();
     const rewardClaimThreshold =
-      config.global.networkPrefix == 2 || config.global.networkPrefix == 0
-        ? REWARD_CLAIMING_THRESHOLD
-        : 6;
+      config.global.networkPrefix == 2
+        ? KUSAMA_REWARD_THRESHOLD
+        : POLKADOT_REWARD_THRESHOLD;
     const claimThreshold = Number(currentEra - rewardClaimThreshold);
 
     logger.info(

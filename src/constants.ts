@@ -29,7 +29,9 @@ export const KUSAMA_FOUR_DAYS_ERAS = 16;
 export const POLKADOT_FOUR_DAYS_ERAS = 4;
 
 // Number of eras that a validator can have unclaimed rewards for until the backend tries to claim them
-export const REWARD_CLAIMING_THRESHOLD = 20;
+export const KUSAMA_REWARD_THRESHOLD = 20;
+
+export const POLKADOT_REWARD_THRESHOLD = 4;
 
 /// On Kusama eras are 6 hours with 6 second blocks.
 export const KUSAMA_APPROX_ERA_LENGTH_IN_BLOCKS = 3600;

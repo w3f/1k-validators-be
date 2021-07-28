@@ -45,7 +45,7 @@
     "koa2-cors": "^2.0.6",
     "matrix-js-sdk": "^12.1.0",
     "mongodb": "4.0.1",
-    "mongodb-memory-server": "^7.3.2",
+    "mongodb-memory-server": "^7.3.4",
     "mongoose": "^5.13.3",
     "prettier": "^2.3.2",
     "reconnecting-websocket": "^4.4.0",

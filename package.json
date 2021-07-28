@@ -34,7 +34,7 @@
     "axios": "^0.21.1",
     "bree": "^6.2.1",
     "bs58": "^4.0.1",
-    "commander": "^8.0.0",
+    "commander": "^8.1.0",
     "cron": "^1.8.2",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^3.4.0",

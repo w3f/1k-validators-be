@@ -61,9 +61,9 @@ export const autoNumNominations = async (
 ): Promise<number> => {
   const stash = await nominator.stash();
   if (!stash) return 0;
-  const stashAccount = (
-    await api.query.system.account(stash)
-  ).data.free.toHuman();
+
+  const stashAccount = (await api.query.system.account(stash)).data.free // @ts-ignore
+    .toHuman();
   const stashDenom =
     stashAccount.slice(stashAccount.length - 4, stashAccount.length - 3) == "M"
       ? 1000000

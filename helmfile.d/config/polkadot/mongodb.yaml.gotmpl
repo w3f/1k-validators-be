@@ -39,10 +39,6 @@ podManagementPolicy: OrderedReady
 affinity: {}
 nodeSelector: {}
 podLabels: {}
-podAnnotations:
-  backup.velero.io/backup-volumes: datadir
-  pre.hook.backup.velero.io/command: '["/bin/bash", "-c", "mongodump --host 127.0.0.1 --port 27017 --username $POLKADOT_MONGO_USERNAME --password $POLKADOT_MONGO_PASSWORD --db $POLKADOT_MONGO_DB"]'
-  pre.hook.backup.velero.io/timeout: 10m
 
 podSecurityContext:
   enabled: true

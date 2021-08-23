@@ -21,7 +21,7 @@
   "author": "Web3 Foundation <teched@web3.foundation>",
   "license": "GPL-3.0",
   "dependencies": {
-    "@koa/router": "^10.1.0",
+    "@koa/router": "^10.1.1",
     "@octokit/rest": "^18.9.1",
     "@polkadot/api": "^5.5.2",
     "@polkadot/keyring": "^7.2.1",

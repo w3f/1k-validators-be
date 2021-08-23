@@ -1,6 +1,6 @@
 {
   "name": "1k-validators-be",
-  "version": "2.4.51",
+  "version": "2.4.52",
   "description": "Services for running the Thousand Validator Program.",
   "main": "index.js",
   "scripts": {
@@ -21,9 +21,9 @@
   "author": "Web3 Foundation <teched@web3.foundation>",
   "license": "GPL-3.0",
   "dependencies": {
-    "@koa/router": "^10.1.0",
+    "@koa/router": "^10.1.1",
     "@octokit/rest": "^18.9.1",
-    "@polkadot/api": "^5.5.2",
+    "@polkadot/api": "^5.6.1",
     "@polkadot/keyring": "^7.2.1",
     "@types/cron": "^1.7.3",
     "@types/koa": "^2.13.4",

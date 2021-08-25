@@ -70,7 +70,7 @@ export const LocalEndpoints = [
 export const KOTVBackendEndpoint = "https://kusama.w3f.community";
 
 // The number of blocks for a time delay proxy. Default is 10850, or ~18 hours
-export const TIME_DELAY_BLOCKS = 10850;
+export const TIME_DELAY_BLOCKS = 10805;
 
 // The number of blocks after a time delay proxy call was announced that we want to cancel the tx. Should be 36 hours
 export const CANCEL_THRESHOLD = 21700;
@@ -88,8 +88,8 @@ export const VALIDITY_CRON = "0 0-59/7 * * * *";
 // Execution Cron Job. This runs every 15 minutes by default
 export const EXECUTION_CRON = "0 0-59/15 * * * *";
 
-// Scorekeeper Cron Job. This runs every 55 minutes by default
-export const SCOREKEEPER_CRON = "0 0 0-23 * * *";
+// Scorekeeper Cron Job. This runs every 10 minutes by default
+export const SCOREKEEPER_CRON = "0 0-59/10 * * * *";
 
 // Reward claiming frequency. This runs every 45 minutes by default
 export const REWARD_CLAIMING_CRON = "0 0-59/45 * * * *";

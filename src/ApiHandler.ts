@@ -87,7 +87,10 @@ class ApiHandler extends EventEmitter {
           });
         }
 
-        if (event.section == "staking" && event.method == "Reward") {
+        if (
+          event.section == "staking" &&
+          (event.method == "Reward" || event.method == "Rewarded")
+        ) {
           const [stash, amount] = event.data;
 
           this.emit("reward", {

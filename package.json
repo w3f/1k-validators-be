@@ -64,7 +64,7 @@
     "eslint": "^7.32.0",
     "eslint-plugin-security": "^1.4.0",
     "nodemon": "^2.0.12",
-    "open-cli": "^7.0.0"
+    "open-cli": "^7.0.1"
   },
   "config": {
     "mongodbMemoryServer": {

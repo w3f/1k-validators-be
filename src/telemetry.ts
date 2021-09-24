@@ -129,28 +129,28 @@ export default class TelemetryClient {
           }
         }
         break;
-      case TelemetryMessage.RemovedNode:
-        {
-          const id = parseInt(payload);
-          const now = Date.now();
+      // case TelemetryMessage.RemovedNode:
+      //   {
+      //     const id = parseInt(payload);
+      //     const now = Date.now();
 
-          //this is to get around security warning vvv
-          const details = MemNodes[parseInt(String(id))];
+      //     //this is to get around security warning vvv
+      //     const details = MemNodes[parseInt(String(id))];
 
-          if (!details) {
-            logger.info(`Unknown node with ${id} reported offline.`);
-          }
+      //     if (!details) {
+      //       logger.info(`Unknown node with ${id} reported offline.`);
+      //     }
 
-          const name = details[0];
+      //     const name = details[0];
 
-          logger.info(`(TELEMETRY) Reporting ${name} OFFLINE`);
-          this.beingReported.set(name, true);
-          await this.db.reportOffline(id, name, now);
-          this.beingReported.set(name, false);
+      //     logger.info(`(TELEMETRY) Reporting ${name} OFFLINE`);
+      //     this.beingReported.set(name, true);
+      //     await this.db.reportOffline(id, name, now);
+      //     this.beingReported.set(name, false);
 
-          this.offlineNodes.set(id, true);
-        }
-        break;
+      //     this.offlineNodes.set(id, true);
+      //   }
+      //   break;
       case TelemetryMessage.ImportedBlock:
         {
           const [id, details] = payload;

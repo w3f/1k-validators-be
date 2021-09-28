@@ -38,14 +38,7 @@
     chalk "^2.0.0"
     js-tokens "^4.0.0"
 
-"@babel/runtime@^7.10.5", "@babel/runtime@^7.12.5", "@babel/runtime@^7.15.3":
-  version "7.15.3"
-  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.15.3.tgz#2e1c2880ca118e5b2f9988322bd8a7656a32502b"
-  integrity sha512-OvwMLqNXkCXSz1kSm58sEsNuhqOx/fKpnUnKnFB5v8uDda5bLNEHNgKPvhDN6IU0LDcnHQ90LlJ0Q6jnyBSIBA==
-  dependencies:
-    regenerator-runtime "^0.13.4"
-
-"@babel/runtime@^7.15.4":
+"@babel/runtime@^7.10.5", "@babel/runtime@^7.12.5", "@babel/runtime@^7.15.3", "@babel/runtime@^7.15.4":
   version "7.15.4"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.15.4.tgz#fd17d16bfdf878e6dd02d19753a39fa8a8d9c84a"
   integrity sha512-99catp6bHCaxr4sJ/DbTGgHS4+Rs2RVd2g7iOap6SLGPDknRK9ztKNsE/Fg6QhSeh1FGE5f6gHGQmvvn3I3xhw==
@@ -3468,10 +3461,10 @@ matcher@^3.0.0:
   dependencies:
     escape-string-regexp "^4.0.0"
 
-matrix-js-sdk@^12.4.0:
-  version "12.4.0"
-  resolved "https://registry.yarnpkg.com/matrix-js-sdk/-/matrix-js-sdk-12.4.0.tgz#ff60306f9a9e39fd1ae6c7e501001f80eb779dd7"
-  integrity sha512-KamHmvNle4mkdErmNgVsGIL3n8/zgPe60DLVaEA2t4aSNwQLEmRS+oVpIgsO3ZrUivBvn4oc9sBqxP0OIl6kUg==
+matrix-js-sdk@^13.0.0:
+  version "13.0.0"
+  resolved "https://registry.yarnpkg.com/matrix-js-sdk/-/matrix-js-sdk-13.0.0.tgz#a57a4b73892e98fcd5eb0081e4745fac567211dd"
+  integrity sha512-VkZhQBd6jlRNjsqjLIoHV3fnjOSljPDuJklKsF4l6yffkra7llxQctyMsrCnoiosdAQWigbLZsKSb+HbSFmcnw==
   dependencies:
     "@babel/runtime" "^7.12.5"
     another-json "^0.2.0"

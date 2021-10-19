@@ -59,11 +59,11 @@ export const autoNumNominations = async (
   api: ApiPromise,
   nominator: Nominator
 ): Promise<number> => {
-
   // Get the denomination for the chain
   const chainType = await api.rpc.system.chain();
-  const denom = chainType.toString() == 'Polkadot' ? 10000000000 : 1000000000000;
-  
+  const denom =
+    chainType.toString() == "Polkadot" ? 10000000000 : 1000000000000;
+
   // Get the nominator stash balance
   const stash = await nominator.stash();
   if (!stash) return 0;
@@ -77,11 +77,11 @@ export const autoNumNominations = async (
   const exposures = await api.query.staking.erasStakers.entries(era.toString());
   const stakedAmounts = [];
   exposures.forEach(([key, exposure]) => {
-
     // Get the amount of exposure in plancks
     const planckAmount = exposure.toHuman().total.toString();
     // get the amount of exposure in human readable denomiantion
-    const numAmount = parseFloat(planckAmount.replace(/[^\d\.\-]/g, "")) / denom;
+    const numAmount =
+      parseFloat(planckAmount.replace(/[^\d\.\-]/g, "")) / denom;
 
     stakedAmounts.push(numAmount);
   });

@@ -28,9 +28,10 @@ class ChainData {
       return;
     }
     const chainType = await api.rpc.system.chain();
-    const denom = chainType.toString() == 'Polkadot' ? 10000000000 : 1000000000000;
+    const denom =
+      chainType.toString() == "Polkadot" ? 10000000000 : 1000000000000;
     return denom;
-  }
+  };
 
   // Gets the active era index
   getActiveEraIndex = async (): Promise<NumberResult> => {

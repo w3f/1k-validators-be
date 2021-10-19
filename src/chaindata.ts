@@ -20,6 +20,20 @@ class ChainData {
     this.handler = handler;
   }
 
+  // Returns the denomination of the chain. Used for formatting planck denomianted amounts
+  getDenom = async (): Promise<number> => {
+    const api = await this.handler.getApi();
+    if (!api.isConnected) {
+      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
+      return;
+    }
+    const chainType = await api.rpc.system.chain();
+    const denom =
+      chainType.toString() == "Polkadot" ? 10000000000 : 1000000000000;
+    return denom;
+  };
+
+  // Gets the active era index
   getActiveEraIndex = async (): Promise<NumberResult> => {
     const api = await this.handler.getApi();
     if (!api.isConnected) {
@@ -38,6 +52,7 @@ class ChainData {
     return [activeEra.unwrap().index.toNumber(), null];
   };
 
+  // Gets the curent era
   getCurrentEra = async () => {
     const api = await this.handler.getApi();
     if (!api.isConnected) {
@@ -49,6 +64,7 @@ class ChainData {
     return Number(currentEra);
   };
 
+  // Gets the commision for a given validator
   getCommission = async (validator: string): Promise<NumberResult> => {
     const api = await this.handler.getApi();
     if (!api.isConnected) {
@@ -95,15 +111,20 @@ class ChainData {
     }
   };
 
-  getBalanceOf = async (validator: string): Promise<NumberResult> => {
+  // returns the human denominated balance of a given address.
+  getBalanceOf = async (address: string): Promise<NumberResult> => {
     const api = await this.handler.getApi();
     if (!api.isConnected) {
       logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
       return;
     }
 
-    const account = await api.query.system.account(validator);
-    return [account.data.free.toNumber(), null];
+    // Get the denomination for this chain
+    const denom = await this.getDenom();
+    const account = await api.query.system.account(address);
+    // Get the human formatted balance
+    const balance = parseFloat(account.data.free.toString()) / denom;
+    return [balance, null];
   };
 
   getBondedAmount = async (stash: string): Promise<NumberResult> => {

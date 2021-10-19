@@ -59,27 +59,30 @@ export const autoNumNominations = async (
   api: ApiPromise,
   nominator: Nominator
 ): Promise<number> => {
+  // Get the denomination for the chain
+  const chainType = await api.rpc.system.chain();
+  const denom =
+    chainType.toString() == "Polkadot" ? 10000000000 : 1000000000000;
+
+  // Get the nominator stash balance
   const stash = await nominator.stash();
   if (!stash) return 0;
   const stashQuery = await api.query.system.account(stash);
   // @ts-ignore
-  const stashAccount = stashQuery.data.free.toHuman();
-  const stashDenom =
-    stashAccount.slice(stashAccount.length - 4, stashAccount.length - 3) == "M"
-      ? 1000000
-      : 1000;
-  // @ts-ignore
-  const stashBal = stashAccount.slice(0, -5) * stashDenom;
+  const stashBal = parseFloat(stashQuery.data.free) / denom;
+
+  // Get the lowest staked validator in the active set
 
   const era = await api.query.staking.currentEra();
   const exposures = await api.query.staking.erasStakers.entries(era.toString());
   const stakedAmounts = [];
   exposures.forEach(([key, exposure]) => {
-    // @ts-ignore
-    const denom = exposure.toHuman().total.slice(7, 8) == "M" ? 1000000 : 1000;
-    // @ts-ignore
-    const amount = exposure.toHuman().total.slice(0, -5);
-    const numAmount = parseFloat(amount) * denom;
+    // Get the amount of exposure in plancks
+    const planckAmount = exposure.toHuman().total.toString();
+    // get the amount of exposure in human readable denomiantion
+    const numAmount =
+      parseFloat(planckAmount.replace(/[^\d\.\-]/g, "")) / denom;
+
     stakedAmounts.push(numAmount);
   });
   const min = Math.min(...stakedAmounts);

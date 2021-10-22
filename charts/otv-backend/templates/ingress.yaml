@@ -24,5 +24,6 @@ spec:
       - path: /
         pathType: Prefix
         backend:
-          serviceName: {{ .Release.Name }}
-          servicePort: {{ .Values.backendPort }}
+          service:
+            name: {{ .Release.Name }}
+            port: {{ .Values.backendPort }}

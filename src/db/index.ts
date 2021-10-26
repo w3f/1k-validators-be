@@ -23,9 +23,6 @@ import { Keyring } from "@polkadot/keyring";
 // [name, client, version, null, networkId]
 export type NodeDetails = [string, string, string, string, string];
 
-// Sets a global configuration to silence mongoose deprecation warnings.
-(mongoose as any).set("useFindAndModify", false);
-
 export default class Db {
   private accountingModel;
   private candidateModel;
@@ -75,11 +72,7 @@ export default class Db {
   }
 
   static async create(uri = "mongodb://localhost:27017/otv"): Promise<Db> {
-    mongoose.connect(uri, {
-      //@ts-ignore
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    mongoose.connect(uri, {});
 
     return new Promise((resolve, reject) => {
       mongoose.connection.once("open", async () => {

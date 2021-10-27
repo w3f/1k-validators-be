@@ -38,10 +38,10 @@
   dependencies:
     regenerator-runtime "^0.13.4"
 
-"@breejs/later@^4.0.2":
-  version "4.0.2"
-  resolved "https://registry.yarnpkg.com/@breejs/later/-/later-4.0.2.tgz#38c85cc98b717c7a196f87238090adaea01f8c9e"
-  integrity sha512-EN0SlbyYouBdtZis1htdsgGlwFePzkXPwdIeqaBaavxkJT1G2/bitc2LSixjv45z2njXslxlJI1mW2O/Gmrb+A==
+"@breejs/later@^4.1.0":
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/@breejs/later/-/later-4.1.0.tgz#9246907f46cc9e9c9af37d791ab468d98921bcc1"
+  integrity sha512-QgGnZ9b7o4k0Ai1ZbTJWwZpZcFK9d+Gb+DyNt4UT9x6IEIs5HVu0iIlmgzGqN+t9MoJSpSPo9S/Mm51UtHr3JA==
 
 "@concordance/react@^2.0.0":
   version "2.0.0"
@@ -1159,13 +1159,13 @@ braces@^3.0.1, braces@~3.0.2:
   dependencies:
     fill-range "^7.0.1"
 
-bree@^6.3.1:
-  version "6.3.1"
-  resolved "https://registry.yarnpkg.com/bree/-/bree-6.3.1.tgz#7ebb5f8907de4f50f2195629ac30dd089c141b75"
-  integrity sha512-FADpEV5c+3ZuFIBothyyRUxZClJD2PetIo0lmqAFJ3ZMI9WsSmQmmstZ86Dy0G4Gyw3nPNdfYTjV7+9pPtlB8g==
+bree@^6.4.0:
+  version "6.4.0"
+  resolved "https://registry.yarnpkg.com/bree/-/bree-6.4.0.tgz#73155fd0468fecc5f60c1ad5443a421f11bc7f38"
+  integrity sha512-eSxoBsIP4eiE4qew03wrMrvLWcYp6arA3Cx8oco7rugldBGFqeMdFnqnH1y/wnjzrcs49jJ8LCuL22MGrO03yQ==
   dependencies:
     "@babel/runtime" "^7.12.5"
-    "@breejs/later" "^4.0.2"
+    "@breejs/later" "^4.1.0"
     boolean "^3.0.2"
     bthreads "^0.5.1"
     combine-errors "^3.0.3"

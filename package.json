@@ -27,7 +27,7 @@
     "@polkadot/keyring": "^7.6.1",
     "@types/cron": "^1.7.3",
     "@types/koa": "^2.13.4",
-    "@types/koa-bodyparser": "^4.3.3",
+    "@types/koa-bodyparser": "^4.3.4",
     "@types/node": "^16.11.6",
     "@types/semver": "^7.3.9",
     "@types/ws": "^8.2.0",

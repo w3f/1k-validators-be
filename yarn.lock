@@ -683,10 +683,10 @@
     "@types/mime" "^1"
     "@types/node" "*"
 
-"@types/tmp@^0.2.0":
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/@types/tmp/-/tmp-0.2.1.tgz#83ecf4ec22a8c218c71db25f316619fe5b986011"
-  integrity sha512-7cTXwKP/HLOPVgjg+YhBdQ7bMiobGMuoBmrGmqwIWJv8elC6t1DfVc/mn4fD9UE1IjhwmhaQ5pGVXkmXbH0rhg==
+"@types/tmp@^0.2.2":
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/@types/tmp/-/tmp-0.2.2.tgz#424537a3b91828cb26aaf697f21ae3cd1b69f7e7"
+  integrity sha512-MhSa0yylXtVMsyT8qFpHA1DLHj4DvQGH5ntxrhHSh8PxUVNi35Wk+P5hVgqbO2qZqOotqr9jaoPRL+iRjWYm/A==
 
 "@types/webidl-conversions@*":
   version "6.1.1"
@@ -3508,13 +3508,13 @@ mongodb-connection-string-url@^2.0.0:
     "@types/whatwg-url" "^8.2.1"
     whatwg-url "^9.1.0"
 
-mongodb-memory-server-core@7.5.1:
-  version "7.5.1"
-  resolved "https://registry.yarnpkg.com/mongodb-memory-server-core/-/mongodb-memory-server-core-7.5.1.tgz#b90e9d8231253ae0ba146158bcc43ae6f1e93375"
-  integrity sha512-jZEbtLJ9P/+6UKr8mcfRKI0fyEKSwHuT4nXVTV3e9OJgJTtgcn9NxgglenuKh40FrdZypB9oOwW6wZzLXZZyNQ==
+mongodb-memory-server-core@7.6.0:
+  version "7.6.0"
+  resolved "https://registry.yarnpkg.com/mongodb-memory-server-core/-/mongodb-memory-server-core-7.6.0.tgz#1645d0c9b137626236e63ddf8dbdc4bf2b9ce7f0"
+  integrity sha512-npxZPWuaTxpyCphYnzepL4caL/HloCn53kZXEtbuBiBX0BZkf/kwC7zFo5S9nFXH0jREyKwpOcLSCAFAeEmZqQ==
   dependencies:
     "@types/mongodb" "^3.6.20"
-    "@types/tmp" "^0.2.0"
+    "@types/tmp" "^0.2.2"
     async-mutex "^0.3.2"
     camelcase "^6.1.0"
     debug "^4.2.0"
@@ -3523,7 +3523,7 @@ mongodb-memory-server-core@7.5.1:
     https-proxy-agent "^5.0.0"
     md5-file "^5.0.0"
     mkdirp "^1.0.4"
-    mongodb "^3.6.9"
+    mongodb "^3.7.3"
     new-find-package-json "^1.1.0"
     semver "^7.3.5"
     tar-stream "^2.1.4"
@@ -3532,12 +3532,12 @@ mongodb-memory-server-core@7.5.1:
     uuid "^8.3.1"
     yauzl "^2.10.0"
 
-mongodb-memory-server@^7.5.1:
-  version "7.5.1"
-  resolved "https://registry.yarnpkg.com/mongodb-memory-server/-/mongodb-memory-server-7.5.1.tgz#2d153bf2d4fd193805b142344914fb10dac9591a"
-  integrity sha512-7CppmoT65fkW2kMkKAVTtUMngmIWk1bGUDhoWX7D+Scee6aa1sZGyBfj1fdCNScFpXbiZqG819IPZyHzAr0UqQ==
+mongodb-memory-server@^7.6.0:
+  version "7.6.0"
+  resolved "https://registry.yarnpkg.com/mongodb-memory-server/-/mongodb-memory-server-7.6.0.tgz#98fd8b7aa26ed42cc784478e126ba54e02c02cb0"
+  integrity sha512-3wneE7JI+mbLAoNVetZJC0ZcKSeG/cRH012jQWzuHFJGRVfv0CrGW6AFEjFXiNKj3iv1WpqqFOubEjF5JCgulw==
   dependencies:
-    mongodb-memory-server-core "7.5.1"
+    mongodb-memory-server-core "7.6.0"
     tslib "^2.3.0"
 
 mongodb@4.1.3:
@@ -3551,15 +3551,15 @@ mongodb@4.1.3:
   optionalDependencies:
     saslprep "^1.0.3"
 
-mongodb@^3.6.9:
-  version "3.7.0"
-  resolved "https://registry.yarnpkg.com/mongodb/-/mongodb-3.7.0.tgz#a2e1d086b72e06f9af685d9ac863aeb3e80a41b8"
-  integrity sha512-JOAYjT9WYeRFkIP6XtDidAr3qvpfLRJhT2iokRWWH0tgqCQr9kmSfOJBZ3Ry0E5A3EqKxVPVhN3MV8Gn03o7pA==
+mongodb@^3.7.3:
+  version "3.7.3"
+  resolved "https://registry.yarnpkg.com/mongodb/-/mongodb-3.7.3.tgz#b7949cfd0adc4cc7d32d3f2034214d4475f175a5"
+  integrity sha512-Psm+g3/wHXhjBEktkxXsFMZvd3nemI0r3IPsE0bU+4//PnvNWKkzhZcEsbPcYiWqe8XqXJJEg4Tgtr7Raw67Yw==
   dependencies:
     bl "^2.2.1"
     bson "^1.1.4"
     denque "^1.4.1"
-    optional-require "^1.0.3"
+    optional-require "^1.1.8"
     safe-buffer "^5.1.2"
   optionalDependencies:
     saslprep "^1.0.0"
@@ -3781,10 +3781,10 @@ open@^8.2.0:
     is-docker "^2.1.1"
     is-wsl "^2.2.0"
 
-optional-require@^1.0.3:
-  version "1.1.7"
-  resolved "https://registry.yarnpkg.com/optional-require/-/optional-require-1.1.7.tgz#9ab5b254f59534108d4b2201d9ae96a063abc015"
-  integrity sha512-cIeRZocXsZnZYn+SevbtSqNlLbeoS4mLzuNn4fvXRMDRNhTGg0sxuKXl0FnZCtnew85LorNxIbZp5OeliILhMw==
+optional-require@^1.1.8:
+  version "1.1.8"
+  resolved "https://registry.yarnpkg.com/optional-require/-/optional-require-1.1.8.tgz#16364d76261b75d964c482b2406cb824d8ec44b7"
+  integrity sha512-jq83qaUb0wNg9Krv1c5OQ+58EK+vHde6aBPzLvPPqJm89UQWsvSuFy9X/OSNJnFeSOKo7btE0n8Nl2+nE+z5nA==
   dependencies:
     require-at "^1.0.6"
 

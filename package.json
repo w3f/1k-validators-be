@@ -1,6 +1,6 @@
 {
   "name": "1k-validators-be",
-  "version": "2.4.69",
+  "version": "2.4.70",
   "description": "Services for running the Thousand Validator Program.",
   "main": "index.js",
   "scripts": {
@@ -23,7 +23,7 @@
   "dependencies": {
     "@koa/router": "^10.1.1",
     "@octokit/rest": "^18.12.0",
-    "@polkadot/api": "^6.7.2",
+    "@polkadot/api": "^6.8.1",
     "@polkadot/keyring": "^7.6.1",
     "@types/cron": "^1.7.3",
     "@types/koa": "^2.13.4",

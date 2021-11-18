@@ -104,6 +104,8 @@ export default class TelemetryClient {
     switch (action) {
       case TelemetryMessage.AddedNode:
         {
+          logger.info(`{TELEMETRY}: action: ${action} ADDED NODE`);
+
           const [id, details] = payload;
           const now = Date.now();
 
@@ -134,6 +136,7 @@ export default class TelemetryClient {
         break;
       case TelemetryMessage.RemovedNode:
         {
+          logger.info(`{TELEMETRY}: action: ${action} REMOVED NODE`);
           const id = parseInt(payload);
           const now = Date.now();
 
@@ -156,6 +159,7 @@ export default class TelemetryClient {
         break;
       case TelemetryMessage.ImportedBlock:
         {
+          logger.info(`{TELEMETRY}: action: ${action} IMPORTED BLOCK`);
           const [id, details] = payload;
           const now = Date.now();
 

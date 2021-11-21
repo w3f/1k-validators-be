@@ -71,6 +71,7 @@ export const InvalidityReason = new Schema({
       "COMMISION",
       "SELF_STAKE",
       "UNCLAIMED_REWARDS",
+      "BLOCKED",
       "KUSAMA_RANK",
     ],
     default: "NEW",

@@ -133,10 +133,6 @@ export class OTV implements Constraints {
 
     const onlineValid = await checkOnline(this.db, candidate);
 
-    // logger.info(
-    //   `{checkCandidate} ${candidate.name} online valid: ${onlineValid}`
-    // );
-
     const validateValid = await checkValidateIntention(
       this.config,
       this.chaindata,
@@ -144,19 +140,11 @@ export class OTV implements Constraints {
       candidate
     );
 
-    // logger.info(
-    //   `{checkCandidate} ${candidate.name} validate valid: ${validateValid}`
-    // );
-
     const versionValid = await checkLatestClientVersion(
       this.config,
       this.db,
       candidate
     );
-
-    // logger.info(
-    //   `{checkCandidate} ${candidate.name} versionValid: ${versionValid}`
-    // );
 
     const monitoringWeekValid = await checkConnectionTime(
       this.config,
@@ -164,25 +152,13 @@ export class OTV implements Constraints {
       candidate
     );
 
-    // logger.info(
-    //   `{checkCandidate} ${candidate.name} monitoringWeekValid: ${monitoringWeekValid}`
-    // );
-
     const identityValid = await checkIdentity(
       this.chaindata,
       this.db,
       candidate
     );
 
-    // logger.info(
-    //   `{checkCandidate} ${candidate.name} identityValid: ${identityValid}`
-    // );
-
     const offlineValid = await checkOffline(this.db, candidate);
-
-    // logger.info(
-    //   `{checkCandidate} ${candidate.name} offlineValid: ${offlineValid}`
-    // );
 
     let rewardDestinationValid = true;
     if (!this.skipStakedDesitnation) {
@@ -190,10 +166,6 @@ export class OTV implements Constraints {
         (await checkRewardDestination(this.db, this.chaindata, candidate)) ||
         false;
     }
-
-    // logger.info(
-    //   `{checkCandidate} ${candidate.name} rewardDestinationValid: ${rewardDestinationValid}`
-    // );
 
     const commissionValid =
       (await checkCommission(
@@ -203,10 +175,6 @@ export class OTV implements Constraints {
         candidate
       )) || false;
 
-    // logger.info(
-    //   `{checkCandidate} ${candidate.name} commissionValid: ${commissionValid}`
-    // );
-
     const selfStakeValid =
       (await checkSelfStake(
         this.db,
@@ -214,10 +182,6 @@ export class OTV implements Constraints {
         this.minSelfStake,
         candidate
       )) || false;
-
-    // logger.info(
-    //   `{checkCandidate} ${candidate.name} selfStakeValid: ${selfStakeValid}`
-    // );
 
     const unclaimedValid =
       (await checkUnclaimed(
@@ -227,9 +191,8 @@ export class OTV implements Constraints {
         candidate
       )) || false;
 
-    // logger.info(
-    //   `{checkCandidate} ${candidate.name} unclaimedValid: ${unclaimedValid}`
-    // );
+    const blockedValid =
+      (await checkBlocked(this.db, this.chaindata, candidate)) || false;
 
     let kusamaValid = true;
     try {
@@ -239,10 +202,6 @@ export class OTV implements Constraints {
     } catch (e) {
       logger.info(`Error trying to get kusama data...`);
     }
-
-    // logger.info(
-    //   `{checkCandidate} ${candidate.name} kusamaValid: ${kusamaValid}`
-    // );
 
     valid =
       onlineValid &&
@@ -255,9 +214,8 @@ export class OTV implements Constraints {
       commissionValid &&
       selfStakeValid &&
       unclaimedValid &&
+      blockedValid &&
       kusamaValid;
-
-    // logger.info(`{checkCandidate} ${candidate.name} is ${valid}`);
 
     await this.db.setValid(candidate.stash, valid);
 
@@ -808,6 +766,23 @@ export const checkUnclaimed = async (
     return false;
   } else {
     await db.setUnclaimedInvalidity(candidate.stash, true);
+    return true;
+  }
+};
+
+// Checks if the validator blocks external nominations
+export const checkBlocked = async (
+  db: Db,
+  chaindata: ChainData,
+  candidate: any
+) => {
+  const isBlocked = await chaindata.getBalance(candidate.stash);
+  if (isBlocked) {
+    const invalidityString = `${candidate.name} blocks external nominations`;
+    await db.setBlockedInvalidity(candidate.stash, false, invalidityString);
+    return false;
+  } else {
+    await db.setBlockedInvalidity(candidate.stash, true);
     return true;
   }
 };

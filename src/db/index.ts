@@ -2079,6 +2079,49 @@ export default class Db {
       .exec();
   }
 
+  // Set Blocked Validity Status
+  async setBlockedInvalidity(
+    address: string,
+    validity: boolean,
+    details?: string
+  ): Promise<any> {
+    const data = await this.candidateModel.findOne({
+      stash: address,
+    });
+
+    if (!data) {
+      console.log(`{Self Stake} NO CANDIDATE DATA FOUND FOR ${address}`);
+      return;
+    }
+
+    const invalidityReasons = data.invalidity.filter((invalidityReason) => {
+      return invalidityReason.type !== "BLOCKED";
+    });
+
+    this.candidateModel
+      .findOneAndUpdate(
+        {
+          stash: address,
+        },
+        {
+          invalidity: [
+            ...invalidityReasons,
+            {
+              valid: validity,
+              type: "BLOCKED",
+              updated: Date.now(),
+              details: validity
+                ? ""
+                : details
+                ? details
+                : `${data.name} has not properly claimed era rewards`,
+            },
+          ],
+        }
+      )
+      .exec();
+  }
+
   // Set Kusama Rank Validity Status
   async setKusamaRankInvalidity(
     address: string,

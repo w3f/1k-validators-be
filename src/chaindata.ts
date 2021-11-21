@@ -77,7 +77,7 @@ class ChainData {
   };
 
   // Gets the validator preferences, and whether or not they block external nominations
-  getBlocked = async (validator: string): Promise<Boolean> => {
+  getBlocked = async (validator: string): Promise<boolean> => {
     const api = await this.handler.getApi();
     if (!api.isConnected) {
       logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);

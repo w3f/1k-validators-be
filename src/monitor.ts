@@ -52,7 +52,7 @@ export default class Monitor {
     }
 
     this.latestTaggedRelease = {
-      name: tag_name,
+      name: tag_name.split(`-`)[0],
       publishedAt,
     };
 

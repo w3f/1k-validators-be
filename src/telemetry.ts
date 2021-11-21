@@ -153,7 +153,6 @@ export default class TelemetryClient {
         break;
       case TelemetryMessage.ImportedBlock:
         {
-          logger.info(`{TELEMETRY}: action: ${action} IMPORTED BLOCK`);
           const [id, details] = payload;
           const now = Date.now();
 
@@ -167,7 +166,7 @@ export default class TelemetryClient {
     }
   }
 
-  private async _subscribe(chain: string, finality = false) {
+  private async _subscribe(chain: string, finality = true) {
     if (this.config.telemetry.chains.includes(chain)) {
       this.socket.send(`subscribe:${chain}`);
       logger.info(`Subscribed to ${chain}`);

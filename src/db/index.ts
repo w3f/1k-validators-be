@@ -2114,7 +2114,7 @@ export default class Db {
                 ? ""
                 : details
                 ? details
-                : `${data.name} has not properly claimed era rewards`,
+                : `${data.name} blocks external nominations`,
             },
           ],
         }

@@ -777,9 +777,6 @@ export const checkBlocked = async (
   candidate: any
 ) => {
   const isBlocked = await chaindata.getBlocked(candidate.stash);
-  logger.info(
-    `{Constraints}: ${candidate.stash} blocked preferences: ${isBlocked}`
-  );
   if (isBlocked) {
     const invalidityString = `${candidate.name} blocks external nominations`;
     await db.setBlockedInvalidity(candidate.stash, false, invalidityString);

@@ -84,8 +84,10 @@ class ChainData {
       return;
     }
 
-    const prefs = (await api.query.staking.validators(validator))?.blocked.toString();
-    return (prefs == "false");
+    const prefs = (
+      await api.query.staking.validators(validator)
+    )?.blocked.toString();
+    return prefs == "false";
   };
 
   destinationIsStaked = async (validatorStash: string): Promise<boolean> => {

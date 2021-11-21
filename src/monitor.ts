@@ -77,7 +77,9 @@ export default class Monitor {
       const { name, version, updated } = node;
 
       const nodeVersion = semver.coerce(version);
-      const latestVersion = semver.clean(this.latestTaggedRelease.name);
+      const latestVersion = semver.clean(
+        this.latestTaggedRelease.name.split(`-`)[0]
+      );
       logger.debug(
         `(Monitor::ensureUpgrades) ${name} | version: ${nodeVersion} latest: ${latestVersion}`
       );

@@ -440,7 +440,7 @@ export class OTV implements Constraints {
   // inclusion - lower is preferrable
   // bonded - higher is preferrable
   INCLUSION_WEIGHT = 40;
-  SPAN_INCLUSION_WEIGHT = 20;
+  SPAN_INCLUSION_WEIGHT = 40;
   DISCOVERED_WEIGHT = 5;
   NOMINATED_WEIGHT = 10;
   RANK_WEIGHT = 5;

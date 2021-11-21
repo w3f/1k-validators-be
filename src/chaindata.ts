@@ -77,15 +77,15 @@ class ChainData {
   };
 
   // Gets the validator preferences, and whether or not they block external nominations
-  getBlocked = async (validator: string): Promise<boolean> => {
+  getBlocked = async (validator: string): Promise<any> => {
     const api = await this.handler.getApi();
     if (!api.isConnected) {
       logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
       return;
     }
 
-    const prefs = (await api.query.staking.validators(validator))?.blocked;
-    return Boolean(prefs);
+    const prefs = (await api.query.staking.validators(validator))?.blocked.toString();
+    return (prefs == "false");
   };
 
   destinationIsStaked = async (validatorStash: string): Promise<boolean> => {

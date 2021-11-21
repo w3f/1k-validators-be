@@ -1,6 +1,6 @@
 {
   "name": "1k-validators-be",
-  "version": "2.4.80",
+  "version": "2.4.81",
   "description": "Services for running the Thousand Validator Program.",
   "main": "index.js",
   "scripts": {
@@ -23,12 +23,12 @@
   "dependencies": {
     "@koa/router": "^10.1.1",
     "@octokit/rest": "^18.12.0",
-    "@polkadot/api": "^6.8.1",
-    "@polkadot/keyring": "^7.8.2",
+    "@polkadot/api": "^6.9.1",
+    "@polkadot/keyring": "^7.9.1",
     "@types/cron": "^1.7.3",
     "@types/koa": "^2.13.4",
     "@types/koa-bodyparser": "^4.3.4",
-    "@types/node": "^16.11.7",
+    "@types/node": "^16.11.9",
     "@types/semver": "^7.3.9",
     "@types/ws": "^8.2.0",
     "axios": "^0.24.0",
@@ -61,7 +61,7 @@
     "@typescript-eslint/parser": "^5.4.0",
     "ava": "^3.15.0",
     "concurrently": "^6.4.0",
-    "eslint": "^8.2.0",
+    "eslint": "^8.3.0",
     "eslint-plugin-security": "^1.4.0",
     "nodemon": "^2.0.15",
     "open-cli": "^7.0.1"

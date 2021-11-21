@@ -2097,7 +2097,6 @@ export default class Db {
     const invalidityReasons = data.invalidity.filter((invalidityReason) => {
       return invalidityReason.type !== "BLOCKED";
     });
-    logger.info(`{DB}: ${address}: setting blocked validity: ${validity}`);
     this.candidateModel
       .findOneAndUpdate(
         {

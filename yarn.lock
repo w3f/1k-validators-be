@@ -3214,10 +3214,10 @@ matcher@^3.0.0:
   dependencies:
     escape-string-regexp "^4.0.0"
 
-matrix-js-sdk@^15.1.0:
-  version "15.1.0"
-  resolved "https://registry.yarnpkg.com/matrix-js-sdk/-/matrix-js-sdk-15.1.0.tgz#46bb1185e80d1c9aeccf290bc214a0ad27351aa3"
-  integrity sha512-1qF6RO3jrMdL2X7WsHW520oHMH6ns3rOkhdJi3PAYknCG8Yv87KCyI46o+7OgdBUTH2a+iwMcH8kP3T9/abKEA==
+matrix-js-sdk@^15.1.1:
+  version "15.1.1"
+  resolved "https://registry.yarnpkg.com/matrix-js-sdk/-/matrix-js-sdk-15.1.1.tgz#791aefb2c68e1e8d398beee3eedcb6c23b63315d"
+  integrity sha512-tKZQLFwYMQk2G4nmLNR0cDDXcfDkdzJGyg2S15HooB2aI7/Ev9PhCczkw+xzwhJusxzfa8j+yx52KjMXUb81WQ==
   dependencies:
     "@babel/runtime" "^7.12.5"
     another-json "^0.2.0"

@@ -595,14 +595,22 @@ export default class ScoreKeeper {
 
     // If the round was started and there are any pending proxy txs, remove them.
     // This prevents proxy txs from piling up.
-    if (proxyTxs.length > 0){
-      logger.info(`(Scorekeeper::startRound) round was started with pending proxy txs. Removing ${proxyTxs.length} txs...`);
-      this.botLog(`(Scorekeeper::startRound) round was started with pending proxy txs. Removing ${proxyTxs.length} txs...`);
+    if (proxyTxs.length > 0) {
+      logger.info(
+        `(Scorekeeper::startRound) round was started with pending proxy txs. Removing ${proxyTxs.length} txs...`
+      );
+      this.botLog(
+        `(Scorekeeper::startRound) round was started with pending proxy txs. Removing ${proxyTxs.length} txs...`
+      );
       proxyTxs.map((proxyTx) => {
         this.db.deleteDelayedTx(proxyTx.number, proxyTx.controller);
-        logger.info(`(Scorekeeper::startRound) removed nomination from ${proxyTx.controller} announced at block $${proxyTx.number}`);
-        this.botLog(`(Scorekeeper::startRound) removed nomination from ${proxyTx.controller} announced at block $${proxyTx.number}`);
-      })
+        logger.info(
+          `(Scorekeeper::startRound) removed nomination from ${proxyTx.controller} announced at block $${proxyTx.number}`
+        );
+        this.botLog(
+          `(Scorekeeper::startRound) removed nomination from ${proxyTx.controller} announced at block $${proxyTx.number}`
+        );
+      });
     }
 
     const allCandidates = await this.db.allCandidates();

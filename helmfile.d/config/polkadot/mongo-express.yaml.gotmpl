@@ -20,4 +20,4 @@ mongodb:
   host: "mongodb://{{ env "POLKADOT_MONGO_USERNAME" | default "username" }}:{{ env "POLKADOT_MONGO_PASSWORD" | default "password123" }}@polkadot-mongodb-0.polkadot-mongodb-headless:27017,polkadot-mongodb-1.polkadot-mongodb-headless:27017/{{ env "POLKADOT_MONGO_DB" | default "otv" }}?replicaSet=rs0"
 
 ingress:
-  whitelist_source_ips: "34.65.4.191/32" # pritunl-vpn VM in main-infrastructure GCP project
+  whitelist_source_ips: "34.65.4.191/32"

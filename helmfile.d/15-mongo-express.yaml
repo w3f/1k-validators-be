@@ -10,14 +10,14 @@ releases:
 - name: kusama-otv-mongo-express
   namespace: kusama
   chart: w3f/mongo-express
-  version: v0.2.2
+  version: v0.3.0
   values:
   - ./config/kusama/mongo-express.yaml.gotmpl
   
 - name: polkadot-otv-mongo-express
   namespace: polkadot
   chart: w3f/mongo-express
-  version: v0.2.2
+  version: v0.3.0
   values:
   - ./config/polkadot/mongo-express.yaml.gotmpl
 

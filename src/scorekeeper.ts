@@ -603,7 +603,7 @@ export default class ScoreKeeper {
         `(Scorekeeper::startRound) round was started with pending proxy txs. Removing ${proxyTxs.length} txs...`
       );
       proxyTxs.map((proxyTx) => {
-        this.db.deleteDelayedTx(proxyTx.number, proxyTx.controller);
+        // this.db.deleteDelayedTx(proxyTx.number, proxyTx.controller);
         logger.info(
           `(Scorekeeper::startRound) removed nomination from ${proxyTx.controller} announced at block $${proxyTx.number}`
         );

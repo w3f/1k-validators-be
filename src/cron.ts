@@ -371,6 +371,32 @@ export const startCancelCron = async (
           );
 
           for (const announcement of announcements) {
+            // If there are any specific announcements to cancel, try to cancel them,
+            //     so long as they are registered on chain
+            const blacklistedAnnouncements =
+              config.proxy.blacklistedAnnouncements;
+            for (const blacklistedAnnouncement of blacklistedAnnouncements) {
+              logger.info(
+                `{CancelCron::cancel} there is a blacklisted announcement to cancel: ${blacklistedAnnouncement}`
+              );
+              if (bot) {
+                bot.sendMessage(
+                  `{CancelCron::cancel} there is a blacklisted announcement to cancel: ${blacklistedAnnouncement}`
+                );
+              }
+
+              // If the blacklisted announcement matches what's registered on chain, cancel it
+              if (announcement.callHash == blacklistedAnnouncement) {
+                const didCancel = await nom.cancelTx(announcement);
+                if (didCancel) {
+                  const successfulCancelMessage = `{CancelCron::cancel} ${blacklistedAnnouncement} was successfully cancelled.`;
+                  logger.info(successfulCancelMessage);
+                  bot.sendMessage(successfulCancelMessage);
+                }
+              }
+            }
+
+            // if it is too old, cancel it
             if (announcement.height < threshold) {
               await sleep(10000);
               logger.info(

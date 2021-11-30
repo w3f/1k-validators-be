@@ -70,7 +70,7 @@ export const LocalEndpoints = [
 export const KOTVBackendEndpoint = "https://kusama.w3f.community";
 
 // The number of blocks for a time delay proxy. Default is 10850, or ~18 hours
-export const TIME_DELAY_BLOCKS = 10805;
+export const TIME_DELAY_BLOCKS = 10820;
 
 // The number of blocks after a time delay proxy call was announced that we want to cancel the tx. Should be 36 hours
 export const CANCEL_THRESHOLD = 21700;

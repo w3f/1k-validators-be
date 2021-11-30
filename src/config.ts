@@ -67,6 +67,7 @@ export type Config = {
   };
   proxy: {
     timeDelayBlocks: number;
+    blacklistedAnnouncements: string[];
   };
   scorekeeper: {
     candidates: CandidateConfig[];

@@ -157,6 +157,7 @@ export default class Nominator {
     }
   }
 
+  // Send an already announced staking tx
   sendStakingTx = async (
     tx: SubmittableExtrinsic<"promise">,
     targets: string[]
@@ -165,52 +166,98 @@ export default class Nominator {
     const api = await this.handler.getApi();
 
     try {
+      logger.info(
+        `{Nominator::nominate} sending announced staking tx for ${this.controller}`
+      );
+
       const unsub = await tx.signAndSend(this.signer, async (result: any) => {
-        // TODO: Check result of Tx - either 'ExtrinsicSuccess' or 'ExtrinsicFail'
-        //  - If the extrinsic fails, this needs some error handling / logging added
+        const { status, events } = result;
 
-        const { status } = result;
+        // Handle tx lifecycle
+        switch (true) {
+          case status.isBroadcast:
+            logger.info(`{Nominator::nomiante} tx has been broadcasted`);
+            break;
+          case status.isInBlock:
+            logger.info(`{Nominator::nominate} tx is in block`);
+            break;
+          case status.isFinalized:
+            const finalizedBlockHash = status.asFinalized;
+            logger.info(
+              `{Nominator::nominate} tx is finalized in block ${finalizedBlockHash}`
+            );
 
-        logger.info(`(Nominator::nominate) Status now: ${status.type}`);
-        if (status.isFinalized) {
-          const finalizedBlockHash = status.asFinalized;
-          logger.info(
-            `(Nominator::nominate) Included in block ${finalizedBlockHash}`
-          );
-          this.currentlyNominating = targets;
+            // Check the events to see if there was any errors - if there are return
+            events
+              .filter(({ event }) =>
+                api.events.system.ExtrinsicFailed.is(event)
+              )
+              .forEach(
+                ({
+                  event: {
+                    data: [error, info],
+                  },
+                }) => {
+                  if (error.isModule) {
+                    const decoded = api.registry.findMetaError(error.asModule);
+                    const { docs, method, section } = decoded;
 
-          // Get the current nominations of an address
-          const currentTargets = await this.db.getCurrentTargets(
-            this.controller
-          );
-          // if the current targets is populated, clear it
-          if (!!currentTargets.length) {
-            logger.info("(Nominator::nominate) Wiping old targets");
-            await this.db.clearCurrent(this.controller);
-          }
+                    logger.info(
+                      `{Nominator::nominate} tx error:  [${section}.${method}] ${docs.join(
+                        " "
+                      )}`
+                    );
+                    return false;
+                  } else {
+                    // Other, CannotLookup, BadOrigin, no extra info
+                    console.log(error.toString());
+                    return false;
+                  }
+                }
+              );
 
-          for (const stash of targets) {
-            await this.db.setTarget(this.controller, stash, now);
-            await this.db.setLastNomination(this.controller, now);
-          }
+            // The tx was otherwise successful
 
-          const era = (await api.query.staking.activeEra()).toJSON()["index"];
-          const decimals = (await this.db.getChainMetadata()).decimals;
-          const bonded = toDecimals(
-            (await api.query.staking.ledger(this.controller)).toJSON()[
-              "active"
-            ],
-            decimals
-          );
-          await this.db.setNomination(
-            this.address,
-            era,
-            targets,
-            bonded,
-            finalizedBlockHash
-          );
+            this.currentlyNominating = targets;
 
-          unsub();
+            // Get the current nominations of an address
+            const currentTargets = await this.db.getCurrentTargets(
+              this.controller
+            );
+
+            // if the current targets is populated, clear it
+            if (!!currentTargets.length) {
+              logger.info("(Nominator::nominate) Wiping old targets");
+              await this.db.clearCurrent(this.controller);
+            }
+
+            // update both the list of nominator for the nominator account as well as the time period of the nomination
+            for (const stash of targets) {
+              await this.db.setTarget(this.controller, stash, now);
+              await this.db.setLastNomination(this.controller, now);
+            }
+
+            // Update the nomination record in the db
+            const era = (await api.query.staking.activeEra()).toJSON()["index"];
+            const decimals = (await this.db.getChainMetadata()).decimals;
+            const bonded = toDecimals(
+              (await api.query.staking.ledger(this.controller)).toJSON()[
+                "active"
+              ],
+              decimals
+            );
+            await this.db.setNomination(
+              this.address,
+              era,
+              targets,
+              bonded,
+              finalizedBlockHash
+            );
+
+            unsub();
+            break;
+          default:
+            break;
         }
       });
       return true;

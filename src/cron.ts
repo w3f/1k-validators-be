@@ -224,10 +224,9 @@ export const startExecutionJob = async (
           "Staking", // TODO: Add dynamic check for  proxy type - if the proxy type isn't a "Staking" proxy, the tx will fail
           innerTx
         );
-        await sleep(10000);
+
         const didSend = await nominator.sendStakingTx(tx, targets);
-        // Sleep to prevent usurped txs
-        await sleep(10000);
+
         if (didSend) {
           // Log Execution
           const validatorsMessage = (

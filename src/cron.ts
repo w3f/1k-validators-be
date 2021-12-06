@@ -374,23 +374,25 @@ export const startCancelCron = async (
             //     so long as they are registered on chain
             const blacklistedAnnouncements =
               config.proxy.blacklistedAnnouncements;
-            for (const blacklistedAnnouncement of blacklistedAnnouncements) {
-              logger.info(
-                `{CancelCron::cancel} there is a blacklisted announcement to cancel: ${blacklistedAnnouncement}`
-              );
-              if (bot) {
-                bot.sendMessage(
+            if (blacklistedAnnouncements) {
+              for (const blacklistedAnnouncement of blacklistedAnnouncements) {
+                logger.info(
                   `{CancelCron::cancel} there is a blacklisted announcement to cancel: ${blacklistedAnnouncement}`
                 );
-              }
+                if (bot) {
+                  bot.sendMessage(
+                    `{CancelCron::cancel} there is a blacklisted announcement to cancel: ${blacklistedAnnouncement}`
+                  );
+                }
 
-              // If the blacklisted announcement matches what's registered on chain, cancel it
-              if (announcement.callHash == blacklistedAnnouncement) {
-                const didCancel = await nom.cancelTx(announcement);
-                if (didCancel) {
-                  const successfulCancelMessage = `{CancelCron::cancel} ${blacklistedAnnouncement} was successfully cancelled.`;
-                  logger.info(successfulCancelMessage);
-                  bot.sendMessage(successfulCancelMessage);
+                // If the blacklisted announcement matches what's registered on chain, cancel it
+                if (announcement.callHash == blacklistedAnnouncement) {
+                  const didCancel = await nom.cancelTx(announcement);
+                  if (didCancel) {
+                    const successfulCancelMessage = `{CancelCron::cancel} ${blacklistedAnnouncement} was successfully cancelled.`;
+                    logger.info(successfulCancelMessage);
+                    bot.sendMessage(successfulCancelMessage);
+                  }
                 }
               }
             }

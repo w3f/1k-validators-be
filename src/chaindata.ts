@@ -720,6 +720,31 @@ class ChainData {
 
     return (await api.rpc.chain.getBlock()).block.header.number.toNumber();
   };
+
+  // gets the votes and stake amount of council voting
+  getCouncilVoting = async () => {
+    const api = await this.handler.getApi();
+    if (!api.isConnected) {
+      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
+      return;
+    }
+
+    const voteQuery = await api.derive.council.votes();
+
+    const votes = voteQuery.map(async (voters) => {
+      const who = voters[0];
+      const { stake } = voters[1];
+
+      const denom = await this.getDenom();
+      const formattedStake = parseFloat(stake.toString()) / denom;
+
+      return {
+        who: who,
+        stake: formattedStake,
+      };
+    });
+    return votes;
+  };
 }
 
 export default ChainData;

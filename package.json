@@ -46,7 +46,7 @@
     "matrix-js-sdk": "^15.1.1",
     "mongodb": "4.2.0",
     "mongodb-memory-server": "^8.0.3",
-    "mongoose": "^6.0.14",
+    "mongoose": "^6.0.15",
     "prettier": "^2.5.0",
     "reconnecting-websocket": "^4.4.0",
     "semver": "^7.3.5",

@@ -733,7 +733,7 @@ class ChainData {
 
     const votes = voteQuery.map(async (voters) => {
       const who = voters[0];
-      const { stake, votes} = voters[1];
+      const { stake, votes } = voters[1];
 
       const denom = await this.getDenom();
       const formattedStake = parseFloat(stake.toString()) / denom;
@@ -741,14 +741,14 @@ class ChainData {
       return {
         who: who,
         stake: formattedStake,
-        votes: votes
+        votes: votes,
       };
     });
     return votes;
   };
 
   // gets info on the current council members as well as runner up candidates
-  getElectionsInfo = async() => {
+  getElectionsInfo = async () => {
     const api = await this.handler.getApi();
     if (!api.isConnected) {
       logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
@@ -756,12 +756,21 @@ class ChainData {
     }
 
     const electionsQuery = await api.derive.elections.info();
-    const {candidacyBond, desiredRunnersUp, desiredSeats, termDuration, candidateCount, candidates, members, runnersUp} = electionsQuery;
+    const {
+      candidacyBond,
+      desiredRunnersUp,
+      desiredSeats,
+      termDuration,
+      candidateCount,
+      candidates,
+      members,
+      runnersUp,
+    } = electionsQuery;
 
     const denom = await this.getDenom();
 
     // Active council members and their total backings
-    const membersMap = members.map((member)=> {
+    const membersMap = members.map((member) => {
       const address = member[0];
       const totalBacking = member[1];
 
@@ -769,20 +778,20 @@ class ChainData {
 
       return {
         address: address,
-        totalBacking: formattedTotalBacking
+        totalBacking: formattedTotalBacking,
       };
     });
 
     // Candidates that are not active and their total backings
-    const runnersUpMap = runnersUp.map((candidate)=> {
+    const runnersUpMap = runnersUp.map((candidate) => {
       const address = candidate[0];
       const totalBacking = candidate[1];
 
       const formattedTotalBacking = parseFloat(totalBacking.toString()) / denom;
-      
+
       return {
         address: address,
-        totalBacking: formattedTotalBacking
+        totalBacking: formattedTotalBacking,
       };
     });
 
@@ -791,10 +800,9 @@ class ChainData {
       desiredSeats: desiredSeats,
       termDuration: termDuration,
       members: membersMap,
-      runnersUp: runnersUpMap
-    }
-
-  }
+      runnersUp: runnersUpMap,
+    };
+  };
 }
 
 export default ChainData;

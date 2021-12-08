@@ -417,3 +417,18 @@ export const ReleaseSchema = new Schema({
   name: String,
   publishedAt: Number,
 });
+
+export const ElectionStats = new Schema({
+  // The amount of active council members
+  totalMembers: Number,
+  // The amount of candidates that are not active
+  totalRunnersUp: Number,
+  // The total amount of addresses that vote for council members
+  totalVoters: Number,
+  // The sum total of tokens (in human readable denomination) bonded for all voters for elections
+  totalBonded: Number,
+  // the timestamp the record was last updated
+  updated: Number,
+  // the epoch the record was queried in
+  epoch: Number,
+});

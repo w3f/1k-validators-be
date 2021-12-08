@@ -721,7 +721,7 @@ class ChainData {
     return (await api.rpc.chain.getBlock()).block.header.number.toNumber();
   };
 
-  // gets the votes and stake amount of council voting
+  // gets the votes and stake amount of voting for council elections
   getCouncilVoting = async () => {
     const api = await this.handler.getApi();
     if (!api.isConnected) {
@@ -733,7 +733,7 @@ class ChainData {
 
     const votes = voteQuery.map(async (voters) => {
       const who = voters[0];
-      const { stake } = voters[1];
+      const { stake, votes} = voters[1];
 
       const denom = await this.getDenom();
       const formattedStake = parseFloat(stake.toString()) / denom;
@@ -741,10 +741,60 @@ class ChainData {
       return {
         who: who,
         stake: formattedStake,
+        votes: votes
       };
     });
     return votes;
   };
+
+  // gets info on the current council members as well as runner up candidates
+  getElectionsInfo = async() => {
+    const api = await this.handler.getApi();
+    if (!api.isConnected) {
+      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
+      return;
+    }
+
+    const electionsQuery = await api.derive.elections.info();
+    const {candidacyBond, desiredRunnersUp, desiredSeats, termDuration, candidateCount, candidates, members, runnersUp} = electionsQuery;
+
+    const denom = await this.getDenom();
+
+    // Active council members and their total backings
+    const membersMap = members.map((member)=> {
+      const address = member[0];
+      const totalBacking = member[1];
+
+      const formattedTotalBacking = parseFloat(totalBacking.toString()) / denom;
+
+      return {
+        address: address,
+        totalBacking: formattedTotalBacking
+      };
+    });
+
+    // Candidates that are not active and their total backings
+    const runnersUpMap = runnersUp.map((candidate)=> {
+      const address = candidate[0];
+      const totalBacking = candidate[1];
+
+      const formattedTotalBacking = parseFloat(totalBacking.toString()) / denom;
+      
+      return {
+        address: address,
+        totalBacking: formattedTotalBacking
+      };
+    });
+
+    return {
+      candidacyBond: candidacyBond,
+      desiredSeats: desiredSeats,
+      termDuration: termDuration,
+      members: membersMap,
+      runnersUp: runnersUpMap
+    }
+
+  }
 }
 
 export default ChainData;

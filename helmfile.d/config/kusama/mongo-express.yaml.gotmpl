@@ -20,4 +20,4 @@ mongodb:
   host: "mongodb://{{ env "KUSAMA_MONGO_USERNAME" | default "username" }}:{{ env "KUSAMA_MONGO_PASSWORD" | default "password123" }}@kusama-mongodb-0.kusama-mongodb-headless:27017,kusama-mongodb-1.kusama-mongodb-headless:27017/{{ env "KUSAMA_MONGO_DB" | default "otv" }}?replicaSet=rs0"
 
 ingress:
-  whitelist_source_ips: "34.65.4.191/32"
+  whitelist_source_ips: "35.216.233.11/32"

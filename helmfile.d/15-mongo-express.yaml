@@ -1,23 +1,19 @@
 environments:
   production:
   ci:
-
 repositories:
-- name: w3f
-  url: https://w3f.github.io/helm-charts/
-
+  - name: w3f
+    url: https://w3f.github.io/helm-charts/
 releases:
-- name: kusama-otv-mongo-express
-  namespace: kusama
-  chart: w3f/mongo-express
-  version: v0.3.0
-  values:
-  - ./config/kusama/mongo-express.yaml.gotmpl
-  
-- name: polkadot-otv-mongo-express
-  namespace: polkadot
-  chart: w3f/mongo-express
-  version: v0.3.0
-  values:
-  - ./config/polkadot/mongo-express.yaml.gotmpl
-
+  - name: kusama-otv-mongo-express
+    namespace: kusama
+    chart: w3f/mongo-express
+    version: v0.3.0
+    values:
+      - ./config/kusama/mongo-express.yaml.gotmpl
+  - name: polkadot-otv-mongo-express
+    namespace: polkadot
+    chart: w3f/mongo-express
+    version: v0.3.0
+    values:
+      - ./config/polkadot/mongo-express.yaml.gotmpl

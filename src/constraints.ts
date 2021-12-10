@@ -240,7 +240,7 @@ export class OTV implements Constraints {
     if (validCandidates.length < 2) return;
 
     // Get Ranges of Parameters
-    //    A validators individual parameter is then scaled to how it compares to others that are also deemd valid
+    //    A validators individual parameter is then scaled to how it compares to others that are also deemed valid
 
     // Bonded
     const bondedValues = validCandidates.map((candidate) => {
@@ -431,14 +431,14 @@ export class OTV implements Constraints {
   }
 
   // Weighted scores
-  // Discovered at - earlier is preferrable
-  // Nominated At - Not nominated in a while is preferrable
-  // offlineAccumulated - lower if prefferable
-  // rank - higher is preferrable
-  // faults - lower is preferrable
-  // unclaimed eras - lower is preferrable
-  // inclusion - lower is preferrable
-  // bonded - higher is preferrable
+  // Discovered at - earlier is preferable
+  // Nominated At - Not nominated in a while is preferable
+  // offlineAccumulated - lower if preferable
+  // rank - higher is preferable
+  // faults - lower is preferable
+  // unclaimed eras - lower is preferable
+  // inclusion - lower is preferable
+  // bonded - higher is preferable
   INCLUSION_WEIGHT = 40;
   SPAN_INCLUSION_WEIGHT = 40;
   DISCOVERED_WEIGHT = 5;
@@ -452,7 +452,7 @@ export class OTV implements Constraints {
   /// At the end of a nomination round this is the logic that separates the
   /// candidates that did good from the ones that did badly.
   /// - We have two sets, a 'good' set, and a 'bad' set
-  ///     - We go through all the candidates and if they meet all constraints, they get alled to the 'good' set
+  ///     - We go through all the candidates and if they meet all constraints, they get called to the 'good' set
   ///     - If they do not meet all the constraints, they get added to the bad set
   async processCandidates(
     candidates: Set<CandidateData>
@@ -616,7 +616,7 @@ export const checkLatestClientVersion = async (
       }
     } else {
       logger.warn(
-        `{latestRelease} Could not set release validatity for ${
+        `{latestRelease} Could not set release validity for ${
           candidate.name
         } - version: ${
           candidate.version
@@ -662,7 +662,7 @@ export const checkIdentity = async (
     return false;
   }
   if (!verified) {
-    const invalidityString = `${candidate.name} has an identity but is not verified by registrar.`;
+    const invalidityString = `${candidate.name} has an identity but is not verified by the registrar.`;
     db.setIdentityInvalidity(candidate.stash, false, invalidityString);
     return false;
   }

@@ -624,7 +624,7 @@ export const checkLatestClientVersion = async (
           candidate.name
         } - version: ${
           candidate.version
-        } Latest release: ${latestRelease} now: ${Date.now()}`
+        } Latest release: ${latestRelease.name} now: ${Date.now()}`
       );
       return true;
     }

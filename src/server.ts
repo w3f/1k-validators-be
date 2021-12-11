@@ -82,6 +82,7 @@ export default class Server {
             validity: candidate.invalidity,
             score: score,
             total: score && score.total ? score.total : 0,
+            location: candidate.location,
           };
         })
       );

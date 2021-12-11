@@ -278,6 +278,20 @@ export default class Db {
     return true;
   }
 
+  async setLocation(telemetryId: number, location: string): Promise<boolean> {
+    const data = await this.candidateModel.findOne({ telemetryId });
+
+    if (!data) return false;
+
+    await this.candidateModel
+      .findOneAndUpdate(telemetryId, {
+        location: location,
+      })
+      .exec();
+
+    return true;
+  }
+
   async reportBestBlock(
     telemetryId: number,
     details: NodeDetails,

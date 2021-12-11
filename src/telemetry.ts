@@ -154,8 +154,7 @@ export default class TelemetryClient {
       case TelemetryMessage.LocatedNode:
         {
           const [id, lat, lon, city] = message.payload;
-          const now = Date.now();
-          logger.info(`id: ${id} lat: ${lat} lon: ${lon} city: ${city}`);
+          await this.db.setLocation(id, city);
         }
         break;
       case TelemetryMessage.ImportedBlock:

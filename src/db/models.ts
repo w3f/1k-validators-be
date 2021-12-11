@@ -152,6 +152,8 @@ export const CandidateSchema = new Schema({
   skipSelfStake: Boolean,
   // array of invalidity reasons
   invalidity: [InvalidityReason],
+  // The node location according to telemetry
+  location: String,
 });
 
 export const EraSchema = new Schema({

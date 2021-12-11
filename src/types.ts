@@ -84,4 +84,5 @@ export type CandidateData = {
   inclusion: number;
   spanInclusion: number;
   identity: Identity;
+  location: string;
 };

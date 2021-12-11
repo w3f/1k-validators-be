@@ -298,6 +298,13 @@ export class OTV implements Constraints {
     });
     const unclaimedStats = getStats(unclaimedValues);
 
+    // Location
+    const locations = validCandidates.map((candidate) => {
+      return candidate.location ? candidate.location : "";
+    });
+
+    logger.info(`{ScoreCandidates::location} locations: ${locations}`);
+
     // Create DB entry for Validator Score Metadata
     await db.setValidatorScoreMetadata(
       bondedStats,

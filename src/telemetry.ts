@@ -151,6 +151,13 @@ export default class TelemetryClient {
           this.offlineNodes.set(id, true);
         }
         break;
+      case TelemetryMessage.LocatedNode:
+        {
+          const [id, lat, lon, city] = message.payload;
+          const now = Date.now();
+          logger.info(`id: ${id} lat: ${lat} lon: ${lon} city: ${city}`);
+        }
+        break;
       case TelemetryMessage.ImportedBlock:
         {
           const [id, details] = payload;

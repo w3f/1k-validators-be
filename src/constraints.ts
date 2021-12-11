@@ -610,11 +610,6 @@ export const checkLatestClientVersion = async (
         ? semver.clean(forceLatestRelease)
         : semver.clean(latestRelease.name);
 
-      // TODO: remove
-      logger.info(
-        `{constraints::checkLatestClientVersion} github version: ${latestRelease.name} latest checked version: ${latestVersion}`
-      );
-
       const isUpgraded = semver.gte(nodeVersion, latestVersion);
       if (!isUpgraded) {
         db.setLatestClientReleaseValidity(candidate.stash, false);

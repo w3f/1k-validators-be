@@ -598,6 +598,7 @@ export const checkLatestClientVersion = async (
   candidate: any
 ) => {
   if (!config.constraints.skipClientUpgrade) {
+    const forceLatestRelease = config.constraints.forceClientVersion;
     const latestRelease = await db.getLatestRelease();
     if (
       candidate.version &&
@@ -605,7 +606,15 @@ export const checkLatestClientVersion = async (
       Date.now() > latestRelease.publishedAt + SIXTEEN_HOURS
     ) {
       const nodeVersion = semver.coerce(candidate.version);
-      const latestVersion = semver.clean(latestRelease.name);
+      const latestVersion = forceLatestRelease
+        ? semver.clean(forceLatestRelease)
+        : semver.clean(latestRelease.name);
+
+      // TODO: remove
+      logger.info(
+        `{constraints::checkLatestClientVersion} github version: ${latestRelease.name} latest checked version: ${latestVersion}`
+      );
+
       const isUpgraded = semver.gte(nodeVersion, latestVersion);
       if (!isUpgraded) {
         db.setLatestClientReleaseValidity(candidate.stash, false);

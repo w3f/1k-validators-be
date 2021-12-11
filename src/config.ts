@@ -26,6 +26,7 @@ export type Config = {
     skipClientUpgrade: boolean;
     skipUnclaimed: boolean;
     skipClaiming: boolean;
+    forceClientVersion: string;
   };
   cron: {
     monitor: string;

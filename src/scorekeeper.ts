@@ -491,20 +491,6 @@ export default class ScoreKeeper {
     });
 
     const candidates = await this.db.allCandidates();
-    // Run jobs once at startup
-    // await monitorJob(this.db, this.monitor);
-    // await activeValidatorJob(this.db, this.chaindata, this.candidateCache);
-    // await sessionKeyJob(this.db, this.chaindata, this.candidateCache);
-    // await inclusionJob(this.db, this.chaindata, this.candidateCache);
-    // await eraPointsJob(this.db, this.chaindata);
-    // await validatorPrefJob(this.db, this.chaindata, this.candidateCache);
-    // await unclaimedErasJob(this.db, this.chaindata, this.candidateCache);
-    // await validityJob(
-    //   this.db,
-    //   this.chaindata,
-    //   this.candidateCache,
-    //   this.constraints
-    // );
 
     // Start all Cron Jobs
     try {
@@ -593,24 +579,13 @@ export default class ScoreKeeper {
 
     const proxyTxs = await this.db.getAllDelayedTxs();
 
-    // If the round was started and there are any pending proxy txs, remove them.
-    // This prevents proxy txs from piling up.
-    if (proxyTxs.length > 0) {
-      logger.info(
-        `(Scorekeeper::startRound) round was started with pending proxy txs. Removing ${proxyTxs.length} txs...`
-      );
-      this.botLog(
-        `(Scorekeeper::startRound) round was started with pending proxy txs. Removing ${proxyTxs.length} txs...`
-      );
-      proxyTxs.map((proxyTx) => {
-        // this.db.deleteDelayedTx(proxyTx.number, proxyTx.controller);
-        logger.info(
-          `(Scorekeeper::startRound) removed nomination from ${proxyTx.controller} announced at block $${proxyTx.number}`
-        );
-        this.botLog(
-          `(Scorekeeper::startRound) removed nomination from ${proxyTx.controller} announced at block $${proxyTx.number}`
-        );
-      });
+    // If the round was started and there are any pending proxy txs skip the round
+    const NUM_NOMINATORS = 3;
+    if (proxyTxs.length >= NUM_NOMINATORS) {
+      const infoMsg = `(Scorekeeper::startRound) round was started with ${proxyTxs.length} pending proxy txs. Skipping Round.`;
+      logger.info(infoMsg);
+      this.botLog(infoMsg);
+      return;
     }
 
     const allCandidates = await this.db.allCandidates();

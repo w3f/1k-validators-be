@@ -133,7 +133,7 @@ export default class TelemetryClient {
           };
 
           await waitUntilFree(details[0]);
-          await this.db.reportOnline(id, details, now);
+          await this.db.reportOnline(id, details, now, location);
 
           const wasOffline = this.offlineNodes.has(id);
           if (wasOffline) {

@@ -339,7 +339,8 @@ export default class Db {
   async reportOnline(
     telemetryId: number,
     details: NodeDetails,
-    now: number
+    now: number,
+    location: string
   ): Promise<boolean> {
     const name = details[0].toString();
     const version = details[2].toString();
@@ -348,7 +349,7 @@ export default class Db {
       details;
 
     logger.info(
-      `(Db::reportOnline) Reporting ${name} ONLINE. ${nodeName} ${nodeImplementation} ${nodeVersion} ${address} ${networkId}`
+      `(Db::reportOnline) Reporting ${name} ONLINE. location: ${location} ${nodeName} ${nodeImplementation} ${nodeVersion} ${address} ${networkId}`
     );
 
     const data = await this.candidateModel.findOne({ name });

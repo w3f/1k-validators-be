@@ -280,7 +280,6 @@ export default class Db {
 
   async setLocation(telemetryId: number, location: string): Promise<boolean> {
     const data = await this.candidateModel.findOne({ telemetryId });
-    logger.info(`located telemetry id: ${telemetryId} at ${location}`);
 
     if (!data) return false;
 
@@ -348,16 +347,12 @@ export default class Db {
     const [nodeName, nodeImplementation, nodeVersion, address, networkId] =
       details;
 
-    logger.info(
-      `(Db::reportOnline) Reporting ${name} ONLINE. location: ${location} ${nodeName} ${nodeImplementation} ${nodeVersion} ${address} ${networkId}`
-    );
-
     const data = await this.candidateModel.findOne({ name });
     if (!data) {
       // A new node that is not already registered as a candidate.
       const candidate = new this.candidateModel({
         telemetryId,
-        // location,
+        location,
         networkId: null,
         nodeRefs: 1,
         name,
@@ -381,6 +376,7 @@ export default class Db {
           { name },
           {
             telemetryId,
+            location,
             discoveredAt: now,
             onlineSince: now,
             offlineSince: 0,
@@ -393,7 +389,6 @@ export default class Db {
                 details: ``,
               },
             ],
-            // $set: { location },
           }
         )
         .exec();
@@ -409,6 +404,7 @@ export default class Db {
         { name },
         {
           telemetryId,
+          location,
           onlineSince: now,
           version,
           invalidity: [
@@ -420,7 +416,6 @@ export default class Db {
               details: ``,
             },
           ],
-          // $set: { location },
           $inc: { nodeRefs: 1 },
         }
       )

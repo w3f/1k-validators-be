@@ -113,6 +113,9 @@ export default class TelemetryClient {
           ] = payload;
           const now = Date.now();
 
+          logger.info(`added node payload:`);
+          logger.info(payload);
+
           MemNodes[parseInt(id)] = details;
 
           // a mutex that will only update after its free to avoid race conditions
@@ -130,7 +133,7 @@ export default class TelemetryClient {
           };
 
           await waitUntilFree(details[0]);
-          await this.db.reportOnline(id, details, now, location);
+          await this.db.reportOnline(id, details, now);
 
           const wasOffline = this.offlineNodes.has(id);
           if (wasOffline) {

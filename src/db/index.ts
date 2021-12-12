@@ -280,9 +280,7 @@ export default class Db {
 
   async setLocation(telemetryId: number, location: string): Promise<boolean> {
     const data = await this.candidateModel.findOne({ telemetryId });
-    logger.info(
-      `located telemetry id: ${telemetryId} at ${location}. Data: ${data}`
-    );
+    logger.info(`located telemetry id: ${telemetryId} at ${location}`);
 
     if (!data) return false;
 
@@ -291,6 +289,8 @@ export default class Db {
         location: location,
       })
       .exec();
+
+    logger.info(`Succesfully set location: ${location} for id: ${telemetryId}`);
 
     return true;
   }
@@ -339,8 +339,7 @@ export default class Db {
   async reportOnline(
     telemetryId: number,
     details: NodeDetails,
-    now: number,
-    location: string
+    now: number
   ): Promise<boolean> {
     const name = details[0].toString();
     const version = details[2].toString();
@@ -349,7 +348,7 @@ export default class Db {
       details;
 
     logger.info(
-      `(Db::reportOnline) Reporting ${name} ONLINE. location: ${location} - ${nodeName} ${nodeImplementation} ${nodeVersion} ${address} ${networkId}`
+      `(Db::reportOnline) Reporting ${name} ONLINE. ${nodeName} ${nodeImplementation} ${nodeVersion} ${address} ${networkId}`
     );
 
     const data = await this.candidateModel.findOne({ name });
@@ -364,7 +363,6 @@ export default class Db {
         discoveredAt: now,
         onlineSince: now,
         offlineSince: 0,
-        location,
       });
 
       return candidate.save();
@@ -393,7 +391,6 @@ export default class Db {
                 details: ``,
               },
             ],
-            location,
           }
         )
         .exec();

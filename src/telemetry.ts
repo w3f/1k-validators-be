@@ -111,10 +111,8 @@ export default class TelemetryClient {
             location,
             startupTime,
           ] = payload;
+          const [lat, lon, city] = location;
           const now = Date.now();
-
-          logger.info(`added node payload:`);
-          logger.info(payload);
 
           MemNodes[parseInt(id)] = details;
 
@@ -133,7 +131,7 @@ export default class TelemetryClient {
           };
 
           await waitUntilFree(details[0]);
-          await this.db.reportOnline(id, details, now, location);
+          await this.db.reportOnline(id, details, now, city);
 
           const wasOffline = this.offlineNodes.has(id);
           if (wasOffline) {

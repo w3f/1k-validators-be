@@ -357,7 +357,7 @@ export default class Db {
       // A new node that is not already registered as a candidate.
       const candidate = new this.candidateModel({
         telemetryId,
-        location,
+        // location,
         networkId: null,
         nodeRefs: 1,
         name,
@@ -393,7 +393,7 @@ export default class Db {
                 details: ``,
               },
             ],
-            $set: { location },
+            // $set: { location },
           }
         )
         .exec();
@@ -420,7 +420,7 @@ export default class Db {
               details: ``,
             },
           ],
-          $set: { location },
+          // $set: { location },
           $inc: { nodeRefs: 1 },
         }
       )

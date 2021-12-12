@@ -281,7 +281,7 @@ export default class Db {
   async setLocation(telemetryId: number, location: string): Promise<boolean> {
     const data = await this.candidateModel.findOne({ telemetryId });
 
-    if (!data) return false;
+    if (!data || !location) return false;
 
     await this.candidateModel
       .findOneAndUpdate(telemetryId, {
@@ -303,6 +303,8 @@ export default class Db {
     const data = await this.candidateModel.findOne({ telemetryId });
 
     if (!data) return false;
+
+    logger.info(`Roporting best block for ${data.name}: ${details}`);
 
     // If the node was previously deemed offline
     if (data.offlineSince && data.offlineSince !== 0) {
@@ -341,11 +343,7 @@ export default class Db {
     now: number,
     location: string
   ): Promise<boolean> {
-    const name = details[0].toString();
-    const version = details[2].toString();
-
-    const [nodeName, nodeImplementation, nodeVersion, address, networkId] =
-      details;
+    const [name, nodeImplementation, version, address, networkId] = details;
 
     const data = await this.candidateModel.findOne({ name });
     if (!data) {

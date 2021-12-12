@@ -394,6 +394,7 @@ export default class Db {
                 details: ``,
               },
             ],
+            $set: { location },
           }
         )
         .exec();
@@ -409,7 +410,6 @@ export default class Db {
         { name },
         {
           telemetryId,
-          location,
           onlineSince: now,
           version,
           invalidity: [
@@ -421,6 +421,7 @@ export default class Db {
               details: ``,
             },
           ],
+          $set: { location },
           $inc: { nodeRefs: 1 },
         }
       )

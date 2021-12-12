@@ -381,7 +381,6 @@ export default class Db {
           { name },
           {
             telemetryId,
-            location,
             discoveredAt: now,
             onlineSince: now,
             offlineSince: 0,

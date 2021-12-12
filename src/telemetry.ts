@@ -101,8 +101,20 @@ export default class TelemetryClient {
     switch (action) {
       case TelemetryMessage.AddedNode:
         {
-          const [id, details] = payload;
+          const [
+            id,
+            details,
+            nodeStats,
+            nodeIO,
+            nodeHardware,
+            blockDetails,
+            location,
+            startupTime,
+          ] = payload;
           const now = Date.now();
+
+          logger.info(`added node payload:`);
+          logger.info(payload);
 
           MemNodes[parseInt(id)] = details;
 
@@ -121,7 +133,7 @@ export default class TelemetryClient {
           };
 
           await waitUntilFree(details[0]);
-          await this.db.reportOnline(id, details, now);
+          await this.db.reportOnline(id, details, now, location);
 
           const wasOffline = this.offlineNodes.has(id);
           if (wasOffline) {
@@ -153,7 +165,7 @@ export default class TelemetryClient {
         break;
       case TelemetryMessage.LocatedNode:
         {
-          const [id, lat, lon, city] = message.payload;
+          const [id, lat, lon, city] = payload;
           await this.db.setLocation(id, city);
         }
         break;

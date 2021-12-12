@@ -280,7 +280,6 @@ export default class Db {
 
   async setLocation(telemetryId: number, location: string): Promise<boolean> {
     const data = await this.candidateModel.findOne({ telemetryId });
-    logger.info(`located telemetry id: ${telemetryId} at ${location}`);
 
     if (!data) return false;
 

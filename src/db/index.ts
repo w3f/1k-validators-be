@@ -12,6 +12,7 @@ import {
   EraPointsSchema,
   TotalEraPointsSchema,
   EraStatsSchema,
+  LocationStatsSchema,
   ValidatorScoreSchema,
   ValidatorScoreMetadataSchema,
   ReleaseSchema,
@@ -35,6 +36,7 @@ export default class Db {
   private chainMetadataModel;
   private botClaimEventModel;
   private eraStatsModel;
+  private locationStatsModel;
   private validatorScoreModel;
   private validatorScoreMetadataModel;
   private releaseModel;
@@ -60,6 +62,10 @@ export default class Db {
       BotClaimEventSchema
     );
     this.eraStatsModel = mongoose.model("EraStatsModel", EraStatsSchema);
+    this.locationStatsModel = mongoose.model(
+      "LocationStatsModel",
+      LocationStatsSchema
+    );
     this.validatorScoreModel = mongoose.model(
       "ValidatorScore",
       ValidatorScoreSchema
@@ -2204,5 +2210,57 @@ export default class Db {
         }
       )
       .exec();
+  }
+
+  // Creates or updates new location stats records
+  async setLocationStats(
+    session: number,
+    locations: Array<{ name: string; numberOfNodes: number }>
+  ): Promise<any> {
+    // Try and find an existing record
+    const data = await this.locationStatsModel.findOne({
+      session,
+    });
+
+    // If the location stats already exist and are the same as before, return
+    if (!!data && data.locations == locations) return;
+
+    // If location stats for that session don't yet exist
+    if (!data) {
+      const locationStats = new this.locationStatsModel({
+        session,
+        locations,
+        updated: Date.now(),
+      });
+      return locationStats.save();
+    }
+
+    // It exists, but has a different value - update it
+    this.locationStatsModel
+      .findOneAndUpdate(
+        {
+          session,
+        },
+        {
+          updated: Date.now(),
+          locations,
+        }
+      )
+      .exec();
+  }
+
+  // Retrieves location stats for a given session
+  async getSessionLocationStats(session: number): Promise<any> {
+    const data = await this.locationStatsModel.findOne({
+      session,
+    });
+    return data;
+  }
+
+  // Retrieves the last location stats record (by the time it was updated)
+  async getLatestLocationStats(): Promise<any> {
+    return (
+      await this.locationStatsModel.find({}).sort("-updated").limit(1)
+    )[0];
   }
 }

@@ -419,3 +419,18 @@ export const ReleaseSchema = new Schema({
   name: String,
   publishedAt: Number,
 });
+
+// Stats on the where nodes are located.
+export const LocationStatsSchema = new Schema({
+  // Session number the record was created at
+  session: Number,
+  // The number of nodes for each location
+  locations: [
+    {
+      name: String,
+      numberOfNodes: Number,
+    },
+  ],
+  // Timestamp of when the record was written
+  updated: Number,
+});

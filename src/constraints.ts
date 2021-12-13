@@ -310,7 +310,11 @@ export class OTV implements Constraints {
       locationCounts[x] = (locationCounts[x] || 0) + 1;
     });
     logger.info(`{ScoreCandidates::location} locations: ${locations}`);
-    logger.info(locationCounts);
+    logger.info(
+      `{ScoreCandidates::location} location count: ${JSON.stringify(
+        locationCounts
+      )}`
+    );
 
     // Create DB entry for Validator Score Metadata
     await db.setValidatorScoreMetadata(

@@ -111,7 +111,7 @@ export default class TelemetryClient {
             location,
             startupTime,
           ] = payload;
-          const [lat, lon, city] = location || ["", "", ""];
+          const [lat, lon, city] = location || ["", "", "No Location"];
           const now = Date.now();
 
           MemNodes[parseInt(id)] = details;

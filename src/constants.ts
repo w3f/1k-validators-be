@@ -106,6 +106,9 @@ export const SCORE_CRON = "0 0-59/5 * * * *";
 // Era Stats Cron Job. This runs ever 5 minutes by default
 export const ERA_STATS_CRON = "0 0-59/5 * * * *";
 
+// Location Stats Cron Job. This runs ever 5 minutes by default
+export const LOCATION_STATS_CRON = "0 0-59/5 * * * *";
+
 // Chain Querying Cron Jobs:
 
 // Era Points Cron Job. This runs ever 30 minutes by default

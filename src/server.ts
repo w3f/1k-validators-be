@@ -8,6 +8,7 @@ import Database from "./db";
 import logger from "./logger";
 import ScoreKeeper from "./scorekeeper";
 import { job } from "cron";
+import { createTextChangeRange } from "typescript";
 
 const API = {
   Accounting: "/accounting/:stashOrController",
@@ -28,7 +29,8 @@ const API = {
   Score: "/score/:stash",
   ScoreMetadata: "/scoremetadata",
   Release: "/release",
-  LocationStats: "locationstats",
+  LocationStats: "/locationstats",
+  sessionLocationStats: "/locationstats/:session",
 };
 
 export default class Server {
@@ -191,6 +193,11 @@ export default class Server {
 
     router.get(API.LocationStats, async (ctx) => {
       const locationStats = await this.db.getLatestLocationStats();
+      ctx.body = locationStats;
+    });
+    router.get(API.LocationStats, async (ctx) => {
+      const { session } = ctx.params;
+      const locationStats = await this.db.getSessionLocationStats(session);
       ctx.body = locationStats;
     });
 

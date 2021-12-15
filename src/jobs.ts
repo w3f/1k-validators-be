@@ -332,7 +332,7 @@ export const locationStatsJob = async (
   const end = Date.now();
 
   logger.info(
-    `{cron::ActiveValidatorJob::ExecutionTime} started at ${new Date(
+    `{cron::locationStatsJob::ExecutionTime} started at ${new Date(
       start
     ).toString()} Done. Took ${(end - start) / 1000} seconds`
   );

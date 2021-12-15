@@ -301,12 +301,12 @@ export class OTV implements Constraints {
     // Location
     const locations = validCandidates
       .map((candidate) => {
-        return candidate.location ? candidate.location : "";
+        return candidate.location ? candidate.location : "No Location";
       })
       .sort((a, b) => a.localeCompare(b));
 
     const locationCounts = {};
-    locations.forEach(function (x) {
+    locations.forEach((x) => {
       locationCounts[x] = (locationCounts[x] || 0) + 1;
     });
     logger.info(`{ScoreCandidates::location} locations: ${locations}`);

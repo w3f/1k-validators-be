@@ -29,6 +29,7 @@ import {
   startEraStatsJob,
   startExecutionJob,
   startInclusionJob,
+  startLocationStatsJob,
   startMonitorJob,
   startRewardClaimJob,
   startScoreJob,
@@ -495,7 +496,7 @@ export default class ScoreKeeper {
     // Start all Cron Jobs
     try {
       await startMonitorJob(this.config, this.db, this.monitor);
-      startValidatityJob(
+      await startValidatityJob(
         this.config,
         this.db,
         this.constraints,
@@ -503,14 +504,14 @@ export default class ScoreKeeper {
         candidates
       );
 
-      startEraPointsJob(this.config, this.db, this.chaindata);
-      startActiveValidatorJob(this.config, this.db, this.chaindata);
-      startInclusionJob(this.config, this.db, this.chaindata);
-      startSessionKeyJob(this.config, this.db, this.chaindata);
-      startUnclaimedEraJob(this.config, this.db, this.chaindata);
-      startValidatorPrefJob(this.config, this.db, this.chaindata);
+      await startEraPointsJob(this.config, this.db, this.chaindata);
+      await startActiveValidatorJob(this.config, this.db, this.chaindata);
+      await startInclusionJob(this.config, this.db, this.chaindata);
+      await startSessionKeyJob(this.config, this.db, this.chaindata);
+      await startUnclaimedEraJob(this.config, this.db, this.chaindata);
+      await startValidatorPrefJob(this.config, this.db, this.chaindata);
       if (this.claimer) {
-        startRewardClaimJob(
+        await startRewardClaimJob(
           this.config,
           this.handler,
           this.db,
@@ -519,22 +520,14 @@ export default class ScoreKeeper {
           this.bot
         );
       }
-      startExecutionJob(
+      await startExecutionJob(
         this.handler,
         this.nominatorGroups,
         this.config,
         this.db,
         this.bot
       );
-      startCancelCron(
-        this.config,
-        this.handler,
-        this.db,
-        this.nominatorGroups,
-        this.chaindata,
-        this.bot
-      );
-      startStaleNominationCron(
+      await startCancelCron(
         this.config,
         this.handler,
         this.db,
@@ -542,8 +535,17 @@ export default class ScoreKeeper {
         this.chaindata,
         this.bot
       );
-      startScoreJob(this.config, this.constraints);
-      startEraStatsJob(this.db, this.config, this.chaindata);
+      await startStaleNominationCron(
+        this.config,
+        this.handler,
+        this.db,
+        this.nominatorGroups,
+        this.chaindata,
+        this.bot
+      );
+      await startScoreJob(this.config, this.constraints);
+      await startEraStatsJob(this.db, this.config, this.chaindata);
+      await startLocationStatsJob(this.config, this.db, this.chaindata);
     } catch (e) {
       logger.info(
         `{Scorekeeper::RunCron} There was an error running some cron jobs...`

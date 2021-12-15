@@ -296,3 +296,44 @@ export const activeValidatorJob = async (
     ).toString()} Done. Took ${(end - start) / 1000} seconds`
   );
 };
+
+// Job for aggregating location stats of all nodes
+export const locationStatsJob = async (
+  db: Db,
+  chaindata: ChainData,
+  candidates: any[]
+) => {
+  const start = Date.now();
+
+  // The current active validators in the validator set.
+  const session = await chaindata.getSession();
+
+  const locationMap = new Map();
+
+  for (const candidate of candidates) {
+    const location = candidate.location;
+    const address = candidate.stash;
+
+    let locationCount = locationMap.get(location);
+    if (!locationCount) {
+      locationMap.set(location, 1);
+    } else {
+      locationMap.set(location, locationCount++);
+    }
+    const locationArr = [];
+    for (const location of locationMap.entries()) {
+      const [name, numberOfNodes] = location;
+      locationArr.push({ name, numberOfNodes });
+    }
+
+    await db.setLocationStats(session, locationArr);
+  }
+
+  const end = Date.now();
+
+  logger.info(
+    `{cron::locationStatsJob::ExecutionTime} started at ${new Date(
+      start
+    ).toString()} Done. Took ${(end - start) / 1000} seconds`
+  );
+};

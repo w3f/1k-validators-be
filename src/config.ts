@@ -39,6 +39,7 @@ export type Config = {
     stale: string;
     score: string;
     eraStats: string;
+    locationStats: string;
     // chain querying crons
     eraPoints: string;
     activeValidator: string;

@@ -28,6 +28,7 @@ const API = {
   Score: "/score/:stash",
   ScoreMetadata: "/scoremetadata",
   Release: "/release",
+  LocationStats: "locationstats",
 };
 
 export default class Server {
@@ -186,6 +187,11 @@ export default class Server {
     router.get(API.ScoreMetadata, async (ctx) => {
       const score = await this.db.getValidatorScoreMetadata();
       ctx.body = score;
+    });
+
+    router.get(API.LocationStats, async (ctx) => {
+      const locationStats = await this.db.getLatestLocationStats();
+      ctx.body = locationStats;
     });
 
     this.app.use(router.routes());

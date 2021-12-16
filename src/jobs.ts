@@ -313,7 +313,7 @@ export const locationStatsJob = async (
 
   // Iterate through all candidates and set
   for (const candidate of candidates) {
-    const location = candidate.location;
+    const location = candidate.location || "No Location";
     const address = candidate.stash;
 
     const locationCount = locationMap.get(location);

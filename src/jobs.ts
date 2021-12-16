@@ -309,25 +309,27 @@ export const locationStatsJob = async (
   const session = await chaindata.getSession();
 
   const locationMap = new Map();
+  const locationArr = [];
 
+  // Iterate through all candidates and set
   for (const candidate of candidates) {
     const location = candidate.location;
     const address = candidate.stash;
 
-    let locationCount = locationMap.get(location);
+    const locationCount = locationMap.get(location);
     if (!locationCount) {
       locationMap.set(location, 1);
     } else {
-      locationMap.set(location, locationCount++);
+      locationMap.set(location, locationCount + 1);
     }
-    const locationArr = [];
-    for (const location of locationMap.entries()) {
-      const [name, numberOfNodes] = location;
-      locationArr.push({ name, numberOfNodes });
-    }
-
-    await db.setLocationStats(session, locationArr);
   }
+
+  for (const location of locationMap.entries()) {
+    const [name, numberOfNodes] = location;
+    locationArr.push({ name, numberOfNodes });
+  }
+
+  await db.setLocationStats(session, locationArr);
 
   const end = Date.now();
 

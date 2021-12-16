@@ -298,23 +298,14 @@ export class OTV implements Constraints {
     });
     const unclaimedStats = getStats(unclaimedValues);
 
-    // Location
-    const locations = validCandidates
-      .map((candidate) => {
-        return candidate.location ? candidate.location : "No Location";
-      })
-      .sort((a, b) => a.localeCompare(b));
-
-    const locationCounts = {};
-    locations.forEach((x) => {
-      locationCounts[x] = (locationCounts[x] || 0) + 1;
+    const latestLocationStats = await this.db.getLatestLocationStats();
+    const { locations } = latestLocationStats;
+    const locationValues = locations.map((location) => {
+      return location.numberOfNodes;
     });
-    logger.info(`{ScoreCandidates::location} locations: ${locations}`);
-    logger.info(
-      `{ScoreCandidates::location} location count: ${JSON.stringify(
-        locationCounts
-      )}`
-    );
+    const locationStats = getStats(locationValues);
+    logger.info(`{Constraints::location} locationValues: ${locationValues}`);
+    logger.info(`{Constraints::location} locationStats: ${locationStats}`);
 
     // Create DB entry for Validator Score Metadata
     await db.setValidatorScoreMetadata(
@@ -457,6 +448,7 @@ export class OTV implements Constraints {
   // unclaimed eras - lower is preferable
   // inclusion - lower is preferable
   // bonded - higher is preferable
+  // Location - lower is preferable
   INCLUSION_WEIGHT = 40;
   SPAN_INCLUSION_WEIGHT = 40;
   DISCOVERED_WEIGHT = 5;
@@ -466,6 +458,7 @@ export class OTV implements Constraints {
   BONDED_WEIGHT = 13;
   FAULTS_WEIGHT = 5;
   OFFLINE_WEIGHT = 2;
+  LOCATION_WEIGHT = 20;
 
   /// At the end of a nomination round this is the logic that separates the
   /// candidates that did good from the ones that did badly.

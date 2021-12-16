@@ -448,6 +448,7 @@ export class OTV implements Constraints {
   // unclaimed eras - lower is preferable
   // inclusion - lower is preferable
   // bonded - higher is preferable
+  // Location - lower is preferable
   INCLUSION_WEIGHT = 40;
   SPAN_INCLUSION_WEIGHT = 40;
   DISCOVERED_WEIGHT = 5;
@@ -457,6 +458,7 @@ export class OTV implements Constraints {
   BONDED_WEIGHT = 13;
   FAULTS_WEIGHT = 5;
   OFFLINE_WEIGHT = 2;
+  LOCATION_WEIGHT = 20;
 
   /// At the end of a nomination round this is the logic that separates the
   /// candidates that did good from the ones that did badly.

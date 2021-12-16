@@ -1515,6 +1515,7 @@ export default class Db {
     bonded: number,
     faults: number,
     offline: number,
+    location: number,
     randomness: number
   ): Promise<boolean> {
     // logger.info(
@@ -1540,6 +1541,7 @@ export default class Db {
         bonded,
         faults,
         offline,
+        location,
         randomness,
       });
 
@@ -1564,6 +1566,7 @@ export default class Db {
           bonded,
           faults,
           offline,
+          location,
           randomness,
         }
       )
@@ -1595,6 +1598,8 @@ export default class Db {
     rankWeight: number,
     unclaimedStats: any,
     unclaimedWeight: number,
+    locationStats: any,
+    locationWeight: number,
     updated: number
   ): Promise<boolean> {
     logger.info(`(Db::SetScoreMetadata) Setting validator score metadata`);
@@ -1626,6 +1631,8 @@ export default class Db {
         rankWeight,
         unclaimedStats,
         unclaimedWeight,
+        locationStats,
+        locationWeight,
         updated,
       });
 
@@ -1655,6 +1662,8 @@ export default class Db {
           rankWeight,
           unclaimedStats,
           unclaimedWeight,
+          locationStats,
+          locationWeight,
           updated,
         }
       )

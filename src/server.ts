@@ -193,7 +193,14 @@ export default class Server {
 
     router.get(API.LocationStats, async (ctx) => {
       const locationStats = await this.db.getLatestLocationStats();
-      ctx.body = locationStats;
+      const sortedLocations = locationStats.locations.sort((a, b) => {
+        return b.numberOfNodes - a.numberOfNodes;
+      });
+      ctx.body = {
+        session: locationStats.session,
+        updated: locationStats.updated,
+        locations: sortedLocations,
+      };
     });
     router.get(API.LocationStats, async (ctx) => {
       const { session } = ctx.params;

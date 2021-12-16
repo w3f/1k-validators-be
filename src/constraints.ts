@@ -298,6 +298,7 @@ export class OTV implements Constraints {
     });
     const unclaimedStats = getStats(unclaimedValues);
 
+    // Location
     const latestLocationStats = await this.db.getLatestLocationStats();
     const { locations } = latestLocationStats;
     const locationValues = locations.map((location) => {
@@ -305,7 +306,9 @@ export class OTV implements Constraints {
     });
     const locationStats = getStats(locationValues);
     logger.info(`{Constraints::location} locationValues: ${locationValues}`);
-    logger.info(`{Constraints::location} locationStats: ${locationStats}`);
+    logger.info(
+      `{Constraints::location} locationStats: ${JSON.stringify(locationStats)}`
+    );
 
     // Create DB entry for Validator Score Metadata
     await db.setValidatorScoreMetadata(
@@ -366,6 +369,17 @@ export class OTV implements Constraints {
 
       const scaledFaults = scaled(candidate.faults, faultsValues);
       const faultsScore = (1 - scaledFaults) * this.FAULTS_WEIGHT;
+
+      // Get the total number of nodes for the location a candidate has their node in
+      const filteredLocation = locations.filter((location) => {
+        if (candidate.location == location.name) return location.numberOfNodes;
+      });
+      const candidateLocation = filteredLocation[0]?.numberOfNodes;
+      const scaledLocation = scaled(candidateLocation, locationValues);
+      const locationScore = (1 - scaledLocation) * this.LOCATION_WEIGHT;
+      logger.info(
+        `{Constraints::locationScore"} ${candidate.location} scaled: ${scaledLocation} score :${locationScore} weight: ${this.LOCATION_WEIGHT}`
+      );
 
       const aggregate =
         inclusionScore +

@@ -330,6 +330,8 @@ export class OTV implements Constraints {
       this.RANK_WEIGHT,
       unclaimedStats,
       this.UNCLAIMED_WEIGHT,
+      locationStats,
+      this.LOCATION_WEIGHT,
       Date.now()
     );
 
@@ -390,6 +392,7 @@ export class OTV implements Constraints {
         rankScore +
         unclaimedScore +
         bondedScore +
+        locationScore +
         offlineScore;
 
       const randomness = 1 + Math.random() * 0.05;
@@ -406,6 +409,7 @@ export class OTV implements Constraints {
         bonded: bondedScore,
         faults: faultsScore,
         offline: offlineScore,
+        location: locationScore,
         randomness: randomness,
         updated: Date.now(),
       };
@@ -424,6 +428,7 @@ export class OTV implements Constraints {
         score.bonded,
         score.faults,
         score.offline,
+        score.location,
         score.randomness
       );
 
@@ -439,6 +444,10 @@ export class OTV implements Constraints {
         identity: candidate.identity,
         nominatedAt: candidate.nominatedAt,
         bonded: candidate.bonded,
+        location: {
+          location: candidate.location,
+          otherNodes: candidateLocation,
+        },
       };
       rankedCandidates.push(rankedCandidate);
     }

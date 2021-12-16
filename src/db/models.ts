@@ -280,6 +280,8 @@ export const ValidatorScoreSchema = new Schema({
   faults: Number,
   // offline score
   offline: Number,
+  // location score
+  location: Number,
   // The randomness factor used to buffer the total
   randomness: Number,
 });
@@ -411,6 +413,20 @@ export const ValidatorScoreMetadataSchema = new Schema({
     standardDeviation: Number,
   },
   unclaimedWeight: Number,
+  // Location Metadata
+  locationStats: {
+    values: [Number],
+    absoluteMin: Number,
+    absoluteMax: Number,
+    q10: Number,
+    q25: Number,
+    q50: Number,
+    q75: Number,
+    q90: Number,
+    mean: Number,
+    standardDeviation: Number,
+  },
+  locationWeight: Number,
   // The last time one was updated
   updated: Number,
 });

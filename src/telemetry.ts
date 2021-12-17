@@ -111,6 +111,9 @@ export default class TelemetryClient {
             location,
             startupTime,
           ] = payload;
+          logger.info(
+            `{TELEMETRY} added node. location ${JSON.stringify(location)}`
+          );
           const [lat, lon, city] = location || ["", "", "No Location"];
           const now = Date.now();
 

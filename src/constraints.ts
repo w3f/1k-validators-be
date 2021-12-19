@@ -377,8 +377,8 @@ export class OTV implements Constraints {
         if (candidate.location == location.name) return location.numberOfNodes;
       });
       const candidateLocation = filteredLocation[0]?.numberOfNodes;
-      const scaledLocation = scaled(candidateLocation, locationValues) || 1;
-      const locationScore = (1 - scaledLocation) * this.LOCATION_WEIGHT;
+      const scaledLocation = scaled(candidateLocation, locationValues);
+      const locationScore = (1 - scaledLocation) * this.LOCATION_WEIGHT || 0;
       logger.info(
         `{Constraints::locationScore"} ${candidate.location} scaled: ${scaledLocation} score :${locationScore} weight: ${this.LOCATION_WEIGHT}`
       );

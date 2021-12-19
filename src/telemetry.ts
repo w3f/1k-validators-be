@@ -112,7 +112,14 @@ export default class TelemetryClient {
             startupTime,
           ] = payload;
           logger.info(
-            `{TELEMETRY} added node. location ${JSON.stringify(location)}`
+            `{TELEMETRY::location} added node. location ${JSON.stringify(
+              location
+            )}`
+          );
+          logger.info(
+            `{TELEMETRY::payload} added node. payload: ${JSON.stringify(
+              payload
+            )}`
           );
           const [lat, lon, city] = location || ["", "", "No Location"];
           const now = Date.now();
@@ -146,6 +153,10 @@ export default class TelemetryClient {
         {
           const id = parseInt(payload);
           const now = Date.now();
+
+          logger.info(
+            `{TELEMETRY::RemovedNode} removed node. Payload: ${payload}`
+          );
 
           //this is to get around security warning vvv
           const details = MemNodes[parseInt(String(id))];

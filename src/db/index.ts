@@ -369,6 +369,10 @@ export default class Db {
       return candidate.save();
     }
 
+    // If the candidate previously had a location set, use that location
+    const candidateLocation =
+      data.location != "No Location" ? data.location : "No Location";
+
     // Get the list of all other validtity reasons besides online
     const invalidityReasons = data.invalidity.filter((invalidityReason) => {
       return invalidityReason.type !== "ONLINE";
@@ -380,7 +384,7 @@ export default class Db {
           { name },
           {
             telemetryId,
-            location,
+            candidateLocation,
             discoveredAt: now,
             onlineSince: now,
             offlineSince: 0,
@@ -408,7 +412,7 @@ export default class Db {
         { name },
         {
           telemetryId,
-          location,
+          candidateLocation,
           onlineSince: now,
           version,
           invalidity: [
@@ -1331,7 +1335,7 @@ export default class Db {
   }
 
   async setInclusion(address: string, inclusion: number): Promise<boolean> {
-    logger.info(
+    logger.debug(
       `(Db::setInclusion) Setting ${address} inclusion to ${inclusion}.`
     );
 
@@ -1351,7 +1355,7 @@ export default class Db {
     address: string,
     spanInclusion: number
   ): Promise<boolean> {
-    logger.info(
+    logger.debug(
       `(Db::setInclusion) Setting ${address} span inclusion to ${spanInclusion}.`
     );
 
@@ -1368,7 +1372,7 @@ export default class Db {
   }
 
   async setBonded(address: string, bonded: number): Promise<boolean> {
-    logger.info(`(Db::setBonded) Setting ${address} bonded to ${bonded}.`);
+    logger.debug(`(Db::setBonded) Setting ${address} bonded to ${bonded}.`);
 
     return this.candidateModel
       .findOneAndUpdate(
@@ -1386,7 +1390,7 @@ export default class Db {
     address: string,
     rewardDestination: string
   ): Promise<boolean> {
-    logger.info(
+    logger.debug(
       `(Db::setRewardDestination) Setting ${address} reward destination to ${rewardDestination}.`
     );
 
@@ -1403,7 +1407,7 @@ export default class Db {
   }
 
   async setQueuedKeys(address: string, queuedKeys: string): Promise<boolean> {
-    logger.info(
+    logger.debug(
       `(Db::setQueuedKeys) Setting ${address} queued keys to ${queuedKeys}.`
     );
 
@@ -1420,7 +1424,7 @@ export default class Db {
   }
 
   async setNextKeys(address: string, nextKeys: string): Promise<boolean> {
-    logger.info(
+    logger.debug(
       `(Db::setNextKeys) Setting ${address} next keys to ${nextKeys}.`
     );
 
@@ -1679,7 +1683,7 @@ export default class Db {
   }
 
   async setRelease(name: string, publishedAt: number): Promise<any> {
-    logger.info(`{DB::Release} setting reelase for ${name}`);
+    logger.debug(`{DB::Release} setting release for ${name}`);
     let data = await this.releaseModel.findOne({ name: name }).exec();
 
     if (!data) {

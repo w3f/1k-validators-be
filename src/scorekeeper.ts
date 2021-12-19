@@ -140,11 +140,6 @@ export default class ScoreKeeper {
           logger.info(
             `{scorekeeper::reward} ${stash} claimed reward of ${amount}. Updating eras....`
           );
-          // if (this.isUpdatingEras) return;
-          this.isUpdatingEras = true;
-
-          // wait 12 seconds in case there are multiple eras claimed in a batch
-          // await sleep(12000);
 
           const unclaimedEras = await this.chaindata.getUnclaimedEras(
             stash,
@@ -152,10 +147,8 @@ export default class ScoreKeeper {
           );
 
           await db.setUnclaimedEras(stash, unclaimedEras);
-          await sleep(2000);
           await this.constraints.checkCandidateStash(stash);
           await this.constraints.scoreAllCandidates();
-          this.isUpdatingEras = false;
         }
 
         // check if it was a nominator address that earned the reward

@@ -88,7 +88,6 @@ export default class Server {
       } else {
         ctx.body = `${stashOrName} not found!`;
       }
-
     });
 
     router.get(API.GetCandidates, async (ctx) => {

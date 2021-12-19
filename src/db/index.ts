@@ -384,7 +384,7 @@ export default class Db {
           { name },
           {
             telemetryId,
-            candidateLocation,
+            location: candidateLocation,
             discoveredAt: now,
             onlineSince: now,
             offlineSince: 0,
@@ -412,7 +412,7 @@ export default class Db {
         { name },
         {
           telemetryId,
-          candidateLocation,
+          location: candidateLocation,
           onlineSince: now,
           version,
           invalidity: [

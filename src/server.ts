@@ -56,30 +56,39 @@ export default class Server {
 
     router.get(API.Candidate, async (ctx) => {
       const { stashOrName } = ctx.params;
-      const candidate = await this.db.getCandidate(stashOrName);
-      const score = await this.db.getValidatorScore(candidate.stash);
-      ctx.body = {
-        discoveredAt: candidate.discoveredAt,
-        nominatedAt: candidate.nominatedAt,
-        offlineSince: candidate.offlineSince,
-        offlineAccumulated: candidate.offlineAccumulated,
-        rank: candidate.rank,
-        faults: candidate.faults,
-        invalidityReasons: candidate.invalidityReasons,
-        unclaimedEras: candidate.unclaimedEras,
-        inclusion: candidate.inclusion,
-        name: candidate.name,
-        stash: candidate.stash,
-        kusamaStash: candidate.kusamaStash,
-        commission: candidate.commission,
-        identity: candidate.identity,
-        active: candidate.active,
-        valid: candidate.valid,
-        validity: candidate.invalidity,
-        score: score,
-        total: score && score.total ? score.total : 0,
-        location: candidate.location,
-      };
+      if (stashOrName) {
+        const candidate = await this.db.getCandidate(stashOrName);
+        const score = candidate
+          ? await this.db.getValidatorScore(candidate.stash)
+          : 0;
+        ctx.body = candidate
+          ? {
+              discoveredAt: candidate.discoveredAt,
+              nominatedAt: candidate.nominatedAt,
+              offlineSince: candidate.offlineSince,
+              offlineAccumulated: candidate.offlineAccumulated,
+              rank: candidate.rank,
+              faults: candidate.faults,
+              invalidityReasons: candidate.invalidityReasons,
+              unclaimedEras: candidate.unclaimedEras,
+              inclusion: candidate.inclusion,
+              name: candidate.name,
+              stash: candidate.stash,
+              kusamaStash: candidate.kusamaStash,
+              commission: candidate.commission,
+              identity: candidate.identity,
+              active: candidate.active,
+              valid: candidate.valid,
+              validity: candidate.invalidity,
+              score: score,
+              total: score && score.total ? score.total : 0,
+              location: candidate.location,
+            }
+          : `${stashOrName} not found!`;
+      } else {
+        ctx.body = `${stashOrName} not found!`;
+      }
+
     });
 
     router.get(API.GetCandidates, async (ctx) => {

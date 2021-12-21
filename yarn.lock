@@ -1161,16 +1161,16 @@ braces@^3.0.1, braces@~3.0.2:
   dependencies:
     fill-range "^7.0.1"
 
-bree@^7.1.0:
-  version "7.1.0"
-  resolved "https://registry.yarnpkg.com/bree/-/bree-7.1.0.tgz#1d9848393113be6e44948808f6c8b9159867ea76"
-  integrity sha512-1bKJDODePYjIIUvt/ImO5PnitRQjZnTfMnsXq64LAWf2muXn9lCju0PnKoayIHdYzEMKepXr+YYY+Y+cmaVkHA==
+bree@^7.1.2:
+  version "7.1.2"
+  resolved "https://registry.yarnpkg.com/bree/-/bree-7.1.2.tgz#f12794fa6584100436bb4e05c693ffbe9bee6abe"
+  integrity sha512-Vznh4gMMHgEqdx+hfE0h5rY86x66i9DNkDfiGao8vVxS9QFKhcaxwdKZFqK/1OksF9A5Nb8bmlLv2/5lOzNMSQ==
   dependencies:
     "@breejs/later" "^4.1.0"
     boolean "^3.1.4"
     combine-errors "^3.0.3"
     cron-validate "^1.4.3"
-    debug "^4.3.2"
+    debug "^4.3.3"
     human-interval "^2.0.1"
     is-string-and-not-blank "^0.0.2"
     is-valid-path "^0.1.1"
@@ -1653,7 +1653,7 @@ date-time@^3.1.0:
   dependencies:
     time-zone "^1.0.0"
 
-debug@4, debug@4.x, debug@^4.1.1, debug@^4.2.0, debug@^4.3.1, debug@^4.3.2:
+debug@4, debug@4.x, debug@^4.1.1, debug@^4.2.0, debug@^4.3.1, debug@^4.3.2, debug@^4.3.3:
   version "4.3.3"
   resolved "https://registry.yarnpkg.com/debug/-/debug-4.3.3.tgz#04266e0b70a98d4462e6e288e38259213332b664"
   integrity sha512-/zxw5+vh1Tfv+4Qn7a5nsbcJKPaSvCDhojn6FEl9vupwK2VCSDtEiEtqr8DFtzYFOdz63LBkxec7DYuc2jon6Q==

@@ -154,6 +154,10 @@ export const CandidateSchema = new Schema({
   invalidity: [InvalidityReason],
   // The node location according to telemetry
   location: String,
+  // The amount of stake going towards backing council members
+  councilStake: Number,
+  // Who the candidate is backing as a council member (an array of council addresses)
+  councilVotes: [String],
 });
 
 export const EraSchema = new Schema({
@@ -449,4 +453,41 @@ export const LocationStatsSchema = new Schema({
   ],
   // Timestamp of when the record was written
   updated: Number,
+});
+
+// A council member
+export const CouncillorSchema = new Schema({
+  // The councillors address
+  address: String,
+  // Membership status
+  status: {
+    type: String,
+    enum: ["Candidate", "Member", "Runner Up"],
+    default: "None",
+  },
+  // The total backing
+  backing: Number,
+  // the last time the record was updated
+  updated: Number,
+});
+
+export const ElectionStatsSchema = new Schema({
+  // The duration of the term
+  termDuration: Number,
+  // The min amount of bond for a candidate
+  candidacyBond: Number,
+  // The amount of active council members
+  totalMembers: Number,
+  // The amount of candidates that are not active
+  totalRunnersUp: Number,
+  // the total amount of candidates
+  totalCandidates: Number,
+  // The total amount of addresses that vote for council members
+  totalVoters: Number,
+  // The sum total of tokens (in human readable denomination) bonded for all voters for elections
+  totalBonded: Number,
+  // the timestamp the record was last updated
+  updated: Number,
+  // the epoch the record was queried in
+  session: Number,
 });

@@ -30,7 +30,10 @@ const API = {
   ScoreMetadata: "/scoremetadata",
   Release: "/release",
   LocationStats: "/locationstats",
-  sessionLocationStats: "/locationstats/:session",
+  SessionLocationStats: "/locationstats/:session",
+  Councillor: "/councillor",
+  Councillors: "/councillor/:address",
+  ElectionStats: "/electionstats",
 };
 
 export default class Server {
@@ -206,7 +209,7 @@ export default class Server {
         locations: sortedLocations,
       };
     });
-    router.get(API.LocationStats, async (ctx) => {
+    router.get(API.SessionLocationStats, async (ctx) => {
       const { session } = ctx.params;
       const locationStats = await this.db.getSessionLocationStats(session);
       const sortedLocations = locationStats.locations.sort((a, b) => {
@@ -217,6 +220,19 @@ export default class Server {
         updated: locationStats.updated,
         locations: sortedLocations,
       };
+    });
+    router.get(API.ElectionStats, async (ctx) => {
+      const electionStats = await this.db.getLatestElectionStats();
+      ctx.body = electionStats;
+    });
+    router.get(API.Councillors, async (ctx) => {
+      const councillors = await this.db.getAllCouncillors();
+      ctx.body = councillors;
+    });
+    router.get(API.Councillor, async (ctx) => {
+      const { address } = ctx.params;
+      const councillor = await this.db.getCouncillor(address);
+      ctx.body = councillor;
     });
 
     this.app.use(router.routes());

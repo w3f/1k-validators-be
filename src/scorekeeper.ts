@@ -38,6 +38,7 @@ import {
   startUnclaimedEraJob,
   startValidatityJob,
   startValidatorPrefJob,
+  startCouncilJob,
 } from "./cron";
 import Claimer from "./claimer";
 import {
@@ -539,6 +540,7 @@ export default class ScoreKeeper {
       await startScoreJob(this.config, this.constraints);
       await startEraStatsJob(this.db, this.config, this.chaindata);
       await startLocationStatsJob(this.config, this.db, this.chaindata);
+      await startCouncilJob(this.config, this.db, this.chaindata);
     } catch (e) {
       logger.info(
         `{Scorekeeper::RunCron} There was an error running some cron jobs...`

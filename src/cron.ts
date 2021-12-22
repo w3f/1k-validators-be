@@ -23,6 +23,7 @@ import {
   KUSAMA_FOUR_DAYS_ERAS,
   POLKADOT_FOUR_DAYS_ERAS,
   LOCATION_STATS_CRON,
+  COUNCIL_CRON,
 } from "./constants";
 import logger from "./logger";
 import Monitor from "./monitor";
@@ -46,6 +47,7 @@ import {
   validatorPrefJob,
   validityJob,
   locationStatsJob,
+  councilJob,
 } from "./jobs";
 
 // Monitors the latest GitHub releases and ensures nodes have upgraded
@@ -735,4 +737,36 @@ export const startLocationStatsJob = async (
     running = false;
   });
   locationStatsCron.start();
+};
+
+// Chron job for council and election info
+export const startCouncilJob = async (
+  config: Config,
+  db: Db,
+  chaindata: ChainData
+) => {
+  const councilFrequency = config.cron.council
+    ? config.cron.council
+    : COUNCIL_CRON;
+
+  logger.info(
+    `(cron::CouncilJob::init) Running council cron with frequency: ${councilFrequency}`
+  );
+
+  let running = false;
+
+  const councilCron = new CronJob(councilFrequency, async () => {
+    if (running) {
+      return;
+    }
+    running = true;
+    logger.info(`{cron::councilJob::start} running council job....`);
+
+    const candidates = await db.allCandidates();
+
+    // Run the active validators job
+    await councilJob(db, chaindata, candidates);
+    running = false;
+  });
+  councilCron.start();
 };

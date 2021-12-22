@@ -1,19 +1,24 @@
 // Utilities for Scoring Validators
 
+// Sorts an array by ascending values
 export const asc = (arr) => arr.sort((a, b) => a - b);
 
+// Gets the absolute min of an array of values
 export const absMin = (arr) => {
   const sorted = asc(arr);
   return sorted[0];
 };
 
+// Gets the absolute max of an array of values
 export const absMax = (arr) => {
   const sorted = asc(arr);
   return sorted[sorted.length - 1];
 };
 
+// Gets the total sum of an array of values
 export const sum = (arr) => arr.reduce((a, b) => a + b, 0);
 
+// Gets the mean of an array of values
 export const mean = (arr) => sum(arr) / arr.length;
 
 // sample standard deviation
@@ -23,6 +28,7 @@ export const std = (arr) => {
   return Math.sqrt(sum(diffArr) / (arr.length - 1));
 };
 
+// Gets the xth quantile of an array
 export const quantile = (arr, q) => {
   const sorted = asc(arr);
   const pos = (sorted.length - 1) * q;

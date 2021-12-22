@@ -152,6 +152,8 @@ export const CandidateSchema = new Schema({
   skipSelfStake: Boolean,
   // array of invalidity reasons
   invalidity: [InvalidityReason],
+  // The node location according to telemetry
+  location: String,
 });
 
 export const EraSchema = new Schema({
@@ -278,6 +280,8 @@ export const ValidatorScoreSchema = new Schema({
   faults: Number,
   // offline score
   offline: Number,
+  // location score
+  location: Number,
   // The randomness factor used to buffer the total
   randomness: Number,
 });
@@ -409,6 +413,20 @@ export const ValidatorScoreMetadataSchema = new Schema({
     standardDeviation: Number,
   },
   unclaimedWeight: Number,
+  // Location Metadata
+  locationStats: {
+    values: [Number],
+    absoluteMin: Number,
+    absoluteMax: Number,
+    q10: Number,
+    q25: Number,
+    q50: Number,
+    q75: Number,
+    q90: Number,
+    mean: Number,
+    standardDeviation: Number,
+  },
+  locationWeight: Number,
   // The last time one was updated
   updated: Number,
 });
@@ -416,6 +434,21 @@ export const ValidatorScoreMetadataSchema = new Schema({
 export const ReleaseSchema = new Schema({
   name: String,
   publishedAt: Number,
+});
+
+// Stats on the where nodes are located.
+export const LocationStatsSchema = new Schema({
+  // Session number the record was created at
+  session: Number,
+  // The number of nodes for each location
+  locations: [
+    {
+      name: String,
+      numberOfNodes: Number,
+    },
+  ],
+  // Timestamp of when the record was written
+  updated: Number,
 });
 
 export const ElectionStats = new Schema({

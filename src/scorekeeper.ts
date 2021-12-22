@@ -29,6 +29,7 @@ import {
   startEraStatsJob,
   startExecutionJob,
   startInclusionJob,
+  startLocationStatsJob,
   startMonitorJob,
   startRewardClaimJob,
   startScoreJob,
@@ -139,11 +140,6 @@ export default class ScoreKeeper {
           logger.info(
             `{scorekeeper::reward} ${stash} claimed reward of ${amount}. Updating eras....`
           );
-          // if (this.isUpdatingEras) return;
-          this.isUpdatingEras = true;
-
-          // wait 12 seconds in case there are multiple eras claimed in a batch
-          // await sleep(12000);
 
           const unclaimedEras = await this.chaindata.getUnclaimedEras(
             stash,
@@ -151,10 +147,8 @@ export default class ScoreKeeper {
           );
 
           await db.setUnclaimedEras(stash, unclaimedEras);
-          await sleep(2000);
           await this.constraints.checkCandidateStash(stash);
           await this.constraints.scoreAllCandidates();
-          this.isUpdatingEras = false;
         }
 
         // check if it was a nominator address that earned the reward
@@ -491,25 +485,11 @@ export default class ScoreKeeper {
     });
 
     const candidates = await this.db.allCandidates();
-    // Run jobs once at startup
-    // await monitorJob(this.db, this.monitor);
-    // await activeValidatorJob(this.db, this.chaindata, this.candidateCache);
-    // await sessionKeyJob(this.db, this.chaindata, this.candidateCache);
-    // await inclusionJob(this.db, this.chaindata, this.candidateCache);
-    // await eraPointsJob(this.db, this.chaindata);
-    // await validatorPrefJob(this.db, this.chaindata, this.candidateCache);
-    // await unclaimedErasJob(this.db, this.chaindata, this.candidateCache);
-    // await validityJob(
-    //   this.db,
-    //   this.chaindata,
-    //   this.candidateCache,
-    //   this.constraints
-    // );
 
     // Start all Cron Jobs
     try {
       await startMonitorJob(this.config, this.db, this.monitor);
-      startValidatityJob(
+      await startValidatityJob(
         this.config,
         this.db,
         this.constraints,
@@ -517,14 +497,14 @@ export default class ScoreKeeper {
         candidates
       );
 
-      startEraPointsJob(this.config, this.db, this.chaindata);
-      startActiveValidatorJob(this.config, this.db, this.chaindata);
-      startInclusionJob(this.config, this.db, this.chaindata);
-      startSessionKeyJob(this.config, this.db, this.chaindata);
-      startUnclaimedEraJob(this.config, this.db, this.chaindata);
-      startValidatorPrefJob(this.config, this.db, this.chaindata);
+      await startEraPointsJob(this.config, this.db, this.chaindata);
+      await startActiveValidatorJob(this.config, this.db, this.chaindata);
+      await startInclusionJob(this.config, this.db, this.chaindata);
+      await startSessionKeyJob(this.config, this.db, this.chaindata);
+      await startUnclaimedEraJob(this.config, this.db, this.chaindata);
+      await startValidatorPrefJob(this.config, this.db, this.chaindata);
       if (this.claimer) {
-        startRewardClaimJob(
+        await startRewardClaimJob(
           this.config,
           this.handler,
           this.db,
@@ -533,22 +513,14 @@ export default class ScoreKeeper {
           this.bot
         );
       }
-      startExecutionJob(
+      await startExecutionJob(
         this.handler,
         this.nominatorGroups,
         this.config,
         this.db,
         this.bot
       );
-      startCancelCron(
-        this.config,
-        this.handler,
-        this.db,
-        this.nominatorGroups,
-        this.chaindata,
-        this.bot
-      );
-      startStaleNominationCron(
+      await startCancelCron(
         this.config,
         this.handler,
         this.db,
@@ -556,8 +528,17 @@ export default class ScoreKeeper {
         this.chaindata,
         this.bot
       );
-      startScoreJob(this.config, this.constraints);
-      startEraStatsJob(this.db, this.config, this.chaindata);
+      await startStaleNominationCron(
+        this.config,
+        this.handler,
+        this.db,
+        this.nominatorGroups,
+        this.chaindata,
+        this.bot
+      );
+      await startScoreJob(this.config, this.constraints);
+      await startEraStatsJob(this.db, this.config, this.chaindata);
+      await startLocationStatsJob(this.config, this.db, this.chaindata);
     } catch (e) {
       logger.info(
         `{Scorekeeper::RunCron} There was an error running some cron jobs...`
@@ -593,24 +574,13 @@ export default class ScoreKeeper {
 
     const proxyTxs = await this.db.getAllDelayedTxs();
 
-    // If the round was started and there are any pending proxy txs, remove them.
-    // This prevents proxy txs from piling up.
-    if (proxyTxs.length > 0) {
-      logger.info(
-        `(Scorekeeper::startRound) round was started with pending proxy txs. Removing ${proxyTxs.length} txs...`
-      );
-      this.botLog(
-        `(Scorekeeper::startRound) round was started with pending proxy txs. Removing ${proxyTxs.length} txs...`
-      );
-      proxyTxs.map((proxyTx) => {
-        // this.db.deleteDelayedTx(proxyTx.number, proxyTx.controller);
-        logger.info(
-          `(Scorekeeper::startRound) removed nomination from ${proxyTx.controller} announced at block $${proxyTx.number}`
-        );
-        this.botLog(
-          `(Scorekeeper::startRound) removed nomination from ${proxyTx.controller} announced at block $${proxyTx.number}`
-        );
-      });
+    // If the round was started and there are any pending proxy txs skip the round
+    const NUM_NOMINATORS = 3;
+    if (proxyTxs.length >= NUM_NOMINATORS) {
+      const infoMsg = `(Scorekeeper::startRound) round was started with ${proxyTxs.length} pending proxy txs. Skipping Round.`;
+      logger.info(infoMsg);
+      this.botLog(infoMsg);
+      return;
     }
 
     const allCandidates = await this.db.allCandidates();

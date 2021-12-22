@@ -22,6 +22,7 @@ import {
   ERA_STATS_CRON,
   KUSAMA_FOUR_DAYS_ERAS,
   POLKADOT_FOUR_DAYS_ERAS,
+  LOCATION_STATS_CRON,
 } from "./constants";
 import logger from "./logger";
 import Monitor from "./monitor";
@@ -44,6 +45,7 @@ import {
   unclaimedErasJob,
   validatorPrefJob,
   validityJob,
+  locationStatsJob,
 } from "./jobs";
 
 // Monitors the latest GitHub releases and ensures nodes have upgraded
@@ -699,4 +701,38 @@ export const startValidatorPrefJob = async (
     running = false;
   });
   validatorPrefCron.start();
+};
+
+// Chron job for storing location stats of nodes
+export const startLocationStatsJob = async (
+  config: Config,
+  db: Db,
+  chaindata: ChainData
+) => {
+  const locationStatsFrequency = config.cron.locationStats
+    ? config.cron.locationStats
+    : LOCATION_STATS_CRON;
+
+  logger.info(
+    `(cron::LocationStatsJob::init) Running location stats cron with frequency: ${locationStatsFrequency}`
+  );
+
+  let running = false;
+
+  const locationStatsCron = new CronJob(locationStatsFrequency, async () => {
+    if (running) {
+      return;
+    }
+    running = true;
+    logger.info(
+      `{cron::LocationStatsJob::start} running location stats job....`
+    );
+
+    const candidates = await db.allCandidates();
+
+    // Run the active validators job
+    await locationStatsJob(db, chaindata, candidates);
+    running = false;
+  });
+  locationStatsCron.start();
 };

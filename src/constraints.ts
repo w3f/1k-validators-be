@@ -240,7 +240,7 @@ export class OTV implements Constraints {
     if (validCandidates.length < 2) return;
 
     // Get Ranges of Parameters
-    //    A validators individual parameter is then scaled to how it compares to others that are also deemd valid
+    //    A validators individual parameter is then scaled to how it compares to others that are also deemed valid
 
     // Bonded
     const bondedValues = validCandidates.map((candidate) => {
@@ -298,6 +298,18 @@ export class OTV implements Constraints {
     });
     const unclaimedStats = getStats(unclaimedValues);
 
+    // Location
+    const latestLocationStats = await this.db.getLatestLocationStats();
+    const { locations } = latestLocationStats;
+    const locationValues = locations.map((location) => {
+      return location.numberOfNodes;
+    });
+    const locationStats = getStats(locationValues);
+    logger.info(`{Constraints::location} locationValues: ${locationValues}`);
+    logger.info(
+      `{Constraints::location} locationStats: ${JSON.stringify(locationStats)}`
+    );
+
     // Create DB entry for Validator Score Metadata
     await db.setValidatorScoreMetadata(
       bondedStats,
@@ -318,6 +330,8 @@ export class OTV implements Constraints {
       this.RANK_WEIGHT,
       unclaimedStats,
       this.UNCLAIMED_WEIGHT,
+      locationStats,
+      this.LOCATION_WEIGHT,
       Date.now()
     );
 
@@ -358,6 +372,17 @@ export class OTV implements Constraints {
       const scaledFaults = scaled(candidate.faults, faultsValues);
       const faultsScore = (1 - scaledFaults) * this.FAULTS_WEIGHT;
 
+      // Get the total number of nodes for the location a candidate has their node in
+      const filteredLocation = locations.filter((location) => {
+        if (candidate.location == location.name) return location.numberOfNodes;
+      });
+      const candidateLocation = filteredLocation[0]?.numberOfNodes;
+      const scaledLocation = scaled(candidateLocation, locationValues);
+      const locationScore = (1 - scaledLocation) * this.LOCATION_WEIGHT || 0;
+      logger.info(
+        `{Constraints::locationScore"} ${candidate.location} scaled: ${scaledLocation} score :${locationScore} weight: ${this.LOCATION_WEIGHT}`
+      );
+
       const aggregate =
         inclusionScore +
         spanInclusionScore +
@@ -367,6 +392,7 @@ export class OTV implements Constraints {
         rankScore +
         unclaimedScore +
         bondedScore +
+        locationScore +
         offlineScore;
 
       const randomness = 1 + Math.random() * 0.05;
@@ -383,6 +409,7 @@ export class OTV implements Constraints {
         bonded: bondedScore,
         faults: faultsScore,
         offline: offlineScore,
+        location: locationScore,
         randomness: randomness,
         updated: Date.now(),
       };
@@ -401,6 +428,7 @@ export class OTV implements Constraints {
         score.bonded,
         score.faults,
         score.offline,
+        score.location,
         score.randomness
       );
 
@@ -416,6 +444,10 @@ export class OTV implements Constraints {
         identity: candidate.identity,
         nominatedAt: candidate.nominatedAt,
         bonded: candidate.bonded,
+        location: {
+          location: candidate.location,
+          otherNodes: candidateLocation,
+        },
       };
       rankedCandidates.push(rankedCandidate);
     }
@@ -431,14 +463,15 @@ export class OTV implements Constraints {
   }
 
   // Weighted scores
-  // Discovered at - earlier is preferrable
-  // Nominated At - Not nominated in a while is preferrable
-  // offlineAccumulated - lower if prefferable
-  // rank - higher is preferrable
-  // faults - lower is preferrable
-  // unclaimed eras - lower is preferrable
-  // inclusion - lower is preferrable
-  // bonded - higher is preferrable
+  // Discovered at - earlier is preferable
+  // Nominated At - Not nominated in a while is preferable
+  // offlineAccumulated - lower if preferable
+  // rank - higher is preferable
+  // faults - lower is preferable
+  // unclaimed eras - lower is preferable
+  // inclusion - lower is preferable
+  // bonded - higher is preferable
+  // Location - lower is preferable
   INCLUSION_WEIGHT = 40;
   SPAN_INCLUSION_WEIGHT = 40;
   DISCOVERED_WEIGHT = 5;
@@ -448,11 +481,12 @@ export class OTV implements Constraints {
   BONDED_WEIGHT = 13;
   FAULTS_WEIGHT = 5;
   OFFLINE_WEIGHT = 2;
+  LOCATION_WEIGHT = 20;
 
   /// At the end of a nomination round this is the logic that separates the
   /// candidates that did good from the ones that did badly.
   /// - We have two sets, a 'good' set, and a 'bad' set
-  ///     - We go through all the candidates and if they meet all constraints, they get alled to the 'good' set
+  ///     - We go through all the candidates and if they meet all constraints, they get called to the 'good' set
   ///     - If they do not meet all the constraints, they get added to the bad set
   async processCandidates(
     candidates: Set<CandidateData>
@@ -598,6 +632,7 @@ export const checkLatestClientVersion = async (
   candidate: any
 ) => {
   if (!config.constraints.skipClientUpgrade) {
+    const forceLatestRelease = config.constraints.forceClientVersion;
     const latestRelease = await db.getLatestRelease();
     if (
       candidate.version &&
@@ -605,7 +640,10 @@ export const checkLatestClientVersion = async (
       Date.now() > latestRelease.publishedAt + SIXTEEN_HOURS
     ) {
       const nodeVersion = semver.coerce(candidate.version);
-      const latestVersion = semver.clean(latestRelease.name);
+      const latestVersion = forceLatestRelease
+        ? semver.clean(forceLatestRelease)
+        : semver.clean(latestRelease.name);
+
       const isUpgraded = semver.gte(nodeVersion, latestVersion);
       if (!isUpgraded) {
         db.setLatestClientReleaseValidity(candidate.stash, false);
@@ -616,11 +654,11 @@ export const checkLatestClientVersion = async (
       }
     } else {
       logger.warn(
-        `{latestRelease} Could not set release validatity for ${
+        `{latestRelease} Could not set release validity for ${
           candidate.name
-        } - version: ${
-          candidate.version
-        } Latest release: ${latestRelease} now: ${Date.now()}`
+        } - version: ${candidate.version} Latest release: ${
+          latestRelease.name
+        } now: ${Date.now()}`
       );
       return true;
     }
@@ -662,7 +700,7 @@ export const checkIdentity = async (
     return false;
   }
   if (!verified) {
-    const invalidityString = `${candidate.name} has an identity but is not verified by registrar.`;
+    const invalidityString = `${candidate.name} has an identity but is not verified by the registrar.`;
     db.setIdentityInvalidity(candidate.stash, false, invalidityString);
     return false;
   }

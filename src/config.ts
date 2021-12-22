@@ -26,6 +26,7 @@ export type Config = {
     skipClientUpgrade: boolean;
     skipUnclaimed: boolean;
     skipClaiming: boolean;
+    forceClientVersion: string;
   };
   cron: {
     monitor: string;
@@ -38,6 +39,7 @@ export type Config = {
     stale: string;
     score: string;
     eraStats: string;
+    locationStats: string;
     // chain querying crons
     eraPoints: string;
     activeValidator: string;

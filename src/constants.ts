@@ -100,28 +100,31 @@ export const CANCEL_CRON = "0 0-59/25 * * * *";
 // Stale Nomination Frequency. This runs every 45 minutes by default
 export const STALE_CRON = "0 0-59/45 * * * *";
 
-// Score Cron Job. This runs ever 5 minutes by default
+// Score Cron Job. This runs every 5 minutes by default
 export const SCORE_CRON = "0 0-59/5 * * * *";
 
-// Era Stats Cron Job. This runs ever 5 minutes by default
+// Era Stats Cron Job. This runs every 5 minutes by default
 export const ERA_STATS_CRON = "0 0-59/5 * * * *";
+
+// Location Stats Cron Job. This runs every 5 minutes by default
+export const LOCATION_STATS_CRON = "0 0-59/5 * * * *";
 
 // Chain Querying Cron Jobs:
 
-// Era Points Cron Job. This runs ever 30 minutes by default
+// Era Points Cron Job. This runs every 30 minutes by default
 export const ERA_POINTS_CRON = "0 0-59/30 * * * *";
 
 // Active Validator Cron Job. This runs ever 5 minutes by default
 export const ACTIVE_VALIDATOR_CRON = "0 0-59/5 * * * *";
 
-// Inclusion Cron Job. This runs ever 15 minutes by default
+// Inclusion Cron Job. This runs every 15 minutes by default
 export const INCLUSION_CRON = "0 0-59/30 * * * *";
 
-// Unclaimed Era Cron Job. This runs ever 30 minutes by default
-export const UNCLAIMED_ERAS_CRON = "0 0-59/30 * * * *";
+// Unclaimed Era Cron Job. This runs every 6 hours by default
+export const UNCLAIMED_ERAS_CRON = "0 0 0-23/6 * * *";
 
-// Validator Pref Cron Job. This runs ever 15 minutes by default
+// Validator Pref Cron Job. This runs every 15 minutes by default
 export const VALIDATOR_PREF_CRON = "0 0-59/15 * * * *";
 
-// Sesion Key Cron Job. This runs ever 45 minutes by default
+// Sesion Key Cron Job. This runs every 45 minutes by default
 export const SESSION_KEY_CRON = "0 0-59/45 * * * *";

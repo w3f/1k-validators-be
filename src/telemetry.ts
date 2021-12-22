@@ -101,7 +101,27 @@ export default class TelemetryClient {
     switch (action) {
       case TelemetryMessage.AddedNode:
         {
-          const [id, details] = payload;
+          const [
+            id,
+            details,
+            nodeStats,
+            nodeIO,
+            nodeHardware,
+            blockDetails,
+            location,
+            startupTime,
+          ] = payload;
+          logger.info(
+            `{TELEMETRY::location} added node. location ${JSON.stringify(
+              location
+            )}`
+          );
+          logger.info(
+            `{TELEMETRY::payload} added node. payload: ${JSON.stringify(
+              payload
+            )}`
+          );
+          const [lat, lon, city] = location || ["", "", "No Location"];
           const now = Date.now();
 
           MemNodes[parseInt(id)] = details;
@@ -121,7 +141,7 @@ export default class TelemetryClient {
           };
 
           await waitUntilFree(details[0]);
-          await this.db.reportOnline(id, details, now);
+          await this.db.reportOnline(id, details, now, city);
 
           const wasOffline = this.offlineNodes.has(id);
           if (wasOffline) {
@@ -133,6 +153,10 @@ export default class TelemetryClient {
         {
           const id = parseInt(payload);
           const now = Date.now();
+
+          logger.info(
+            `{TELEMETRY::RemovedNode} removed node. Payload: ${payload}`
+          );
 
           //this is to get around security warning vvv
           const details = MemNodes[parseInt(String(id))];
@@ -149,6 +173,12 @@ export default class TelemetryClient {
           this.beingReported.set(name, false);
 
           this.offlineNodes.set(id, true);
+        }
+        break;
+      case TelemetryMessage.LocatedNode:
+        {
+          const [id, lat, lon, city] = payload;
+          await this.db.setLocation(id, city);
         }
         break;
       case TelemetryMessage.ImportedBlock:

@@ -8,6 +8,7 @@ import Database from "./db";
 import logger from "./logger";
 import ScoreKeeper from "./scorekeeper";
 import { job } from "cron";
+import { createTextChangeRange } from "typescript";
 
 const API = {
   Accounting: "/accounting/:stashOrController",
@@ -28,6 +29,8 @@ const API = {
   Score: "/score/:stash",
   ScoreMetadata: "/scoremetadata",
   Release: "/release",
+  LocationStats: "/locationstats",
+  sessionLocationStats: "/locationstats/:session",
 };
 
 export default class Server {
@@ -53,8 +56,12 @@ export default class Server {
 
     router.get(API.Candidate, async (ctx) => {
       const { stashOrName } = ctx.params;
-      const candidateData = await this.db.getCandidate(stashOrName);
-      ctx.body = candidateData;
+      if (stashOrName) {
+        const candidate = await this.db.getCandidate(stashOrName);
+        ctx.body = candidate;
+      } else {
+        ctx.body = `${stashOrName} not found!`;
+      }
     });
 
     router.get(API.GetCandidates, async (ctx) => {
@@ -82,6 +89,7 @@ export default class Server {
             validity: candidate.invalidity,
             score: score,
             total: score && score.total ? score.total : 0,
+            location: candidate.location,
           };
         })
       );
@@ -185,6 +193,30 @@ export default class Server {
     router.get(API.ScoreMetadata, async (ctx) => {
       const score = await this.db.getValidatorScoreMetadata();
       ctx.body = score;
+    });
+
+    router.get(API.LocationStats, async (ctx) => {
+      const locationStats = await this.db.getLatestLocationStats();
+      const sortedLocations = locationStats.locations.sort((a, b) => {
+        return b.numberOfNodes - a.numberOfNodes;
+      });
+      ctx.body = {
+        session: locationStats.session,
+        updated: locationStats.updated,
+        locations: sortedLocations,
+      };
+    });
+    router.get(API.LocationStats, async (ctx) => {
+      const { session } = ctx.params;
+      const locationStats = await this.db.getSessionLocationStats(session);
+      const sortedLocations = locationStats.locations.sort((a, b) => {
+        return b.numberOfNodes - a.numberOfNodes;
+      });
+      ctx.body = {
+        session: locationStats.session,
+        updated: locationStats.updated,
+        locations: sortedLocations,
+      };
     });
 
     this.app.use(router.routes());

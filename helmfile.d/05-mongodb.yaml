@@ -1,22 +1,19 @@
 environments:
   production:
   ci:
-
 repositories:
-- name: bitnami
-  url: https://charts.bitnami.com/bitnami
-
+  - name: bitnami
+    url: https://charts.bitnami.com/bitnami
 releases:
-- name: kusama-mongodb
-  namespace: kusama
-  chart: bitnami/mongodb
-  version: 10.0.5
-  values:
-  - ./config/kusama/mongodb.yaml.gotmpl
-  
-- name: polkadot-mongodb
-  namespace: polkadot
-  chart: bitnami/mongodb
-  version: 10.0.5
-  values:
-  - ./config/polkadot/mongodb.yaml.gotmpl
+  - name: kusama-mongodb
+    namespace: kusama
+    chart: bitnami/mongodb
+    version: 10.30.6
+    values:
+      - ./config/kusama/mongodb.yaml.gotmpl
+  - name: polkadot-mongodb
+    namespace: polkadot
+    chart: bitnami/mongodb
+    version: 10.30.6
+    values:
+      - ./config/polkadot/mongodb.yaml.gotmpl

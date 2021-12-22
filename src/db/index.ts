@@ -12,6 +12,7 @@ import {
   EraPointsSchema,
   TotalEraPointsSchema,
   EraStatsSchema,
+  LocationStatsSchema,
   ValidatorScoreSchema,
   ValidatorScoreMetadataSchema,
   ReleaseSchema,
@@ -35,6 +36,7 @@ export default class Db {
   private chainMetadataModel;
   private botClaimEventModel;
   private eraStatsModel;
+  private locationStatsModel;
   private validatorScoreModel;
   private validatorScoreMetadataModel;
   private releaseModel;
@@ -60,6 +62,10 @@ export default class Db {
       BotClaimEventSchema
     );
     this.eraStatsModel = mongoose.model("EraStatsModel", EraStatsSchema);
+    this.locationStatsModel = mongoose.model(
+      "LocationStatsModel",
+      LocationStatsSchema
+    );
     this.validatorScoreModel = mongoose.model(
       "ValidatorScore",
       ValidatorScoreSchema
@@ -278,6 +284,22 @@ export default class Db {
     return true;
   }
 
+  async setLocation(telemetryId: number, location: string): Promise<boolean> {
+    const data = await this.candidateModel.findOne({ telemetryId });
+
+    if (!data || !location) return false;
+
+    await this.candidateModel
+      .findOneAndUpdate(telemetryId, {
+        location: location,
+      })
+      .exec();
+
+    logger.info(`Succesfully set location: ${location} for id: ${telemetryId}`);
+
+    return true;
+  }
+
   async reportBestBlock(
     telemetryId: number,
     details: NodeDetails,
@@ -287,6 +309,8 @@ export default class Db {
     const data = await this.candidateModel.findOne({ telemetryId });
 
     if (!data) return false;
+
+    logger.info(`Roporting best block for ${data.name}: ${details}`);
 
     // If the node was previously deemed offline
     if (data.offlineSince && data.offlineSince !== 0) {
@@ -322,18 +346,17 @@ export default class Db {
   async reportOnline(
     telemetryId: number,
     details: NodeDetails,
-    now: number
+    now: number,
+    location: string
   ): Promise<boolean> {
-    const name = details[0].toString();
-    const version = details[2].toString();
-
-    logger.info(`(Db::reportOnline) Reporting ${name} ONLINE.`);
+    const [name, nodeImplementation, version, address, networkId] = details;
 
     const data = await this.candidateModel.findOne({ name });
     if (!data) {
       // A new node that is not already registered as a candidate.
       const candidate = new this.candidateModel({
         telemetryId,
+        location,
         networkId: null,
         nodeRefs: 1,
         name,
@@ -346,6 +369,12 @@ export default class Db {
       return candidate.save();
     }
 
+    // If the candidate previously had a location set, use that location
+    const candidateLocation =
+      location == "No Location" && data.location != "No Location"
+        ? data.location
+        : location;
+
     // Get the list of all other validtity reasons besides online
     const invalidityReasons = data.invalidity.filter((invalidityReason) => {
       return invalidityReason.type !== "ONLINE";
@@ -357,6 +386,7 @@ export default class Db {
           { name },
           {
             telemetryId,
+            location: candidateLocation,
             discoveredAt: now,
             onlineSince: now,
             offlineSince: 0,
@@ -384,6 +414,7 @@ export default class Db {
         { name },
         {
           telemetryId,
+          candidateLocation,
           onlineSince: now,
           version,
           invalidity: [
@@ -1306,7 +1337,7 @@ export default class Db {
   }
 
   async setInclusion(address: string, inclusion: number): Promise<boolean> {
-    logger.info(
+    logger.debug(
       `(Db::setInclusion) Setting ${address} inclusion to ${inclusion}.`
     );
 
@@ -1326,7 +1357,7 @@ export default class Db {
     address: string,
     spanInclusion: number
   ): Promise<boolean> {
-    logger.info(
+    logger.debug(
       `(Db::setInclusion) Setting ${address} span inclusion to ${spanInclusion}.`
     );
 
@@ -1343,7 +1374,7 @@ export default class Db {
   }
 
   async setBonded(address: string, bonded: number): Promise<boolean> {
-    logger.info(`(Db::setBonded) Setting ${address} bonded to ${bonded}.`);
+    logger.debug(`(Db::setBonded) Setting ${address} bonded to ${bonded}.`);
 
     return this.candidateModel
       .findOneAndUpdate(
@@ -1361,7 +1392,7 @@ export default class Db {
     address: string,
     rewardDestination: string
   ): Promise<boolean> {
-    logger.info(
+    logger.debug(
       `(Db::setRewardDestination) Setting ${address} reward destination to ${rewardDestination}.`
     );
 
@@ -1378,7 +1409,7 @@ export default class Db {
   }
 
   async setQueuedKeys(address: string, queuedKeys: string): Promise<boolean> {
-    logger.info(
+    logger.debug(
       `(Db::setQueuedKeys) Setting ${address} queued keys to ${queuedKeys}.`
     );
 
@@ -1395,7 +1426,7 @@ export default class Db {
   }
 
   async setNextKeys(address: string, nextKeys: string): Promise<boolean> {
-    logger.info(
+    logger.debug(
       `(Db::setNextKeys) Setting ${address} next keys to ${nextKeys}.`
     );
 
@@ -1490,6 +1521,7 @@ export default class Db {
     bonded: number,
     faults: number,
     offline: number,
+    location: number,
     randomness: number
   ): Promise<boolean> {
     // logger.info(
@@ -1515,6 +1547,7 @@ export default class Db {
         bonded,
         faults,
         offline,
+        location,
         randomness,
       });
 
@@ -1539,6 +1572,7 @@ export default class Db {
           bonded,
           faults,
           offline,
+          location,
           randomness,
         }
       )
@@ -1570,6 +1604,8 @@ export default class Db {
     rankWeight: number,
     unclaimedStats: any,
     unclaimedWeight: number,
+    locationStats: any,
+    locationWeight: number,
     updated: number
   ): Promise<boolean> {
     logger.info(`(Db::SetScoreMetadata) Setting validator score metadata`);
@@ -1601,6 +1637,8 @@ export default class Db {
         rankWeight,
         unclaimedStats,
         unclaimedWeight,
+        locationStats,
+        locationWeight,
         updated,
       });
 
@@ -1630,6 +1668,8 @@ export default class Db {
           rankWeight,
           unclaimedStats,
           unclaimedWeight,
+          locationStats,
+          locationWeight,
           updated,
         }
       )
@@ -1645,7 +1685,7 @@ export default class Db {
   }
 
   async setRelease(name: string, publishedAt: number): Promise<any> {
-    logger.info(`{DB::Release} setting reelase for ${name}`);
+    logger.debug(`{DB::Release} setting release for ${name}`);
     let data = await this.releaseModel.findOne({ name: name }).exec();
 
     if (!data) {
@@ -2185,5 +2225,57 @@ export default class Db {
         }
       )
       .exec();
+  }
+
+  // Creates or updates new location stats records
+  async setLocationStats(
+    session: number,
+    locations: Array<{ name: string; numberOfNodes: number }>
+  ): Promise<any> {
+    // Try and find an existing record
+    const data = await this.locationStatsModel.findOne({
+      session,
+    });
+
+    // If the location stats already exist and are the same as before, return
+    if (!!data && data.locations == locations) return;
+
+    // If location stats for that session don't yet exist
+    if (!data) {
+      const locationStats = new this.locationStatsModel({
+        session,
+        locations,
+        updated: Date.now(),
+      });
+      return locationStats.save();
+    }
+
+    // It exists, but has a different value - update it
+    this.locationStatsModel
+      .findOneAndUpdate(
+        {
+          session,
+        },
+        {
+          updated: Date.now(),
+          locations,
+        }
+      )
+      .exec();
+  }
+
+  // Retrieves location stats for a given session
+  async getSessionLocationStats(session: number): Promise<any> {
+    const data = await this.locationStatsModel.findOne({
+      session,
+    });
+    return data;
+  }
+
+  // Retrieves the last location stats record (by the time it was updated)
+  async getLatestLocationStats(): Promise<any> {
+    return (
+      await this.locationStatsModel.find({}).sort("-updated").limit(1)
+    )[0];
   }
 }

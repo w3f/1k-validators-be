@@ -286,6 +286,8 @@ export const ValidatorScoreSchema = new Schema({
   offline: Number,
   // location score
   location: Number,
+  // council backing score
+  councilStake: Number,
   // The randomness factor used to buffer the total
   randomness: Number,
 });

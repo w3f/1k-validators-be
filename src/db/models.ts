@@ -456,7 +456,7 @@ export const LocationStatsSchema = new Schema({
 });
 
 // A council member
-export const Councillor = new Schema({
+export const CouncillorSchema = new Schema({
   // The councillors address
   address: String,
   // Membership status
@@ -467,13 +467,21 @@ export const Councillor = new Schema({
   },
   // The total backing
   backing: Number,
+  // the last time the record was updated
+  updated: Number,
 });
 
-export const ElectionStats = new Schema({
+export const ElectionStatsSchema = new Schema({
+  // The duration of the term
+  termDuration: Number,
+  // The min amount of bond for a candidate
+  candidacyBond: Number,
   // The amount of active council members
   totalMembers: Number,
   // The amount of candidates that are not active
   totalRunnersUp: Number,
+  // the total amount of candidates
+  totalCandidates: Number,
   // The total amount of addresses that vote for council members
   totalVoters: Number,
   // The sum total of tokens (in human readable denomination) bonded for all voters for elections
@@ -481,5 +489,5 @@ export const ElectionStats = new Schema({
   // the timestamp the record was last updated
   updated: Number,
   // the epoch the record was queried in
-  epoch: Number,
+  session: Number,
 });

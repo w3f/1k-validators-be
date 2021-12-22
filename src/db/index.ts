@@ -16,6 +16,8 @@ import {
   ValidatorScoreSchema,
   ValidatorScoreMetadataSchema,
   ReleaseSchema,
+  ElectionStatsSchema,
+  CouncillorSchema,
 } from "./models";
 import logger from "../logger";
 import { formatAddress } from "../util";
@@ -40,6 +42,8 @@ export default class Db {
   private validatorScoreModel;
   private validatorScoreMetadataModel;
   private releaseModel;
+  private electionStatsModel;
+  private councillorModel;
 
   constructor() {
     this.accountingModel = mongoose.model("Accounting", AccountingSchema);
@@ -75,6 +79,11 @@ export default class Db {
       ValidatorScoreMetadataSchema
     );
     this.releaseModel = mongoose.model("Release", ReleaseSchema);
+    this.electionStatsModel = mongoose.model(
+      "ElectionStats",
+      ElectionStatsSchema
+    );
+    this.councillorModel = mongoose.model("Councillor", CouncillorSchema);
   }
 
   static async create(uri = "mongodb://localhost:27017/otv"): Promise<Db> {
@@ -1455,6 +1464,24 @@ export default class Db {
       .exec();
   }
 
+  // updates a candidates council backing amounts and who they vote for
+  async setCouncilBacking(
+    address: string,
+    councilStake: number,
+    councilVotes: any[]
+  ): Promise<boolean> {
+    return this.candidateModel
+      .findOneAndUpdate(
+        {
+          stash: address,
+        },
+        {
+          $set: { councilStake: councilStake, councilVotes: councilVotes },
+        }
+      )
+      .exec();
+  }
+
   async setEraStats(
     era: number,
     totalNodes: number,
@@ -2277,5 +2304,103 @@ export default class Db {
     return (
       await this.locationStatsModel.find({}).sort("-updated").limit(1)
     )[0];
+  }
+
+  // Writes an election stats record in the db
+  async setElectionStats(
+    termDuration: number,
+    candidacyBond: number,
+    totalMembers: number,
+    totalRunnersUp: number,
+    totalCandidates: number,
+    totalVoters: number,
+    totalBonded: number,
+    session: number
+  ): Promise<any> {
+    // Try and find an existing record
+    const data = await this.electionStatsModel.findOne({
+      session,
+    });
+
+    // If election stats for that session doesnt yet exist
+    if (!data) {
+      const electionStats = new this.electionStatsModel({
+        termDuration,
+        candidacyBond,
+        totalMembers,
+        totalRunnersUp,
+        totalCandidates,
+        totalVoters,
+        totalBonded,
+        session,
+        updated: Date.now(),
+      });
+      return electionStats.save();
+    }
+
+    // It exists, but has a different value - update it
+    this.electionStatsModel
+      .findOneAndUpdate(
+        {
+          session,
+        },
+        {
+          termDuration,
+          candidacyBond,
+          totalMembers,
+          totalRunnersUp,
+          totalCandidates,
+          totalVoters,
+          totalBonded,
+          updated: Date.now(),
+        }
+      )
+      .exec();
+  }
+
+  // Retrieves the last election stats record (by the time it was updated)
+  async getLatestElectionStats(): Promise<any> {
+    return (
+      await this.electionStatsModel.find({}).sort("-updated").limit(1)
+    )[0];
+  }
+
+  // Updates information on a council member
+  async setCouncillor(
+    address: string,
+    membershipStatus: string,
+    backing: number
+  ): Promise<any> {
+    // Try and find an existing record
+    const data = await this.councillorModel.findOne({
+      address,
+    });
+
+    // if the data is the same, return
+    if (!!data && data.backing == backing && data.status == membershipStatus)
+      return;
+
+    // If councillor info doesn't yet exist
+    if (!data) {
+      const councillor = new this.councillorModel({
+        address,
+        status: membershipStatus,
+        backing,
+        updated: Date.now(),
+      });
+      return councillor.save();
+    }
+
+    // It exists, but has a different value - update it
+    this.councillorModel.findOneAndUpdate(
+      {
+        address,
+      },
+      {
+        status: membershipStatus,
+        backing,
+        updated: Date.now(),
+      }
+    );
   }
 }

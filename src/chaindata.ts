@@ -807,7 +807,7 @@ class ChainData {
     });
 
     return {
-      candidacyBond: candidacyBond,
+      candidacyBond: parseFloat(candidacyBond.toString()) / denom,
       desiredSeats: desiredSeats,
       termDuration: termDuration,
       members: membersMap,

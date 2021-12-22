@@ -31,8 +31,8 @@ const API = {
   Release: "/release",
   LocationStats: "/locationstats",
   SessionLocationStats: "/locationstats/:session",
-  Councillor: "/councillor",
-  Councillors: "/councillor/:address",
+  Councillors: "/councillor",
+  Councillor: "/councillor/:address",
   ElectionStats: "/electionstats",
 };
 

@@ -793,12 +793,26 @@ class ChainData {
       };
     });
 
+    // Candidates that have just put in their bid, and their total backings
+    const candidatesMap = candidates.map((candidate) => {
+      const address = candidate[0];
+      const totalBacking = candidate[1];
+
+      const formattedTotalBacking = parseFloat(totalBacking.toString()) / denom;
+
+      return {
+        address: address,
+        totalBacking: formattedTotalBacking,
+      };
+    });
+
     return {
       candidacyBond: candidacyBond,
       desiredSeats: desiredSeats,
       termDuration: termDuration,
       members: membersMap,
       runnersUp: runnersUpMap,
+      candidates: candidatesMap,
     };
   };
 }

@@ -33,6 +33,7 @@ const API = {
   SessionLocationStats: "/locationstats/:session",
   Councillors: "/councillor",
   Councillor: "/councillor/:address",
+  Voters: "/voters",
   ElectionStats: "/electionstats",
 };
 
@@ -93,6 +94,8 @@ export default class Server {
             score: score,
             total: score && score.total ? score.total : 0,
             location: candidate.location,
+            councilStake: candidate.councilStake,
+            councilVotes: candidate.councilVotes,
           };
         })
       );
@@ -233,6 +236,44 @@ export default class Server {
       const { address } = ctx.params;
       const councillor = await this.db.getCouncillor(address);
       ctx.body = councillor;
+    });
+    // Returns all candidates who back council members
+    router.get(API.Voters, async (ctx) => {
+      let allCandidates = await this.db.allCandidates();
+      allCandidates = await Promise.all(
+        allCandidates.map(async (candidate) => {
+          const score = await this.db.getValidatorScore(candidate.stash);
+          if (candidate.councilStake && candidate.councilStake > 0)
+            return {
+              discoveredAt: candidate.discoveredAt,
+              nominatedAt: candidate.nominatedAt,
+              offlineSince: candidate.offlineSince,
+              offlineAccumulated: candidate.offlineAccumulated,
+              rank: candidate.rank,
+              faults: candidate.faults,
+              invalidityReasons: candidate.invalidityReasons,
+              unclaimedEras: candidate.unclaimedEras,
+              inclusion: candidate.inclusion,
+              name: candidate.name,
+              stash: candidate.stash,
+              kusamaStash: candidate.kusamaStash,
+              commission: candidate.commission,
+              identity: candidate.identity,
+              active: candidate.active,
+              valid: candidate.valid,
+              validity: candidate.invalidity,
+              score: score,
+              total: score && score.total ? score.total : 0,
+              location: candidate.location,
+              councilStake: candidate.councilStake,
+              councilVotes: candidate.councilVotes,
+            };
+        })
+      );
+      allCandidates = allCandidates.sort((a, b) => {
+        return b.total - a.total;
+      });
+      ctx.body = allCandidates;
     });
 
     this.app.use(router.routes());

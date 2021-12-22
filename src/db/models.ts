@@ -155,7 +155,7 @@ export const CandidateSchema = new Schema({
   // The node location according to telemetry
   location: String,
   // The amount of stake going towards backing council members
-  councilStake: Number,
+  councilStake: { type: String, default: 0 },
   // Who the candidate is backing as a council member (an array of council addresses)
   councilVotes: [String],
 });

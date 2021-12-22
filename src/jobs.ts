@@ -359,10 +359,8 @@ export const councilJob = async (
   // Get all the votes of everyone in the network that backs a council member
   const councilVoting = await chaindata.getCouncilVoting();
   for (const vote of councilVoting) {
-    logger.info(`{Council::councilVoting} vote.who.toString()`);
     const isCandidate = candidateAddresses.includes(vote.who.toString());
     if (isCandidate) {
-      logger.info(`{Council::voting} ${vote.who} is voting`);
       db.setCouncilBacking(vote.who.toString(), vote.stake, vote.votes);
     }
   }
@@ -397,9 +395,6 @@ export const councilJob = async (
   if (totalMembers) {
     for (const member of electionsInfo.members) {
       const { address, totalBacking } = member;
-      logger.info(
-        `{Council::member}:: member ${address} backing: ${totalBacking}`
-      );
       await db.setCouncillor(address.toString(), "Member", totalBacking);
     }
   }
@@ -408,9 +403,6 @@ export const councilJob = async (
   if (totalRunnersUp) {
     for (const member of electionsInfo.runnersUp) {
       const { address, totalBacking } = member;
-      logger.info(
-        `{Council::runnerUp}:: member ${address} backing: ${totalBacking}`
-      );
       await db.setCouncillor(address.toString(), "Runner Up", totalBacking);
     }
   }
@@ -419,9 +411,6 @@ export const councilJob = async (
   if (totalCandidates) {
     for (const member of electionsInfo.candidates) {
       const { address, totalBacking } = member;
-      logger.info(
-        `{Council::candidate}:: member ${address} backing: ${totalBacking}`
-      );
       await db.setCouncillor(address.toString(), "Candidate", totalBacking);
     }
   }

@@ -371,7 +371,9 @@ export default class Db {
 
     // If the candidate previously had a location set, use that location
     const candidateLocation =
-      data.location != "No Location" ? data.location : location;
+      location == "No Location" && data.location != "No Location"
+        ? data.location
+        : location;
 
     // Get the list of all other validtity reasons besides online
     const invalidityReasons = data.invalidity.filter((invalidityReason) => {
@@ -412,7 +414,7 @@ export default class Db {
         { name },
         {
           telemetryId,
-          location: candidateLocation,
+          candidateLocation,
           onlineSince: now,
           version,
           invalidity: [

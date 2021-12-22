@@ -310,6 +310,13 @@ export class OTV implements Constraints {
       `{Constraints::location} locationStats: ${JSON.stringify(locationStats)}`
     );
 
+    // Council Stake
+    const councilStakeValues = validCandidates.map((candidate) => {
+      return candidate.councilStake ? candidate.councilStake : 0;
+    });
+    const councilStakeStats =
+      councilStakeValues.length > 0 ? getStats(councilStakeValues) : [];
+
     // Create DB entry for Validator Score Metadata
     await db.setValidatorScoreMetadata(
       bondedStats,
@@ -332,6 +339,8 @@ export class OTV implements Constraints {
       this.UNCLAIMED_WEIGHT,
       locationStats,
       this.LOCATION_WEIGHT,
+      councilStakeStats,
+      this.COUNCIL_WEIGHT,
       Date.now()
     );
 
@@ -379,8 +388,15 @@ export class OTV implements Constraints {
       const candidateLocation = filteredLocation[0]?.numberOfNodes;
       const scaledLocation = scaled(candidateLocation, locationValues);
       const locationScore = (1 - scaledLocation) * this.LOCATION_WEIGHT || 0;
+
+      const scaledCouncilStake = scaled(
+        candidate.councilStake,
+        councilStakeValues
+      );
+      const councilStakeScore = scaledCouncilStake * this.COUNCIL_WEIGHT;
+
       logger.info(
-        `{Constraints::locationScore"} ${candidate.location} scaled: ${scaledLocation} score :${locationScore} weight: ${this.LOCATION_WEIGHT}`
+        `{Constraints::councilScore"} ${candidate.councilStake} scaled: ${scaledCouncilStake} score :${councilStakeScore} weight: ${this.COUNCIL_WEIGHT}`
       );
 
       const aggregate =
@@ -393,6 +409,7 @@ export class OTV implements Constraints {
         unclaimedScore +
         bondedScore +
         locationScore +
+        //councilStakeScore +
         offlineScore;
 
       const randomness = 1 + Math.random() * 0.05;
@@ -410,6 +427,7 @@ export class OTV implements Constraints {
         faults: faultsScore,
         offline: offlineScore,
         location: locationScore,
+        councilStake: councilStakeScore,
         randomness: randomness,
         updated: Date.now(),
       };
@@ -429,6 +447,7 @@ export class OTV implements Constraints {
         score.faults,
         score.offline,
         score.location,
+        score.councilStake,
         score.randomness
       );
 
@@ -482,6 +501,7 @@ export class OTV implements Constraints {
   FAULTS_WEIGHT = 5;
   OFFLINE_WEIGHT = 2;
   LOCATION_WEIGHT = 20;
+  COUNCIL_WEIGHT = 30;
 
   /// At the end of a nomination round this is the logic that separates the
   /// candidates that did good from the ones that did badly.

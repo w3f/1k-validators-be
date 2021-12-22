@@ -85,4 +85,6 @@ export type CandidateData = {
   spanInclusion: number;
   identity: Identity;
   location: string;
+  councilStake: number;
+  councilVotes: any[];
 };

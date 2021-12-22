@@ -730,14 +730,12 @@ class ChainData {
     }
 
     const voteQuery = await api.derive.council.votes();
+    const denom = await this.getDenom();
 
-    const votes = voteQuery.map(async (voters) => {
+    const votes = voteQuery.map((voters) => {
       const who = voters[0];
       const { stake, votes } = voters[1];
-
-      const denom = await this.getDenom();
       const formattedStake = parseFloat(stake.toString()) / denom;
-
       return {
         who: who,
         stake: formattedStake,

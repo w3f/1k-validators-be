@@ -2403,4 +2403,17 @@ export default class Db {
       }
     );
   }
+
+  // returns a single council member by their address
+  async getCouncillor(address: string): Promise<any> {
+    const data = await this.councillorModel.findOne({
+      address,
+    });
+    return data;
+  }
+
+  // return all council members
+  async getAllCouncillors(): Promise<any> {
+    return await this.councillorModel.find({});
+  }
 }

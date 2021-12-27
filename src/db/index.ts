@@ -420,7 +420,7 @@ export default class Db {
         { name },
         {
           telemetryId,
-          candidateLocation,
+          location: candidateLocation,
           onlineSince: now,
           version,
           invalidity: [

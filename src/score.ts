@@ -78,7 +78,7 @@ export const getStats = (arr) => {
     q50: arrQ50,
     q75: arrQ75,
     q90: arrQ90,
-    mean: arrMean,
-    standardDeviation: arrStd,
+    mean: arrMean ? arrMean : 0,
+    standardDeviation: arrStd ? arrStd : 0,
   };
 };

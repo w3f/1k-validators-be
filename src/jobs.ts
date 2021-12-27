@@ -354,8 +354,6 @@ export const councilJob = async (
     return candidate.stash;
   });
 
-  logger.info(`candidates: ${candidateAddresses}`);
-
   // Get all the votes of everyone in the network that backs a council member
   const councilVoting = await chaindata.getCouncilVoting();
   for (const vote of councilVoting) {

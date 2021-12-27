@@ -305,10 +305,6 @@ export class OTV implements Constraints {
       return location.numberOfNodes;
     });
     const locationStats = getStats(locationValues);
-    logger.info(`{Constraints::location} locationValues: ${locationValues}`);
-    logger.info(
-      `{Constraints::location} locationStats: ${JSON.stringify(locationStats)}`
-    );
 
     // Council Stake
     const councilStakeValues = validCandidates.map((candidate) => {
@@ -316,6 +312,12 @@ export class OTV implements Constraints {
     });
     const councilStakeStats =
       councilStakeValues.length > 0 ? getStats(councilStakeValues) : [];
+    logger.info(
+      `{Constraints::councilStake} values ${JSON.stringify(councilStakeValues)}`
+    );
+    logger.info(
+      `{Constraints::councilStake} stats ${JSON.stringify(councilStakeStats)}`
+    );
 
     // Create DB entry for Validator Score Metadata
     await db.setValidatorScoreMetadata(
@@ -394,10 +396,6 @@ export class OTV implements Constraints {
         councilStakeValues
       );
       const councilStakeScore = scaledCouncilStake * this.COUNCIL_WEIGHT;
-
-      logger.info(
-        `{Constraints::councilScore"} ${candidate.councilStake} scaled: ${scaledCouncilStake} score :${councilStakeScore} weight: ${this.COUNCIL_WEIGHT}`
-      );
 
       const aggregate =
         inclusionScore +

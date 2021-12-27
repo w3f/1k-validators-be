@@ -378,11 +378,8 @@ export default class Db {
       return candidate.save();
     }
 
-    // If the candidate previously had a location set, use that location
     const candidateLocation =
-      location == "No Location" && data.location != "No Location"
-        ? data.location
-        : location;
+      location != "No Location" ? location : data.location;
 
     // Get the list of all other validtity reasons besides online
     const invalidityReasons = data.invalidity.filter((invalidityReason) => {
@@ -1671,6 +1668,8 @@ export default class Db {
         unclaimedWeight,
         locationStats,
         locationWeight,
+        councilStakeStats,
+        councilStakeWeight,
         updated,
       });
 
@@ -1702,6 +1701,8 @@ export default class Db {
           unclaimedWeight,
           locationStats,
           locationWeight,
+          councilStakeStats,
+          councilStakeWeight,
           updated,
         }
       )

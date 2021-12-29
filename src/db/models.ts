@@ -506,3 +506,25 @@ export const ElectionStatsSchema = new Schema({
   // the epoch the record was queried in
   session: Number,
 });
+
+// Era payout events that happen at the end of every era
+export const EraPaidEventSchema = new Schema({
+  // The era index
+  era: Number,
+  // the block number the era payout event was included in
+  blockNumber: Number,
+  // The timestamp of the block the era payout was included in
+  blockTimestamp: Number,
+  // The event index in the block it was included in
+  eventIndex: String,
+  // The pallet of the event
+  moduleId: String,
+  // The event type of the pallet
+  eventId: String,
+  // The total amount split between all validators that era
+  totalValidatorReward: Number,
+  // The total amount that goes to the treasury
+  totalRemainderReward: Number,
+  // when the record was updated
+  updated: Number,
+});

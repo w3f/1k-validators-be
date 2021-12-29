@@ -39,6 +39,7 @@ import {
   startValidatityJob,
   startValidatorPrefJob,
   startCouncilJob,
+  startSubscanJob,
 } from "./cron";
 import Claimer from "./claimer";
 import {
@@ -52,6 +53,7 @@ import {
   validityJob,
 } from "./jobs";
 import Monitor from "./monitor";
+import { Subscan } from "./subscan";
 
 type NominatorGroup = NominatorConfig[];
 
@@ -121,6 +123,7 @@ export default class ScoreKeeper {
   private nominatorGroups: Array<SpawnedNominatorGroup> = [];
   private claimer: Claimer;
   private monitor: Monitor;
+  private subscan: Subscan;
 
   constructor(handler: ApiHandler, db: Db, config: Config, bot: any = false) {
     this.handler = handler;
@@ -233,6 +236,14 @@ export default class ScoreKeeper {
       this.db
     );
     this.monitor = new Monitor(db, SIXTEEN_HOURS);
+
+    this.subscan = new Subscan(
+      this.config.subscan.baseV1Url,
+      this.config.subscan.baseV2Url,
+      this.config.global.networkPrefix == 2
+        ? Math.pow(10, 12)
+        : Math.pow(10, 10)
+    );
 
     this.populateCandidates();
     this.populateRewardDestinationCache();
@@ -541,6 +552,7 @@ export default class ScoreKeeper {
       await startEraStatsJob(this.db, this.config, this.chaindata);
       await startLocationStatsJob(this.config, this.db, this.chaindata);
       await startCouncilJob(this.config, this.db, this.chaindata);
+      await startSubscanJob(this.config, this.db, this.subscan);
     } catch (e) {
       logger.info(
         `{Scorekeeper::RunCron} There was an error running some cron jobs...`

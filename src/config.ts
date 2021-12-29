@@ -48,6 +48,7 @@ export type Config = {
     unclaimedEras: string;
     validatorPref: string;
     council: string;
+    subscan: string;
   };
   db: {
     mongo: {
@@ -85,6 +86,10 @@ export type Config = {
   telemetry: {
     chains: string[];
     host: string;
+  };
+  subscan: {
+    baseV1Url: string;
+    baseV2Url: string;
   };
 };
 

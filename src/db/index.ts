@@ -18,6 +18,7 @@ import {
   ReleaseSchema,
   ElectionStatsSchema,
   CouncillorSchema,
+  EraPaidEventSchema,
 } from "./models";
 import logger from "../logger";
 import { formatAddress } from "../util";
@@ -44,6 +45,7 @@ export default class Db {
   private releaseModel;
   private electionStatsModel;
   private councillorModel;
+  private eraPaidEventModel;
 
   constructor() {
     this.accountingModel = mongoose.model("Accounting", AccountingSchema);
@@ -84,6 +86,7 @@ export default class Db {
       ElectionStatsSchema
     );
     this.councillorModel = mongoose.model("Councillor", CouncillorSchema);
+    this.eraPaidEventModel = mongoose.model("EraPaid", EraPaidEventSchema);
   }
 
   static async create(uri = "mongodb://localhost:27017/otv"): Promise<Db> {
@@ -2421,5 +2424,70 @@ export default class Db {
   // return all council members
   async getAllCouncillors(): Promise<any> {
     return await this.councillorModel.find({});
+  }
+
+  // Writes an era paid event record in the db
+  async setEraPaidEvent(
+    era: number,
+    blockNumber: number,
+    blockTimestamp: number,
+    eventIndex: string,
+    moduleId: string,
+    eventId: string,
+    totalValidatorReward: number,
+    totalRemainderReward: number
+  ): Promise<any> {
+    // Try and find an existing record
+    const data = await this.eraPaidEventModel.findOne({
+      era,
+    });
+
+    // If an era paid event for that era doesnt yet exist
+    if (!data) {
+      const eraPaidEvent = new this.eraPaidEventModel({
+        era,
+        blockNumber,
+        blockTimestamp,
+        eventIndex,
+        moduleId,
+        eventId,
+        totalValidatorReward,
+        totalRemainderReward,
+        updated: Date.now(),
+      });
+      return eraPaidEvent.save();
+    }
+
+    // It exists, but has a different value - update it
+    this.eraPaidEventModel
+      .findOneAndUpdate(
+        {
+          era,
+        },
+        {
+          blockNumber,
+          blockTimestamp,
+          eventIndex,
+          moduleId,
+          eventId,
+          totalValidatorReward,
+          totalRemainderReward,
+          updated: Date.now(),
+        }
+      )
+      .exec();
+  }
+
+  // returns a era paid event for a given era
+  async getEraPaidEvent(era: number): Promise<any> {
+    const data = await this.eraPaidEventModel.findOne({
+      era,
+    });
+    return data;
+  }
+
+  // Retrieves the last era paid event record (by era)
+  async getLatestEraPaidEvent(): Promise<any> {
+    return (await this.eraPaidEventModel.find({}).sort("-era").limit(1))[0];
   }
 }

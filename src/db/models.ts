@@ -528,3 +528,16 @@ export const EraPaidEventSchema = new Schema({
   // when the record was updated
   updated: Number,
 });
+
+export const EraReward = new Schema({
+  era: Number,
+  stash: String,
+  rewardDestination: String,
+  validatorStash: String,
+  amount: Number,
+  blockTimestamp: Number,
+  blockNumber: Number,
+  slashKTon: Number,
+  claimTimestampDelta: Number,
+  claimBlockDelta: Number,
+});

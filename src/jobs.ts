@@ -498,8 +498,12 @@ export const subscanJob = async (
       }
 
       const eraPaid = await db.getEraPaidEvent(era);
-      const eraPaidBlockNumber = eraPaid.blockNumber;
-      const eraPaidBlockTimestamp = eraPaid.blockTimesamp;
+      const eraPaidBlockNumber = eraPaid?.blockNumber
+        ? eraPaid?.blockNumber
+        : 0;
+      const eraPaidBlockTimestamp = eraPaid?.blockTimesamp
+        ? eraPaid?.blockTimesamp
+        : 0;
 
       const claimTimestampDelta =
         blockTimestamp != 0 ? eraPaidBlockTimestamp - blockTimestamp : 0;
@@ -519,8 +523,8 @@ export const subscanJob = async (
         blockTimestamp,
         blockNumber,
         slashKTon,
-        claimTimestampDelta,
-        claimBlockDelta
+        claimTimestampDelta ? claimTimestampDelta : 0,
+        claimBlockDelta ? claimBlockDelta : 0
       );
     }
 

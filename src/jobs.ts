@@ -489,13 +489,13 @@ export const subscanJob = async (
       }
 
       // set reward as claimed
-      if (blockNumber != 0 && candidate.unclaimedEras.includes(era)) {
-        const index = unclaimedRewards.indexOf(era);
-        if (index > -1) {
-          unclaimedRewards.splice(index, 1);
-          await db.setUnclaimedEras(candidate.stash, unclaimedRewards);
-        }
-      }
+      // if (blockNumber != 0 && candidate.unclaimedEras.includes(era)) {
+      //   const index = unclaimedRewards.indexOf(era);
+      //   if (index > -1) {
+      //     unclaimedRewards.splice(index, 1);
+      //     await db.setUnclaimedEras(candidate.stash, unclaimedRewards);
+      //   }
+      // }
 
       const eraPaid = await db.getEraPaidEvent(era);
       const eraPaidBlockNumber = eraPaid?.blockNumber

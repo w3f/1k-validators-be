@@ -52,6 +52,7 @@ import {
   validityJob,
 } from "./jobs";
 import Monitor from "./monitor";
+import { Subscan } from "./subscan";
 
 type NominatorGroup = NominatorConfig[];
 

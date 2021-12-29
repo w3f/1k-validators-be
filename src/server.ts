@@ -36,6 +36,8 @@ const API = {
   Voters: "/voters",
   ElectionStats: "/electionstats",
   EraPaid: "/erapaid",
+  EraRewards: "/erareward/:stash/:limit",
+  EraReward: "/erareward/:stash/:era",
 };
 
 export default class Server {
@@ -279,6 +281,16 @@ export default class Server {
     router.get(API.EraPaid, async (ctx) => {
       const lastEraPaid = await this.db.getLatestEraPaidEvent();
       ctx.body = lastEraPaid;
+    });
+    router.get(API.EraRewards, async (ctx) => {
+      const { stash, limit } = ctx.params;
+      const lastRewards = await this.db.getLastEraRewards(stash, limit);
+      ctx.body = lastRewards;
+    });
+    router.get(API.EraReward, async (ctx) => {
+      const { stash, era } = ctx.params;
+      const reward = await this.db.getEraReward(stash, era);
+      ctx.body = reward;
     });
 
     this.app.use(router.routes());

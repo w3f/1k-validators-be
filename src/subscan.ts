@@ -7,6 +7,7 @@ export class Subscan {
   public denom: number;
 
   public eventsEndpoint = "/events";
+  public rewardsEndpoint = "/account/reward_slash";
 
   public defaultHeader = {
     "Content-Type": "application/json",
@@ -104,6 +105,67 @@ export class Subscan {
       }
     }
 
+    return totalList;
+  };
+
+  // Gets all rewards for a given validator stash
+  getRewards = async (stash) => {
+    const url = this.baseV2Url + this.rewardsEndpoint;
+
+    // The total list of all rewards
+    const totalList = [];
+    // start at page 0
+    let page = 0;
+    // flag for deciding when the loop should stop
+    let shouldContinue = true;
+
+    while (shouldContinue) {
+      const data = { row: 100, page: page, address: stash, is_stash: true };
+      const res = await axios.post(url, data, { headers: this.defaultHeader });
+      const status = res.status;
+      if (status == 200) {
+        const { count, list } = res.data.data;
+
+        if (!list) {
+          shouldContinue = false;
+        } else {
+          const rewardList = list.map((reward) => {
+            const {
+              era,
+              stash,
+              account,
+              validator_stash,
+              amount,
+              block_timestamp,
+              event_index,
+              module_id,
+              event_id,
+              slash_kton,
+              extrinsic_index,
+            } = reward;
+            return {
+              era,
+              stash,
+              rewardDestination: account,
+              validatorStash: validator_stash,
+              amount: parseFloat(amount) / this.denom,
+              blockTimestamp: block_timestamp,
+              blockNumber: event_index ? event_index.split("-")[0] : 0,
+              //   eventIndex: event_index,
+              //   moduleId: module_id,
+              //   eventId: event_id,
+              slashKTon: slash_kton,
+              //   extrinsicIndex: extrinsic_index,
+            };
+          });
+          page++;
+          totalList.push(...rewardList);
+          await sleep(2000);
+        }
+      } else if (status == 400) {
+        // TODO:
+      }
+    }
     return totalList;
   };
 }

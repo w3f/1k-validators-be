@@ -4,6 +4,7 @@ import logger from "./logger";
 import { checkUnclaimed, OTV } from "./constraints";
 import Monitor from "./monitor";
 import { Subscan } from "./subscan";
+import { arrayBuffer } from "stream/consumers";
 
 // Runs Monitor Job
 export const monitorJob = async (db: Db, monitor: Monitor) => {
@@ -431,8 +432,8 @@ export const subscanJob = async (
 ) => {
   const start = Date.now();
 
+  // Era Paid Events Query
   const eraPaidEvents = await subscan.getEraPaid();
-
   for (const event of eraPaidEvents) {
     if (event) {
       const {
@@ -458,6 +459,83 @@ export const subscanJob = async (
     } else {
       logger.info(`{cron::subscanJob::eraPaidEvent} event ${event} is empty`);
     }
+  }
+
+  // Rewards Query
+  for (const candidate of candidates) {
+    const rewards = await subscan.getRewards(candidate.stash);
+
+    let totalRewards = 0;
+    let totalClaimTimestampDelta = 0;
+    let totalClaimBlockDelta = 0;
+    for (const reward of rewards) {
+      const {
+        era,
+        stash,
+        rewardDestination,
+        validatorStash,
+        amount,
+        blockTimestamp,
+        blockNumber,
+        slashKTon,
+      } = reward;
+
+      const unclaimedRewards = candidate.unclaimedEras;
+
+      // If the block number is zero, add to unclaimed rewards
+      if (blockNumber == 0) {
+        unclaimedRewards.push(era);
+        await db.setUnclaimedEras(candidate.stash, unclaimedRewards);
+      }
+
+      // set reward as claimed
+      if (blockNumber != 0 && candidate.unclaimedEras.includes(era)) {
+        const index = unclaimedRewards.indexOf(era);
+        if (index > -1) {
+          unclaimedRewards.splice(index, 1);
+          await db.setUnclaimedEras(candidate.stash, unclaimedRewards);
+        }
+      }
+
+      const eraPaid = await db.getEraPaidEvent(era);
+      const eraPaidBlockNumber = eraPaid.blockNumber;
+      const eraPaidBlockTimestamp = eraPaid.blockTimesamp;
+
+      const claimTimestampDelta =
+        blockTimestamp != 0 ? eraPaidBlockTimestamp - blockTimestamp : 0;
+      const claimBlockDelta =
+        blockNumber != 0 ? eraPaidBlockNumber - blockNumber : 0;
+
+      totalRewards = totalRewards + amount;
+      totalClaimTimestampDelta = totalClaimTimestampDelta + claimTimestampDelta;
+      totalClaimBlockDelta = totalClaimBlockDelta + claimBlockDelta;
+
+      await db.setEraReward(
+        era,
+        stash,
+        rewardDestination,
+        validatorStash,
+        amount,
+        blockTimestamp,
+        blockNumber,
+        slashKTon,
+        claimTimestampDelta,
+        claimBlockDelta
+      );
+    }
+
+    const avgClaimTimestampDelta = rewards
+      ? totalClaimTimestampDelta / rewards.length
+      : 0;
+    const avgClaimBlockDelta = rewards
+      ? totalClaimBlockDelta / rewards.length
+      : 0;
+    await db.setClaimDelta(
+      candidate.stash,
+      avgClaimBlockDelta,
+      avgClaimTimestampDelta
+    );
+    await db.setTotalRewards(candidate.stash, totalRewards);
   }
 
   const end = Date.now();

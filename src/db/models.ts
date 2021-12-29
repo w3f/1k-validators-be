@@ -158,6 +158,9 @@ export const CandidateSchema = new Schema({
   councilStake: { type: String, default: 0 },
   // Who the candidate is backing as a council member (an array of council addresses)
   councilVotes: [String],
+  totalRewards: Number,
+  avgClaimTimestampDelta: Number,
+  avgClaimBlockDelta: Number,
 });
 
 export const EraSchema = new Schema({
@@ -526,5 +529,19 @@ export const EraPaidEventSchema = new Schema({
   // The total amount that goes to the treasury
   totalRemainderReward: Number,
   // when the record was updated
+  updated: Number,
+});
+
+export const EraRewardSchema = new Schema({
+  era: Number,
+  stash: String,
+  rewardDestination: String,
+  validatorStash: String,
+  amount: Number,
+  blockTimestamp: Number,
+  blockNumber: Number,
+  slashKTon: Number,
+  claimTimestampDelta: Number,
+  claimBlockDelta: Number,
   updated: Number,
 });

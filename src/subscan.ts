@@ -150,7 +150,7 @@ export class Subscan {
               validatorStash: validator_stash,
               amount: parseFloat(amount) / this.denom,
               blockTimestamp: block_timestamp,
-              blockNumber: event_index.split("-")[0],
+              blockNumber: event_index ? event_index.split("-")[0] : 0,
               //   eventIndex: event_index,
               //   moduleId: module_id,
               //   eventId: event_id,

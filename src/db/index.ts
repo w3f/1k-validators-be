@@ -19,6 +19,7 @@ import {
   ElectionStatsSchema,
   CouncillorSchema,
   EraPaidEventSchema,
+  EraRewardSchema,
 } from "./models";
 import logger from "../logger";
 import { formatAddress } from "../util";
@@ -46,6 +47,7 @@ export default class Db {
   private electionStatsModel;
   private councillorModel;
   private eraPaidEventModel;
+  private eraRewardModel;
 
   constructor() {
     this.accountingModel = mongoose.model("Accounting", AccountingSchema);
@@ -87,6 +89,7 @@ export default class Db {
     );
     this.councillorModel = mongoose.model("Councillor", CouncillorSchema);
     this.eraPaidEventModel = mongoose.model("EraPaid", EraPaidEventSchema);
+    this.eraRewardModel = mongoose.model("EraReward", EraRewardSchema);
   }
 
   static async create(uri = "mongodb://localhost:27017/otv"): Promise<Db> {
@@ -805,6 +808,45 @@ export default class Db {
         },
         {
           current: [],
+        }
+      )
+      .exec();
+
+    return true;
+  }
+
+  async setClaimDelta(
+    stash: string,
+    blockDelta: number,
+    timestampDelta: number
+  ): Promise<boolean> {
+    logger.info(
+      `(Db::setClaimDelta) Setting claim delta timestamp: ${timestampDelta}, blocks: ${blockDelta}`
+    );
+    await this.candidateModel
+      .findOneAndUpdate(
+        {
+          stash,
+        },
+        {
+          avgClaimTimestampDelta: timestampDelta,
+          avgClaimBlockDelta: blockDelta,
+        }
+      )
+      .exec();
+
+    return true;
+  }
+
+  async setTotalRewards(stash: string, totalRewards: number): Promise<boolean> {
+    logger.info(`(Db::setTotalRewards) Setting ${totalRewards}`);
+    await this.candidateModel
+      .findOneAndUpdate(
+        {
+          stash,
+        },
+        {
+          totalRewards: totalRewards,
         }
       )
       .exec();
@@ -2489,5 +2531,64 @@ export default class Db {
   // Retrieves the last era paid event record (by era)
   async getLatestEraPaidEvent(): Promise<any> {
     return (await this.eraPaidEventModel.find({}).sort("-era").limit(1))[0];
+  }
+
+  async setEraReward(
+    era: number,
+    stash: string,
+    rewardDestination: string,
+    validatorStash: string,
+    amount: number,
+    blockTimestamp: number,
+    blockNumber: number,
+    slashKTon: number,
+    claimTimestampDelta: number,
+    claimBlockDelta: number
+  ): Promise<any> {
+    const data = await this.eraRewardModel.findOne({
+      era,
+    });
+
+    // If the era rewards already exist and are the same as before, return
+    if (!!data && data.blockTimesamp == blockTimestamp) return;
+
+    // If an era reward record for that era doesnt yet exist create it
+    if (!data) {
+      const eraReward = new this.eraRewardModel({
+        era,
+        stash,
+        rewardDestination,
+        validatorStash,
+        amount,
+        blockTimestamp,
+        blockNumber,
+        slashKTon,
+        claimTimestampDelta,
+        claimBlockDelta,
+        updated: Date.now(),
+      });
+      return eraReward.save();
+    }
+
+    // It exists, but has a different value - update it
+    this.eraRewardModel
+      .findOneAndUpdate(
+        {
+          era,
+        },
+        {
+          stash,
+          rewardDestination,
+          validatorStash,
+          amount,
+          blockTimestamp,
+          blockNumber,
+          slashKTon,
+          claimTimestampDelta,
+          claimBlockDelta,
+          updated: Date.now(),
+        }
+      )
+      .exec();
   }
 }

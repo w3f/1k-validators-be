@@ -176,7 +176,7 @@ export default class Nominator {
         // Handle tx lifecycle
         switch (true) {
           case status.isBroadcast:
-            logger.info(`{Nominator::nomiante} tx has been broadcasted`);
+            logger.info(`{Nominator::nominate} tx has been broadcasted`);
             break;
           case status.isInBlock:
             logger.info(`{Nominator::nominate} tx is in block`);
@@ -210,7 +210,9 @@ export default class Nominator {
                     return false;
                   } else {
                     // Other, CannotLookup, BadOrigin, no extra info
-                    console.log(error.toString());
+                    logger.info(
+                      `{Nominator::nominate} has an error: ${error.toString()}`
+                    );
                     return false;
                   }
                 }
@@ -257,6 +259,9 @@ export default class Nominator {
             unsub();
             break;
           default:
+            logger.info(
+              `{Nominator::nominate} tx has another status: ${status}`
+            );
             break;
         }
       });

@@ -515,16 +515,16 @@ export default class ScoreKeeper {
       await startSessionKeyJob(this.config, this.db, this.chaindata);
       await startUnclaimedEraJob(this.config, this.db, this.chaindata);
       await startValidatorPrefJob(this.config, this.db, this.chaindata);
-      if (this.claimer) {
-        await startRewardClaimJob(
-          this.config,
-          this.handler,
-          this.db,
-          this.claimer,
-          this.chaindata,
-          this.bot
-        );
-      }
+      // if (this.claimer) {
+      //   await startRewardClaimJob(
+      //     this.config,
+      //     this.handler,
+      //     this.db,
+      //     this.claimer,
+      //     this.chaindata,
+      //     this.bot
+      //   );
+      // }
       await startExecutionJob(
         this.handler,
         this.nominatorGroups,

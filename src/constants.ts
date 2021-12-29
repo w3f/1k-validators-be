@@ -131,3 +131,6 @@ export const SESSION_KEY_CRON = "0 0-59/45 * * * *";
 
 // Council Cron Job. This runs ever 5 minutes by default
 export const COUNCIL_CRON = "0 0-59/5 * * * *";
+
+// Subscan Cron Job. This runs ever 10 minutes by default
+export const SUBSCAN_CRON = "0 0-59/10 * * * *";

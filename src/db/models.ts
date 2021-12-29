@@ -524,7 +524,7 @@ export const EraPaidEventSchema = new Schema({
   // The total amount split between all validators that era
   totalValidatorReward: Number,
   // The total amount that goes to the treasury
-  remainderReward: Number,
+  totalRemainderReward: Number,
   // when the record was updated
   updated: Number,
 });

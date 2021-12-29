@@ -3,6 +3,7 @@ import ChainData from "./chaindata";
 import logger from "./logger";
 import { checkUnclaimed, OTV } from "./constraints";
 import Monitor from "./monitor";
+import { Subscan } from "./subscan";
 
 // Runs Monitor Job
 export const monitorJob = async (db: Db, monitor: Monitor) => {
@@ -417,6 +418,52 @@ export const councilJob = async (
 
   logger.info(
     `{cron::councilJob::ExecutionTime} started at ${new Date(
+      start
+    ).toString()} Done. Took ${(end - start) / 1000} seconds`
+  );
+};
+
+// Job for querying subscan data
+export const subscanJob = async (
+  db: Db,
+  subscan: Subscan,
+  candidates: any[]
+) => {
+  const start = Date.now();
+
+  const eraPaidEvents = await subscan.getEraPaid();
+
+  for (const event of eraPaidEvents) {
+    if (event) {
+      const {
+        era,
+        blockNumber,
+        blockTimestamp,
+        eventIndex,
+        moduleId,
+        eventId,
+        totalValidatorsReward,
+        totalRemainderReward,
+      } = event;
+      await db.setEraPaidEvent(
+        era,
+        blockNumber,
+        blockTimestamp,
+        eventIndex,
+        moduleId,
+        eventId,
+        totalValidatorsReward,
+        totalRemainderReward
+      );
+    } else {
+      logger.info(`{cron::subscanJob::eraPaidEvent} event ${event} is empty`);
+    }
+  }
+
+  const end = Date.now();
+
+  logger.info(
+    `{cron::subscanJob::ExecutionTime} started at ${new Date(
       start
     ).toString()} Done. Took ${(end - start) / 1000} seconds`
   );

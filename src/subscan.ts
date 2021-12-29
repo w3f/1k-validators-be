@@ -91,7 +91,8 @@ export class Subscan {
               eventId: event_id,
               totalValidatorReward:
                 parseFloat(validatorReward.value) / this.denom,
-              remainderReward: parseFloat(remainderReward.value) / this.denom,
+              totalRemainderReward:
+                parseFloat(remainderReward.value) / this.denom,
             };
           });
           page++;

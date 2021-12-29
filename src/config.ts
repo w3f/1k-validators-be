@@ -48,6 +48,7 @@ export type Config = {
     unclaimedEras: string;
     validatorPref: string;
     council: string;
+    subscan: string;
   };
   db: {
     mongo: {

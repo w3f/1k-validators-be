@@ -24,6 +24,7 @@ import {
   POLKADOT_FOUR_DAYS_ERAS,
   LOCATION_STATS_CRON,
   COUNCIL_CRON,
+  SUBSCAN_CRON,
 } from "./constants";
 import logger from "./logger";
 import Monitor from "./monitor";
@@ -48,7 +49,9 @@ import {
   validityJob,
   locationStatsJob,
   councilJob,
+  subscanJob,
 } from "./jobs";
+import { Subscan } from "./subscan";
 
 // Monitors the latest GitHub releases and ensures nodes have upgraded
 // within a timely period.
@@ -769,4 +772,36 @@ export const startCouncilJob = async (
     running = false;
   });
   councilCron.start();
+};
+
+// Chron job for querying subscan data
+export const startSubscanJob = async (
+  config: Config,
+  db: Db,
+  subscan: Subscan
+) => {
+  const subscanFrequency = config.cron.subscan
+    ? config.cron.subscan
+    : SUBSCAN_CRON;
+
+  logger.info(
+    `(cron::subscanJob::init) Running council cron with frequency: ${subscanFrequency}`
+  );
+
+  let running = false;
+
+  const subscanCron = new CronJob(subscanFrequency, async () => {
+    if (running) {
+      return;
+    }
+    running = true;
+    logger.info(`{cron::subscanJob::start} running subscan job....`);
+
+    const candidates = await db.allCandidates();
+
+    // Run the subscan  job
+    await subscanJob(db, subscan, candidates);
+    running = false;
+  });
+  subscanCron.start();
 };

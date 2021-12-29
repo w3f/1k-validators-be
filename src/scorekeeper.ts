@@ -39,6 +39,7 @@ import {
   startValidatityJob,
   startValidatorPrefJob,
   startCouncilJob,
+  startSubscanJob,
 } from "./cron";
 import Claimer from "./claimer";
 import {
@@ -238,7 +239,7 @@ export default class ScoreKeeper {
 
     this.subscan = new Subscan(
       this.config.subscan.baseV1Url,
-      this.config.subscan.baseV1Url,
+      this.config.subscan.baseV2Url,
       this.config.global.networkPrefix == 2
         ? Math.pow(10, 12)
         : Math.pow(10, 10)
@@ -551,6 +552,7 @@ export default class ScoreKeeper {
       await startEraStatsJob(this.db, this.config, this.chaindata);
       await startLocationStatsJob(this.config, this.db, this.chaindata);
       await startCouncilJob(this.config, this.db, this.chaindata);
+      await startSubscanJob(this.config, this.db, this.subscan);
     } catch (e) {
       logger.info(
         `{Scorekeeper::RunCron} There was an error running some cron jobs...`

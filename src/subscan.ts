@@ -19,8 +19,8 @@ export class Subscan {
   }
 
   // Returns all the era reward events for the chain.
-  // This includes the era, how much rewards total went to validators, 
-  // and what the remainder is (that goes to the treasury). 
+  // This includes the era, how much rewards total went to validators,
+  // and what the remainder is (that goes to the treasury).
   // At some point, the name changed from EraPayout to EraPaid, hence
   // this queries both.
   getEraPaid = async () => {
@@ -89,7 +89,8 @@ export class Subscan {
               eventIndex: event_index,
               moduleId: module_id,
               eventId: event_id,
-              totalValidatorReward: parseFloat(validatorReward.value) / this.denom,
+              totalValidatorReward:
+                parseFloat(validatorReward.value) / this.denom,
               remainderReward: parseFloat(remainderReward.value) / this.denom,
             };
           });

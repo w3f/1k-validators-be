@@ -525,5 +525,6 @@ export const EraPaidEventSchema = new Schema({
   totalValidatorReward: Number,
   // The total amount that goes to the treasury
   remainderReward: Number,
-
+  // when the record was updated
+  updated: Number,
 });

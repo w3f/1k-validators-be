@@ -2546,7 +2546,8 @@ export default class Db {
     claimBlockDelta: number
   ): Promise<any> {
     const data = await this.eraRewardModel.findOne({
-      era,
+      era: era,
+      stash: stash,
     });
 
     // If the era rewards already exist and are the same as before, return
@@ -2574,10 +2575,10 @@ export default class Db {
     this.eraRewardModel
       .findOneAndUpdate(
         {
-          era,
+          stash: stash,
+          era: era,
         },
         {
-          stash,
           rewardDestination,
           validatorStash,
           amount,
@@ -2591,4 +2592,21 @@ export default class Db {
       )
       .exec();
   }
+
+  // Retrieves the last era paid event record (by era)
+  async getLastEraRewards(stash: string, limit: number): Promise<any> {
+    return await this.eraRewardModel
+      .find({ stash: stash })
+      .sort("-era")
+      .limit(limit);
+  }
+
+    // returns a era paid event for a given era
+    async getEraReward(stash: string, era: number): Promise<any> {
+      const data = await this.eraRewardModel.findOne({
+        stash: stash,
+        era: era,
+      });
+      return data;
+    }
 }

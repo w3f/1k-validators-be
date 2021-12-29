@@ -2601,12 +2601,12 @@ export default class Db {
       .limit(limit);
   }
 
-    // returns a era paid event for a given era
-    async getEraReward(stash: string, era: number): Promise<any> {
-      const data = await this.eraRewardModel.findOne({
-        stash: stash,
-        era: era,
-      });
-      return data;
-    }
+  // returns a era paid event for a given era
+  async getEraReward(stash: string, era: number): Promise<any> {
+    const data = await this.eraRewardModel.findOne({
+      stash: stash,
+      era: era,
+    });
+    return data;
+  }
 }

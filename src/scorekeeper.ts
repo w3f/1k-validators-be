@@ -121,6 +121,7 @@ export default class ScoreKeeper {
   private nominatorGroups: Array<SpawnedNominatorGroup> = [];
   private claimer: Claimer;
   private monitor: Monitor;
+  private subscan: Subscan;
 
   constructor(handler: ApiHandler, db: Db, config: Config, bot: any = false) {
     this.handler = handler;
@@ -233,6 +234,14 @@ export default class ScoreKeeper {
       this.db
     );
     this.monitor = new Monitor(db, SIXTEEN_HOURS);
+
+    this.subscan = new Subscan(
+      this.config.subscan.baseV1Url,
+      this.config.subscan.baseV1Url,
+      this.config.global.networkPrefix == 2
+        ? Math.pow(10, 12)
+        : Math.pow(10, 10)
+    );
 
     this.populateCandidates();
     this.populateRewardDestinationCache();

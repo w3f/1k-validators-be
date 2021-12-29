@@ -483,10 +483,10 @@ export const subscanJob = async (
       const unclaimedRewards = candidate.unclaimedEras;
 
       // If the block number is zero, add to unclaimed rewards
-      if (blockNumber == 0) {
-        unclaimedRewards.push(era);
-        await db.setUnclaimedEras(candidate.stash, unclaimedRewards);
-      }
+      // if (blockNumber == 0) {
+      //   unclaimedRewards.push(era);
+      //   await db.setUnclaimedEras(candidate.stash, unclaimedRewards);
+      // }
 
       // set reward as claimed
       // if (blockNumber != 0 && candidate.unclaimedEras.includes(era)) {

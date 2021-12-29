@@ -35,6 +35,7 @@ const API = {
   Councillor: "/councillor/:address",
   Voters: "/voters",
   ElectionStats: "/electionstats",
+  EraPaid: "/erapaid",
 };
 
 export default class Server {
@@ -274,6 +275,10 @@ export default class Server {
         return b.total - a.total;
       });
       ctx.body = allCandidates;
+    });
+    router.get(API.EraPaid, async (ctx) => {
+      const lastEraPaid = await this.db.getLatestEraPaidEvent();
+      ctx.body = lastEraPaid;
     });
 
     this.app.use(router.routes());

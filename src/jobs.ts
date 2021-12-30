@@ -528,10 +528,10 @@ export const subscanJob = async (
       );
     }
 
-    const avgClaimTimestampDelta = rewards
+    const avgClaimTimestampDelta = !isNaN(rewards) && rewards.length > 0
       ? totalClaimTimestampDelta / rewards.length
       : 0;
-    const avgClaimBlockDelta = rewards
+    const avgClaimBlockDelta = !isNaN(rewards) && rewards.length > 0
       ? totalClaimBlockDelta / rewards.length
       : 0;
     await db.setClaimDelta(

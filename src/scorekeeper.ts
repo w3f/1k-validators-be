@@ -552,7 +552,8 @@ export default class ScoreKeeper {
       await startEraStatsJob(this.db, this.config, this.chaindata);
       await startLocationStatsJob(this.config, this.db, this.chaindata);
       await startCouncilJob(this.config, this.db, this.chaindata);
-      await startSubscanJob(this.config, this.db, this.subscan);
+      // Subscan job currently leads to 429 due to API rate limiting.
+      // await startSubscanJob(this.config, this.db, this.subscan);
     } catch (e) {
       logger.info(
         `{Scorekeeper::RunCron} There was an error running some cron jobs...`

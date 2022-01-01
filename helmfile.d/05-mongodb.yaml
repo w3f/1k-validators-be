@@ -8,12 +8,12 @@ releases:
   - name: kusama-mongodb
     namespace: kusama
     chart: bitnami/mongodb
-    version: 10.30.9
+    version: 10.30.11
     values:
       - ./config/kusama/mongodb.yaml.gotmpl
   - name: polkadot-mongodb
     namespace: polkadot
     chart: bitnami/mongodb
-    version: 10.30.9
+    version: 10.30.11
     values:
       - ./config/polkadot/mongodb.yaml.gotmpl

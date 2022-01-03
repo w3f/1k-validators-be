@@ -232,7 +232,10 @@ export const startExecutionJob = async (
           innerTx
         );
 
-        const didSend = await nominator.sendStakingTx(tx, targets);
+        const [didSend, finalizedBlockHash] = await nominator.sendStakingTx(
+          tx,
+          targets
+        );
 
         if (didSend) {
           // Log Execution
@@ -255,7 +258,7 @@ export const startExecutionJob = async (
           const message = `${addressUrl(
             nominator.address,
             config
-          )} executed announcement that was announced at block #${dataNum} \n Validators Nominated:\n ${validatorsMessage}`;
+          )} executed announcement in finalized block #${finalizedBlockHash} annouced at #${dataNum} \n Validators Nominated:\n ${validatorsMessage}`;
           logger.info(message);
           if (bot) {
             await bot.sendMessage(
@@ -269,6 +272,7 @@ export const startExecutionJob = async (
           await db.deleteDelayedTx(dataNum, controller);
         }
       }
+      await sleep(7000);
     }
   });
   executionCron.start();

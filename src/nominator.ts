@@ -8,7 +8,7 @@ import ApiHandler from "./ApiHandler";
 import Database from "./db";
 import logger from "./logger";
 
-import { NominatorConfig, Stash } from "./types";
+import { BooleanResult, NominatorConfig, Stash } from "./types";
 import { toDecimals } from "./util";
 
 export default class Nominator {
@@ -161,10 +161,12 @@ export default class Nominator {
   sendStakingTx = async (
     tx: SubmittableExtrinsic<"promise">,
     targets: string[]
-  ): Promise<boolean> => {
+  ): Promise<BooleanResult> => {
     const now = new Date().getTime();
     const api = await this.handler.getApi();
 
+    let didSend = false;
+    let finalizedBlockHash;
     try {
       logger.info(
         `{Nominator::nominate} sending announced staking tx for ${this.controller}`
@@ -176,13 +178,24 @@ export default class Nominator {
         // Handle tx lifecycle
         switch (true) {
           case status.isBroadcast:
-            logger.info(`{Nominator::nominate} tx has been broadcasted`);
+            logger.info(
+              `{Nominator::nominate} tx for ${this.controller} has been broadcasted`
+            );
             break;
           case status.isInBlock:
-            logger.info(`{Nominator::nominate} tx is in block`);
+            logger.info(
+              `{Nominator::nominate} tx for ${this.controller} in block`
+            );
+            break;
+          case status.isUsurped:
+            logger.info(
+              `{Nominator::nominate} tx for ${this.controller} has been usurped: ${status.asUsurped}`
+            );
+            didSend = false;
             break;
           case status.isFinalized:
-            const finalizedBlockHash = status.asFinalized;
+            finalizedBlockHash = status.asFinalized;
+            didSend = true;
             logger.info(
               `{Nominator::nominate} tx is finalized in block ${finalizedBlockHash}`
             );
@@ -207,13 +220,13 @@ export default class Nominator {
                         " "
                       )}`
                     );
-                    return false;
+                    didSend = false;
                   } else {
                     // Other, CannotLookup, BadOrigin, no extra info
                     logger.info(
                       `{Nominator::nominate} has an error: ${error.toString()}`
                     );
-                    return false;
+                    didSend = false;
                   }
                 }
               );
@@ -260,15 +273,14 @@ export default class Nominator {
             break;
           default:
             logger.info(
-              `{Nominator::nominate} tx has another status: ${status}`
+              `{Nominator::nominate} tx from ${this.controller} has another status: ${status}`
             );
             break;
         }
       });
-      return true;
     } catch (err) {
       logger.warn(`Nominate tx failed: ${err}`);
-      return false;
     }
+    return [didSend, finalizedBlockHash];
   };
 }

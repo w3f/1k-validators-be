@@ -1035,15 +1035,15 @@ braces@^3.0.1, braces@~3.0.2:
   dependencies:
     fill-range "^7.0.1"
 
-bree@^7.1.0:
-  version "7.1.0"
-  resolved "https://registry.npmjs.org/bree/-/bree-7.1.0.tgz"
+bree@^7.1.5:
+  version "7.1.5"
+  resolved "https://registry.yarnpkg.com/bree/-/bree-7.1.5.tgz#fde0074d25745bae5a4c165ef39bc3d44c121491"
   dependencies:
     "@breejs/later" "^4.1.0"
     boolean "^3.1.4"
     combine-errors "^3.0.3"
     cron-validate "^1.4.3"
-    debug "^4.3.2"
+    debug "^4.3.3"
     human-interval "^2.0.1"
     is-string-and-not-blank "^0.0.2"
     is-valid-path "^0.1.1"

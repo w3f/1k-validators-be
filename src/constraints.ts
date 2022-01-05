@@ -299,9 +299,25 @@ export class OTV implements Constraints {
     const unclaimedStats = getStats(unclaimedValues);
 
     // Location
-    const latestLocationStats = await this.db.getLatestLocationStats();
-    const { locations } = latestLocationStats;
-    const locationValues = locations.map((location) => {
+    const locationMap = new Map();
+    const locationArr = [];
+    for (const candidate of validCandidates) {
+      const location = candidate.location || "No Location";
+
+      const locationCount = locationMap.get(location);
+      if (!locationCount) {
+        locationMap.set(location, 1);
+      } else {
+        locationMap.set(location, locationCount + 1);
+      }
+    }
+
+    for (const location of locationMap.entries()) {
+      const [name, numberOfNodes] = location;
+      locationArr.push({ name, numberOfNodes });
+    }
+
+    const locationValues = locationArr.map((location) => {
       return location.numberOfNodes;
     });
     const locationStats = getStats(locationValues);
@@ -387,7 +403,7 @@ export class OTV implements Constraints {
       const faultsScore = (1 - scaledFaults) * this.FAULTS_WEIGHT;
 
       // Get the total number of nodes for the location a candidate has their node in
-      const filteredLocation = locations.filter((location) => {
+      const filteredLocation = locationArr.filter((location) => {
         if (candidate.location == location.name) return location.numberOfNodes;
       });
       const candidateLocation = filteredLocation[0]?.numberOfNodes;

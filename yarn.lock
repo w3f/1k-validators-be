@@ -647,21 +647,14 @@
     eslint-scope "^5.1.1"
     eslint-utils "^3.0.0"
 
-"@typescript-eslint/parser@^5.6.0":
-  version "5.6.0"
-  resolved "https://registry.npmjs.org/@typescript-eslint/parser/-/parser-5.6.0.tgz"
+"@typescript-eslint/parser@^5.9.0":
+  version "5.9.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/parser/-/parser-5.9.0.tgz#fdbb08767a4caa6ca6ccfed5f9ffe9387f0c7d97"
   dependencies:
-    "@typescript-eslint/scope-manager" "5.6.0"
-    "@typescript-eslint/types" "5.6.0"
-    "@typescript-eslint/typescript-estree" "5.6.0"
+    "@typescript-eslint/scope-manager" "5.9.0"
+    "@typescript-eslint/types" "5.9.0"
+    "@typescript-eslint/typescript-estree" "5.9.0"
     debug "^4.3.2"
-
-"@typescript-eslint/scope-manager@5.6.0":
-  version "5.6.0"
-  resolved "https://registry.npmjs.org/@typescript-eslint/scope-manager/-/scope-manager-5.6.0.tgz"
-  dependencies:
-    "@typescript-eslint/types" "5.6.0"
-    "@typescript-eslint/visitor-keys" "5.6.0"
 
 "@typescript-eslint/scope-manager@5.8.1":
   version "5.8.1"
@@ -670,25 +663,20 @@
     "@typescript-eslint/types" "5.8.1"
     "@typescript-eslint/visitor-keys" "5.8.1"
 
-"@typescript-eslint/types@5.6.0":
-  version "5.6.0"
-  resolved "https://registry.npmjs.org/@typescript-eslint/types/-/types-5.6.0.tgz"
+"@typescript-eslint/scope-manager@5.9.0":
+  version "5.9.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/scope-manager/-/scope-manager-5.9.0.tgz#02dfef920290c1dcd7b1999455a3eaae7a1a3117"
+  dependencies:
+    "@typescript-eslint/types" "5.9.0"
+    "@typescript-eslint/visitor-keys" "5.9.0"
 
 "@typescript-eslint/types@5.8.1":
   version "5.8.1"
   resolved "https://registry.npmjs.org/@typescript-eslint/types/-/types-5.8.1.tgz"
 
-"@typescript-eslint/typescript-estree@5.6.0":
-  version "5.6.0"
-  resolved "https://registry.npmjs.org/@typescript-eslint/typescript-estree/-/typescript-estree-5.6.0.tgz"
-  dependencies:
-    "@typescript-eslint/types" "5.6.0"
-    "@typescript-eslint/visitor-keys" "5.6.0"
-    debug "^4.3.2"
-    globby "^11.0.4"
-    is-glob "^4.0.3"
-    semver "^7.3.5"
-    tsutils "^3.21.0"
+"@typescript-eslint/types@5.9.0":
+  version "5.9.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/types/-/types-5.9.0.tgz#e5619803e39d24a03b3369506df196355736e1a3"
 
 "@typescript-eslint/typescript-estree@5.8.1":
   version "5.8.1"
@@ -702,18 +690,30 @@
     semver "^7.3.5"
     tsutils "^3.21.0"
 
-"@typescript-eslint/visitor-keys@5.6.0":
-  version "5.6.0"
-  resolved "https://registry.npmjs.org/@typescript-eslint/visitor-keys/-/visitor-keys-5.6.0.tgz"
+"@typescript-eslint/typescript-estree@5.9.0":
+  version "5.9.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/typescript-estree/-/typescript-estree-5.9.0.tgz#0e5c6f03f982931abbfbc3c1b9df5fbf92a3490f"
   dependencies:
-    "@typescript-eslint/types" "5.6.0"
-    eslint-visitor-keys "^3.0.0"
+    "@typescript-eslint/types" "5.9.0"
+    "@typescript-eslint/visitor-keys" "5.9.0"
+    debug "^4.3.2"
+    globby "^11.0.4"
+    is-glob "^4.0.3"
+    semver "^7.3.5"
+    tsutils "^3.21.0"
 
 "@typescript-eslint/visitor-keys@5.8.1":
   version "5.8.1"
   resolved "https://registry.npmjs.org/@typescript-eslint/visitor-keys/-/visitor-keys-5.8.1.tgz"
   dependencies:
     "@typescript-eslint/types" "5.8.1"
+    eslint-visitor-keys "^3.0.0"
+
+"@typescript-eslint/visitor-keys@5.9.0":
+  version "5.9.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/visitor-keys/-/visitor-keys-5.9.0.tgz#7585677732365e9d27f1878150fab3922784a1a6"
+  dependencies:
+    "@typescript-eslint/types" "5.9.0"
     eslint-visitor-keys "^3.0.0"
 
 abbrev@1:

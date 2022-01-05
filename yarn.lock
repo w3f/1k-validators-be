@@ -521,9 +521,9 @@
   version "1.0.2"
   resolved "https://registry.npmjs.org/@types/keygrip/-/keygrip-1.0.2.tgz"
 
-"@types/koa-bodyparser@^4.3.4":
-  version "4.3.4"
-  resolved "https://registry.npmjs.org/@types/koa-bodyparser/-/koa-bodyparser-4.3.4.tgz"
+"@types/koa-bodyparser@^4.3.5":
+  version "4.3.5"
+  resolved "https://registry.yarnpkg.com/@types/koa-bodyparser/-/koa-bodyparser-4.3.5.tgz#0c5fa44d7150202ffc16b89bd730ce1b6c7bc250"
   dependencies:
     "@types/koa" "*"
 

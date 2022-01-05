@@ -1309,9 +1309,9 @@ concordance@^5.0.1:
     semver "^7.3.2"
     well-known-symbols "^2.0.0"
 
-concurrently@^6.4.0:
-  version "6.4.0"
-  resolved "https://registry.npmjs.org/concurrently/-/concurrently-6.4.0.tgz"
+concurrently@^6.5.1:
+  version "6.5.1"
+  resolved "https://registry.yarnpkg.com/concurrently/-/concurrently-6.5.1.tgz#4518c67f7ac680cf5c34d5adf399a2a2047edc8c"
   dependencies:
     chalk "^4.1.0"
     date-fns "^2.16.1"

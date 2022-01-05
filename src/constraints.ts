@@ -374,7 +374,10 @@ export class OTV implements Constraints {
         : 0;
       const unclaimedScore = (1 - scaledUnclaimed) * this.UNCLAIMED_WEIGHT;
 
-      const scaledBonded = scaled(candidate.bonded, bondedValues);
+      const scaledBonded = scaled(
+        candidate.bonded ? candidate.bonded : 0,
+        bondedValues
+      );
       const bondedScore = scaledBonded * this.BONDED_WEIGHT;
 
       const scaledOffline = scaled(candidate.offlineAccumulated, offlineValues);
@@ -434,7 +437,7 @@ export class OTV implements Constraints {
         candidate.stash,
         score.updated,
         score.total,
-        score.aggregate,
+        score.aggregate ? score.aggregate : 0,
         score.inclusion,
         score.spanInclusion,
         score.discovered,

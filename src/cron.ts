@@ -265,7 +265,7 @@ export const startExecutionJob = async (
               `${addressUrl(
                 nominator.address,
                 config
-              )} executed announcement that was announced at block #${dataNum} <br> Validators Nominated:<br> ${validatorsHtml}`
+              )} executed announcement in finalized block #${finalizedBlockHash} announced at block #${dataNum} <br> Validators Nominated:<br> ${validatorsHtml}`
             );
           }
 

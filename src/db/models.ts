@@ -181,6 +181,8 @@ export const NominatorSchema = new Schema({
   proxy: String,
   // The amount bonded
   bonded: Number,
+  // the amount of blocks of time delay
+  proxyDelay: Number,
   current: [],
   lastNomination: { type: Number, default: 0 },
   createdAt: { type: Number, default: 0 },

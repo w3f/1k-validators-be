@@ -16,6 +16,7 @@ export type NominatorConfig = {
   maxNominations: number | "auto";
   isProxy?: boolean;
   proxyFor?: string;
+  proxyDelay?: number;
 };
 
 export type Config = {

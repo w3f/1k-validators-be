@@ -572,7 +572,8 @@ export default class Db {
     stash: string,
     proxy: string,
     bonded: number,
-    now: number
+    now: number,
+    proxyDelay: number
   ): Promise<boolean> {
     logger.info(`(Db::addNominator) Adding ${address} at ${now}.`);
 
@@ -583,6 +584,7 @@ export default class Db {
         stash,
         proxy,
         bonded,
+        proxyDelay,
         current: [],
         lastNomination: 0,
         createdAt: now,
@@ -599,6 +601,7 @@ export default class Db {
         stash,
         proxy,
         bonded,
+        proxyDelay,
       }
     );
   }

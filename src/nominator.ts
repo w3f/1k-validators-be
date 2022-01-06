@@ -10,6 +10,8 @@ import logger from "./logger";
 
 import { BooleanResult, NominatorConfig, Stash } from "./types";
 import { toDecimals } from "./util";
+import { TIME_DELAY_BLOCKS } from "./constants";
+import { BotClaimEventSchema } from "./db/models";
 
 export default class Nominator {
   public currentlyNominating: Stash[] = [];
@@ -17,22 +19,31 @@ export default class Nominator {
 
   private _controller: string;
   private db: Database;
+  private bot: any;
   private handler: ApiHandler;
   private signer: KeyringPair;
 
   // Use proxy of controller instead of controller directly.
   private _isProxy: boolean;
 
+  // The amount of blocks for a time delay proxy
+  private _proxyDelay: number;
+
   constructor(
     handler: ApiHandler,
     db: Database,
     cfg: NominatorConfig,
-    networkPrefix = 2
+    networkPrefix = 2,
+    bot: any
   ) {
     this.handler = handler;
     this.db = db;
+    this.bot = bot;
     this.maxNominations = cfg.maxNominations || 16;
     this._isProxy = cfg.isProxy || false;
+
+    // If the proxyDelay is not set in the config, default to TIME_DELAY_BLOCKS (~18 hours, 10800 blocks)
+    this._proxyDelay = cfg.proxyDelay || TIME_DELAY_BLOCKS;
 
     const keyring = new Keyring({
       type: "sr25519",
@@ -65,6 +76,10 @@ export default class Nominator {
     return this._isProxy;
   }
 
+  public get proxyDelay(): number {
+    return this._proxyDelay;
+  }
+
   public async stash(): Promise<any> {
     const api = await this.handler.getApi();
     const ledger = await api.query.staking.ledger(this.controller);
@@ -90,7 +105,13 @@ export default class Nominator {
       const api = await this.handler.getApi();
 
       let tx: SubmittableExtrinsic<"promise">;
-      if (this._isProxy) {
+
+      // Start an announcement for a delayed proxy tx
+      if (this._isProxy && this._proxyDelay > 0) {
+        logger.info(
+          `{Nominator::nominate::proxy} starting tx for ${this.address} with proxy delay ${this._proxyDelay} blocks`
+        );
+
         const innerTx = api.tx.staking.nominate(targets);
 
         const currentBlock = await api.rpc.chain.getBlock();
@@ -109,7 +130,26 @@ export default class Nominator {
         );
 
         await tx.signAndSend(this.signer);
+      } else if (this._isProxy && this._proxyDelay == 0) {
+        // Start a normal proxy tx call
+        logger.info(
+          `{Nominator::nominate::proxy} starting tx for ${this.address} with proxy delay ${this._proxyDelay} blocks`
+        );
+        const innerTx = api.tx.staking.nominate(targets);
+        const callHash = innerTx.method.hash.toString();
+
+        const outerTx = api.tx.proxy.proxy(this.address, "Staking", innerTx);
+
+        const [didSend, finalizedBlockHash] = await this.sendStakingTx(
+          outerTx,
+          targets
+        );
+
+        const nominateMsg = `{Nominator::nominate::proxy} non-delay ${this.address} sent tx: ${didSend} finalized in block #${finalizedBlockHash}`;
+        logger.info(nominateMsg);
+        this.bot.sendMessage(nominateMsg);
       } else {
+        // Do a non-proxy tx
         logger.info(
           `(Nominator::nominate) Creating extrinsic Staking::nominate from ${this.address} to targets ${targets} at ${now}`
         );
@@ -169,7 +209,7 @@ export default class Nominator {
     let finalizedBlockHash;
 
     logger.info(
-      `{Nominator::nominate} sending announced staking tx for ${this.controller}`
+      `{Nominator::nominate} sending staking tx for ${this.controller}`
     );
 
     const unsub = await tx.signAndSend(this.signer, async (result: any) => {

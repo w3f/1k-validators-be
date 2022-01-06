@@ -302,7 +302,7 @@ export default class ScoreKeeper {
 
   /// Spawns a new nominator.
   _spawn(cfg: NominatorConfig, networkPrefix = 2): Nominator {
-    return new Nominator(this.handler, this.db, cfg, networkPrefix);
+    return new Nominator(this.handler, this.db, cfg, networkPrefix, this.bot);
   }
 
   // Adds nominators from the config
@@ -324,7 +324,15 @@ export default class ScoreKeeper {
         const stash = await nom.stash();
         const [bonded, err] = await this.chaindata.getBondedAmount(stash);
         const proxy = nom.isProxy ? nom.address : "";
-        await this.db.addNominator(nom.controller, stash, proxy, bonded, now);
+        const proxyDelay = nom.proxyDelay;
+        await this.db.addNominator(
+          nom.controller,
+          stash,
+          proxy,
+          bonded,
+          now,
+          proxyDelay
+        );
         // Create a new accounting record in case one doesn't exist.
         await this.db.newAccountingRecord(stash, nom.controller);
         group.push(nom);

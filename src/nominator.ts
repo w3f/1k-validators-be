@@ -167,120 +167,115 @@ export default class Nominator {
 
     let didSend = false;
     let finalizedBlockHash;
-    try {
-      logger.info(
-        `{Nominator::nominate} sending announced staking tx for ${this.controller}`
-      );
 
-      const unsub = await tx.signAndSend(this.signer, async (result: any) => {
-        const { status, events } = result;
+    logger.info(
+      `{Nominator::nominate} sending announced staking tx for ${this.controller}`
+    );
 
-        // Handle tx lifecycle
-        switch (true) {
-          case status.isBroadcast:
-            logger.info(
-              `{Nominator::nominate} tx for ${this.controller} has been broadcasted`
-            );
-            break;
-          case status.isInBlock:
-            logger.info(
-              `{Nominator::nominate} tx for ${this.controller} in block`
-            );
-            break;
-          case status.isUsurped:
-            logger.info(
-              `{Nominator::nominate} tx for ${this.controller} has been usurped: ${status.asUsurped}`
-            );
-            didSend = false;
-            break;
-          case status.isFinalized:
-            finalizedBlockHash = status.asFinalized;
-            didSend = true;
-            logger.info(
-              `{Nominator::nominate} tx is finalized in block ${finalizedBlockHash}`
-            );
+    const unsub = await tx.signAndSend(this.signer, async (result: any) => {
+      const { status, events } = result;
 
-            // Check the events to see if there was any errors - if there are return
-            events
-              .filter(({ event }) =>
-                api.events.system.ExtrinsicFailed.is(event)
-              )
-              .forEach(
-                ({
-                  event: {
-                    data: [error, info],
-                  },
-                }) => {
-                  if (error.isModule) {
-                    const decoded = api.registry.findMetaError(error.asModule);
-                    const { docs, method, section } = decoded;
+      // Handle tx lifecycle
+      switch (true) {
+        case status.isBroadcast:
+          logger.info(
+            `{Nominator::nominate} tx for ${this.controller} has been broadcasted`
+          );
+          break;
+        case status.isInBlock:
+          logger.info(
+            `{Nominator::nominate} tx for ${this.controller} in block`
+          );
+          break;
+        case status.isUsurped:
+          logger.info(
+            `{Nominator::nominate} tx for ${this.controller} has been usurped: ${status.asUsurped}`
+          );
+          didSend = false;
+          break;
+        case status.isFinalized:
+          finalizedBlockHash = status.asFinalized;
+          didSend = true;
+          logger.info(
+            `{Nominator::nominate} tx is finalized in block ${finalizedBlockHash}`
+          );
 
-                    logger.info(
-                      `{Nominator::nominate} tx error:  [${section}.${method}] ${docs.join(
-                        " "
-                      )}`
-                    );
-                    didSend = false;
-                  } else {
-                    // Other, CannotLookup, BadOrigin, no extra info
-                    logger.info(
-                      `{Nominator::nominate} has an error: ${error.toString()}`
-                    );
-                    didSend = false;
-                  }
+          // Check the events to see if there was any errors - if there are return
+          events
+            .filter(({ event }) => api.events.system.ExtrinsicFailed.is(event))
+            .forEach(
+              ({
+                event: {
+                  data: [error, info],
+                },
+              }) => {
+                if (error.isModule) {
+                  const decoded = api.registry.findMetaError(error.asModule);
+                  const { docs, method, section } = decoded;
+
+                  logger.info(
+                    `{Nominator::nominate} tx error:  [${section}.${method}] ${docs.join(
+                      " "
+                    )}`
+                  );
+                  didSend = false;
+                } else {
+                  // Other, CannotLookup, BadOrigin, no extra info
+                  logger.info(
+                    `{Nominator::nominate} has an error: ${error.toString()}`
+                  );
+                  didSend = false;
                 }
-              );
-
-            // The tx was otherwise successful
-
-            this.currentlyNominating = targets;
-
-            // Get the current nominations of an address
-            const currentTargets = await this.db.getCurrentTargets(
-              this.controller
+              }
             );
 
-            // if the current targets is populated, clear it
-            if (!!currentTargets.length) {
-              logger.info("(Nominator::nominate) Wiping old targets");
-              await this.db.clearCurrent(this.controller);
-            }
+          // The tx was otherwise successful
 
-            // update both the list of nominator for the nominator account as well as the time period of the nomination
-            for (const stash of targets) {
-              await this.db.setTarget(this.controller, stash, now);
-              await this.db.setLastNomination(this.controller, now);
-            }
+          this.currentlyNominating = targets;
 
-            // Update the nomination record in the db
-            const era = (await api.query.staking.activeEra()).toJSON()["index"];
-            const decimals = (await this.db.getChainMetadata()).decimals;
-            const bonded = toDecimals(
-              (await api.query.staking.ledger(this.controller)).toJSON()[
-                "active"
-              ],
-              decimals
-            );
-            await this.db.setNomination(
-              this.address,
-              era,
-              targets,
-              bonded,
-              finalizedBlockHash
-            );
+          // Get the current nominations of an address
+          const currentTargets = await this.db.getCurrentTargets(
+            this.controller
+          );
 
-            unsub();
-            break;
-          default:
-            logger.info(
-              `{Nominator::nominate} tx from ${this.controller} has another status: ${status}`
-            );
-            break;
-        }
-      });
-    } catch (err) {
-      logger.warn(`Nominate tx failed: ${err}`);
-    }
+          // if the current targets is populated, clear it
+          if (!!currentTargets.length) {
+            logger.info("(Nominator::nominate) Wiping old targets");
+            await this.db.clearCurrent(this.controller);
+          }
+
+          // update both the list of nominator for the nominator account as well as the time period of the nomination
+          for (const stash of targets) {
+            await this.db.setTarget(this.controller, stash, now);
+            await this.db.setLastNomination(this.controller, now);
+          }
+
+          // Update the nomination record in the db
+          const era = (await api.query.staking.activeEra()).toJSON()["index"];
+          const decimals = (await this.db.getChainMetadata()).decimals;
+          const bonded = toDecimals(
+            (await api.query.staking.ledger(this.controller)).toJSON()[
+              "active"
+            ],
+            decimals
+          );
+          await this.db.setNomination(
+            this.address,
+            era,
+            targets,
+            bonded,
+            finalizedBlockHash
+          );
+
+          unsub();
+          break;
+        default:
+          logger.info(
+            `{Nominator::nominate} tx from ${this.controller} has another status: ${status}`
+          );
+          break;
+      }
+    });
     return [didSend, finalizedBlockHash];
   };
 }

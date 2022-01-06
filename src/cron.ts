@@ -237,6 +237,10 @@ export const startExecutionJob = async (
           targets
         );
 
+        logger.info(
+          `{executionCron::sendStakingTx} sent: ${didSend} finalizedBlockHash: ${finalizedBlockHash}`
+        );
+
         if (didSend) {
           // Log Execution
           const validatorsMessage = (
@@ -271,8 +275,8 @@ export const startExecutionJob = async (
 
           await db.deleteDelayedTx(dataNum, controller);
         }
+        await sleep(7000);
       }
-      await sleep(7000);
     }
   });
   executionCron.start();

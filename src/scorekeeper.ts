@@ -75,26 +75,43 @@ export const autoNumNominations = async (
   // @ts-ignore
   const stashBal = parseFloat(stashQuery.data.free) / denom;
 
-  // Get the lowest staked validator in the active set
+  // Query the staking info of the validator set
+  const query = await api.derive.staking.electedInfo();
+  const { info } = query;
 
-  const era = await api.query.staking.currentEra();
-  const exposures = await api.query.staking.erasStakers.entries(era.toString());
-  const stakedAmounts = [];
-  exposures.forEach(([key, exposure]) => {
-    // Get the amount of exposure in plancks
-    const planckAmount = exposure.toHuman().total.toString();
-    // get the amount of exposure in human readable denomiantion
-    const numAmount =
-      parseFloat(planckAmount.replace(/[^\d\.\-]/g, "")) / denom;
+  const totalStakeAmounts = [];
 
-    stakedAmounts.push(numAmount);
-  });
-  const min = Math.min(...stakedAmounts);
-  logger.info(`{autoNom} lowest staked in set: ${min}`);
+  // add formatted totals to list
+  for (const validator of info) {
+    const { exposure } = validator;
+    const { total, own, others } = exposure;
+    // @ts-ignore
+    const formattedTotal = parseFloat(total.toBigInt()) / denom;
+    totalStakeAmounts.push(formattedTotal);
+  }
 
-  const nominationNum = Math.min(Math.floor(stashBal / min) + 1, 24);
+  const sorted = totalStakeAmounts.sort((a, b) => a - b);
 
-  logger.info(`{autoNom} number of nominations: ${nominationNum}`);
+  let sum = 0;
+  let amount = 1;
+
+  // Loop until we find the amount of validators that the account can get in.
+  while (sum < stashBal) {
+    // An offset so the slice isn't the immediate lowest validators in the set
+    const offset = 5;
+    const lowestNum = sorted.slice(offset, offset + amount);
+    sum = lowestNum.reduce((a, b) => a + b, 0);
+
+    if (sum < stashBal) {
+      amount++;
+    }
+  }
+  const avg = stashBal / amount;
+  const nominationNum = Math.min(amount, 24);
+
+  logger.info(
+    `{Scorekeeper::autoNom} stash: ${stash} with balance ${stashBal} can elect ${nominationNum} validators, each having ~${avg} stake`
+  );
 
   return nominationNum;
 };

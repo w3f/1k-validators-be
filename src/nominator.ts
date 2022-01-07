@@ -205,7 +205,7 @@ export default class Nominator {
     const now = new Date().getTime();
     const api = await this.handler.getApi();
 
-    let didSend = false;
+    let didSend = true;
     let finalizedBlockHash;
 
     logger.info(
@@ -232,6 +232,7 @@ export default class Nominator {
             `{Nominator::nominate} tx for ${this.controller} has been usurped: ${status.asUsurped}`
           );
           didSend = false;
+          unsub();
           break;
         case status.isFinalized:
           finalizedBlockHash = status.asFinalized;
@@ -259,12 +260,14 @@ export default class Nominator {
                     )}`
                   );
                   didSend = false;
+                  unsub();
                 } else {
                   // Other, CannotLookup, BadOrigin, no extra info
                   logger.info(
                     `{Nominator::nominate} has an error: ${error.toString()}`
                   );
                   didSend = false;
+                  unsub();
                 }
               }
             );
@@ -306,7 +309,6 @@ export default class Nominator {
             bonded,
             finalizedBlockHash
           );
-
           unsub();
           break;
         default:

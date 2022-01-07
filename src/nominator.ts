@@ -205,7 +205,7 @@ export default class Nominator {
     const now = new Date().getTime();
     const api = await this.handler.getApi();
 
-    let didSend = false;
+    let didSend = true;
     let finalizedBlockHash;
 
     logger.info(
@@ -232,6 +232,7 @@ export default class Nominator {
             `{Nominator::nominate} tx for ${this.controller} has been usurped: ${status.asUsurped}`
           );
           didSend = false;
+          unsub();
           break;
         case status.isFinalized:
           finalizedBlockHash = status.asFinalized;
@@ -253,18 +254,20 @@ export default class Nominator {
                   const decoded = api.registry.findMetaError(error.asModule);
                   const { docs, method, section } = decoded;
 
-                  logger.info(
-                    `{Nominator::nominate} tx error:  [${section}.${method}] ${docs.join(
-                      " "
-                    )}`
-                  );
+                  const errorMsg = `{Nominator::nominate} tx error:  [${section}.${method}] ${docs.join(
+                    " "
+                  )}`;
+                  logger.info(errorMsg);
+                  this.bot.sendMessage(errorMsg);
                   didSend = false;
+                  unsub();
                 } else {
                   // Other, CannotLookup, BadOrigin, no extra info
                   logger.info(
                     `{Nominator::nominate} has an error: ${error.toString()}`
                   );
                   didSend = false;
+                  unsub();
                 }
               }
             );
@@ -306,7 +309,6 @@ export default class Nominator {
             bonded,
             finalizedBlockHash
           );
-
           unsub();
           break;
         default:

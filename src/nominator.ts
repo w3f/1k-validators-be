@@ -254,11 +254,11 @@ export default class Nominator {
                   const decoded = api.registry.findMetaError(error.asModule);
                   const { docs, method, section } = decoded;
 
-                  logger.info(
-                    `{Nominator::nominate} tx error:  [${section}.${method}] ${docs.join(
-                      " "
-                    )}`
-                  );
+                  const errorMsg = `{Nominator::nominate} tx error:  [${section}.${method}] ${docs.join(
+                    " "
+                  )}`;
+                  logger.info(errorMsg);
+                  this.bot.sendMessage(errorMsg);
                   didSend = false;
                   unsub();
                 } else {

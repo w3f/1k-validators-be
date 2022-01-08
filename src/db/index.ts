@@ -2698,15 +2698,12 @@ export default class Db {
 
   // returns a referendum by index
   async getAllReferenda(): Promise<any> {
-    return this.referendumModel.find({ referendumIndex: /.*/ }).exec();
+    return this.referendumModel.find({}).exec();
   }
 
   // Retrieves the last referenda (by index)
   async getLastReferenda(): Promise<any> {
-    return await this.referendumModel
-      .find({ referendumIndex: /.*/ })
-      .sort("-referendumIndex")
-      .exec();
+    return await this.referendumModel.find({}).sort("-referendumIndex").exec();
   }
 
   // Sets a Referendum record in the db

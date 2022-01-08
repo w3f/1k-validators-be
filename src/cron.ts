@@ -845,5 +845,3 @@ export const startDemocracyJob = async (
   });
   democracyCron.start();
 };
-
-

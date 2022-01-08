@@ -555,10 +555,7 @@ export const subscanJob = async (
 };
 
 // Job for democracy related data
-export const democracyJob = async (
-  db: Db,
-  chaindata: ChainData,
-) => {
+export const democracyJob = async (db: Db, chaindata: ChainData) => {
   const start = Date.now();
 
   const latestBlockNumber = await chaindata.getLatestBlock();

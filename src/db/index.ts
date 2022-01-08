@@ -20,10 +20,13 @@ import {
   CouncillorSchema,
   EraPaidEventSchema,
   EraRewardSchema,
+  ReferendumSchema,
+  ReferendumVoteSchema,
 } from "./models";
 import logger from "../logger";
 import { formatAddress } from "../util";
 import { Keyring } from "@polkadot/keyring";
+import { Referendum, ReferendumVote } from "../types";
 
 // [name, client, version, null, networkId]
 export type NodeDetails = [string, string, string, string, string];
@@ -48,6 +51,8 @@ export default class Db {
   private councillorModel;
   private eraPaidEventModel;
   private eraRewardModel;
+  private referendumModel;
+  private referendumVoteModel;
 
   constructor() {
     this.accountingModel = mongoose.model("Accounting", AccountingSchema);
@@ -90,6 +95,11 @@ export default class Db {
     this.councillorModel = mongoose.model("Councillor", CouncillorSchema);
     this.eraPaidEventModel = mongoose.model("EraPaid", EraPaidEventSchema);
     this.eraRewardModel = mongoose.model("EraReward", EraRewardSchema);
+    this.referendumModel = mongoose.model("Referendum", ReferendumSchema);
+    this.referendumVoteModel = mongoose.model(
+      "ReferendumVote",
+      ReferendumVoteSchema
+    );
   }
 
   static async create(uri = "mongodb://localhost:27017/otv"): Promise<Db> {
@@ -2611,5 +2621,165 @@ export default class Db {
       era: era,
     });
     return data;
+  }
+
+  // Sets a Referendum record in the db
+  async setReferendum(
+    referendum: Referendum,
+    updatedBlockNumber: number,
+    updatedBlockHash: string
+  ): Promise<any> {
+    // Try and find an existing record
+    const data = await this.referendumModel.findOne({
+      referendumIndex: referendum.referendumIndex,
+    });
+
+    // If an referendum object doesnt yet exist
+    if (!data) {
+      const referendumData = new this.referendumModel({
+        referendumIndex: referendum.referendumIndex,
+        proposedAt: referendum.proposedAt,
+        proposalEnd: referendum.proposalEnd,
+        proposalDelay: referendum.proposalDelay,
+        threshold: referendum.threshold,
+        deposit: referendum.deposit,
+        proposer: referendum.proposer,
+        imageHash: referendum.imageHash,
+        voteCount: referendum.voteCount,
+        voteCountAye: referendum.voteCountAye,
+        voteCountNay: referendum.voteCountNay,
+        voteAyeAmount: referendum.voteAyeAmount,
+        voteNayAmount: referendum.voteNayAmount,
+        voteTotalAmount: referendum.voteTotalAmount,
+        isPassing: referendum.isPassing,
+        updatedBlockNumber: updatedBlockNumber,
+        updatedBlockHash: updatedBlockHash,
+        updatedTimestamp: Date.now(),
+      });
+      return referendumData.save();
+    }
+
+    // It exists, update it
+    this.referendumModel
+      .findOneAndUpdate(
+        {
+          referendumIndex: referendum.referendumIndex,
+        },
+        {
+          proposedAt: referendum.proposedAt,
+          proposalEnd: referendum.proposalEnd,
+          proposalDelay: referendum.proposalDelay,
+          threshold: referendum.threshold,
+          deposit: referendum.deposit,
+          proposer: referendum.proposer,
+          imageHash: referendum.imageHash,
+          voteCount: referendum.voteCount,
+          voteCountAye: referendum.voteCountAye,
+          voteCountNay: referendum.voteCountNay,
+          voteAyeAmount: referendum.voteAyeAmount,
+          voteNayAmount: referendum.voteNayAmount,
+          voteTotalAmount: referendum.voteTotalAmount,
+          isPassing: referendum.isPassing,
+          updatedBlockNumber: updatedBlockNumber,
+          updatedBlockHash: updatedBlockHash,
+          updatedTimestamp: Date.now(),
+        }
+      )
+      .exec();
+  }
+
+  // returns a referendum by index
+  async getReferendum(index: number): Promise<any> {
+    const data = await this.referendumModel.findOne({
+      referendumIndex: index,
+    });
+    return data;
+  }
+
+  // returns a referendum by index
+  async getAllReferenda(): Promise<any> {
+    return this.referendumModel.find({ referendumIndex: /.*/ }).exec();
+  }
+
+  // Retrieves the last referenda (by index)
+  async getLastReferenda(): Promise<any> {
+    return await this.referendumModel
+      .find({ referendumIndex: /.*/ })
+      .sort("-referendumIndex")
+      .exec();
+  }
+
+  // Sets a Referendum record in the db
+  async setReferendumVote(
+    referendumVote: ReferendumVote,
+    updatedBlockNumber: number,
+    updatedBlockHash: string
+  ): Promise<any> {
+    // Try and find an existing record
+    const data = await this.referendumVoteModel.findOne({
+      referendumIndex: referendumVote.referendumIndex,
+      accountId: referendumVote.accountId,
+    });
+
+    // If an referendum vote object doesnt yet exist
+    if (!data) {
+      // create the referendum vote record
+      const referendumVoteData = new this.referendumVoteModel({
+        referendumIndex: referendumVote.referendumIndex,
+        accountId: referendumVote.accountId,
+        isDelegating: referendumVote.isDelegating,
+        updatedBlockNumber: updatedBlockNumber,
+        updatedBlockHash: updatedBlockHash,
+        updatedTimestamp: Date.now(),
+      }).exec();
+
+      const candidate = await this.candidateModel.findOne({
+        stash: referendumVote.accountId,
+      });
+
+      // If the vote was done by a candidate, add the referendum and increase the vote count
+      if (
+        candidate &&
+        !candidate.democracyVotes?.includes(referendumVote.referendumIndex)
+      ) {
+        await this.candidateModel.findOneAndUpdate(
+          {
+            stash: referendumVote.accountId,
+          },
+          {
+            $push: {
+              democracyVotes: referendumVote.referendumIndex,
+            },
+            $inc: { democracyVoteCount: 1 },
+          }
+        );
+      }
+    }
+
+    // It exists, update it
+    this.referendumVoteModel
+      .findOneAndUpdate(
+        {
+          referendumIndex: referendumVote.referendumIndex,
+          accountId: referendumVote.accountId,
+        },
+        {
+          isDelegating: referendumVote.isDelegating,
+          updatedBlockNumber: updatedBlockNumber,
+          updatedBlockHash: updatedBlockHash,
+          updatedTimestamp: Date.now(),
+        }
+      )
+      .exec();
+  }
+
+  // returns all votes for a referendum by index
+  async getVoteReferendumIndex(index: number): Promise<any> {
+    return this.referendumVoteModel.find({ referendumIndex: index }).exec();
+  }
+
+  // returns all votes for a referendum by account
+  async getAccountVoteReferendum(accountId: string): Promise<any> {
+    return this.referendumVoteModel.find({ accountId: accountId }).exec();
   }
 }

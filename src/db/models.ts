@@ -161,6 +161,10 @@ export const CandidateSchema = new Schema({
   totalRewards: Number,
   avgClaimTimestampDelta: Number,
   avgClaimBlockDelta: Number,
+  // The number of referenda voted on
+  democracyVoteCount: { type: Number, default: 0 },
+  // The referenda indexes voted on
+  democracyVotes: [Number],
 });
 
 export const EraSchema = new Schema({
@@ -546,4 +550,66 @@ export const EraRewardSchema = new Schema({
   claimTimestampDelta: Number,
   claimBlockDelta: Number,
   updated: Number,
+});
+
+// Information about a democracy referendum
+export const ReferendumSchema = new Schema({
+  // The unique index of the proposal, used to identity and query by
+  referendumIndex: Number,
+  // The block at which the proposal was made
+  proposedAt: Number,
+  // The block at which voting on the proposal ends
+  proposalEnd: Number,
+  // the number of blocks delay between the proposal voting ending and it enacting if passed
+  proposalDelay: Number,
+  // The kind of turnout needed, ie 'SimplyMajority', or 'SuperMajorityApprove'
+  threshold: String,
+  // The human denoninated deposit for the proposal
+  deposit: Number,
+  // The address of who proposed it
+  proposer: String,
+  // the hash of the call
+  imageHash: String,
+  // The total amount of votes
+  voteCount: Number,
+  // The total amount of votes for Aye
+  voteCountAye: Number,
+  // The total amount of nay votes
+  voteCountNay: Number,
+  // The amount of human denominated tokens that voted Aye
+  voteAyeAmount: Number,
+  // The amount of human denominated tokens that voted Nay
+  voteNayAmount: Number,
+  // The amount of human denominated tokens that voted in total
+  voteTotalAmount: Number,
+  // Whether the vote is passing or not
+  isPassing: Boolean,
+  // The last timestamp the record was updated at
+  updatedTimestamp: Number,
+  // The last block number the record was updated at
+  updatedBlockNumber: Number,
+  // last block hash the record was updated at
+  updatedBlockHash: Number,
+});
+
+// Information about a particular vote in a democracy referendum
+export const ReferendumVoteSchema = new Schema({
+  // The unique index of the proposal, used to identity and query by
+  referendumIndex: Number,
+  // The account the vote is from
+  accountId: String,
+  // Whether or not the vote was delegated
+  isDelegating: Boolean,
+  // the human denominated amount of tokens voting
+  balance: Number,
+  // The kind of vote, ie 'Aye' or 'Nay'
+  voteDirection: String,
+  // The conviction that was used to vote with
+  conviction: String,
+  // The last timestamp the record was updated at
+  updatedTimestamp: Number,
+  // The last block number the record was updated at
+  updatedBlockNumber: Number,
+  // last block hash the record was updated at
+  updatedBlockHash: Number,
 });

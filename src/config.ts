@@ -50,6 +50,7 @@ export type Config = {
     validatorPref: string;
     council: string;
     subscan: string;
+    democracy: string;
   };
   db: {
     mongo: {

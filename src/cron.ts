@@ -25,6 +25,7 @@ import {
   LOCATION_STATS_CRON,
   COUNCIL_CRON,
   SUBSCAN_CRON,
+  DEMOCRACY_CRON,
 } from "./constants";
 import logger from "./logger";
 import Monitor from "./monitor";
@@ -50,6 +51,7 @@ import {
   locationStatsJob,
   councilJob,
   subscanJob,
+  democracyJob,
 } from "./jobs";
 import { Subscan } from "./subscan";
 
@@ -812,4 +814,34 @@ export const startSubscanJob = async (
     running = false;
   });
   subscanCron.start();
+};
+
+// Chron job for querying democracy data
+export const startDemocracyJob = async (
+  config: Config,
+  db: Db,
+  chaindata: ChainData
+) => {
+  const democracyFrequency = config.cron.democracy
+    ? config.cron.democracy
+    : DEMOCRACY_CRON;
+
+  logger.info(
+    `(cron::democracyJob::init) Running democracy cron with frequency: ${democracyFrequency}`
+  );
+
+  let running = false;
+
+  const democracyCron = new CronJob(democracyFrequency, async () => {
+    if (running) {
+      return;
+    }
+    running = true;
+    logger.info(`{cron::democracyJob::start} running democracy job....`);
+
+    // Run the democracy  job
+    await democracyJob(db, chaindata);
+    running = false;
+  });
+  democracyCron.start();
 };

@@ -297,6 +297,8 @@ export const ValidatorScoreSchema = new Schema({
   location: Number,
   // council backing score
   councilStake: Number,
+  // democracy score
+  democracy: Number,
   // The randomness factor used to buffer the total
   randomness: Number,
 });
@@ -455,6 +457,7 @@ export const ValidatorScoreMetadataSchema = new Schema({
     standardDeviation: Number,
   },
   locationWeight: Number,
+  democracyWeight: Number,
   // The last time one was updated
   updated: Number,
 });

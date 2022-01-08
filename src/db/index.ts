@@ -1605,6 +1605,7 @@ export default class Db {
     offline: number,
     location: number,
     councilStake: number,
+    democracy: number,
     randomness: number
   ): Promise<boolean> {
     // logger.info(
@@ -1632,6 +1633,7 @@ export default class Db {
         offline,
         location,
         councilStake,
+        democracy,
         randomness,
       });
 
@@ -1658,6 +1660,7 @@ export default class Db {
           offline,
           location,
           councilStake,
+          democracy,
           randomness,
         }
       )
@@ -1693,6 +1696,7 @@ export default class Db {
     locationWeight: number,
     councilStakeStats: any,
     councilStakeWeight: number,
+    democracyWeight: number,
     updated: number
   ): Promise<boolean> {
     logger.info(`(Db::SetScoreMetadata) Setting validator score metadata`);
@@ -1728,6 +1732,7 @@ export default class Db {
         locationWeight,
         councilStakeStats,
         councilStakeWeight,
+        democracyWeight,
         updated,
       });
 
@@ -1761,6 +1766,7 @@ export default class Db {
           locationWeight,
           councilStakeStats,
           councilStakeWeight,
+          democracyWeight,
           updated,
         }
       )

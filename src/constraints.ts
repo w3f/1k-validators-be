@@ -359,6 +359,7 @@ export class OTV implements Constraints {
       this.LOCATION_WEIGHT,
       councilStakeStats,
       this.COUNCIL_WEIGHT,
+      this.DEMOCRACY_WEIGHT,
       Date.now()
     );
 
@@ -416,6 +417,9 @@ export class OTV implements Constraints {
       );
       const councilStakeScore = scaledCouncilStake * this.COUNCIL_WEIGHT;
 
+      const democracyScore =
+        candidate.democracyVoteCount * this.DEMOCRACY_WEIGHT;
+
       const aggregate =
         inclusionScore +
         spanInclusionScore +
@@ -427,6 +431,7 @@ export class OTV implements Constraints {
         bondedScore +
         locationScore +
         //councilStakeScore +
+        // democracyScore +
         offlineScore;
 
       const randomness = 1 + Math.random() * 0.05;
@@ -445,6 +450,7 @@ export class OTV implements Constraints {
         offline: offlineScore,
         location: locationScore,
         councilStake: councilStakeScore,
+        democracy: democracyScore,
         randomness: randomness,
         updated: Date.now(),
       };
@@ -465,6 +471,7 @@ export class OTV implements Constraints {
         score.offline,
         score.location,
         score.councilStake,
+        score.democracy,
         score.randomness
       );
 
@@ -519,6 +526,8 @@ export class OTV implements Constraints {
   OFFLINE_WEIGHT = 2;
   LOCATION_WEIGHT = 20;
   COUNCIL_WEIGHT = 30;
+
+  DEMOCRACY_WEIGHT = 10;
 
   /// At the end of a nomination round this is the logic that separates the
   /// candidates that did good from the ones that did badly.

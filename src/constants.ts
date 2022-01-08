@@ -134,3 +134,6 @@ export const COUNCIL_CRON = "0 0-59/5 * * * *";
 
 // Subscan Cron Job. This runs ever 10 minutes by default
 export const SUBSCAN_CRON = "0 0-59/10 * * * *";
+
+// Democracy Cron Job. This runs ever 10 minutes by default
+export const DEMOCRACY_CRON = "0 0-59/10 * * * *";

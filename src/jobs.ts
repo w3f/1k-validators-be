@@ -5,6 +5,7 @@ import { checkUnclaimed, OTV } from "./constraints";
 import Monitor from "./monitor";
 import { Subscan } from "./subscan";
 import { arrayBuffer } from "stream/consumers";
+import { Referendum, ReferendumVote } from "./types";
 
 // Runs Monitor Job
 export const monitorJob = async (db: Db, monitor: Monitor) => {
@@ -550,5 +551,127 @@ export const subscanJob = async (
     `{cron::subscanJob::ExecutionTime} started at ${new Date(
       start
     ).toString()} Done. Took ${(end - start) / 1000} seconds`
+  );
+};
+
+// Job for democracy related data
+export const democracyJob = async (
+  db: Db,
+  chaindata: ChainData,
+) => {
+  const start = Date.now();
+
+  const latestBlockNumber = await chaindata.getLatestBlock();
+  const latestBlockHash = await chaindata.getLatestBlockHash();
+  const denom = await chaindata.getDenom();
+
+  const referendaQuery = await chaindata.getDerivedReferenda();
+  for (const r of referendaQuery) {
+    const {
+      // The image that was proposed
+      image: {
+        // The block at which the proposal was made
+        at,
+        // The planck denominated deposit made for the gov call
+        balance,
+        // Details about the specific proposal, including the call
+        proposal,
+        // the address that made the proposal
+        proposer,
+      },
+      imageHash,
+      index,
+      status: {
+        // The block the referendum closes at
+        end,
+        // image hash
+        proposalHash,
+        // The kind of turnout is needed, ie 'SimplyMajority'
+        threshold,
+        // how many blocks after the end block that it takes for the proposal to get enacted
+        delay,
+        // The current tally of votes
+        // @ts-ignore
+        tally: {
+          // planck denominated, conviction adjusted ayes
+          ayes,
+          // planck denominated, conviction adjusted nays
+          nays,
+          // planck denominated conviction adjusted total turnout
+          turnout,
+        },
+      },
+      // list of accounts that voted aye
+      allAye,
+      // list of accounts that voted nay
+      allNay,
+      // the total amounts of votes
+      voteCount,
+      // the total amount of aye votes
+      voteCountAye,
+      // the total amount of nay votes
+      voteCountNay,
+      // the total amount of tokens voted aye
+      votedAye,
+      // the total amount of tokens voted nay
+      votedNay,
+      // the total amount of tokens voted
+      votedTotal,
+      // whether the proposal is currently passing
+      isPassing,
+      // the list of votes
+      votes,
+    } = r;
+
+    const referendum: Referendum = {
+      referendumIndex: index.toNumber(),
+      proposedAt: at.toNumber(),
+      proposalEnd: end.toNumber(),
+      proposalDelay: delay.toNumber(),
+      threshold: threshold.toString(),
+      deposit: parseFloat(balance.toString()) / denom,
+      proposer: proposer.toString(),
+      imageHash: imageHash.toString(),
+      voteCount: voteCount,
+      voteCountAye: voteCountAye,
+      voteCountNay: voteCountNay,
+      voteAyeAmount: parseFloat(votedAye.toString()) / denom,
+      voteNayAmount: parseFloat(votedNay.toString()) / denom,
+      voteTotalAmount: parseFloat(votedTotal.toString()) / denom,
+      isPassing: isPassing,
+    };
+
+    await db.setReferendum(referendum, latestBlockNumber, latestBlockHash);
+
+    // Go through all votes for the referendum and update db entries for them
+    for (const v of votes) {
+      // @ts-ignore
+      const { accountId, isDelegating, initialU8aLength, vote, balance } = v;
+      // @ts-ignore
+      const { vote: voteDirection, conviction } = vote.toHuman();
+
+      const referendumVote: ReferendumVote = {
+        referendumIndex: index.toNumber(),
+        accountId: accountId.toString(),
+        isDelegating: isDelegating,
+        balance: parseFloat(balance.toString()) / denom,
+        voteDirection: voteDirection,
+        conviction: conviction,
+      };
+
+      await db.setReferendumVote(
+        referendumVote,
+        latestBlockNumber,
+        latestBlockHash
+      );
+    }
+  }
+
+  const endTime = Date.now();
+
+  logger.info(
+    `{cron::councilJob::ExecutionTime} started at ${new Date(
+      start
+    ).toString()} Done. Took ${(endTime - start) / 1000} seconds`
   );
 };

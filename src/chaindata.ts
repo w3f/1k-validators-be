@@ -721,6 +721,16 @@ class ChainData {
     return (await api.rpc.chain.getBlock()).block.header.number.toNumber();
   };
 
+  getLatestBlockHash = async () => {
+    const api = await this.handler.getApi();
+    if (!api.isConnected) {
+      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
+      return;
+    }
+    const latestBlock = await api.rpc.chain.getBlock();
+    return latestBlock.block.header.hash.toString();
+  };
+
   // gets the votes and stake amount of voting for council elections
   getCouncilVoting = async () => {
     const api = await this.handler.getApi();
@@ -814,6 +824,75 @@ class ChainData {
       runnersUp: runnersUpMap,
       candidates: candidatesMap,
     };
+  };
+
+  // Returns the response from the derive referenda query
+  getDerivedReferenda = async () => {
+    const api = await this.handler.getApi();
+    if (!api.isConnected) {
+      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
+      return;
+    }
+
+    // A list of referenda that are currently active. They are in the form:
+    //   {
+    //   The image that was proposed
+    //   image: {
+    //       // The block at which the proposal was made
+    //       at,
+    //       // The planck denominated deposit made for the gov call
+    //       balance,
+    //       // Details about the specific proposal, including the call
+    //       proposal,
+    //        // the address that made the proposal
+    //       proposer
+    //   },
+    //   imageHash,
+    //   index,
+    //   status: {
+    //       // The block the referendum closes at
+    //       end,
+    //       // image hash
+    //       proposalHash,
+    //       // The kind of turnout is needed, ie 'SimplyMajority'
+    //       threshold,
+    //       // how many blocks after the end block that it takes for the proposal to get enacted
+    //       delay,
+    //       // The current tally of votes
+    //       // @ts-ignore
+    //       tally: {
+    //           // planck denominated, conviction adjusted ayes
+    //           ayes,
+    //           // planck denominated, conviction adjusted nays
+    //           nays,
+    //           // planck denominated conviction adjusted total turnout
+    //           turnout
+    //       }
+    //   },
+    //   // list of accounts that voted aye
+    //   allAye,
+    //   // list of accounts that voted nay
+    //   allNay,
+    //   // the total amounts of votes
+    //   voteCount,
+    //   // the total amount of aye votes
+    //   voteCountAye,
+    //   // the total amount of nay votes
+    //   voteCountNay,
+    //   // the total amount of tokens voted aye
+    //   votedAye,
+    //   // the total amount of tokens voted nay
+    //   votedNay,
+    //   // the total amount of tokens voted
+    //   votedTotal,
+    //   // whether the proposal is currently passing
+    //   isPassing,
+    //   // the list of votes
+    //   votes,
+    // }
+    const referendaQuery = await api.derive.democracy.referendums();
+
+    return referendaQuery;
   };
 }
 

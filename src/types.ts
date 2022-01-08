@@ -89,3 +89,51 @@ export type CandidateData = {
   councilStake: number;
   councilVotes: any[];
 };
+
+export type Referendum = {
+  // The unique index of the proposal, used to identity and query by
+  referendumIndex: number;
+  // The block at which the proposal was made
+  proposedAt: number;
+  // The block at which voting on the proposal ends
+  proposalEnd: number;
+  // the number of blocks delay between the proposal voting ending and it enacting if passed
+  proposalDelay: number;
+  // The kind of turnout needed, ie 'SimplyMajority', or 'SuperMajorityApprove'
+  threshold: string;
+  // The human denoninated deposit for the proposal
+  deposit: number;
+  // The address of who proposed it
+  proposer: string;
+  // the hash of the call
+  imageHash: string;
+  // The total amount of votes
+  voteCount: number;
+  // The total amount of votes for Aye
+  voteCountAye: number;
+  // The total amount of nay votes
+  voteCountNay: number;
+  // The amount of human denominated tokens that voted Aye
+  voteAyeAmount: number;
+  // The amount of human denominated tokens that voted Nay
+  voteNayAmount: number;
+  // The amount of human denominated tokens that voted in total
+  voteTotalAmount: number;
+  // Whether the vote is passing or not
+  isPassing: boolean;
+};
+
+export type ReferendumVote = {
+  // The unique index of the proposal, used to identity and query by
+  referendumIndex: number;
+  // The account the vote is from
+  accountId: string;
+  // Whether or not the vote was delegated
+  isDelegating: boolean;
+  // the human denominated amount of tokens voting
+  balance: number;
+  // The kind of vote, ie 'Aye' or 'Nay'
+  voteDirection: string;
+  // The conviction that was used to vote with
+  conviction: string;
+};

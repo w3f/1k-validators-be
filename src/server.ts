@@ -38,6 +38,11 @@ const API = {
   EraPaid: "/erapaid",
   EraRewards: "/erareward/:stash/:limit",
   EraReward: "/erareward/:stash/:era",
+  Referenda: "/referenda",
+  Referendum: "/referendum/:index",
+  LastReferendum: "/lastreferendum",
+  ReferendumIndexVotes: "/referendumvotes/index/:index",
+  ReferendumAccountVotes: "/referendumvotes/account/:address",
 };
 
 export default class Server {
@@ -291,6 +296,29 @@ export default class Server {
       const { stash, era } = ctx.params;
       const reward = await this.db.getEraReward(stash, era);
       ctx.body = reward;
+    });
+    router.get(API.Referenda, async (ctx) => {
+      const referenda = await this.db.getAllReferenda();
+      ctx.body = referenda;
+    });
+    router.get(API.Referendum, async (ctx) => {
+      const { index } = ctx.params;
+      const referendum = await this.db.getReferendum(index);
+      ctx.body = referendum;
+    });
+    router.get(API.LastReferendum, async (ctx) => {
+      const referendum = await this.db.getLastReferenda();
+      ctx.body = referendum;
+    });
+    router.get(API.ReferendumIndexVotes, async (ctx) => {
+      const { index } = ctx.params;
+      const referendum = await this.db.getVoteReferendumIndex(index);
+      ctx.body = referendum;
+    });
+    router.get(API.ReferendumAccountVotes, async (ctx) => {
+      const { address } = ctx.params;
+      const referendum = await this.db.getAccountVoteReferendum(address);
+      ctx.body = referendum;
     });
 
     this.app.use(router.routes());

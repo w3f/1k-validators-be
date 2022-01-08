@@ -359,6 +359,7 @@ export class OTV implements Constraints {
       this.LOCATION_WEIGHT,
       councilStakeStats,
       this.COUNCIL_WEIGHT,
+      this.DEMOCRACY_WEIGHT,
       Date.now()
     );
 
@@ -416,7 +417,8 @@ export class OTV implements Constraints {
       );
       const councilStakeScore = scaledCouncilStake * this.COUNCIL_WEIGHT;
 
-      const democracyScore = candidate.democracyVoteCount * this.DEMOCRACY_WEIGHT;
+      const democracyScore =
+        candidate.democracyVoteCount * this.DEMOCRACY_WEIGHT;
 
       const aggregate =
         inclusionScore +
@@ -429,7 +431,7 @@ export class OTV implements Constraints {
         bondedScore +
         locationScore +
         //councilStakeScore +
-        // democracyScore + 
+        // democracyScore +
         offlineScore;
 
       const randomness = 1 + Math.random() * 0.05;

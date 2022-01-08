@@ -2731,7 +2731,8 @@ export default class Db {
         updatedBlockNumber: updatedBlockNumber,
         updatedBlockHash: updatedBlockHash,
         updatedTimestamp: Date.now(),
-      }).exec();
+      });
+      referendumVoteData.save();
 
       const candidate = await this.candidateModel.findOne({
         stash: referendumVote.accountId,

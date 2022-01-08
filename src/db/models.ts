@@ -611,5 +611,5 @@ export const ReferendumVoteSchema = new Schema({
   // The last block number the record was updated at
   updatedBlockNumber: Number,
   // last block hash the record was updated at
-  updatedBlockHash: Number,
+  updatedBlockHash: String,
 });

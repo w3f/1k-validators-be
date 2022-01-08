@@ -104,6 +104,8 @@ export default class Server {
             location: candidate.location,
             councilStake: candidate.councilStake,
             councilVotes: candidate.councilVotes,
+            democracyVoteCount: candidate.democracyVoteCount,
+            democracyVotes: candidate.democracyVotes,
           };
         })
       );
@@ -275,6 +277,8 @@ export default class Server {
               location: candidate.location,
               councilStake: candidate.councilStake,
               councilVotes: candidate.councilVotes,
+              democracyVoteCount: candidate.democracyVoteCount,
+              democracyVotes: candidate.democracyVotes,
             };
         })
       );

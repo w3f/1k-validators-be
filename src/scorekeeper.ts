@@ -136,6 +136,8 @@ export const autoNominationsStake = async (
   const denom =
     chainType.toString() == "Polkadot" ? 10000000000 : 1000000000000;
 
+  const stashBal = bonded / denom;
+
   // Query the staking info of the validator set
   const query = await api.derive.staking.electedInfo();
   const { info } = query;
@@ -157,22 +159,22 @@ export const autoNominationsStake = async (
   let amount = 1;
 
   // Loop until we find the amount of validators that the account can get in.
-  while (sum < bonded) {
+  while (sum < stashBal) {
     // An offset so the slice isn't the immediate lowest validators in the set
     const offset = 5;
     const lowestNum = sorted.slice(offset, offset + amount);
     sum = lowestNum.reduce((a, b) => a + b, 0);
 
-    if (sum < bonded) {
+    if (sum < stashBal) {
       amount++;
     }
   }
 
   const nominationNum = Math.min(amount, 24);
-  const avg = bonded / nominationNum;
+  const avg = stashBal / nominationNum;
 
   logger.info(
-    `{Scorekeeper::autoNomStake} account balance ${bonded} can elect ${nominationNum} validators, each having ~${avg} stake`
+    `{Scorekeeper::autoNomStake} account balance ${stashBal} can elect ${nominationNum} validators, each having ~${avg} stake`
   );
 
   return avg;
@@ -386,7 +388,7 @@ export default class ScoreKeeper {
 
   // Adds nominators from the config
   async addNominatorGroup(nominatorGroup: NominatorGroup): Promise<boolean> {
-    const group = [];
+    let group = [];
     const now = getNow();
     for (const nomCfg of nominatorGroup) {
       const nom = this._spawn(nomCfg, this.config.global.networkPrefix);
@@ -412,7 +414,7 @@ export default class ScoreKeeper {
           bonded,
           now,
           proxyDelay,
-          0 //avgStake
+          avgStake
         );
         // Create a new accounting record in case one doesn't exist.
         await this.db.newAccountingRecord(stash, nom.controller);
@@ -420,7 +422,7 @@ export default class ScoreKeeper {
       }
     }
     // Sort the group by the lowest avg stake
-    // group = group.sort((a, b) => a.avgStake - b.avgStake);
+    group = group.sort((a, b) => a.avgStake - b.avgStake);
     this.nominatorGroups.push(group);
 
     const nominatorGroupString = (

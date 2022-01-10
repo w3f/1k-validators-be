@@ -15,6 +15,7 @@ import {
   FIVE_THOUSAND_DOT,
   THREE_PERCENT,
   SIXTEEN_HOURS,
+  TEN_KSM,
 } from "./constants";
 import { checkAllValidateIntentions, OTV } from "./constraints";
 import Db from "./db";
@@ -55,14 +56,17 @@ import {
 } from "./jobs";
 import Monitor from "./monitor";
 import { Subscan } from "./subscan";
+import { asc } from "./score";
 
 type NominatorGroup = NominatorConfig[];
 
 type SpawnedNominatorGroup = Nominator[];
 
+// The number of nominations a nominator can get in the set.
 export const autoNumNominations = async (
   api: ApiPromise,
-  nominator: Nominator
+  nominator: Nominator,
+  db?: Db
 ): Promise<number> => {
   // Get the denomination for the chain
   const chainType = await api.rpc.system.chain();
@@ -107,14 +111,73 @@ export const autoNumNominations = async (
       amount++;
     }
   }
-  const avg = stashBal / amount;
+
   const nominationNum = Math.min(amount, 24);
+  const avg = stashBal / nominationNum;
+
+  if (db) {
+    await db.setNominatorAvgStake(nominator.address, avg);
+  }
 
   logger.info(
     `{Scorekeeper::autoNom} stash: ${stash} with balance ${stashBal} can elect ${nominationNum} validators, each having ~${avg} stake`
   );
 
   return nominationNum;
+};
+
+// The avg stake amount (human denominated) of validators from a nominator with a given balance
+export const autoNominationsStake = async (
+  api: ApiPromise,
+  bonded: number
+): Promise<number> => {
+  // Get the denomination for the chain
+  const chainType = await api.rpc.system.chain();
+  const denom =
+    chainType.toString() == "Polkadot" ? 10000000000 : 1000000000000;
+
+  const stashBal = bonded / denom;
+
+  // Query the staking info of the validator set
+  const query = await api.derive.staking.electedInfo();
+  const { info } = query;
+
+  const totalStakeAmounts = [];
+
+  // add formatted totals to list
+  for (const validator of info) {
+    const { exposure } = validator;
+    const { total, own, others } = exposure;
+    // @ts-ignore
+    const formattedTotal = parseFloat(total.toBigInt()) / denom;
+    totalStakeAmounts.push(formattedTotal);
+  }
+
+  const sorted = totalStakeAmounts.sort((a, b) => a - b);
+
+  let sum = 0;
+  let amount = 1;
+
+  // Loop until we find the amount of validators that the account can get in.
+  while (sum < stashBal) {
+    // An offset so the slice isn't the immediate lowest validators in the set
+    const offset = 5;
+    const lowestNum = sorted.slice(offset, offset + amount);
+    sum = lowestNum.reduce((a, b) => a + b, 0);
+
+    if (sum < stashBal) {
+      amount++;
+    }
+  }
+
+  const nominationNum = Math.min(amount, 24);
+  const avg = stashBal / nominationNum;
+
+  logger.info(
+    `{Scorekeeper::autoNomStake} account balance ${stashBal} can elect ${nominationNum} validators, each having ~${avg} stake`
+  );
+
+  return avg;
 };
 
 export default class ScoreKeeper {
@@ -245,7 +308,7 @@ export default class ScoreKeeper {
       this.config.constraints.skipStakedDestination,
       this.config.constraints.skipClientUpgrade,
       this.config.constraints.skipUnclaimed,
-      this.config.global.networkPrefix == 2 ? FIFTY_KSM : FIVE_THOUSAND_DOT,
+      this.config.global.networkPrefix == 2 ? TEN_KSM : FIVE_THOUSAND_DOT,
       this.config.global.networkPrefix == 2 ? TEN_PERCENT : THREE_PERCENT,
       this.config.global.networkPrefix == 2
         ? KUSAMA_FOUR_DAYS_ERAS
@@ -325,7 +388,7 @@ export default class ScoreKeeper {
 
   // Adds nominators from the config
   async addNominatorGroup(nominatorGroup: NominatorGroup): Promise<boolean> {
-    const group = [];
+    let group = [];
     const now = getNow();
     for (const nomCfg of nominatorGroup) {
       const nom = this._spawn(nomCfg, this.config.global.networkPrefix);
@@ -343,19 +406,23 @@ export default class ScoreKeeper {
         const [bonded, err] = await this.chaindata.getBondedAmount(stash);
         const proxy = nom.isProxy ? nom.address : "";
         const proxyDelay = nom.proxyDelay;
+        const avgStake = await autoNominationsStake(api, bonded);
         await this.db.addNominator(
           nom.controller,
           stash,
           proxy,
           bonded,
           now,
-          proxyDelay
+          proxyDelay,
+          avgStake
         );
         // Create a new accounting record in case one doesn't exist.
         await this.db.newAccountingRecord(stash, nom.controller);
         group.push(nom);
       }
     }
+    // Sort the group by the lowest avg stake
+    group = group.sort((a, b) => a.avgStake - b.avgStake);
     this.nominatorGroups.push(group);
 
     const nominatorGroupString = (

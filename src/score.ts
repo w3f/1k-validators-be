@@ -58,6 +58,15 @@ export const scaled = (value, arr) => {
   return (value - aq10) / (aq90 - aq10);
 };
 
+// Scale the value in between defined quartile ranges
+export const scaledDefined = (value, arr, lowQuartile, highQuartile) => {
+  const lowQ = quantile(arr, lowQuartile);
+  const highQ = quantile(arr, highQuartile);
+  if (value <= lowQ) return 0;
+  if (value >= highQ) return 1;
+  return (value - lowQ) / (highQ - lowQ);
+};
+
 export const getStats = (arr) => {
   const arrSorted = arr.length != 0 ? asc(arr) : [];
   const arrAbsMin = arr.length != 0 ? absMin(arr) : 0;

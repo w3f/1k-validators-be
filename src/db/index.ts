@@ -335,7 +335,7 @@ export default class Db {
 
     if (!data) return false;
 
-    logger.info(`Roporting best block for ${data.name}: ${details}`);
+    // logger.info(`Reporting best block for ${data.name}: ${details}`);
 
     // If the node was previously deemed offline
     if (data.offlineSince && data.offlineSince !== 0) {
@@ -583,7 +583,8 @@ export default class Db {
     proxy: string,
     bonded: number,
     now: number,
-    proxyDelay: number
+    proxyDelay: number,
+    avgStake: number
   ): Promise<boolean> {
     logger.info(`(Db::addNominator) Adding ${address} at ${now}.`);
 
@@ -595,6 +596,7 @@ export default class Db {
         proxy,
         bonded,
         proxyDelay,
+        avgStake,
         current: [],
         lastNomination: 0,
         createdAt: now,
@@ -612,6 +614,24 @@ export default class Db {
         proxy,
         bonded,
         proxyDelay,
+        avgStake,
+      }
+    );
+  }
+
+  // Updates the avg stake amount of a nominator
+  async setNominatorAvgStake(
+    address: string,
+    avgStake: number
+  ): Promise<boolean> {
+    const data = await this.nominatorModel.findOne({ address });
+    if (!data) return;
+    return this.nominatorModel.findOneAndUpdate(
+      {
+        address,
+      },
+      {
+        avgStake,
       }
     );
   }
@@ -1696,6 +1716,7 @@ export default class Db {
     locationWeight: number,
     councilStakeStats: any,
     councilStakeWeight: number,
+    democracyStats: any,
     democracyWeight: number,
     updated: number
   ): Promise<boolean> {
@@ -1732,6 +1753,7 @@ export default class Db {
         locationWeight,
         councilStakeStats,
         councilStakeWeight,
+        democracyStats,
         democracyWeight,
         updated,
       });
@@ -1766,6 +1788,7 @@ export default class Db {
           locationWeight,
           councilStakeStats,
           councilStakeWeight,
+          democracyStats,
           democracyWeight,
           updated,
         }

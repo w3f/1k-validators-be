@@ -95,7 +95,11 @@ export const autoNumNominations = async (
     totalStakeAmounts.push(formattedTotal);
   }
 
-  const sorted = totalStakeAmounts.sort((a, b) => a - b);
+  const sorted = totalStakeAmounts
+    .sort((a, b) => a - b)
+    .filter((c) => {
+      c != 0;
+    });
 
   let sum = 0;
   let amount = 1;
@@ -153,7 +157,11 @@ export const autoNominationsStake = async (
     totalStakeAmounts.push(formattedTotal);
   }
 
-  const sorted = totalStakeAmounts.sort((a, b) => a - b);
+  const sorted = totalStakeAmounts
+    .sort((a, b) => a - b)
+    .filter((c) => {
+      c != 0;
+    });
 
   let sum = 0;
   let amount = 1;

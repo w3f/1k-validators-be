@@ -145,7 +145,7 @@ export default class Nominator {
         const innerTx = api.tx.staking.nominate(targets);
         const callHash = innerTx.method.hash.toString();
 
-        const outerTx = api.tx.proxy.proxy(this.address, "Staking", innerTx);
+        const outerTx = api.tx.proxy.proxy(this.controller, "Staking", innerTx);
 
         const [didSend, finalizedBlockHash] = await this.sendStakingTx(
           outerTx,

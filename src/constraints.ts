@@ -461,7 +461,7 @@ export class OTV implements Constraints {
         democracyScore +
         offlineScore;
 
-      const randomness = 1 + Math.random() * 0.05;
+      const randomness = 1 + Math.random() * 0.15;
 
       const score = {
         total: aggregate * randomness,

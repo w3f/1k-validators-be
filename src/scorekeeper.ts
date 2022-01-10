@@ -684,7 +684,7 @@ export default class ScoreKeeper {
     const proxyTxs = await this.db.getAllDelayedTxs();
 
     // If the round was started and there are any pending proxy txs skip the round
-    const NUM_NOMINATORS = 3;
+    const NUM_NOMINATORS = 20;
     if (proxyTxs.length >= NUM_NOMINATORS) {
       const infoMsg = `(Scorekeeper::startRound) round was started with ${proxyTxs.length} pending proxy txs. Skipping Round.`;
       logger.info(infoMsg);

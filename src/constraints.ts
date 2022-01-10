@@ -327,8 +327,7 @@ export class OTV implements Constraints {
     const councilStakeValues = validCandidates.map((candidate) => {
       return candidate.councilStake ? candidate.councilStake : 0;
     });
-    const councilStakeStats =
-      councilStakeValues.length > 0 ? getStats(councilStakeValues) : [];
+    const councilStakeStats = getStats(councilStakeValues);
 
     // Democracy
     const democracyValues = validCandidates.map((candidate) => {

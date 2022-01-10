@@ -23,6 +23,7 @@ import {
   q75,
   q90,
   scaled,
+  scaledDefined,
   std,
 } from "./score";
 
@@ -328,12 +329,12 @@ export class OTV implements Constraints {
     });
     const councilStakeStats =
       councilStakeValues.length > 0 ? getStats(councilStakeValues) : [];
-    logger.info(
-      `{Constraints::councilStake} values ${JSON.stringify(councilStakeValues)}`
-    );
-    logger.info(
-      `{Constraints::councilStake} stats ${JSON.stringify(councilStakeStats)}`
-    );
+
+    // Democracy
+    const democracyValues = validCandidates.map((candidate) => {
+      return candidate.democracyVoteCount;
+    });
+    const democracyStats = getStats(democracyValues);
 
     // Create DB entry for Validator Score Metadata
     await db.setValidatorScoreMetadata(
@@ -359,17 +360,27 @@ export class OTV implements Constraints {
       this.LOCATION_WEIGHT,
       councilStakeStats,
       this.COUNCIL_WEIGHT,
+      democracyStats,
       this.DEMOCRACY_WEIGHT,
       Date.now()
     );
 
     for (const candidate of validCandidates) {
-      const scaledInclusion = scaled(candidate.inclusion, inclusionValues);
+      // Scale inclusion between the 20th and 75th percentiles
+      const scaledInclusion = scaledDefined(
+        candidate.inclusion,
+        inclusionValues,
+        0.2,
+        0.75
+      );
       const inclusionScore = (1 - scaledInclusion) * this.INCLUSION_WEIGHT;
 
-      const scaledSpanInclusion = scaled(
+      // Scale inclusion between the 20th and 75h percentiles
+      const scaledSpanInclusion = scaledDefined(
         candidate.spanInclusion,
-        spanInclusionValues
+        spanInclusionValues,
+        0.2,
+        0.75
       );
       const spanInclusionScore =
         (1 - scaledSpanInclusion) * this.SPAN_INCLUSION_WEIGHT;
@@ -386,14 +397,17 @@ export class OTV implements Constraints {
       const scaledRank = scaled(candidate.rank, rankValues);
       const rankScore = scaledRank * this.RANK_WEIGHT;
 
-      const scaledUnclaimed = candidate.unclaimedEras
-        ? scaled(candidate.unclaimedEras.length, unclaimedValues)
+      // Subtract the UNCLAIMED WEIGHT for each unclaimed era
+      const unclaimedScore = candidate.unclaimedEras
+        ? -1 * candidate.unclaimedEras.length * this.UNCLAIMED_WEIGHT
         : 0;
-      const unclaimedScore = (1 - scaledUnclaimed) * this.UNCLAIMED_WEIGHT;
 
-      const scaledBonded = scaled(
+      // Scale bonding based on the 5th and 85th percentile
+      const scaledBonded = scaledDefined(
         candidate.bonded ? candidate.bonded : 0,
-        bondedValues
+        bondedValues,
+        0.05,
+        0.85
       );
       const bondedScore = scaledBonded * this.BONDED_WEIGHT;
 
@@ -408,15 +422,28 @@ export class OTV implements Constraints {
         if (candidate.location == location.name) return location.numberOfNodes;
       });
       const candidateLocation = filteredLocation[0]?.numberOfNodes;
-      const scaledLocation = scaled(candidateLocation, locationValues);
+      // Scale the location value to between the 10th and 95th percentile
+      const scaledLocation = scaledDefined(
+        candidateLocation,
+        locationValues,
+        0.1,
+        0.95
+      );
       const locationScore = (1 - scaledLocation) * this.LOCATION_WEIGHT || 0;
 
-      const scaledCouncilStake = scaled(
-        candidate.councilStake,
-        councilStakeValues
-      );
-      const councilStakeScore = scaledCouncilStake * this.COUNCIL_WEIGHT;
+      // Score the council backing weight based on what percentage of their staking bond it is
+      const councilStakeScore =
+        candidate.councilStake >= 0.75 * candidate.bonded
+          ? this.COUNCIL_WEIGHT
+          : candidate.councilStake >= 0.5 * candidate.bonded
+          ? 0.75 * this.COUNCIL_WEIGHT
+          : candidate.councilStake >= 0.25 * candidate.bonded
+          ? 0.5 * this.COUNCIL_WEIGHT
+          : candidate.councilStake < 0.25 * candidate.bonded
+          ? 0.25 * this.COUNCIL_WEIGHT
+          : 0;
 
+      // Score democracy based on how many proposals have been voted on
       const democracyScore =
         candidate.democracyVoteCount * this.DEMOCRACY_WEIGHT;
 
@@ -430,8 +457,8 @@ export class OTV implements Constraints {
         unclaimedScore +
         bondedScore +
         locationScore +
-        //councilStakeScore +
-        // democracyScore +
+        councilStakeScore +
+        democracyScore +
         offlineScore;
 
       const randomness = 1 + Math.random() * 0.05;
@@ -516,16 +543,16 @@ export class OTV implements Constraints {
   // bonded - higher is preferable
   // Location - lower is preferable
   INCLUSION_WEIGHT = 40;
-  SPAN_INCLUSION_WEIGHT = 40;
+  SPAN_INCLUSION_WEIGHT = 60;
   DISCOVERED_WEIGHT = 5;
   NOMINATED_WEIGHT = 10;
   RANK_WEIGHT = 5;
-  UNCLAIMED_WEIGHT = 15;
-  BONDED_WEIGHT = 13;
+  UNCLAIMED_WEIGHT = 10;
+  BONDED_WEIGHT = 50;
   FAULTS_WEIGHT = 5;
   OFFLINE_WEIGHT = 2;
   LOCATION_WEIGHT = 20;
-  COUNCIL_WEIGHT = 30;
+  COUNCIL_WEIGHT = 50;
 
   DEMOCRACY_WEIGHT = 10;
 

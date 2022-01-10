@@ -185,6 +185,8 @@ export const NominatorSchema = new Schema({
   proxy: String,
   // The amount bonded
   bonded: Number,
+  // The average amount of human denominated stake the nominator can get all it's nominations in the set with
+  avgStake: { type: Number, default: 0 },
   // the amount of blocks of time delay
   proxyDelay: Number,
   current: [],
@@ -443,6 +445,7 @@ export const ValidatorScoreMetadataSchema = new Schema({
     mean: Number,
     standardDeviation: Number,
   },
+  locationWeight: Number,
   councilStakeWeight: Number,
   councilStakeStats: {
     values: [Number],
@@ -456,7 +459,18 @@ export const ValidatorScoreMetadataSchema = new Schema({
     mean: Number,
     standardDeviation: Number,
   },
-  locationWeight: Number,
+  democracyStats: {
+    values: [Number],
+    absoluteMin: Number,
+    absoluteMax: Number,
+    q10: Number,
+    q25: Number,
+    q50: Number,
+    q75: Number,
+    q90: Number,
+    mean: Number,
+    standardDeviation: Number,
+  },
   democracyWeight: Number,
   // The last time one was updated
   updated: Number,

@@ -386,7 +386,7 @@ export default class ScoreKeeper {
 
   // Adds nominators from the config
   async addNominatorGroup(nominatorGroup: NominatorGroup): Promise<boolean> {
-    let group = [];
+    const group = [];
     const now = getNow();
     for (const nomCfg of nominatorGroup) {
       const nom = this._spawn(nomCfg, this.config.global.networkPrefix);
@@ -404,7 +404,7 @@ export default class ScoreKeeper {
         const [bonded, err] = await this.chaindata.getBondedAmount(stash);
         const proxy = nom.isProxy ? nom.address : "";
         const proxyDelay = nom.proxyDelay;
-        const avgStake = await autoNominationsStake(api, bonded);
+        // const avgStake = await autoNominationsStake(api, bonded);
         await this.db.addNominator(
           nom.controller,
           stash,
@@ -412,7 +412,7 @@ export default class ScoreKeeper {
           bonded,
           now,
           proxyDelay,
-          avgStake
+          0 //avgStake
         );
         // Create a new accounting record in case one doesn't exist.
         await this.db.newAccountingRecord(stash, nom.controller);
@@ -420,7 +420,7 @@ export default class ScoreKeeper {
       }
     }
     // Sort the group by the lowest avg stake
-    group = group.sort((a, b) => a.avgStake - b.avgStake);
+    // group = group.sort((a, b) => a.avgStake - b.avgStake);
     this.nominatorGroups.push(group);
 
     const nominatorGroupString = (

@@ -43,7 +43,14 @@ export default class Nominator {
     this._isProxy = cfg.isProxy || false;
 
     // If the proxyDelay is not set in the config, default to TIME_DELAY_BLOCKS (~18 hours, 10800 blocks)
-    this._proxyDelay = cfg.proxyDelay || TIME_DELAY_BLOCKS;
+    this._proxyDelay = cfg.proxyDelay == 0 ? cfg.proxyDelay : TIME_DELAY_BLOCKS;
+
+    logger.info(
+      `{nominator::proxyDelay} config proxy delay: ${cfg.proxyDelay}`
+    );
+    logger.info(
+      `{nominator::proxy} nominator proxy delay: ${this._proxyDelay}`
+    );
 
     const keyring = new Keyring({
       type: "sr25519",

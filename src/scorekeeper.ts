@@ -92,14 +92,12 @@ export const autoNumNominations = async (
     const { total, own, others } = exposure;
     // @ts-ignore
     const formattedTotal = parseFloat(total.toBigInt()) / denom;
-    totalStakeAmounts.push(formattedTotal);
+    if (formattedTotal > 0) {
+      totalStakeAmounts.push(formattedTotal);
+    }
   }
 
-  const sorted = totalStakeAmounts
-    .sort((a, b) => a - b)
-    .filter((c) => {
-      c != 0;
-    });
+  const sorted = totalStakeAmounts.sort((a, b) => a - b);
 
   let sum = 0;
   let amount = 1;
@@ -154,14 +152,12 @@ export const autoNominationsStake = async (
     const { total, own, others } = exposure;
     // @ts-ignore
     const formattedTotal = parseFloat(total.toBigInt()) / denom;
-    totalStakeAmounts.push(formattedTotal);
+    if (formattedTotal > 0) {
+      totalStakeAmounts.push(formattedTotal);
+    }
   }
 
-  const sorted = totalStakeAmounts
-    .sort((a, b) => a - b)
-    .filter((c) => {
-      c != 0;
-    });
+  const sorted = totalStakeAmounts.sort((a, b) => a - b);
 
   let sum = 0;
   let amount = 1;

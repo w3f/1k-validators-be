@@ -420,7 +420,7 @@ export default class ScoreKeeper {
       }
     }
     // Sort the group by the lowest avg stake
-    group = asc(group);
+    group = group.sort((a, b) => a.avgStake - b.avgStake);
     this.nominatorGroups.push(group);
 
     const nominatorGroupString = (

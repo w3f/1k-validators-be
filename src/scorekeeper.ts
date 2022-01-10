@@ -404,7 +404,7 @@ export default class ScoreKeeper {
         const [bonded, err] = await this.chaindata.getBondedAmount(stash);
         const proxy = nom.isProxy ? nom.address : "";
         const proxyDelay = nom.proxyDelay;
-        // const avgStake = await autoNominationsStake(api, bonded);
+        const avgStake = await autoNominationsStake(api, bonded);
         await this.db.addNominator(
           nom.controller,
           stash,

@@ -187,6 +187,8 @@ export const NominatorSchema = new Schema({
   bonded: Number,
   // The average amount of human denominated stake the nominator can get all it's nominations in the set with
   avgStake: { type: Number, default: 0 },
+  // The estimated amount of nomiantors to nominate
+  nominateAmount: { type: Number, default: 0 },
   // the amount of blocks of time delay
   proxyDelay: Number,
   current: [],

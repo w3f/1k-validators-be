@@ -91,7 +91,7 @@ export default class Nominator {
     const api = await this.handler.getApi();
     const ledger = await api.query.staking.ledger(this.controller);
     if (!ledger.isSome) {
-      // logger.warn(`Account ${this.controller} is not a controller account!`);
+      logger.warn(`Account ${this.controller} is not a controller account!`);
       return "0x";
     }
     const { stash } = ledger.unwrap();
@@ -105,7 +105,7 @@ export default class Nominator {
     const payee = await api.query.staking.payee(stash);
     if (payee) {
       // @ts-ignore
-      return payee.toJSON().account ? payee.toJSON().account : payee;
+      return payee.toJSON().account ? payee.toJSON().account : payee.toString();
     }
   }
 

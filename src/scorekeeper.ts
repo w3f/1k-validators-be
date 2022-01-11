@@ -389,7 +389,7 @@ export default class ScoreKeeper {
           bonded,
           now,
           proxyDelay,
-          payee,
+          '0x',//payee,
           targetValStake,
           nominationNum,
           newBondedAmount

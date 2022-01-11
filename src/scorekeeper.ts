@@ -411,6 +411,7 @@ export default class ScoreKeeper {
         const proxy = nom.isProxy ? nom.address : "";
         const proxyDelay = nom.proxyDelay;
         const avgStake = await autoNominationsStake(api, bonded);
+        const stakeAmount = await autoNumNominations(api, nom, this.db);
         await this.db.addNominator(
           nom.controller,
           stash,
@@ -418,7 +419,8 @@ export default class ScoreKeeper {
           bonded,
           now,
           proxyDelay,
-          avgStake
+          avgStake,
+          stakeAmount
         );
         // Create a new accounting record in case one doesn't exist.
         await this.db.newAccountingRecord(stash, nom.controller);
@@ -772,7 +774,7 @@ export default class ScoreKeeper {
           nominator.maxNominations == "auto"
             ? await (async () => {
                 const api = await this.chaindata.handler.getApi();
-                return autoNumNominations(api, nominator);
+                return autoNumNominations(api, nominator, this.db);
               })()
             : nominator.maxNominations;
 

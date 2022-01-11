@@ -132,8 +132,7 @@ export const autoNumNominations = async (
   // The total amount of validators to nominate
   const adjustedNominationAmount = Math.min(amount, 24);
   // The total amount of funds the nominator should have bonded
-  const newBondedAmount =
-    (1 + BALANCE_BUFFER_PERCENT) * adjustedNominationAmount;
+  const newBondedAmount = (1 + BALANCE_BUFFER_PERCENT) * sum;
   // The target amount for each validator
   const targetValStake = newBondedAmount / adjustedNominationAmount;
 

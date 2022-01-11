@@ -25,7 +25,7 @@ import { startClearAccumulatedOfflineTimeJob, startMonitorJob } from "./cron";
 
 const isCI = process.env.CI;
 
-const version = "v2.5.55";
+const version = "v2.5.56";
 
 const catchAndQuit = async (fn: any) => {
   try {
@@ -39,7 +39,7 @@ const catchAndQuit = async (fn: any) => {
 const start = async (cmd: { config: string }) => {
   const config = loadConfigDir(cmd.config);
 
-  logger.info(`{Start} Starting the backend services.`);
+  logger.info(`{Start} Starting the backend services. ${version}`);
 
   logger.info(`{Start} Network prefix: ${config.global.networkPrefix}`);
 

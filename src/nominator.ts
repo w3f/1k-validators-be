@@ -101,7 +101,8 @@ export default class Nominator {
 
   public async payee(): Promise<any> {
     const api = await this.handler.getApi();
-    const payee = await api.query.staking.payee(this.controller);
+    const stash = await this.stash();
+    const payee = await api.query.staking.payee(stash);
     if (payee) {
       // @ts-ignore
       return payee.toJSON().account ? payee.toJSON().account : payee;

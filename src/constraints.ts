@@ -431,14 +431,16 @@ export class OTV implements Constraints {
       const locationScore = (1 - scaledLocation) * this.LOCATION_WEIGHT || 0;
 
       // Score the council backing weight based on what percentage of their staking bond it is
+      const denom = await this.chaindata.getDenom();
+      const formattedBonded = candidate.bonded / denom;
       const councilStakeScore =
-        candidate.councilStake >= 0.75 * candidate.bonded
+        candidate.councilStake >= 0.75 * formattedBonded
           ? this.COUNCIL_WEIGHT
-          : candidate.councilStake >= 0.5 * candidate.bonded
+          : candidate.councilStake >= 0.5 * formattedBonded
           ? 0.75 * this.COUNCIL_WEIGHT
-          : candidate.councilStake >= 0.25 * candidate.bonded
+          : candidate.councilStake >= 0.25 * formattedBonded
           ? 0.5 * this.COUNCIL_WEIGHT
-          : candidate.councilStake < 0.25 * candidate.bonded
+          : candidate.councilStake < 0.25 * formattedBonded
           ? 0.25 * this.COUNCIL_WEIGHT
           : 0;
 
@@ -552,7 +554,6 @@ export class OTV implements Constraints {
   OFFLINE_WEIGHT = 2;
   LOCATION_WEIGHT = 40;
   COUNCIL_WEIGHT = 50;
-
   DEMOCRACY_WEIGHT = 10;
 
   /// At the end of a nomination round this is the logic that separates the

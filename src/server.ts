@@ -121,7 +121,8 @@ export default class Server {
     });
 
     router.get(API.GetNominators, async (ctx) => {
-      const allNominators = await this.db.allNominators();
+      let allNominators = await this.db.allNominators();
+      allNominators = allNominators.sort((a, b) => a.avgStake - b.avgStake);
       ctx.body = allNominators;
     });
 

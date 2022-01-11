@@ -45,6 +45,12 @@ export const POLKADOT_APPROX_ERA_LENGTH_IN_BLOCKS = 14400;
 /// On a Local Testnet eras are 3 minutes with 3 second blocks.
 export const TESTNET_APPROX_ERA_LENGTH_IN_BLOCKS = 60;
 
+// The buffer % we want to remain free in an account - 0.2%
+export const BALANCE_BUFFER_PERCENT = 0.002;
+
+// the buffer hard stop - 20 tokens
+export const BALANCE_BUFFER_AMOUNT = 20;
+
 /// List of Kusama endpoints we can switch between.
 export const KusamaEndpoints = [
   "wss://kusama-rpc.polkadot.io",

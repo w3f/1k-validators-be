@@ -375,7 +375,7 @@ export default class ScoreKeeper {
         continue;
       } else {
         const stash = await nom.stash();
-        const payee = await nom.payee();
+        // const payee = await nom.payee();
         const [bonded, err] = await this.chaindata.getBondedAmount(stash);
         const proxy = nom.isProxy ? nom.address : "";
         const proxyDelay = nom.proxyDelay;

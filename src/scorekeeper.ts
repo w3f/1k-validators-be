@@ -119,7 +119,7 @@ export const autoNumNominations = async (
     const lowestNum = sorted.slice(offset, offset + amount);
     sum = lowestNum.reduce((a, b) => a + b, 0);
 
-    if (sum < stashBal) {
+    if (sum < bufferedBalance) {
       amount++;
     } else {
       amount--;
@@ -380,7 +380,7 @@ export default class ScoreKeeper {
         const proxy = nom.isProxy ? nom.address : "";
         const proxyDelay = nom.proxyDelay;
 
-        const { adjustedNominationAmount, newBondedAmount, targetValStake } =
+        const { nominationNum, newBondedAmount, targetValStake } =
           await autoNumNominations(api, nom, this.db);
         await this.db.addNominator(
           nom.controller,
@@ -391,7 +391,7 @@ export default class ScoreKeeper {
           proxyDelay,
           payee,
           targetValStake,
-          adjustedNominationAmount,
+          nominationNum,
           newBondedAmount
         );
         // Create a new accounting record in case one doesn't exist.

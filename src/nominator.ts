@@ -99,6 +99,15 @@ export default class Nominator {
     return stash;
   }
 
+  public async payee(): Promise<any> {
+    const api = await this.handler.getApi();
+    const payee = await api.query.staking.payee(this.controller);
+    if (payee) {
+      // @ts-ignore
+      return payee.toJSON().account ? payee.toJSON().account : payee;
+    }
+  }
+
   public async nominate(targets: Stash[], dryRun = false): Promise<boolean> {
     const now = new Date().getTime();
 

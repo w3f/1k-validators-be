@@ -584,8 +584,10 @@ export default class Db {
     bonded: number,
     now: number,
     proxyDelay: number,
+    rewaredDestination: string,
     avgStake: number,
-    nominateAmount: number
+    nominateAmount: number,
+    newBondedAmount: number
   ): Promise<boolean> {
     logger.info(`(Db::addNominator) Adding ${address} at ${now}.`);
 
@@ -597,8 +599,10 @@ export default class Db {
         proxy,
         bonded,
         proxyDelay,
+        rewaredDestination,
         avgStake,
         nominateAmount,
+        newBondedAmount,
         current: [],
         lastNomination: 0,
         createdAt: now,
@@ -616,8 +620,10 @@ export default class Db {
         proxy,
         bonded,
         proxyDelay,
+        rewaredDestination,
         avgStake,
         nominateAmount,
+        newBondedAmount,
       }
     );
   }

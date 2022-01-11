@@ -16,6 +16,8 @@ import {
   THREE_PERCENT,
   SIXTEEN_HOURS,
   TEN_KSM,
+  BALANCE_BUFFER_PERCENT,
+  BALANCE_BUFFER_AMOUNT,
 } from "./constants";
 import { checkAllValidateIntentions, OTV } from "./constraints";
 import Db from "./db";
@@ -67,18 +69,26 @@ export const autoNumNominations = async (
   api: ApiPromise,
   nominator: Nominator,
   db?: Db
-): Promise<number> => {
+): Promise<any> => {
   // Get the denomination for the chain
   const chainType = await api.rpc.system.chain();
   const denom =
     chainType.toString() == "Polkadot" ? 10000000000 : 1000000000000;
 
-  // Get the nominator stash balance
+  // Get the full nominator stash balance (free + reserved)
   const stash = await nominator.stash();
   if (!stash) return 0;
   const stashQuery = await api.query.system.account(stash);
-  // @ts-ignore
-  const stashBal = parseFloat(stashQuery.data.free) / denom;
+
+  const stashBal =
+    // @ts-ignore
+    (parseFloat(stashQuery.data.free) + parseFloat(stashQuery.data.reserved)) /
+    denom;
+
+  // get the balance minus a buffer to remain free
+  const bufferedBalance =
+    stashBal -
+    Math.max(BALANCE_BUFFER_PERCENT * stashBal, BALANCE_BUFFER_AMOUNT);
 
   // Query the staking info of the validator set
   const query = await api.derive.staking.electedInfo();
@@ -103,85 +113,43 @@ export const autoNumNominations = async (
   let amount = 1;
 
   // Loop until we find the amount of validators that the account can get in.
-  while (sum < stashBal) {
+  while (sum < bufferedBalance) {
     // An offset so the slice isn't the immediate lowest validators in the set
     const offset = 5;
     const lowestNum = sorted.slice(offset, offset + amount);
     sum = lowestNum.reduce((a, b) => a + b, 0);
 
-    if (sum < stashBal) {
+    if (sum < bufferedBalance) {
       amount++;
+    } else {
+      amount--;
+      const lowestNum = sorted.slice(offset, offset + amount);
+      sum = lowestNum.reduce((a, b) => a + b, 0);
+      break;
     }
   }
 
-  const nominationNum = Math.min(amount, 24);
-  const avg = stashBal / nominationNum;
+  // The total amount of validators to nominate
+  const adjustedNominationAmount = Math.min(amount, 24);
+  // The total amount of funds the nominator should have bonded
+  const newBondedAmount =
+    (1 + BALANCE_BUFFER_PERCENT) * adjustedNominationAmount;
+  // The target amount for each validator
+  const targetValStake = newBondedAmount / adjustedNominationAmount;
 
   if (db) {
-    await db.setNominatorAvgStake(nominator.address, avg);
+    await db.setNominatorAvgStake(nominator.address, targetValStake);
   }
 
   logger.info(
-    `{Scorekeeper::autoNom} stash: ${stash} with balance ${stashBal} can elect ${nominationNum} validators, each having ~${avg} stake`
+    `{Scorekeeper::autoNom} stash: ${stash} with balance ${stashBal} should adjust balance to ${newBondedAmount} and can elect ${adjustedNominationAmount} validators, each having ~${targetValStake} stake`
   );
 
-  return nominationNum;
-};
-
-// The avg stake amount (human denominated) of validators from a nominator with a given balance
-export const autoNominationsStake = async (
-  api: ApiPromise,
-  bonded: number
-): Promise<number> => {
-  // Get the denomination for the chain
-  const chainType = await api.rpc.system.chain();
-  const denom =
-    chainType.toString() == "Polkadot" ? 10000000000 : 1000000000000;
-
-  const stashBal = bonded / denom;
-
-  // Query the staking info of the validator set
-  const query = await api.derive.staking.electedInfo();
-  const { info } = query;
-
-  const totalStakeAmounts = [];
-
-  // add formatted totals to list
-  for (const validator of info) {
-    const { exposure } = validator;
-    const { total, own, others } = exposure;
-    // @ts-ignore
-    const formattedTotal = parseFloat(total.toBigInt()) / denom;
-    if (formattedTotal > 0) {
-      totalStakeAmounts.push(formattedTotal);
-    }
-  }
-
-  const sorted = totalStakeAmounts.sort((a, b) => a - b);
-
-  let sum = 0;
-  let amount = 1;
-
-  // Loop until we find the amount of validators that the account can get in.
-  while (sum < stashBal) {
-    // An offset so the slice isn't the immediate lowest validators in the set
-    const offset = 5;
-    const lowestNum = sorted.slice(offset, offset + amount);
-    sum = lowestNum.reduce((a, b) => a + b, 0);
-
-    if (sum < stashBal) {
-      amount++;
-    }
-  }
-
-  const nominationNum = Math.min(amount, 24);
-  const avg = stashBal / nominationNum;
-
-  logger.info(
-    `{Scorekeeper::autoNomStake} account balance ${stashBal} can elect ${nominationNum} validators, each having ~${avg} stake`
-  );
-
-  return avg;
+  return {
+    nominationNum: adjustedNominationAmount,
+    newBondedAmount: newBondedAmount,
+    targetValStake: targetValStake,
+  };
 };
 
 export default class ScoreKeeper {
@@ -407,11 +375,13 @@ export default class ScoreKeeper {
         continue;
       } else {
         const stash = await nom.stash();
+        const payee = await nom.payee();
         const [bonded, err] = await this.chaindata.getBondedAmount(stash);
         const proxy = nom.isProxy ? nom.address : "";
         const proxyDelay = nom.proxyDelay;
-        const avgStake = await autoNominationsStake(api, bonded);
-        const stakeAmount = await autoNumNominations(api, nom, this.db);
+
+        const { nominationNum, newBondedAmount, targetValStake } =
+          await autoNumNominations(api, nom, this.db);
         await this.db.addNominator(
           nom.controller,
           stash,
@@ -419,8 +389,10 @@ export default class ScoreKeeper {
           bonded,
           now,
           proxyDelay,
-          avgStake,
-          stakeAmount
+          payee,
+          targetValStake,
+          nominationNum,
+          newBondedAmount
         );
         // Create a new accounting record in case one doesn't exist.
         await this.db.newAccountingRecord(stash, nom.controller);

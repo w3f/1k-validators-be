@@ -192,7 +192,7 @@ export const NominatorSchema = new Schema({
   // the amount of blocks of time delay
   proxyDelay: Number,
   // the reward destination
-  rewardDestination: Number,
+  rewardDestination: String,
   // The amount the account should change for it's bonding
   newBondedAmount: Number,
   current: [],

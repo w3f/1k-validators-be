@@ -189,6 +189,9 @@ export default class Nominator {
     const now = new Date().getTime();
 
     const api = await this.handler.getApi();
+    const chainType = await api.rpc.system.chain();
+    const denom =
+      chainType.toString() == "Polkadot" ? 10000000000 : 1000000000000;
 
     let tx: SubmittableExtrinsic<"promise">;
 
@@ -198,19 +201,35 @@ export default class Nominator {
     } else if (this._isProxy && this._proxyDelay == 0) {
       // Start a normal proxy tx call
       logger.info(
-        `{Nominator::bond::proxy} starting bond tx for ${this.address} with proxy delay ${this._proxyDelay} blocks. Current bond is ${currentBondedAmount}, setting to ${newBondedAmount}`
+        `{Nominator::bond::proxy} starting bond tx for ${
+          this.controller
+        } with proxy delay ${this._proxyDelay} blocks. Current bond is ${
+          currentBondedAmount / denom
+        }, setting to ${newBondedAmount / denom}`
       );
       let innerTx;
 
       if (currentBondedAmount > newBondedAmount) {
         const unbondDiff = BigInt(currentBondedAmount - newBondedAmount);
+        logger.info(
+          `{Nominator::BondDiff} ${this.controller} with bond: ${
+            currentBondedAmount / denom
+          }  will unbond ${Number(unbondDiff) / denom}`
+        );
         innerTx = api.tx.staking.unbond(unbondDiff);
       } else if (currentBondedAmount < newBondedAmount) {
         const bondExtraDiff = BigInt(newBondedAmount - currentBondedAmount);
+        logger.info(
+          `{Nominator::BondDiff} ${this.controller} with bond: ${
+            currentBondedAmount / denom
+          }  will bond ${Number(bondExtraDiff) / denom} extra`
+        );
         innerTx = api.tx.staking.bondExtra(bondExtraDiff);
       } else {
         logger.warn(
-          `{Nominator::bond} could not compare bonds - currentBondedAmount ${currentBondedAmount} newBondedAmount: ${newBondedAmount}`
+          `{Nominator::bond} could not compare bonds - currentBondedAmount ${currentBondedAmount} newBondedAmount: ${
+            newBondedAmount / denom
+          }`
         );
         return false;
       }
@@ -223,7 +242,11 @@ export default class Nominator {
           newBondedAmount
         );
 
-        const bondMsg = `{Nominator::bond::proxy} non-delay ${this.address} sent tx to bond ${newBondedAmount}: ${didSend} finalized in block #${finalizedBlockHash}`;
+        const bondMsg = `{Nominator::bond::proxy} non-delay ${
+          this.controller
+        } sent tx to set bond to ${
+          newBondedAmount / denom
+        } : ${didSend} finalized in block #${finalizedBlockHash}`;
         logger.info(bondMsg);
         this.bot.sendMessage(bondMsg);
       }

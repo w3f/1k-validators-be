@@ -208,22 +208,26 @@ export default class Nominator {
       } else if (currentBondedAmount < newBondedAmount) {
         const bondExtraDiff = BigInt(newBondedAmount - currentBondedAmount);
         innerTx = api.tx.staking.bondExtra(bondExtraDiff);
+      } else {
+        logger.warn(
+          `{Nominator::bond} could not compare bonds - currentBondedAmount ${currentBondedAmount} newBondedAmount: ${newBondedAmount}`
+        );
+        return false;
       }
 
-      const callHash = innerTx.method.hash.toString();
+      if (innerTx) {
+        const outerTx = api.tx.proxy.proxy(this.controller, "Staking", innerTx);
 
-      const outerTx = api.tx.proxy.proxy(this.controller, "Staking", innerTx);
+        const [didSend, finalizedBlockHash] = await this.sendBondTx(
+          outerTx,
+          newBondedAmount
+        );
 
-      const [didSend, finalizedBlockHash] = await this.sendBondTx(
-        outerTx,
-        newBondedAmount
-      );
-
-      const bondeMsg = `{Nominator::bond::proxy} non-delay ${this.address} sent tx: ${didSend} finalized in block #${finalizedBlockHash}`;
-      logger.info(bondeMsg);
-      this.bot.sendMessage(bondeMsg);
+        const bondMsg = `{Nominator::bond::proxy} non-delay ${this.address} sent tx to bond ${newBondedAmount}: ${didSend} finalized in block #${finalizedBlockHash}`;
+        logger.info(bondMsg);
+        this.bot.sendMessage(bondMsg);
+      }
     }
-
     return true;
   }
 

@@ -741,16 +741,22 @@ export default class ScoreKeeper {
         // The number of nominations to do per nominator account
         // This is either hard coded, or set to "auto", meaning it will find a dynamic amount of validators
         //    to nominate based on the lowest staked validator in the validator set
-        const numNominations =
-          nominator.maxNominations == "auto"
-            ? await (async () => {
-                const api = await this.chaindata.handler.getApi();
-                return autoNumNominations(api, nominator, this.db);
-              })()
-            : nominator.maxNominations;
+        const api = await this.chaindata.handler.getApi();
+        const denom = await this.chaindata.getDenom();
+        const autoNom = await autoNumNominations(api, nominator, this.db);
+        const {
+          nominationNum,
+          newBondedAmount: formattedNewBondedAmount,
+          targetValStake,
+        } = autoNom;
+        const stash = await nominator.stash();
+        // Planck Denominated Bonded Amount
+        const currentBondedAmount = await this.chaindata.getBondedAmount(stash);
+        // Planck Denominated New Bonded Amount
+        const newBondedAmount = formattedNewBondedAmount / denom;
 
         logger.info(
-          `{Scorekeepr::_doNominations} ${nominator.address} max nomindations: ${nominator.maxNominations}, number of nominations: ${numNominations}`
+          `{Scorekeepr::_doNominations} ${nominator.address} number of nominations: ${nominationNum} newBondedAmount: ${newBondedAmount} targetValStake: ${targetValStake}`
         );
 
         // Check the free balance of the account. If it doesn't have a free balance, skip.
@@ -773,8 +779,8 @@ export default class ScoreKeeper {
         }
 
         // Get the target slice based on the amount of nominations to do and increment the counter.
-        const targets = allTargets.slice(counter, counter + numNominations);
-        counter = counter + numNominations;
+        const targets = allTargets.slice(counter, counter + nominationNum);
+        counter = counter + nominationNum;
 
         if (targets.length == 0) {
           logger.info(
@@ -783,6 +789,7 @@ export default class ScoreKeeper {
           return;
         }
 
+        await nominator.adjustBond(newBondedAmount, currentBondedAmount);
         await nominator.nominate(targets, dryRun || this.config.global.dryRun);
 
         // Wait some time between each transaction to avoid nonce issues.
@@ -797,7 +804,6 @@ export default class ScoreKeeper {
           )
         ).join("\n");
 
-        const stash = await nominator.stash();
         if (!stash) continue;
         const name = (await this.db.getChainMetadata()).name;
         const decimals = name == "Kusama" ? 12 : 10;

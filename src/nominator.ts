@@ -153,6 +153,7 @@ export default class Nominator {
         logger.info(
           `{Nominator::nominate::proxy} starting tx for ${this.address} with proxy delay ${this._proxyDelay} blocks`
         );
+
         const innerTx = api.tx.staking.nominate(targets);
         const callHash = innerTx.method.hash.toString();
 
@@ -175,6 +176,52 @@ export default class Nominator {
         logger.info("(Nominator::nominate} Sending extrinsic to network...");
         await this.sendStakingTx(tx, targets);
       }
+    }
+
+    return true;
+  }
+
+  // Adjust bond amounts - inputs are planck denominated
+  public async adjustBond(
+    newBondedAmount: number,
+    currentBondedAmount
+  ): Promise<boolean> {
+    const now = new Date().getTime();
+
+    const api = await this.handler.getApi();
+
+    let tx: SubmittableExtrinsic<"promise">;
+
+    // Start an announcement for a delayed proxy tx
+    if (this._isProxy && this._proxyDelay > 0) {
+      // TODO:
+    } else if (this._isProxy && this._proxyDelay == 0) {
+      // Start a normal proxy tx call
+      logger.info(
+        `{Nominator::bond::proxy} starting bond tx for ${this.address} with proxy delay ${this._proxyDelay} blocks. Current bond is ${currentBondedAmount}, setting to ${newBondedAmount}`
+      );
+      let innerTx;
+
+      if (currentBondedAmount > newBondedAmount) {
+        const unbondDiff = BigInt(currentBondedAmount - newBondedAmount);
+        innerTx = api.tx.staking.unbond(unbondDiff);
+      } else if (currentBondedAmount < newBondedAmount) {
+        const bondExtraDiff = BigInt(newBondedAmount - currentBondedAmount);
+        innerTx = api.tx.staking.bondExtra(bondExtraDiff);
+      }
+
+      const callHash = innerTx.method.hash.toString();
+
+      const outerTx = api.tx.proxy.proxy(this.controller, "Staking", innerTx);
+
+      const [didSend, finalizedBlockHash] = await this.sendBondTx(
+        outerTx,
+        newBondedAmount
+      );
+
+      const bondeMsg = `{Nominator::bond::proxy} non-delay ${this.address} sent tx: ${didSend} finalized in block #${finalizedBlockHash}`;
+      logger.info(bondeMsg);
+      this.bot.sendMessage(bondeMsg);
     }
 
     return true;
@@ -215,7 +262,6 @@ export default class Nominator {
     }
   }
 
-  // Send an already announced staking tx
   sendStakingTx = async (
     tx: SubmittableExtrinsic<"promise">,
     targets: string[]
@@ -336,6 +382,91 @@ export default class Nominator {
           break;
       }
     });
+    return [didSend, finalizedBlockHash];
+  };
+
+  sendBondTx = async (
+    tx: SubmittableExtrinsic<"promise">,
+    newBondAmount: number
+  ): Promise<BooleanResult> => {
+    const now = new Date().getTime();
+    const api = await this.handler.getApi();
+
+    const didSend = true;
+    let finalizedBlockHash;
+
+    logger.info(
+      `{Nominator::bond} sending bonding tx for ${this.controller} for ${newBondAmount}`
+    );
+
+    // const unsub = await tx.signAndSend(this.signer, async (result: any) => {
+    //   const { status, events } = result;
+
+    //   // Handle tx lifecycle
+    //   switch (true) {
+    //     case status.isBroadcast:
+    //       logger.info(
+    //         `{Nominator::nominate} tx for ${this.controller} has been broadcasted`
+    //       );
+    //       break;
+    //     case status.isInBlock:
+    //       logger.info(
+    //         `{Nominator::nominate} tx for ${this.controller} in block`
+    //       );
+    //       break;
+    //     case status.isUsurped:
+    //       logger.info(
+    //         `{Nominator::nominate} tx for ${this.controller} has been usurped: ${status.asUsurped}`
+    //       );
+    //       didSend = false;
+    //       unsub();
+    //       break;
+    //     case status.isFinalized:
+    //       finalizedBlockHash = status.asFinalized;
+    //       didSend = true;
+    //       logger.info(
+    //         `{Nominator::bond} tx is finalized in block ${finalizedBlockHash}`
+    //       );
+
+    //       // Check the events to see if there was any errors - if there are return
+    //       events
+    //         .filter(({ event }) => api.events.system.ExtrinsicFailed.is(event))
+    //         .forEach(
+    //           ({
+    //             event: {
+    //               data: [error, info],
+    //             },
+    //           }) => {
+    //             if (error.isModule) {
+    //               const decoded = api.registry.findMetaError(error.asModule);
+    //               const { docs, method, section } = decoded;
+
+    //               const errorMsg = `{Nominator::bond} tx error:  [${section}.${method}] ${docs.join(
+    //                 " "
+    //               )}`;
+    //               logger.info(errorMsg);
+    //               this.bot.sendMessage(errorMsg);
+    //               didSend = false;
+    //               unsub();
+    //             } else {
+    //               // Other, CannotLookup, BadOrigin, no extra info
+    //               logger.info(
+    //                 `{Nominator::bond} has an error: ${error.toString()}`
+    //               );
+    //               didSend = false;
+    //               unsub();
+    //             }
+    //           }
+    //         );
+    //       unsub();
+    //       break;
+    //     default:
+    //       logger.info(
+    //         `{Nominator::bond} tx from ${this.controller} has another status: ${status}`
+    //       );
+    //       break;
+    //   }
+    // });
     return [didSend, finalizedBlockHash];
   };
 }

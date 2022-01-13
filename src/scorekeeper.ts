@@ -751,7 +751,8 @@ export default class ScoreKeeper {
         } = autoNom;
         const stash = await nominator.stash();
         // Planck Denominated Bonded Amount
-        const currentBondedAmount = await this.chaindata.getBondedAmount(stash);
+        const [currentBondedAmount, bondErr] =
+          await this.chaindata.getBondedAmount(stash);
         // Planck Denominated New Bonded Amount
         const newBondedAmount = formattedNewBondedAmount / denom;
 

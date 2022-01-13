@@ -790,7 +790,10 @@ export default class ScoreKeeper {
           return;
         }
 
-        await nominator.adjustBond(newBondedAmount, currentBondedAmount);
+        await nominator.adjustBond(
+          newBondedAmount,
+          Number(currentBondedAmount)
+        );
         await sleep(10000);
         await nominator.nominate(targets, dryRun || this.config.global.dryRun);
 

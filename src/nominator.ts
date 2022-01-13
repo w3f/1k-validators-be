@@ -392,81 +392,81 @@ export default class Nominator {
     const now = new Date().getTime();
     const api = await this.handler.getApi();
 
-    const didSend = true;
+    let didSend = true;
     let finalizedBlockHash;
 
     logger.info(
       `{Nominator::bond} sending bonding tx for ${this.controller} for ${newBondAmount}`
     );
 
-    // const unsub = await tx.signAndSend(this.signer, async (result: any) => {
-    //   const { status, events } = result;
+    const unsub = await tx.signAndSend(this.signer, async (result: any) => {
+      const { status, events } = result;
 
-    //   // Handle tx lifecycle
-    //   switch (true) {
-    //     case status.isBroadcast:
-    //       logger.info(
-    //         `{Nominator::nominate} tx for ${this.controller} has been broadcasted`
-    //       );
-    //       break;
-    //     case status.isInBlock:
-    //       logger.info(
-    //         `{Nominator::nominate} tx for ${this.controller} in block`
-    //       );
-    //       break;
-    //     case status.isUsurped:
-    //       logger.info(
-    //         `{Nominator::nominate} tx for ${this.controller} has been usurped: ${status.asUsurped}`
-    //       );
-    //       didSend = false;
-    //       unsub();
-    //       break;
-    //     case status.isFinalized:
-    //       finalizedBlockHash = status.asFinalized;
-    //       didSend = true;
-    //       logger.info(
-    //         `{Nominator::bond} tx is finalized in block ${finalizedBlockHash}`
-    //       );
+      // Handle tx lifecycle
+      switch (true) {
+        case status.isBroadcast:
+          logger.info(
+            `{Nominator::nominate} tx for ${this.controller} has been broadcasted`
+          );
+          break;
+        case status.isInBlock:
+          logger.info(
+            `{Nominator::nominate} tx for ${this.controller} in block`
+          );
+          break;
+        case status.isUsurped:
+          logger.info(
+            `{Nominator::nominate} tx for ${this.controller} has been usurped: ${status.asUsurped}`
+          );
+          didSend = false;
+          unsub();
+          break;
+        case status.isFinalized:
+          finalizedBlockHash = status.asFinalized;
+          didSend = true;
+          logger.info(
+            `{Nominator::bond} tx is finalized in block ${finalizedBlockHash}`
+          );
 
-    //       // Check the events to see if there was any errors - if there are return
-    //       events
-    //         .filter(({ event }) => api.events.system.ExtrinsicFailed.is(event))
-    //         .forEach(
-    //           ({
-    //             event: {
-    //               data: [error, info],
-    //             },
-    //           }) => {
-    //             if (error.isModule) {
-    //               const decoded = api.registry.findMetaError(error.asModule);
-    //               const { docs, method, section } = decoded;
+          // Check the events to see if there was any errors - if there are return
+          events
+            .filter(({ event }) => api.events.system.ExtrinsicFailed.is(event))
+            .forEach(
+              ({
+                event: {
+                  data: [error, info],
+                },
+              }) => {
+                if (error.isModule) {
+                  const decoded = api.registry.findMetaError(error.asModule);
+                  const { docs, method, section } = decoded;
 
-    //               const errorMsg = `{Nominator::bond} tx error:  [${section}.${method}] ${docs.join(
-    //                 " "
-    //               )}`;
-    //               logger.info(errorMsg);
-    //               this.bot.sendMessage(errorMsg);
-    //               didSend = false;
-    //               unsub();
-    //             } else {
-    //               // Other, CannotLookup, BadOrigin, no extra info
-    //               logger.info(
-    //                 `{Nominator::bond} has an error: ${error.toString()}`
-    //               );
-    //               didSend = false;
-    //               unsub();
-    //             }
-    //           }
-    //         );
-    //       unsub();
-    //       break;
-    //     default:
-    //       logger.info(
-    //         `{Nominator::bond} tx from ${this.controller} has another status: ${status}`
-    //       );
-    //       break;
-    //   }
-    // });
+                  const errorMsg = `{Nominator::bond} tx error:  [${section}.${method}] ${docs.join(
+                    " "
+                  )}`;
+                  logger.info(errorMsg);
+                  this.bot.sendMessage(errorMsg);
+                  didSend = false;
+                  unsub();
+                } else {
+                  // Other, CannotLookup, BadOrigin, no extra info
+                  logger.info(
+                    `{Nominator::bond} has an error: ${error.toString()}`
+                  );
+                  didSend = false;
+                  unsub();
+                }
+              }
+            );
+          unsub();
+          break;
+        default:
+          logger.info(
+            `{Nominator::bond} tx from ${this.controller} has another status: ${status}`
+          );
+          break;
+      }
+    });
     return [didSend, finalizedBlockHash];
   };
 }

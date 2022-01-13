@@ -790,6 +790,7 @@ export default class ScoreKeeper {
         }
 
         await nominator.adjustBond(newBondedAmount, currentBondedAmount);
+        await sleep(10000);
         await nominator.nominate(targets, dryRun || this.config.global.dryRun);
 
         // Wait some time between each transaction to avoid nonce issues.

@@ -434,6 +434,7 @@ export class OTV implements Constraints {
       const denom = await this.chaindata.getDenom();
       const formattedBonded = candidate.bonded / denom;
       const councilStakeScore =
+      candidate.councilStake == 0 ? 0 : 
         candidate.councilStake >= 0.75 * formattedBonded
           ? this.COUNCIL_WEIGHT
           : candidate.councilStake >= 0.5 * formattedBonded

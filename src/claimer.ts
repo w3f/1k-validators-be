@@ -45,7 +45,7 @@ export default class Claimer {
       await this.sendClaimTx(tx, era);
       const candidate = await this.db.getCandidate(era.stash);
       if (this.bot) {
-        this.bot.sendMessage(
+        await this.bot.sendMessage(
           `Claimer claimed era ${era.era} for validator ${candidate.name} - ${era.stash}`
         );
       }

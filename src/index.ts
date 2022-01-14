@@ -25,7 +25,7 @@ import { startClearAccumulatedOfflineTimeJob, startMonitorJob } from "./cron";
 
 const isCI = process.env.CI;
 
-const version = "v2.5.62";
+const version = "v2.5.63";
 
 const catchAndQuit = async (fn: any) => {
   try {
@@ -94,7 +94,7 @@ const start = async (cmd: { config: string }) => {
     const { accessToken, baseUrl, userId } = config.matrix;
     maybeBot = new MatrixBot(baseUrl, accessToken, userId, db, config);
     maybeBot.start();
-    maybeBot.sendMessage(
+    await maybeBot.sendMessage(
       `<a href="https://github.com/w3f/1k-validators-be">Backend services</a> (re)-started! Version: ${version}`
     );
   }

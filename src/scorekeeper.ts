@@ -136,6 +136,12 @@ export const autoNumNominations = async (
   // The target amount for each validator
   const targetValStake = newBondedAmount / adjustedNominationAmount;
 
+  nominator.setBonding(
+    adjustedNominationAmount,
+    newBondedAmount,
+    targetValStake
+  );
+
   if (db) {
     await db.setNominatorAvgStake(nominator.address, targetValStake);
   }
@@ -353,7 +359,7 @@ export default class ScoreKeeper {
   }
 
   /// Spawns a new nominator.
-  async _spawn(cfg: NominatorConfig, networkPrefix = 2): Promise<Nominator> {
+  _spawn(cfg: NominatorConfig, networkPrefix = 2): Nominator {
     const nom = new Nominator(
       this.handler,
       this.db,
@@ -361,10 +367,6 @@ export default class ScoreKeeper {
       networkPrefix,
       this.bot
     );
-    const api = await this.handler.getApi();
-    const { nominationNum, newBondedAmount, targetValStake } =
-      await autoNumNominations(api, nom, this.db);
-    nom.setBonding(nominationNum, newBondedAmount, targetValStake);
     return nom;
   }
 
@@ -373,7 +375,7 @@ export default class ScoreKeeper {
     let group = [];
     const now = getNow();
     for (const nomCfg of nominatorGroup) {
-      const nom = await this._spawn(nomCfg, this.config.global.networkPrefix);
+      const nom = this._spawn(nomCfg, this.config.global.networkPrefix);
 
       // try and get the ledger for the nominator - this means it is bonded. If not then don't add it.
       const api = await this.handler.getApi();
@@ -745,7 +747,7 @@ export default class ScoreKeeper {
       );
       return;
     }
-    const api = await this.handler.getApi();
+
     const allTargets = candidates.map((c) => c.stash);
     let counter = 0;
     for (const nomGroup of nominatorGroups) {

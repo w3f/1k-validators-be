@@ -360,14 +360,7 @@ export default class ScoreKeeper {
 
   /// Spawns a new nominator.
   _spawn(cfg: NominatorConfig, networkPrefix = 2): Nominator {
-    const nom = new Nominator(
-      this.handler,
-      this.db,
-      cfg,
-      networkPrefix,
-      this.bot
-    );
-    return nom;
+    return new Nominator(this.handler, this.db, cfg, networkPrefix, this.bot);
   }
 
   // Adds nominators from the config

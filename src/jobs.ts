@@ -568,23 +568,23 @@ export const democracyJob = async (db: Db, chaindata: ChainData) => {
       // The image that was proposed
       image: {
         // The block at which the proposal was made
-        at,
+        at = 0,
         // The planck denominated deposit made for the gov call
-        balance,
+        balance = 0,
         // Details about the specific proposal, including the call
         proposal,
         // the address that made the proposal
-        proposer,
+        proposer = "0x",
       },
       imageHash,
       index,
       status: {
         // The block the referendum closes at
-        end,
+        end = 0,
         // image hash
         proposalHash,
         // The kind of turnout is needed, ie 'SimplyMajority'
-        threshold,
+        threshold = "",
         // how many blocks after the end block that it takes for the proposal to get enacted
         delay,
         // The current tally of votes
@@ -603,17 +603,17 @@ export const democracyJob = async (db: Db, chaindata: ChainData) => {
       // list of accounts that voted nay
       allNay,
       // the total amounts of votes
-      voteCount,
+      voteCount = 0,
       // the total amount of aye votes
-      voteCountAye,
+      voteCountAye = 0,
       // the total amount of nay votes
-      voteCountNay,
+      voteCountNay = 0,
       // the total amount of tokens voted aye
-      votedAye,
+      votedAye = 0,
       // the total amount of tokens voted nay
-      votedNay,
+      votedNay = 0,
       // the total amount of tokens voted
-      votedTotal,
+      votedTotal = 0,
       // whether the proposal is currently passing
       isPassing,
       // the list of votes
@@ -622,8 +622,8 @@ export const democracyJob = async (db: Db, chaindata: ChainData) => {
 
     const referendum: Referendum = {
       referendumIndex: index.toNumber(),
-      proposedAt: at.toNumber(),
-      proposalEnd: end.toNumber(),
+      proposedAt: Number(at),
+      proposalEnd: Number(end),
       proposalDelay: delay.toNumber(),
       threshold: threshold.toString(),
       deposit: parseFloat(balance.toString()) / denom,

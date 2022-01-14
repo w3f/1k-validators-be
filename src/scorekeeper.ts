@@ -353,8 +353,19 @@ export default class ScoreKeeper {
   }
 
   /// Spawns a new nominator.
-  _spawn(cfg: NominatorConfig, networkPrefix = 2): Nominator {
-    return new Nominator(this.handler, this.db, cfg, networkPrefix, this.bot);
+  async _spawn(cfg: NominatorConfig, networkPrefix = 2): Promise<Nominator> {
+    const nom = new Nominator(
+      this.handler,
+      this.db,
+      cfg,
+      networkPrefix,
+      this.bot
+    );
+    const api = await this.handler.getApi();
+    const { nominationNum, newBondedAmount, targetValStake } =
+      await autoNumNominations(api, nom, this.db);
+    nom.setBonding(nominationNum, newBondedAmount, targetValStake);
+    return nom;
   }
 
   // Adds nominators from the config
@@ -362,7 +373,7 @@ export default class ScoreKeeper {
     let group = [];
     const now = getNow();
     for (const nomCfg of nominatorGroup) {
-      const nom = this._spawn(nomCfg, this.config.global.networkPrefix);
+      const nom = await this._spawn(nomCfg, this.config.global.networkPrefix);
 
       // try and get the ledger for the nominator - this means it is bonded. If not then don't add it.
       const api = await this.handler.getApi();
@@ -734,10 +745,13 @@ export default class ScoreKeeper {
       );
       return;
     }
+    const api = await this.handler.getApi();
     const allTargets = candidates.map((c) => c.stash);
     let counter = 0;
     for (const nomGroup of nominatorGroups) {
-      for (const nominator of nomGroup) {
+      // ensure the group is sorted by least avg stake
+      const sortedNominators = nomGroup.sort((a, b) => a.avgStake - b.avgStake);
+      for (const nominator of sortedNominators) {
         // The number of nominations to do per nominator account
         // This is either hard coded, or set to "auto", meaning it will find a dynamic amount of validators
         //    to nominate based on the lowest staked validator in the validator set
@@ -754,7 +768,7 @@ export default class ScoreKeeper {
         const [currentBondedAmount, bondErr] =
           await this.chaindata.getBondedAmount(stash);
         // Planck Denominated New Bonded Amount
-        const newBondedAmount = formattedNewBondedAmount / denom;
+        const newBondedAmount = formattedNewBondedAmount * denom;
 
         logger.info(
           `{Scorekeepr::_doNominations} ${nominator.address} number of nominations: ${nominationNum} newBondedAmount: ${newBondedAmount} targetValStake: ${targetValStake}`

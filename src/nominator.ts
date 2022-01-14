@@ -118,7 +118,7 @@ export default class Nominator {
   }
 
   public get nominationNum(): number {
-    return this.nominationNum;
+    return this._nominationNum;
   }
 
   public set nominationNum(nominationNum) {
@@ -126,7 +126,7 @@ export default class Nominator {
   }
 
   public get targetBond(): number {
-    return this.targetBond;
+    return this._targetBond;
   }
 
   public set targetBond(targetBond) {
@@ -134,7 +134,7 @@ export default class Nominator {
   }
 
   public get avgStake(): number {
-    return this.avgStake;
+    return this._avgStake;
   }
 
   public set avgStake(avgStake) {

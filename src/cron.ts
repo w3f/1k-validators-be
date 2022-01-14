@@ -310,7 +310,7 @@ export const startRewardClaimJob = async (
   // TODO Parameterize this as a constant
   if (free < 0.5) {
     logger.info(`{Cron::RewardClaiming} Claimer has low free balance: ${free}`);
-    bot.sendMessage(
+    await bot.sendMessage(
       `Reward Claiming Account ${addressUrl(
         claimer.address,
         config
@@ -397,7 +397,7 @@ export const startCancelCron = async (
                   `{CancelCron::cancel} there is a blacklisted announcement to cancel: ${blacklistedAnnouncement}`
                 );
                 if (bot) {
-                  bot.sendMessage(
+                  await bot.sendMessage(
                     `{CancelCron::cancel} there is a blacklisted announcement to cancel: ${blacklistedAnnouncement}`
                   );
                 }
@@ -408,7 +408,7 @@ export const startCancelCron = async (
                   if (didCancel) {
                     const successfulCancelMessage = `{CancelCron::cancel} ${blacklistedAnnouncement} was successfully cancelled.`;
                     logger.info(successfulCancelMessage);
-                    bot.sendMessage(successfulCancelMessage);
+                    await bot.sendMessage(successfulCancelMessage);
                   }
                 }
               }
@@ -426,7 +426,7 @@ export const startCancelCron = async (
                   `{CancelCron::cancel} announcement from ${announcement.real} at ${announcement.height} was older than ${threshold} and has been cancelled`
                 );
                 if (bot) {
-                  bot.sendMessage(
+                  await bot.sendMessage(
                     `Proxy announcement from ${addressUrl(
                       announcement.real,
                       config
@@ -488,7 +488,7 @@ export const startStaleNominationCron = async (
             const message = `Nominator ${stash} is nominating ${target}, which is not a 1kv candidate`;
             logger.info(message);
             if (bot) {
-              bot.sendMessage(message);
+              await bot.sendMessage(message);
             }
           }
         }
@@ -497,7 +497,7 @@ export const startStaleNominationCron = async (
           const message = `Nominator ${stash} has a stale nomination. Last nomination was in era ${submittedIn} (it is now era ${currentEra})`;
           logger.info(message);
           if (bot) {
-            bot.sendMessage(message);
+            await bot.sendMessage(message);
           }
         }
       }

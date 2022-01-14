@@ -197,7 +197,7 @@ export default class Nominator {
 
         const nominateMsg = `{Nominator::nominate::proxy} non-delay ${this.address} sent tx: ${didSend} finalized in block #${finalizedBlockHash}`;
         logger.info(nominateMsg);
-        this.bot.sendMessage(nominateMsg);
+        await this.bot.sendMessage(nominateMsg);
       } else {
         // Do a non-proxy tx
         logger.info(
@@ -279,7 +279,7 @@ export default class Nominator {
           newBondedAmount / denom
         } : ${didSend} finalized in block #${finalizedBlockHash}`;
         logger.info(bondMsg);
-        this.bot.sendMessage(bondMsg);
+        await this.bot.sendMessage(bondMsg);
       }
     }
     return true;
@@ -380,7 +380,7 @@ export default class Nominator {
                     " "
                   )}`;
                   logger.info(errorMsg);
-                  this.bot.sendMessage(errorMsg);
+                  await this.bot.sendMessage(errorMsg);
                   didSend = false;
                   unsub();
                 } else {
@@ -503,7 +503,7 @@ export default class Nominator {
                     " "
                   )}`;
                   logger.info(errorMsg);
-                  this.bot.sendMessage(errorMsg);
+                  await this.bot.sendMessage(errorMsg);
                   didSend = false;
                   unsub();
                 } else {

@@ -29,6 +29,13 @@ export default class Nominator {
   // The amount of blocks for a time delay proxy
   private _proxyDelay: number;
 
+  // The ideal average amount of stake the account can nominate per validator
+  private _avgStake = 0;
+  // The target amount of how much funds should be bonded so they can all be optimally used
+  private _targetBond = 0;
+  // The target number of validators to nominate
+  private _nominationNum = 0;
+
   constructor(
     handler: ApiHandler,
     db: Database,
@@ -108,6 +115,30 @@ export default class Nominator {
       // @ts-ignore
       return payee.toJSON().account ? payee.toJSON().account : payee.toString();
     }
+  }
+
+  public get nominationNum(): number {
+    return this._nominationNum;
+  }
+
+  public set nominationNum(nominationNum) {
+    this._nominationNum = nominationNum;
+  }
+
+  public get targetBond(): number {
+    return this._targetBond;
+  }
+
+  public set targetBond(targetBond) {
+    this._targetBond = targetBond;
+  }
+
+  public get avgStake(): number {
+    return this._avgStake;
+  }
+
+  public set avgStake(avgStake) {
+    this._avgStake = avgStake;
   }
 
   public async nominate(targets: Stash[], dryRun = false): Promise<boolean> {

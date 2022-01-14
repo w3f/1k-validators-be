@@ -136,6 +136,10 @@ export const autoNumNominations = async (
   // The target amount for each validator
   const targetValStake = newBondedAmount / adjustedNominationAmount;
 
+  nominator.nominationNum = adjustedNominationAmount;
+  nominator.targetBond = newBondedAmount;
+  nominator.avgStake = targetValStake;
+
   if (db) {
     await db.setNominatorAvgStake(nominator.address, targetValStake);
   }
@@ -734,10 +738,13 @@ export default class ScoreKeeper {
       );
       return;
     }
+
     const allTargets = candidates.map((c) => c.stash);
     let counter = 0;
     for (const nomGroup of nominatorGroups) {
-      for (const nominator of nomGroup) {
+      // ensure the group is sorted by least avg stake
+      const sortedNominators = nomGroup.sort((a, b) => a.avgStake - b.avgStake);
+      for (const nominator of sortedNominators) {
         // The number of nominations to do per nominator account
         // This is either hard coded, or set to "auto", meaning it will find a dynamic amount of validators
         //    to nominate based on the lowest staked validator in the validator set
@@ -754,7 +761,7 @@ export default class ScoreKeeper {
         const [currentBondedAmount, bondErr] =
           await this.chaindata.getBondedAmount(stash);
         // Planck Denominated New Bonded Amount
-        const newBondedAmount = formattedNewBondedAmount / denom;
+        const newBondedAmount = formattedNewBondedAmount * denom;
 
         logger.info(
           `{Scorekeepr::_doNominations} ${nominator.address} number of nominations: ${nominationNum} newBondedAmount: ${newBondedAmount} targetValStake: ${targetValStake}`

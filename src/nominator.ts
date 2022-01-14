@@ -367,7 +367,7 @@ export default class Nominator {
           events
             .filter(({ event }) => api.events.system.ExtrinsicFailed.is(event))
             .forEach(
-              ({
+              async ({
                 event: {
                   data: [error, info],
                 },
@@ -490,7 +490,7 @@ export default class Nominator {
           events
             .filter(({ event }) => api.events.system.ExtrinsicFailed.is(event))
             .forEach(
-              ({
+              async ({
                 event: {
                   data: [error, info],
                 },

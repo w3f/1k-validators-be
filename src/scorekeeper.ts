@@ -136,11 +136,9 @@ export const autoNumNominations = async (
   // The target amount for each validator
   const targetValStake = newBondedAmount / adjustedNominationAmount;
 
-  // nominator.setBonding(
-  //   adjustedNominationAmount,
-  //   newBondedAmount,
-  //   targetValStake
-  // );
+  nominator.nominationNum = adjustedNominationAmount;
+  nominator.targetBond = newBondedAmount;
+  nominator.avgStake = targetValStake;
 
   if (db) {
     await db.setNominatorAvgStake(nominator.address, targetValStake);

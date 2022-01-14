@@ -121,19 +121,24 @@ export default class Nominator {
     return this.nominationNum;
   }
 
+  public set nominationNum(nominationNum) {
+    this._nominationNum = nominationNum;
+  }
+
   public get targetBond(): number {
     return this.targetBond;
+  }
+
+  public set targetBond(targetBond) {
+    this._targetBond = targetBond;
   }
 
   public get avgStake(): number {
     return this.avgStake;
   }
 
-  public setBonding(nominationNum, targetBond, avgStake): boolean {
-    this._nominationNum = nominationNum;
-    this._targetBond = targetBond;
+  public set avgStake(avgStake) {
     this._avgStake = avgStake;
-    return true;
   }
 
   public async nominate(targets: Stash[], dryRun = false): Promise<boolean> {

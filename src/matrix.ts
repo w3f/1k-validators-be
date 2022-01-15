@@ -90,7 +90,7 @@ export default class MatrixBot {
           }
         );
       } catch (e) {
-        logger.info(`{Matrix::error}`)
+        logger.info(`{Matrix::error}`);
         logger.warn(e);
       }
     });

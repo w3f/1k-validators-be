@@ -2,6 +2,7 @@ import * as Sdk from "matrix-js-sdk";
 
 import { Config } from "./config";
 import Db from "./db";
+import logger from "./logger";
 
 const sdk: any = Sdk;
 
@@ -77,16 +78,21 @@ export default class MatrixBot {
     };
 
     return new Promise((resolve: any, reject: any) => {
-      this.client.sendEvent(
-        this.conf.matrix.room,
-        "m.room.message",
-        content,
-        "",
-        (err: any) => {
-          if (err) reject(err);
-          resolve(true);
-        }
-      );
+      try {
+        this.client.sendEvent(
+          this.conf.matrix.room,
+          "m.room.message",
+          content,
+          "",
+          (err: any) => {
+            if (err) reject(err);
+            resolve(true);
+          }
+        );
+      } catch (e) {
+        logger.info(`{Matrix::error}`);
+        logger.warn(e);
+      }
     });
   }
 }

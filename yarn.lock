@@ -3093,9 +3093,9 @@ mongodb-connection-string-url@^2.3.2:
     "@types/whatwg-url" "^8.2.1"
     whatwg-url "^11.0.0"
 
-mongodb-memory-server-core@8.1.0:
-  version "8.1.0"
-  resolved "https://registry.yarnpkg.com/mongodb-memory-server-core/-/mongodb-memory-server-core-8.1.0.tgz#fe0793f71f901118e5e739123a89ee1c53b51759"
+mongodb-memory-server-core@8.2.0:
+  version "8.2.0"
+  resolved "https://registry.yarnpkg.com/mongodb-memory-server-core/-/mongodb-memory-server-core-8.2.0.tgz#18d254f1598805033dc803e0808a4a5ed1b67ae3"
   dependencies:
     "@types/tmp" "^0.2.3"
     async-mutex "^0.3.2"
@@ -3114,11 +3114,11 @@ mongodb-memory-server-core@8.1.0:
     uuid "^8.3.1"
     yauzl "^2.10.0"
 
-mongodb-memory-server@^8.1.0:
-  version "8.1.0"
-  resolved "https://registry.yarnpkg.com/mongodb-memory-server/-/mongodb-memory-server-8.1.0.tgz#5b5457838ebf2c1e7616a581e8cf927f422e345b"
+mongodb-memory-server@^8.2.0:
+  version "8.2.0"
+  resolved "https://registry.yarnpkg.com/mongodb-memory-server/-/mongodb-memory-server-8.2.0.tgz#11f156ad41211610ff98195af2cfd41f55d3dcf9"
   dependencies:
-    mongodb-memory-server-core "8.1.0"
+    mongodb-memory-server-core "8.2.0"
     tslib "^2.3.1"
 
 mongodb@4.2.2, mongodb@^4.2.2:

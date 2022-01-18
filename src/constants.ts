@@ -97,8 +97,8 @@ export const VALIDITY_CRON = "0 0-59/20 * * * *";
 // Execution Cron Job. This runs every 15 minutes by default
 export const EXECUTION_CRON = "0 0-59/15 * * * *";
 
-// Scorekeeper Cron Job. This runs every 20 minutes by default
-export const SCOREKEEPER_CRON = "0 0-59/20 * * * *";
+// Scorekeeper Cron Job. This runs every 30 minutes by default
+export const SCOREKEEPER_CRON = "0 0-59/30 * * * *";
 
 // Reward claiming frequency. This runs every 45 minutes by default
 export const REWARD_CLAIMING_CRON = "0 0-59/45 * * * *";

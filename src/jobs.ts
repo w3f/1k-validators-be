@@ -565,6 +565,8 @@ export const democracyJob = async (db: Db, chaindata: ChainData) => {
   const referendaQuery = await chaindata.getDerivedReferenda();
   for (const r of referendaQuery) {
     if (!r) continue;
+    logger.info(`{referendaQuery:}`);
+    logger.info(JSON.stringify(r));
     const {
       // The image that was proposed
       image: {
@@ -573,36 +575,26 @@ export const democracyJob = async (db: Db, chaindata: ChainData) => {
         // The planck denominated deposit made for the gov call
         balance = 0,
         // Details about the specific proposal, including the call
-        proposal,
+        // proposal,
         // the address that made the proposal
         proposer = "0x",
-      },
+      } = {},
       imageHash,
       index,
       status: {
         // The block the referendum closes at
         end = 0,
         // image hash
-        proposalHash,
+        // proposalHash,
         // The kind of turnout is needed, ie 'SimplyMajority'
         threshold = "",
         // how many blocks after the end block that it takes for the proposal to get enacted
         delay,
-        // The current tally of votes
-        // @ts-ignore
-        tally: {
-          // planck denominated, conviction adjusted ayes
-          ayes,
-          // planck denominated, conviction adjusted nays
-          nays,
-          // planck denominated conviction adjusted total turnout
-          turnout,
-        },
-      },
+      } = {},
       // list of accounts that voted aye
-      allAye,
+      // allAye,
       // list of accounts that voted nay
-      allNay,
+      // allNay,
       // the total amounts of votes
       voteCount = 0,
       // the total amount of aye votes
@@ -622,21 +614,21 @@ export const democracyJob = async (db: Db, chaindata: ChainData) => {
     } = r;
 
     const referendum: Referendum = {
-      referendumIndex: index.toNumber(),
-      proposedAt: Number(at),
-      proposalEnd: Number(end),
-      proposalDelay: delay.toNumber(),
-      threshold: threshold.toString(),
-      deposit: parseFloat(balance.toString()) / denom,
-      proposer: proposer.toString(),
-      imageHash: imageHash.toString(),
-      voteCount: voteCount,
-      voteCountAye: voteCountAye,
-      voteCountNay: voteCountNay,
-      voteAyeAmount: parseFloat(votedAye.toString()) / denom,
-      voteNayAmount: parseFloat(votedNay.toString()) / denom,
-      voteTotalAmount: parseFloat(votedTotal.toString()) / denom,
-      isPassing: isPassing,
+      referendumIndex: index.toNumber() || 0,
+      proposedAt: Number(at) || 0,
+      proposalEnd: Number(end) || 0,
+      proposalDelay: delay.toNumber() || 0,
+      threshold: threshold.toString() || "",
+      deposit: parseFloat(balance.toString()) / denom || 0,
+      proposer: proposer.toString() || "",
+      imageHash: imageHash.toString() || "",
+      voteCount: voteCount || 0,
+      voteCountAye: voteCountAye || 0,
+      voteCountNay: voteCountNay | 0,
+      voteAyeAmount: parseFloat(votedAye.toString()) / denom || 0,
+      voteNayAmount: parseFloat(votedNay.toString()) / denom || 0,
+      voteTotalAmount: parseFloat(votedTotal.toString()) / denom || 0,
+      isPassing: isPassing || false,
     };
 
     await db.setReferendum(referendum, latestBlockNumber, latestBlockHash);

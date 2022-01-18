@@ -1061,9 +1061,9 @@ bs58@^4.0.1:
   dependencies:
     base-x "^3.0.2"
 
-bson@^4.2.2, bson@^4.6.0:
-  version "4.6.0"
-  resolved "https://registry.npmjs.org/bson/-/bson-4.6.0.tgz"
+bson@^4.2.2, bson@^4.6.0, bson@^4.6.1:
+  version "4.6.1"
+  resolved "https://registry.yarnpkg.com/bson/-/bson-4.6.1.tgz#2b5da517539bb0f7f3ffb54ac70a384ca899641c"
   dependencies:
     buffer "^5.6.0"
 
@@ -2408,6 +2408,10 @@ ip-regex@^4.3.0:
   version "4.3.0"
   resolved "https://registry.npmjs.org/ip-regex/-/ip-regex-4.3.0.tgz"
 
+ip@^1.1.5:
+  version "1.1.5"
+  resolved "https://registry.yarnpkg.com/ip/-/ip-1.1.5.tgz#bdded70114290828c0a039e72ef25f5aaec4354a"
+
 irregular-plurals@^3.2.0:
   version "3.3.0"
   resolved "https://registry.npmjs.org/irregular-plurals/-/irregular-plurals-3.3.0.tgz"
@@ -3086,9 +3090,9 @@ moment-timezone@^0.5.x:
   version "2.29.1"
   resolved "https://registry.npmjs.org/moment/-/moment-2.29.1.tgz"
 
-mongodb-connection-string-url@^2.3.2:
-  version "2.3.2"
-  resolved "https://registry.npmjs.org/mongodb-connection-string-url/-/mongodb-connection-string-url-2.3.2.tgz"
+mongodb-connection-string-url@^2.3.2, mongodb-connection-string-url@^2.4.1:
+  version "2.4.1"
+  resolved "https://registry.yarnpkg.com/mongodb-connection-string-url/-/mongodb-connection-string-url-2.4.1.tgz#6b3c6c40133a0ad059fe9a0abda64b2a1cb4e8b4"
   dependencies:
     "@types/whatwg-url" "^8.2.1"
     whatwg-url "^11.0.0"
@@ -3121,13 +3125,24 @@ mongodb-memory-server@^8.1.0:
     mongodb-memory-server-core "8.1.0"
     tslib "^2.3.1"
 
-mongodb@4.2.2, mongodb@^4.2.2:
+mongodb@4.2.2:
   version "4.2.2"
   resolved "https://registry.npmjs.org/mongodb/-/mongodb-4.2.2.tgz"
   dependencies:
     bson "^4.6.0"
     denque "^2.0.1"
     mongodb-connection-string-url "^2.3.2"
+  optionalDependencies:
+    saslprep "^1.0.3"
+
+mongodb@4.3.1, mongodb@^4.2.2:
+  version "4.3.1"
+  resolved "https://registry.yarnpkg.com/mongodb/-/mongodb-4.3.1.tgz#e346f76e421ec6f47ddea5c8f5140e6181aaeb94"
+  dependencies:
+    bson "^4.6.1"
+    denque "^2.0.1"
+    mongodb-connection-string-url "^2.4.1"
+    socks "^2.6.1"
   optionalDependencies:
     saslprep "^1.0.3"
 
@@ -3968,6 +3983,17 @@ slice-ansi@^3.0.0:
 sliced@1.0.1:
   version "1.0.1"
   resolved "https://registry.npmjs.org/sliced/-/sliced-1.0.1.tgz"
+
+smart-buffer@^4.1.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/smart-buffer/-/smart-buffer-4.2.0.tgz#6e1d71fa4f18c05f7d0ff216dd16a481d0e8d9ae"
+
+socks@^2.6.1:
+  version "2.6.1"
+  resolved "https://registry.yarnpkg.com/socks/-/socks-2.6.1.tgz#989e6534a07cf337deb1b1c94aaa44296520d30e"
+  dependencies:
+    ip "^1.1.5"
+    smart-buffer "^4.1.0"
 
 source-map-support@^0.5.19:
   version "0.5.21"

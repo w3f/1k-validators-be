@@ -1,10 +1,3 @@
-image:
-  registry: docker.io
-  repository: bitnami/mongodb
-  tag: 4.4.10-debian-10-r44
-  pullPolicy: IfNotPresent
-  debug: false
-
 clusterDomain: cluster.local
 architecture: replicaset
 useStatefulSet: true
@@ -183,11 +176,6 @@ rbac:
 
 metrics:
   enabled: true
-  image:
-    registry: docker.io
-    repository: bitnami/mongodb-exporter
-    tag: 0.11.2-debian-10-r360
-    pullPolicy: IfNotPresent
 
   resources:
     limits: 

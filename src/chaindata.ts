@@ -1,4 +1,5 @@
 import { ApiPromise } from "@polkadot/api";
+import "@polkadot/api-augment";
 import ApiHandler from "./ApiHandler";
 
 import {

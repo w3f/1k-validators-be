@@ -565,8 +565,6 @@ export const democracyJob = async (db: Db, chaindata: ChainData) => {
   const referendaQuery = await chaindata.getDerivedReferenda();
   for (const r of referendaQuery) {
     if (!r) continue;
-    logger.info(`{referendaQuery:}`);
-    logger.info(JSON.stringify(r));
     const {
       // The image that was proposed
       image: {

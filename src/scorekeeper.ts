@@ -923,7 +923,12 @@ export default class ScoreKeeper {
 
         for (const val of current) {
           const candidate = await this.db.getCandidate(val.stash);
-
+          if (!candidate) {
+            logger.warn(
+              `{endRound} cannot find candidate for ${val} stash: ${val.stash}`
+            );
+            continue;
+          }
           // if we already have, don't add it again
           if (toProcess.has(candidate.stash)) continue;
           toProcess.set(candidate.stash, candidate);

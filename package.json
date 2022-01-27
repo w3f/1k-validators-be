@@ -46,7 +46,7 @@
     "matrix-js-sdk": "^15.4.0",
     "mongodb": "4.3.1",
     "mongodb-memory-server": "^8.2.0",
-    "mongoose": "^6.1.7",
+    "mongoose": "^6.1.8",
     "prettier": "^2.5.1",
     "reconnecting-websocket": "^4.4.0",
     "semver": "^7.3.5",
@@ -58,7 +58,7 @@
   "devDependencies": {
     "@ava/typescript": "^3.0.1",
     "@typescript-eslint/eslint-plugin": "^5.10.1",
-    "@typescript-eslint/parser": "^5.10.0",
+    "@typescript-eslint/parser": "^5.10.1",
     "ava": "^4.0.1",
     "concurrently": "^7.0.0",
     "eslint": "^8.7.0",

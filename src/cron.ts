@@ -248,8 +248,11 @@ export const startExecutionJob = async (
           const validatorsMessage = (
             await Promise.all(
               targets.map(async (n) => {
+                logger.info(`did send: ${n}`);
                 const name = await db.getCandidate(n);
-                return `- ${name.name} (${addressUrl(n, config)})`;
+                if (n && n.name) {
+                  return `- ${name.name} (${addressUrl(n, config)})`;
+                }
               })
             )
           ).join("<br>");

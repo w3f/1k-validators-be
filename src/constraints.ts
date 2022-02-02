@@ -654,10 +654,7 @@ export class OTV implements Constraints {
 
 // Checks the online validity of a node
 export const checkOnline = async (db: Db, candidate: any) => {
-  if (
-    (candidate && Number(candidate.onlineSince) === 0) ||
-    Number(candidate.offlineSince) !== 0
-  ) {
+  if (candidate && Number(candidate.onlineSince) === 0) {
     await db.setOnlineValidity(candidate.stash, false);
     return false;
   } else {

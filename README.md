@@ -17,7 +17,7 @@ on the Kusama network first.
 
 Requirements for prospective validators on the Kusama network:
 
- - 50 KSM self-stake.
+ - 10 KSM self-stake.
  - Signed up on the [form][form] and has received approval.
  - Connected to the private telemetry.
  - Seven days of online validator infrastructure.

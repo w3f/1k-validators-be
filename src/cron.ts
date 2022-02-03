@@ -249,6 +249,12 @@ export const startExecutionJob = async (
             await Promise.all(
               targets.map(async (n) => {
                 const name = await db.getCandidate(n);
+                if (!name) {
+                  logger.info(`did send: no entry for :${n}`);
+                }
+                if (!name.name) {
+                  logger.info(`did send: no name for :${n}`);
+                }
                 if (n && name) {
                   return `- ${name.name} (${addressUrl(n, config)})`;
                 } else {

@@ -129,8 +129,8 @@ export const ACTIVE_VALIDATOR_CRON = "0 0-59/5 * * * *";
 // Inclusion Cron Job. This runs every hour by default
 export const INCLUSION_CRON = "0 0 0-23/1 * * *";
 
-// Unclaimed Era Cron Job. This runs every 6 hours by default
-export const UNCLAIMED_ERAS_CRON = "0 0 0-23/6 * * *";
+// Unclaimed Era Cron Job. This runs every hour by default
+export const UNCLAIMED_ERAS_CRON = "0 0 0-23/1 * * *";
 
 // Validator Pref Cron Job. This runs every 15 minutes by default
 export const VALIDATOR_PREF_CRON = "0 0-59/15 * * * *";

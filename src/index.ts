@@ -25,7 +25,7 @@ import { startClearAccumulatedOfflineTimeJob, startMonitorJob } from "./cron";
 
 const isCI = process.env.CI;
 
-const version = "v2.5.91";
+const version = "v2.5.92";
 
 const catchAndQuit = async (fn: any) => {
   try {
@@ -70,7 +70,7 @@ const start = async (cmd: { config: string }) => {
     await sleep(15000);
   }
 
-  await db.setChainMetadata(config.global.networkPrefix, handler);
+  await db.setChainMetadata(config.global.networkPrefix);
 
   // Delete the old candidate fields.
   await db.deleteOldCandidateFields();

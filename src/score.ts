@@ -119,6 +119,14 @@ export const lastValues = (array, lastValue, threshold) => {
 };
 
 export const scoreDemocracyVotes = (votes, lastReferendum, threshold) => {
+  if (votes.length == 0) {
+    return {
+      democracyScore: 0,
+      totalConsistencyMultiplier: 0,
+      lastConsistencyMultiplier: 0,
+      totalDemocracyScore: 0,
+    };
+  }
   const sorted = asc(votes);
   let demScore = 0;
   for (const referendum of votes) {
@@ -140,9 +148,9 @@ export const scoreDemocracyVotes = (votes, lastReferendum, threshold) => {
   const totalDemScore =
     demScore * totalConsistencyMultiplier * lastConsistencyMultiplier;
   return {
-    democracyScore: demScore,
-    totalConsistencyMultiplier: totalConsistencyMultiplier,
-    lastConsistencyMultiplier: lastConsistencyMultiplier,
-    totalDemocracyScore: totalDemScore,
+    democracyScore: demScore || 0,
+    totalConsistencyMultiplier: totalConsistencyMultiplier || 0,
+    lastConsistencyMultiplier: lastConsistencyMultiplier || 0,
+    totalDemocracyScore: totalDemScore || 0,
   };
 };

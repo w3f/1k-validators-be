@@ -457,7 +457,7 @@ export class OTV implements Constraints {
         lastReferendum
       );
       logger.info(
-        `{democracyScore} votes: ${candidate.democracyVotes} democracyScore: ${demScore.democracyScore} total mult: ${demScore.totalConsistencyMultiplier} last mult: ${demScore.lastConsistencyMultiplier} total: ${demScore.totalDemocracyScore}`
+        `{democracyScore} ${candidate.stash} votes: ${candidate.democracyVotes} democracyScore: ${demScore.democracyScore} total mult: ${demScore.totalConsistencyMultiplier} last mult: ${demScore.lastConsistencyMultiplier} total: ${demScore.totalDemocracyScore}`
       );
       const democracyScore = demScore.totalDemocracyScore; // TODO: remove candidate.democracyVoteCount * this.DEMOCRACY_WEIGHT;
 

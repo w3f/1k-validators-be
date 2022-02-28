@@ -24,6 +24,7 @@ import {
   q90,
   scaled,
   scaledDefined,
+  scoreDemocracyVotes,
   std,
 } from "./score";
 
@@ -334,6 +335,8 @@ export class OTV implements Constraints {
       return candidate.democracyVoteCount;
     });
     const democracyStats = getStats(democracyValues);
+    // index of the last democracy referendum
+    const lastReferendum = (await db.getLastReferenda())[0]?.referendumIndex;
 
     // Create DB entry for Validator Score Metadata
     await db.setValidatorScoreMetadata(
@@ -447,8 +450,16 @@ export class OTV implements Constraints {
           : 0;
 
       // Score democracy based on how many proposals have been voted on
-      const democracyScore =
-        candidate.democracyVoteCount * this.DEMOCRACY_WEIGHT;
+      const voteThreshold = 5;
+      const demScore = scoreDemocracyVotes(
+        candidate.democracyVotes,
+        voteThreshold,
+        lastReferendum
+      );
+      logger.info(
+        `{democracyScore} votes: ${candidate.democracyVotes} democracyScore: ${demScore.democracyScore} total mult: ${demScore.totalConsistencyMultiplier} last mult: ${demScore.lastConsistencyMultiplier} total: ${demScore.totalDemocracyScore}`
+      );
+      const democracyScore = demScore.totalDemocracyScore; // TODO: remove candidate.democracyVoteCount * this.DEMOCRACY_WEIGHT;
 
       const aggregate =
         inclusionScore +

@@ -91,3 +91,58 @@ export const getStats = (arr) => {
     standardDeviation: arrStd ? arrStd : 0,
   };
 };
+
+// Returns an array of sub-arrays of consecutive numbers.
+// ie [1, 2, 3, 5, 6, 8, 9]
+// return [[1, 2, 3], [5, 6], [8, 9]]
+export const consistency = (array) => {
+  const sorted = asc(array);
+  return sorted.reduce((r, n) => {
+    const lastSubArray = r[r.length - 1];
+
+    if (!lastSubArray || lastSubArray[lastSubArray.length - 1] !== n - 1) {
+      r.push([]);
+    }
+
+    r[r.length - 1].push(n);
+
+    return r;
+  }, []);
+};
+
+// Given an array, return a new array with the last _threshold_ amount of items from a lastValue
+export const lastValues = (array, lastValue, threshold) => {
+  const sorted = asc(array);
+  return sorted.filter((x) => {
+    return lastValue - threshold < x;
+  });
+};
+
+export const scoreDemocracyVotes = (votes, lastReferendum, threshold) => {
+  const sorted = asc(votes);
+  let demScore = 0;
+  for (const referendum of votes) {
+    if (referendum == lastReferendum) {
+      demScore += 15;
+    } else if (lastReferendum - referendum <= 3) {
+      demScore += 5;
+    } else {
+      demScore += 2;
+    }
+  }
+  const totalConsistency = consistency(sorted);
+  const lastConsistency = consistency(
+    lastValues(sorted, lastReferendum, threshold)
+  );
+
+  const totalConsistencyMultiplier = 1 + 1 / totalConsistency.length;
+  const lastConsistencyMultiplier = 1 + 1 / lastConsistency.length;
+  const totalDemScore =
+    demScore * totalConsistencyMultiplier * lastConsistencyMultiplier;
+  return {
+    democracyScore: demScore,
+    totalConsistencyMultiplier: totalConsistencyMultiplier,
+    lastConsistencyMultiplier: lastConsistencyMultiplier,
+    totalDemocracyScore: totalDemScore,
+  };
+};

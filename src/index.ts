@@ -70,7 +70,7 @@ const start = async (cmd: { config: string }) => {
     await sleep(15000);
   }
 
-  await db.setChainMetadata(config.global.networkPrefix, handler);
+  await db.setChainMetadata(config.global.networkPrefix);
 
   // Delete the old candidate fields.
   await db.deleteOldCandidateFields();

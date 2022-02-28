@@ -1225,7 +1225,7 @@ export default class Db {
     return this.eraModel.findOne({ lastNominatedEraIndex: /[0-9]+/ }).exec();
   }
 
-  async setChainMetadata(networkPrefix: number, handler): Promise<any> {
+  async setChainMetadata(networkPrefix: number): Promise<any> {
     const networkName =
       networkPrefix == 2
         ? "Kusama"

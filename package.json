@@ -51,7 +51,7 @@
     "reconnecting-websocket": "^4.4.0",
     "semver": "^7.3.5",
     "ts-node": "^10.5.0",
-    "typescript": "^4.5.5",
+    "typescript": "^4.6.2",
     "winston": "^3.6.0",
     "ws": "^8.5.0"
   },

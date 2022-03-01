@@ -143,7 +143,12 @@ export const scoreDemocracyVotes = (votes, lastReferendum, threshold) => {
     lastValues(sorted, lastReferendum, threshold)
   );
 
-  const totalConsistencyMultiplier = 1 + 1 / totalConsistency.length;
+  // The consistency of all historical votes, capped at 1.5x
+  const totalConsistencyMultiplier = Math.min(
+    1 + 1 / totalConsistency.length,
+    1.5
+  );
+  // The consistency of only the last _threshold_ votes
   const lastConsistencyMultiplier = 1 + 1 / lastConsistency.length;
   const totalDemScore =
     demScore * totalConsistencyMultiplier * lastConsistencyMultiplier;

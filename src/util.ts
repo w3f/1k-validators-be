@@ -19,6 +19,7 @@ export const getRawPeerId = (peerId: string): string => {
   const buf = bs58.decode(peerId);
 
   // Get the first two byte prefix.
+  //@ts-ignore
   const prefix = buf.slice(0, 2).toString("hex");
 
   // The new prefix.
@@ -28,6 +29,7 @@ export const getRawPeerId = (peerId: string): string => {
 
   // The old prefix.
   if (prefix == "1220") {
+    //@ts-ignore
     return buf.slice(2).toString("hex");
   }
 

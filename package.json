@@ -30,7 +30,7 @@
     "@types/koa-bodyparser": "^4.3.6",
     "@types/node": "^17.0.21",
     "@types/semver": "^7.3.9",
-    "@types/ws": "^8.5.2",
+    "@types/ws": "^8.5.3",
     "axios": "^0.26.0",
     "bree": "^7.2.0",
     "bs58": "^5.0.0",

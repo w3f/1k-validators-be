@@ -111,6 +111,11 @@ export const consistency = (array) => {
 };
 
 // Given an array, return a new array with the last _threshold_ amount of items from a lastValue
+//     For example given:
+//         - the array [1, 3, 4, 6, 7, 8, 9, 11, 12],
+//         - a last value of 15
+//         - a threshold of 5
+//     This will return a new array [11, 12]
 export const lastValues = (array, lastValue, threshold) => {
   const sorted = asc(array);
   return sorted.filter((x) => {
@@ -118,29 +123,84 @@ export const lastValues = (array, lastValue, threshold) => {
   });
 };
 
-export const scoreDemocracyVotes = (votes, lastReferendum, threshold) => {
+// The window of the last votes we want to check consistency for.
+//      For example, if the last referendum was 143 and there's a window of 3,
+//      we want to check votes [139, 140, 141, 142, 143]
+const RECENT_WINDOW = 5;
+
+const LAST_REFERENDUM_WEIGHT = 15;
+const RECENT_REFERENDUM_WEIGHT = 5;
+const BASE_REFERENDUM_WEIGHT = 2;
+
+// Inputs:
+//    votes: an array of all the votes of a validator
+//    lastReferendum: the last (or current) on chain referendum
+// Returns:
+//    baseDemocracyScore: the base score, sans multipliers
+//    totalConsistencyMultiplier: the multiplier for the consistency of all votes
+//    lastConsistencyMultiplier: the mulitiplier for the consistency of the recent window (ie the last 5 votes)
+// Scoring:
+//     consistency is quantified as the batches of consecutive votes.
+//
+//     if someone has the votes [0, 1, 2, 4, 5, 6, 8, 10, 13],
+//         there are 5 separate streaks of consistency: [0, 1, 2], [4, 5, 6], [8], [10], [13]
+//
+//     ideally we want to reward people that have the fewest separate streaks of consistency
+//       (ie we want them to have fewer, longer consecutive streams of votes)
+//
+//     these consistency streaks are used to determine two different multipliers:
+//        total consistency: how consistent are they with all votes
+//        last consistency: how consistent are they within the recent window of votes (ie the last 5)
+//
+//     the multiplier is calculated as: 1 + 1 / consistency_streaks
+//          resulting the more separate steams of consistency, the lower the multiplier
+//
+//      the total score is calculated as (base_score * lastMultiplier * totalMultipler)
+//
+//      The total score is capped at 250, the last consistency multiplier at 2x and the total consistency multiplier at 1.5x
+//
+//  Desired Outcome:
+//     We want to balance the fact that new people may not have the number of votes as people that have
+//       been voting for a while, so ideally if people start voting on the recent referenda (and are consistent)
+//       they can achieve a good score from the multipliers.
+//     We want to still benefit people that have been voting on lots of things though, so the points
+//       they get from those gradually decrease over time (but still add up)
+export const scoreDemocracyVotes = (
+  votes: number[],
+  lastReferendum: number
+) => {
   if (votes.length == 0) {
     return {
-      democracyScore: 0,
+      baseDemocracyScore: 0,
       totalConsistencyMultiplier: 0,
       lastConsistencyMultiplier: 0,
       totalDemocracyScore: 0,
     };
   }
+  // Make sure votes are in ascending order
   const sorted = asc(votes);
+
+  // Calculate the base democracy score:
+  //     - if the referendum is the last/current, add 15 points
+  //     - if the referendum is one of the last 3 most recent referenda, add 5 points per vote
+  //     - everything else add 2 points per vote
   let demScore = 0;
   for (const referendum of votes) {
     if (referendum == lastReferendum) {
-      demScore += 15;
+      demScore += LAST_REFERENDUM_WEIGHT;
     } else if (lastReferendum - referendum <= 3) {
-      demScore += 5;
+      demScore += RECENT_REFERENDUM_WEIGHT;
     } else {
-      demScore += 2;
+      demScore += BASE_REFERENDUM_WEIGHT;
     }
   }
+
+  // Get the consistency sub-arrays for all votes
   const totalConsistency = consistency(sorted);
+
+  //
   const lastConsistency = consistency(
-    lastValues(sorted, lastReferendum, threshold)
+    lastValues(sorted, lastReferendum, RECENT_WINDOW)
   );
 
   // The consistency of all historical votes, capped at 1.5x
@@ -148,12 +208,18 @@ export const scoreDemocracyVotes = (votes, lastReferendum, threshold) => {
     1 + 1 / totalConsistency.length,
     1.5
   );
+
   // The consistency of only the last _threshold_ votes
   const lastConsistencyMultiplier = 1 + 1 / lastConsistency.length;
-  const totalDemScore =
-    demScore * totalConsistencyMultiplier * lastConsistencyMultiplier;
+
+  // Calculate the total score, capping it at 250 points
+  const totalDemScore = Math.min(
+    demScore * totalConsistencyMultiplier * lastConsistencyMultiplier,
+    250
+  );
+
   return {
-    democracyScore: demScore || 0,
+    baseDemocracyScore: demScore || 0,
     totalConsistencyMultiplier: totalConsistencyMultiplier || 0,
     lastConsistencyMultiplier: lastConsistencyMultiplier || 0,
     totalDemocracyScore: totalDemScore || 0,

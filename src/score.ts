@@ -139,6 +139,7 @@ const BASE_REFERENDUM_WEIGHT = 2;
 //    baseDemocracyScore: the base score, sans multipliers
 //    totalConsistencyMultiplier: the multiplier for the consistency of all votes
 //    lastConsistencyMultiplier: the mulitiplier for the consistency of the recent window (ie the last 5 votes)
+//    totalDemocracyScore: the base score * multipliers
 // Scoring:
 //     consistency is quantified as the batches of consecutive votes.
 //

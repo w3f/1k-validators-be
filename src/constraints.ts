@@ -450,16 +450,15 @@ export class OTV implements Constraints {
           : 0;
 
       // Score democracy based on how many proposals have been voted on
-      const voteThreshold = 5;
-      const demScore = scoreDemocracyVotes(
-        candidate.democracyVotes,
-        voteThreshold,
-        lastReferendum
-      );
+      const {
+        baseDemocracyScore,
+        totalDemocracyScore,
+        totalConsistencyMultiplier,
+        lastConsistencyMultiplier,
+      } = scoreDemocracyVotes(candidate.democracyVotes, lastReferendum);
       logger.info(
-        `{democracyScore} ${candidate.stash} votes: ${candidate.democracyVotes} democracyScore: ${demScore.democracyScore} total mult: ${demScore.totalConsistencyMultiplier} last mult: ${demScore.lastConsistencyMultiplier} total: ${demScore.totalDemocracyScore}`
+        `{democracyScore} last referendum: ${lastReferendum} ${candidate.stash} votes: ${candidate.democracyVotes} democracyScore: ${baseDemocracyScore} total mult: ${totalConsistencyMultiplier} last mult: ${lastConsistencyMultiplier} total: ${totalDemocracyScore}`
       );
-      const democracyScore = demScore.totalDemocracyScore; // TODO: remove candidate.democracyVoteCount * this.DEMOCRACY_WEIGHT;
 
       const aggregate =
         inclusionScore +
@@ -472,7 +471,7 @@ export class OTV implements Constraints {
         bondedScore +
         locationScore +
         councilStakeScore +
-        democracyScore +
+        totalDemocracyScore +
         offlineScore;
 
       const randomness = 1 + Math.random() * 0.15;
@@ -491,7 +490,7 @@ export class OTV implements Constraints {
         offline: offlineScore,
         location: locationScore,
         councilStake: councilStakeScore,
-        democracy: democracyScore,
+        democracy: totalDemocracyScore,
         randomness: randomness,
         updated: Date.now(),
       };

@@ -546,16 +546,19 @@ export class OTV implements Constraints {
   }
 
   // Weighted scores
+  // Inclusion - lower is preferable (84-Era Inclusion)
+  // Span Inclusion - lower is preferable (28-Era Inclusion)
   // Discovered at - earlier is preferable
-  // Nominated At - Not nominated in a while is preferable
-  // offlineAccumulated - lower if preferable
-  // rank - higher is preferable
-  // faults - lower is preferable
-  // unclaimed eras - lower is preferable
-  // inclusion - lower is preferable
-  // bonded - higher is preferable
+  // Nominated At - not nominated in a while is preferable
+  // Rank - higher is preferable
+  // Unclaimed Eras - lower is preferable
+  // Bonded - higher is preferable
+  // Faults - lower is preferable
+  // Accumulated Offline - lower if preferable
   // Location - lower is preferable
-  INCLUSION_WEIGHT = 60;
+  // Council - higher is preferable
+  // Democracy - higher is preferable
+  INCLUSION_WEIGHT = 80;
   SPAN_INCLUSION_WEIGHT = 80;
   DISCOVERED_WEIGHT = 5;
   NOMINATED_WEIGHT = 10;

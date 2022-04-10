@@ -37,6 +37,8 @@ Requirements for prospective validators on the Polkadot network:
 - Connected to the private telemetry.
 - Must have an identity set and verified by a registrar ([instructions](https://wiki.polkadot.network/docs/en/learn-registrar)).
 
+For either programme, validators must operate nodes themselves, they may not be operated by third parties or staking providers.
+
 ## What is this repository?
 
 The `1k-validator-be` repository houses the backend code for the services that

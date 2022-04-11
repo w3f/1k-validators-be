@@ -1,6 +1,6 @@
 basicauth:
-  username: {{ env "POLKADOT_MONGO_EXPRESS_USERNAME" | default "admin" | quote }}
-  password: {{ env "POLKADOT_MONGO_EXPRESS_PASSWORD" | default "pass" | quote }}
+  username: "admin"
+  password: "pass"
 
 mongodb:
-  host: "mongodb://{{ env "POLKADOT_MONGO_USERNAME" | default "username" }}:{{ env "POLKADOT_MONGO_PASSWORD" | default "password123" }}@polkadot-mongodb-0.polkadot-mongodb-headless:27017,polkadot-mongodb-1.polkadot-mongodb-headless:27017/{{ env "POLKADOT_MONGO_DB" | default "otv" }}?replicaSet=rs0"
+  host: "mongodb://username:password123@polkadot-mongodb-0.polkadot-mongodb-headless:27017,polkadot-mongodb-1.polkadot-mongodb-headless:27017/otv?replicaSet=rs0"

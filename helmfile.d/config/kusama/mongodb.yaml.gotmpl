@@ -1,55 +1,15 @@
-clusterDomain: cluster.local
-architecture: replicaset
-useStatefulSet: true
-
 auth:
   enabled: true
-  rootPassword: {{ env "KUSAMA_MONGO_ROOT_PASSWORD" | default "root123123" }}
-  username: {{ env "KUSAMA_MONGO_USERNAME" | default "username" }}
-  password: {{ env "KUSAMA_MONGO_PASSWORD" | default "password123" }}
-  database: {{ env "KUSAMA_MONGO_DB" | default "otv" }}
-  replicaSetKey: {{ env "KUSAMA_MONGO_RS_KEY" | default "rskey123456789" }}
-
-tls:
-  enabled: false
-
-replicaSetName: rs0
-replicaSetHostnames: true
+  rootPassword: {{ "ref+vault://op/vaults/k8s-community-secrets/items/otv-kusama-mongodb-rootpassword?proto=http#password" | fetchSecretValue }}
+  username: {{ "ref+vault://op/vaults/k8s-community-secrets/items/otv-kusama-mongodb-username?proto=http#password" | fetchSecretValue }}
+  password: {{ "ref+vault://op/vaults/k8s-community-secrets/items/otv-kusama-mongodb-password?proto=http#password" | fetchSecretValue }}
+  database: {{ "ref+vault://op/vaults/k8s-community-secrets/items/otv-kusama-mongodb-db?proto=http#password" | fetchSecretValue }}
+  replicaSetKey: {{ "ref+vault://op/vaults/k8s-community-secrets/items/otv-kusama-mongodb-replicakey?proto=http#password" | fetchSecretValue }}
 
 directoryPerDB: true
-systemLogVerbosity: 0
-disableSystemLog: false
 
-annotations: {}
-labels: {}
-{{ if eq .Environment.Name "production" }}
 replicaCount: 2
-{{ else }}
-replicaCount: 1
-{{ end }}
-strategyType: RollingUpdate
-podManagementPolicy: OrderedReady
-affinity: {}
-nodeSelector: {}
-podLabels: {}
 
-podSecurityContext:
-  enabled: true
-  fsGroup: 1001
-  ## sysctl settings
-  ## Example:
-  ## sysctls:
-  ## - name: net.core.somaxconn
-  ##   value: "10000"
-  ##
-  sysctls: []
-
-containerSecurityContext:
-  enabled: true
-  runAsUser: 1001
-  runAsNonRoot: true
-
-{{ if eq .Environment.Name "production" }}
 resources:
   limits: 
     cpu: 2000m
@@ -57,36 +17,7 @@ resources:
   requests: 
     cpu: 1000m
     memory: "1Gi"
-{{ else }}
-resources:
-  limits: {}
-  requests: {}
-{{ end }}
 
-livenessProbe:
-  enabled: true
-  initialDelaySeconds: 30
-  periodSeconds: 10
-  timeoutSeconds: 5
-  failureThreshold: 6
-  successThreshold: 1
-readinessProbe:
-  enabled: true
-  initialDelaySeconds: 5
-  periodSeconds: 10
-  timeoutSeconds: 5
-  failureThreshold: 6
-  successThreshold: 1
-
-extraVolumeMounts: []
-extraVolumes: []
-
-pdb:
-  create: false
-  minAvailable: 1
-  maxUnavailable: 1
-
-{{ if eq .Environment.Name "production" }}
 persistence:
   enabled: true
   # storageClass: ""
@@ -96,114 +27,6 @@ persistence:
   annotations: {}
   mountPath: /bitnami/mongodb
   subPath: ""
-{{ else }}
-persistence:
-  enabled: true
-{{ end }}
-
-service:
-  type: ClusterIP
-  port: 27017
-  portName: mongodb
-  nodePort: ""
-
-externalAccess:
-  enabled: false
 
 arbiter:
-{{ if eq .Environment.Name "production" }}
   enabled: true
-{{ else }}
-  enabled: false
-{{ end }}
-  configuration: ""
-  # existingConfigmap:
-  annotations: {}
-  labels: {}
-  affinity: {}
-  nodeSelector: {}
-  tolerations: []
-  podLabels: {}
-  podAnnotations: {}
-
-  podSecurityContext:
-    enabled: true
-    fsGroup: 1001
-    ## sysctl settings
-    ## Example:
-    ## sysctls:
-    ## - name: net.core.somaxconn
-    ##   value: "10000"
-    ##
-    sysctls: []
-
-  containerSecurityContext:
-    enabled: true
-    runAsUser: 1001
-
-  resources:
-    limits: 
-      cpu: 100m
-      memory: 128Mi
-    requests: 
-      cpu: 100m
-      memory: 128Mi
-
-  livenessProbe:
-    enabled: true
-    initialDelaySeconds: 30
-    periodSeconds: 10
-    timeoutSeconds: 5
-    failureThreshold: 6
-    successThreshold: 1
-  readinessProbe:
-    enabled: true
-    initialDelaySeconds: 5
-    periodSeconds: 10
-    timeoutSeconds: 5
-    failureThreshold: 6
-    successThreshold: 1
-
-  pdb:
-    create: false
-    minAvailable: 1
-
-serviceAccount:
-  create: true
-
-rbac:
-  create: false
-
-metrics:
-  enabled: true
-
-  resources:
-    limits: 
-      cpu: 100m
-      memory: 128Mi
-    requests: 
-      cpu: 100m
-      memory: 128Mi
-
-  service:
-    annotations:
-      prometheus.io/scrape: "true"
-      prometheus.io/port: "9216"
-      prometheus.io/path: "/metrics"
-    type: ClusterIP
-    port: 9216
-
-  livenessProbe:
-    enabled: true
-    initialDelaySeconds: 15
-    periodSeconds: 5
-    timeoutSeconds: 5
-    failureThreshold: 3
-    successThreshold: 1
-  readinessProbe:
-    enabled: false
-    initialDelaySeconds: 15
-    periodSeconds: 5
-    timeoutSeconds: 1
-    failureThreshold: 30
-    successThreshold: 1

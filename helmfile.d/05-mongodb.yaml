@@ -13,7 +13,7 @@ releases:
       - ./config/mongodb-common.yaml.gotmpl
 {{ if eq .Environment.Name "prod" }}
       - ./config/kusama/mongodb.yaml.gotmpl
-{{ else }}
+{{ end }}
   - name: polkadot-mongodb
     namespace: polkadot
     chart: bitnami/mongodb
@@ -22,4 +22,4 @@ releases:
       - ./config/mongodb-common.yaml.gotmpl
 {{ if eq .Environment.Name "prod" }}
       - ./config/polkadot/mongodb.yaml.gotmpl
-{{ else }}
+{{ end }}

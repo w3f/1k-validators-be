@@ -10,10 +10,16 @@ releases:
     chart: bitnami/mongodb
     version: 10.31.5
     values:
+      - ./config/mongodb-common.yaml.gotmpl
+{{ if eq .Environment.Name "prod" }}
       - ./config/kusama/mongodb.yaml.gotmpl
+{{ else }}
   - name: polkadot-mongodb
     namespace: polkadot
     chart: bitnami/mongodb
     version: 10.31.5
     values:
+      - ./config/mongodb-common.yaml.gotmpl
+{{ if eq .Environment.Name "prod" }}
       - ./config/polkadot/mongodb.yaml.gotmpl
+{{ else }}

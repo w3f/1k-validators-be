@@ -11,7 +11,7 @@ releases:
     version: v0.3.1
     values:
       - ./config/mongo-express-common.yaml.gotmpl
-{{ if eq .Environment.Name "prod" }}
+{{ if eq .Environment.Name "production" }}
       - ./config/kusama/mongo-express-prod.yaml.gotmpl
 {{ else }}
       - ./config/kusama/mongo-express-ci.yaml.gotmpl
@@ -22,7 +22,7 @@ releases:
     version: v0.3.1
     values:
       - ./config/mongo-express-common.yaml.gotmpl
-{{ if eq .Environment.Name "prod" }}
+{{ if eq .Environment.Name "production" }}
       - ./config/polkadot/mongo-express-prod.yaml.gotmpl
 {{ else }}
       - ./config/polkadot/mongo-express-ci.yaml.gotmpl

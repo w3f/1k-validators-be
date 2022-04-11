@@ -41,6 +41,7 @@ const API = {
   Referenda: "/referenda",
   Referendum: "/referendum/:index",
   LastReferendum: "/lastreferendum",
+  LastReferendums: "/lastreferendums",
   ReferendumIndexVotes: "/referendumvotes/index/:index",
   ReferendumAccountVotes: "/referendumvotes/account/:address",
 };
@@ -312,6 +313,10 @@ export default class Server {
       ctx.body = referendum;
     });
     router.get(API.LastReferendum, async (ctx) => {
+      const referendum = (await db.getLastReferenda())[0];
+      ctx.body = referendum;
+    });
+    router.get(API.LastReferendums, async (ctx) => {
       const referendum = await this.db.getLastReferenda();
       ctx.body = referendum;
     });

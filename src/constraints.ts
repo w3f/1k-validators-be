@@ -450,16 +450,15 @@ export class OTV implements Constraints {
           : 0;
 
       // Score democracy based on how many proposals have been voted on
-      const voteThreshold = 5;
-      const demScore = scoreDemocracyVotes(
-        candidate.democracyVotes,
-        voteThreshold,
-        lastReferendum
-      );
+      const {
+        baseDemocracyScore,
+        totalDemocracyScore,
+        totalConsistencyMultiplier,
+        lastConsistencyMultiplier,
+      } = scoreDemocracyVotes(candidate.democracyVotes, lastReferendum);
       logger.info(
-        `{democracyScore} ${candidate.stash} votes: ${candidate.democracyVotes} democracyScore: ${demScore.democracyScore} total mult: ${demScore.totalConsistencyMultiplier} last mult: ${demScore.lastConsistencyMultiplier} total: ${demScore.totalDemocracyScore}`
+        `{democracyScore} last referendum: ${lastReferendum} ${candidate.stash} votes: ${candidate.democracyVotes} democracyScore: ${baseDemocracyScore} total mult: ${totalConsistencyMultiplier} last mult: ${lastConsistencyMultiplier} total: ${totalDemocracyScore}`
       );
-      const democracyScore = demScore.totalDemocracyScore; // TODO: remove candidate.democracyVoteCount * this.DEMOCRACY_WEIGHT;
 
       const aggregate =
         inclusionScore +
@@ -472,7 +471,7 @@ export class OTV implements Constraints {
         bondedScore +
         locationScore +
         councilStakeScore +
-        democracyScore +
+        totalDemocracyScore +
         offlineScore;
 
       const randomness = 1 + Math.random() * 0.15;
@@ -491,7 +490,7 @@ export class OTV implements Constraints {
         offline: offlineScore,
         location: locationScore,
         councilStake: councilStakeScore,
-        democracy: democracyScore,
+        democracy: totalDemocracyScore,
         randomness: randomness,
         updated: Date.now(),
       };
@@ -547,16 +546,19 @@ export class OTV implements Constraints {
   }
 
   // Weighted scores
+  // Inclusion - lower is preferable (84-Era Inclusion)
+  // Span Inclusion - lower is preferable (28-Era Inclusion)
   // Discovered at - earlier is preferable
-  // Nominated At - Not nominated in a while is preferable
-  // offlineAccumulated - lower if preferable
-  // rank - higher is preferable
-  // faults - lower is preferable
-  // unclaimed eras - lower is preferable
-  // inclusion - lower is preferable
-  // bonded - higher is preferable
+  // Nominated At - not nominated in a while is preferable
+  // Rank - higher is preferable
+  // Unclaimed Eras - lower is preferable
+  // Bonded - higher is preferable
+  // Faults - lower is preferable
+  // Accumulated Offline - lower if preferable
   // Location - lower is preferable
-  INCLUSION_WEIGHT = 60;
+  // Council - higher is preferable
+  // Democracy - higher is preferable
+  INCLUSION_WEIGHT = 80;
   SPAN_INCLUSION_WEIGHT = 80;
   DISCOVERED_WEIGHT = 5;
   NOMINATED_WEIGHT = 10;

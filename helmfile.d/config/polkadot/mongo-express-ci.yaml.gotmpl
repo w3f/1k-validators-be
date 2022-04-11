@@ -1,23 +1,6 @@
-environment: {{ .Environment.Name }}
-
-image:
-  tag: v0.1.0
-
 basicauth:
   username: {{ env "POLKADOT_MONGO_EXPRESS_USERNAME" | default "admin" | quote }}
   password: {{ env "POLKADOT_MONGO_EXPRESS_PASSWORD" | default "pass" | quote }}
-{{ if eq .Environment.Name "production" }}
-certificate:
-  enabled: true
-{{ else }}
-certificate:
-  enabled: false
-{{ end }}
-
-domain: w3f.community
 
 mongodb:
   host: "mongodb://{{ env "POLKADOT_MONGO_USERNAME" | default "username" }}:{{ env "POLKADOT_MONGO_PASSWORD" | default "password123" }}@polkadot-mongodb-0.polkadot-mongodb-headless:27017,polkadot-mongodb-1.polkadot-mongodb-headless:27017/{{ env "POLKADOT_MONGO_DB" | default "otv" }}?replicaSet=rs0"
-
-ingress:
-  whitelist_source_ips: "35.216.233.11/32"

@@ -1,18 +1,6 @@
 environment: {{ .Environment.Name }}
 
-image:
-  tag: v0.1.0
-
-basicauth:
-{{ if eq .Environment.Name "production" }}
-certificate:
-  enabled: true
-{{ else }}
 certificate:
   enabled: false
-{{ end }}
 
 domain: w3f.community
-
-ingress:
-  whitelist_source_ips: "35.216.233.11/32"

@@ -1,6 +1,11 @@
 basicauth:
   username: {{ "ref+vault://op/vaults/k8s-community-secrets/items/otv-kusama-mongodb-express-username?proto=http#password" | fetchSecretValue | quote }}
   password: {{ "ref+vault://op/vaults/k8s-community-secrets/items/otv-kusama-mongodb-express-password?proto=http#password" | fetchSecretValue | quote }}
+certificate:
+  enabled: true
 
 mongodb:
   host: "mongodb://{{ "ref+vault://op/vaults/k8s-community-secrets/items/otv-kusama-mongodb-express-username?proto=http#password" | fetchSecretValue }}:{{ "ref+vault://op/vaults/k8s-community-secrets/items/otv-kusama-mongodb-express-password?proto=http#password" | fetchSecretValue }}@kusama-mongodb-0.kusama-mongodb-headless:27017,kusama-mongodb-1.kusama-mongodb-headless:27017/{{ "ref+vault://op/vaults/k8s-community-secrets/items/otv-kusama-mongodb-express-db?proto=http#password" | fetchSecretValue }}?replicaSet=rs0"
+
+ingress:
+  whitelist_source_ips: {{ "ref+vault://op/vaults/k8s-community-secrets/items/shared-vpn-ip?proto=http#password" | fetchSecretValue | quote }}

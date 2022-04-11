@@ -2,6 +2,15 @@ clusterDomain: cluster.local
 architecture: replicaset
 useStatefulSet: true
 
+auth:
+  enabled: true
+  ## dummy values for CI
+  rootPassword: "root123123"
+  username: "username"
+  password: "password123"
+  database: "otv"
+  replicaSetKey: "rskey123456789"
+
 tls:
   enabled: false
 
@@ -137,7 +146,6 @@ rbac:
 
 metrics:
   enabled: true
-
   resources:
     limits: 
       cpu: 100m
@@ -145,7 +153,6 @@ metrics:
     requests: 
       cpu: 100m
       memory: 128Mi
-
   service:
     annotations:
       prometheus.io/scrape: "true"
@@ -153,7 +160,6 @@ metrics:
       prometheus.io/path: "/metrics"
     type: ClusterIP
     port: 9216
-
   livenessProbe:
     enabled: true
     initialDelaySeconds: 15

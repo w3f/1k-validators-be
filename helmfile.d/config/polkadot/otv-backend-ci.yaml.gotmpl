@@ -1,0 +1,78 @@
+domain: polkadot.w3f.community
+
+resources:
+  limits:
+    cpu: 1500m
+    memory: 4Gi
+  requests:
+    cpu: 600m
+    memory: 3Gi
+
+secret: '{"matrix":{"accessToken":"Null"},"scorekeeper":{"claimer":{"seed":"0x0"},"nominators":[[]]}}'
+
+config: |
+  {
+    "global": {
+      "dryRun": false,
+      "networkPrefix": 0,
+      "test": false,
+      "retroactive": false,
+      "historicalNominations": false
+    },
+    "constraints": {
+      "skipConnectionTime": false,
+      "skipIdentity": false,
+      "skipStakedDestination": false,
+      "skipClientUpgrade": false,
+      "skipUnclaimed": false,
+      "forceClientVersion": "v0.9.16"
+    },
+    "cron": {
+      "monitor": "0 */15 * * * *"
+    },
+    "db": {
+      "mongo": {
+          "uri": "mongodb://username:password123@polkadot-mongodb-0.polkadot-mongodb-headless:27017,polkadot-mongodb-1.polkadot-mongodb-headless:27017/otv"
+      }
+    },
+    "matrix": {
+      "enabled": true,
+      "baseUrl": "https://matrix.org",
+      "room": "!ccXWsugXuoiHnkEhKa:web3.foundation",
+      "userId": "@1kv-stats:matrix.org"
+    },
+    "proxy": {
+        "timeDelayBlocks": "10850"
+    },
+    "scorekeeper": {
+      "candidates": [
+        {
+          "name": "specialized-tarmac-1",
+          "stash": "126RwaHn4MDekLWfUYfiqcVbiQHapwDSAT9vZZS15HLqfDJh",
+          "kusamaStash": "HngUT2inDFPBwiey6ZdqhhnmPKHkXayRpWw9rFj55reAqvi",
+          "riotHandle": "@joe:web3.foundation"
+        },
+        {
+          "name": "🔒stateless_money-5🔒",
+          "stash": "14Vh8S1DzzycngbAB9vqEgPFR9JpSvmF1ezihTUES1EaHAV",
+          "kusamaStash": "HZvvFHgPdhDr6DHN43xT1sP5fDyzLDFv5t5xwmXBrm6dusm",
+          "riotHandle": "@aaronschwarz:matrix.org"
+        }
+      ],
+      "forceRound": false,
+      "nominating": true
+    },
+    "server": {
+      "port": 3300
+    },
+    "telemetry": {
+      "chains": [
+          "0x91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3"
+      ],
+      "host": "wss://telemetry-backend.w3f.community/feed"
+    },
+    "subscan": {
+        "baseV1Url": "https://polkadot.api.subscan.io/api/scan",
+        "baseV2Url": "https://polkadot.api.subscan.io/api/v2/scan"
+    }
+  }

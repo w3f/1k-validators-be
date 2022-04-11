@@ -1,0 +1,11 @@
+basicauth:
+  username: {{ "ref+vault://op/vaults/k8s-community-secrets/items/otv-polkadot-mongodb-express-username?proto=http#password" | fetchSecretValue | quote }}
+  password: {{ "ref+vault://op/vaults/k8s-community-secrets/items/otv-polkadot-mongodb-express-password?proto=http#password" | fetchSecretValue | quote }}
+certificate:
+  enabled: true
+
+mongodb:
+  host: "mongodb://{{ "ref+vault://op/vaults/k8s-community-secrets/items/otv-polkadot-mongodb-express-db-username?proto=http#password" | fetchSecretValue }}:{{ "ref+vault://op/vaults/k8s-community-secrets/items/otv-polkadot-mongodb-express-db-password?proto=http#password" | fetchSecretValue }}@polkadot-mongodb-0.polkadot-mongodb-headless:27017,polkadot-mongodb-1.polkadot-mongodb-headless:27017/{{ "ref+vault://op/vaults/k8s-community-secrets/items/otv-polkadot-mongodb-express-db?proto=http#password" | fetchSecretValue }}?replicaSet=rs0"
+
+ingress:
+  whitelist_source_ips: {{ "ref+vault://op/vaults/k8s-community-secrets/items/shared-vpn-ip?proto=http#password" | fetchSecretValue | quote }}

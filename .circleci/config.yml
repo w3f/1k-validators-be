@@ -144,7 +144,9 @@ workflows:
           requires:
             - integrationTests
       - deploy:
-          context: digital_ocean_access
+          context: 
+          - digital_ocean_access
+          - vault_community
           filters:
             branches:
               ignore: /.*/

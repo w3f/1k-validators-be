@@ -58,7 +58,7 @@
   "devDependencies": {
     "@ava/typescript": "^3.0.1",
     "@typescript-eslint/eslint-plugin": "^5.17.0",
-    "@typescript-eslint/parser": "^5.17.0",
+    "@typescript-eslint/parser": "^5.19.0",
     "ava": "^4.1.0",
     "concurrently": "^7.1.0",
     "eslint": "^8.12.0",

@@ -272,7 +272,9 @@ export const startExecutionJob = async (
                 if (name) {
                   return `- ${name.name} (${addressUrl(n, config)})`;
                 } else {
-                  return `- ${JSON.stringify(name)} (Invalid name!) (${addressUrl(n, config)})`;
+                  return `- ${JSON.stringify(
+                    name
+                  )} (Invalid name!) (${addressUrl(n, config)})`;
                 }
               })
             )

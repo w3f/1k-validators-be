@@ -252,7 +252,7 @@ export const startExecutionJob = async (
                 if (!name) {
                   logger.info(`did send: no entry for :${n}`);
                 }
-                if (!name.name) {
+                if (name && !name.name) {
                   logger.info(`did send: no name for :${n}`);
                 }
                 if (n && name) {

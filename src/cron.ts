@@ -269,7 +269,11 @@ export const startExecutionJob = async (
             await Promise.all(
               targets.map(async (n) => {
                 const name = await db.getCandidate(n);
-                return `- ${name.name} (${addressUrl(n, config)})`;
+                if (name) {
+                  return `- ${name.name} (${addressUrl(n, config)})`;
+                } else {
+                  return `- ${JSON.stringify(name)} (Invalid name!) (${addressUrl(n, config)})`;
+                }
               })
             )
           ).join("<br>");

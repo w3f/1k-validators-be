@@ -820,6 +820,12 @@ export default class Db {
       .exec();
 
     const candidate = await this.getCandidate(target);
+    if (!candidate) {
+      logger.info(
+        `(Db::setTarget) getCandidate returned null for ${target}. Deleted candidate?`
+      );
+      return false;
+    }
     const currentCandidate = {
       name: candidate.name,
       stash: candidate.stash,

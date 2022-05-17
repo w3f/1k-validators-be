@@ -332,9 +332,16 @@ export class OTV implements Constraints {
 
     // Democracy
     const democracyValues = validCandidates.map((candidate) => {
-      return candidate.democracyVoteCount;
+      const {
+        baseDemocracyScore,
+        totalDemocracyScore,
+        totalConsistencyMultiplier,
+        lastConsistencyMultiplier,
+      } = scoreDemocracyVotes(candidate.democracyVotes, lastReferendum);
+      return totalDemocracyScore || 0;
     });
     const democracyStats = getStats(democracyValues);
+
     // index of the last democracy referendum
     const lastReferendum = (await db.getLastReferenda())[0]?.referendumIndex;
 
@@ -456,8 +463,10 @@ export class OTV implements Constraints {
         totalConsistencyMultiplier,
         lastConsistencyMultiplier,
       } = scoreDemocracyVotes(candidate.democracyVotes, lastReferendum);
+      const scaledDemocracyScore =
+        scaled(totalDemocracyScore, democracyValues) * this.DEMOCRACY_WEIGHT;
       logger.info(
-        `{democracyScore} last referendum: ${lastReferendum} ${candidate.stash} votes: ${candidate.democracyVotes} democracyScore: ${baseDemocracyScore} total mult: ${totalConsistencyMultiplier} last mult: ${lastConsistencyMultiplier} total: ${totalDemocracyScore}`
+        `{democracyScore} last referendum: ${lastReferendum} ${candidate.stash} votes: ${candidate.democracyVotes} democracyScore: ${baseDemocracyScore} total mult: ${totalConsistencyMultiplier} last mult: ${lastConsistencyMultiplier} total: ${totalDemocracyScore} scaled: ${scaledDemocracyScore}`
       );
 
       const aggregate =
@@ -471,7 +480,7 @@ export class OTV implements Constraints {
         bondedScore +
         locationScore +
         councilStakeScore +
-        totalDemocracyScore +
+        scaledDemocracyScore +
         offlineScore;
 
       const randomness = 1 + Math.random() * 0.15;
@@ -490,7 +499,7 @@ export class OTV implements Constraints {
         offline: offlineScore,
         location: locationScore,
         councilStake: councilStakeScore,
-        democracy: totalDemocracyScore,
+        democracy: scaledDemocracyScore,
         randomness: randomness,
         updated: Date.now(),
       };
@@ -558,10 +567,10 @@ export class OTV implements Constraints {
   // Location - lower is preferable
   // Council - higher is preferable
   // Democracy - higher is preferable
-  INCLUSION_WEIGHT = 80;
-  SPAN_INCLUSION_WEIGHT = 80;
+  INCLUSION_WEIGHT = 100;
+  SPAN_INCLUSION_WEIGHT = 100;
   DISCOVERED_WEIGHT = 5;
-  NOMINATED_WEIGHT = 10;
+  NOMINATED_WEIGHT = 30;
   RANK_WEIGHT = 5;
   UNCLAIMED_WEIGHT = 10;
   BONDED_WEIGHT = 50;
@@ -569,7 +578,7 @@ export class OTV implements Constraints {
   OFFLINE_WEIGHT = 2;
   LOCATION_WEIGHT = 40;
   COUNCIL_WEIGHT = 50;
-  DEMOCRACY_WEIGHT = 10;
+  DEMOCRACY_WEIGHT = 100;
 
   /// At the end of a nomination round this is the logic that separates the
   /// candidates that did good from the ones that did badly.

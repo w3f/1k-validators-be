@@ -558,8 +558,8 @@ export class OTV implements Constraints {
   // Location - lower is preferable
   // Council - higher is preferable
   // Democracy - higher is preferable
-  INCLUSION_WEIGHT = 80;
-  SPAN_INCLUSION_WEIGHT = 80;
+  INCLUSION_WEIGHT = 100;
+  SPAN_INCLUSION_WEIGHT = 100;
   DISCOVERED_WEIGHT = 5;
   NOMINATED_WEIGHT = 10;
   RANK_WEIGHT = 5;

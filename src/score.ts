@@ -217,7 +217,7 @@ export const scoreDemocracyVotes = (
   // Calculate the total score, capping it at 250 points
   const totalDemScore = Math.min(
     demScore * totalConsistencyMultiplier * lastConsistencyMultiplier,
-    250
+    200
   );
 
   return {

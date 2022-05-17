@@ -330,6 +330,9 @@ export class OTV implements Constraints {
     });
     const councilStakeStats = getStats(councilStakeValues);
 
+    // index of the last democracy referendum
+    const lastReferendum = (await db.getLastReferenda())[0]?.referendumIndex;
+
     // Democracy
     const democracyValues = validCandidates.map((candidate) => {
       const {
@@ -341,9 +344,6 @@ export class OTV implements Constraints {
       return totalDemocracyScore || 0;
     });
     const democracyStats = getStats(democracyValues);
-
-    // index of the last democracy referendum
-    const lastReferendum = (await db.getLastReferenda())[0]?.referendumIndex;
 
     // Create DB entry for Validator Score Metadata
     await db.setValidatorScoreMetadata(

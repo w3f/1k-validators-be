@@ -212,7 +212,7 @@ export const scoreDemocracyVotes = (
 
   // The consistency of only the last _threshold_ votes
   const lastConsistencyMultiplier =
-    lastConsistency?.length > 0 ? 1 + 1 / lastConsistency.length : 1;
+    lastConsistency?.length > 0 ? 1 + (1 / lastConsistency.length) * 1.5 : 1;
 
   // Calculate the total score, capping it at 400 points
   const totalDemScore = Math.min(

@@ -44,7 +44,7 @@
     "koa-bodyparser": "^4.3.0",
     "koa2-cors": "^2.0.6",
     "matrix-js-sdk": "^16.0.1",
-    "mongodb": "4.4.1",
+    "mongodb": "4.6.0",
     "mongodb-memory-server": "^8.5.2",
     "mongoose": "^6.3.4",
     "prettier": "^2.6.2",

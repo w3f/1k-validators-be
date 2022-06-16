@@ -186,12 +186,14 @@ export class OTV implements Constraints {
       )) || false;
 
     const unclaimedValid =
-      (await checkUnclaimed(
-        this.db,
-        this.chaindata,
-        this.unclaimedEraThreshold,
-        candidate
-      )) || false;
+      this.config.constraints.skipUnclaimed == true
+        ? true
+        : (await checkUnclaimed(
+            this.db,
+            this.chaindata,
+            this.unclaimedEraThreshold,
+            candidate
+          )) || false;
 
     const blockedValid =
       (await checkBlocked(this.db, this.chaindata, candidate)) || false;

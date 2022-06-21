@@ -153,11 +153,15 @@ class ChainData {
     if (controller.isNone) {
       return [null, "Not bonded to any account."];
     }
-    if (controller.toString() === stash && !this.stashHasSafeProxy(stash)) {
-      return [
-        null,
-        `Bonded to itself, please follow recommendations and bond to a different controller or set a proxy. Stash: ${stash} | Controller ${controller.toString()}`,
-      ];
+
+    if (controller.toString() === stash) {
+      const stashHasSafeProxy = await this.stashHasSafeProxy(stash);
+      if (!stashHasSafeProxy) {
+        return [
+          null,
+          `Bonded to itself, please follow recommendations and bond to a different controller or set a proxy. Stash: ${stash} | Controller ${controller.toString()}`,
+        ];
+      }
     }
 
     const ledger: JSON = await api.query.staking.ledger(controller.toString());

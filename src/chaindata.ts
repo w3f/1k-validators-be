@@ -153,10 +153,10 @@ class ChainData {
     if (controller.isNone) {
       return [null, "Not bonded to any account."];
     }
-    if (controller.toString() === stash) {
+    if (controller.toString() === stash && !this.stashHasSafeProxy(stash)) {
       return [
         null,
-        `Bonded to itself, please follow recommendations and bond to a different controller. Stash: ${stash} | Controller ${controller.toString()}`,
+        `Bonded to itself, please follow recommendations and bond to a different controller or set a proxy. Stash: ${stash} | Controller ${controller.toString()}`,
       ];
     }
 
@@ -167,6 +167,34 @@ class ChainData {
 
     return [ledger.toJSON().active, null];
   };
+
+  // Check if a stash has an acceptable proxy set. This could be used in place of a controller.
+  stashHasSafeProxy = async (stash: string): Promise<boolean> => {
+    const api = await this.handler.getApi();
+    // ([ProxyDefinition], Balance)
+    const maybeProxies = await api.query.proxy.proxy(stash);
+
+    // Non-exhaustive. Some proxies, like `Governance`, are not relevant.
+    const acceptableProxies = ['Staking', 'NonTransfer'];
+    const unacceptableProxies = ['Any'];
+
+    let proxyIsSafe = false;
+
+    if (maybeProxies[0].length > 0) {
+      for (const proxy of maybeProxies[0]) {
+        if (acceptableProxies.includes(proxy.proxyType) && stash != proxy.delegate) {
+          // Set flag to `true`, but can't return yet as we need to check for any unacceptables.
+          proxyIsSafe = true;
+        }
+
+        if (unacceptableProxies.includes(proxy.proxyType)) {
+          // Don't need to check any more. One unacceptabel proxy short circuits.
+          return false;
+        }
+      }
+    }
+    return proxyIsSafe;
+  }
 
   getOwnExposure = async (
     eraIndex: number,

@@ -179,14 +179,17 @@ class ChainData {
     const maybeProxies = await api.query.proxy.proxy(stash);
 
     // Non-exhaustive. Some proxies, like `Governance`, are not relevant.
-    const acceptableProxies = ['Staking', 'NonTransfer'];
-    const unacceptableProxies = ['Any'];
+    const acceptableProxies = ["Staking", "NonTransfer"];
+    const unacceptableProxies = ["Any"];
 
     let proxyIsSafe = false;
 
     if (maybeProxies[0].length > 0) {
       for (const proxy of maybeProxies[0]) {
-        if (acceptableProxies.includes(proxy.proxyType) && stash != proxy.delegate) {
+        if (
+          acceptableProxies.includes(proxy.proxyType) &&
+          stash != proxy.delegate
+        ) {
           // Set flag to `true`, but can't return yet as we need to check for any unacceptables.
           proxyIsSafe = true;
         }
@@ -198,7 +201,7 @@ class ChainData {
       }
     }
     return proxyIsSafe;
-  }
+  };
 
   getOwnExposure = async (
     eraIndex: number,

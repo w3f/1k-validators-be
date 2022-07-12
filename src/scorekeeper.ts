@@ -10,10 +10,10 @@ import {
   KUSAMA_FOUR_DAYS_ERAS,
   POLKADOT_FOUR_DAYS_ERAS,
   SCOREKEEPER_CRON,
-  TEN_PERCENT,
+  FIFTEEN_PERCENT,
   TEN_THOUSAND_DOT,
   FIVE_THOUSAND_DOT,
-  THREE_PERCENT,
+  FIVE_PERCENT,
   SIXTEEN_HOURS,
   TEN_KSM,
   BALANCE_BUFFER_PERCENT,
@@ -284,7 +284,7 @@ export default class ScoreKeeper {
       this.config.constraints.skipClientUpgrade,
       this.config.constraints.skipUnclaimed,
       this.config.global.networkPrefix == 2 ? TEN_KSM : FIVE_THOUSAND_DOT,
-      this.config.global.networkPrefix == 2 ? TEN_PERCENT : THREE_PERCENT,
+      this.config.global.networkPrefix == 2 ? FIFTEEN_PERCENT : FIVE_PERCENT,
       this.config.global.networkPrefix == 2
         ? KUSAMA_FOUR_DAYS_ERAS
         : POLKADOT_FOUR_DAYS_ERAS,

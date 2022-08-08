@@ -187,8 +187,9 @@ export const unclaimedErasJob = async (
 
   for (const candidate of candidates) {
     // Set unclaimed eras
-    const unclaimedEras = await chaindata.getUnclaimedEras(candidate.stash, db);
-    await db.setUnclaimedEras(candidate.stash, unclaimedEras);
+    // const unclaimedEras = await chaindata.getUnclaimedEras(candidate.stash, db);
+    // await db.setUnclaimedEras(candidate.stash, unclaimedEras);
+    await db.setUnclaimedEras(candidate.stash, []); // reset unclaimed eras
     await checkUnclaimed(db, chaindata, unclaimedEraThreshold, candidate);
   }
 

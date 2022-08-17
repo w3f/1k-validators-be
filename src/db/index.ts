@@ -402,8 +402,7 @@ export default class Db {
       // A new node that is not already registered as a candidate.
       const candidate = new this.candidateModel({
         telemetryId,
-        location,
-        // location: locationData.city,
+        location: locationData.city,
         networkId: null,
         nodeRefs: 1,
         name,
@@ -431,8 +430,7 @@ export default class Db {
           { name },
           {
             telemetryId,
-            location,
-            // location: locationData.city,
+            location: locationData.city,
             infrastructureLocation: locationData,
             discoveredAt: now,
             onlineSince: now,
@@ -461,8 +459,7 @@ export default class Db {
         { name },
         {
           telemetryId,
-          location,
-          // location: locationData.city,
+          location: locationData.city,
           infrastructureLocation: locationData,
           onlineSince: now,
           version,

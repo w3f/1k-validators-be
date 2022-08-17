@@ -98,7 +98,6 @@ export const fetchLocationInfo = async (addr: any, iit: any) => {
   try {
     logger.info(`trying to get json....`);
     json = await resp.json();
-    console.log(json);
   } catch (e) {
     logger.info(`There was an error fetching location data....`);
     logger.info(e);

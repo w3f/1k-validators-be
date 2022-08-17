@@ -315,16 +315,136 @@ export class OTV implements Constraints {
         locationMap.set(location, locationCount + 1);
       }
     }
-
-    for (const location of locationMap.entries()) {
-      const [name, numberOfNodes] = location;
-      locationArr.push({ name, numberOfNodes });
-    }
-
     const locationValues = locationArr.map((location) => {
       return location.numberOfNodes;
     });
     const locationStats = getStats(locationValues);
+
+    // ---------------- CITY -----------------------------------
+    const cityMap = new Map();
+    const cityArr = [];
+    for (const candidate of validCandidates) {
+      const city = candidate.infrastructureLocation.city || "No Location";
+
+      const cityCount = cityMap.get(city);
+      if (!cityCount) {
+        cityMap.set(city, 1);
+      } else {
+        cityMap.set(city, cityCount + 1);
+      }
+    }
+
+    for (const city of cityMap.entries()) {
+      const [name, numberOfNodes] = city;
+      cityArr.push({ name, numberOfNodes });
+    }
+    const cityValues = cityArr.map((city) => {
+      return city.numberOfNodes;
+    });
+    const cityStats = getStats(cityValues);
+    logger.info(`city stats:`);
+    logger.info(cityStats);
+
+    // ---------------- REGION -----------------------------------
+    const regionMap = new Map();
+    const regionArr = [];
+    for (const candidate of validCandidates) {
+      const region = candidate.infrastructureLocation.region || "No Location";
+
+      const regionCount = regionMap.get(region);
+      if (!regionCount) {
+        regionMap.set(region, 1);
+      } else {
+        regionMap.set(region, regionCount + 1);
+      }
+    }
+
+    for (const region of regionMap.entries()) {
+      const [name, numberOfNodes] = region;
+      regionArr.push({ name, numberOfNodes });
+    }
+    const regionValues = regionArr.map((region) => {
+      return region.numberOfNodes;
+    });
+    const regionStats = getStats(regionValues);
+    logger.info(`region stats:`);
+    logger.info(regionStats);
+
+    // ---------------- COUNTRY -----------------------------------
+    const countryMap = new Map();
+    const countryArr = [];
+    for (const candidate of validCandidates) {
+      const country = candidate.infrastructureLocation.country || "No Location";
+
+      const countryCount = countryMap.get(country);
+      if (!countryCount) {
+        countryMap.set(country, 1);
+      } else {
+        countryMap.set(country, countryCount + 1);
+      }
+    }
+
+    for (const country of countryMap.entries()) {
+      const [name, numberOfNodes] = country;
+      countryArr.push({ name, numberOfNodes });
+    }
+    const countryValues = countryArr.map((country) => {
+      return country.numberOfNodes;
+    });
+    const countryStats = getStats(countryValues);
+    logger.info(`country stats:`);
+    logger.info(countryStats);
+
+    // ---------------- ASN -----------------------------------
+    const asnMap = new Map();
+    const asnArr = [];
+    for (const candidate of validCandidates) {
+      const asn = candidate.infrastructureLocation.asn || "No Location";
+
+      const asnCount = asnMap.get(asn);
+      if (!asnCount) {
+        asnMap.set(asn, 1);
+      } else {
+        asnMap.set(asn, asnCount + 1);
+      }
+    }
+
+    for (const asn of asnMap.entries()) {
+      const [name, numberOfNodes] = asn;
+      asnArr.push({ name, numberOfNodes });
+    }
+    const asnValues = asnArr.map((asn) => {
+      return asn.numberOfNodes;
+    });
+    const asnStats = getStats(asnValues);
+    logger.info(`asn stats:`);
+    logger.info(asnStats);
+
+    // ---------------- PROVIDER -----------------------------------
+    const providerMap = new Map();
+    const providerArr = [];
+    for (const candidate of validCandidates) {
+      const provider =
+        candidate.infrastructureLocation.provider || "No Location";
+
+      const providerCount = providerMap.get(provider);
+      if (!providerCount) {
+        providerMap.set(provider, 1);
+      } else {
+        providerMap.set(provider, providerCount + 1);
+      }
+    }
+
+    for (const provider of providerMap.entries()) {
+      const [name, numberOfNodes] = provider;
+      providerArr.push({ name, numberOfNodes });
+    }
+    const providerValues = providerArr.map((provider) => {
+      return provider.numberOfNodes;
+    });
+    const providerStats = getStats(providerValues);
+    logger.info(`provider stats:`);
+    logger.info(providerStats);
 
     // Council Stake
     const councilStakeValues = validCandidates.map((candidate) => {

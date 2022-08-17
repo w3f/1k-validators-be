@@ -112,7 +112,6 @@ export default class TelemetryClient {
             startupTime,
           ] = payload;
           const [lat, lon, city] = location || ["", "", "No Location"];
-          logger.info(`{locationLog} city: ${city} lat: ${lat} lon: ${lon}`);
           const now = Date.now();
 
           MemNodes[parseInt(id)] = details;
@@ -165,7 +164,7 @@ export default class TelemetryClient {
       case TelemetryMessage.LocatedNode:
         {
           const [id, lat, lon, city] = payload;
-          await this.db.setLocation(id, city);
+          // await this.db.setLocation(id, city);
         }
         break;
       case TelemetryMessage.ImportedBlock:

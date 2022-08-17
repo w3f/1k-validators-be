@@ -71,7 +71,34 @@ export default class Server {
       const { stashOrName } = ctx.params;
       if (stashOrName) {
         const candidate = await this.db.getCandidate(stashOrName);
-        ctx.body = candidate;
+        const score = await this.db.getValidatorScore(candidate.stash);
+        ctx.body = {
+          discoveredAt: candidate.discoveredAt,
+          nominatedAt: candidate.nominatedAt,
+          offlineSince: candidate.offlineSince,
+          offlineAccumulated: candidate.offlineAccumulated,
+          rank: candidate.rank,
+          faults: candidate.faults,
+          invalidityReasons: candidate.invalidityReasons,
+          unclaimedEras: candidate.unclaimedEras,
+          inclusion: candidate.inclusion,
+          name: candidate.name,
+          stash: candidate.stash,
+          kusamaStash: candidate.kusamaStash,
+          commission: candidate.commission,
+          identity: candidate.identity,
+          active: candidate.active,
+          valid: candidate.valid,
+          validity: candidate.invalidity,
+          score: score,
+          total: score && score.total ? score.total : 0,
+          location: candidate.location,
+          councilStake: candidate.councilStake,
+          councilVotes: candidate.councilVotes,
+          democracyVoteCount: candidate.democracyVoteCount,
+          democracyVotes: candidate.democracyVotes,
+        };
+        // ctx.body = candidate;
       } else {
         ctx.body = `${stashOrName} not found!`;
       }

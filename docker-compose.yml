@@ -7,7 +7,7 @@ services:
             - "9944:9944"
         volumes:
             - "polkadot-data-alice:/alice"
-        command: polkadot --chain=polkadot-local --telemetry-url 'ws://172.28.1.15:8001/submit 0' --validator --unsafe-ws-external --rpc-methods Unsafe --unsafe-rpc-external --ws-port 9944 --rpc-cors all --pruning archive --alice --node-key aa788920201122290fc7d3faf00698d9a8e061d7173424da2a31a8130a882a5f
+        command: polkadot --chain=polkadot-local --telemetry-url 'ws://172.28.1.15:8001/submit 9' --validator --unsafe-ws-external --rpc-methods Unsafe --unsafe-rpc-external --ws-port 9944 --rpc-cors all --pruning archive --alice --node-key aa788920201122290fc7d3faf00698d9a8e061d7173424da2a31a8130a882a5f
         depends_on:
             - telemetry-backend-core
             - mongo
@@ -23,7 +23,7 @@ services:
             - "9945:9945"
         volumes:
             - "polkadot-data-bob:/bob"
-        command: polkadot --chain=polkadot-local --telemetry-url 'ws://172.28.1.15:8001/submit 0' --validator --unsafe-ws-external --rpc-methods Unsafe --unsafe-rpc-external --rpc-cors all --ws-port 9945 --pruning archive --bob --bootnodes /ip4/172.28.1.1/tcp/30333/p2p/12D3KooWCJC43YRmb5WJcJmskPSxbkWY4Vp6jPKdFeggnXPxgBCw --port 30334
+        command: polkadot --chain=polkadot-local --telemetry-url 'ws://172.28.1.15:8001/submit 9' --validator --unsafe-ws-external --rpc-methods Unsafe --unsafe-rpc-external --rpc-cors all --ws-port 9945 --pruning archive --bob --bootnodes /ip4/172.28.1.1/tcp/30333/p2p/12D3KooWCJC43YRmb5WJcJmskPSxbkWY4Vp6jPKdFeggnXPxgBCw --port 30334
         depends_on:
             - telemetry-backend-core
             - mongo
@@ -39,7 +39,7 @@ services:
             - "9946:9946"
         volumes:
             - "polkadot-data-charlie:/charlie"
-        command: polkadot --chain=polkadot-local --telemetry-url 'ws://172.28.1.15:8001/submit 0' --validator --unsafe-ws-external --rpc-methods Unsafe --unsafe-rpc-external --rpc-cors all --ws-port 9946 --pruning archive --charlie --bootnodes /ip4/172.28.1.1/tcp/30333/p2p/12D3KooWCJC43YRmb5WJcJmskPSxbkWY4Vp6jPKdFeggnXPxgBCw --port 30335
+        command: polkadot --chain=polkadot-local --telemetry-url 'ws://172.28.1.15:8001/submit 9' --validator --unsafe-ws-external --rpc-methods Unsafe --unsafe-rpc-external --rpc-cors all --ws-port 9946 --pruning archive --charlie --bootnodes /ip4/172.28.1.1/tcp/30333/p2p/12D3KooWCJC43YRmb5WJcJmskPSxbkWY4Vp6jPKdFeggnXPxgBCw --port 30335
         depends_on:
             - telemetry-backend-core
             - mongo
@@ -55,7 +55,7 @@ services:
             - "9947:9947"
         volumes:
             - "polkadot-data-dave:/dave"
-        command: polkadot --chain=polkadot-local --telemetry-url 'ws://172.28.1.15:8001/submit 0' --validator --unsafe-ws-external --rpc-methods Unsafe --unsafe-rpc-external --rpc-cors all --ws-port 9947 --pruning archive --dave --bootnodes /ip4/172.28.1.1/tcp/30333/p2p/12D3KooWCJC43YRmb5WJcJmskPSxbkWY4Vp6jPKdFeggnXPxgBCw --port 30336
+        command: polkadot --chain=polkadot-local --telemetry-url 'ws://172.28.1.15:8001/submit 9' --validator --unsafe-ws-external --rpc-methods Unsafe --unsafe-rpc-external --rpc-cors all --ws-port 9947 --pruning archive --dave --bootnodes /ip4/172.28.1.1/tcp/30333/p2p/12D3KooWCJC43YRmb5WJcJmskPSxbkWY4Vp6jPKdFeggnXPxgBCw --port 30336
         depends_on:
             - telemetry-backend-core
             - mongo
@@ -71,7 +71,7 @@ services:
             - "9948:9948"
         volumes:
             - "polkadot-data-eve:/eve"
-        command: polkadot --chain=polkadot-local --telemetry-url 'ws://172.28.1.15:8001/submit 0' --validator --unsafe-ws-external --rpc-methods Unsafe --unsafe-rpc-external --rpc-cors all --ws-port 9948 --pruning archive --eve --bootnodes /ip4/172.28.1.1/tcp/30333/p2p/12D3KooWCJC43YRmb5WJcJmskPSxbkWY4Vp6jPKdFeggnXPxgBCw --port 30337
+        command: polkadot --chain=polkadot-local --telemetry-url 'ws://172.28.1.15:8001/submit 9' --validator --unsafe-ws-external --rpc-methods Unsafe --unsafe-rpc-external --rpc-cors all --ws-port 9948 --pruning archive --eve --bootnodes /ip4/172.28.1.1/tcp/30333/p2p/12D3KooWCJC43YRmb5WJcJmskPSxbkWY4Vp6jPKdFeggnXPxgBCw --port 30337
         depends_on:
             - telemetry-backend-core
             - mongo
@@ -87,7 +87,7 @@ services:
             - "9949:9949"
         volumes:
             - "polkadot-data-ferdie:/ferdie"
-        command: polkadot --chain=polkadot-local --telemetry-url 'ws://172.28.1.15:8001/submit 0' --validator --unsafe-ws-external --rpc-methods Unsafe --unsafe-rpc-external --rpc-cors all --ws-port 9949 --pruning archive --ferdie --bootnodes /ip4/172.28.1.1/tcp/30333/p2p/12D3KooWCJC43YRmb5WJcJmskPSxbkWY4Vp6jPKdFeggnXPxgBCw --port 30338
+        command: polkadot --chain=polkadot-local --telemetry-url 'ws://172.28.1.15:8001/submit 9' --validator --unsafe-ws-external --rpc-methods Unsafe --unsafe-rpc-external --rpc-cors all --ws-port 9949 --pruning archive --ferdie --bootnodes /ip4/172.28.1.1/tcp/30333/p2p/12D3KooWCJC43YRmb5WJcJmskPSxbkWY4Vp6jPKdFeggnXPxgBCw --port 30338
         depends_on:
             - telemetry-backend-core
             - mongo
@@ -97,35 +97,37 @@ services:
                 ipv4_address: 172.28.1.6
 
     telemetry-backend-core:
-        image: parity/substrate-telemetry-backend
+        image: parity/substrate-telemetry-backend:09b44ad0-beta
         environment:
         - PORT=8000
         ports:
         - 8000:8000
         expose:
         - 8000
-        command: telemetry_core --listen 0.0.0.0:8000
+        command: telemetry_core --listen 0.0.0.0:8000 --expose-node-ips
         networks:
             testing_net:
                 ipv4_address: 172.28.1.10
 
     telemetry-backend-shard:
-        image: parity/substrate-telemetry-backend
+        image: parity/substrate-telemetry-backend:09b44ad0-beta
         environment:
         - PORT=8001
         ports:
         - 8001:8001
         expose:
         - 8001
-        command: telemetry_shard --listen 0.0.0.0:8001 --core http://172.28.1.10:8000/shard_submit
+        command: telemetry_shard --listen 0.0.0.0:8001 --core http://172.28.1.10:8000/shard_submit 
         networks:
             testing_net:
                 ipv4_address: 172.28.1.15
     
     telemetry-frontend:
-        image: parity/substrate-telemetry-frontend
+        image: parity/substrate-telemetry-frontend:latest
         ports:
-            - 3000:80
+            - 3000:8000
+        expose:
+            - 3000
         read_only: true
         tmpfs:
             - /var/cache/nginx:uid=101,gid=101

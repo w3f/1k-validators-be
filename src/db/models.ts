@@ -509,6 +509,31 @@ export const LocationStatsSchema = new Schema({
       numberOfNodes: Number,
     },
   ],
+  regions: [
+    {
+      name: String,
+      numberOfNodes: Number,
+    },
+  ],
+  countries: [
+    {
+      name: String,
+      numberOfNodes: Number,
+    },
+  ],
+  asns: [
+    {
+      name: String,
+      numberOfNodes: Number,
+    },
+  ],
+  providers: [
+    {
+      name: String,
+      numberOfNodes: Number,
+    },
+  ],
+
   // Timestamp of when the record was written
   updated: Number,
 });

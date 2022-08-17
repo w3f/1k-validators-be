@@ -2389,7 +2389,11 @@ export default class Db {
   // Creates or updates new location stats records
   async setLocationStats(
     session: number,
-    locations: Array<{ name: string; numberOfNodes: number }>
+    locations: Array<{ name: string; numberOfNodes: number }>,
+    regions: Array<{ name: string; numberOfNodes: number }>,
+    countries: Array<{ name: string; numberOfNodes: number }>,
+    asns: Array<{ name: string; numberOfNodes: number }>,
+    providers: Array<{ name: string; numberOfNodes: number }>
   ): Promise<any> {
     // Try and find an existing record
     const data = await this.locationStatsModel.findOne({
@@ -2404,6 +2408,10 @@ export default class Db {
       const locationStats = new this.locationStatsModel({
         session,
         locations,
+        regions,
+        countries,
+        asns,
+        providers,
         updated: Date.now(),
       });
       return locationStats.save();
@@ -2418,6 +2426,10 @@ export default class Db {
         {
           updated: Date.now(),
           locations,
+          regions,
+          countries,
+          asns,
+          providers,
         }
       )
       .exec();

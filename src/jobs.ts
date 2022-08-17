@@ -6,6 +6,7 @@ import Monitor from "./monitor";
 import { Subscan } from "./subscan";
 import { arrayBuffer } from "stream/consumers";
 import { Referendum, ReferendumVote } from "./types";
+import { getStats } from "./score";
 
 // Runs Monitor Job
 export const monitorJob = async (db: Db, monitor: Monitor) => {
@@ -332,7 +333,111 @@ export const locationStatsJob = async (
     locationArr.push({ name, numberOfNodes });
   }
 
-  await db.setLocationStats(session, locationArr);
+  // ---------------- CITY -----------------------------------
+  const cityMap = new Map();
+  const cityArr = [];
+  for (const candidate of candidates) {
+    const city = candidate.infrastructureLocation.city || "No Location";
+
+    const cityCount = cityMap.get(city);
+    if (!cityCount) {
+      cityMap.set(city, 1);
+    } else {
+      cityMap.set(city, cityCount + 1);
+    }
+  }
+
+  for (const city of cityMap.entries()) {
+    const [name, numberOfNodes] = city;
+    cityArr.push({ name, numberOfNodes });
+  }
+
+  // ---------------- REGION -----------------------------------
+  const regionMap = new Map();
+  const regionArr = [];
+  for (const candidate of candidates) {
+    const region = candidate.infrastructureLocation.region || "No Location";
+
+    const regionCount = regionMap.get(region);
+    if (!regionCount) {
+      regionMap.set(region, 1);
+    } else {
+      regionMap.set(region, regionCount + 1);
+    }
+  }
+
+  for (const region of regionMap.entries()) {
+    const [name, numberOfNodes] = region;
+    regionArr.push({ name, numberOfNodes });
+  }
+
+  // ---------------- COUNTRY -----------------------------------
+  const countryMap = new Map();
+  const countryArr = [];
+  for (const candidate of candidates) {
+    const country = candidate.infrastructureLocation.country || "No Location";
+
+    const countryCount = countryMap.get(country);
+    if (!countryCount) {
+      countryMap.set(country, 1);
+    } else {
+      countryMap.set(country, countryCount + 1);
+    }
+  }
+
+  for (const country of countryMap.entries()) {
+    const [name, numberOfNodes] = country;
+    countryArr.push({ name, numberOfNodes });
+  }
+
+  // ---------------- ASN -----------------------------------
+  const asnMap = new Map();
+  const asnArr = [];
+  for (const candidate of candidates) {
+    const asn = candidate.infrastructureLocation.asn || "No Location";
+
+    const asnCount = asnMap.get(asn);
+    if (!asnCount) {
+      asnMap.set(asn, 1);
+    } else {
+      asnMap.set(asn, asnCount + 1);
+    }
+  }
+
+  for (const asn of asnMap.entries()) {
+    const [name, numberOfNodes] = asn;
+    asnArr.push({ name, numberOfNodes });
+  }
+
+  // ---------------- PROVIDER -----------------------------------
+  const providerMap = new Map();
+  const providerArr = [];
+  for (const candidate of candidates) {
+    const provider = candidate.infrastructureLocation.provider || "No Location";
+
+    const providerCount = providerMap.get(provider);
+    if (!providerCount) {
+      providerMap.set(provider, 1);
+    } else {
+      providerMap.set(provider, providerCount + 1);
+    }
+  }
+
+  for (const provider of providerMap.entries()) {
+    const [name, numberOfNodes] = provider;
+    providerArr.push({ name, numberOfNodes });
+  }
+
+  // --------------------------
+
+  await db.setLocationStats(
+    session,
+    locationArr,
+    regionArr,
+    countryArr,
+    asnArr,
+    providerArr
+  );
 
   const end = Date.now();
 

@@ -260,10 +260,26 @@ export default class Server {
       const sortedLocations = locationStats.locations.sort((a, b) => {
         return b.numberOfNodes - a.numberOfNodes;
       });
+      const sortedRegions = locationStats.regions.sort((a, b) => {
+        return b.numberOfNodes - a.numberOfNodes;
+      });
+      const sortedCountries = locationStats.countries.sort((a, b) => {
+        return b.numberOfNodes - a.numberOfNodes;
+      });
+      const sortedASNs = locationStats.asns.sort((a, b) => {
+        return b.numberOfNodes - a.numberOfNodes;
+      });
+      const sortedProviders = locationStats.providers.sort((a, b) => {
+        return b.numberOfNodes - a.numberOfNodes;
+      });
       ctx.body = {
         session: locationStats.session,
         updated: locationStats.updated,
         locations: sortedLocations,
+        regions: sortedRegions,
+        countries: sortedCountries,
+        asns: sortedASNs,
+        providers: sortedProviders,
       };
     });
     router.get(API.ElectionStats, async (ctx) => {

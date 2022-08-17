@@ -324,7 +324,11 @@ export class OTV implements Constraints {
     const cityMap = new Map();
     const cityArr = [];
     for (const candidate of validCandidates) {
-      const city = candidate.infrastructureLocation.city || "No Location";
+      const city =
+        candidate.infrastructureLocation &&
+        candidate.infrastructureLocation.city
+          ? candidate.infrastructureLocation.city
+          : "No Location";
 
       const cityCount = cityMap.get(city);
       if (!cityCount) {
@@ -349,7 +353,11 @@ export class OTV implements Constraints {
     const regionMap = new Map();
     const regionArr = [];
     for (const candidate of validCandidates) {
-      const region = candidate.infrastructureLocation.region || "No Location";
+      const region =
+        candidate.infrastructureLocation &&
+        candidate.infrastructureLocation.region
+          ? candidate.infrastructureLocation.region
+          : "No Location";
 
       const regionCount = regionMap.get(region);
       if (!regionCount) {
@@ -374,7 +382,11 @@ export class OTV implements Constraints {
     const countryMap = new Map();
     const countryArr = [];
     for (const candidate of validCandidates) {
-      const country = candidate.infrastructureLocation.country || "No Location";
+      const country =
+        candidate.infrastructureLocation &&
+        candidate.infrastructureLocation.country
+          ? candidate.infrastructureLocation.country
+          : "No Location";
 
       const countryCount = countryMap.get(country);
       if (!countryCount) {
@@ -399,7 +411,10 @@ export class OTV implements Constraints {
     const asnMap = new Map();
     const asnArr = [];
     for (const candidate of validCandidates) {
-      const asn = candidate.infrastructureLocation.asn || "No Location";
+      const asn =
+        candidate.infrastructureLocation && candidate.infrastructureLocation.asn
+          ? candidate.infrastructureLocation.asn
+          : "No Location";
 
       const asnCount = asnMap.get(asn);
       if (!asnCount) {
@@ -425,7 +440,10 @@ export class OTV implements Constraints {
     const providerArr = [];
     for (const candidate of validCandidates) {
       const provider =
-        candidate.infrastructureLocation.provider || "No Location";
+        candidate.infrastructureLocation &&
+        candidate.infrastructureLocation.provider
+          ? candidate.infrastructureLocation.provider
+          : "No Location";
 
       const providerCount = providerMap.get(provider);
       if (!providerCount) {

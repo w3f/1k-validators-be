@@ -22,14 +22,16 @@ import {
   EraRewardSchema,
   ReferendumSchema,
   ReferendumVoteSchema,
+  LocationSchema,
+  IIT,
 } from "./models";
 import logger from "../logger";
-import { formatAddress } from "../util";
+import { fetchLocationInfo, formatAddress } from "../util";
 import { Keyring } from "@polkadot/keyring";
 import { Referendum, ReferendumVote } from "../types";
 
 // [name, client, version, null, networkId]
-export type NodeDetails = [string, string, string, string, string];
+export type NodeDetails = [string, string, string, string, string, string];
 
 export default class Db {
   private accountingModel;
@@ -53,6 +55,8 @@ export default class Db {
   private eraRewardModel;
   private referendumModel;
   private referendumVoteModel;
+  private locationModel;
+  private iitModel;
 
   constructor() {
     this.accountingModel = mongoose.model("Accounting", AccountingSchema);
@@ -100,6 +104,8 @@ export default class Db {
       "ReferendumVote",
       ReferendumVoteSchema
     );
+    this.locationModel = mongoose.model("Location", LocationSchema);
+    this.iitModel = mongoose.model("IIT", IIT);
   }
 
   static async create(uri = "mongodb://localhost:27017/otv"): Promise<Db> {
@@ -309,21 +315,21 @@ export default class Db {
     return true;
   }
 
-  async setLocation(telemetryId: number, location: string): Promise<boolean> {
-    const data = await this.candidateModel.findOne({ telemetryId });
-
-    if (!data || !location) return false;
-
-    await this.candidateModel
-      .findOneAndUpdate(telemetryId, {
-        location: location,
-      })
-      .exec();
-
-    logger.info(`Succesfully set location: ${location} for id: ${telemetryId}`);
-
-    return true;
-  }
+  // async setLocation(telemetryId: number, location: string): Promise<boolean> {
+  //   const data = await this.candidateModel.findOne({ telemetryId });
+  //
+  //   if (!data || !location) return false;
+  //
+  //   await this.candidateModel
+  //     .findOneAndUpdate(telemetryId, {
+  //       location: location,
+  //     })
+  //     .exec();
+  //
+  //   logger.info(`Succesfully set location: ${location} for id: ${telemetryId}`);
+  //
+  //   return true;
+  // }
 
   async reportBestBlock(
     telemetryId: number,
@@ -374,7 +380,22 @@ export default class Db {
     now: number,
     location: string
   ): Promise<boolean> {
-    const [name, nodeImplementation, version, address, networkId] = details;
+    const [name, nodeImplementation, version, address, networkId, addr] =
+      details;
+
+    let locationData;
+    locationData = await this.getLocation(addr);
+    const iit = await this.getIIT();
+    if (!locationData) {
+      logger.info(`{reportOnline} Fetching Location Info`);
+      const iit = await this.getIIT();
+      const { city, region, country, asn, provider } = await fetchLocationInfo(
+        addr,
+        iit && iit.iit ? iit.iit : null
+      );
+      await this.setLocation(addr, city, region, country, asn, provider);
+      locationData = await this.getLocation(addr);
+    }
 
     const data = await this.candidateModel.findOne({ name });
     if (!data) {
@@ -382,6 +403,7 @@ export default class Db {
       const candidate = new this.candidateModel({
         telemetryId,
         location,
+        // location: locationData.city,
         networkId: null,
         nodeRefs: 1,
         name,
@@ -389,6 +411,7 @@ export default class Db {
         discoveredAt: now,
         onlineSince: now,
         offlineSince: 0,
+        infrastructureLocation: locationData,
       });
 
       return candidate.save();
@@ -408,7 +431,9 @@ export default class Db {
           { name },
           {
             telemetryId,
-            location: candidateLocation,
+            location,
+            // location: locationData.city,
+            infrastructureLocation: locationData,
             discoveredAt: now,
             onlineSince: now,
             offlineSince: 0,
@@ -436,7 +461,9 @@ export default class Db {
         { name },
         {
           telemetryId,
-          location: candidateLocation,
+          location,
+          // location: locationData.city,
+          infrastructureLocation: locationData,
           onlineSince: now,
           version,
           invalidity: [
@@ -2823,5 +2850,44 @@ export default class Db {
   // returns all votes for a referendum by account
   async getAccountVoteReferendum(accountId: string): Promise<any> {
     return this.referendumVoteModel.find({ accountId: accountId }).exec();
+  }
+
+  async getLocation(addr: string): Promise<any> {
+    return this.locationModel
+      .findOne({
+        addr,
+      })
+      .exec();
+  }
+
+  async setLocation(
+    addr: string,
+    city: string,
+    region: string,
+    country: string,
+    asn: string,
+    provider: string
+  ): Promise<any> {
+    // Try and find an existing record
+    const data = await this.locationModel.findOne({
+      addr,
+    });
+
+    if (!data) {
+      const location = new this.locationModel({
+        addr,
+        city,
+        region,
+        country,
+        asn,
+        provider,
+        updated: Date.now(),
+      });
+      return location.save();
+    }
+  }
+
+  async getIIT(): Promise<any> {
+    return this.iitModel.findOne({}).exec();
   }
 }

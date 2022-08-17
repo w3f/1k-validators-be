@@ -80,6 +80,16 @@ export const InvalidityReason = new Schema({
   updated: Number,
 });
 
+export const LocationSchema = new Schema({
+  addr: String,
+  city: String,
+  region: String,
+  country: String,
+  asn: String,
+  provider: String,
+  updated: Number,
+});
+
 export const CandidateSchema = new Schema({
   // The inherited telemetry ID.
   telemetryId: Number,
@@ -165,6 +175,7 @@ export const CandidateSchema = new Schema({
   democracyVoteCount: { type: Number, default: 0 },
   // The referenda indexes voted on
   democracyVotes: [Number],
+  infrastructureLocation: LocationSchema,
 });
 
 export const EraSchema = new Schema({
@@ -635,4 +646,8 @@ export const ReferendumVoteSchema = new Schema({
   updatedBlockNumber: Number,
   // last block hash the record was updated at
   updatedBlockHash: String,
+});
+
+export const IIT = new Schema({
+  iit: String,
 });

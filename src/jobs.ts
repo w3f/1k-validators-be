@@ -338,10 +338,9 @@ export const locationStatsJob = async (
   const cityArr = [];
   for (const candidate of candidates) {
     const city =
-        candidate.infrastructureLocation &&
-        candidate.infrastructureLocation.city
-            ? candidate.infrastructureLocation.city
-            : "No Location";
+      candidate.infrastructureLocation && candidate.infrastructureLocation.city
+        ? candidate.infrastructureLocation.city
+        : "No Location";
 
     const cityCount = cityMap.get(city);
     if (!cityCount) {
@@ -361,10 +360,10 @@ export const locationStatsJob = async (
   const regionArr = [];
   for (const candidate of candidates) {
     const region =
-        candidate.infrastructureLocation &&
-        candidate.infrastructureLocation.region
-            ? candidate.infrastructureLocation.region
-            : "No Location";
+      candidate.infrastructureLocation &&
+      candidate.infrastructureLocation.region
+        ? candidate.infrastructureLocation.region
+        : "No Location";
 
     const regionCount = regionMap.get(region);
     if (!regionCount) {
@@ -384,10 +383,10 @@ export const locationStatsJob = async (
   const countryArr = [];
   for (const candidate of candidates) {
     const country =
-        candidate.infrastructureLocation &&
-        candidate.infrastructureLocation.country
-            ? candidate.infrastructureLocation.country
-            : "No Location";
+      candidate.infrastructureLocation &&
+      candidate.infrastructureLocation.country
+        ? candidate.infrastructureLocation.country
+        : "No Location";
 
     const countryCount = countryMap.get(country);
     if (!countryCount) {
@@ -407,9 +406,9 @@ export const locationStatsJob = async (
   const asnArr = [];
   for (const candidate of candidates) {
     const asn =
-        candidate.infrastructureLocation && candidate.infrastructureLocation.asn
-            ? candidate.infrastructureLocation.asn
-            : "No Location";
+      candidate.infrastructureLocation && candidate.infrastructureLocation.asn
+        ? candidate.infrastructureLocation.asn
+        : "No Location";
 
     const asnCount = asnMap.get(asn);
     if (!asnCount) {
@@ -429,10 +428,10 @@ export const locationStatsJob = async (
   const providerArr = [];
   for (const candidate of candidates) {
     const provider =
-        candidate.infrastructureLocation &&
-        candidate.infrastructureLocation.provider
-            ? candidate.infrastructureLocation.provider
-            : "No Location";
+      candidate.infrastructureLocation &&
+      candidate.infrastructureLocation.provider
+        ? candidate.infrastructureLocation.provider
+        : "No Location";
 
     const providerCount = providerMap.get(provider);
     if (!providerCount) {

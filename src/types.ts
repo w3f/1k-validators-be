@@ -90,6 +90,7 @@ export type CandidateData = {
   councilVotes: any[];
   democracyVoteCount: number;
   democracyVotes: [number];
+  infrastructureLocation: any;
 };
 
 export type Referendum = {

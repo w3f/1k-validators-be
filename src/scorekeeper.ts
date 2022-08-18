@@ -202,14 +202,14 @@ export default class ScoreKeeper {
             `{scorekeeper::reward} ${stash} claimed reward of ${amount}. Updating eras....`
           );
 
-          const unclaimedEras = await this.chaindata.getUnclaimedEras(
-            stash,
-            db
-          );
-
-          await db.setUnclaimedEras(stash, unclaimedEras);
-          await this.constraints.checkCandidateStash(stash);
-          await this.constraints.scoreAllCandidates();
+          // const unclaimedEras = await this.chaindata.getUnclaimedEras(
+          //   stash,
+          //   db
+          // );
+          //
+          // await db.setUnclaimedEras(stash, unclaimedEras);
+          // await this.constraints.checkCandidateStash(stash);
+          // await this.constraints.scoreAllCandidates();
         }
 
         // check if it was a nominator address that earned the reward

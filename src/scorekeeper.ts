@@ -44,6 +44,7 @@ import {
   startCouncilJob,
   startSubscanJob,
   startDemocracyJob,
+  startNominatorJob,
 } from "./cron";
 import Claimer from "./claimer";
 import {
@@ -628,7 +629,8 @@ export default class ScoreKeeper {
       await startCouncilJob(this.config, this.db, this.chaindata);
       // Subscan job currently leads to 429 due to API rate limiting.
       // await startSubscanJob(this.config, this.db, this.subscan);
-      startDemocracyJob(this.config, this.db, this.chaindata);
+      await startDemocracyJob(this.config, this.db, this.chaindata);
+      await startNominatorJob(this.config, this.db, this.chaindata);
     } catch (e) {
       logger.info(
         `{Scorekeeper::RunCron} There was an error running some cron jobs...`

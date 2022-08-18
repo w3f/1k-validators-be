@@ -315,10 +315,18 @@ export class OTV implements Constraints {
         locationMap.set(location, locationCount + 1);
       }
     }
+
+    for (const location of locationMap.entries()) {
+      const [name, numberOfNodes] = location;
+      locationArr.push({ name, numberOfNodes });
+    }
+
     const locationValues = locationArr.map((location) => {
       return location.numberOfNodes;
     });
     const locationStats = getStats(locationValues);
+    logger.info(`location stats`);
+    logger.info(JSON.stringify(locationStats));
 
     // ---------------- CITY -----------------------------------
     const cityMap = new Map();
@@ -347,7 +355,7 @@ export class OTV implements Constraints {
     });
     const cityStats = getStats(cityValues);
     logger.info(`city stats:`);
-    logger.info(cityStats);
+    logger.info(JSON.stringify(cityStats));
 
     // ---------------- REGION -----------------------------------
     const regionMap = new Map();
@@ -376,7 +384,7 @@ export class OTV implements Constraints {
     });
     const regionStats = getStats(regionValues);
     logger.info(`region stats:`);
-    logger.info(regionStats);
+    logger.info(JSON.stringify(regionStats));
 
     // ---------------- COUNTRY -----------------------------------
     const countryMap = new Map();
@@ -405,7 +413,7 @@ export class OTV implements Constraints {
     });
     const countryStats = getStats(countryValues);
     logger.info(`country stats:`);
-    logger.info(countryStats);
+    logger.info(JSON.stringify(countryStats));
 
     // ---------------- ASN -----------------------------------
     const asnMap = new Map();
@@ -433,7 +441,7 @@ export class OTV implements Constraints {
     });
     const asnStats = getStats(asnValues);
     logger.info(`asn stats:`);
-    logger.info(asnStats);
+    logger.info(JSON.stringify(asnStats));
 
     // ---------------- PROVIDER -----------------------------------
     const providerMap = new Map();
@@ -462,7 +470,7 @@ export class OTV implements Constraints {
     });
     const providerStats = getStats(providerValues);
     logger.info(`provider stats:`);
-    logger.info(providerStats);
+    logger.info(JSON.stringify(providerStats));
 
     // Council Stake
     const councilStakeValues = validCandidates.map((candidate) => {
@@ -567,10 +575,9 @@ export class OTV implements Constraints {
       const faultsScore = (1 - scaledFaults) * this.FAULTS_WEIGHT;
 
       // Get the total number of nodes for the location a candidate has their node in
-      const filteredLocation = locationArr.filter((location) => {
+      const candidateLocation = locationArr.filter((location) => {
         if (candidate.location == location.name) return location.numberOfNodes;
-      });
-      const candidateLocation = filteredLocation[0]?.numberOfNodes;
+      })[0]?.numberOfNodes;
       // Scale the location value to between the 10th and 95th percentile
       const scaledLocation = scaledDefined(
         candidateLocation,
@@ -579,6 +586,69 @@ export class OTV implements Constraints {
         0.95
       );
       const locationScore = (1 - scaledLocation) * this.LOCATION_WEIGHT || 0;
+
+      const candidateRegion = regionArr.filter((region) => {
+        if (
+          candidate.infrastructureLocation &&
+          candidate.infrastructureLocation.region == region.name
+        )
+          return region.numberOfNodes;
+      })[0]?.numberOfNodes;
+      // Scale the value to between the 10th and 95th percentile
+      const scaledRegion = scaledDefined(
+        candidateRegion,
+        regionValues,
+        0.1,
+        0.95
+      );
+      const regionScore = (1 - scaledRegion) * this.LOCATION_WEIGHT || 0;
+
+      const candidateCountry = countryArr.filter((country) => {
+        if (
+          candidate.infrastructureLocation &&
+          candidate.infrastructureLocation.country == country.name
+        )
+          return country.numberOfNodes;
+      })[0]?.numberOfNodes;
+      // Scale the value to between the 10th and 95th percentile
+      const scaledCountry = scaledDefined(
+        candidateCountry,
+        countryValues,
+        0.1,
+        0.95
+      );
+      const countryScore = (1 - scaledCountry) * this.LOCATION_WEIGHT || 0;
+
+      const candidateASN = asnArr.filter((asn) => {
+        if (
+          candidate.infrastructureLocation &&
+          candidate.infrastructureLocation.asn == asn.name
+        )
+          return asn.numberOfNodes;
+      })[0]?.numberOfNodes;
+      // Scale the value to between the 10th and 95th percentile
+      const scaledASN = scaledDefined(candidateASN, asnValues, 0.1, 0.95);
+      const asnScore = (1 - scaledASN) * this.LOCATION_WEIGHT || 0;
+
+      const candidateProvider = providerArr.filter((provider) => {
+        if (
+          candidate.infrastructureLocation &&
+          candidate.infrastructureLocation.provider == provider.name
+        )
+          return provider.numberOfNodes;
+      })[0]?.numberOfNodes;
+      // Scale the value to between the 10th and 95th percentile
+      const scaledProvider = scaledDefined(
+        candidateProvider,
+        providerValues,
+        0.1,
+        0.95
+      );
+      const providerScore = (1 - scaledProvider) * this.LOCATION_WEIGHT || 0;
+
+      logger.info(
+        `${candidate.stash}: location: ${locationScore} region: ${regionScore} country: ${countryScore} asn: ${asnScore} provider: ${providerScore}`
+      );
 
       // Score the council backing weight based on what percentage of their staking bond it is
       const denom = await this.chaindata.getDenom();
@@ -605,9 +675,9 @@ export class OTV implements Constraints {
       } = scoreDemocracyVotes(candidate.democracyVotes, lastReferendum);
       const scaledDemocracyScore =
         scaled(totalDemocracyScore, democracyValues) * this.DEMOCRACY_WEIGHT;
-      logger.info(
-        `{democracyScore} last referendum: ${lastReferendum} ${candidate.stash} votes: ${candidate.democracyVotes} democracyScore: ${baseDemocracyScore} total mult: ${totalConsistencyMultiplier} last mult: ${lastConsistencyMultiplier} total: ${totalDemocracyScore} scaled: ${scaledDemocracyScore}`
-      );
+      // logger.info(
+      //   `{democracyScore} last referendum: ${lastReferendum} ${candidate.stash} votes: ${candidate.democracyVotes} democracyScore: ${baseDemocracyScore} total mult: ${totalConsistencyMultiplier} last mult: ${lastConsistencyMultiplier} total: ${totalDemocracyScore} scaled: ${scaledDemocracyScore}`
+      // );
 
       const aggregate =
         inclusionScore +

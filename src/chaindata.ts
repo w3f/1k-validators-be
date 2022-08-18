@@ -168,6 +168,57 @@ class ChainData {
     return [ledger.toJSON().active, null];
   };
 
+  getNominators = async (): Promise<any> => {
+    const api = await this.handler.getApi();
+    if (!api.isConnected) {
+      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
+      return;
+    }
+    const nominatorEntries = await api.query.staking.nominators.entries();
+    const nominators = await Promise.all(
+      nominatorEntries.map(async ([key, value]) => {
+        const address = key.toHuman()[0];
+        const controller = await api.query.staking.bonded(address);
+        const denom = await this.getDenom();
+        const bonded = (
+          await api.query.staking.ledger(controller.toString())
+        ).toJSON();
+        // @ts-ignore
+        const bondedAmount = bonded.active / denom;
+        // @ts-ignore
+        const targets = value.toHuman().targets;
+        return {
+          address: address.toString(),
+          bonded: bondedAmount,
+          targets: targets,
+        };
+      })
+    );
+    return nominators;
+  };
+
+  getExposure = async (eraIndex: number, validator: string): Promise<any> => {
+    const api = await this.handler.getApi();
+    if (!api.isConnected) {
+      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
+      return;
+    }
+    const denom = await this.getDenom();
+    const eraStakers = await api.query.staking.erasStakers(eraIndex, validator);
+    const total = parseFloat(eraStakers.total.toString()) / denom;
+    // @ts-ignore
+    const activeExposure = eraStakers.others.toJSON().map((stake) => {
+      return {
+        address: stake.who.toString(),
+        bonded: stake.value / denom,
+      };
+    });
+    return {
+      total: total,
+      others: activeExposure,
+    };
+  };
+
   getOwnExposure = async (
     eraIndex: number,
     validator: string

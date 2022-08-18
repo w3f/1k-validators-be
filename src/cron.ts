@@ -26,6 +26,7 @@ import {
   COUNCIL_CRON,
   SUBSCAN_CRON,
   DEMOCRACY_CRON,
+  NOMINATOR_CRON,
 } from "./constants";
 import logger from "./logger";
 import Monitor from "./monitor";
@@ -52,6 +53,7 @@ import {
   councilJob,
   subscanJob,
   democracyJob,
+  nominatorJob,
 } from "./jobs";
 import { Subscan } from "./subscan";
 
@@ -862,4 +864,36 @@ export const startDemocracyJob = async (
     running = false;
   });
   democracyCron.start();
+};
+
+// Chron job for querying nominator data
+export const startNominatorJob = async (
+  config: Config,
+  db: Db,
+  chaindata: ChainData
+) => {
+  const nominatorFrequency = config.cron.nominator
+    ? config.cron.nominator
+    : NOMINATOR_CRON;
+
+  logger.info(
+    `(cron::nominatorJob::init) Running nominator cron with frequency: ${nominatorFrequency}`
+  );
+
+  let running = false;
+
+  const nominatorCron = new CronJob(nominatorFrequency, async () => {
+    if (running) {
+      return;
+    }
+    running = true;
+    logger.info(`{cron::nominatorJob::start} running nominator job....`);
+
+    const candidates = await db.allCandidates();
+
+    // Run the job
+    await nominatorJob(db, chaindata, candidates);
+    running = false;
+  });
+  nominatorCron.start();
 };

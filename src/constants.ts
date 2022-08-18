@@ -56,7 +56,7 @@ export const KusamaEndpoints = [
   "wss://kusama-rpc.polkadot.io",
   // "wss://cc3-0.kusama.network",
   "wss://kusama.api.onfinality.io/public-ws",
-  "wss://kusama.elara.patract.io",
+  // "wss://kusama.elara.patract.io",
 ];
 
 /// List of Polkadot endpoints we can switch between.
@@ -64,7 +64,7 @@ export const PolkadotEndpoints = [
   "wss://rpc.polkadot.io",
   // "wss://cc1-0.polkadot.network",
   "wss://polkadot.api.onfinality.io/public-ws",
-  "wss://polkadot.elara.patract.io",
+  // "wss://polkadot.elara.patract.io",
 ];
 
 // List of Local endpoints we can switch between.
@@ -83,6 +83,10 @@ export const TIME_DELAY_BLOCKS = 10820;
 
 // The number of blocks after a time delay proxy call was announced that we want to cancel the tx. Should be 36 hours
 export const CANCEL_THRESHOLD = 21700;
+
+export const KUSAMA_NOMINATOR_THRESHOLD = 2;
+
+export const POLKADOT_NOMINATOR_THRESHOLD = 10;
 
 // Monitor Cron job for checking if clients have upgraded. This runs ever 15 minutes by default
 export const MONITOR_CRON = "0 */15 * * * *";
@@ -146,5 +150,8 @@ export const SUBSCAN_CRON = "0 0-59/10 * * * *";
 
 // Democracy Cron Job. This runs ever 10 minutes by default
 export const DEMOCRACY_CRON = "0 0-59/10 * * * *";
+
+// Nominator Cron Job. This runs ever 5 minutes by default
+export const NOMINATOR_CRON = "0 0-59/5 * * * *";
 
 export const LOCATION_URL = "https://ipinfo.io/";

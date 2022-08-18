@@ -44,6 +44,7 @@ const API = {
   LastReferendums: "/lastreferendums",
   ReferendumIndexVotes: "/referendumvotes/index/:index",
   ReferendumAccountVotes: "/referendumvotes/account/:address",
+  NominatorStake: "/nominatorstake/:address",
 };
 
 export default class Server {
@@ -248,10 +249,26 @@ export default class Server {
       const sortedLocations = locationStats.locations.sort((a, b) => {
         return b.numberOfNodes - a.numberOfNodes;
       });
+      const sortedRegions = locationStats.regions.sort((a, b) => {
+        return b.numberOfNodes - a.numberOfNodes;
+      });
+      const sortedCountries = locationStats.countries.sort((a, b) => {
+        return b.numberOfNodes - a.numberOfNodes;
+      });
+      const sortedASNs = locationStats.asns.sort((a, b) => {
+        return b.numberOfNodes - a.numberOfNodes;
+      });
+      const sortedProviders = locationStats.providers.sort((a, b) => {
+        return b.numberOfNodes - a.numberOfNodes;
+      });
       ctx.body = {
         session: locationStats.session,
         updated: locationStats.updated,
         locations: sortedLocations,
+        regions: sortedRegions,
+        countries: sortedCountries,
+        asns: sortedASNs,
+        providers: sortedProviders,
       };
     });
     router.get(API.SessionLocationStats, async (ctx) => {
@@ -375,6 +392,12 @@ export default class Server {
       const { address } = ctx.params;
       const referendum = await this.db.getAccountVoteReferendum(address);
       ctx.body = referendum;
+    });
+
+    router.get(API.NominatorStake, async (ctx) => {
+      const { address } = ctx.params;
+      const stake = await this.db.getLatestNominatorStake(address);
+      ctx.body = stake;
     });
 
     this.app.use(router.routes());

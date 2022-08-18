@@ -51,6 +51,7 @@ export type Config = {
     council: string;
     subscan: string;
     democracy: string;
+    nominator: string;
   };
   db: {
     mongo: {

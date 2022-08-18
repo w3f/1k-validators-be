@@ -473,16 +473,24 @@ export class OTV implements Constraints {
     logger.info(JSON.stringify(providerStats));
 
     // Nominator Stake
+    const ownNominators = await db.allNominators();
+    const ownNominatorAddresses = ownNominators.map((nom) => {
+      return nom.address;
+    });
     const nominatorStakeValues = [];
     for (const candidate of validCandidates) {
       const nomStake = await db.getLatestNominatorStake(candidate.stash);
       const { activeNominators, inactiveNominators } = nomStake;
       let total = 0;
       for (const active of activeNominators) {
-        total += Math.sqrt(active.bonded);
+        if (!ownNominatorAddresses.includes(active.address)) {
+          total += Math.sqrt(active.bonded);
+        }
       }
       for (const inactive of inactiveNominators) {
-        total += Math.sqrt(inactive.bonded);
+        if (!ownNominatorAddresses.includes(inactive.address)) {
+          total += Math.sqrt(inactive.bonded);
+        }
       }
       nominatorStakeValues.push(total);
     }
@@ -669,10 +677,14 @@ export class OTV implements Constraints {
       const { activeNominators, inactiveNominators } = nomStake;
       let totalNominatorStake = 0;
       for (const active of activeNominators) {
-        totalNominatorStake += Math.sqrt(active.bonded);
+        if (!ownNominatorAddresses.includes(active.address)) {
+          totalNominatorStake += Math.sqrt(active.bonded);
+        }
       }
       for (const inactive of inactiveNominators) {
-        totalNominatorStake += Math.sqrt(inactive.bonded);
+        if (!ownNominatorAddresses.includes(inactive.address)) {
+          totalNominatorStake += Math.sqrt(inactive.bonded);
+        }
       }
       const scaledNominatorStake = scaledDefined(
         totalNominatorStake,

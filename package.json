@@ -1,6 +1,6 @@
 {
   "name": "1k-validators-be",
-  "version": "2.6.36",
+  "version": "2.6.37",
   "description": "Services for running the Thousand Validator Program.",
   "main": "index.js",
   "scripts": {
@@ -42,6 +42,7 @@
     "hash.js": "^1.1.7",
     "koa": "^2.13.4",
     "koa-bodyparser": "^4.3.0",
+    "koa-cash": "^4.1.0",
     "koa2-cors": "^2.0.6",
     "matrix-js-sdk": "^16.0.1",
     "mongodb": "4.7.0",

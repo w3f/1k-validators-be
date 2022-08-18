@@ -6,7 +6,7 @@ resources:
     memory: 6Gi
   requests:
     cpu: 700m
-    memory: 1.3Gi
+    memory: 3Gi
 
 secret: {{ "ref+vault://op/vaults/k8s-community-secrets/items/otv-kusama-backend-secret?proto=http#password" | fetchSecretValue }}
 
@@ -25,7 +25,7 @@ config: |
       "skipStakedDestination": true,
       "skipClientUpgrade": false,
       "skipUnclaimed": true,
-      "forceClientVersion": "v0.9.26"
+      "forceClientVersion": "v0.9.27"
     },
     "cron": {
       "monitor": "0 */15 * * * *"

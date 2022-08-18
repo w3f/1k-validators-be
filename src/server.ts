@@ -269,6 +269,12 @@ export default class Server {
         countries: sortedCountries,
         asns: sortedASNs,
         providers: sortedProviders,
+        locationVariance: locationStats.locationVariance,
+        regionVariance: locationStats.regionVariance,
+        countyVariance: locationStats.countryVariance,
+        asnVariance: locationStats.asnVariance,
+        providerVaraince: locationStats.providerVariance,
+        decentralization: locationStats.decentralization
       };
     });
     router.get(API.SessionLocationStats, async (ctx) => {
@@ -297,6 +303,12 @@ export default class Server {
         countries: sortedCountries,
         asns: sortedASNs,
         providers: sortedProviders,
+        locationVariance: locationStats.locationVariance,
+        regionVariance: locationStats.regionVariance,
+        countyVariance: locationStats.countryVariance,
+        asnVariance: locationStats.asnVariance,
+        providerVaraince: locationStats.providerVariance,
+        decentralization: locationStats.decentralization
       };
     });
     router.get(API.ElectionStats, async (ctx) => {

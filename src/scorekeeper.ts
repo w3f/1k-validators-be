@@ -110,25 +110,25 @@ export const autoNumNominations = async (
 
   const sorted = totalStakeAmounts.sort((a, b) => a - b);
 
-  let sum = 0;
-  let amount = 1;
+  const sum = 0;
+  const amount = 1;
 
   // Loop until we find the amount of validators that the account can get in.
-  while (sum < bufferedBalance) {
-    // An offset so the slice isn't the immediate lowest validators in the set
-    const offset = 5;
-    const lowestNum = sorted.slice(offset, offset + amount);
-    sum = lowestNum.reduce((a, b) => a + b, 0);
-
-    if (sum < bufferedBalance) {
-      amount++;
-    } else {
-      amount--;
-      const lowestNum = sorted.slice(offset, offset + amount);
-      sum = lowestNum.reduce((a, b) => a + b, 0);
-      break;
-    }
-  }
+  // while (sum < bufferedBalance) {
+  //   // An offset so the slice isn't the immediate lowest validators in the set
+  //   const offset = 5;
+  //   const lowestNum = sorted.slice(offset, offset + amount);
+  //   sum = lowestNum.reduce((a, b) => a + b, 0);
+  //
+  //   if (sum < bufferedBalance) {
+  //     amount++;
+  //   } else {
+  //     amount--;
+  //     const lowestNum = sorted.slice(offset, offset + amount);
+  //     sum = lowestNum.reduce((a, b) => a + b, 0);
+  //     break;
+  //   }
+  // }
 
   // The total amount of validators to nominate
   const adjustedNominationAmount = Math.min(amount, 24);

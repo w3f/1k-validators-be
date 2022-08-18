@@ -6,7 +6,7 @@ import Monitor from "./monitor";
 import { Subscan } from "./subscan";
 import { arrayBuffer } from "stream/consumers";
 import { Referendum, ReferendumVote } from "./types";
-import { getStats } from "./score";
+import { getStats, variance } from "./score";
 
 // Runs Monitor Job
 export const monitorJob = async (db: Db, monitor: Monitor) => {
@@ -332,6 +332,10 @@ export const locationStatsJob = async (
     const [name, numberOfNodes] = location;
     locationArr.push({ name, numberOfNodes });
   }
+  const locationValues = locationArr.map((location) => {
+    return location.numberOfNodes;
+  });
+  const locationVariance = variance(locationValues);
 
   // ---------------- CITY -----------------------------------
   const cityMap = new Map();
@@ -355,6 +359,11 @@ export const locationStatsJob = async (
     cityArr.push({ name, numberOfNodes });
   }
 
+  const cityValues = cityArr.map((city) => {
+    return city.numberOfNodes;
+  });
+  const cityVariance = variance(cityValues);
+
   // ---------------- REGION -----------------------------------
   const regionMap = new Map();
   const regionArr = [];
@@ -377,6 +386,10 @@ export const locationStatsJob = async (
     const [name, numberOfNodes] = region;
     regionArr.push({ name, numberOfNodes });
   }
+  const regionValues = regionArr.map((region) => {
+    return region.numberOfNodes;
+  });
+  const regionVariance = variance(regionValues);
 
   // ---------------- COUNTRY -----------------------------------
   const countryMap = new Map();
@@ -400,6 +413,10 @@ export const locationStatsJob = async (
     const [name, numberOfNodes] = country;
     countryArr.push({ name, numberOfNodes });
   }
+  const countryValues = countryArr.map((country) => {
+    return country.numberOfNodes;
+  });
+  const countryVariance = variance(countryValues);
 
   // ---------------- ASN -----------------------------------
   const asnMap = new Map();
@@ -422,6 +439,10 @@ export const locationStatsJob = async (
     const [name, numberOfNodes] = asn;
     asnArr.push({ name, numberOfNodes });
   }
+  const asnValues = asnArr.map((asn) => {
+    return asn.numberOfNodes;
+  });
+  const asnVariance = variance(asnValues);
 
   // ---------------- PROVIDER -----------------------------------
   const providerMap = new Map();
@@ -445,6 +466,18 @@ export const locationStatsJob = async (
     const [name, numberOfNodes] = provider;
     providerArr.push({ name, numberOfNodes });
   }
+  const providerValues = providerArr.map((provider) => {
+    return provider.numberOfNodes;
+  });
+  const providerVariance = variance(providerValues);
+
+  const decentralization =
+    (locationVariance +
+      regionVariance +
+      countryVariance +
+      asnVariance +
+      providerVariance) /
+    5;
 
   // --------------------------
 
@@ -454,7 +487,13 @@ export const locationStatsJob = async (
     regionArr,
     countryArr,
     asnArr,
-    providerArr
+    providerArr,
+    locationVariance,
+    regionVariance,
+    countryVariance,
+    asnVariance,
+    providerVariance,
+    decentralization
   );
 
   const end = Date.now();

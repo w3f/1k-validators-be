@@ -472,6 +472,21 @@ export class OTV implements Constraints {
     logger.info(`provider stats:`);
     logger.info(JSON.stringify(providerStats));
 
+    // Nominator Stake
+    const nominatorStakeValues = [];
+    for (const candidate of validCandidates) {
+      const nomStake = await db.getLatestNominatorStake(candidate.stash);
+      const { activeNominators, inactiveNominators } = nomStake;
+      let total = 0;
+      for (const active of activeNominators) {
+        total += Math.sqrt(active.bonded);
+      }
+      for (const inactive of inactiveNominators) {
+        total += Math.sqrt(inactive.bonded);
+      }
+      nominatorStakeValues.push(total);
+    }
+
     // Council Stake
     const councilStakeValues = validCandidates.map((candidate) => {
       return candidate.councilStake ? candidate.councilStake : 0;
@@ -650,6 +665,27 @@ export class OTV implements Constraints {
         `${candidate.stash}: location: ${locationScore} region: ${regionScore} country: ${countryScore} asn: ${asnScore} provider: ${providerScore}`
       );
 
+      const nomStake = await db.getLatestNominatorStake(candidate.stash);
+      const { activeNominators, inactiveNominators } = nomStake;
+      let totalNominatorStake = 0;
+      for (const active of activeNominators) {
+        totalNominatorStake += Math.sqrt(active.bonded);
+      }
+      for (const inactive of inactiveNominators) {
+        totalNominatorStake += Math.sqrt(inactive.bonded);
+      }
+      const scaledNominatorStake = scaledDefined(
+        totalNominatorStake,
+        nominatorStakeValues,
+        0.1,
+        0.95
+      );
+      const nominatorStakeScore = scaledNominatorStake * this.BONDED_WEIGHT;
+      logger.info(`nominator stake values: ${candidate.stash}`);
+      logger.info(JSON.stringify(nominatorStakeValues));
+      logger.info(`nominator stake: ${totalNominatorStake}`);
+      logger.info(`score: ${nominatorStakeScore} / 50`);
+
       // Score the council backing weight based on what percentage of their staking bond it is
       const denom = await this.chaindata.getDenom();
       const formattedBonded = candidate.bonded / denom;
@@ -708,8 +744,13 @@ export class OTV implements Constraints {
         faults: faultsScore,
         offline: offlineScore,
         location: locationScore,
+        region: regionScore,
+        country: countryScore,
+        asn: asnScore,
+        provider: providerScore,
         councilStake: councilStakeScore,
         democracy: scaledDemocracyScore,
+        nominatorStake: nominatorStakeScore,
         randomness: randomness,
         updated: Date.now(),
       };
@@ -729,8 +770,13 @@ export class OTV implements Constraints {
         score.faults,
         score.offline,
         score.location,
+        score.region,
+        score.country,
+        score.asn,
+        score.provider,
         score.councilStake,
         score.democracy,
+        score.nominatorStake,
         score.randomness
       );
 

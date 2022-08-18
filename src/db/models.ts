@@ -335,10 +335,15 @@ export const ValidatorScoreSchema = new Schema({
   offline: Number,
   // location score
   location: Number,
+  region: Number,
+  country: Number,
+  asn: Number,
+  provider: Number,
   // council backing score
   councilStake: Number,
   // democracy score
   democracy: Number,
+  nominatorStake: Number,
   // The randomness factor used to buffer the total
   randomness: Number,
 });
@@ -530,31 +535,36 @@ export const LocationStatsSchema = new Schema({
       numberOfNodes: Number,
     },
   ],
+  locationVariance: Number,
   regions: [
     {
       name: String,
       numberOfNodes: Number,
     },
   ],
+  regionVariance: Number,
   countries: [
     {
       name: String,
       numberOfNodes: Number,
     },
   ],
+  countryVariance: Number,
   asns: [
     {
       name: String,
       numberOfNodes: Number,
     },
   ],
+  asnVariance: Number,
   providers: [
     {
       name: String,
       numberOfNodes: Number,
     },
   ],
-
+  providerVariance: Number,
+  decentralization: Number,
   // Timestamp of when the record was written
   updated: Number,
 });

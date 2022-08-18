@@ -1669,8 +1669,13 @@ export default class Db {
     faults: number,
     offline: number,
     location: number,
+    region: number,
+    country: number,
+    asn: number,
+    provider: number,
     councilStake: number,
     democracy: number,
+    nominatorStake: number,
     randomness: number
   ): Promise<boolean> {
     // logger.info(
@@ -1697,8 +1702,13 @@ export default class Db {
         faults,
         offline,
         location,
+        region,
+        country,
+        asn,
+        provider,
         councilStake,
         democracy,
+        nominatorStake,
         randomness,
       });
 
@@ -1724,8 +1734,13 @@ export default class Db {
           faults,
           offline,
           location,
+          region,
+          country,
+          asn,
+          provider,
           councilStake,
           democracy,
+          nominatorStake,
           randomness,
         }
       )
@@ -2399,7 +2414,13 @@ export default class Db {
     regions: Array<{ name: string; numberOfNodes: number }>,
     countries: Array<{ name: string; numberOfNodes: number }>,
     asns: Array<{ name: string; numberOfNodes: number }>,
-    providers: Array<{ name: string; numberOfNodes: number }>
+    providers: Array<{ name: string; numberOfNodes: number }>,
+    locationVariance: number,
+    regionVariance: number,
+    countryVariance: number,
+    asnVariance: number,
+    providerVariance: number,
+    decentralization: number
   ): Promise<any> {
     // Try and find an existing record
     const data = await this.locationStatsModel.findOne({
@@ -2418,6 +2439,12 @@ export default class Db {
         countries,
         asns,
         providers,
+        locationVariance,
+        regionVariance,
+        countryVariance,
+        asnVariance,
+        providerVariance,
+        decentralization,
         updated: Date.now(),
       });
       return locationStats.save();
@@ -2436,6 +2463,12 @@ export default class Db {
           countries,
           asns,
           providers,
+          locationVariance,
+          regionVariance,
+          countryVariance,
+          asnVariance,
+          providerVariance,
+          decentralization,
         }
       )
       .exec();

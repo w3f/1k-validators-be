@@ -7,8 +7,8 @@ import { Config } from "./config";
 import Database from "./db";
 import logger from "./logger";
 import ScoreKeeper from "./scorekeeper";
-import { job } from "cron";
-import { createTextChangeRange } from "typescript";
+import LRU from "lru-cache";
+import koaCash from "koa-cash";
 
 const API = {
   Accounting: "/accounting/:stashOrController",
@@ -60,15 +60,29 @@ export default class Server {
     this.app.use(cors());
     this.app.use(bodyparser());
 
+    const cache = new LRU();
+    this.app.use(
+      koaCash({
+        get: (key) => {
+          return cache.get(key);
+        },
+        set(key, value) {
+          return cache.set(key, value);
+        },
+      })
+    );
+
     const router = new Router();
 
     router.get(API.Accounting, async (ctx) => {
+      if (await ctx.cashed()) return;
       const { stashOrController } = ctx.params;
       const accounting = await this.db.getAccounting(stashOrController);
       ctx.body = accounting;
     });
 
     router.get(API.Candidate, async (ctx) => {
+      if (await ctx.cashed()) return;
       const { stashOrName } = ctx.params;
       if (stashOrName) {
         const candidate = await this.db.getCandidate(stashOrName);
@@ -109,6 +123,7 @@ export default class Server {
     });
 
     router.get(API.GetCandidates, async (ctx) => {
+      if (await ctx.cashed()) return;
       let allCandidates = await this.db.allCandidates();
       allCandidates = await Promise.all(
         allCandidates.map(async (candidate) => {
@@ -148,33 +163,39 @@ export default class Server {
     });
 
     router.get(API.GetNodes, async (ctx) => {
+      if (await ctx.cashed()) return;
       const allNodes: Array<any> = await this.db.allNodes();
       ctx.body = allNodes;
     });
 
     router.get(API.GetNominators, async (ctx) => {
+      if (await ctx.cashed()) return;
       let allNominators = await this.db.allNominators();
       allNominators = allNominators.sort((a, b) => a.avgStake - b.avgStake);
       ctx.body = allNominators;
     });
 
     router.get(API.Release, async (ctx) => {
+      if (await ctx.cashed()) return;
       const release = await this.db.getLatestRelease();
       ctx.body = release;
     });
 
     router.get(API.GetNominator, async (ctx) => {
+      if (await ctx.cashed()) return;
       const { stash } = ctx.params;
       const nominator = await this.db.getNominator(stash);
       ctx.body = nominator;
     });
 
     router.get(API.GetNominations, async (ctx) => {
+      if (await ctx.cashed()) return;
       const allNominations = await this.db.allNominations();
       ctx.body = allNominations;
     });
 
     router.get(API.GetNominatorNominations, async (ctx) => {
+      if (await ctx.cashed()) return;
       const { address, last } = ctx.params;
       last ? Number(last) : 30;
       const nominations = await this.db.getLastNominations(address, last);
@@ -182,6 +203,7 @@ export default class Server {
     });
 
     router.get(API.GetBotClaimEvents, async (ctx) => {
+      if (await ctx.cashed()) return;
       const allNominations = await this.db.getBotClaimEvents();
       ctx.body = allNominations;
     });
@@ -193,6 +215,7 @@ export default class Server {
     });
 
     router.get(API.EraPoints, async (ctx) => {
+      if (await ctx.cashed()) return;
       const { stash } = ctx.params;
       const latestEra = (await this.db.getLastTotalEraPoints())[0].era;
       const eraPoints = await this.db.getHistoryDepthEraPoints(
@@ -203,6 +226,7 @@ export default class Server {
     });
 
     router.get(API.TotalEraPoints, async (ctx) => {
+      if (await ctx.cashed()) return;
       const latestEra = (await this.db.getLastTotalEraPoints())[0].era;
       let eras = await this.db.getHistoryDepthTotalEraPoints(latestEra);
       eras = eras.map((era) => {
@@ -219,32 +243,38 @@ export default class Server {
     });
 
     router.get(API.LastNomination, async (ctx) => {
+      if (await ctx.cashed()) return;
       const lastNomiation = await this.db.getLastNominatedEraIndex();
       ctx.body = lastNomiation;
     });
 
     router.get(API.ProxyTxs, async (ctx) => {
+      if (await ctx.cashed()) return;
       const proxyTxs = await this.db.getAllDelayedTxs();
       ctx.body = proxyTxs;
     });
 
     router.get(API.EraStats, async (ctx) => {
+      if (await ctx.cashed()) return;
       const latestEraStats = await this.db.getLatestEraStats();
       ctx.body = latestEraStats;
     });
 
     router.get(API.Score, async (ctx) => {
+      if (await ctx.cashed()) return;
       const { stash } = ctx.params;
       const score = await this.db.getValidatorScore(stash);
       ctx.body = score;
     });
 
     router.get(API.ScoreMetadata, async (ctx) => {
+      if (await ctx.cashed()) return;
       const score = await this.db.getValidatorScoreMetadata();
       ctx.body = score;
     });
 
     router.get(API.LocationStats, async (ctx) => {
+      if (await ctx.cashed()) return;
       const locationStats = await this.db.getLatestLocationStats();
       const sortedLocations = locationStats.locations.sort((a, b) => {
         return b.numberOfNodes - a.numberOfNodes;
@@ -278,6 +308,7 @@ export default class Server {
       };
     });
     router.get(API.SessionLocationStats, async (ctx) => {
+      if (await ctx.cashed()) return;
       const { session } = ctx.params;
       const locationStats = await this.db.getSessionLocationStats(session);
       const sortedLocations = locationStats.locations.sort((a, b) => {
@@ -312,20 +343,24 @@ export default class Server {
       };
     });
     router.get(API.ElectionStats, async (ctx) => {
+      if (await ctx.cashed()) return;
       const electionStats = await this.db.getLatestElectionStats();
       ctx.body = electionStats;
     });
     router.get(API.Councillors, async (ctx) => {
+      if (await ctx.cashed()) return;
       const councillors = await this.db.getAllCouncillors();
       ctx.body = councillors;
     });
     router.get(API.Councillor, async (ctx) => {
+      if (await ctx.cashed()) return;
       const { address } = ctx.params;
       const councillor = await this.db.getCouncillor(address);
       ctx.body = councillor;
     });
     // Returns all candidates who back council members
     router.get(API.Voters, async (ctx) => {
+      if (await ctx.cashed()) return;
       let allCandidates = await this.db.allCandidates();
       allCandidates = await Promise.all(
         allCandidates.map(async (candidate) => {
@@ -365,48 +400,58 @@ export default class Server {
       ctx.body = allCandidates;
     });
     router.get(API.EraPaid, async (ctx) => {
+      if (await ctx.cashed()) return;
       const lastEraPaid = await this.db.getLatestEraPaidEvent();
       ctx.body = lastEraPaid;
     });
     router.get(API.EraRewards, async (ctx) => {
+      if (await ctx.cashed()) return;
       const { stash, limit } = ctx.params;
       const lastRewards = await this.db.getLastEraRewards(stash, limit);
       ctx.body = lastRewards;
     });
     router.get(API.EraReward, async (ctx) => {
+      if (await ctx.cashed()) return;
       const { stash, era } = ctx.params;
       const reward = await this.db.getEraReward(stash, era);
       ctx.body = reward;
     });
     router.get(API.Referenda, async (ctx) => {
+      if (await ctx.cashed()) return;
       const referenda = await this.db.getAllReferenda();
       ctx.body = referenda;
     });
     router.get(API.Referendum, async (ctx) => {
+      if (await ctx.cashed()) return;
       const { index } = ctx.params;
       const referendum = await this.db.getReferendum(index);
       ctx.body = referendum;
     });
     router.get(API.LastReferendum, async (ctx) => {
+      if (await ctx.cashed()) return;
       const referendum = (await db.getLastReferenda())[0];
       ctx.body = referendum;
     });
     router.get(API.LastReferendums, async (ctx) => {
+      if (await ctx.cashed()) return;
       const referendum = await this.db.getLastReferenda();
       ctx.body = referendum;
     });
     router.get(API.ReferendumIndexVotes, async (ctx) => {
+      if (await ctx.cashed()) return;
       const { index } = ctx.params;
       const referendum = await this.db.getVoteReferendumIndex(index);
       ctx.body = referendum;
     });
     router.get(API.ReferendumAccountVotes, async (ctx) => {
+      if (await ctx.cashed()) return;
       const { address } = ctx.params;
       const referendum = await this.db.getAccountVoteReferendum(address);
       ctx.body = referendum;
     });
 
     router.get(API.NominatorStake, async (ctx) => {
+      if (await ctx.cashed()) return;
       const { address } = ctx.params;
       const stake = await this.db.getLatestNominatorStake(address);
       ctx.body = stake;

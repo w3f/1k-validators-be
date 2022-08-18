@@ -274,7 +274,7 @@ export default class Server {
         countyVariance: locationStats.countryVariance,
         asnVariance: locationStats.asnVariance,
         providerVaraince: locationStats.providerVariance,
-        decentralization: locationStats.decentralization
+        decentralization: locationStats.decentralization,
       };
     });
     router.get(API.SessionLocationStats, async (ctx) => {
@@ -307,8 +307,8 @@ export default class Server {
         regionVariance: locationStats.regionVariance,
         countyVariance: locationStats.countryVariance,
         asnVariance: locationStats.asnVariance,
-        providerVaraince: locationStats.providerVariance,
-        decentralization: locationStats.decentralization
+        providerVariance: locationStats.providerVariance,
+        decentralization: locationStats.decentralization,
       };
     });
     router.get(API.ElectionStats, async (ctx) => {

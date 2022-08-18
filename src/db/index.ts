@@ -24,6 +24,7 @@ import {
   ReferendumVoteSchema,
   LocationSchema,
   IIT,
+  NominatorStakeSchema,
 } from "./models";
 import logger from "../logger";
 import { fetchLocationInfo, formatAddress } from "../util";
@@ -57,6 +58,7 @@ export default class Db {
   private referendumVoteModel;
   private locationModel;
   private iitModel;
+  private nominatorStakeModel;
 
   constructor() {
     this.accountingModel = mongoose.model("Accounting", AccountingSchema);
@@ -106,6 +108,10 @@ export default class Db {
     );
     this.locationModel = mongoose.model("Location", LocationSchema);
     this.iitModel = mongoose.model("IIT", IIT);
+    this.nominatorStakeModel = mongoose.model(
+      "NominatorStake",
+      NominatorStakeSchema
+    );
   }
 
   static async create(uri = "mongodb://localhost:27017/otv"): Promise<Db> {
@@ -2898,5 +2904,60 @@ export default class Db {
 
   async getIIT(): Promise<any> {
     return this.iitModel.findOne({}).exec();
+  }
+
+  async setNominatorStake(
+    validator: string,
+    era: number,
+    totalStake: number,
+    inactiveStake: number,
+    activeNominators: Array<{ address: string; bonded: number }>,
+    inactiveNominators: Array<{ address: string; bonded: number }>
+  ): Promise<any> {
+    // Try and find an existing record
+    const data = await this.nominatorStakeModel.findOne({
+      era,
+      validator,
+    });
+
+    // If it already exist and are the same as before, return
+    if (!!data && data.inactiveStake == inactiveStake) return;
+
+    // If it doesnt yet exist
+    if (!data) {
+      const nominatorStake = new this.nominatorStakeModel({
+        validator,
+        era,
+        totalStake,
+        inactiveStake,
+        activeNominators,
+        inactiveNominators,
+        updated: Date.now(),
+      });
+      return nominatorStake.save();
+    }
+
+    // It exists, but has a different value - update it
+    this.nominatorStakeModel
+      .findOneAndUpdate(
+        {
+          validator,
+          era,
+        },
+        {
+          totalStake,
+          inactiveStake,
+          activeNominators,
+          inactiveNominators,
+          updated: Date.now(),
+        }
+      )
+      .exec();
+  }
+
+  async getLatestNominatorStake(validator: string): Promise<any> {
+    return (
+      await this.nominatorStakeModel.find({ validator }).sort("-era").limit(1)
+    )[0];
   }
 }

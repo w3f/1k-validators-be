@@ -90,6 +90,27 @@ export const LocationSchema = new Schema({
   updated: Number,
 });
 
+// Info about a validators nominations
+export const NominatorStakeSchema = new Schema({
+  validator: String,
+  era: Number,
+  totalStake: Number,
+  inactiveStake: Number,
+  activeNominators: [
+    {
+      address: String,
+      bonded: Number,
+    },
+  ],
+  inactiveNominators: [
+    {
+      address: String,
+      bonded: Number,
+    },
+  ],
+  updated: Number,
+});
+
 export const CandidateSchema = new Schema({
   // The inherited telemetry ID.
   telemetryId: Number,

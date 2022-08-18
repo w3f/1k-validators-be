@@ -866,7 +866,7 @@ export const startDemocracyJob = async (
   democracyCron.start();
 };
 
-// Chron job for querying democracy data
+// Chron job for querying nominator data
 export const startNominatorJob = async (
   config: Config,
   db: Db,
@@ -891,7 +891,7 @@ export const startNominatorJob = async (
 
     const candidates = await db.allCandidates();
 
-    // Run the democracy  job
+    // Run the job
     await nominatorJob(db, chaindata, candidates);
     running = false;
   });

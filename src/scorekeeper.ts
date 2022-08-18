@@ -110,8 +110,8 @@ export const autoNumNominations = async (
 
   const sorted = totalStakeAmounts.sort((a, b) => a - b);
 
-  const sum = 0;
-  const amount = 1;
+  let sum = 0;
+  let amount = 1;
 
   // Loop until we find the amount of validators that the account can get in.
   while (sum < bufferedBalance) {

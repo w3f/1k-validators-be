@@ -124,7 +124,7 @@ try {
     provider: provider,
   };
 } catch (e) {
-  logger.info(`There was an error fetching location data....`);
+    logger.info(`There was an error fetching location data....`);
     logger.info(e);
     return blank;
 }

@@ -107,6 +107,7 @@ export const fetchLocationInfo = async (addr: any, iit: any) => {
     return blank;
   }
 
+try {
   //@ts-ignore
   const { city, region, country, loc, org, postal, timezone } = json;
 
@@ -122,4 +123,10 @@ export const fetchLocationInfo = async (addr: any, iit: any) => {
     asn: asn,
     provider: provider,
   };
+} catch (e) {
+  logger.info(`There was an error fetching location data....`);
+    logger.info(e);
+    return blank;
+}
+
 };

@@ -128,5 +128,4 @@ export const fetchLocationInfo = async (addr: any, iit: any) => {
     logger.info(e);
     return blank;
   }
-
 };

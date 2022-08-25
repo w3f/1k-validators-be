@@ -124,9 +124,9 @@ export const fetchLocationInfo = async (addr: any, iit: any) => {
       provider: provider,
     };
   } catch (e) {
-      logger.info(`There was an error fetching location data....`);
-      logger.info(e);
-      return blank;
+    logger.info(`There was an error fetching location data....`);
+    logger.info(e);
+    return blank;
   }
 
 };

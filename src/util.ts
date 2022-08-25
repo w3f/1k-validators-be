@@ -107,19 +107,25 @@ export const fetchLocationInfo = async (addr: any, iit: any) => {
     return blank;
   }
 
-  //@ts-ignore
-  const { city, region, country, loc, org, postal, timezone } = json;
+  try {
+    //@ts-ignore
+    const { city, region, country, loc, org, postal, timezone } = json;
 
-  if (!org) {
-    logger.info(`no org: ${json}`);
+    if (!org) {
+      logger.info(`no org: ${json}`);
+    }
+    const asn = org.substring(0, org.indexOf(" "));
+    const provider = org.substring(org.indexOf(" ") + 1);
+    return {
+      city: city,
+      region: region,
+      country: country,
+      asn: asn,
+      provider: provider,
+    };
+  } catch (e) {
+    logger.info(`There was an error fetching location data....`);
+    logger.info(e);
+    return blank;
   }
-  const asn = org.substring(0, org.indexOf(" "));
-  const provider = org.substring(org.indexOf(" ") + 1);
-  return {
-    city: city,
-    region: region,
-    country: country,
-    asn: asn,
-    provider: provider,
-  };
 };

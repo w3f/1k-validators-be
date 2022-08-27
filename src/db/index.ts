@@ -411,8 +411,6 @@ export default class Db {
       logger.info(`{reportOnline}: no addr sent for ${name}`);
     }
 
-    // }
-
     const data = await this.candidateModel.findOne({ name });
     if (!data) {
       // A new node that is not already registered as a candidate.

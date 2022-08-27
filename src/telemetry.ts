@@ -40,8 +40,8 @@ export default class TelemetryClient {
 
     const options = {
       WebSocket: WS,
-      connectionTimeout: 1000,
-      maxRetries: 10,
+      connectionTimeout: 10000,
+      maxRetries: 20,
     };
 
     this.socket = new ReconnectingWebSocket(this.host, [], options);
@@ -66,10 +66,9 @@ export default class TelemetryClient {
 
       this.socket.onerror = (err: any) => {
         logger.info(
-          `Could not connect to substrate-telemetry on host ${
-            this.host
-          }: ${JSON.stringify(err.toString())}`
+          `Could not connect to substrate-telemetry on host ${this.host}: `
         );
+        logger.info(err);
         reject();
       };
 

@@ -480,20 +480,24 @@ export class OTV implements Constraints {
     const nominatorStakeValues = [];
     for (const candidate of validCandidates) {
       const nomStake = await db.getLatestNominatorStake(candidate.stash);
-      const { activeNominators, inactiveNominators } = nomStake;
-      let total = 0;
-      for (const active of activeNominators) {
-        if (!ownNominatorAddresses.includes(active.address)) {
-          total += Math.sqrt(active.bonded);
+      if (nomStake != undefined) {
+        const { activeNominators, inactiveNominators } = nomStake;
+
+        let total = 0;
+        for (const active of activeNominators) {
+          if (!ownNominatorAddresses.includes(active.address)) {
+            total += Math.sqrt(active.bonded);
+          }
         }
-      }
-      for (const inactive of inactiveNominators) {
-        if (!ownNominatorAddresses.includes(inactive.address)) {
-          total += Math.sqrt(inactive.bonded);
+        for (const inactive of inactiveNominators) {
+          if (!ownNominatorAddresses.includes(inactive.address)) {
+            total += Math.sqrt(inactive.bonded);
+          }
         }
+        nominatorStakeValues.push(total);
       }
-      nominatorStakeValues.push(total);
     }
+    if (nominatorStakeValues.length == 0) nominatorStakeValues.push(0);
 
     // Council Stake
     const councilStakeValues = validCandidates.map((candidate) => {
@@ -669,9 +673,9 @@ export class OTV implements Constraints {
       );
       const providerScore = (1 - scaledProvider) * this.LOCATION_WEIGHT || 0;
 
-      logger.info(
-        `${candidate.stash}: location: ${locationScore} region: ${regionScore} country: ${countryScore} asn: ${asnScore} provider: ${providerScore}`
-      );
+      // logger.info(
+      //   `${candidate.stash}: location: ${locationScore} region: ${regionScore} country: ${countryScore} asn: ${asnScore} provider: ${providerScore}`
+      // );
 
       const nomStake = await db.getLatestNominatorStake(candidate.stash);
       const { activeNominators, inactiveNominators } = nomStake;
@@ -693,10 +697,10 @@ export class OTV implements Constraints {
         0.95
       );
       const nominatorStakeScore = scaledNominatorStake * this.BONDED_WEIGHT;
-      logger.info(`nominator stake values: ${candidate.stash}`);
-      logger.info(JSON.stringify(nominatorStakeValues));
-      logger.info(`nominator stake: ${totalNominatorStake}`);
-      logger.info(`score: ${nominatorStakeScore} / 50`);
+      // logger.info(`nominator stake values: ${candidate.stash}`);
+      // logger.info(JSON.stringify(nominatorStakeValues));
+      // logger.info(`nominator stake: ${totalNominatorStake}`);
+      // logger.info(`score: ${nominatorStakeScore} / 50`);
 
       // Score the council backing weight based on what percentage of their staking bond it is
       const denom = await this.chaindata.getDenom();

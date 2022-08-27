@@ -45,6 +45,8 @@ const API = {
   ReferendumIndexVotes: "/referendumvotes/index/:index",
   ReferendumAccountVotes: "/referendumvotes/account/:address",
   NominatorStake: "/nominatorstake/:address",
+  Delegations: "/delegations/:address",
+  AllDelegations: "/delegations",
 };
 
 export default class Server {
@@ -246,8 +248,8 @@ export default class Server {
 
     router.get(API.LastNomination, async (ctx) => {
       if (await ctx.cashed()) return;
-      const lastNomiation = await this.db.getLastNominatedEraIndex();
-      ctx.body = lastNomiation;
+      const lastNomination = await this.db.getLastNominatedEraIndex();
+      ctx.body = lastNomination;
     });
 
     router.get(API.ProxyTxs, async (ctx) => {
@@ -457,6 +459,19 @@ export default class Server {
       const { address } = ctx.params;
       const stake = await this.db.getLatestNominatorStake(address);
       ctx.body = stake;
+    });
+
+    router.get(API.Delegations, async (ctx) => {
+      // if (await ctx.cashed()) return;
+      const { address } = ctx.params;
+      const delegations = await this.db.getDelegations(address);
+      ctx.body = delegations;
+    });
+
+    router.get(API.AllDelegations, async (ctx) => {
+      // if (await ctx.cashed()) return;
+      const delegations = await this.db.getAllDelegations();
+      ctx.body = delegations;
     });
 
     this.app.use(router.routes());

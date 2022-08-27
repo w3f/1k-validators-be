@@ -154,4 +154,7 @@ export const DEMOCRACY_CRON = "0 0-59/10 * * * *";
 // Nominator Cron Job. This runs ever 5 minutes by default
 export const NOMINATOR_CRON = "0 0-59/5 * * * *";
 
+// Delegation Cron Job. This runs ever 5 minutes by default
+export const DELEGATION_CRON = "0 0-59/5 * * * *";
+
 export const LOCATION_URL = "https://ipinfo.io/";

@@ -882,3 +882,36 @@ export const nominatorJob = async (
     ).toString()} Done. Took ${(end - start) / 1000} seconds`
   );
 };
+
+export const delegationJob = async (
+  db: Db,
+  chaindata: ChainData,
+  candidates: any[]
+) => {
+  const start = Date.now();
+
+  const delegators = await chaindata.getDelegators();
+  logger.info(`delegators from job:`);
+  logger.info(JSON.stringify(delegators));
+
+  for (const candidate of candidates) {
+    const delegating = delegators.filter((delegator) => {
+      if (delegator.target == candidate.stash) return true;
+    });
+
+    let totalBalance = 0;
+    for (const delegator of delegating) {
+      totalBalance += delegator.effectiveBalance;
+    }
+
+    await db.setDelegation(candidate.stash, totalBalance, delegating);
+  }
+
+  const end = Date.now();
+
+  logger.info(
+    `{cron::delegationJob::ExecutionTime} started at ${new Date(
+      start
+    ).toString()} Done. Took ${(end - start) / 1000} seconds`
+  );
+};

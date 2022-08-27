@@ -24,7 +24,8 @@ import {
   ReferendumVoteSchema,
   LocationSchema,
   IIT,
-  NominatorStakeSchema, DelegationSchema,
+  NominatorStakeSchema,
+  DelegationSchema,
 } from "./models";
 import logger from "../logger";
 import { fetchLocationInfo, formatAddress } from "../util";
@@ -113,7 +114,7 @@ export default class Db {
       "NominatorStake",
       NominatorStakeSchema
     );
-    this.delegationModel = mongoose.model("Delegation", DelegationSchema)
+    this.delegationModel = mongoose.model("Delegation", DelegationSchema);
   }
 
   static async create(uri = "mongodb://localhost:27017/otv"): Promise<Db> {
@@ -392,17 +393,19 @@ export default class Db {
       details;
 
     let locationData;
-    locationData = await this.getLocation(addr);
-    const iit = await this.getIIT();
-    if (!locationData) {
-      logger.info(`{reportOnline} Fetching Location Info`);
-      const iit = await this.getIIT();
-      const { city, region, country, asn, provider } = await fetchLocationInfo(
-        addr,
-        iit && iit.iit ? iit.iit : null
-      );
-      await this.setLocation(addr, city, region, country, asn, provider);
+    if (addr) {
       locationData = await this.getLocation(addr);
+      const iit = await this.getIIT();
+      if (!locationData) {
+        logger.info(`{reportOnline} Fetching Location Info`);
+        const iit = await this.getIIT();
+        const { city, region, country, asn, provider } =
+          await fetchLocationInfo(addr, iit && iit.iit ? iit.iit : null);
+        await this.setLocation(addr, city, region, country, asn, provider);
+        locationData = await this.getLocation(addr);
+      }
+    } else {
+      logger.info(`{reportOnline}: no addr sent for ${name}`);
     }
 
     const data = await this.candidateModel.findOne({ name });
@@ -2997,9 +3000,14 @@ export default class Db {
   }
 
   async setDelegation(
-      validator: string,
-      totalBalance: number,
-      delegators: Array<{ address: string; balance: number, conviction: number }>,
+    validator: string,
+    totalBalance: number,
+    delegators: Array<{
+      address: string;
+      balance: number;
+      effectiveBalance: number;
+      conviction: string;
+    }>
   ): Promise<any> {
     // Try and find an existing record
     const data = await this.delegationModel.findOne({
@@ -3007,37 +3015,39 @@ export default class Db {
     });
 
     // If it already exist and are the same as before, return
-    if (!!data && data.inactiveStake == inactiveStake) return;
+    if (!!data && data.totalBalance == totalBalance) return;
 
     // If it doesnt yet exist
     if (!data) {
-      const nominatorStake = new this.nominatorStakeModel({
+      const delegation = new this.delegationModel({
         validator,
-        era,
-        totalStake,
-        inactiveStake,
-        activeNominators,
-        inactiveNominators,
+        totalBalance,
+        delegators,
         updated: Date.now(),
       });
-      return nominatorStake.save();
+      return delegation.save();
     }
 
     // It exists, but has a different value - update it
-    this.nominatorStakeModel
-        .findOneAndUpdate(
-            {
-              validator,
-              era,
-            },
-            {
-              totalStake,
-              inactiveStake,
-              activeNominators,
-              inactiveNominators,
-              updated: Date.now(),
-            }
-        )
-        .exec();
+    this.delegationModel
+      .findOneAndUpdate(
+        {
+          validator,
+        },
+        {
+          totalBalance,
+          delegators,
+          updated: Date.now(),
+        }
+      )
+      .exec();
+  }
+
+  async getDelegations(validator: string): Promise<any> {
+    return (await this.delegationModel.find({ validator }).limit(1))[0];
+  }
+
+  async getAllDelegations(): Promise<any> {
+    return await this.delegationModel.find({}).sort("-totalBalance");
   }
 }

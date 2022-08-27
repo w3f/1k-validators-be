@@ -45,6 +45,7 @@ import {
   startSubscanJob,
   startDemocracyJob,
   startNominatorJob,
+  startDelegationJob,
 } from "./cron";
 import Claimer from "./claimer";
 import {
@@ -588,7 +589,7 @@ export default class ScoreKeeper {
       await startActiveValidatorJob(this.config, this.db, this.chaindata);
       await startInclusionJob(this.config, this.db, this.chaindata);
       await startSessionKeyJob(this.config, this.db, this.chaindata);
-      await startUnclaimedEraJob(this.config, this.db, this.chaindata);
+      // await startUnclaimedEraJob(this.config, this.db, this.chaindata);
       await startValidatorPrefJob(this.config, this.db, this.chaindata);
       // if (this.claimer) {
       //   await startRewardClaimJob(
@@ -631,6 +632,7 @@ export default class ScoreKeeper {
       // await startSubscanJob(this.config, this.db, this.subscan);
       await startDemocracyJob(this.config, this.db, this.chaindata);
       await startNominatorJob(this.config, this.db, this.chaindata);
+      await startDelegationJob(this.config, this.db, this.chaindata);
     } catch (e) {
       logger.info(
         `{Scorekeeper::RunCron} There was an error running some cron jobs...`

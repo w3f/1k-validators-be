@@ -27,6 +27,7 @@ import {
   SUBSCAN_CRON,
   DEMOCRACY_CRON,
   NOMINATOR_CRON,
+  DELEGATION_CRON,
 } from "./constants";
 import logger from "./logger";
 import Monitor from "./monitor";
@@ -54,6 +55,7 @@ import {
   subscanJob,
   democracyJob,
   nominatorJob,
+  delegationJob,
 } from "./jobs";
 import { Subscan } from "./subscan";
 
@@ -896,4 +898,36 @@ export const startNominatorJob = async (
     running = false;
   });
   nominatorCron.start();
+};
+
+// Chron job for querying delegator data
+export const startDelegationJob = async (
+  config: Config,
+  db: Db,
+  chaindata: ChainData
+) => {
+  const delegationFrequency = config.cron.delegation
+    ? config.cron.delegation
+    : DELEGATION_CRON;
+
+  logger.info(
+    `(cron::delegationJob::init) Running delegation cron with frequency: ${delegationFrequency}`
+  );
+
+  let running = false;
+
+  const delegationCron = new CronJob(delegationFrequency, async () => {
+    if (running) {
+      return;
+    }
+    running = true;
+    logger.info(`{cron::delegationJob::start} running nominator job....`);
+
+    const candidates = await db.allCandidates();
+
+    // Run the job
+    await delegationJob(db, chaindata, candidates);
+    running = false;
+  });
+  delegationCron.start();
 };

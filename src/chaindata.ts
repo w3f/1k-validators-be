@@ -964,10 +964,49 @@ class ChainData {
             const delegating = value.toJSON()["delegating"];
             const { balance, target, conviction, delegations, prior } =
               delegating;
+            let effectiveBalance = 0;
+            switch (conviction) {
+              case "None":
+                {
+                  effectiveBalance = balance / denom / 0.1;
+                }
+                break;
+              case "Locked1x":
+                {
+                  effectiveBalance = balance / denom;
+                }
+                break;
+              case "Locked2x":
+                {
+                  effectiveBalance = (balance / denom) * 2;
+                }
+                break;
+              case "Locked3x":
+                {
+                  effectiveBalance = (balance / denom) * 3;
+                }
+                break;
+              case "Locked4x":
+                {
+                  effectiveBalance = (balance / denom) * 4;
+                }
+                break;
+              case "Locked5x":
+                {
+                  effectiveBalance = (balance / denom) * 5;
+                }
+                break;
+              case "Locked6x":
+                {
+                  effectiveBalance = (balance / denom) * 6;
+                }
+                break;
+            }
             return {
               address: address,
               target: target,
-              balance: parseFloat(balance) / denom,
+              balance: balance / denom,
+              effectiveBalance: effectiveBalance,
               conviction: conviction,
             };
           }

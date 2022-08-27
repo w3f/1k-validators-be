@@ -52,6 +52,7 @@ export type Config = {
     subscan: string;
     democracy: string;
     nominator: string;
+    delegation: string;
   };
   db: {
     mongo: {

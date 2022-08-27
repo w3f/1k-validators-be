@@ -68,7 +68,7 @@ export default class TelemetryClient {
         logger.info(
           `Could not connect to substrate-telemetry on host ${
             this.host
-          }: ${err.toString()}`
+          }: ${JSON.stringify(err.toString())}`
         );
         reject();
       };
@@ -99,6 +99,12 @@ export default class TelemetryClient {
     const { action, payload } = message;
 
     switch (action) {
+      case TelemetryMessage.FeedVersion:
+        {
+          logger.info(`feed version:`);
+          logger.info(JSON.stringify(payload));
+        }
+        break;
       case TelemetryMessage.AddedNode:
         {
           const [

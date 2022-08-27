@@ -114,11 +114,12 @@ export const NominatorStakeSchema = new Schema({
 export const DelegationSchema = new Schema({
   validator: String,
   totalBalance: Number,
-  delgators: [
+  delegators: [
     {
       address: String,
       balance: Number,
-      conviction: Number,
+      effectiveBalance: Number,
+      conviction: String,
     },
   ],
   updated: Number,

@@ -883,7 +883,7 @@ export const nominatorJob = async (
   );
 };
 
-export const delegatorJob = async (
+export const delegationJob = async (
   db: Db,
   chaindata: ChainData,
   candidates: any[]
@@ -891,28 +891,26 @@ export const delegatorJob = async (
   const start = Date.now();
 
   const delegators = await chaindata.getDelegators();
+  logger.info(`delegators from job:`);
+  logger.info(JSON.stringify(delegators));
 
   for (const candidate of candidates) {
-    // A validators active nominators
-
     const delegating = delegators.filter((delegator) => {
-      delegator.target == candidate.stash;
+      if (delegator.target == candidate.stash) return true;
     });
 
-    await db.setNominatorStake(
-      candidate.stash,
-      activeEra,
-      total,
-      totalInactiveStake,
-      others,
-      inactiveNominators
-    );
+    let totalBalance = 0;
+    for (const delegator of delegating) {
+      totalBalance += delegator.effectiveBalance;
+    }
+
+    await db.setDelegation(candidate.stash, totalBalance, delegating);
   }
 
   const end = Date.now();
 
   logger.info(
-    `{cron::NominatorStakeJob::ExecutionTime} started at ${new Date(
+    `{cron::delegationJob::ExecutionTime} started at ${new Date(
       start
     ).toString()} Done. Took ${(end - start) / 1000} seconds`
   );

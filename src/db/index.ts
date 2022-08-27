@@ -24,7 +24,7 @@ import {
   ReferendumVoteSchema,
   LocationSchema,
   IIT,
-  NominatorStakeSchema,
+  NominatorStakeSchema, DelegationSchema,
 } from "./models";
 import logger from "../logger";
 import { fetchLocationInfo, formatAddress } from "../util";
@@ -59,6 +59,7 @@ export default class Db {
   private locationModel;
   private iitModel;
   private nominatorStakeModel;
+  private delegationModel;
 
   constructor() {
     this.accountingModel = mongoose.model("Accounting", AccountingSchema);
@@ -112,6 +113,7 @@ export default class Db {
       "NominatorStake",
       NominatorStakeSchema
     );
+    this.delegationModel = mongoose.model("Delegation", DelegationSchema)
   }
 
   static async create(uri = "mongodb://localhost:27017/otv"): Promise<Db> {
@@ -2992,5 +2994,50 @@ export default class Db {
     return (
       await this.nominatorStakeModel.find({ validator }).sort("-era").limit(1)
     )[0];
+  }
+
+  async setDelegation(
+      validator: string,
+      totalBalance: number,
+      delegators: Array<{ address: string; balance: number, conviction: number }>,
+  ): Promise<any> {
+    // Try and find an existing record
+    const data = await this.delegationModel.findOne({
+      validator,
+    });
+
+    // If it already exist and are the same as before, return
+    if (!!data && data.inactiveStake == inactiveStake) return;
+
+    // If it doesnt yet exist
+    if (!data) {
+      const nominatorStake = new this.nominatorStakeModel({
+        validator,
+        era,
+        totalStake,
+        inactiveStake,
+        activeNominators,
+        inactiveNominators,
+        updated: Date.now(),
+      });
+      return nominatorStake.save();
+    }
+
+    // It exists, but has a different value - update it
+    this.nominatorStakeModel
+        .findOneAndUpdate(
+            {
+              validator,
+              era,
+            },
+            {
+              totalStake,
+              inactiveStake,
+              activeNominators,
+              inactiveNominators,
+              updated: Date.now(),
+            }
+        )
+        .exec();
   }
 }

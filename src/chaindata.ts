@@ -946,6 +946,38 @@ class ChainData {
 
     return referendaQuery;
   };
+
+  getDelegators = async () => {
+    const api = await this.handler.getApi();
+    if (!api.isConnected) {
+      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
+      return;
+    }
+
+    const denom = await this.getDenom();
+    const dem = await api.query.democracy.votingOf.entries();
+    const delegators = (
+      await Promise.all(
+        dem.map(async ([key, value]) => {
+          if (value.toHuman()["Delegating"]) {
+            const address = key.toHuman()[0];
+            const delegating = value.toJSON()["delegating"];
+            const { balance, target, conviction, delegations, prior } =
+              delegating;
+            return {
+              address: address,
+              target: target,
+              balance: parseFloat(balance) / denom,
+              conviction: conviction,
+            };
+          }
+        })
+      )
+    ).filter((del) => {
+      return del;
+    });
+    return delegators;
+  };
 }
 
 export default ChainData;

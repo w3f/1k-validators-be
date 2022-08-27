@@ -111,6 +111,19 @@ export const NominatorStakeSchema = new Schema({
   updated: Number,
 });
 
+export const DelegationSchema = new Schema({
+  validator: String,
+  totalBalance: Number,
+  delgators: [
+    {
+      address: String,
+      balance: Number,
+      conviction: Number,
+    },
+  ],
+  updated: Number,
+});
+
 export const CandidateSchema = new Schema({
   // The inherited telemetry ID.
   telemetryId: Number,

@@ -882,3 +882,38 @@ export const nominatorJob = async (
     ).toString()} Done. Took ${(end - start) / 1000} seconds`
   );
 };
+
+export const delegatorJob = async (
+  db: Db,
+  chaindata: ChainData,
+  candidates: any[]
+) => {
+  const start = Date.now();
+
+  const delegators = await chaindata.getDelegators();
+
+  for (const candidate of candidates) {
+    // A validators active nominators
+
+    const delegating = delegators.filter((delegator) => {
+      delegator.target == candidate.stash;
+    });
+
+    await db.setNominatorStake(
+      candidate.stash,
+      activeEra,
+      total,
+      totalInactiveStake,
+      others,
+      inactiveNominators
+    );
+  }
+
+  const end = Date.now();
+
+  logger.info(
+    `{cron::NominatorStakeJob::ExecutionTime} started at ${new Date(
+      start
+    ).toString()} Done. Took ${(end - start) / 1000} seconds`
+  );
+};

@@ -393,20 +393,25 @@ export default class Db {
       details;
 
     let locationData;
-    if (addr) {
-      locationData = await this.getLocation(addr);
+    // if (addr) {
+    locationData = await this.getLocation(addr);
+    const iit = await this.getIIT();
+    if (!locationData) {
+      logger.info(`{reportOnline} Fetching Location Info`);
       const iit = await this.getIIT();
-      if (!locationData) {
-        logger.info(`{reportOnline} Fetching Location Info`);
-        const iit = await this.getIIT();
-        const { city, region, country, asn, provider } =
-          await fetchLocationInfo(addr, iit && iit.iit ? iit.iit : null);
-        await this.setLocation(addr, city, region, country, asn, provider);
-        locationData = await this.getLocation(addr);
-      }
-    } else {
+      const { city, region, country, asn, provider } = await fetchLocationInfo(
+        addr,
+        iit && iit.iit ? iit.iit : null
+      );
+      await this.setLocation(addr, city, region, country, asn, provider);
+      locationData = await this.getLocation(addr);
+    }
+    // } else {
+    if (!addr) {
       logger.info(`{reportOnline}: no addr sent for ${name}`);
     }
+
+    // }
 
     const data = await this.candidateModel.findOne({ name });
     if (!data) {

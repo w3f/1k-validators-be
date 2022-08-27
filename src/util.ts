@@ -90,7 +90,8 @@ export const fetchLocationInfo = async (addr: any, iit: any) => {
     asn: "asn",
     provider: "provider",
   };
-  if (!iit) {
+  if (!iit || !addr) {
+    logger.info(`fetch info for ${addr} isn't there.`);
     return blank;
   }
   const resp = await fetch(`${LOCATION_URL}${addr}?${iit}`);

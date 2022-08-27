@@ -891,8 +891,6 @@ export const delegationJob = async (
   const start = Date.now();
 
   const delegators = await chaindata.getDelegators();
-  logger.info(`delegators from job:`);
-  logger.info(JSON.stringify(delegators));
 
   for (const candidate of candidates) {
     const delegating = delegators.filter((delegator) => {

@@ -968,7 +968,7 @@ class ChainData {
             switch (conviction) {
               case "None":
                 {
-                  effectiveBalance = balance / denom / 0.1;
+                  effectiveBalance = (balance / denom) * 0.1;
                 }
                 break;
               case "Locked1x":

@@ -498,6 +498,23 @@ export class OTV implements Constraints {
       }
     }
     if (nominatorStakeValues.length == 0) nominatorStakeValues.push(0);
+    const nominatorStats = getStats(nominatorStakeValues);
+
+    // Delegations
+    const delegationValues = [];
+    for (const candidate of validCandidates) {
+      const delegations = await db.getDelegations(candidate.stash);
+      if (delegations != undefined) {
+        const { totalBalance, delegators } = delegations;
+
+        let total = 0;
+        for (const delegator of delegators) {
+          total += Math.sqrt(delegator.effectiveBalance);
+        }
+        delegationValues.push(total);
+      }
+    }
+    const delegationStats = getStats(delegationValues);
 
     // Council Stake
     const councilStakeValues = validCandidates.map((candidate) => {
@@ -697,10 +714,20 @@ export class OTV implements Constraints {
         0.95
       );
       const nominatorStakeScore = scaledNominatorStake * this.BONDED_WEIGHT;
-      // logger.info(`nominator stake values: ${candidate.stash}`);
-      // logger.info(JSON.stringify(nominatorStakeValues));
-      // logger.info(`nominator stake: ${totalNominatorStake}`);
-      // logger.info(`score: ${nominatorStakeScore} / 50`);
+
+      const delegations = await db.getDelegations(candidate.stash);
+      const { totalBalance, delegators } = delegations;
+      let totalDelegations = 0;
+      for (const delegator of delegators) {
+        totalDelegations += Math.sqrt(delegator.effectiveBalance);
+      }
+      const scaledDelegations = scaledDefined(
+        totalDelegations,
+        delegationValues,
+        0.1,
+        0.95
+      );
+      const delegationScore = scaledDelegations * this.BONDED_WEIGHT;
 
       // Score the council backing weight based on what percentage of their staking bond it is
       const denom = await this.chaindata.getDenom();
@@ -767,6 +794,7 @@ export class OTV implements Constraints {
         councilStake: councilStakeScore,
         democracy: scaledDemocracyScore,
         nominatorStake: nominatorStakeScore,
+        delegations: delegationScore,
         randomness: randomness,
         updated: Date.now(),
       };
@@ -793,6 +821,7 @@ export class OTV implements Constraints {
         score.councilStake,
         score.democracy,
         score.nominatorStake,
+        score.delegations,
         score.randomness
       );
 

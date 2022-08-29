@@ -1684,6 +1684,7 @@ export default class Db {
     councilStake: number,
     democracy: number,
     nominatorStake: number,
+    delegations: number,
     randomness: number
   ): Promise<boolean> {
     // logger.info(
@@ -1717,6 +1718,7 @@ export default class Db {
         councilStake,
         democracy,
         nominatorStake,
+        delegations,
         randomness,
       });
 
@@ -1749,6 +1751,7 @@ export default class Db {
           councilStake,
           democracy,
           nominatorStake,
+          delegations,
           randomness,
         }
       )

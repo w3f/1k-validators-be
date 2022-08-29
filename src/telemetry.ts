@@ -41,7 +41,11 @@ export default class TelemetryClient {
     const options = {
       WebSocket: WS,
       connectionTimeout: 10000,
-      maxRetries: Infinity,
+      // maxReconnectionDelay: 10000,
+      // minReconnectionDelay: 10000,
+      // reconnectionDelayGrowFactor: 1.5,
+      maxRetries: 15,
+      debug: true,
     };
 
     this.socket = new ReconnectingWebSocket(this.host, [], options);
@@ -69,7 +73,7 @@ export default class TelemetryClient {
           `Could not connect to substrate-telemetry on host ${this.host}: `
         );
         logger.info(err);
-        reject(err);
+        reject();
       };
 
       this.socket.onmessage = (msg: any) => {

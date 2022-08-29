@@ -40,7 +40,7 @@ export default class TelemetryClient {
 
     const options = {
       WebSocket: WS,
-      connectionTimeout: 4000,
+      connectionTimeout: 10000,
       maxRetries: Infinity,
     };
 
@@ -69,7 +69,7 @@ export default class TelemetryClient {
           `Could not connect to substrate-telemetry on host ${this.host}: `
         );
         logger.info(err);
-        // reject();
+        reject(err);
       };
 
       this.socket.onmessage = (msg: any) => {
@@ -78,9 +78,6 @@ export default class TelemetryClient {
           this._handle(message);
         }
       };
-    }).catch((err) => {
-      logger.warn(`Caught telemetry error:`);
-      logger.warn(err);
     });
   }
 

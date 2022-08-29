@@ -61,9 +61,7 @@ export default class TelemetryClient {
         logger.info(
           `Connection to substrate-telemetry on host ${this.host} closed`
         );
-        this.socket.reconnect();
-        resolve();
-        // reject();
+        reject();
       };
 
       this.socket.onerror = (err: any) => {
@@ -71,9 +69,7 @@ export default class TelemetryClient {
           `Could not connect to substrate-telemetry on host ${this.host}: `
         );
         logger.info(err);
-        this.socket.reconnect();
-        resolve();
-        // reject();
+        reject();
       };
 
       this.socket.onmessage = (msg: any) => {

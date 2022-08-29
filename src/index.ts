@@ -86,7 +86,7 @@ const start = async (cmd: { config: string }) => {
 
   // Start the telemetry client.
   const telemetry = new TelemetryClient(config, db);
-  telemetry.start();
+  await telemetry.start();
 
   // Create the matrix bot if enabled.
   let maybeBot: any = false;

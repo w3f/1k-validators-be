@@ -115,19 +115,21 @@ export const autoNumNominations = async (
   let amount = 1;
 
   // Loop until we find the amount of validators that the account can get in.
-  while (sum < bufferedBalance) {
-    // An offset so the slice isn't the immediate lowest validators in the set
-    const offset = 5;
-    const lowestNum = sorted.slice(offset, offset + amount);
-    sum = lowestNum.reduce((a, b) => a + b, 0);
-
-    if (sum < bufferedBalance) {
-      amount++;
-    } else {
-      amount--;
+  if (chainType.toString() != "Local Testnet") {
+    while (sum < bufferedBalance) {
+      // An offset so the slice isn't the immediate lowest validators in the set
+      const offset = 5;
       const lowestNum = sorted.slice(offset, offset + amount);
       sum = lowestNum.reduce((a, b) => a + b, 0);
-      break;
+
+      if (sum < bufferedBalance) {
+        amount++;
+      } else {
+        amount--;
+        const lowestNum = sorted.slice(offset, offset + amount);
+        sum = lowestNum.reduce((a, b) => a + b, 0);
+        break;
+      }
     }
   }
 

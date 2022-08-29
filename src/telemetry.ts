@@ -47,7 +47,7 @@ export default class TelemetryClient {
     this.socket = new ReconnectingWebSocket(this.host, [], options);
   }
 
-  async start(): Promise<null> {
+  async start(): Promise<any> {
     return new Promise((resolve: any, reject: any) => {
       this.socket.onopen = () => {
         logger.info(`Connected to substrate-telemetry on host ${this.host}`);
@@ -78,6 +78,9 @@ export default class TelemetryClient {
           this._handle(message);
         }
       };
+    }).catch((err)=> {
+      logger.warn(`Caught telemetry error:`)
+      logger.warn(err)
     });
   }
 

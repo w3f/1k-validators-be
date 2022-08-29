@@ -69,7 +69,7 @@ export default class TelemetryClient {
           `Could not connect to substrate-telemetry on host ${this.host}: `
         );
         logger.info(err);
-        reject();
+        // reject();
       };
 
       this.socket.onmessage = (msg: any) => {
@@ -78,9 +78,9 @@ export default class TelemetryClient {
           this._handle(message);
         }
       };
-    }).catch((err)=> {
-      logger.warn(`Caught telemetry error:`)
-      logger.warn(err)
+    }).catch((err) => {
+      logger.warn(`Caught telemetry error:`);
+      logger.warn(err);
     });
   }
 
@@ -192,13 +192,9 @@ export default class TelemetryClient {
 
   private async _subscribe(chain: string, finality = true) {
     if (this.config.telemetry.chains.includes(chain)) {
+      this.socket.send(`ping:${chain}`);
       this.socket.send(`subscribe:${chain}`);
       logger.info(`Subscribed to ${chain}`);
-
-      if (finality) {
-        this.socket.send(`send-finality:${chain}`);
-        logger.info("Request finality data");
-      }
     }
   }
 }

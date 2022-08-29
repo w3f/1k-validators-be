@@ -62,7 +62,7 @@
     "@typescript-eslint/parser": "^5.27.1",
     "ava": "^4.3.0",
     "concurrently": "^7.2.1",
-    "eslint": "^8.17.0",
+    "eslint": "^8.23.0",
     "eslint-plugin-security": "^1.5.0",
     "nodemon": "^2.0.16",
     "open-cli": "^7.0.1"

@@ -25,7 +25,7 @@ class ApiHandler extends EventEmitter {
 
   static async createApi(endpoints) {
     const api = new ApiPromise({
-      provider: new WsProvider(endpoints, undefined, undefined, 1000),
+      provider: new WsProvider(endpoints, undefined, undefined, 100000),
       // throwOnConnect: true,
     });
     if (api) {

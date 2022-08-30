@@ -51,20 +51,19 @@ export const BALANCE_BUFFER_PERCENT = 0.002;
 // the buffer hard stop - 20 tokens
 export const BALANCE_BUFFER_AMOUNT = 20;
 
+// Timeout threshold for polkadot js api - 360 seconds
+export const POLKADOT_API_TIMEOUT = 360000;
+
 /// List of Kusama endpoints we can switch between.
 export const KusamaEndpoints = [
   "wss://kusama-rpc.polkadot.io",
-  // "wss://cc3-0.kusama.network",
   "wss://kusama.api.onfinality.io/public-ws",
-  // "wss://kusama.elara.patract.io",
 ];
 
 /// List of Polkadot endpoints we can switch between.
 export const PolkadotEndpoints = [
   "wss://rpc.polkadot.io",
-  // "wss://cc1-0.polkadot.network",
   "wss://polkadot.api.onfinality.io/public-ws",
-  // "wss://polkadot.elara.patract.io",
 ];
 
 // List of Local endpoints we can switch between.

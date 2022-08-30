@@ -393,8 +393,7 @@ export default class Db {
       details;
 
     let locationData;
-    // if (addr) {
-    locationData = await this.getLocation(addr);
+    locationData = await this.getLocation(name, addr);
     const iit = await this.getIIT();
     if (!locationData) {
       logger.info(`{reportOnline} Fetching Location Info`);
@@ -403,10 +402,10 @@ export default class Db {
         addr,
         iit && iit.iit ? iit.iit : null
       );
-      await this.setLocation(addr, city, region, country, asn, provider);
-      locationData = await this.getLocation(addr);
+      await this.setLocation(name, addr, city, region, country, asn, provider);
+      locationData = await this.getLocation(name, addr);
     }
-    // } else {
+
     if (!addr) {
       logger.info(`{reportOnline}: no addr sent for ${name}`);
     }
@@ -2911,15 +2910,26 @@ export default class Db {
     return this.referendumVoteModel.find({ accountId: accountId }).exec();
   }
 
-  async getLocation(addr: string): Promise<any> {
-    return this.locationModel
+  async getLocation(name: string, addr: string): Promise<any> {
+    let data;
+    // First try to get by telemetry name
+    data = this.locationModel
       .findOne({
-        addr,
+        name,
       })
       .exec();
+    if (!data) {
+      data = this.locationModel
+        .findOne({
+          addr,
+        })
+        .exec();
+    }
+    return data;
   }
 
   async setLocation(
+    name: string,
     addr: string,
     city: string,
     region: string,
@@ -2928,12 +2938,19 @@ export default class Db {
     provider: string
   ): Promise<any> {
     // Try and find an existing record
-    const data = await this.locationModel.findOne({
-      addr,
+    let data;
+    data = await this.locationModel.findOne({
+      name,
     });
+    if (!data) {
+      data = await this.locationModel.findOne({
+        addr,
+      });
+    }
 
     if (!data) {
       const location = new this.locationModel({
+        name,
         addr,
         city,
         region,

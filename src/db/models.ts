@@ -81,6 +81,7 @@ export const InvalidityReason = new Schema({
 });
 
 export const LocationSchema = new Schema({
+  name: String, // The Telemetry name of the node
   addr: String,
   city: String,
   region: String,

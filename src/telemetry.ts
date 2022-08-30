@@ -41,11 +41,7 @@ export default class TelemetryClient {
     const options = {
       WebSocket: WS,
       connectionTimeout: 10000,
-      // maxReconnectionDelay: 10000,
-      // minReconnectionDelay: 10000,
-      // reconnectionDelayGrowFactor: 1.5,
       maxRetries: 15,
-      debug: true,
     };
 
     this.socket = new ReconnectingWebSocket(this.host, [], options);

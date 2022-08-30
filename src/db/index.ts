@@ -2913,13 +2913,13 @@ export default class Db {
   async getLocation(name: string, addr: string): Promise<any> {
     let data;
     // First try to get by telemetry name
-    data = this.locationModel
+    data = await this.locationModel
       .findOne({
         name,
       })
       .exec();
     if (!data) {
-      data = this.locationModel
+      data = await this.locationModel
         .findOne({
           addr,
         })

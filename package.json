@@ -1,6 +1,6 @@
 {
   "name": "1k-validators-be",
-  "version": "2.6.49",
+  "version": "2.6.50",
   "description": "Services for running the Thousand Validator Program.",
   "main": "index.js",
   "scripts": {
@@ -58,7 +58,7 @@
   },
   "devDependencies": {
     "@ava/typescript": "^3.0.1",
-    "@typescript-eslint/eslint-plugin": "^5.27.1",
+    "@typescript-eslint/eslint-plugin": "^5.36.0",
     "@typescript-eslint/parser": "^5.27.1",
     "ava": "^4.3.0",
     "concurrently": "^7.2.1",

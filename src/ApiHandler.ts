@@ -3,6 +3,7 @@ import EventEmitter from "eventemitter3";
 
 import logger from "./logger";
 import { sleep } from "./util";
+import { POLKADOT_API_TIMEOUT } from "./constants";
 
 /**
  * A higher level handler for the Polkadot-Js API that can handle reconnecting
@@ -25,7 +26,12 @@ class ApiHandler extends EventEmitter {
 
   static async createApi(endpoints) {
     const api = new ApiPromise({
-      provider: new WsProvider(endpoints, undefined, undefined, 100000),
+      provider: new WsProvider(
+        endpoints,
+        undefined,
+        undefined,
+        POLKADOT_API_TIMEOUT
+      ),
       // throwOnConnect: true,
     });
     if (api) {

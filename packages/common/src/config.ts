@@ -19,7 +19,7 @@ export type NominatorConfig = {
   proxyDelay?: number;
 };
 
-export type Config = {
+export type ConfigSchema = {
   constraints: {
     skipConnectionTime: boolean;
     skipIdentity: boolean;
@@ -97,7 +97,7 @@ export type Config = {
   };
 };
 
-export const loadConfig = (configPath: string): Config => {
+export const loadConfig = (configPath: string): ConfigSchema => {
   let conf = fs.readFileSync(configPath, { encoding: "utf-8" });
   if (conf.startsWith("'")) {
     conf = conf.slice(1).slice(0, -1);
@@ -105,7 +105,7 @@ export const loadConfig = (configPath: string): Config => {
   return JSON.parse(conf);
 };
 
-export const loadConfigDir = (configDir: string): Config => {
+export const loadConfigDir = (configDir: string): ConfigSchema => {
   const secretPath = path.join(configDir, "secret.json");
   const secretConf = loadConfig(secretPath);
 

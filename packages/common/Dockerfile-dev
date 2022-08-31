@@ -2,5 +2,5 @@ FROM node:18 AS builder
 COPY . /app
 WORKDIR /app
 RUN yarn && \
-    yarn build
-CMD yarn start:dev
+    yarn workspace 1kv-core build
+CMD yarn start:dev:core

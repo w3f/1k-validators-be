@@ -1,0 +1,85 @@
+{
+  "name": "@1kv/core",
+  "version": "2.6.50",
+  "description": "Services for running the Thousand Validator Program.",
+  "main": "index.js",
+  "scripts": {
+    "open:polkadot-apps": "open-cli https://polkadot.js.org/apps/?rpc=ws%3A%2F%2F127.0.0.1%3A9944#/staking",
+    "open:telemetry": "open-cli http://localhost:3000",
+    "build": "tsc",
+    "docker": "docker-compose rm -f; docker-compose build --no-cache; docker-compose up -d",
+    "clean": "rm validator.db",
+    "lint": "tsc --noEmit && eslint 'src/**/*.{js,ts,tsx}' --quiet",
+    "lint:fix": "tsc --noEmit && eslint 'src/**/*.{js,ts,tsx}' --quiet --fix",
+    "start": "NODE_OPTIONS='--max-old-space-size=4096' ts-node src/index.ts start",
+    "start:watch": "NODE_OPTIONS='--max-old-space-size=6096' nodemon --watch build --exec node build/index.js",
+    "start:dev": "concurrently \"tsc -w\"  \"yarn start:watch\"",
+    "js:start": "NODE_OPTIONS='--max-old-space-size=6096' node build/index.js start",
+    "test": "ava test/*.spec.ts --timeout=10m",
+    "test:api": "ts-node test/api/chaindata.ts"
+  },
+  "author": "Web3 Foundation <teched@web3.foundation>",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "@koa/router": "^10.1.1",
+    "@octokit/rest": "^18.12.0",
+    "@polkadot/api": "^8.8.1",
+    "@polkadot/keyring": "^9.4.1",
+    "@types/cron": "^2.0.0",
+    "@types/koa": "^2.13.4",
+    "@types/koa-bodyparser": "^4.3.7",
+    "@types/node": "^17.0.42",
+    "@types/semver": "^7.3.9",
+    "@types/ws": "^8.5.3",
+    "axios": "^0.27.2",
+    "bree": "^9.0.1",
+    "bs58": "^5.0.0",
+    "commander": "^9.3.0",
+    "cron": "^2.0.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eventemitter3": "^4.0.7",
+    "hash.js": "^1.1.7",
+    "koa": "^2.13.4",
+    "koa-bodyparser": "^4.3.0",
+    "koa-cash": "^4.1.0",
+    "koa2-cors": "^2.0.6",
+    "matrix-js-sdk": "^16.0.1",
+    "mongodb": "4.7.0",
+    "mongodb-memory-server": "^8.6.0",
+    "mongoose": "^6.3.6",
+    "prettier": "^2.6.2",
+    "reconnecting-websocket": "^4.4.0",
+    "semver": "^7.3.7",
+    "ts-node": "^10.8.1",
+    "typescript": "^4.7.3",
+    "winston": "^3.7.2",
+    "ws": "^8.8.0"
+  },
+  "devDependencies": {
+    "@ava/typescript": "^3.0.1",
+    "@typescript-eslint/eslint-plugin": "^5.27.1",
+    "@typescript-eslint/parser": "^5.27.1",
+    "ava": "^4.3.0",
+    "concurrently": "^7.2.1",
+    "eslint": "^8.17.0",
+    "eslint-plugin-security": "^1.5.0",
+    "nodemon": "^2.0.16",
+    "open-cli": "^7.0.1"
+  },
+  "config": {
+    "mongodbMemoryServer": {
+      "debug": "on"
+    }
+  },
+  "ava": {
+    "failFast": false,
+    "verbose": true,
+    "extensions": [
+      "ts"
+    ],
+    "require": [
+      "ts-node/register"
+    ]
+  }
+}

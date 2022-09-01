@@ -20,7 +20,7 @@ jobs:
           environment:
             YARN_ENABLE_IMMUTABLE_INSTALLS: false
           command: |
-            yarn set version 3.2.1; yarn; yarn build; yarn lint
+            yarn set version 3.2.2; yarn; yarn build; yarn lint
 
   unitTests:
     docker:

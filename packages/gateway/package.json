@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc --build tsconfig.json",
+    "clean": "../../node_modules/.bin/rimraf ./build tsconfig.tsbuildinfo",
+    "clean:build": "yarn clean && yarn build",
     "docker": "docker-compose rm -f; docker-compose build --no-cache; docker-compose up -d",
     "lint": "tsc --noEmit && eslint 'src/**/*.{js,ts,tsx}' --quiet",
     "lint:fix": "tsc --noEmit && eslint 'src/**/*.{js,ts,tsx}' --quiet --fix",

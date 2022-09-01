@@ -10,3 +10,8 @@ config.json*
 build
 .yarn
 .yarnrc.yml
+.editorconfig
+.idea
+*.tsbuildinfo
+**/config/main.json
+**/config/secret.json

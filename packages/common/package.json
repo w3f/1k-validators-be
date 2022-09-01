@@ -5,7 +5,7 @@
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
-    "build": "tsc ",
+    "build": "tsc --build tsconfig.json",
     "docker": "docker-compose rm -f; docker-compose build --no-cache; docker-compose up -d",
     "lint": "tsc --noEmit && eslint 'src/**/*.{js,ts,tsx}' --quiet",
     "lint:fix": "tsc --noEmit && eslint 'src/**/*.{js,ts,tsx}' --quiet --fix",

@@ -28,5 +28,8 @@
     "require": [
       "ts-node/register"
     ]
+  },
+  "dependencies": {
+    "@types/node": "^18.7.14"
   }
 }

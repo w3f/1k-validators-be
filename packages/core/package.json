@@ -10,6 +10,7 @@
     "docker": "docker-compose rm -f; docker-compose build --no-cache; docker-compose up -d",
     "clean": "../../node_modules/.bin/rimraf ./build tsconfig.tsbuildinfo",
     "clean:build": "yarn clean && yarn build",
+    "create-config": "cp ./config/main.sample.json ./config/main.json && cp ./config/secret.sample.json ./config/secret.json",
     "lint": "tsc --noEmit && eslint 'src/**/*.{js,ts,tsx}' --quiet",
     "lint:fix": "tsc --noEmit && eslint 'src/**/*.{js,ts,tsx}' --quiet --fix",
     "start": "NODE_OPTIONS='--max-old-space-size=4096' ts-node src/index.ts start",

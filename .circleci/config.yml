@@ -47,7 +47,7 @@ jobs:
       - setup_remote_docker
       - run:
           command: |
-            /scripts/build-image.sh web3f/otv-backend .
+            /scripts/build-image.sh web3f/otv-backend ./packages/core
 
   integrationTests:
     docker:

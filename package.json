@@ -1,6 +1,6 @@
 {
   "name": "1k-validators-be",
-  "packageManager": "yarn@3.2.0",
+  "packageManager": "yarn@3.2.2",
   "private": true,
   "workspaces": [
     "packages/common",

@@ -3,12 +3,7 @@ import bodyparser from "koa-bodyparser";
 import cors from "koa2-cors";
 import Router from "@koa/router";
 
-// import { Config } from "./config";
 import { Db, Config, logger } from "@1kv/common";
-// import { Db, Config, logger } from "../../common/build/index";
-// import Db from "@1kv/common";
-// import logger from "./logger";
-// import ScoreKeeper from "./scorekeeper";
 import LRU from "lru-cache";
 import koaCash from "koa-cash";
 

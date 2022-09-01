@@ -17,10 +17,10 @@ jobs:
     steps:
       - checkout
       - run:
-#          environment:
-#            YARN_ENABLE_IMMUTABLE_INSTALLS: false
+          environment:
+            YARN_ENABLE_IMMUTABLE_INSTALLS: false
           command: |
-            yarn install --immutable; yarn plugin import workspace-tools; yarn workspace @1kv/common build;
+            yarn --version; yarn; yarn plugin import workspace-tools; yarn workspace @1kv/common build;
 
   unitTests:
     docker:

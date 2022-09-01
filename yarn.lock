@@ -12,6 +12,8 @@ __metadata:
     "@typescript-eslint/eslint-plugin": latest
     "@typescript-eslint/parser": latest
     eslint: ^8.23.0
+    eslint-config-prettier: latest
+    eslint-plugin-prettier: latest
     typescript: ^4.8.2
   languageName: unknown
   linkType: soft
@@ -3067,7 +3069,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-config-prettier@npm:^8.5.0":
+"eslint-config-prettier@npm:^8.5.0, eslint-config-prettier@npm:latest":
   version: 8.5.0
   resolution: "eslint-config-prettier@npm:8.5.0"
   peerDependencies:
@@ -3078,7 +3080,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-prettier@npm:^4.0.0":
+"eslint-plugin-prettier@npm:^4.0.0, eslint-plugin-prettier@npm:latest":
   version: 4.2.1
   resolution: "eslint-plugin-prettier@npm:4.2.1"
   dependencies:

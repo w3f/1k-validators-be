@@ -22,6 +22,8 @@
     "@typescript-eslint/eslint-plugin": "latest",
     "@typescript-eslint/parser": "latest",
     "eslint": "^8.23.0",
+    "eslint-config-prettier": "latest",
+    "eslint-plugin-prettier": "latest",
     "typescript": "^4.8.2"
   }
 }

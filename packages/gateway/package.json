@@ -24,7 +24,8 @@
     }
   },
   "dependencies": {
-    "@1kv/common": "2.6.50"
+    "@1kv/common": "2.6.50",
+    "typescript": "^4.8.2"
   },
   "ava": {
     "failFast": false,

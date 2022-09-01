@@ -35,9 +35,7 @@
     "@types/node": "^18.7.14",
     "hash.js": "^1.1.7",
     "mongoose": "^6.5.4",
+    "typescript": "^4.8.2",
     "winston": "^3.8.1"
-  },
-  "installConfig": {
-    "pnp": false
   }
 }

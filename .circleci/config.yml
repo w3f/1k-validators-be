@@ -20,7 +20,7 @@ jobs:
           environment:
             YARN_ENABLE_IMMUTABLE_INSTALLS: false
           command: |
-            npm install -g typescript && yarn set version 3.2.2 && yarn install && yarn workspace @1kv/core build && yarn workspace @1kv/core lint
+            yarn set version 3.2.2 && yarn install && yarn workspace @1kv/core build && yarn workspace @1kv/core lint
 
   unitTests:
     docker:

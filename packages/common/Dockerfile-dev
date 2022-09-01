@@ -1,6 +1,4 @@
 FROM node:18 AS builder
 COPY . /app
 WORKDIR /app
-RUN yarn && \
-    yarn workspace 1kv-core build
-CMD yarn start:dev:core
+RUN npm install -g typescript && yarn set version 3.2.2 && yarn install && yarn workspace @1kv/common build

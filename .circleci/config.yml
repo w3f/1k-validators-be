@@ -18,7 +18,7 @@ jobs:
       - checkout
       - run:
           command: |
-            yarn; yarn lint
+            yarn; yarn build; yarn lint
 
   unitTests:
     docker:

@@ -8,9 +8,10 @@
   "scripts": {
     "create-config:all": "yarn workspaces foreach create-config",
     "docker:start": "yarn build:clean:all && docker-compose up -d --build",
-    "lint:all": "yarn workspaces foreach run lint",
-    "build:all": "yarn workspaces foreach run build",
-    "build:clean:all": "yarn workspaces foreach run clean:build",
+    "lint": "yarn workspaces foreach run lint",
+    "clean": "yarn workspaces foreach run clean",
+    "build": "yarn workspaces foreach run build",
+    "build:clean": "yarn workspaces foreach run clean:build",
     "start:dev:gateway": "yarn workspace @1kv/gateway run start:dev",
     "start:dev:core": "yarn workspace @1kv/core run start:dev"
   }

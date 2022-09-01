@@ -14,5 +14,8 @@
     "build:clean": "yarn workspaces foreach run clean:build",
     "start:dev:gateway": "yarn workspace @1kv/gateway run start:dev",
     "start:dev:core": "yarn workspace @1kv/core run start:dev"
+  },
+  "devDependencies": {
+    "typescript": "^4.8.2"
   }
 }

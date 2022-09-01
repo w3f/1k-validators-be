@@ -18,7 +18,7 @@ jobs:
       - checkout
       - run:
           command: |
-            yarn; yarn set version 3.2.1; yarn build; yarn lint
+            yarn set version 3.2.1; yarn; yarn build; yarn lint
 
   unitTests:
     docker:

@@ -1,21 +1,13 @@
 {
+  "extends": "../../tsconfig.json",
   "exclude": ["test", "node_modules"],
   "include": ["src/**/*.ts"],
+  "paths": {
+    "@1kv/common": ["../common/build"]
+  },
   "files": [
-    "src/ApiHandler.ts",
-    "src/chaindata.ts",
-    "src/constants.ts",
-    "src/db/index.ts",
     "src/index.ts",
-    "src/logger.ts",
-//    "src/matrix.ts",
-//    "src/monitor.ts",
-//    "src/nominator.ts",
-//    "src/scorekeeper.ts",
-//    "src/server.ts",
-//    "src/telemetry.ts",
-    "src/types.ts",
-    "src/util.ts"
+    "src/telemetry.ts",
   ],
   "compilerOptions": {
     /* Basic Options */
@@ -29,7 +21,7 @@
     // "declarationMap": true,                /* Generates a sourcemap for each corresponding '.d.ts' file. */
     // "sourceMap": true,                     /* Generates corresponding '.map' file. */
     // "outFile": "./",                       /* Concatenate and emit output to single file. */
-    "outDir": "./build",
+    "outDir": "build",
     "skipLibCheck": true,                        /* Redirect output structure to the directory. */
      "rootDir": "src",                       /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
      "composite": true,                     /* Enable project compilation */
@@ -75,5 +67,6 @@
     // "experimentalDecorators": true,        /* Enables experimental support for ES7 decorators. */
     // "emitDecoratorMetadata": true,         /* Enables experimental support for emitting type metadata for decorators. */
     "resolveJsonModule": true
-  }
+  },
+  "references": [{ "path": "../common" }]
 }

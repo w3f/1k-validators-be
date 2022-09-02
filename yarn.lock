@@ -88,6 +88,31 @@ __metadata:
   resolution: "@1kv/gateway@workspace:packages/gateway"
   dependencies:
     "@1kv/common": 2.6.50
+    "@ava/typescript": ^3.0.1
+    "@typescript-eslint/eslint-plugin": ^5.27.1
+    "@typescript-eslint/parser": ^5.27.1
+    ava: ^4.3.0
+    concurrently: ^7.2.1
+    eslint: ^8.17.0
+    eslint-plugin-security: ^1.5.0
+    nodemon: ^2.0.16
+    typescript: ^4.8.2
+  languageName: unknown
+  linkType: soft
+
+"@1kv/telemetry@workspace:packages/telemetry":
+  version: 0.0.0-use.local
+  resolution: "@1kv/telemetry@workspace:packages/telemetry"
+  dependencies:
+    "@1kv/common": 2.6.50
+    "@ava/typescript": ^3.0.1
+    "@typescript-eslint/eslint-plugin": ^5.27.1
+    "@typescript-eslint/parser": ^5.27.1
+    ava: ^4.3.0
+    concurrently: ^7.2.1
+    eslint: ^8.17.0
+    eslint-plugin-security: ^1.5.0
+    nodemon: ^2.0.16
     typescript: ^4.8.2
   languageName: unknown
   linkType: soft

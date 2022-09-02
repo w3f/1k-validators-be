@@ -8,7 +8,7 @@
     "open:telemetry": "open-cli http://localhost:3000",
     "build": "tsc",
     "docker": "docker-compose rm -f; docker-compose build --no-cache; docker-compose up -d",
-    "clean": "../../node_modules/.bin/rimraf ./build tsconfig.tsbuildinfo",
+    "clean": "../../node_modules/.bin/rimraf ./build tsconfig.tsbuildinfo combined.log ./node_modules",
     "clean:build": "yarn clean && yarn build",
     "create-config": "cp ./config/main.sample.json ./config/main.json && cp ./config/secret.sample.json ./config/secret.json",
     "lint": "tsc --noEmit && eslint 'src/**/*.{js,ts,tsx}' --quiet",

@@ -1,0 +1,5 @@
+FROM node:18 AS builder
+COPY . /app
+WORKDIR /app
+RUN npm install -g typescript && yarn set version 3.2.2 && yarn install && yarn workspace @1kv/common build && yarn workspace @1kv/telemetry build
+CMD yarn start:dev:telemetry

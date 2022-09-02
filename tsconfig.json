@@ -22,7 +22,8 @@
   "references": [
     { "path": "./packages/core" },
     { "path": "./packages/common" },
-    { "path": "./packages/gateway" }
+    { "path": "./packages/gateway" },
+    { "path":  "./packages/telemetry"}
   ],
   "files": [],
   "include": ["src/**/*.ts"],

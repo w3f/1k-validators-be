@@ -3,7 +3,7 @@ import { Command } from "commander";
 
 import TelemetryClient from './telemetry';
 
-const version = "v2.6.50";
+const version = "v3.0.0";
 
 const catchAndQuit = async (fn: any) => {
     try {

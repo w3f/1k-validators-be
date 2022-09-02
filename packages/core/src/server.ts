@@ -54,7 +54,7 @@ export default class Server {
   private db: Database;
   private port: number;
 
-  constructor(db: Database, config: Config, scoreKeeper: ScoreKeeper) {
+  constructor(db: Database, config: Config) {
     this.app = new Koa();
     this.db = db;
     this.port = config.server.port;

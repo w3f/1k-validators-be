@@ -151,7 +151,7 @@ const start = async (cmd: { config: string }) => {
   }
 
   // Start the API server.
-  const server = new Server(db, config, scorekeeper);
+  const server = new Server(db, config);
   server.start();
 };
 

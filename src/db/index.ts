@@ -2916,6 +2916,7 @@ export default class Db {
     data = await this.locationModel
       .findOne({
         name,
+        addr,
       })
       .exec();
     if (!data) {

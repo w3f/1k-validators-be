@@ -2915,17 +2915,16 @@ export default class Db {
     // First try to get by telemetry name
     data = await this.locationModel
       .findOne({
-        name,
         addr,
       })
       .exec();
-    if (!data) {
-      data = await this.locationModel
-        .findOne({
-          addr,
-        })
-        .exec();
-    }
+    // if (!data) {
+    //   data = await this.locationModel
+    //     .findOne({
+    //       addr,
+    //     })
+    //     .exec();
+    // }
     return data;
   }
 

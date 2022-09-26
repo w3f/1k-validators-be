@@ -472,7 +472,7 @@ export default class Db {
         { name },
         {
           telemetryId,
-          location: locationData?.city ? locationData.city : 'No Location',
+          location: locationData?.city ? locationData.city : "No Location",
           infrastructureLocation: locationData,
           onlineSince: now,
           version,

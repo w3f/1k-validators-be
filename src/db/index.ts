@@ -395,7 +395,7 @@ export default class Db {
     let locationData;
     locationData = await this.getLocation(name, addr);
     const iit = await this.getIIT();
-    if (!locationData) {
+    if (!locationData || locationData.addr != addr) {
       logger.info(`{reportOnline} Fetching Location Info`);
       const iit = await this.getIIT();
       const { city, region, country, asn, provider } = await fetchLocationInfo(
@@ -2923,15 +2923,14 @@ export default class Db {
     let data;
     // First try to get by telemetry name
     data = await this.locationModel
-      .find({
-        addr,
+      .findOne({
+        name,
       })
-      .limit(1)
       .exec();
     if (!data) {
       data = await this.locationModel
         .findOne({
-          name,
+          addr,
         })
         .exec();
     }

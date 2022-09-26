@@ -395,7 +395,7 @@ export default class Db {
     let locationData;
     locationData = await this.getLocation(name, addr);
     const iit = await this.getIIT();
-    if (!locationData) {
+    if (!locationData || locationData.addr != addr) {
       logger.info(`{reportOnline} Fetching Location Info`);
       const iit = await this.getIIT();
       const { city, region, country, asn, provider } = await fetchLocationInfo(
@@ -415,7 +415,10 @@ export default class Db {
       // A new node that is not already registered as a candidate.
       const candidate = new this.candidateModel({
         telemetryId,
-        location: locationData?.city ? locationData.city : "No Location",
+        location:
+          locationData && locationData?.city
+            ? locationData?.city
+            : "No Location",
         networkId: null,
         nodeRefs: 1,
         name,
@@ -443,7 +446,10 @@ export default class Db {
           { name },
           {
             telemetryId,
-            location: locationData?.city ? locationData.city : "No Location",
+            location:
+              locationData && locationData?.city
+                ? locationData?.city
+                : "No Location",
             infrastructureLocation: locationData,
             discoveredAt: now,
             onlineSince: now,
@@ -472,7 +478,10 @@ export default class Db {
         { name },
         {
           telemetryId,
-          location: locationData.city,
+          location:
+            locationData && locationData?.city
+              ? locationData?.city
+              : "No Location",
           infrastructureLocation: locationData,
           onlineSince: now,
           version,
@@ -2911,20 +2920,20 @@ export default class Db {
   }
 
   async getLocation(name: string, addr: string): Promise<any> {
+    let data;
     // First try to get by telemetry name
-    const data = await this.locationModel
+    data = await this.locationModel
       .findOne({
         name,
-        addr,
       })
       .exec();
-    // if (!data) {
-    //   data = await this.locationModel
-    //     .findOne({
-    //       addr,
-    //     })
-    //     .exec();
-    // }
+    if (!data) {
+      data = await this.locationModel
+        .findOne({
+          addr,
+        })
+        .exec();
+    }
     return data;
   }
 

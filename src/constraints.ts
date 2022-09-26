@@ -325,8 +325,6 @@ export class OTV implements Constraints {
       return location.numberOfNodes;
     });
     const locationStats = getStats(locationValues);
-    logger.info(`location stats`);
-    logger.info(JSON.stringify(locationStats));
 
     // ---------------- CITY -----------------------------------
     const cityMap = new Map();
@@ -354,8 +352,6 @@ export class OTV implements Constraints {
       return city.numberOfNodes;
     });
     const cityStats = getStats(cityValues);
-    logger.info(`city stats:`);
-    logger.info(JSON.stringify(cityStats));
 
     // ---------------- REGION -----------------------------------
     const regionMap = new Map();
@@ -383,8 +379,6 @@ export class OTV implements Constraints {
       return region.numberOfNodes;
     });
     const regionStats = getStats(regionValues);
-    logger.info(`region stats:`);
-    logger.info(JSON.stringify(regionStats));
 
     // ---------------- COUNTRY -----------------------------------
     const countryMap = new Map();
@@ -412,8 +406,6 @@ export class OTV implements Constraints {
       return country.numberOfNodes;
     });
     const countryStats = getStats(countryValues);
-    logger.info(`country stats:`);
-    logger.info(JSON.stringify(countryStats));
 
     // ---------------- ASN -----------------------------------
     const asnMap = new Map();
@@ -440,8 +432,6 @@ export class OTV implements Constraints {
       return asn.numberOfNodes;
     });
     const asnStats = getStats(asnValues);
-    logger.info(`asn stats:`);
-    logger.info(JSON.stringify(asnStats));
 
     // ---------------- PROVIDER -----------------------------------
     const providerMap = new Map();

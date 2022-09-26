@@ -472,7 +472,7 @@ export default class Db {
         { name },
         {
           telemetryId,
-          location: locationData.city,
+          location: locationData?.city ? locationData.city : 'No Location',
           infrastructureLocation: locationData,
           onlineSince: now,
           version,
@@ -2913,10 +2913,10 @@ export default class Db {
   async getLocation(name: string, addr: string): Promise<any> {
     // First try to get by telemetry name
     const data = await this.locationModel
-      .findOne({
-        name,
+      .find({
         addr,
       })
+      .limit(1)
       .exec();
     // if (!data) {
     //   data = await this.locationModel

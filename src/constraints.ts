@@ -459,8 +459,6 @@ export class OTV implements Constraints {
       return provider.numberOfNodes;
     });
     const providerStats = getStats(providerValues);
-    logger.info(`provider stats:`);
-    logger.info(JSON.stringify(providerStats));
 
     // Nominator Stake
     const ownNominators = await db.allNominators();
@@ -680,10 +678,6 @@ export class OTV implements Constraints {
       );
       const providerScore = (1 - scaledProvider) * this.LOCATION_WEIGHT || 0;
 
-      // logger.info(
-      //   `${candidate.stash}: location: ${locationScore} region: ${regionScore} country: ${countryScore} asn: ${asnScore} provider: ${providerScore}`
-      // );
-
       const nomStake = await db.getLatestNominatorStake(candidate.stash);
       const { activeNominators, inactiveNominators } = nomStake;
       let totalNominatorStake = 0;
@@ -744,9 +738,6 @@ export class OTV implements Constraints {
       } = scoreDemocracyVotes(candidate.democracyVotes, lastReferendum);
       const scaledDemocracyScore =
         scaled(totalDemocracyScore, democracyValues) * this.DEMOCRACY_WEIGHT;
-      // logger.info(
-      //   `{democracyScore} last referendum: ${lastReferendum} ${candidate.stash} votes: ${candidate.democracyVotes} democracyScore: ${baseDemocracyScore} total mult: ${totalConsistencyMultiplier} last mult: ${lastConsistencyMultiplier} total: ${totalDemocracyScore} scaled: ${scaledDemocracyScore}`
-      // );
 
       const aggregate =
         inclusionScore +

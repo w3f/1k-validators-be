@@ -565,11 +565,7 @@ export default class ScoreKeeper {
           );
           await this.startRound();
         } else {
-          logger.info(
-            `(Scorekeeper::mainCron) Current Targets: ${JSON.stringify(
-              this.currentTargets
-            )}. Ending round.`
-          );
+          logger.info(`(Scorekeeper::mainCron). Ending round.`);
           await this.endRound();
           await this.startRound();
         }

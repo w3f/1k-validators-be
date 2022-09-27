@@ -116,7 +116,7 @@ export const STALE_CRON = "0 0-59/45 * * * *";
 export const SCORE_CRON = "0 0-59/5 * * * *";
 
 // Era Stats Cron Job. This runs every 5 minutes by default
-export const ERA_STATS_CRON = "0 0-59/5 * * * *";
+export const ERA_STATS_CRON = "0 0-59/35 * * * *";
 
 // Location Stats Cron Job. This runs every 5 minutes by default
 export const LOCATION_STATS_CRON = "0 0-59/5 * * * *";
@@ -142,16 +142,16 @@ export const VALIDATOR_PREF_CRON = "0 0-59/15 * * * *";
 export const SESSION_KEY_CRON = "0 0-59/45 * * * *";
 
 // Council Cron Job. This runs ever 15 minutes by default
-export const COUNCIL_CRON = "0 0-59/15 * * * *";
+export const COUNCIL_CRON = "0 0-59/25 * * * *";
 
 // Subscan Cron Job. This runs ever 10 minutes by default
 export const SUBSCAN_CRON = "0 0-59/10 * * * *";
 
 // Democracy Cron Job. This runs ever 15 minutes by default
-export const DEMOCRACY_CRON = "0 0-59/15 * * * *";
+export const DEMOCRACY_CRON = "0 0-59/12 * * * *";
 
 // Nominator Cron Job. This runs ever 15 minutes by default
-export const NOMINATOR_CRON = "0 0-59/15 * * * *";
+export const NOMINATOR_CRON = "0 0-59/17 * * * *";
 
 // Delegation Cron Job. This runs ever 20 minutes by default
 export const DELEGATION_CRON = "0 0-59/20 * * * *";

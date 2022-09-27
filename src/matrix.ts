@@ -69,7 +69,7 @@ export default class MatrixBot {
     );
   }
 
-  sendMessage(msg: string): Promise<boolean> {
+  sendMessage(msg: string): any {
     const content = {
       body: msg,
       msgtype: "m.text",
@@ -77,22 +77,22 @@ export default class MatrixBot {
       formatted_body: msg,
     };
 
-    return new Promise((resolve: any, reject: any) => {
-      try {
-        this.client.sendEvent(
-          this.conf.matrix.room,
-          "m.room.message",
-          content,
-          "",
-          (err: any) => {
-            if (err) reject(err);
-            resolve(true);
-          }
-        );
-      } catch (e) {
-        logger.info(`{Matrix::error}`);
-        logger.warn(e);
-      }
-    });
+    // return new Promise((resolve: any, reject: any) => {
+    //   try {
+    //     this.client.sendEvent(
+    //       this.conf.matrix.room,
+    //       "m.room.message",
+    //       content,
+    //       "",
+    //       (err: any) => {
+    //         if (err) reject(err);
+    //         resolve(true);
+    //       }
+    //     );
+    //   } catch (e) {
+    //     logger.info(`{Matrix::error}`);
+    //     logger.warn(e);
+    //   }
+    // });
   }
 }

@@ -577,13 +577,13 @@ export default class ScoreKeeper {
     // Start all Cron Jobs
     try {
       // await startMonitorJob(this.config, this.db, this.monitor);
-      // await startValidatityJob(
-      //   this.config,
-      //   this.db,
-      //   this.constraints,
-      //   this.chaindata,
-      //   candidates
-      // );
+      await startValidatityJob(
+        this.config,
+        this.db,
+        this.constraints,
+        this.chaindata,
+        candidates
+      );
       //
       // await startEraPointsJob(this.config, this.db, this.chaindata);
       // await startActiveValidatorJob(this.config, this.db, this.chaindata);

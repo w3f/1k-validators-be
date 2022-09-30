@@ -585,9 +585,9 @@ export default class ScoreKeeper {
         candidates
       );
       //
-      // await startEraPointsJob(this.config, this.db, this.chaindata);
+      await startEraPointsJob(this.config, this.db, this.chaindata);
       // await startActiveValidatorJob(this.config, this.db, this.chaindata);
-      // await startInclusionJob(this.config, this.db, this.chaindata);
+      await startInclusionJob(this.config, this.db, this.chaindata);
       // await startSessionKeyJob(this.config, this.db, this.chaindata);
       // await startUnclaimedEraJob(this.config, this.db, this.chaindata);
       // await startValidatorPrefJob(this.config, this.db, this.chaindata);

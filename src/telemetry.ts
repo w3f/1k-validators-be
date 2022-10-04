@@ -100,8 +100,7 @@ export default class TelemetryClient {
     switch (action) {
       case TelemetryMessage.FeedVersion:
         {
-          logger.info(`feed version:`);
-          logger.info(JSON.stringify(payload));
+          logger.info(`feed version: ${JSON.stringify(payload)}`);
         }
         break;
       case TelemetryMessage.AddedNode:

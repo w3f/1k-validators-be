@@ -396,7 +396,6 @@ export default class Db {
     locationData = await this.getLocation(name, addr);
     const iit = await this.getIIT();
     if (!locationData || locationData.addr != addr) {
-      logger.info(`{reportOnline} Fetching Location Info`);
       const iit = await this.getIIT();
       const { city, region, country, asn, provider } = await fetchLocationInfo(
         addr,

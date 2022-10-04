@@ -468,7 +468,11 @@ export class OTV implements Constraints {
     const nominatorStakeValues = [];
     for (const candidate of validCandidates) {
       const nomStake = await db.getLatestNominatorStake(candidate.stash);
-      if (nomStake != undefined) {
+      if (
+        nomStake != undefined &&
+        nomStake?.activeNominators &&
+        nomStake?.inactiveNominators
+      ) {
         const { activeNominators, inactiveNominators } = nomStake;
 
         let total = 0;
@@ -492,7 +496,7 @@ export class OTV implements Constraints {
     const delegationValues = [];
     for (const candidate of validCandidates) {
       const delegations = await db.getDelegations(candidate.stash);
-      if (delegations != undefined) {
+      if (delegations != undefined && delegations?.delegators) {
         const { totalBalance, delegators } = delegations;
 
         let total = 0;

@@ -95,7 +95,7 @@ export const MONITOR_CRON = "0 */15 * * * *";
 export const CLEAR_OFFLINE_CRON = "0 0 * * * *";
 
 // Validity Cron Job. This runs every 20 minutes by default
-export const VALIDITY_CRON = "0 0-59/20 * * * *";
+export const VALIDITY_CRON = "0 0-59/10 * * * *";
 
 // Execution Cron Job. This runs every 15 minutes by default
 export const EXECUTION_CRON = "0 0-59/15 * * * *";
@@ -130,7 +130,8 @@ export const ERA_POINTS_CRON = "0 0-59/45 * * * *";
 export const ACTIVE_VALIDATOR_CRON = "0 0-59/5 * * * *";
 
 // Inclusion Cron Job. This runs every hour by default
-export const INCLUSION_CRON = "0 0 0-23/1 * * *";
+// export const INCLUSION_CRON = "0 0 0-23/1 * * *";
+export const INCLUSION_CRON = "0 0-59/35 * * * *";
 
 // Unclaimed Era Cron Job. This runs every hour by default
 export const UNCLAIMED_ERAS_CRON = "0 0 0-23/1 * * *";

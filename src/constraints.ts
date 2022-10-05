@@ -473,20 +473,25 @@ export class OTV implements Constraints {
         nomStake?.activeNominators &&
         nomStake?.inactiveNominators
       ) {
-        const { activeNominators, inactiveNominators } = nomStake;
+        try {
+          const { activeNominators, inactiveNominators } = nomStake;
 
-        let total = 0;
-        for (const active of activeNominators) {
-          if (!ownNominatorAddresses.includes(active.address)) {
-            total += Math.sqrt(active.bonded);
+          let total = 0;
+          for (const active of activeNominators) {
+            if (!ownNominatorAddresses.includes(active.address)) {
+              total += Math.sqrt(active.bonded);
+            }
           }
-        }
-        for (const inactive of inactiveNominators) {
-          if (!ownNominatorAddresses.includes(inactive.address)) {
-            total += Math.sqrt(inactive.bonded);
+          for (const inactive of inactiveNominators) {
+            if (!ownNominatorAddresses.includes(inactive.address)) {
+              total += Math.sqrt(inactive.bonded);
+            }
           }
+          nominatorStakeValues.push(total);
+        } catch (e) {
+          logger.info(`{nominatorStake} Can't find nominator stake values`);
+          logger.info(JSON.stringify(nomStake));
         }
-        nominatorStakeValues.push(total);
       }
     }
     if (nominatorStakeValues.length == 0) nominatorStakeValues.push(0);
@@ -497,13 +502,18 @@ export class OTV implements Constraints {
     for (const candidate of validCandidates) {
       const delegations = await db.getDelegations(candidate.stash);
       if (delegations != undefined && delegations?.delegators) {
-        const { totalBalance, delegators } = delegations;
+        try {
+          const { totalBalance, delegators } = delegations;
 
-        let total = 0;
-        for (const delegator of delegators) {
-          total += Math.sqrt(delegator.effectiveBalance);
+          let total = 0;
+          for (const delegator of delegators) {
+            total += Math.sqrt(delegator.effectiveBalance);
+          }
+          delegationValues.push(total);
+        } catch (e) {
+          logger.info(`{delegations} Can't find delegation values`);
+          logger.info(JSON.stringify(delegations));
         }
-        delegationValues.push(total);
       }
     }
     const delegationStats = getStats(delegationValues);
@@ -683,16 +693,23 @@ export class OTV implements Constraints {
       const providerScore = (1 - scaledProvider) * this.LOCATION_WEIGHT || 0;
 
       const nomStake = await db.getLatestNominatorStake(candidate.stash);
-      const { activeNominators, inactiveNominators } = nomStake;
       let totalNominatorStake = 0;
-      for (const active of activeNominators) {
-        if (!ownNominatorAddresses.includes(active.address)) {
-          totalNominatorStake += Math.sqrt(active.bonded);
+      if (
+        nomStake != undefined &&
+        nomStake?.activeNominators &&
+        nomStake?.inactiveNominators
+      ) {
+        const { activeNominators, inactiveNominators } = nomStake;
+
+        for (const active of activeNominators) {
+          if (!ownNominatorAddresses.includes(active.address)) {
+            totalNominatorStake += Math.sqrt(active.bonded);
+          }
         }
-      }
-      for (const inactive of inactiveNominators) {
-        if (!ownNominatorAddresses.includes(inactive.address)) {
-          totalNominatorStake += Math.sqrt(inactive.bonded);
+        for (const inactive of inactiveNominators) {
+          if (!ownNominatorAddresses.includes(inactive.address)) {
+            totalNominatorStake += Math.sqrt(inactive.bonded);
+          }
         }
       }
       const scaledNominatorStake = scaledDefined(
@@ -704,10 +721,17 @@ export class OTV implements Constraints {
       const nominatorStakeScore = scaledNominatorStake * this.BONDED_WEIGHT;
 
       const delegations = await db.getDelegations(candidate.stash);
-      const { totalBalance, delegators } = delegations;
       let totalDelegations = 0;
-      for (const delegator of delegators) {
-        totalDelegations += Math.sqrt(delegator.effectiveBalance);
+      if (
+        delegations != undefined &&
+        delegations?.totalBalance &&
+        delegations?.delegators
+      ) {
+        const { totalBalance, delegators } = delegations;
+
+        for (const delegator of delegators) {
+          totalDelegations += Math.sqrt(delegator.effectiveBalance);
+        }
       }
       const scaledDelegations = scaledDefined(
         totalDelegations,

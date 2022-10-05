@@ -60,6 +60,7 @@ export const scaled = (value, arr) => {
 
 // Scale the value in between defined quartile ranges
 export const scaledDefined = (value, arr, lowQuartile, highQuartile) => {
+  if (arr.length == 0) return 0;
   const lowQ = quantile(arr, lowQuartile);
   const highQ = quantile(arr, highQuartile);
   if (value <= lowQ) return 0;

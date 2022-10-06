@@ -434,9 +434,6 @@ export default class Db {
       return candidate.save();
     }
 
-    const candidateLocation =
-      location != "No Location" ? location : data.location;
-
     // Get the list of all other validtity reasons besides online
     const invalidityReasons = data.invalidity.filter((invalidityReason) => {
       return invalidityReason.type !== "ONLINE";

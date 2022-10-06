@@ -394,6 +394,9 @@ export default class Db {
 
     let locationData;
     locationData = await this.getLocation(name, addr);
+    logger.info(`${name} : ${addr}`);
+    logger.info(`fetched location data:`);
+    logger.info(JSON.stringify(locationData));
     const iit = await this.getIIT();
     if (!locationData || locationData.addr != addr) {
       const iit = await this.getIIT();
@@ -430,9 +433,6 @@ export default class Db {
 
       return candidate.save();
     }
-
-    const candidateLocation =
-      location != "No Location" ? location : data.location;
 
     // Get the list of all other validtity reasons besides online
     const invalidityReasons = data.invalidity.filter((invalidityReason) => {

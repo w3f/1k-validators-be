@@ -61,6 +61,37 @@ export class OTV implements Constraints {
   private validMapCache: Map<string, CandidateData> = new Map();
   private invalidMapCache: Map<string, CandidateData> = new Map();
 
+  // Weighted scores
+  // Inclusion - lower is preferable (84-Era Inclusion)
+  // Span Inclusion - lower is preferable (28-Era Inclusion)
+  // Discovered at - earlier is preferable
+  // Nominated At - not nominated in a while is preferable
+  // Rank - higher is preferable
+  // Unclaimed Eras - lower is preferable
+  // Bonded - higher is preferable
+  // Faults - lower is preferable
+  // Accumulated Offline - lower if preferable
+  // Location - lower is preferable
+  // Council - higher is preferable
+  // Democracy - higher is preferable
+  private INCLUSION_WEIGHT = 100;
+  private SPAN_INCLUSION_WEIGHT = 100;
+  private DISCOVERED_WEIGHT = 5;
+  private NOMINATED_WEIGHT = 30;
+  private RANK_WEIGHT = 5;
+  private UNCLAIMED_WEIGHT = 10;
+  private BONDED_WEIGHT = 50;
+  private FAULTS_WEIGHT = 5;
+  private OFFLINE_WEIGHT = 2;
+  private LOCATION_WEIGHT = 30;
+  private REGION_WEIGHT = 10;
+  private COUNTRY_WEIGHT = 10;
+  private PROVIDER_WEIGHT = 50;
+  private COUNCIL_WEIGHT = 50;
+  private DEMOCRACY_WEIGHT = 100;
+  private NOMINATIONS_WEIGHT = 100;
+  private DELEGATIONS_WEIGHT = 60;
+
   constructor(
     handler: ApiHandler,
     skipConnectionTime = false,
@@ -88,6 +119,23 @@ export class OTV implements Constraints {
 
     this.config = config;
     this.db = db;
+
+    this.INCLUSION_WEIGHT = this.config.score.inclusion;
+    this.SPAN_INCLUSION_WEIGHT = this.config.score.spanInclusion;
+    this.DISCOVERED_WEIGHT = this.config.score.discovered;
+    this.NOMINATED_WEIGHT = this.config.score.nominated;
+    this.RANK_WEIGHT = this.config.score.nominated;
+    this.BONDED_WEIGHT = this.config.score.bonded;
+    this.FAULTS_WEIGHT = this.config.score.faults;
+    this.OFFLINE_WEIGHT = this.config.score.offline;
+    this.LOCATION_WEIGHT = this.config.score.location;
+    this.REGION_WEIGHT = this.config.score.region;
+    this.COUNTRY_WEIGHT = this.config.score.region;
+    this.PROVIDER_WEIGHT = this.config.score.provider;
+    this.COUNCIL_WEIGHT = this.config.score.council;
+    this.DEMOCRACY_WEIGHT = this.config.score.democracy;
+    this.NOMINATIONS_WEIGHT = this.config.score.nominations;
+    this.DELEGATIONS_WEIGHT = this.config.score.delegations;
   }
 
   get validCandidateCache(): CandidateData[] {
@@ -863,32 +911,6 @@ export class OTV implements Constraints {
 
     return rankedCandidates;
   }
-
-  // Weighted scores
-  // Inclusion - lower is preferable (84-Era Inclusion)
-  // Span Inclusion - lower is preferable (28-Era Inclusion)
-  // Discovered at - earlier is preferable
-  // Nominated At - not nominated in a while is preferable
-  // Rank - higher is preferable
-  // Unclaimed Eras - lower is preferable
-  // Bonded - higher is preferable
-  // Faults - lower is preferable
-  // Accumulated Offline - lower if preferable
-  // Location - lower is preferable
-  // Council - higher is preferable
-  // Democracy - higher is preferable
-  INCLUSION_WEIGHT = 100;
-  SPAN_INCLUSION_WEIGHT = 100;
-  DISCOVERED_WEIGHT = 5;
-  NOMINATED_WEIGHT = 30;
-  RANK_WEIGHT = 5;
-  UNCLAIMED_WEIGHT = 10;
-  BONDED_WEIGHT = 50;
-  FAULTS_WEIGHT = 5;
-  OFFLINE_WEIGHT = 2;
-  LOCATION_WEIGHT = 40;
-  COUNCIL_WEIGHT = 50;
-  DEMOCRACY_WEIGHT = 100;
 
   /// At the end of a nomination round this is the logic that separates the
   /// candidates that did good from the ones that did badly.

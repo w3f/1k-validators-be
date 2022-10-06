@@ -78,22 +78,22 @@ export type Config = {
     blacklistedAnnouncements: string[];
   };
   score: {
-    inclusion: number;
-    spanInclusion: number;
-    discovered: number;
-    nominated: number;
-    rank: number;
-    bonded: number;
-    faults: number;
-    offline: number;
-    location: number;
-    region: number;
-    country: number;
-    provider: number;
-    council: number;
-    democracy: number;
-    nominations: number;
-    delegations: number;
+    inclusion: number | 0;
+    spanInclusion: number | 0;
+    discovered: number| 0;
+    nominated: number | 0;
+    rank: number | 0;
+    bonded: number| 0;
+    faults: number| 0;
+    offline: number| 0;
+    location: number | 0;
+    region: number | 0;
+    country: number | 0;
+    provider: number | 0;
+    council: number| 0;
+    democracy: number | 0;
+    nominations: number | 0;
+    delegations: number | 0;
   };
   scorekeeper: {
     candidates: CandidateConfig[];

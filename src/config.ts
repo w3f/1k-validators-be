@@ -77,6 +77,24 @@ export type Config = {
     timeDelayBlocks: number;
     blacklistedAnnouncements: string[];
   };
+  score: {
+    inclusion: number;
+    spanInclusion: number;
+    discovered: number;
+    nominated: number;
+    rank: number;
+    bonded: number;
+    faults: number;
+    offline: number;
+    location: number;
+    region: number;
+    country: number;
+    provider: number;
+    council: number;
+    democracy: number;
+    nominations: number;
+    delegations: number;
+  };
   scorekeeper: {
     candidates: CandidateConfig[];
     forceRound: boolean;

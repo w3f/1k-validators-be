@@ -586,7 +586,7 @@ export default class ScoreKeeper {
       );
       //
       await startEraPointsJob(this.config, this.db, this.chaindata);
-      // await startActiveValidatorJob(this.config, this.db, this.chaindata);
+      await startActiveValidatorJob(this.config, this.db, this.chaindata);
       await startInclusionJob(this.config, this.db, this.chaindata);
       // await startSessionKeyJob(this.config, this.db, this.chaindata);
       // await startUnclaimedEraJob(this.config, this.db, this.chaindata);
@@ -624,15 +624,15 @@ export default class ScoreKeeper {
       //   this.chaindata,
       //   this.bot
       // );
-      // await startScoreJob(this.config, this.constraints);
-      // await startEraStatsJob(this.db, this.config, this.chaindata);
-      // await startLocationStatsJob(this.config, this.db, this.chaindata);
-      // await startCouncilJob(this.config, this.db, this.chaindata);
+      await startScoreJob(this.config, this.constraints);
+      await startEraStatsJob(this.db, this.config, this.chaindata);
+      await startLocationStatsJob(this.config, this.db, this.chaindata);
+      await startCouncilJob(this.config, this.db, this.chaindata);
       // Subscan job currently leads to 429 due to API rate limiting.
       // await startSubscanJob(this.config, this.db, this.subscan);
-      // await startDemocracyJob(this.config, this.db, this.chaindata);
-      // await startNominatorJob(this.config, this.db, this.chaindata);
-      // await startDelegationJob(this.config, this.db, this.chaindata);
+      await startDemocracyJob(this.config, this.db, this.chaindata);
+      await startNominatorJob(this.config, this.db, this.chaindata);
+      await startDelegationJob(this.config, this.db, this.chaindata);
     } catch (e) {
       logger.info(
         `{Scorekeeper::RunCron} There was an error running some cron jobs...`

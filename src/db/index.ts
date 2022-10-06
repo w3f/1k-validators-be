@@ -394,6 +394,9 @@ export default class Db {
 
     let locationData;
     locationData = await this.getLocation(name, addr);
+    logger.info(`${name} : ${addr}`);
+    logger.info(`fetched location data:`);
+    logger.info(JSON.stringify(locationData));
     const iit = await this.getIIT();
     if (!locationData || locationData.addr != addr) {
       const iit = await this.getIIT();

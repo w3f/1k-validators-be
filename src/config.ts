@@ -80,17 +80,17 @@ export type Config = {
   score: {
     inclusion: number | 0;
     spanInclusion: number | 0;
-    discovered: number| 0;
+    discovered: number | 0;
     nominated: number | 0;
     rank: number | 0;
-    bonded: number| 0;
-    faults: number| 0;
-    offline: number| 0;
+    bonded: number | 0;
+    faults: number | 0;
+    offline: number | 0;
     location: number | 0;
     region: number | 0;
     country: number | 0;
     provider: number | 0;
-    council: number| 0;
+    council: number | 0;
     democracy: number | 0;
     nominations: number | 0;
     delegations: number | 0;

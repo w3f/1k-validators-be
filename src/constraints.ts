@@ -851,11 +851,11 @@ export class OTV implements Constraints {
 
       const randomness = 1 + Math.random() * 0.15;
 
-      const total = aggregate * randomness
+      const total = aggregate * randomness;
 
-      logger.info(`aggregate: ${aggregate}`)
-      logger.info(`randomness: ${randomness}`)
-      logger.info(`total: ${total}`)
+      logger.info(`aggregate: ${aggregate}`);
+      logger.info(`randomness: ${randomness}`);
+      logger.info(`total: ${total}`);
 
       const score = {
         total: total,

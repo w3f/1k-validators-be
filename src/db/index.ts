@@ -410,10 +410,10 @@ export default class Db {
         addr,
         iit && iit.iit ? iit.iit : null
       );
-      logger.info(`new city: ${city}`);
+      logger.info(`${name} new city: ${city}`);
       await this.setLocation(name, addr, city, region, country, asn, provider);
       locationData = await this.getLocation(name, addr);
-      logger.info(`new location data:`);
+      logger.info(`${name} new location data:`);
       logger.info(JSON.stringify(locationData));
     }
 
@@ -2965,7 +2965,7 @@ export default class Db {
       });
     }
 
-    if (!data) {
+    if (!data || data?.addr != addr) {
       const location = new this.locationModel({
         name,
         addr,

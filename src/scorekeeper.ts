@@ -133,8 +133,11 @@ export const autoNumNominations = async (
     }
   }
 
+  // How many additional validator to nominate above the amount to get in the set
+  const additional = 4;
+
   // The total amount of validators to nominate
-  const adjustedNominationAmount = Math.min(amount, 24);
+  const adjustedNominationAmount = Math.min(amount + additional, 24);
   // The total amount of funds the nominator should have bonded
   const newBondedAmount = (1 + BALANCE_BUFFER_PERCENT) * sum;
   // The target amount for each validator
@@ -801,10 +804,10 @@ export default class ScoreKeeper {
           return;
         }
 
-        await nominator.adjustBond(
-          newBondedAmount,
-          Number(currentBondedAmount)
-        );
+        // await nominator.adjustBond(
+        //   newBondedAmount,
+        //   Number(currentBondedAmount)
+        // );
         await sleep(10000);
         await nominator.nominate(targets, dryRun || this.config.global.dryRun);
 

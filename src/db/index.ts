@@ -394,16 +394,8 @@ export default class Db {
 
     let locationData;
     locationData = await this.getLocation(name, addr);
-    logger.info(`${name} : ${addr}`);
-    logger.info(`${name} fetched location data:`);
-    logger.info(JSON.stringify(locationData));
-    logger.info(
-      `${name} location addr: ${locationData?.addr ? locationData?.addr : null}`
-    );
-    logger.info(`${name} addr: ${addr}`);
     const shouldFetch =
       !locationData || (locationData?.addr && locationData?.addr != addr);
-    logger.info(`${name} shouldFetch: ${shouldFetch}`);
     if (shouldFetch) {
       const iit = await this.getIIT();
       const { city, region, country, asn, provider } = await fetchLocationInfo(
@@ -412,10 +404,7 @@ export default class Db {
       );
 
       await this.setLocation(name, addr, city, region, country, asn, provider);
-      logger.info(`${name} new city: ${city}`);
       locationData = await this.getLocation(name, addr);
-      logger.info(`${name} new location data:`);
-      logger.info(JSON.stringify(locationData));
     }
 
     if (!addr) {
@@ -2967,8 +2956,6 @@ export default class Db {
     }
 
     if (!data || data?.addr != addr || data?.city != city) {
-      logger.info(`writing new data for ${name} ${addr} ${city}`);
-      logger.info(`old data for ${name}`);
       logger.info(JSON.stringify(data ? data : null));
       const location = new this.locationModel({
         name,

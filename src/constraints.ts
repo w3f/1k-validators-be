@@ -766,7 +766,8 @@ export class OTV implements Constraints {
         0.1,
         0.95
       );
-      const nominatorStakeScore = scaledNominatorStake * this.BONDED_WEIGHT;
+      const nominatorStakeScore =
+        scaledNominatorStake * this.NOMINATIONS_WEIGHT;
 
       const delegations = await db.getDelegations(candidate.stash);
       let totalDelegations = 0;
@@ -787,7 +788,7 @@ export class OTV implements Constraints {
         0.1,
         0.95
       );
-      const delegationScore = scaledDelegations * this.BONDED_WEIGHT;
+      const delegationScore = scaledDelegations * this.DELEGATIONS_WEIGHT;
 
       // Score the council backing weight based on what percentage of their staking bond it is
       const denom = await this.chaindata.getDenom();
@@ -815,6 +816,25 @@ export class OTV implements Constraints {
       const scaledDemocracyScore =
         scaled(totalDemocracyScore, democracyValues) * this.DEMOCRACY_WEIGHT;
 
+      logger.info(`${candidate.name} inclusionScore ${inclusionScore}`);
+      logger.info(`${candidate.name} spanInclusionScore ${spanInclusionScore}`);
+      logger.info(`${candidate.name} faultsScore ${faultsScore}`);
+      logger.info(`${candidate.name} inclusionScore ${inclusionScore}`);
+      logger.info(`${candidate.name} discoveredScore ${discoveredScore}`);
+      logger.info(`${candidate.name} nominatedScore ${nominatedScore}`);
+      logger.info(`${candidate.name} rankScore ${rankScore}`);
+      logger.info(`${candidate.name} unclaimedScore ${unclaimedScore}`);
+      logger.info(`${candidate.name} bondedScore ${bondedScore}`);
+      logger.info(`${candidate.name} locationScore ${locationScore}`);
+      logger.info(`${candidate.name} councilStakeScore ${councilStakeScore}`);
+      logger.info(
+        `${candidate.name} scaledDemocracyScore ${scaledDemocracyScore}`
+      );
+      logger.info(`${candidate.name} offlineScore ${offlineScore}`);
+      logger.info(
+        `${candidate.name} nominatorStakeScore ${nominatorStakeScore}`
+      );
+
       const aggregate =
         inclusionScore +
         spanInclusionScore +
@@ -827,7 +847,8 @@ export class OTV implements Constraints {
         locationScore +
         councilStakeScore +
         scaledDemocracyScore +
-        offlineScore;
+        offlineScore +
+        nominatorStakeScore;
 
       const randomness = 1 + Math.random() * 0.15;
 

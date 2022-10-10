@@ -397,15 +397,17 @@ export default class Db {
     logger.info(`${name} : ${addr}`);
     logger.info(`fetched location data:`);
     logger.info(JSON.stringify(locationData));
-    const iit = await this.getIIT();
     if (!locationData || locationData.addr != addr) {
       const iit = await this.getIIT();
       const { city, region, country, asn, provider } = await fetchLocationInfo(
         addr,
         iit && iit.iit ? iit.iit : null
       );
+      logger.info(`new city: ${city}`);
       await this.setLocation(name, addr, city, region, country, asn, provider);
       locationData = await this.getLocation(name, addr);
+      logger.info(`new location data:`);
+      logger.info(JSON.stringify(locationData));
     }
 
     if (!addr) {

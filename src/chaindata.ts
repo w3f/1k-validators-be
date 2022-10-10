@@ -184,7 +184,7 @@ class ChainData {
           await api.query.staking.ledger(controller.toString())
         ).toJSON();
         // @ts-ignore
-        const bondedAmount = bonded.active / denom;
+        const bondedAmount = bonded?.active ? bonded?.active / denom : 0;
         // @ts-ignore
         const targets = value.toHuman().targets;
         return {

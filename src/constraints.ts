@@ -819,7 +819,6 @@ export class OTV implements Constraints {
       logger.info(`${candidate.name} inclusionScore ${inclusionScore}`);
       logger.info(`${candidate.name} spanInclusionScore ${spanInclusionScore}`);
       logger.info(`${candidate.name} faultsScore ${faultsScore}`);
-      logger.info(`${candidate.name} inclusionScore ${inclusionScore}`);
       logger.info(`${candidate.name} discoveredScore ${discoveredScore}`);
       logger.info(`${candidate.name} nominatedScore ${nominatedScore}`);
       logger.info(`${candidate.name} rankScore ${rankScore}`);
@@ -852,8 +851,14 @@ export class OTV implements Constraints {
 
       const randomness = 1 + Math.random() * 0.15;
 
+      const total = aggregate * randomness
+
+      logger.info(`aggregate: ${aggregate}`)
+      logger.info(`randomness: ${randomness}`)
+      logger.info(`total: ${total}`)
+
       const score = {
-        total: aggregate * randomness,
+        total: total,
         aggregate: aggregate,
         inclusion: inclusionScore,
         spanInclusion: spanInclusionScore,

@@ -766,7 +766,7 @@ export class OTV implements Constraints {
         0.1,
         0.95
       );
-      const nominatorStakeScore = scaledNominatorStake * this.BONDED_WEIGHT;
+      const nominatorStakeScore = scaledNominatorStake * this.NOMINATIONS_WEIGHT;
 
       const delegations = await db.getDelegations(candidate.stash);
       let totalDelegations = 0;
@@ -787,7 +787,7 @@ export class OTV implements Constraints {
         0.1,
         0.95
       );
-      const delegationScore = scaledDelegations * this.BONDED_WEIGHT;
+      const delegationScore = scaledDelegations * this.DELEGATIONS_WEIGHT;
 
       // Score the council backing weight based on what percentage of their staking bond it is
       const denom = await this.chaindata.getDenom();
@@ -827,7 +827,8 @@ export class OTV implements Constraints {
         locationScore +
         councilStakeScore +
         scaledDemocracyScore +
-        offlineScore;
+        offlineScore +
+        nominatorStakeScore;
 
       const randomness = 1 + Math.random() * 0.15;
 

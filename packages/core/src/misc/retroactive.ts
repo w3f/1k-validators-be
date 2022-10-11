@@ -1,14 +1,12 @@
-import ApiHandler from "../ApiHandler";
-import ChainData from "../chaindata";
+import { ApiHandler, ChainData, Types } from "@1kv/common";
 import Db from "../db";
-import { CandidateData } from "../types";
 
 /**
  * Retroactively increases validators ranks based on their activity between
  * era 1728 to era 1760, roughly between 4 Jan and Jan 12.
  */
 export const retroactiveRanks = async (
-  candidates: CandidateData[],
+  candidates: Types.CandidateData[],
   handler: ApiHandler,
   db?: Db
 ): Promise<boolean> => {

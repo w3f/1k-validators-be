@@ -1,6 +1,5 @@
-import ApiHandler from "./../ApiHandler";
+import { ApiHandler, Util } from "@1kv/common";
 import { Keyring } from "@polkadot/keyring";
-import { sleep } from "../util";
 
 export const startTestSetup = async () => {
   const handler = await ApiHandler.create(["ws://172.28.1.1:9944"]);
@@ -165,7 +164,7 @@ export const startTestSetup = async () => {
       `{TestSetup::Reward::${claimer.address}} transfer tx failed...`
     );
   }
-  await sleep(3000);
+  await Util.sleep(3000);
 
   // For each nominator:
   // - Transfer some balance into the stash account from Alice
@@ -186,7 +185,7 @@ export const startTestSetup = async () => {
     } catch {
       console.log("{TestSetup::${nominator.name}} transfer tx failed...");
     }
-    await sleep(3000);
+    await Util.sleep(3000);
 
     // Send funds to the Nominator Controller
     console.log(
@@ -203,7 +202,7 @@ export const startTestSetup = async () => {
     } catch {
       console.log("{TestSetup::${nominator.name}} transfer tx failed...");
     }
-    await sleep(3000);
+    await Util.sleep(3000);
 
     // Transfer to Proxy Address, and set Proxy account as a proxy to the Controller
     if (nominator.proxyAddress) {
@@ -221,7 +220,7 @@ export const startTestSetup = async () => {
       } catch {
         console.log("{TestSetup::${nominator.name}} transfer tx failed...");
       }
-      await sleep(3000);
+      await Util.sleep(3000);
 
       const setProxy = api.tx.proxy.addProxy(
         nominator.proxyAddress,
@@ -253,7 +252,7 @@ export const startTestSetup = async () => {
       console.log(`{TestSetup::${nominator.name}} bond tx failed`);
     }
   }
-  await sleep(6000);
+  await Util.sleep(6000);
 
   // Set Alice as a registrar
   console.log(`{TestSetup} Setting Alice as a Registrar`);
@@ -262,21 +261,21 @@ export const startTestSetup = async () => {
   );
   const su = api.tx.sudo.sudo(reg);
   await su.signAndSend(keyring.addFromUri("//Alice"));
-  await sleep(6000);
+  await Util.sleep(6000);
 
   // Set Force New Era Always
   console.log(`{TestSetup} set Force New Era Always`);
   const forceEra = api.tx.staking.forceNewEraAlways();
   const su2 = api.tx.sudo.sudo(forceEra);
   await su2.signAndSend(keyring.addFromUri("//Alice"));
-  await sleep(6000);
+  await Util.sleep(6000);
 
   // Increase Validator Set Size to 5
   console.log(`{TestSetup} Increase validator set size to 5`);
   const increaseSet = api.tx.staking.increaseValidatorCount(3);
   const su3 = api.tx.sudo.sudo(increaseSet);
   await su3.signAndSend(keyring.addFromUri("//Alice"));
-  await sleep(6000);
+  await Util.sleep(6000);
 
   // For each node:
   // - add the keyring
@@ -286,7 +285,7 @@ export const startTestSetup = async () => {
   // - generate session keys
   // - set session keys on chain
   for (const node of nodes) {
-    await sleep(6000);
+    await Util.sleep(6000);
 
     console.log(`{TestSetup::${node.name}} setting up ${node.name}`);
     node.keyring = keyring.addFromUri(node.derivation);
@@ -299,12 +298,12 @@ export const startTestSetup = async () => {
         display: { Raw: `${node.name}` },
       });
       const identityTx = await identity.signAndSend(node.keyring);
-      await sleep(3000);
+      await Util.sleep(3000);
     } catch {
       console.log(`{TestSetup:${node.name}} set identity failed...`);
     }
 
-    await sleep(3000);
+    await Util.sleep(3000);
 
     try {
       console.log(
@@ -317,7 +316,7 @@ export const startTestSetup = async () => {
         "Reasonable"
       );
       await verify.signAndSend(keyring.addFromUri("//Alice"));
-      await sleep(3000);
+      await Util.sleep(3000);
     } catch {
       console.log(`{TestSetup:${node.name}} verify identity failed...`);
     }
@@ -341,7 +340,7 @@ export const startTestSetup = async () => {
     const handler = await ApiHandler.create([node.endpoint]);
     const nodeApi = await handler.getApi();
 
-    await sleep(16000);
+    await Util.sleep(16000);
     console.log(`{TestSetup:${node.name}} Bonding Stash...`);
     const bond = api.tx.staking.bond(
       node.controllerAddress,
@@ -357,7 +356,7 @@ export const startTestSetup = async () => {
               `{TestSetup::${node.name}} Bond Successful, generating session keys...`
             );
 
-            await sleep(6000);
+            await Util.sleep(6000);
             const sessionKeys = await nodeApi.rpc.author.rotateKeys();
             const setKeys = nodeApi.tx.session.setKeys(
               // @ts-ignore
@@ -403,7 +402,7 @@ export const startTestSetup = async () => {
     );
 
     console.log(`{TestSetup::${node.name}} setup done`);
-    await sleep(6000);
+    await Util.sleep(6000);
   }
 };
 

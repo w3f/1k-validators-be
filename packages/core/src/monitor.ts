@@ -2,7 +2,7 @@ import { Octokit } from "@octokit/rest";
 import semver from "semver";
 
 import Database from "./db";
-import logger from "./logger";
+import { logger } from "@1kv/common";
 
 type TaggedRelease = {
   name: string;

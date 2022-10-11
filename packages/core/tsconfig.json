@@ -2,20 +2,18 @@
 //  "extends": "../../tsconfig.json",
   "exclude": ["test", "node_modules"],
   "include": ["src/**/*.ts"],
+  "paths": {
+    "@1kv/common": ["../common/build"]
+  },
   "files": [
-    "src/chaindata.ts",
-    "src/constants.ts",
     "src/db/index.ts",
     "src/index.ts",
-    "src/logger.ts",
     "src/matrix.ts",
     "src/monitor.ts",
     "src/nominator.ts",
     "src/scorekeeper.ts",
     "src/server.ts",
-    "src/telemetry.ts",
-    "src/types.ts",
-    "src/util.ts"
+    "src/telemetry.ts"
   ],
   "compilerOptions": {
     /* Basic Options */
@@ -75,5 +73,6 @@
     // "experimentalDecorators": true,        /* Enables experimental support for ES7 decorators. */
     // "emitDecoratorMetadata": true,         /* Enables experimental support for emitting type metadata for decorators. */
     "resolveJsonModule": true
-  }
+  },
+  "references": [{ "path": "../common" }]
 }

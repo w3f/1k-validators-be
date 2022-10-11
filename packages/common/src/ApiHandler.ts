@@ -9,7 +9,7 @@ import { POLKADOT_API_TIMEOUT } from "./constants";
  * A higher level handler for the Polkadot-Js API that can handle reconnecting
  * to a different provider if one proves troublesome.
  */
-class ApiHandler extends EventEmitter {
+export class ApiHandler extends EventEmitter {
   private _api: ApiPromise;
   private _endpoints: string[];
   private _reconnectLock: boolean;

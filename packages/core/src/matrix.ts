@@ -1,9 +1,8 @@
 import * as Sdk from "matrix-js-sdk";
 import request from "request";
-
+import { logger } from "@1kv/common";
 import { Config } from "./config";
 import Db from "./db";
-import logger from "./logger";
 
 const sdk: any = Sdk;
 

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { sleep } from "./util";
+import { Util } from "@1kv/common";
 
 export class Subscan {
   public baseV1Url: string;
@@ -98,7 +98,7 @@ export class Subscan {
           });
           page++;
           totalList.push(...eventPageList);
-          await sleep(2000);
+          await Util.sleep(2000);
         }
       } else if (status == 400) {
         //TODO:
@@ -160,7 +160,7 @@ export class Subscan {
           });
           page++;
           totalList.push(...rewardList);
-          await sleep(2000);
+          await Util.sleep(2000);
         }
       } else if (status == 400) {
         // TODO:

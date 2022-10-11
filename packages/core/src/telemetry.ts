@@ -3,7 +3,7 @@ import WS from "ws";
 
 import { Config } from "./config";
 import Database from "./db";
-import logger from "./logger";
+import { logger } from "@1kv/common";
 
 enum TelemetryMessage {
   FeedVersion = 0x00,

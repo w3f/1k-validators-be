@@ -27,10 +27,8 @@ import {
   NominatorStakeSchema,
   DelegationSchema,
 } from "./models";
-import logger from "../logger";
-import { fetchLocationInfo, formatAddress } from "../util";
+import { logger, Util, Types } from "@1kv/common";
 import { Keyring } from "@polkadot/keyring";
-import { Referendum, ReferendumVote } from "../types";
 
 // [name, client, version, null, networkId]
 export type NodeDetails = [string, string, string, string, string, string];
@@ -398,10 +396,8 @@ export default class Db {
       !locationData || (locationData?.addr && locationData?.addr != addr);
     if (shouldFetch) {
       const iit = await this.getIIT();
-      const { city, region, country, asn, provider } = await fetchLocationInfo(
-        addr,
-        iit && iit.iit ? iit.iit : null
-      );
+      const { city, region, country, asn, provider } =
+        await Util.fetchLocationInfo(addr, iit && iit.iit ? iit.iit : null);
 
       await this.setLocation(name, addr, city, region, country, asn, provider);
       locationData = await this.getLocation(name, addr);
@@ -2761,7 +2757,7 @@ export default class Db {
 
   // Sets a Referendum record in the db
   async setReferendum(
-    referendum: Referendum,
+    referendum: Types.Referendum,
     updatedBlockNumber: number,
     updatedBlockHash: string
   ): Promise<any> {
@@ -2844,7 +2840,7 @@ export default class Db {
 
   // Sets a Referendum record in the db
   async setReferendumVote(
-    referendumVote: ReferendumVote,
+    referendumVote: Types.ReferendumVote,
     updatedBlockNumber: number,
     updatedBlockHash: string
   ): Promise<any> {

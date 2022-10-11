@@ -37,6 +37,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@1kv/core@workspace:packages/core"
   dependencies:
+    "@1kv/common": 2.6.82
     "@ava/typescript": ^3.0.1
     "@koa/router": ^12.0.0
     "@octokit/rest": ^19.0.4

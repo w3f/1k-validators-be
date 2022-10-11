@@ -25,7 +25,7 @@ import { startClearAccumulatedOfflineTimeJob, startMonitorJob } from "./cron";
 
 const isCI = process.env.CI;
 
-const version = "v2.6.79";
+const version = "v2.6.80";
 
 const catchAndQuit = async (fn: any) => {
   try {
@@ -54,6 +54,10 @@ const start = async (cmd: { config: string }) => {
 
   // Create the Database.
   const db = await Database.create(config.db.mongo.uri);
+
+  // Start the API server.
+  const server = new Server(db, config);
+  server.start();
 
   const chainMetadata = await db.getChainMetadata();
 
@@ -149,10 +153,6 @@ const start = async (cmd: { config: string }) => {
   if (config.global.historicalNominations && !isCI) {
     writeHistoricNominations(handler, db);
   }
-
-  // Start the API server.
-  const server = new Server(db, config, scorekeeper);
-  server.start();
 };
 
 const program = new Command();

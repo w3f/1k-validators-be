@@ -19,7 +19,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@1kv/common@3.0.0, @1kv/common@workspace:packages/common":
+"@1kv/common@2.6.82, @1kv/common@workspace:packages/common":
   version: 0.0.0-use.local
   resolution: "@1kv/common@workspace:packages/common"
   dependencies:
@@ -87,7 +87,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@1kv/gateway@workspace:packages/gateway"
   dependencies:
-    "@1kv/common": 3.0.0
+    "@1kv/common": 2.6.82
     "@ava/typescript": ^3.0.1
     "@typescript-eslint/eslint-plugin": ^5.40.0
     "@typescript-eslint/parser": ^5.40.0
@@ -104,7 +104,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@1kv/telemetry@workspace:packages/telemetry"
   dependencies:
-    "@1kv/common": 3.0.0
+    "@1kv/common": 2.6.82
     "@ava/typescript": ^3.0.1
     "@typescript-eslint/eslint-plugin": ^5.40.0
     "@typescript-eslint/parser": ^5.40.0

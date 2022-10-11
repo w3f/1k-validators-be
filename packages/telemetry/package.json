@@ -1,6 +1,6 @@
 {
   "name": "@1kv/telemetry",
-  "version": "3.0.0",
+  "version": "2.6.82",
   "description": "Services for running the Thousand Validator Program.",
   "main": "index.js",
   "scripts": {
@@ -24,7 +24,7 @@
     }
   },
   "dependencies": {
-    "@1kv/common": "3.0.0",
+    "@1kv/common": "2.6.82",
     "typescript": "^4.8.4"
   },
   "devDependencies": {

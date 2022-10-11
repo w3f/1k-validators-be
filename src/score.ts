@@ -50,7 +50,7 @@ export const q90 = (arr) => quantile(arr, 0.9);
 export const median = (arr) => q50(arr);
 
 // Scale the value in between the 10th and 90th quartiles
-export const scaled = (value, arr) => {
+export const scaled = (value, arr): number => {
   const aq10 = q10(arr);
   const aq90 = q90(arr);
   if (value <= aq10) return 0;
@@ -59,7 +59,12 @@ export const scaled = (value, arr) => {
 };
 
 // Scale the value in between defined quartile ranges
-export const scaledDefined = (value, arr, lowQuartile, highQuartile) => {
+export const scaledDefined = (
+  value,
+  arr,
+  lowQuartile,
+  highQuartile
+): number => {
   if (arr.length == 0) return 0;
   const lowQ = quantile(arr, lowQuartile);
   const highQ = quantile(arr, highQuartile);

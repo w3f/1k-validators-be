@@ -99,7 +99,7 @@
     "nominating": true
   },
   "server": {
-    "port": 3301
+    "port": 3300
   },
   "telemetry": {
     "chains": [

@@ -48,8 +48,8 @@ const start = async (cmd: { config: string }) => {
     config.global.networkPrefix == 2
       ? KusamaEndpoints
       : config.global.networkPrefix == 0
-        ? PolkadotEndpoints
-        : LocalEndpoints;
+      ? PolkadotEndpoints
+      : LocalEndpoints;
   const handler = await ApiHandler.create(endpoints);
 
   // Create the Database.

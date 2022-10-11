@@ -237,11 +237,11 @@ export class OTV implements Constraints {
       this.config.constraints.skipUnclaimed == true
         ? true
         : (await checkUnclaimed(
-        this.db,
-        this.chaindata,
-        this.unclaimedEraThreshold,
-        candidate
-      )) || false;
+            this.db,
+            this.chaindata,
+            this.unclaimedEraThreshold,
+            candidate
+          )) || false;
 
     const blockedValid =
       (await checkBlocked(this.db, this.chaindata, candidate)) || false;
@@ -772,14 +772,14 @@ export class OTV implements Constraints {
         candidate.councilStake == 0
           ? 0
           : candidate.councilStake >= 0.75 * formattedBonded
-            ? this.COUNCIL_WEIGHT
-            : candidate.councilStake >= 0.5 * formattedBonded
-              ? 0.75 * this.COUNCIL_WEIGHT
-              : candidate.councilStake >= 0.25 * formattedBonded
-                ? 0.5 * this.COUNCIL_WEIGHT
-                : candidate.councilStake < 0.25 * formattedBonded
-                  ? 0.25 * this.COUNCIL_WEIGHT
-                  : 0;
+          ? this.COUNCIL_WEIGHT
+          : candidate.councilStake >= 0.5 * formattedBonded
+          ? 0.75 * this.COUNCIL_WEIGHT
+          : candidate.councilStake >= 0.25 * formattedBonded
+          ? 0.5 * this.COUNCIL_WEIGHT
+          : candidate.councilStake < 0.25 * formattedBonded
+          ? 0.25 * this.COUNCIL_WEIGHT
+          : 0;
 
       // Score democracy based on how many proposals have been voted on
       const {
@@ -922,7 +922,7 @@ export class OTV implements Constraints {
     candidates: Set<CandidateData>
   ): Promise<
     [Set<CandidateData>, Set<{ candidate: CandidateData; reason: string }>]
-    > {
+  > {
     logger.info(`(OTV::processCandidates) Processing candidates`);
 
     const [activeEraIndex, eraErr] = await this.chaindata.getActiveEraIndex();

@@ -99,89 +99,89 @@ export default class TelemetryClient {
 
     switch (action) {
       case TelemetryMessage.FeedVersion:
-      {
-        logger.info(`feed version: ${JSON.stringify(payload)}`);
-      }
+        {
+          logger.info(`feed version: ${JSON.stringify(payload)}`);
+        }
         break;
       case TelemetryMessage.AddedNode:
-      {
-        const [
-          id,
-          details,
-          nodeStats,
-          nodeIO,
-          nodeHardware,
-          blockDetails,
-          location,
-          startupTime,
-        ] = payload;
-        const [lat, lon, city] = location || ["", "", "No Location"];
-        const now = Date.now();
+        {
+          const [
+            id,
+            details,
+            nodeStats,
+            nodeIO,
+            nodeHardware,
+            blockDetails,
+            location,
+            startupTime,
+          ] = payload;
+          const [lat, lon, city] = location || ["", "", "No Location"];
+          const now = Date.now();
 
-        MemNodes[parseInt(id)] = details;
+          MemNodes[parseInt(id)] = details;
 
-        // a mutex that will only update after its free to avoid race conditions
-        const waitUntilFree = async (name: string): Promise<void> => {
-          if (this.beingReported.get(name)) {
-            return new Promise((resolve) => {
-              const intervalId = setInterval(() => {
-                if (!this.beingReported.get(name)) {
-                  clearInterval(intervalId);
-                  resolve();
-                }
-              }, 1000);
-            });
+          // a mutex that will only update after its free to avoid race conditions
+          const waitUntilFree = async (name: string): Promise<void> => {
+            if (this.beingReported.get(name)) {
+              return new Promise((resolve) => {
+                const intervalId = setInterval(() => {
+                  if (!this.beingReported.get(name)) {
+                    clearInterval(intervalId);
+                    resolve();
+                  }
+                }, 1000);
+              });
+            }
+          };
+
+          await waitUntilFree(details[0]);
+          await this.db.reportOnline(id, details, now, city);
+
+          const wasOffline = this.offlineNodes.has(id);
+          if (wasOffline) {
+            this.offlineNodes.delete(id);
           }
-        };
-
-        await waitUntilFree(details[0]);
-        await this.db.reportOnline(id, details, now, city);
-
-        const wasOffline = this.offlineNodes.has(id);
-        if (wasOffline) {
-          this.offlineNodes.delete(id);
         }
-      }
         break;
       case TelemetryMessage.RemovedNode:
-      {
-        const id = parseInt(payload);
-        const now = Date.now();
+        {
+          const id = parseInt(payload);
+          const now = Date.now();
 
-        //this is to get around security warning vvv
-        const details = MemNodes[parseInt(String(id))];
+          //this is to get around security warning vvv
+          const details = MemNodes[parseInt(String(id))];
 
-        if (!details) {
-          logger.info(`Unknown node with ${id} reported offline.`);
+          if (!details) {
+            logger.info(`Unknown node with ${id} reported offline.`);
+          }
+
+          const name = details[0];
+
+          logger.info(`(TELEMETRY) Reporting ${name} OFFLINE`);
+          this.beingReported.set(name, true);
+          await this.db.reportOffline(id, name, now);
+          this.beingReported.set(name, false);
+
+          this.offlineNodes.set(id, true);
         }
-
-        const name = details[0];
-
-        logger.info(`(TELEMETRY) Reporting ${name} OFFLINE`);
-        this.beingReported.set(name, true);
-        await this.db.reportOffline(id, name, now);
-        this.beingReported.set(name, false);
-
-        this.offlineNodes.set(id, true);
-      }
         break;
       case TelemetryMessage.LocatedNode:
-      {
-        const [id, lat, lon, city] = payload;
-        // await this.db.setLocation(id, city);
-      }
+        {
+          const [id, lat, lon, city] = payload;
+          // await this.db.setLocation(id, city);
+        }
         break;
       case TelemetryMessage.ImportedBlock:
-      {
-        const [id, details] = payload;
-        const now = Date.now();
+        {
+          const [id, details] = payload;
+          const now = Date.now();
 
-        const wasOffline = this.offlineNodes.has(id);
-        if (wasOffline) {
-          this.offlineNodes.delete(id);
-          await this.db.reportBestBlock(id, details, now);
+          const wasOffline = this.offlineNodes.has(id);
+          if (wasOffline) {
+            this.offlineNodes.delete(id);
+            await this.db.reportBestBlock(id, details, now);
+          }
         }
-      }
         break;
     }
   }

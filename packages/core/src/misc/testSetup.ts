@@ -310,6 +310,7 @@ export const startTestSetup = async () => {
       console.log(
         `{TestSetup::${node.name}} verifying identity for ${node.name}`
       );
+      // @ts-ignore
       const verify = api.tx.identity.provideJudgement(
         0,
         node.address,

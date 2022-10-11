@@ -252,9 +252,11 @@ class ChainData {
     }
 
     const earliestUnapplied = await api.query.staking.earliestUnappliedSlash();
+    // @ts-ignore
     if (earliestUnapplied.isNone) {
       return [null, "Earliest unapplied is none."];
     }
+    // @ts-ignore
     const earliestEraIndex = await earliestUnapplied.unwrap().toNumber();
     if (startEraIndex < earliestEraIndex) {
       return [null, `Start era is too early to query unapplied slashes.`];
@@ -297,8 +299,8 @@ class ChainData {
       chainType == "Kusama"
         ? KUSAMA_APPROX_ERA_LENGTH_IN_BLOCKS
         : chainType == "Polkadot"
-          ? POLKADOT_APPROX_ERA_LENGTH_IN_BLOCKS
-          : TESTNET_APPROX_ERA_LENGTH_IN_BLOCKS;
+        ? POLKADOT_APPROX_ERA_LENGTH_IN_BLOCKS
+        : TESTNET_APPROX_ERA_LENGTH_IN_BLOCKS;
 
     const api = await this.handler.getApi();
     if (!api.isConnected) {
@@ -967,39 +969,39 @@ class ChainData {
             let effectiveBalance = 0;
             switch (conviction) {
               case "None":
-              {
-                effectiveBalance = (balance / denom) * 0.1;
-              }
+                {
+                  effectiveBalance = (balance / denom) * 0.1;
+                }
                 break;
               case "Locked1x":
-              {
-                effectiveBalance = balance / denom;
-              }
+                {
+                  effectiveBalance = balance / denom;
+                }
                 break;
               case "Locked2x":
-              {
-                effectiveBalance = (balance / denom) * 2;
-              }
+                {
+                  effectiveBalance = (balance / denom) * 2;
+                }
                 break;
               case "Locked3x":
-              {
-                effectiveBalance = (balance / denom) * 3;
-              }
+                {
+                  effectiveBalance = (balance / denom) * 3;
+                }
                 break;
               case "Locked4x":
-              {
-                effectiveBalance = (balance / denom) * 4;
-              }
+                {
+                  effectiveBalance = (balance / denom) * 4;
+                }
                 break;
               case "Locked5x":
-              {
-                effectiveBalance = (balance / denom) * 5;
-              }
+                {
+                  effectiveBalance = (balance / denom) * 5;
+                }
                 break;
               case "Locked6x":
-              {
-                effectiveBalance = (balance / denom) * 6;
-              }
+                {
+                  effectiveBalance = (balance / denom) * 6;
+                }
                 break;
             }
             return {

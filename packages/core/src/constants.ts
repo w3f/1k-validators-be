@@ -95,7 +95,7 @@ export const MONITOR_CRON = "0 */15 * * * *";
 export const CLEAR_OFFLINE_CRON = "0 0 * * * *";
 
 // Validity Cron Job. This runs every 20 minutes by default
-export const VALIDITY_CRON = "0 0-59/20 * * * *";
+export const VALIDITY_CRON = "0 0-59/10 * * * *";
 
 // Execution Cron Job. This runs every 15 minutes by default
 export const EXECUTION_CRON = "0 0-59/15 * * * *";
@@ -116,7 +116,7 @@ export const STALE_CRON = "0 0-59/45 * * * *";
 export const SCORE_CRON = "0 0-59/5 * * * *";
 
 // Era Stats Cron Job. This runs every 5 minutes by default
-export const ERA_STATS_CRON = "0 0-59/5 * * * *";
+export const ERA_STATS_CRON = "0 0-59/35 * * * *";
 
 // Location Stats Cron Job. This runs every 5 minutes by default
 export const LOCATION_STATS_CRON = "0 0-59/5 * * * *";
@@ -130,7 +130,8 @@ export const ERA_POINTS_CRON = "0 0-59/45 * * * *";
 export const ACTIVE_VALIDATOR_CRON = "0 0-59/5 * * * *";
 
 // Inclusion Cron Job. This runs every hour by default
-export const INCLUSION_CRON = "0 0 0-23/1 * * *";
+// export const INCLUSION_CRON = "0 0 0-23/1 * * *";
+export const INCLUSION_CRON = "0 0-59/35 * * * *";
 
 // Unclaimed Era Cron Job. This runs every hour by default
 export const UNCLAIMED_ERAS_CRON = "0 0 0-23/1 * * *";
@@ -141,19 +142,19 @@ export const VALIDATOR_PREF_CRON = "0 0-59/15 * * * *";
 // Sesion Key Cron Job. This runs every 45 minutes by default
 export const SESSION_KEY_CRON = "0 0-59/45 * * * *";
 
-// Council Cron Job. This runs ever 5 minutes by default
-export const COUNCIL_CRON = "0 0-59/8 * * * *";
+// Council Cron Job. This runs ever 15 minutes by default
+export const COUNCIL_CRON = "0 0-59/25 * * * *";
 
 // Subscan Cron Job. This runs ever 10 minutes by default
 export const SUBSCAN_CRON = "0 0-59/10 * * * *";
 
-// Democracy Cron Job. This runs ever 10 minutes by default
-export const DEMOCRACY_CRON = "0 0-59/10 * * * *";
+// Democracy Cron Job. This runs ever 15 minutes by default
+export const DEMOCRACY_CRON = "0 0-59/12 * * * *";
 
-// Nominator Cron Job. This runs ever 5 minutes by default
-export const NOMINATOR_CRON = "0 0-59/5 * * * *";
+// Nominator Cron Job. This runs ever 15 minutes by default
+export const NOMINATOR_CRON = "0 0-59/17 * * * *";
 
-// Delegation Cron Job. This runs ever 5 minutes by default
-export const DELEGATION_CRON = "0 0-59/5 * * * *";
+// Delegation Cron Job. This runs ever 20 minutes by default
+export const DELEGATION_CRON = "0 0-59/20 * * * *";
 
 export const LOCATION_URL = "https://ipinfo.io/";

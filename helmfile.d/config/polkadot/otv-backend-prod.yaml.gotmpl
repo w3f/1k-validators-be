@@ -25,7 +25,7 @@ config: |
       "skipStakedDestination": false,
       "skipClientUpgrade": false,
       "skipUnclaimed": true,
-      "forceClientVersion": "v0.9.27"
+      "forceClientVersion": "v0.9.29"
     },
     "cron": {
       "monitor": "0 */15 * * * *"
@@ -43,6 +43,24 @@ config: |
     },
     "proxy": {
         "timeDelayBlocks": "10850"
+    },
+    "score": {
+      "inclusion": "140",
+      "spanInclusion": "140",
+      "discovered": "5",
+      "nominated": "30",
+      "rank": "5",
+      "bonded": "50",
+      "faults": "5",
+      "offline": "2",
+      "location": "40",
+      "region": "10",
+      "country": "10",
+      "provider": "50",
+      "council": "50",
+      "democracy": "100",
+      "nominations": "100",
+      "delegations": "60"
     },
     "scorekeeper": {
       "candidates": [
@@ -386,8 +404,7 @@ config: |
           "name": "YellowFin Tuna",
           "stash": "1TunGctS5HELfuJZjd5qBNoMVsST2EBdMw5vWK8f3dCFbq9",
           "kusamaStash": "CbaNLeJQ8e8aCJMTLa9euDKuTDmnT5oPmGFt4AmuvXmYFGN",
-          "riotHandle": "@bluefin_tuna:matrix.org",
-          "skipSelfStake": true
+          "riotHandle": "@bluefin_tuna:matrix.org"
         },
         {
           "name": "CoinStudio",
@@ -398,7 +415,7 @@ config: |
         {
           "name": "legos-x",
           "stash": "1PhQxnCXTCfDVBw3Ttbxa6DZJujV3YNFYpi4mFfLHyGWXD9",
-          "kusamaStash": "EFysEttiUwYAYu3CAgqmySCmRQ43ucBvgi4Dm1Sfgm4DqG7",
+          "kusamaStash": "EHAgisQqE3paxAC694qumC9QLmGSJTRT1vEMJ8FUK744ixS",
           "riotHandle": "@legos:matrix.org"
         },
         {
@@ -1204,6 +1221,45 @@ config: |
           "stash": "13YJ7PrjwAhKHP9m99APDSuvLwWKSQSmKABfJY3H2Cepk2CA",
           "kusamaStash": "J6ixMhTj9UmgZtNiWVGs1SdGm9HXSj7z2Emjc9syMgGdN5X",
           "riotHandle": "@ignatev:matrix.org"
+         },
+        {
+          "name": "COSMOTRON",
+          "stash": "16KjnbCmBXqT3R956sHak7THsgQZ9Ek8ibnG1sFyCNtfJ8y",
+          "kusamaStash": "EVhWhw6w6i5C9SV3FbHdM1rroTxsM5UzxEKMyXCwnct2EnH",
+          "riotHandle": "@cosmotronv:matrix.org",
+          "skipSelfStake": true
+        },
+        {
+          "name": "VALIDATRIUM",
+          "stash": "15SfLgBPmtLAuqTdvga72k8g3rPTzfidgssXV4n4DvfB8xgr",
+          "kusamaStash": "GNxLBL5TiXry4mWZmuDqmqj5JByWQkLr4sNP1RhF6Mo1HQ8",
+          "riotHandle": "@supermyzuk:matrix.org",
+          "skipSelfStake": true
+         },
+         {
+          "name": "bLdn0d3",
+          "stash": "12bLdVAgWiKHgFHtAaQstasMUWVq35oG9iwHCwsKoFFNoNrk",
+          "kusamaStash": "Hf8C626KBAjitMV7w8AhQWDCiPgUU47htEwbomq5mDMKeyL",
+          "riotHandle": "@bld759:matrix.org",
+          "skipSelfStake": true
+         },
+         {
+          "name": "Chris Staking/p1",
+          "stash": "16hUkBK3h94uh7682gk7HeTYvPmSa4D1Y2w4KUZh1u1cP5J",
+          "kusamaStash": "EAqxvPZ3nxyfum6d8DFBeGuykQayJHtE6DyCcHMyd6o57WZ",
+          "riotHandle": "@clang:matrix.org"
+         },
+         {
+          "name": "Exotic Stake",
+          "stash": "13VS9jM2pkKNwd8LFpQNNRPBKUonU9jzGZ5fTEZiuB4nYF6Y",
+          "kusamaStash": "JMkSXXco4mxTRXNyRgYqeNpRZDXZ3i1qdKMP5FoMphCE6fq",
+          "riotHandle": "@exoticstake:matrix.org"
+         },
+         {
+          "name": "DotSkull",
+          "stash": "13NbzR1jse1FgB699sTDSfHUB4bqec1xKt7my7cXiL8oGd4w",
+          "kusamaStash": "EUYfsTNCCVJbrq7YjT4xbxWB8GX1j7nRZiuziQVj9mjFSdP",
+          "riotHandle": "@dotskull:matrix.org"
          }
       ],
       "forceRound": false,

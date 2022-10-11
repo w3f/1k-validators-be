@@ -9,6 +9,7 @@ spec:
   revisionHistoryLimit: 3
   updateStrategy:
     type: RollingUpdate
+  podManagementPolicy: Parallel
   selector:
     matchLabels:
       app: {{ .Release.Name }}
@@ -17,6 +18,9 @@ spec:
     metadata:
       labels:
         app: {{ .Release.Name }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
     spec:
       containers:
       - name: {{ .Release.Name }}
@@ -44,13 +48,13 @@ spec:
           readOnly: true
       {{- if ne .Values.environment "ci" }}
         resources:
-{{ toYaml .Values.resources | indent 10 }}        
+{{ toYaml .Values.resources | indent 10 }}
       {{- end }}
       {{- if eq .Values.environment "ci" }}
         env:
         - name: CI
           value: "true"
-      {{- end }}    
+      {{- end }}
       volumes:
       - name: secret-config
         secret:

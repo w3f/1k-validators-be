@@ -2,8 +2,8 @@ domain: kusama.w3f.community
 
 resources:
   limits:
-    cpu: 2000m
-    memory: 6Gi
+    cpu: 2500m
+    memory: 8Gi
   requests:
     cpu: 700m
     memory: 3Gi
@@ -25,7 +25,7 @@ config: |
       "skipStakedDestination": true,
       "skipClientUpgrade": false,
       "skipUnclaimed": true,
-      "forceClientVersion": "v0.9.27"
+      "forceClientVersion": "v0.9.29"
     },
     "cron": {
       "monitor": "0 */15 * * * *"
@@ -44,6 +44,24 @@ config: |
     "proxy": {
         "timeDelayBlocks": "10850",
         "blacklistedAnnouncements": []
+    },
+    "score": {
+      "inclusion": "140",
+      "spanInclusion": "140",
+      "discovered": "5",
+      "nominated": "30",
+      "rank": "5",
+      "bonded": "50",
+      "faults": "5",
+      "offline": "2",
+      "location": "40",
+      "region": "10",
+      "country": "10",
+      "provider": "50",
+      "council": "50",
+      "democracy": "100",
+      "nominations": "100",
+      "delegations": "60"
     },
     "scorekeeper": {
       "candidates": [
@@ -758,8 +776,8 @@ config: |
               "riotHandle": "@swezey:matrix.org"
           },
           {
-              "name": "Mile",
-              "stash": "HMaTJbeYonb2SoT7ek1sjrtkkKaor7j3yy2VUbj6FDokPXr",
+              "name": "Mile-Charlie",
+              "stash": "HMat4V87JEtRKMthyMKMX8yMpGPkzjiy1dZBVQ7RDQCQkFt",
               "riotHandle": "@matherceg:matrix.org"
           },
           {
@@ -1135,7 +1153,7 @@ config: |
           {
               "name": "postchain_io",
               "stash": "EHs5p1TR3SpQXvqAUq7pL4qKWRVNmrvtCT4izncvnk6Kh5W",
-              "riotHandle": ["@postchain_p:matrix.org", "@postchain_d:matrix.org"] 
+              "riotHandle": ["@postchain_p:matrix.org", "@postchain_d:matrix.org"]
           },
           {
               "name": "Uno Staking",
@@ -1538,8 +1556,8 @@ config: |
               "riotHandle": "@asteeber:matrix.org"
           },
           {
-              "name": "🍀LuckyFridayLabs01🍀",
-              "stash": "HhnoTHGW76ewz4ZL5Y4F9aPAqD5grq449U6mKfp6i1KuutX",
+              "name": "🍀LuckyFriday-KSM-07🍀",
+              "stash": "J6HxQniipCQLVAJxzC1pn2DphoN3za9eAq1bhkBtMhZ9sid",
               "riotHandle": "@luckyfriday:matrix.org"
           },
           {
@@ -1593,8 +1611,8 @@ config: |
               "riotHandle": "@stakeaweeb:matrix.org"
           },
           {
-              "name": "🍀LuckyFriday-KSM-02🍀",
-              "stash": "GXBZmr9NyFgPg92VZGRR3NEQKQNQEu8FqoBFdqSdCyWRscF",
+              "name": "🍀LuckyFriday-KSM-08🍀",
+              "stash": "GM31KcErdS3ob8wmFSbLycccJ6YGvvTXLBAawd6d9wkAxqj",
               "riotHandle": "@luckyfriday:matrix.org"
           },
           {
@@ -1694,12 +1712,12 @@ config: |
           },
           {
               "name": "turboflakes-2",
-              "stash": "GA7j1FHWXpEU4kavowEte6LWR3NgZ8bkv4spWa9joiQF5R2",
+              "stash": "GwJweN3Q8VjBMkd2wWLQsgMXrwmFLD6ihfS146GkmiYg5gw",
               "riotHandle": "@turboflakes:matrix.org"
           },
           {
-              "name": "Paramito-KV1",
-              "stash": "FCes7ZDr12Xa3CgfjsZdR2vKRKqNM5fDYbn6TszjgX8KMmd",
+              "name": "Paramito-KV2",
+              "stash": "EBd9PDnKJHkL3r5yu8Yw7VWNj7ARSxTCXi2FLQvqhcVtd1o",
               "riotHandle": "@paramito:matrix.org"
           },
           {
@@ -2592,7 +2610,7 @@ config: |
           },
           {
               "name": "STAKEWORLD/02",
-              "stash": "Dh2ZNKbQMdusURjfZZj7Bczb57PGEoCVmDHdq8hjnH5PZ4E",
+              "stash": "FZ1GFKR6tYx9gNGHV67h5aV6bfhAbh7ZRdU9ypVvXfseyfg",
               "riotHandle": "@stakeworld:matrix.org"
           },
           {
@@ -2714,6 +2732,151 @@ config: |
               "name": "🦜dotsamastake_ksm2🦜",
               "stash": "EaNqkv87hVL8vvwBcTxeCkECkzRuyFLVtSmrVCDhfj4dNmf",
               "riotHandle": "@dotsamastake.io:matrix.org"
+          },
+          {
+              "name": "Alzymologist-03",
+              "stash": "EAp3SeY72kfoCUV9SRbmZyiWVEhoQevwLASo7HmiTxCVKuv",
+              "riotHandle": "@alexander_slesarev:matrix.zymologia.fi"
+          },
+          {
+              "name": "Alzymologist-02",
+              "stash": "HPb2Eumk74WJ1rCnVL8rdQvJ8ALyUhxRmGxVrbHbuQ8fFMW",
+              "riotHandle": "@alexander_slesarev:matrix.zymologia.fi"
+          },
+          {
+              "name": "JelliedOwl_1",
+              "stash": "FfKiC6eiRapSgPnZd953vAbMAsR5J9c7x37rPuHMSKpruqD",
+              "riotHandle": "@jelliedowl:matrix.org"
+          },
+          {
+              "name": "openbitlab2",
+              "stash": "DYGkobGPb7Hc6c7dZbxTDX3DnGEAjXcv1kuNV3tQvkscxUL",
+              "riotHandle": "@openbitlab_:matrix.org"
+          },
+          {
+              "name": "big-wave-ksm-01",
+              "stash": "CrTPV874i4VNTjkCfQbGpPT338dhyu27w6poWrKuZZpEz17",
+              "riotHandle": "@big-wave:matrix.org"
+          },
+          {
+              "name": "stakingtree-1",
+              "stash": "HUQWG3HfMzKHo5W6uU3y6JJTTTxNGx7gmZvU8L93iTWmViS",
+              "riotHandle": "@stakingtree:matrix.org"
+          },
+          {
+              "name": "stakingtree-2",
+              "stash": "GV5Zij1Ayri83wA5BrfjUSq14P7efHHK8mV346AATQvAHnD",
+              "riotHandle": "@stakingtree:matrix.org"
+          },
+          {
+              "name": "Alzymologist-00",
+              "stash": "EQHdPbmAySkGg8UmTDfnVTkU7FhQ1ytKPMopsoN7Kuy2eth",
+              "riotHandle": "@agryaznov:matrix.parity.io"
+          },
+          {
+              "name": "blockbus",
+              "stash": "GXihX81hjYw4f5VQd9s1zsLU1poyo6hGqfPtcx2GJDVyyYx",
+              "riotHandle": "@ccole1:matrix.org"
+          },
+          {
+              "name": "LongNode",
+              "stash": "DizXV8fnNYr1HqBm9M3h4fUa8EdCTZWRyYpXF18s9JmWxh1",
+              "riotHandle": "@rdovgan:matrix.org"
+          },
+          {
+              "name": "BlockCtrl-2",
+              "stash": "Cx8jJMMwTcEwTMHSQDdwTwFJCmmTsMVz25auV95WkFBZnZv",
+              "riotHandle": "@alberto_bc:matrix.org"
+          },
+          {
+              "name": "Vel_Validator_02",
+              "stash": "HnidBVNsn5MdboWwHRRoVHuzzFEZZFgenQb3KmgEoRt3tTJ",
+              "riotHandle": "@vda0390:matrix.org"
+          },
+          {
+              "name": "bigTuna",
+              "stash": "FntXNA6GesCTLJQZUt1LjyUCxkTbhCYny4Y6UdT8et1aqNt",
+              "riotHandle": "@tunabig:matrix.org"
+          },
+          {
+              "name": "KYB-validator-2",
+              "stash": "CmS4wQk2P9DboQ3SVAJct1j948QbNhbJJmSrqvFMUSLATNZ",
+              "riotHandle": "@kostyayesikov:matrix.org"
+          },
+          {
+              "name": "Swiss Bond/2",
+              "stash": "E2gCFEisQ3k4LmaJHBysj8f1SRoG6jCo5ffFdX9XidqsjDC",
+              "riotHandle": "@matteo_swissbond:matrix.org"
+          },
+          {
+              "name": "Darkstar Ω Muladhara",
+              "stash": "HKskSdW3uDspu9x8Q9ph8tiKvbLE7Rd2n5cCKaG5rHL7DUv",
+              "riotHandle": "@darkstar/forklessnation:matrix.org"
+          },
+          {
+              "name": "metaspan-ksm2",
+              "stash": "FAR296Aqh9i8W5bi7BS7a8Bkhbw5LX5xCXP22c1Jvc2tM5v",
+              "riotHandle": "@metaspan:matrix.org"
+          },
+          {
+              "name": "anvel",
+              "stash": "EPbpqewHLsudtHdJnyMSR3SqP3fwUSSGssP18qsW1UABaFr",
+              "riotHandle": "@anvel:matrix.org"
+          },
+          {
+              "name": "Rekt Street Capital",
+              "stash": "FkrektytDeepNHKZMMiPYZsrmgrVum9cqZmE4fsz4cotKs9",
+              "riotHandle": "@rektstreet:matrix.org"
+          },
+          {
+              "name": "djandre2",
+              "stash": "Fynn5CRPtc8xH1gM5emZoRkXEZstrJE3ixmtNqTKa9yaV56",
+              "riotHandle": "@djandre77:matrix.org"
+          },
+          {
+              "name": "maxaon_Validator",
+              "stash": "EGU1mTpaHKdwqXJwZGSmyEhuh1Exy2o4yd6UyJ9HcGfBsjN",
+              "riotHandle": "@sasha1983:matrix.org"
+          },
+          {
+              "name": "kuzo",
+              "stash": "EAcDiMkyNsmiRY539ELBzSmjVwpfrcmPXEJLRME6DTiN4GF",
+              "riotHandle": "@guzo:matrix.org"
+          },
+          {
+              "name": "ERN VENTURES",
+              "stash": "FHsDBsDmxzsANzvDrPBCzxyRAAYuTHCoe5d6vzi2qEdTBKk",
+              "riotHandle": "@ernventures:matrix.org"
+          },
+          {
+              "name": "Powerstake-k1",
+              "stash": "HnZafcsErZXmc6gUupBDzNVayTQbraN5fvzoC7XYKev8f5q",
+              "riotHandle": "@powerstake:matrix.org"
+          },
+          {
+              "name": "Kobredabre/2",
+              "stash": "EDeGMwoAZ3SQwcGSb5oLPxSqNCYLCMHrfw4gJ9CM8Gr9XiA",
+              "riotHandle": "@kobredabre:matrix.org"
+          },
+          {
+              "name": "DomiNodes-Bravo",
+              "stash": "DN2oxCHnJviLK1NoYdzSNo9n9gmH3eBTfLGXSUcoFcq5khX",
+              "riotHandle": "@dominodes:matrix.org"
+          },
+          {
+              "name": "WolfEdge-Labs",
+              "stash": "F7otXz5RLDMf1Vcdo98zY4zYWQ13E7yeST48ZRS9QKHdr3d",
+              "riotHandle": "@wolfedge:matrix.org"
+          },
+          {
+              "name": "STAKEMORE",
+              "stash": "Gvtpyq5SFo7bcjA287yCqN7UqrpdBS7vYcMbyzaTKBDmUmc",
+              "riotHandle": "@stakemore:matrix.org"
+          },
+          {
+              "name": "Leostake",
+              "stash": "HNGMhUpVnZjuJ3kQcBAMF4KVywdkk2SCxQ4TAt6QBKtMCFh",
+              "riotHandle": "@leostake:matrix.org"
           }
       ],
       "forceRound": false,

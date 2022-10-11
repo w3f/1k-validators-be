@@ -133,8 +133,11 @@ export const autoNumNominations = async (
     }
   }
 
+  // How many additional validator to nominate above the amount to get in the set
+  const additional = 4;
+
   // The total amount of validators to nominate
-  const adjustedNominationAmount = Math.min(amount, 24);
+  const adjustedNominationAmount = Math.min(amount + additional, 24);
   // The total amount of funds the nominator should have bonded
   const newBondedAmount = (1 + BALANCE_BUFFER_PERCENT) * sum;
   // The target amount for each validator
@@ -565,11 +568,7 @@ export default class ScoreKeeper {
           );
           await this.startRound();
         } else {
-          logger.info(
-            `(Scorekeeper::mainCron) Current Targets: ${JSON.stringify(
-              this.currentTargets
-            )}. Ending round.`
-          );
+          logger.info(`(Scorekeeper::mainCron). Ending round.`);
           await this.endRound();
           await this.startRound();
         }
@@ -580,7 +579,7 @@ export default class ScoreKeeper {
 
     // Start all Cron Jobs
     try {
-      await startMonitorJob(this.config, this.db, this.monitor);
+      // await startMonitorJob(this.config, this.db, this.monitor);
       await startValidatityJob(
         this.config,
         this.db,
@@ -588,13 +587,13 @@ export default class ScoreKeeper {
         this.chaindata,
         candidates
       );
-
+      //
       await startEraPointsJob(this.config, this.db, this.chaindata);
       await startActiveValidatorJob(this.config, this.db, this.chaindata);
       await startInclusionJob(this.config, this.db, this.chaindata);
-      await startSessionKeyJob(this.config, this.db, this.chaindata);
+      // await startSessionKeyJob(this.config, this.db, this.chaindata);
       // await startUnclaimedEraJob(this.config, this.db, this.chaindata);
-      await startValidatorPrefJob(this.config, this.db, this.chaindata);
+      // await startValidatorPrefJob(this.config, this.db, this.chaindata);
       // if (this.claimer) {
       //   await startRewardClaimJob(
       //     this.config,
@@ -612,22 +611,22 @@ export default class ScoreKeeper {
         this.db,
         this.bot
       );
-      await startCancelCron(
-        this.config,
-        this.handler,
-        this.db,
-        this.nominatorGroups,
-        this.chaindata,
-        this.bot
-      );
-      await startStaleNominationCron(
-        this.config,
-        this.handler,
-        this.db,
-        this.nominatorGroups,
-        this.chaindata,
-        this.bot
-      );
+      // await startCancelCron(
+      //   this.config,
+      //   this.handler,
+      //   this.db,
+      //   this.nominatorGroups,
+      //   this.chaindata,
+      //   this.bot
+      // );
+      // await startStaleNominationCron(
+      //   this.config,
+      //   this.handler,
+      //   this.db,
+      //   this.nominatorGroups,
+      //   this.chaindata,
+      //   this.bot
+      // );
       await startScoreJob(this.config, this.constraints);
       await startEraStatsJob(this.db, this.config, this.chaindata);
       await startLocationStatsJob(this.config, this.db, this.chaindata);
@@ -805,10 +804,10 @@ export default class ScoreKeeper {
           return;
         }
 
-        await nominator.adjustBond(
-          newBondedAmount,
-          Number(currentBondedAmount)
-        );
+        // await nominator.adjustBond(
+        //   newBondedAmount,
+        //   Number(currentBondedAmount)
+        // );
         await sleep(10000);
         await nominator.nominate(targets, dryRun || this.config.global.dryRun);
 

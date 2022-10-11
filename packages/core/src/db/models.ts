@@ -1,6 +1,6 @@
 import { Schema } from "mongoose";
 
-export const RewardRecordScheme = new Schema({
+const RewardRecordScheme = new Schema({
   // Era
   era: String,
   // reward for era
@@ -18,7 +18,7 @@ export const AccountingSchema = new Schema({
   records: [RewardRecordScheme],
 });
 
-export const FaultEventSchema = new Schema({
+const FaultEventSchema = new Schema({
   // Timestamp when the fault happened.
   when: Number,
   // The reason the fault took place.
@@ -27,7 +27,7 @@ export const FaultEventSchema = new Schema({
   prevRank: Number,
 });
 
-export const RankEventSchema = new Schema({
+const RankEventSchema = new Schema({
   // Timestamp when this event happened.
   when: Number,
   // Start era for this rank event.

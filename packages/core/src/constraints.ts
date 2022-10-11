@@ -61,6 +61,37 @@ export class OTV implements Constraints {
   private validMapCache: Map<string, CandidateData> = new Map();
   private invalidMapCache: Map<string, CandidateData> = new Map();
 
+  // Weighted scores
+  // Inclusion - lower is preferable (84-Era Inclusion)
+  // Span Inclusion - lower is preferable (28-Era Inclusion)
+  // Discovered at - earlier is preferable
+  // Nominated At - not nominated in a while is preferable
+  // Rank - higher is preferable
+  // Unclaimed Eras - lower is preferable
+  // Bonded - higher is preferable
+  // Faults - lower is preferable
+  // Accumulated Offline - lower if preferable
+  // Location - lower is preferable
+  // Council - higher is preferable
+  // Democracy - higher is preferable
+  private INCLUSION_WEIGHT = 100;
+  private SPAN_INCLUSION_WEIGHT = 100;
+  private DISCOVERED_WEIGHT = 5;
+  private NOMINATED_WEIGHT = 30;
+  private RANK_WEIGHT = 5;
+  private UNCLAIMED_WEIGHT = 10;
+  private BONDED_WEIGHT = 50;
+  private FAULTS_WEIGHT = 5;
+  private OFFLINE_WEIGHT = 2;
+  private LOCATION_WEIGHT = 30;
+  private REGION_WEIGHT = 10;
+  private COUNTRY_WEIGHT = 10;
+  private PROVIDER_WEIGHT = 50;
+  private COUNCIL_WEIGHT = 50;
+  private DEMOCRACY_WEIGHT = 100;
+  private NOMINATIONS_WEIGHT = 100;
+  private DELEGATIONS_WEIGHT = 60;
+
   constructor(
     handler: ApiHandler,
     skipConnectionTime = false,
@@ -88,6 +119,23 @@ export class OTV implements Constraints {
 
     this.config = config;
     this.db = db;
+
+    this.INCLUSION_WEIGHT = Number(this.config.score.inclusion);
+    this.SPAN_INCLUSION_WEIGHT = Number(this.config.score.spanInclusion);
+    this.DISCOVERED_WEIGHT = Number(this.config.score.discovered);
+    this.NOMINATED_WEIGHT = Number(this.config.score.nominated);
+    this.RANK_WEIGHT = Number(this.config.score.nominated);
+    this.BONDED_WEIGHT = Number(this.config.score.bonded);
+    this.FAULTS_WEIGHT = Number(this.config.score.faults);
+    this.OFFLINE_WEIGHT = Number(this.config.score.offline);
+    this.LOCATION_WEIGHT = Number(this.config.score.location);
+    this.REGION_WEIGHT = Number(this.config.score.region);
+    this.COUNTRY_WEIGHT = Number(this.config.score.region);
+    this.PROVIDER_WEIGHT = Number(this.config.score.provider);
+    this.COUNCIL_WEIGHT = Number(this.config.score.council);
+    this.DEMOCRACY_WEIGHT = Number(this.config.score.democracy);
+    this.NOMINATIONS_WEIGHT = Number(this.config.score.nominations);
+    this.DELEGATIONS_WEIGHT = Number(this.config.score.delegations);
   }
 
   get validCandidateCache(): CandidateData[] {
@@ -189,11 +237,11 @@ export class OTV implements Constraints {
       this.config.constraints.skipUnclaimed == true
         ? true
         : (await checkUnclaimed(
-            this.db,
-            this.chaindata,
-            this.unclaimedEraThreshold,
-            candidate
-          )) || false;
+        this.db,
+        this.chaindata,
+        this.unclaimedEraThreshold,
+        candidate
+      )) || false;
 
     const blockedValid =
       (await checkBlocked(this.db, this.chaindata, candidate)) || false;
@@ -325,8 +373,6 @@ export class OTV implements Constraints {
       return location.numberOfNodes;
     });
     const locationStats = getStats(locationValues);
-    logger.info(`location stats`);
-    logger.info(JSON.stringify(locationStats));
 
     // ---------------- CITY -----------------------------------
     const cityMap = new Map();
@@ -354,8 +400,6 @@ export class OTV implements Constraints {
       return city.numberOfNodes;
     });
     const cityStats = getStats(cityValues);
-    logger.info(`city stats:`);
-    logger.info(JSON.stringify(cityStats));
 
     // ---------------- REGION -----------------------------------
     const regionMap = new Map();
@@ -383,8 +427,6 @@ export class OTV implements Constraints {
       return region.numberOfNodes;
     });
     const regionStats = getStats(regionValues);
-    logger.info(`region stats:`);
-    logger.info(JSON.stringify(regionStats));
 
     // ---------------- COUNTRY -----------------------------------
     const countryMap = new Map();
@@ -412,8 +454,6 @@ export class OTV implements Constraints {
       return country.numberOfNodes;
     });
     const countryStats = getStats(countryValues);
-    logger.info(`country stats:`);
-    logger.info(JSON.stringify(countryStats));
 
     // ---------------- ASN -----------------------------------
     const asnMap = new Map();
@@ -440,8 +480,6 @@ export class OTV implements Constraints {
       return asn.numberOfNodes;
     });
     const asnStats = getStats(asnValues);
-    logger.info(`asn stats:`);
-    logger.info(JSON.stringify(asnStats));
 
     // ---------------- PROVIDER -----------------------------------
     const providerMap = new Map();
@@ -469,8 +507,6 @@ export class OTV implements Constraints {
       return provider.numberOfNodes;
     });
     const providerStats = getStats(providerValues);
-    logger.info(`provider stats:`);
-    logger.info(JSON.stringify(providerStats));
 
     // Nominator Stake
     const ownNominators = await db.allNominators();
@@ -480,21 +516,30 @@ export class OTV implements Constraints {
     const nominatorStakeValues = [];
     for (const candidate of validCandidates) {
       const nomStake = await db.getLatestNominatorStake(candidate.stash);
-      if (nomStake != undefined) {
-        const { activeNominators, inactiveNominators } = nomStake;
+      if (
+        nomStake != undefined &&
+        nomStake?.activeNominators &&
+        nomStake?.inactiveNominators
+      ) {
+        try {
+          const { activeNominators, inactiveNominators } = nomStake;
 
-        let total = 0;
-        for (const active of activeNominators) {
-          if (!ownNominatorAddresses.includes(active.address)) {
-            total += Math.sqrt(active.bonded);
+          let total = 0;
+          for (const active of activeNominators) {
+            if (!ownNominatorAddresses.includes(active.address)) {
+              total += Math.sqrt(active.bonded);
+            }
           }
-        }
-        for (const inactive of inactiveNominators) {
-          if (!ownNominatorAddresses.includes(inactive.address)) {
-            total += Math.sqrt(inactive.bonded);
+          for (const inactive of inactiveNominators) {
+            if (!ownNominatorAddresses.includes(inactive.address)) {
+              total += Math.sqrt(inactive.bonded);
+            }
           }
+          nominatorStakeValues.push(total);
+        } catch (e) {
+          logger.info(`{nominatorStake} Can't find nominator stake values`);
+          logger.info(JSON.stringify(nomStake));
         }
-        nominatorStakeValues.push(total);
       }
     }
     if (nominatorStakeValues.length == 0) nominatorStakeValues.push(0);
@@ -504,14 +549,19 @@ export class OTV implements Constraints {
     const delegationValues = [];
     for (const candidate of validCandidates) {
       const delegations = await db.getDelegations(candidate.stash);
-      if (delegations != undefined) {
-        const { totalBalance, delegators } = delegations;
+      if (delegations != undefined && delegations?.delegators) {
+        try {
+          const { totalBalance, delegators } = delegations;
 
-        let total = 0;
-        for (const delegator of delegators) {
-          total += Math.sqrt(delegator.effectiveBalance);
+          let total = 0;
+          for (const delegator of delegators) {
+            total += Math.sqrt(delegator.effectiveBalance);
+          }
+          delegationValues.push(total);
+        } catch (e) {
+          logger.info(`{delegations} Can't find delegation values`);
+          logger.info(JSON.stringify(delegations));
         }
-        delegationValues.push(total);
       }
     }
     const delegationStats = getStats(delegationValues);
@@ -568,34 +618,30 @@ export class OTV implements Constraints {
 
     for (const candidate of validCandidates) {
       // Scale inclusion between the 20th and 75th percentiles
-      const scaledInclusion = scaledDefined(
-        candidate.inclusion,
-        inclusionValues,
-        0.2,
-        0.75
-      );
+      const scaledInclusion =
+        scaledDefined(candidate.inclusion, inclusionValues, 0.2, 0.75) || 0;
       const inclusionScore = (1 - scaledInclusion) * this.INCLUSION_WEIGHT;
 
       // Scale inclusion between the 20th and 75h percentiles
-      const scaledSpanInclusion = scaledDefined(
-        candidate.spanInclusion,
-        spanInclusionValues,
-        0.2,
-        0.75
-      );
+      const scaledSpanInclusion =
+        scaledDefined(
+          candidate.spanInclusion,
+          spanInclusionValues,
+          0.2,
+          0.75
+        ) || 0;
       const spanInclusionScore =
         (1 - scaledSpanInclusion) * this.SPAN_INCLUSION_WEIGHT;
 
-      const scaledDiscovered = scaled(
-        candidate.discoveredAt,
-        discoveredAtValues
-      );
+      const scaledDiscovered =
+        scaled(candidate.discoveredAt, discoveredAtValues) || 0;
       const discoveredScore = (1 - scaledDiscovered) * this.DISCOVERED_WEIGHT;
 
-      const scaledNominated = scaled(candidate.nominatedAt, nominatedAtValues);
+      const scaledNominated =
+        scaled(candidate.nominatedAt, nominatedAtValues) || 0;
       const nominatedScore = (1 - scaledNominated) * this.NOMINATED_WEIGHT;
 
-      const scaledRank = scaled(candidate.rank, rankValues);
+      const scaledRank = scaled(candidate.rank, rankValues) || 0;
       const rankScore = scaledRank * this.RANK_WEIGHT;
 
       // Subtract the UNCLAIMED WEIGHT for each unclaimed era
@@ -604,18 +650,20 @@ export class OTV implements Constraints {
         : 0;
 
       // Scale bonding based on the 5th and 85th percentile
-      const scaledBonded = scaledDefined(
-        candidate.bonded ? candidate.bonded : 0,
-        bondedValues,
-        0.05,
-        0.85
-      );
+      const scaledBonded =
+        scaledDefined(
+          candidate.bonded ? candidate.bonded : 0,
+          bondedValues,
+          0.05,
+          0.85
+        ) || 0;
       const bondedScore = scaledBonded * this.BONDED_WEIGHT;
 
-      const scaledOffline = scaled(candidate.offlineAccumulated, offlineValues);
+      const scaledOffline =
+        scaled(candidate.offlineAccumulated, offlineValues) || 0;
       const offlineScore = (1 - scaledOffline) * this.OFFLINE_WEIGHT;
 
-      const scaledFaults = scaled(candidate.faults, faultsValues);
+      const scaledFaults = scaled(candidate.faults, faultsValues) || 0;
       const faultsScore = (1 - scaledFaults) * this.FAULTS_WEIGHT;
 
       // Get the total number of nodes for the location a candidate has their node in
@@ -623,12 +671,8 @@ export class OTV implements Constraints {
         if (candidate.location == location.name) return location.numberOfNodes;
       })[0]?.numberOfNodes;
       // Scale the location value to between the 10th and 95th percentile
-      const scaledLocation = scaledDefined(
-        candidateLocation,
-        locationValues,
-        0.1,
-        0.95
-      );
+      const scaledLocation =
+        scaledDefined(candidateLocation, locationValues, 0.1, 0.95) || 0;
       const locationScore = (1 - scaledLocation) * this.LOCATION_WEIGHT || 0;
 
       const candidateRegion = regionArr.filter((region) => {
@@ -639,12 +683,8 @@ export class OTV implements Constraints {
           return region.numberOfNodes;
       })[0]?.numberOfNodes;
       // Scale the value to between the 10th and 95th percentile
-      const scaledRegion = scaledDefined(
-        candidateRegion,
-        regionValues,
-        0.1,
-        0.95
-      );
+      const scaledRegion =
+        scaledDefined(candidateRegion, regionValues, 0.1, 0.95) || 0;
       const regionScore = (1 - scaledRegion) * this.LOCATION_WEIGHT || 0;
 
       const candidateCountry = countryArr.filter((country) => {
@@ -655,12 +695,8 @@ export class OTV implements Constraints {
           return country.numberOfNodes;
       })[0]?.numberOfNodes;
       // Scale the value to between the 10th and 95th percentile
-      const scaledCountry = scaledDefined(
-        candidateCountry,
-        countryValues,
-        0.1,
-        0.95
-      );
+      const scaledCountry =
+        scaledDefined(candidateCountry, countryValues, 0.1, 0.95) || 0;
       const countryScore = (1 - scaledCountry) * this.LOCATION_WEIGHT || 0;
 
       const candidateASN = asnArr.filter((asn) => {
@@ -671,7 +707,7 @@ export class OTV implements Constraints {
           return asn.numberOfNodes;
       })[0]?.numberOfNodes;
       // Scale the value to between the 10th and 95th percentile
-      const scaledASN = scaledDefined(candidateASN, asnValues, 0.1, 0.95);
+      const scaledASN = scaledDefined(candidateASN, asnValues, 0.1, 0.95) || 0;
       const asnScore = (1 - scaledASN) * this.LOCATION_WEIGHT || 0;
 
       const candidateProvider = providerArr.filter((provider) => {
@@ -682,52 +718,52 @@ export class OTV implements Constraints {
           return provider.numberOfNodes;
       })[0]?.numberOfNodes;
       // Scale the value to between the 10th and 95th percentile
-      const scaledProvider = scaledDefined(
-        candidateProvider,
-        providerValues,
-        0.1,
-        0.95
-      );
+      const scaledProvider =
+        scaledDefined(candidateProvider, providerValues, 0.1, 0.95) || 0;
       const providerScore = (1 - scaledProvider) * this.LOCATION_WEIGHT || 0;
 
-      // logger.info(
-      //   `${candidate.stash}: location: ${locationScore} region: ${regionScore} country: ${countryScore} asn: ${asnScore} provider: ${providerScore}`
-      // );
-
       const nomStake = await db.getLatestNominatorStake(candidate.stash);
-      const { activeNominators, inactiveNominators } = nomStake;
       let totalNominatorStake = 0;
-      for (const active of activeNominators) {
-        if (!ownNominatorAddresses.includes(active.address)) {
-          totalNominatorStake += Math.sqrt(active.bonded);
+      if (
+        nomStake != undefined &&
+        nomStake?.activeNominators &&
+        nomStake?.inactiveNominators
+      ) {
+        const { activeNominators, inactiveNominators } = nomStake;
+
+        for (const active of activeNominators) {
+          if (!ownNominatorAddresses.includes(active.address)) {
+            totalNominatorStake += Math.sqrt(active.bonded);
+          }
+        }
+        for (const inactive of inactiveNominators) {
+          if (!ownNominatorAddresses.includes(inactive.address)) {
+            totalNominatorStake += Math.sqrt(inactive.bonded);
+          }
         }
       }
-      for (const inactive of inactiveNominators) {
-        if (!ownNominatorAddresses.includes(inactive.address)) {
-          totalNominatorStake += Math.sqrt(inactive.bonded);
-        }
-      }
-      const scaledNominatorStake = scaledDefined(
-        totalNominatorStake,
-        nominatorStakeValues,
-        0.1,
-        0.95
-      );
-      const nominatorStakeScore = scaledNominatorStake * this.BONDED_WEIGHT;
+      const scaledNominatorStake =
+        scaledDefined(totalNominatorStake, nominatorStakeValues, 0.1, 0.95) ||
+        0;
+      const nominatorStakeScore =
+        scaledNominatorStake * this.NOMINATIONS_WEIGHT;
 
       const delegations = await db.getDelegations(candidate.stash);
-      const { totalBalance, delegators } = delegations;
       let totalDelegations = 0;
-      for (const delegator of delegators) {
-        totalDelegations += Math.sqrt(delegator.effectiveBalance);
+      if (
+        delegations != undefined &&
+        delegations?.totalBalance &&
+        delegations?.delegators
+      ) {
+        const { totalBalance, delegators } = delegations;
+
+        for (const delegator of delegators) {
+          totalDelegations += Math.sqrt(delegator.effectiveBalance);
+        }
       }
-      const scaledDelegations = scaledDefined(
-        totalDelegations,
-        delegationValues,
-        0.1,
-        0.95
-      );
-      const delegationScore = scaledDelegations * this.BONDED_WEIGHT;
+      const scaledDelegations =
+        scaledDefined(totalDelegations, delegationValues, 0.1, 0.95) || 0;
+      const delegationScore = scaledDelegations * this.DELEGATIONS_WEIGHT;
 
       // Score the council backing weight based on what percentage of their staking bond it is
       const denom = await this.chaindata.getDenom();
@@ -736,14 +772,14 @@ export class OTV implements Constraints {
         candidate.councilStake == 0
           ? 0
           : candidate.councilStake >= 0.75 * formattedBonded
-          ? this.COUNCIL_WEIGHT
-          : candidate.councilStake >= 0.5 * formattedBonded
-          ? 0.75 * this.COUNCIL_WEIGHT
-          : candidate.councilStake >= 0.25 * formattedBonded
-          ? 0.5 * this.COUNCIL_WEIGHT
-          : candidate.councilStake < 0.25 * formattedBonded
-          ? 0.25 * this.COUNCIL_WEIGHT
-          : 0;
+            ? this.COUNCIL_WEIGHT
+            : candidate.councilStake >= 0.5 * formattedBonded
+              ? 0.75 * this.COUNCIL_WEIGHT
+              : candidate.councilStake >= 0.25 * formattedBonded
+                ? 0.5 * this.COUNCIL_WEIGHT
+                : candidate.councilStake < 0.25 * formattedBonded
+                  ? 0.25 * this.COUNCIL_WEIGHT
+                  : 0;
 
       // Score democracy based on how many proposals have been voted on
       const {
@@ -754,9 +790,24 @@ export class OTV implements Constraints {
       } = scoreDemocracyVotes(candidate.democracyVotes, lastReferendum);
       const scaledDemocracyScore =
         scaled(totalDemocracyScore, democracyValues) * this.DEMOCRACY_WEIGHT;
-      // logger.info(
-      //   `{democracyScore} last referendum: ${lastReferendum} ${candidate.stash} votes: ${candidate.democracyVotes} democracyScore: ${baseDemocracyScore} total mult: ${totalConsistencyMultiplier} last mult: ${lastConsistencyMultiplier} total: ${totalDemocracyScore} scaled: ${scaledDemocracyScore}`
-      // );
+
+      logger.info(`${candidate.name} inclusionScore ${inclusionScore}`);
+      logger.info(`${candidate.name} spanInclusionScore ${spanInclusionScore}`);
+      logger.info(`${candidate.name} faultsScore ${faultsScore}`);
+      logger.info(`${candidate.name} discoveredScore ${discoveredScore}`);
+      logger.info(`${candidate.name} nominatedScore ${nominatedScore}`);
+      logger.info(`${candidate.name} rankScore ${rankScore}`);
+      logger.info(`${candidate.name} unclaimedScore ${unclaimedScore}`);
+      logger.info(`${candidate.name} bondedScore ${bondedScore}`);
+      logger.info(`${candidate.name} locationScore ${locationScore}`);
+      logger.info(`${candidate.name} councilStakeScore ${councilStakeScore}`);
+      logger.info(
+        `${candidate.name} scaledDemocracyScore ${scaledDemocracyScore}`
+      );
+      logger.info(`${candidate.name} offlineScore ${offlineScore}`);
+      logger.info(
+        `${candidate.name} nominatorStakeScore ${nominatorStakeScore}`
+      );
 
       const aggregate =
         inclusionScore +
@@ -770,12 +821,19 @@ export class OTV implements Constraints {
         locationScore +
         councilStakeScore +
         scaledDemocracyScore +
-        offlineScore;
+        offlineScore +
+        nominatorStakeScore;
 
       const randomness = 1 + Math.random() * 0.15;
 
+      const total = aggregate * randomness || 0;
+
+      logger.info(`aggregate: ${aggregate}`);
+      logger.info(`randomness: ${randomness}`);
+      logger.info(`total: ${total}`);
+
       const score = {
-        total: aggregate * randomness,
+        total: total,
         aggregate: aggregate,
         inclusion: inclusionScore,
         spanInclusion: spanInclusionScore,
@@ -855,32 +913,6 @@ export class OTV implements Constraints {
     return rankedCandidates;
   }
 
-  // Weighted scores
-  // Inclusion - lower is preferable (84-Era Inclusion)
-  // Span Inclusion - lower is preferable (28-Era Inclusion)
-  // Discovered at - earlier is preferable
-  // Nominated At - not nominated in a while is preferable
-  // Rank - higher is preferable
-  // Unclaimed Eras - lower is preferable
-  // Bonded - higher is preferable
-  // Faults - lower is preferable
-  // Accumulated Offline - lower if preferable
-  // Location - lower is preferable
-  // Council - higher is preferable
-  // Democracy - higher is preferable
-  INCLUSION_WEIGHT = 100;
-  SPAN_INCLUSION_WEIGHT = 100;
-  DISCOVERED_WEIGHT = 5;
-  NOMINATED_WEIGHT = 30;
-  RANK_WEIGHT = 5;
-  UNCLAIMED_WEIGHT = 10;
-  BONDED_WEIGHT = 50;
-  FAULTS_WEIGHT = 5;
-  OFFLINE_WEIGHT = 2;
-  LOCATION_WEIGHT = 40;
-  COUNCIL_WEIGHT = 50;
-  DEMOCRACY_WEIGHT = 100;
-
   /// At the end of a nomination round this is the logic that separates the
   /// candidates that did good from the ones that did badly.
   /// - We have two sets, a 'good' set, and a 'bad' set
@@ -890,7 +922,7 @@ export class OTV implements Constraints {
     candidates: Set<CandidateData>
   ): Promise<
     [Set<CandidateData>, Set<{ candidate: CandidateData; reason: string }>]
-  > {
+    > {
     logger.info(`(OTV::processCandidates) Processing candidates`);
 
     const [activeEraIndex, eraErr] = await this.chaindata.getActiveEraIndex();

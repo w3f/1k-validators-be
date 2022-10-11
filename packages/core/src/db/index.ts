@@ -394,14 +394,15 @@ export default class Db {
 
     let locationData;
     locationData = await this.getLocation(name, addr);
-    const iit = await this.getIIT();
-    if (!locationData) {
-      logger.info(`{reportOnline} Fetching Location Info`);
+    const shouldFetch =
+      !locationData || (locationData?.addr && locationData?.addr != addr);
+    if (shouldFetch) {
       const iit = await this.getIIT();
       const { city, region, country, asn, provider } = await fetchLocationInfo(
         addr,
         iit && iit.iit ? iit.iit : null
       );
+
       await this.setLocation(name, addr, city, region, country, asn, provider);
       locationData = await this.getLocation(name, addr);
     }
@@ -415,7 +416,10 @@ export default class Db {
       // A new node that is not already registered as a candidate.
       const candidate = new this.candidateModel({
         telemetryId,
-        location: locationData.city,
+        location:
+          locationData && locationData?.city
+            ? locationData?.city
+            : "No Location",
         networkId: null,
         nodeRefs: 1,
         name,
@@ -429,9 +433,6 @@ export default class Db {
       return candidate.save();
     }
 
-    const candidateLocation =
-      location != "No Location" ? location : data.location;
-
     // Get the list of all other validtity reasons besides online
     const invalidityReasons = data.invalidity.filter((invalidityReason) => {
       return invalidityReason.type !== "ONLINE";
@@ -443,7 +444,10 @@ export default class Db {
           { name },
           {
             telemetryId,
-            location: locationData.city,
+            location:
+              locationData && locationData?.city
+                ? locationData?.city
+                : "No Location",
             infrastructureLocation: locationData,
             discoveredAt: now,
             onlineSince: now,
@@ -472,7 +476,10 @@ export default class Db {
         { name },
         {
           telemetryId,
-          location: locationData.city,
+          location:
+            locationData && locationData?.city
+              ? locationData?.city
+              : "No Location",
           infrastructureLocation: locationData,
           onlineSince: now,
           version,
@@ -1273,8 +1280,8 @@ export default class Db {
       networkPrefix == 2
         ? "Kusama"
         : networkPrefix == 0
-        ? "Polkadot"
-        : "Local Testnet";
+          ? "Polkadot"
+          : "Local Testnet";
     const decimals = networkPrefix == 2 ? 12 : networkPrefix == 0 ? 10 : 12;
 
     logger.info(
@@ -2085,8 +2092,8 @@ export default class Db {
               details: validity
                 ? ""
                 : details
-                ? details
-                : `${data.name} has not properly set their identity`,
+                  ? details
+                  : `${data.name} has not properly set their identity`,
             },
           ],
         }
@@ -2129,8 +2136,8 @@ export default class Db {
               details: validity
                 ? ""
                 : `${data.name} has been offline ${
-                    data.offlineAccumulated / 1000 / 60
-                  } minutes this week.`,
+                  data.offlineAccumulated / 1000 / 60
+                } minutes this week.`,
             },
           ],
         }
@@ -2214,8 +2221,8 @@ export default class Db {
               details: validity
                 ? ""
                 : details
-                ? details
-                : `${data.name} has not properly set their commission`,
+                  ? details
+                  : `${data.name} has not properly set their commission`,
             },
           ],
         }
@@ -2257,8 +2264,8 @@ export default class Db {
               details: validity
                 ? ""
                 : details
-                ? details
-                : `${data.name} has not properly bonded enough self stake`,
+                  ? details
+                  : `${data.name} has not properly bonded enough self stake`,
             },
           ],
         }
@@ -2300,8 +2307,8 @@ export default class Db {
               details: validity
                 ? ""
                 : details
-                ? details
-                : `${data.name} has not properly claimed era rewards`,
+                  ? details
+                  : `${data.name} has not properly claimed era rewards`,
             },
           ],
         }
@@ -2342,8 +2349,8 @@ export default class Db {
               details: validity
                 ? ""
                 : details
-                ? details
-                : `${data.name} blocks external nominations`,
+                  ? details
+                  : `${data.name} blocks external nominations`,
             },
           ],
         }
@@ -2385,8 +2392,8 @@ export default class Db {
               details: validity
                 ? ""
                 : details
-                ? details
-                : `${data.name} has not properly claimed era rewards`,
+                  ? details
+                  : `${data.name} has not properly claimed era rewards`,
             },
           ],
         }
@@ -2915,13 +2922,13 @@ export default class Db {
     // First try to get by telemetry name
     data = await this.locationModel
       .findOne({
-        name,
+        addr,
       })
       .exec();
     if (!data) {
       data = await this.locationModel
         .findOne({
-          addr,
+          name,
         })
         .exec();
     }
@@ -2948,7 +2955,8 @@ export default class Db {
       });
     }
 
-    if (!data) {
+    if (!data || data?.addr != addr || data?.city != city) {
+      logger.info(JSON.stringify(data ? data : null));
       const location = new this.locationModel({
         name,
         addr,

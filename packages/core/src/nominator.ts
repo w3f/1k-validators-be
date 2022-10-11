@@ -368,10 +368,10 @@ export default class Nominator {
             .filter(({ event }) => api.events.system.ExtrinsicFailed.is(event))
             .forEach(
               async ({
-                event: {
-                  data: [error, info],
-                },
-              }) => {
+                       event: {
+                         data: [error, info],
+                       },
+                     }) => {
                 if (error.isModule) {
                   const decoded = api.registry.findMetaError(error.asModule);
                   const { docs, method, section } = decoded;
@@ -421,7 +421,7 @@ export default class Nominator {
           const bonded = toDecimals(
             (await api.query.staking.ledger(this.controller)).toJSON()[
               "active"
-            ],
+              ],
             decimals
           );
           await this.db.setNomination(
@@ -491,10 +491,10 @@ export default class Nominator {
             .filter(({ event }) => api.events.system.ExtrinsicFailed.is(event))
             .forEach(
               async ({
-                event: {
-                  data: [error, info],
-                },
-              }) => {
+                       event: {
+                         data: [error, info],
+                       },
+                     }) => {
                 if (error.isModule) {
                   const decoded = api.registry.findMetaError(error.asModule);
                   const { docs, method, section } = decoded;

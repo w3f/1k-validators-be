@@ -28,6 +28,8 @@ jobs:
     steps:
       - checkout
       - run:
+          environment:
+            YARN_ENABLE_IMMUTABLE_INSTALLS: false
           command: |
             yarn
 

@@ -11,7 +11,7 @@ services:
         depends_on:
             - telemetry-backend-core
             - mongo
-            - 1kv
+            - 1kv-core
         networks:
             testing_net:
                 ipv4_address: 172.28.1.1
@@ -27,7 +27,7 @@ services:
         depends_on:
             - telemetry-backend-core
             - mongo
-            - 1kv
+            - 1kv-core
         networks:
             testing_net:
                 ipv4_address: 172.28.1.2
@@ -43,7 +43,7 @@ services:
         depends_on:
             - telemetry-backend-core
             - mongo
-            - 1kv
+            - 1kv-core
         networks:
             testing_net:
                 ipv4_address: 172.28.1.3
@@ -59,7 +59,7 @@ services:
         depends_on:
             - telemetry-backend-core
             - mongo
-            - 1kv
+            - 1kv-core
         networks:
             testing_net:
                 ipv4_address: 172.28.1.4
@@ -75,7 +75,7 @@ services:
         depends_on:
             - telemetry-backend-core
             - mongo
-            - 1kv
+            - 1kv-core
         networks:
             testing_net:
                 ipv4_address: 172.28.1.5
@@ -91,10 +91,47 @@ services:
         depends_on:
             - telemetry-backend-core
             - mongo
-            - 1kv
+            - 1kv-core
         networks:
             testing_net:
                 ipv4_address: 172.28.1.6
+
+    1kv-core:
+      build:
+        context: .
+        dockerfile: ./packages/core/Dockerfile-dev
+      volumes:
+        - .:/app
+      ports:
+        - "3300:3300"
+      networks:
+        testing_net:
+          ipv4_address: 172.28.1.7
+
+    1kv-gateway:
+      build:
+        context: .
+        dockerfile: ./packages/gateway/Dockerfile-dev
+      volumes:
+        - .:/app
+      ports:
+        - "3301:3301"
+      networks:
+        testing_net:
+          ipv4_address: 172.28.1.8
+
+    1kv-telemetry:
+      build:
+        context: .
+        dockerfile: ./packages/telemetry/Dockerfile-dev
+      volumes:
+        - .:/app
+#      ports:
+#        - "3300:3300"
+      networks:
+        testing_net:
+          ipv4_address: 172.28.1.9
+
 
     telemetry-backend-core:
         image: parity/substrate-telemetry-backend:latest
@@ -148,36 +185,29 @@ services:
             testing_net:
                 ipv4_address: 172.28.1.12
 
-    1kv:
-        build:
-            context: .
-            dockerfile: Dockerfile-dev
-        volumes:
-            - .:/app
-        ports:
-            - "3300:3300"
-        networks:
-            testing_net:
-                ipv4_address: 172.28.1.13
-
     mongo-express:
-        image: mongo-express
-        environment:
-            - ME_CONFIG_MONGODB_SERVER=mongo
-            - ME_CONFIG_MONGODB_PORT=27017
-            - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
-            - ME_CONFIG_MONGODB_AUTH_DATABASE=admin
-            - ME_CONFIG_MONGODB_AUTH_USERNAME=${MONGO_ROOT_USER}
-            - ME_CONFIG_MONGODB_AUTH_PASSWORD=${MONGO_ROOT_PASSWORD}
-            - ME_CONFIG_BASICAUTH_USERNAME=${MONGOEXPRESS_LOGIN}
-            - ME_CONFIG_BASICAUTH_PASSWORD=${MONGOEXPRESS_PASSWORD}
-        depends_on:
-            - mongo
-        ports:
-          - "8888:8081"
-        networks:
-            testing_net:
-                ipv4_address: 172.28.1.14
+      image: mongo-express
+      environment:
+        - ME_CONFIG_MONGODB_SERVER=mongo
+        - ME_CONFIG_MONGODB_PORT=27017
+        - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
+        - ME_CONFIG_MONGODB_AUTH_DATABASE=admin
+        - ME_CONFIG_MONGODB_AUTH_USERNAME=${MONGO_ROOT_USER}
+        - ME_CONFIG_MONGODB_AUTH_PASSWORD=${MONGO_ROOT_PASSWORD}
+        - ME_CONFIG_BASICAUTH_USERNAME=${MONGOEXPRESS_LOGIN}
+        - ME_CONFIG_BASICAUTH_PASSWORD=${MONGOEXPRESS_PASSWORD}
+      depends_on:
+        - mongo
+      ports:
+        - "8888:8081"
+      networks:
+        testing_net:
+          ipv4_address: 172.28.1.14
+
+
+
+
+
 
 volumes:
     polkadot-data-alice:

@@ -4,7 +4,6 @@ import logger from "./logger";
 import { checkUnclaimed, OTV } from "./constraints";
 import Monitor from "./monitor";
 import { Subscan } from "./subscan";
-import { arrayBuffer } from "stream/consumers";
 import { Referendum, ReferendumVote } from "./types";
 import { getStats, variance } from "./score";
 

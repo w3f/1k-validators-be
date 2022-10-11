@@ -1,5 +1,6 @@
 alice
 bob
+.dockerignore
 node_modules
 scripts
 test
@@ -8,3 +9,11 @@ zero
 charts
 helmfile.d
 build
+.circleci
+.editorconfig
+.git
+.github
+.gitignore
+.idea
+combined.log
+docker-compose.yml

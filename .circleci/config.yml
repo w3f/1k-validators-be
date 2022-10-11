@@ -12,13 +12,15 @@ jobs:
 
   checkESLint:
     docker:
-      - image: node:slim
+      - image: node:18
     resource_class: large      
     steps:
       - checkout
       - run:
+          environment:
+            YARN_ENABLE_IMMUTABLE_INSTALLS: false
           command: |
-            yarn; yarn lint
+            yarn set version 3.2.2 && yarn install && yarn workspace @1kv/core build && yarn workspace @1kv/core lint
 
   unitTests:
     docker:
@@ -47,7 +49,7 @@ jobs:
       - setup_remote_docker
       - run:
           command: |
-            /scripts/build-image.sh web3f/otv-backend .
+            /scripts/build-image.sh web3f/otv-backend ./packages/core
 
   integrationTests:
     docker:

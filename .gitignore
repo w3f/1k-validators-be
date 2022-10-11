@@ -8,5 +8,18 @@ combined.log
 scripts/test
 config.json*
 build
-.yarn
-.yarnrc.yml
+
+# Yarn
+.yarn/*
+!.yarn/patches
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
+
+.editorconfig
+.idea
+*.tsbuildinfo
+**/config/main.json
+**/config/secret.json

@@ -45,13 +45,13 @@ jobs:
   buildImage:
     docker:
       - image: web3f/ci-commons:v3.1.6
+        args:
+          BUILD_CONTEXT: core
     resource_class: xlarge
     steps:
       - checkout
       - setup_remote_docker
       - run:
-          environment:
-            BUILD_CONTEXT: core
           command: |
             /scripts/build-image.sh web3f/otv-backend .
 

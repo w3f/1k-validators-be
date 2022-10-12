@@ -50,6 +50,8 @@ jobs:
       - checkout
       - setup_remote_docker
       - run:
+          environment:
+            BUILD_CONTEXT: core
           command: |
             /scripts/build-image.sh web3f/otv-backend .
 

@@ -1,10 +1,7 @@
-FROM node:18-slim AS builder
-COPY . /app
-WORKDIR /app
-RUN yarn set version 3.2.2 && \
-    yarn workspaces list --json  && \
-    ls && \
-    yarn install && \
-    yarn workspace @1kv/common build && \
-    yarn workspace @1kv/core build
-CMD ["node", "packages/core/build/index.js", "start"]
+FROM node:17-slim
+ARG MATRIX_TOKEN
+WORKDIR /code
+COPY . .
+RUN ["npm", "i"]
+RUN ["npm", "run", "build"]
+CMD ["npm", "run", "js:start"]

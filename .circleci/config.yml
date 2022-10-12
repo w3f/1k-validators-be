@@ -107,10 +107,10 @@ workflows:
           filters:
             tags:
               only: /.*/
-      - unitTests:
-          filters:
-            tags:
-              only: /.*/
+#      - unitTests:
+#          filters:
+#            tags:
+#              only: /.*/
       - helmLint:
           filters:
             tags:
@@ -121,7 +121,7 @@ workflows:
             tags:
               only: /.*/
           requires:
-            - unitTests
+#            - unitTests
       - integrationTests:
           filters:
             tags:

@@ -8,4 +8,4 @@ RUN echo "building ${PACKAGE}... " && \
     yarn set version 3.2.2 && \
     yarn install && \
     yarn build
-CMD ["node", "packages/${PACKAGE}/build/index.js",  "start"]
+CMD yarn start:js:${PACKAGE}

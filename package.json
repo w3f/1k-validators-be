@@ -18,6 +18,7 @@
     "build:clean": "yarn workspaces foreach run clean:build",
     "start:dev:gateway": "yarn workspace @1kv/gateway run start:dev",
     "start:dev:core": "yarn workspace @1kv/core run start:dev",
+    "start:js:core": "yarn workspace @1kv/core run js:start",
     "start:dev:telemetry": "yarn workspace @1kv/telemetry run start:dev"
   },
   "devDependencies": {

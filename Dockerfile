@@ -9,4 +9,5 @@ RUN echo "building ${PACKAGE}... " && \
     yarn install && \
     yarn workspace @1kv/common build && \
     yarn workspace @1kv/core build
-CMD yarn start:js:${PACKAGE}
+CMD  node packages/${PACKAGE}/build/index.js
+

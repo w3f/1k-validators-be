@@ -7,5 +7,6 @@ WORKDIR /app
 RUN echo "building ${PACKAGE}... " && \
     yarn set version 3.2.2 && \
     yarn install && \
-    yarn build
+    yarn workspace @1kv/common build && \
+    yarn workspace @1kv/core build
 CMD yarn start:js:${PACKAGE}

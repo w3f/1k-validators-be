@@ -23,7 +23,7 @@
   "author": "Web3 Foundation <teched@web3.foundation>",
   "license": "GPL-3.0",
   "dependencies": {
-    "@1kv/common": "2.6.82",
+    "@1kv/common": "workspace:^",
     "@koa/router": "^12.0.0",
     "@octokit/rest": "^19.0.4",
     "@polkadot/api": "^9.5.1",

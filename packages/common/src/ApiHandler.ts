@@ -9,7 +9,7 @@ import { POLKADOT_API_TIMEOUT } from "./constants";
  * A higher level handler for the Polkadot-Js API that can handle reconnecting
  * to a different provider if one proves troublesome.
  */
-export class ApiHandler extends EventEmitter {
+class ApiHandler extends EventEmitter {
   private _api: ApiPromise;
   private _endpoints: string[];
   private _reconnectLock: boolean;
@@ -27,28 +27,28 @@ export class ApiHandler extends EventEmitter {
   static async createApi(endpoints) {
     const api = new ApiPromise({
       provider: new WsProvider(
-        endpoints,
-        undefined,
-        undefined,
-        POLKADOT_API_TIMEOUT
+          endpoints,
+          undefined,
+          undefined
+          // POLKADOT_API_TIMEOUT
       ),
       // throwOnConnect: true,
     });
     if (api) {
       api
-        .on("connected", () => {
-          logger.info(`Connected to chain`);
-        })
-        .on("disconnected", async () => {
-          logger.warn(`Disconnected from chain`);
-        })
-        .on("ready", () => {
-          logger.info(`API connection ready`);
-        })
-        .on("error", (error) => {
-          logger.warn("The API has an error");
-          console.log(error);
-        });
+          .on("connected", () => {
+            logger.info(`Connected to chain`);
+          })
+          .on("disconnected", async () => {
+            logger.warn(`Disconnected from chain`);
+          })
+          .on("ready", () => {
+            logger.info(`API connection ready`);
+          })
+          .on("error", (error) => {
+            logger.warn("The API has an error");
+            console.log(error);
+          });
       await api.isReadyOrError;
       return api;
     }
@@ -94,8 +94,8 @@ export class ApiHandler extends EventEmitter {
         }
 
         if (
-          event.section == "staking" &&
-          (event.method == "Reward" || event.method == "Rewarded")
+            event.section == "staking" &&
+            (event.method == "Reward" || event.method == "Rewarded")
         ) {
           const [stash, amount] = event.data;
 
@@ -123,7 +123,7 @@ export class ApiHandler extends EventEmitter {
     }
 
     logger.info(
-      `API Disconnected... Reconnecting... (reconnect tries: ${this._reconnectTries})`
+        `API Disconnected... Reconnecting... (reconnect tries: ${this._reconnectTries})`
     );
     this._reconnectLock = true;
     this._reconnectTries++;

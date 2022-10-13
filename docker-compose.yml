@@ -101,7 +101,7 @@ services:
         context: .
         args:
           PACKAGE: core
-        dockerfile: ./Dockerfile
+        dockerfile: ./Dockerfile-dev
       volumes:
         - .:/app
       ports:

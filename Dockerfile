@@ -10,5 +10,5 @@ RUN echo "building ${PACKAGE}... "; \
     echo "yarn install done. Building...." ; \
     yarn workspaces foreach run build ; \
     echo "building ${PACKAGE} done."
-CMD start:js:${PACKAGE}
+CMD yarn run start:js:${PACKAGE}
 

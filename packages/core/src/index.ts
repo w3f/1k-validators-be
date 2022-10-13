@@ -7,7 +7,7 @@ import Database from "./db";
 import MatrixBot from "./matrix";
 import Monitor from "./monitor";
 import Scorekeeper from "./scorekeeper";
-import Server from "./server";
+import { Server } from "@1kv/gateway";
 import TelemetryClient from "./telemetry";
 import { startTestSetup } from "./misc/testSetup";
 

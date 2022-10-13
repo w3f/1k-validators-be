@@ -4,8 +4,8 @@
   "private": true,
   "workspaces": [
     "packages/common",
-    "packages/core",
     "packages/gateway",
+    "packages/core",
     "packages/telemetry"
   ],
   "scripts": {

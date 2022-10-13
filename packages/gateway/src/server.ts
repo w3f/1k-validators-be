@@ -6,6 +6,7 @@ import Router from "@koa/router";
 import { Db, Config, logger } from "@1kv/common";
 import LRU from "lru-cache";
 import koaCash from "koa-cash";
+import Database from "@1kv/core/build/db";
 
 const API = {
   Accounting: "/accounting/:stashOrController",
@@ -48,10 +49,10 @@ const API = {
 
 export default class Server {
   public app: Koa;
-  private db: Db;
+  private db: Database;
   private port: number;
 
-  constructor(db: Db, config: Config.ConfigSchema) {
+  constructor(db: Database, config: Config.ConfigSchema) {
     this.app = new Koa();
     this.db = db;
     this.port = config.server.port;
@@ -63,14 +64,14 @@ export default class Server {
       maxAge: 30000, // global max age
     });
     this.app.use(
-      koaCash({
-        get: (key) => {
-          return cache.get(key);
-        },
-        set(key, value) {
-          return cache.set(key, value);
-        },
-      })
+        koaCash({
+          get: (key) => {
+            return cache.get(key);
+          },
+          set(key, value) {
+            return cache.set(key, value);
+          },
+        })
     );
 
     const router = new Router();
@@ -131,35 +132,35 @@ export default class Server {
       if (await ctx.cashed()) return;
       let allCandidates = await this.db.allCandidates();
       allCandidates = await Promise.all(
-        allCandidates.map(async (candidate) => {
-          const score = await this.db.getValidatorScore(candidate.stash);
-          return {
-            discoveredAt: candidate.discoveredAt,
-            nominatedAt: candidate.nominatedAt,
-            offlineSince: candidate.offlineSince,
-            offlineAccumulated: candidate.offlineAccumulated,
-            rank: candidate.rank,
-            faults: candidate.faults,
-            invalidityReasons: candidate.invalidityReasons,
-            unclaimedEras: candidate.unclaimedEras,
-            inclusion: candidate.inclusion,
-            name: candidate.name,
-            stash: candidate.stash,
-            kusamaStash: candidate.kusamaStash,
-            commission: candidate.commission,
-            identity: candidate.identity,
-            active: candidate.active,
-            valid: candidate.valid,
-            validity: candidate.invalidity,
-            score: score,
-            total: score && score.total ? score.total : 0,
-            location: candidate.location,
-            councilStake: candidate.councilStake,
-            councilVotes: candidate.councilVotes,
-            democracyVoteCount: candidate.democracyVoteCount,
-            democracyVotes: candidate.democracyVotes,
-          };
-        })
+          allCandidates.map(async (candidate) => {
+            const score = await this.db.getValidatorScore(candidate.stash);
+            return {
+              discoveredAt: candidate.discoveredAt,
+              nominatedAt: candidate.nominatedAt,
+              offlineSince: candidate.offlineSince,
+              offlineAccumulated: candidate.offlineAccumulated,
+              rank: candidate.rank,
+              faults: candidate.faults,
+              invalidityReasons: candidate.invalidityReasons,
+              unclaimedEras: candidate.unclaimedEras,
+              inclusion: candidate.inclusion,
+              name: candidate.name,
+              stash: candidate.stash,
+              kusamaStash: candidate.kusamaStash,
+              commission: candidate.commission,
+              identity: candidate.identity,
+              active: candidate.active,
+              valid: candidate.valid,
+              validity: candidate.invalidity,
+              score: score,
+              total: score && score.total ? score.total : 0,
+              location: candidate.location,
+              councilStake: candidate.councilStake,
+              councilVotes: candidate.councilVotes,
+              democracyVoteCount: candidate.democracyVoteCount,
+              democracyVotes: candidate.democracyVotes,
+            };
+          })
       );
       allCandidates = allCandidates.sort((a, b) => {
         return b.total - a.total;
@@ -224,8 +225,8 @@ export default class Server {
       const { stash } = ctx.params;
       const latestEra = (await this.db.getLastTotalEraPoints())[0].era;
       const eraPoints = await this.db.getHistoryDepthEraPoints(
-        stash,
-        latestEra
+          stash,
+          latestEra
       );
       ctx.body = eraPoints;
     });
@@ -368,36 +369,36 @@ export default class Server {
       if (await ctx.cashed()) return;
       let allCandidates = await this.db.allCandidates();
       allCandidates = await Promise.all(
-        allCandidates.map(async (candidate) => {
-          const score = await this.db.getValidatorScore(candidate.stash);
-          if (candidate.councilStake && candidate.councilStake > 0)
-            return {
-              discoveredAt: candidate.discoveredAt,
-              nominatedAt: candidate.nominatedAt,
-              offlineSince: candidate.offlineSince,
-              offlineAccumulated: candidate.offlineAccumulated,
-              rank: candidate.rank,
-              faults: candidate.faults,
-              invalidityReasons: candidate.invalidityReasons,
-              unclaimedEras: candidate.unclaimedEras,
-              inclusion: candidate.inclusion,
-              name: candidate.name,
-              stash: candidate.stash,
-              kusamaStash: candidate.kusamaStash,
-              commission: candidate.commission,
-              identity: candidate.identity,
-              active: candidate.active,
-              valid: candidate.valid,
-              validity: candidate.invalidity,
-              score: score,
-              total: score && score.total ? score.total : 0,
-              location: candidate.location,
-              councilStake: candidate.councilStake,
-              councilVotes: candidate.councilVotes,
-              democracyVoteCount: candidate.democracyVoteCount,
-              democracyVotes: candidate.democracyVotes,
-            };
-        })
+          allCandidates.map(async (candidate) => {
+            const score = await this.db.getValidatorScore(candidate.stash);
+            if (candidate.councilStake && candidate.councilStake > 0)
+              return {
+                discoveredAt: candidate.discoveredAt,
+                nominatedAt: candidate.nominatedAt,
+                offlineSince: candidate.offlineSince,
+                offlineAccumulated: candidate.offlineAccumulated,
+                rank: candidate.rank,
+                faults: candidate.faults,
+                invalidityReasons: candidate.invalidityReasons,
+                unclaimedEras: candidate.unclaimedEras,
+                inclusion: candidate.inclusion,
+                name: candidate.name,
+                stash: candidate.stash,
+                kusamaStash: candidate.kusamaStash,
+                commission: candidate.commission,
+                identity: candidate.identity,
+                active: candidate.active,
+                valid: candidate.valid,
+                validity: candidate.invalidity,
+                score: score,
+                total: score && score.total ? score.total : 0,
+                location: candidate.location,
+                councilStake: candidate.councilStake,
+                councilVotes: candidate.councilVotes,
+                democracyVoteCount: candidate.democracyVoteCount,
+                democracyVotes: candidate.democracyVotes,
+              };
+          })
       );
       allCandidates = allCandidates.sort((a, b) => {
         return b.total - a.total;

@@ -30,3 +30,5 @@ program
 
 program.version(version);
 program.parse(process.argv);
+
+export { Server }

@@ -38,6 +38,7 @@ __metadata:
   resolution: "@1kv/core@workspace:packages/core"
   dependencies:
     "@1kv/common": "workspace:^"
+    "@1kv/gateway": "workspace:^"
     "@ava/typescript": ^3.0.1
     "@koa/router": ^12.0.0
     "@octokit/rest": ^19.0.4
@@ -84,7 +85,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@1kv/gateway@workspace:packages/gateway":
+"@1kv/gateway@workspace:^, @1kv/gateway@workspace:packages/gateway":
   version: 0.0.0-use.local
   resolution: "@1kv/gateway@workspace:packages/gateway"
   dependencies:

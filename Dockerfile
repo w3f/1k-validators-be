@@ -10,5 +10,5 @@ RUN echo "building ${PACKAGE}... "; \
     echo "yarn install done. Building...." ; \
     yarn workspaces foreach run build ; \
     echo "building ${PACKAGE} done."
-CMD  yarn run start:js:core
+CMD NODE_OPTIONS='--max-old-space-size=6096' node packages/core/build/index.js start
 

@@ -1,23 +1,18 @@
 import { Keyring } from "@polkadot/api";
-import ApiHandler from "./ApiHandler";
-import { ClaimerConfig, EraReward, Stash } from "./types";
-import Database from "./db";
+import { ApiHandler, logger, Util, Types, Db } from "@1kv/common";
 import { KeyringPair } from "@polkadot/keyring/types";
 import { SubmittableExtrinsic } from "@polkadot/api/types";
-import logger from "./logger";
-import { sleep } from "./util";
-import MatrixBot from "./matrix";
 
 export default class Claimer {
-  private db: Database;
+  private db: Db;
   private handler: ApiHandler;
   private signer: KeyringPair;
   private bot: any;
 
   constructor(
     handler: ApiHandler,
-    db: Database,
-    cfg: ClaimerConfig,
+    db: Db,
+    cfg: Types.ClaimerConfig,
     networkPrefix = 2,
     bot?: any
   ) {
@@ -38,7 +33,7 @@ export default class Claimer {
     );
   }
 
-  public async claim(unclaimedEras: EraReward[]): Promise<boolean> {
+  public async claim(unclaimedEras: Types.EraReward[]): Promise<boolean> {
     const api = await this.handler.getApi();
     for (const era of unclaimedEras) {
       const tx = api.tx.staking.payoutStakers(era.stash, era.era);
@@ -49,7 +44,7 @@ export default class Claimer {
           `Claimer claimed era ${era.era} for validator ${candidate.name} - ${era.stash}`
         );
       }
-      await sleep(12000);
+      await Util.sleep(12000);
     }
     return true;
   }
@@ -60,7 +55,7 @@ export default class Claimer {
 
   sendClaimTx = async (
     tx: SubmittableExtrinsic<"promise">,
-    unclaimedEras: EraReward
+    unclaimedEras: Types.EraReward
   ): Promise<boolean> => {
     try {
       const unsub = await tx.signAndSend(this.signer, async (result: any) => {
@@ -104,7 +99,7 @@ export default class Claimer {
   };
 
   /// Handles the docking of points from bad behaving validators.
-  async dockPoints(stash: Stash, era: number): Promise<boolean> {
+  async dockPoints(stash: Types.Stash, era: number): Promise<boolean> {
     await this.db.dockPointsUnclaimedReward(stash);
 
     const candidate = await this.db.getCandidate(stash);

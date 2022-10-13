@@ -20,18 +20,18 @@ jobs:
           environment:
             YARN_ENABLE_IMMUTABLE_INSTALLS: false
           command: |
-            yarn set version 3.2.2 && yarn install && yarn workspace @1kv/core build && yarn workspace @1kv/core lint
+            yarn set version 3.2.2 && yarn install && yarn build && yarn workspace @1kv/core lint
 
-  unitTests:
-    docker:
-      - image: node:slim
-    steps:
-      - checkout
-      - run:
-          environment:
-            YARN_ENABLE_IMMUTABLE_INSTALLS: false
-          command: |
-            yarn
+#  unitTests:
+#    docker:
+#      - image: node:slim
+#    steps:
+#      - checkout
+#      - run:
+#          environment:
+#            YARN_ENABLE_IMMUTABLE_INSTALLS: false
+#          command: |
+#            yarn
 
   helmLint:
     docker:
@@ -51,7 +51,7 @@ jobs:
       - setup_remote_docker
       - run:
           command: |
-            /scripts/build-image.sh web3f/otv-backend ./packages/core
+            /scripts/build-image.sh web3f/otv-backend . --build-arg PACKAGE=core
 
   integrationTests:
     docker:
@@ -107,10 +107,10 @@ workflows:
           filters:
             tags:
               only: /.*/
-      - unitTests:
-          filters:
-            tags:
-              only: /.*/
+#      - unitTests:
+#          filters:
+#            tags:
+#              only: /.*/
       - helmLint:
           filters:
             tags:
@@ -121,7 +121,7 @@ workflows:
             tags:
               only: /.*/
           requires:
-            - unitTests
+#            - unitTests
       - integrationTests:
           filters:
             tags:

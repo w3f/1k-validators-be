@@ -1,10 +1,7 @@
-import Db from "./db";
-import ChainData from "./chaindata";
-import logger from "./logger";
+import { ChainData, logger, Types, Db } from "@1kv/common";
 import { checkUnclaimed, OTV } from "./constraints";
 import Monitor from "./monitor";
 import { Subscan } from "./subscan";
-import { Referendum, ReferendumVote } from "./types";
 import { getStats, variance } from "./score";
 
 // Runs Monitor Job
@@ -773,7 +770,7 @@ export const democracyJob = async (db: Db, chaindata: ChainData) => {
       votes,
     } = r;
 
-    const referendum: Referendum = {
+    const referendum: Types.Referendum = {
       referendumIndex: index.toNumber() || 0,
       proposedAt: Number(at) || 0,
       proposalEnd: Number(end) || 0,
@@ -800,7 +797,7 @@ export const democracyJob = async (db: Db, chaindata: ChainData) => {
       // @ts-ignore
       const { vote: voteDirection, conviction } = vote.toHuman();
 
-      const referendumVote: ReferendumVote = {
+      const referendumVote: Types.ReferendumVote = {
         referendumIndex: index.toNumber(),
         accountId: accountId.toString(),
         isDelegating: isDelegating,

@@ -1,44 +1,18 @@
 import { CronJob } from "cron";
-import Db from "./db";
-import {
-  CLEAR_OFFLINE_CRON,
-  EXECUTION_CRON,
-  MONITOR_CRON,
-  SIXTEEN_HOURS,
-  TIME_DELAY_BLOCKS,
-  VALIDITY_CRON,
-  KUSAMA_REWARD_THRESHOLD,
-  POLKADOT_REWARD_THRESHOLD,
-  REWARD_CLAIMING_CRON,
-  CANCEL_CRON,
-  STALE_CRON,
-  ERA_POINTS_CRON,
-  ACTIVE_VALIDATOR_CRON,
-  INCLUSION_CRON,
-  UNCLAIMED_ERAS_CRON,
-  VALIDATOR_PREF_CRON,
-  SESSION_KEY_CRON,
-  SCORE_CRON,
-  ERA_STATS_CRON,
-  KUSAMA_FOUR_DAYS_ERAS,
-  POLKADOT_FOUR_DAYS_ERAS,
-  LOCATION_STATS_CRON,
-  COUNCIL_CRON,
-  SUBSCAN_CRON,
-  DEMOCRACY_CRON,
-  NOMINATOR_CRON,
-  DELEGATION_CRON,
-} from "./constants";
-import logger from "./logger";
 import Monitor from "./monitor";
 import { Config } from "./config";
 import { OTV } from "./constraints";
-import ApiHandler from "./ApiHandler";
 import Nominator from "./nominator";
-import ChainData from "./chaindata";
+import {
+  ApiHandler,
+  ChainData,
+  Constants,
+  logger,
+  Types,
+  Util,
+  Db,
+} from "@1kv/common";
 import Claimer from "./claimer";
-import { CandidateData, EraReward } from "./types";
-import { addressUrl, sleep, toDecimals } from "./util";
 import {
   activeValidatorJob,
   eraPointsJob,
@@ -68,7 +42,7 @@ export const startMonitorJob = async (
 ) => {
   const monitorFrequency = config.cron.monitor
     ? config.cron.monitor
-    : MONITOR_CRON;
+    : Constants.MONITOR_CRON;
 
   logger.info(
     `(cron::startMonitorJob) Starting Monitor Cron Job with frequency ${monitorFrequency}`
@@ -93,7 +67,7 @@ export const startClearAccumulatedOfflineTimeJob = async (
 ) => {
   const clearFrequency = config.cron.clearOffline
     ? config.cron.clearOffline
-    : CLEAR_OFFLINE_CRON;
+    : Constants.CLEAR_OFFLINE_CRON;
   logger.info(
     `(cron::startClearAccumlatedOfflineTimeJob) Starting Clear Accumulated Offline Time Job with frequency ${clearFrequency}`
   );
@@ -114,7 +88,7 @@ export const startValidatityJob = async (
 ) => {
   const validityFrequency = config.cron.validity
     ? config.cron.validity
-    : VALIDITY_CRON;
+    : Constants.VALIDITY_CRON;
   logger.info(
     `(cron::startValidityJob::init) Starting Validity Job with frequency ${validityFrequency}`
   );
@@ -135,7 +109,9 @@ export const startValidatityJob = async (
 
 // Runs job that updates scores of all validators
 export const startScoreJob = async (config: Config, constraints: OTV) => {
-  const scoreFrequency = config.cron.score ? config.cron.score : SCORE_CRON;
+  const scoreFrequency = config.cron.score
+    ? config.cron.score
+    : Constants.SCORE_CRON;
   logger.info(
     `(cron::startScoreJob::init) Starting Score Job with frequency ${scoreFrequency}`
   );
@@ -161,7 +137,7 @@ export const startEraStatsJob = async (
 ) => {
   const eraStatsFrequency = config.cron.eraStats
     ? config.cron.eraStats
-    : ERA_STATS_CRON;
+    : Constants.ERA_STATS_CRON;
   logger.info(
     `(cron::startEraStatsJob::init) Starting Era Stats Job with frequency ${eraStatsFrequency}`
   );
@@ -194,10 +170,10 @@ export const startExecutionJob = async (
 ) => {
   const timeDelayBlocks = config.proxy.timeDelayBlocks
     ? Number(config.proxy.timeDelayBlocks)
-    : Number(TIME_DELAY_BLOCKS);
+    : Number(Constants.TIME_DELAY_BLOCKS);
   const executionFrequency = config.cron.execution
     ? config.cron.execution
-    : EXECUTION_CRON;
+    : Constants.EXECUTION_CRON;
   logger.info(
     `(cron::startExecutionJob) Starting Execution Job with frequency ${executionFrequency} and time delay of ${timeDelayBlocks} blocks`
   );
@@ -260,7 +236,7 @@ export const startExecutionJob = async (
                   logger.info(`did send: no name for :${n}`);
                 }
                 if (n && name) {
-                  return `- ${name.name} (${addressUrl(n, config)})`;
+                  return `- ${name.name} (${Util.addressUrl(n, config)})`;
                 } else {
                   logger.info(
                     `did send: n: ${n} name: ${JSON.stringify(name)}`
@@ -274,23 +250,23 @@ export const startExecutionJob = async (
               targets.map(async (n) => {
                 const name = await db.getCandidate(n);
                 if (name) {
-                  return `- ${name.name} (${addressUrl(n, config)})`;
+                  return `- ${name.name} (${Util.addressUrl(n, config)})`;
                 } else {
                   return `- ${JSON.stringify(
                     name
-                  )} (Invalid name!) (${addressUrl(n, config)})`;
+                  )} (Invalid name!) (${Util.addressUrl(n, config)})`;
                 }
               })
             )
           ).join("<br>");
-          const message = `${addressUrl(
+          const message = `${Util.addressUrl(
             nominator.address,
             config
           )} executed announcement in finalized block #${finalizedBlockHash} annouced at #${dataNum} \n Validators Nominated:\n ${validatorsMessage}`;
           logger.info(message);
           if (bot) {
             await bot.sendMessage(
-              `${addressUrl(
+              `${Util.addressUrl(
                 nominator.address,
                 config
               )} executed announcement in finalized block #${finalizedBlockHash} announced at block #${dataNum} <br> Validators Nominated:<br> ${validatorsHtml}`
@@ -299,7 +275,7 @@ export const startExecutionJob = async (
 
           await db.deleteDelayedTx(dataNum, controller);
         }
-        await sleep(7000);
+        await Util.sleep(7000);
       }
     }
   });
@@ -318,7 +294,7 @@ export const startRewardClaimJob = async (
   if (config.constraints.skipClaiming) return;
   const rewardClaimingFrequency = config.cron.rewardClaiming
     ? config.cron.rewardClaiming
-    : REWARD_CLAIMING_CRON;
+    : Constants.REWARD_CLAIMING_CRON;
 
   logger.info(
     `(cron::RewardClaiming) Running reward claiming cron with frequency: ${rewardClaimingFrequency}`
@@ -328,12 +304,12 @@ export const startRewardClaimJob = async (
   const balance = await chaindata.getBalance(claimer.address);
   const metadata = await db.getChainMetadata();
   const network = metadata.name.toLowerCase();
-  const free = toDecimals(Number(balance.free), metadata.decimals);
+  const free = Util.toDecimals(Number(balance.free), metadata.decimals);
   // TODO Parameterize this as a constant
   if (free < 0.5) {
     logger.info(`{Cron::RewardClaiming} Claimer has low free balance: ${free}`);
     await bot.sendMessage(
-      `Reward Claiming Account ${addressUrl(
+      `Reward Claiming Account ${Util.addressUrl(
         claimer.address,
         config
       )} has low free balance: ${free}`
@@ -348,8 +324,8 @@ export const startRewardClaimJob = async (
     const [currentEra, err] = await chaindata.getActiveEraIndex();
     const rewardClaimThreshold =
       config.global.networkPrefix == 2
-        ? KUSAMA_REWARD_THRESHOLD
-        : POLKADOT_REWARD_THRESHOLD;
+        ? Constants.KUSAMA_REWARD_THRESHOLD
+        : Constants.POLKADOT_REWARD_THRESHOLD;
     const claimThreshold = Number(currentEra - rewardClaimThreshold);
 
     logger.info(
@@ -367,7 +343,10 @@ export const startRewardClaimJob = async (
             logger.info(
               `{cron::startRewardClaimJob} added era ${era} for validator ${candidate.stash} to be claimed.`
             );
-            const eraReward: EraReward = { era: era, stash: candidate.stash };
+            const eraReward: Types.EraReward = {
+              era: era,
+              stash: candidate.stash,
+            };
             erasToClaim.push(eraReward);
           }
         }
@@ -388,7 +367,9 @@ export const startCancelCron = async (
   chaindata: ChainData,
   bot: any
 ) => {
-  const cancelFrequency = config.cron.cancel ? config.cron.cancel : CANCEL_CRON;
+  const cancelFrequency = config.cron.cancel
+    ? config.cron.cancel
+    : Constants.CANCEL_CRON;
 
   logger.info(
     `(cron::Cancel) Running cancel cron with frequency: ${cancelFrequency}`
@@ -438,7 +419,7 @@ export const startCancelCron = async (
 
             // if it is too old, cancel it
             if (announcement.height < threshold) {
-              await sleep(10000);
+              await Util.sleep(10000);
               logger.info(
                 `{CancelCron::cancel} announcement at ${announcement.height} is older than threshold: ${threshold}. Cancelling...`
               );
@@ -449,7 +430,7 @@ export const startCancelCron = async (
                 );
                 if (bot) {
                   await bot.sendMessage(
-                    `Proxy announcement from ${addressUrl(
+                    `Proxy announcement from ${Util.addressUrl(
                       announcement.real,
                       config
                     )} at #${
@@ -458,7 +439,7 @@ export const startCancelCron = async (
                   );
                 }
               }
-              await sleep(10000);
+              await Util.sleep(10000);
             }
           }
         }
@@ -476,7 +457,9 @@ export const startStaleNominationCron = async (
   chaindata: ChainData,
   bot: any
 ) => {
-  const staleFrequency = config.cron.stale ? config.cron.stale : STALE_CRON;
+  const staleFrequency = config.cron.stale
+    ? config.cron.stale
+    : Constants.STALE_CRON;
 
   logger.info(
     `(cron::Stale) Running stale nomination cron with frequency: ${staleFrequency}`
@@ -538,7 +521,7 @@ export const startEraPointsJob = async (
 ) => {
   const eraPointsFrequency = config.cron.eraPoints
     ? config.cron.eraPoints
-    : ERA_POINTS_CRON;
+    : Constants.ERA_POINTS_CRON;
 
   logger.info(
     `(cron::EraPointsJob::init) Running era points job with frequency: ${eraPointsFrequency}`
@@ -576,7 +559,7 @@ export const startActiveValidatorJob = async (
 ) => {
   const activeValidatorFrequency = config.cron.activeValidator
     ? config.cron.activeValidator
-    : ACTIVE_VALIDATOR_CRON;
+    : Constants.ACTIVE_VALIDATOR_CRON;
 
   logger.info(
     `(cron::ActiveValidatorJob::init) Running active validator job with frequency: ${activeValidatorFrequency}`
@@ -612,7 +595,7 @@ export const startInclusionJob = async (
 ) => {
   const inclusionFrequency = config.cron.inclusion
     ? config.cron.inclusion
-    : INCLUSION_CRON;
+    : Constants.INCLUSION_CRON;
 
   logger.info(
     `(cron::InclusionJob::init) Running inclusion job with frequency: ${inclusionFrequency}`
@@ -644,7 +627,7 @@ export const startSessionKeyJob = async (
 ) => {
   const sessionKeyFrequency = config.cron.sessionKey
     ? config.cron.sessionKey
-    : SESSION_KEY_CRON;
+    : Constants.SESSION_KEY_CRON;
 
   logger.info(
     `(cron::SessionKeyJob::init) Running sesion key job with frequency: ${sessionKeyFrequency}`
@@ -676,7 +659,7 @@ export const startUnclaimedEraJob = async (
 ) => {
   const unclaimedErasFrequency = config.cron.unclaimedEras
     ? config.cron.unclaimedEras
-    : UNCLAIMED_ERAS_CRON;
+    : Constants.UNCLAIMED_ERAS_CRON;
 
   logger.info(
     `(cron::UnclaimedEraJob::init) Running unclaimed era job with frequency: ${unclaimedErasFrequency}`
@@ -698,8 +681,8 @@ export const startUnclaimedEraJob = async (
     // Run the active validators job
     const unclaimedEraThreshold =
       config.global.networkPrefix == 2
-        ? KUSAMA_FOUR_DAYS_ERAS
-        : POLKADOT_FOUR_DAYS_ERAS;
+        ? Constants.KUSAMA_FOUR_DAYS_ERAS
+        : Constants.POLKADOT_FOUR_DAYS_ERAS;
     await unclaimedErasJob(db, chaindata, candidates, unclaimedEraThreshold);
     running = false;
   });
@@ -714,7 +697,7 @@ export const startValidatorPrefJob = async (
 ) => {
   const validatorPrefFrequency = config.cron.validatorPref
     ? config.cron.validatorPref
-    : VALIDATOR_PREF_CRON;
+    : Constants.VALIDATOR_PREF_CRON;
 
   logger.info(
     `(cron::ValidatorPrefJob::init) Running validator pref cron with frequency: ${validatorPrefFrequency}`
@@ -748,7 +731,7 @@ export const startLocationStatsJob = async (
 ) => {
   const locationStatsFrequency = config.cron.locationStats
     ? config.cron.locationStats
-    : LOCATION_STATS_CRON;
+    : Constants.LOCATION_STATS_CRON;
 
   logger.info(
     `(cron::LocationStatsJob::init) Running location stats cron with frequency: ${locationStatsFrequency}`
@@ -782,7 +765,7 @@ export const startCouncilJob = async (
 ) => {
   const councilFrequency = config.cron.council
     ? config.cron.council
-    : COUNCIL_CRON;
+    : Constants.COUNCIL_CRON;
 
   logger.info(
     `(cron::CouncilJob::init) Running council cron with frequency: ${councilFrequency}`
@@ -814,7 +797,7 @@ export const startSubscanJob = async (
 ) => {
   const subscanFrequency = config.cron.subscan
     ? config.cron.subscan
-    : SUBSCAN_CRON;
+    : Constants.SUBSCAN_CRON;
 
   logger.info(
     `(cron::subscanJob::init) Running council cron with frequency: ${subscanFrequency}`
@@ -846,7 +829,7 @@ export const startDemocracyJob = async (
 ) => {
   const democracyFrequency = config.cron.democracy
     ? config.cron.democracy
-    : DEMOCRACY_CRON;
+    : Constants.DEMOCRACY_CRON;
 
   logger.info(
     `(cron::democracyJob::init) Running democracy cron with frequency: ${democracyFrequency}`
@@ -876,7 +859,7 @@ export const startNominatorJob = async (
 ) => {
   const nominatorFrequency = config.cron.nominator
     ? config.cron.nominator
-    : NOMINATOR_CRON;
+    : Constants.NOMINATOR_CRON;
 
   logger.info(
     `(cron::nominatorJob::init) Running nominator cron with frequency: ${nominatorFrequency}`
@@ -908,7 +891,7 @@ export const startDelegationJob = async (
 ) => {
   const delegationFrequency = config.cron.delegation
     ? config.cron.delegation
-    : DELEGATION_CRON;
+    : Constants.DELEGATION_CRON;
 
   logger.info(
     `(cron::delegationJob::init) Running delegation cron with frequency: ${delegationFrequency}`

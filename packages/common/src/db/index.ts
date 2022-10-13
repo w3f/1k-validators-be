@@ -1280,8 +1280,8 @@ export default class Db {
       networkPrefix == 2
         ? "Kusama"
         : networkPrefix == 0
-          ? "Polkadot"
-          : "Local Testnet";
+        ? "Polkadot"
+        : "Local Testnet";
     const decimals = networkPrefix == 2 ? 12 : networkPrefix == 0 ? 10 : 12;
 
     logger.info(
@@ -2092,8 +2092,8 @@ export default class Db {
               details: validity
                 ? ""
                 : details
-                  ? details
-                  : `${data.name} has not properly set their identity`,
+                ? details
+                : `${data.name} has not properly set their identity`,
             },
           ],
         }
@@ -2136,8 +2136,8 @@ export default class Db {
               details: validity
                 ? ""
                 : `${data.name} has been offline ${
-                  data.offlineAccumulated / 1000 / 60
-                } minutes this week.`,
+                    data.offlineAccumulated / 1000 / 60
+                  } minutes this week.`,
             },
           ],
         }
@@ -2221,8 +2221,8 @@ export default class Db {
               details: validity
                 ? ""
                 : details
-                  ? details
-                  : `${data.name} has not properly set their commission`,
+                ? details
+                : `${data.name} has not properly set their commission`,
             },
           ],
         }
@@ -2264,8 +2264,8 @@ export default class Db {
               details: validity
                 ? ""
                 : details
-                  ? details
-                  : `${data.name} has not properly bonded enough self stake`,
+                ? details
+                : `${data.name} has not properly bonded enough self stake`,
             },
           ],
         }
@@ -2307,8 +2307,8 @@ export default class Db {
               details: validity
                 ? ""
                 : details
-                  ? details
-                  : `${data.name} has not properly claimed era rewards`,
+                ? details
+                : `${data.name} has not properly claimed era rewards`,
             },
           ],
         }
@@ -2349,8 +2349,8 @@ export default class Db {
               details: validity
                 ? ""
                 : details
-                  ? details
-                  : `${data.name} blocks external nominations`,
+                ? details
+                : `${data.name} blocks external nominations`,
             },
           ],
         }
@@ -2392,8 +2392,8 @@ export default class Db {
               details: validity
                 ? ""
                 : details
-                  ? details
-                  : `${data.name} has not properly claimed era rewards`,
+                ? details
+                : `${data.name} has not properly claimed era rewards`,
             },
           ],
         }

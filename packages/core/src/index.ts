@@ -1,31 +1,20 @@
 import { CronJob } from "cron";
 import { Command } from "commander";
 
-import ApiHandler from "./ApiHandler";
+import { ApiHandler, Constants, logger, Util, Db } from "@1kv/common";
 import { loadConfigDir } from "./config";
-import {
-  SIXTEEN_HOURS,
-  KusamaEndpoints,
-  PolkadotEndpoints,
-  LocalEndpoints,
-} from "./constants";
-import Database from "./db";
-import logger from "./logger";
 import MatrixBot from "./matrix";
 import Monitor from "./monitor";
 import Scorekeeper from "./scorekeeper";
-import Server from "./server";
-import TelemetryClient from "./telemetry";
-import { sleep } from "./util";
+import { Server } from "@1kv/gateway";
+import { TelemetryClient } from "@1kv/telemetry";
 import { startTestSetup } from "./misc/testSetup";
-import { writeHistoricNominations } from "./misc/historicNominations";
 
-import { retroactiveRanks } from "./misc/retroactive";
 import { startClearAccumulatedOfflineTimeJob, startMonitorJob } from "./cron";
 
 const isCI = process.env.CI;
 
-const version = "v2.6.82";
+const version = "v2.6.83";
 
 const catchAndQuit = async (fn: any) => {
   try {
@@ -39,21 +28,21 @@ const catchAndQuit = async (fn: any) => {
 const start = async (cmd: { config: string }) => {
   const config = loadConfigDir(cmd.config);
 
-  logger.info(`{Start} Starting the backend services. ${version}`);
+  logger.info(`{Core:Start} Starting the backend services. ${version}`);
 
   logger.info(`{Start} Network prefix: ${config.global.networkPrefix}`);
 
   // Create the API handler.
   const endpoints =
     config.global.networkPrefix == 2
-      ? KusamaEndpoints
+      ? Constants.KusamaEndpoints
       : config.global.networkPrefix == 0
-      ? PolkadotEndpoints
-      : LocalEndpoints;
+      ? Constants.PolkadotEndpoints
+      : Constants.LocalEndpoints;
   const handler = await ApiHandler.create(endpoints);
 
   // Create the Database.
-  const db = await Database.create(config.db.mongo.uri);
+  const db = await Db.create(config.db.mongo.uri);
 
   // Start the API server.
   const server = new Server(db, config);
@@ -67,11 +56,11 @@ const start = async (cmd: { config: string }) => {
       `{Start::testSetup} chain index is ${config.global.networkPrefix}, starting init script...`
     );
     await startTestSetup();
-    await sleep(1500);
+    await Util.sleep(1500);
     logger.info(
       `{Start::testSetup} init script done ----------------------------------------------------`
     );
-    await sleep(15000);
+    await Util.sleep(15000);
   }
 
   await db.setChainMetadata(config.global.networkPrefix);
@@ -104,7 +93,7 @@ const start = async (cmd: { config: string }) => {
   }
 
   // Buffer some time for set up.
-  await sleep(1500);
+  await Util.sleep(1500);
 
   await startClearAccumulatedOfflineTimeJob(config, db);
 
@@ -145,14 +134,10 @@ const start = async (cmd: { config: string }) => {
   }
 
   // Buffer more time.
-  sleep(3000);
+  Util.sleep(3000);
 
   // Start the scorekeeper
   scorekeeper.begin();
-
-  if (config.global.historicalNominations && !isCI) {
-    writeHistoricNominations(handler, db);
-  }
 };
 
 const program = new Command();

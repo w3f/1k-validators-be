@@ -60,7 +60,10 @@ export const toDecimals = (raw: number, networkDecimals): number => {
   return raw / Math.pow(10, networkDecimals);
 };
 
-export const formatAddress = (address: string, config: ConfigSchema): string => {
+export const formatAddress = (
+  address: string,
+  config: ConfigSchema
+): string => {
   const keyring = new Keyring();
   const ss58Prefix = config.global.networkPrefix == 2 ? 2 : 0;
   return keyring.encodeAddress(address, ss58Prefix);

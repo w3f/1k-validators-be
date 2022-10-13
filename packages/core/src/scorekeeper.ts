@@ -2,29 +2,18 @@ import { CronJob } from "cron";
 import { ApiPromise } from "@polkadot/api";
 import { bnToBn } from "@polkadot/util";
 
-import ApiHandler from "./ApiHandler";
-import ChainData from "./chaindata";
-import { Config, NominatorConfig } from "./config";
 import {
-  FIFTY_KSM,
-  KUSAMA_FOUR_DAYS_ERAS,
-  POLKADOT_FOUR_DAYS_ERAS,
-  SCOREKEEPER_CRON,
-  FIFTEEN_PERCENT,
-  TEN_THOUSAND_DOT,
-  FIVE_THOUSAND_DOT,
-  FIVE_PERCENT,
-  SIXTEEN_HOURS,
-  TEN_KSM,
-  BALANCE_BUFFER_PERCENT,
-  BALANCE_BUFFER_AMOUNT,
-} from "./constants";
+  ApiHandler,
+  ChainData,
+  Constants,
+  logger,
+  Types,
+  Util,
+  Db,
+} from "@1kv/common";
+import { Config, NominatorConfig } from "./config";
 import { checkAllValidateIntentions, OTV } from "./constraints";
-import Db from "./db";
-import logger from "./logger";
 import Nominator from "./nominator";
-import { CandidateData, ClaimerConfig, Stash } from "./types";
-import { formatAddress, getNow, sleep, addressUrl, toDecimals } from "./util";
 import {
   startActiveValidatorJob,
   startCancelCron,
@@ -90,7 +79,10 @@ export const autoNumNominations = async (
   // get the balance minus a buffer to remain free
   const bufferedBalance =
     stashBal -
-    Math.max(BALANCE_BUFFER_PERCENT * stashBal, BALANCE_BUFFER_AMOUNT);
+    Math.max(
+      Constants.BALANCE_BUFFER_PERCENT * stashBal,
+      Constants.BALANCE_BUFFER_AMOUNT
+    );
 
   // Query the staking info of the validator set
   const query = await api.derive.staking.electedInfo();
@@ -139,7 +131,7 @@ export const autoNumNominations = async (
   // The total amount of validators to nominate
   const adjustedNominationAmount = Math.min(amount + additional, 24);
   // The total amount of funds the nominator should have bonded
-  const newBondedAmount = (1 + BALANCE_BUFFER_PERCENT) * sum;
+  const newBondedAmount = (1 + Constants.BALANCE_BUFFER_PERCENT) * sum;
   // The target amount for each validator
   const targetValStake = newBondedAmount / adjustedNominationAmount;
 
@@ -290,15 +282,19 @@ export default class ScoreKeeper {
       this.config.constraints.skipStakedDestination,
       this.config.constraints.skipClientUpgrade,
       this.config.constraints.skipUnclaimed,
-      this.config.global.networkPrefix == 2 ? TEN_KSM : FIVE_THOUSAND_DOT,
-      this.config.global.networkPrefix == 2 ? FIFTEEN_PERCENT : FIVE_PERCENT,
       this.config.global.networkPrefix == 2
-        ? KUSAMA_FOUR_DAYS_ERAS
-        : POLKADOT_FOUR_DAYS_ERAS,
+        ? Constants.TEN_KSM
+        : Constants.FIVE_THOUSAND_DOT,
+      this.config.global.networkPrefix == 2
+        ? Constants.FIFTEEN_PERCENT
+        : Constants.FIVE_PERCENT,
+      this.config.global.networkPrefix == 2
+        ? Constants.KUSAMA_FOUR_DAYS_ERAS
+        : Constants.POLKADOT_FOUR_DAYS_ERAS,
       this.config,
       this.db
     );
-    this.monitor = new Monitor(db, SIXTEEN_HOURS);
+    this.monitor = new Monitor(db, Constants.SIXTEEN_HOURS);
 
     this.subscan = new Subscan(
       this.config.subscan.baseV1Url,
@@ -371,7 +367,7 @@ export default class ScoreKeeper {
   // Adds nominators from the config
   async addNominatorGroup(nominatorGroup: NominatorGroup): Promise<boolean> {
     let group = [];
-    const now = getNow();
+    const now = Util.getNow();
     for (const nomCfg of nominatorGroup) {
       const nom = this._spawn(nomCfg, this.config.global.networkPrefix);
 
@@ -429,16 +425,16 @@ export default class ScoreKeeper {
           const name = (await this.db.getChainMetadata()).name;
           const decimals = name == "Kusama" ? 12 : 10;
           const [rawBal, err] = await this.chaindata.getBondedAmount(stash);
-          const bal = toDecimals(rawBal, decimals);
+          const bal = Util.toDecimals(rawBal, decimals);
           const sym = name == "Kusama" ? "KSM" : "DOT";
 
           const proxy = (await n._isProxy)
-            ? `/ ${addressUrl(n.address, this.config)}`
+            ? `/ ${Util.addressUrl(n.address, this.config)}`
             : "";
-          return `- ${addressUrl(n.controller, this.config)} / ${addressUrl(
-            stash,
+          return `- ${Util.addressUrl(
+            n.controller,
             this.config
-          )} (${bal} ${sym}) ${proxy}`;
+          )} / ${Util.addressUrl(stash, this.config)} (${bal} ${sym}) ${proxy}`;
         })
       )
     ).join("<br>");
@@ -460,7 +456,10 @@ export default class ScoreKeeper {
             return `- ${val.name}<br>`;
           });
 
-          return `- ${addressUrl(n.controller, this.config)} / ${addressUrl(
+          return `- ${Util.addressUrl(
+            n.controller,
+            this.config
+          )} / ${Util.addressUrl(
             stash,
             this.config
           )} <br> Current Nominations:<br> ${current}`;
@@ -474,7 +473,7 @@ export default class ScoreKeeper {
   }
 
   // Adds a claimer from the config
-  async addClaimer(claimerCfg: ClaimerConfig): Promise<boolean> {
+  async addClaimer(claimerCfg: Types.ClaimerConfig): Promise<boolean> {
     const claimer = new Claimer(
       this.handler,
       this.db,
@@ -504,7 +503,7 @@ export default class ScoreKeeper {
     // Main cron job for starting rounds and ending rounds of the scorekeeper
     const scoreKeeperFrequency = this.config.cron.scorekeeper
       ? this.config.cron.scorekeeper
-      : SCOREKEEPER_CRON;
+      : Constants.SCOREKEEPER_CRON;
     const mainCron = new CronJob(scoreKeeperFrequency, async () => {
       logger.info(
         `(Scorekeeper::mainCron) Running mainCron of Scorekeeper with frequency ${scoreKeeperFrequency}`
@@ -688,7 +687,7 @@ export default class ScoreKeeper {
 
     await this.constraints.scoreCandidates(allCandidates, this.db);
 
-    await sleep(6000);
+    await Util.sleep(6000);
 
     let validCandidates = allCandidates.filter((candidate) => candidate.valid);
     validCandidates = await Promise.all(
@@ -735,7 +734,7 @@ export default class ScoreKeeper {
   // - Determine the number of nominations to make for each nominator account
   //     - This will either be a static number, or "auto"
   async _doNominations(
-    candidates: CandidateData[],
+    candidates: Types.CandidateData[],
     nominatorGroups: SpawnedNominatorGroup[] = [],
     dryRun = false
   ): Promise<any> {
@@ -778,14 +777,14 @@ export default class ScoreKeeper {
         const balance = await this.chaindata.getBalance(nominator.address);
         const metadata = await this.db.getChainMetadata();
         const network = metadata.name.toLowerCase();
-        const free = toDecimals(Number(balance.free), metadata.decimals);
+        const free = Util.toDecimals(Number(balance.free), metadata.decimals);
         // TODO Parameterize this as a constant
         if (free < 0.5) {
           logger.info(
             `{Scorekeeper::_doNominations} Nominator has low free balance: ${free}`
           );
           this.botLog(
-            `Nominator Account ${addressUrl(
+            `Nominator Account ${Util.addressUrl(
               nominator.address,
               this.config
             )} has low free balance: ${free}`
@@ -808,11 +807,11 @@ export default class ScoreKeeper {
         //   newBondedAmount,
         //   Number(currentBondedAmount)
         // );
-        await sleep(10000);
+        await Util.sleep(10000);
         await nominator.nominate(targets, dryRun || this.config.global.dryRun);
 
         // Wait some time between each transaction to avoid nonce issues.
-        await sleep(16000);
+        await Util.sleep(16000);
 
         const targetsString = (
           await Promise.all(
@@ -827,14 +826,14 @@ export default class ScoreKeeper {
         const name = (await this.db.getChainMetadata()).name;
         const decimals = name == "Kusama" ? 12 : 10;
         const [rawBal, err] = await this.chaindata.getBondedAmount(stash);
-        const bal = toDecimals(rawBal, decimals);
+        const bal = Util.toDecimals(rawBal, decimals);
         const sym = name == "Kusama" ? "KSM" : "DOT";
 
         const targetsHtml = (
           await Promise.all(
             targets.map(async (target) => {
               const name = (await this.db.getCandidate(target)).name;
-              return `- ${name} (${addressUrl(target, this.config)})`;
+              return `- ${name} (${Util.addressUrl(target, this.config)})`;
             })
           )
         ).join("<br>");
@@ -843,8 +842,8 @@ export default class ScoreKeeper {
           `Nominator ${stash} (${bal} ${sym}) / ${nominator.controller} nominated:\n${targetsString}`
         );
         this.botLog(
-          `Nominator ${addressUrl(stash, this.config)} (${bal} ${sym}) / 
-          ${addressUrl(
+          `Nominator ${Util.addressUrl(stash, this.config)} (${bal} ${sym}) / 
+          ${Util.addressUrl(
             nominator.controller,
             this.config
           )} nominated:<br>${targetsHtml}`
@@ -889,7 +888,7 @@ export default class ScoreKeeper {
     logger.info("(Scorekeeper::endRound) Ending round");
 
     // The targets that have already been processed for this round.
-    const toProcess: Map<Stash, CandidateData> = new Map();
+    const toProcess: Map<Types.Stash, Types.CandidateData> = new Map();
 
     const { lastNominatedEraIndex: startEra } =
       await this.db.getLastNominatedEraIndex();
@@ -969,7 +968,7 @@ export default class ScoreKeeper {
     for (const goodOne of good.values()) {
       const { stash } = goodOne;
       const wasActive =
-        activeValidators.indexOf(formatAddress(stash, this.config)) !== -1;
+        activeValidators.indexOf(Util.formatAddress(stash, this.config)) !== -1;
 
       // if it wasn't active we will not increase the point
       if (!wasActive) {
@@ -996,7 +995,7 @@ export default class ScoreKeeper {
   }
 
   /// Handles the docking of points from bad behaving validators.
-  async dockPoints(stash: Stash): Promise<boolean> {
+  async dockPoints(stash: Types.Stash): Promise<boolean> {
     logger.info(
       `(Scorekeeper::dockPoints) Stash ${stash} did BAD, docking points`
     );
@@ -1010,7 +1009,7 @@ export default class ScoreKeeper {
   }
 
   /// Handles the adding of points to successful validators.
-  async addPoint(stash: Stash): Promise<boolean> {
+  async addPoint(stash: Types.Stash): Promise<boolean> {
     logger.info(
       `(Scorekeeper::addPoint) Stash ${stash} did GOOD, adding points`
     );

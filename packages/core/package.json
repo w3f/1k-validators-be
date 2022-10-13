@@ -1,6 +1,6 @@
 {
   "name": "@1kv/core",
-  "version": "2.6.82",
+  "version": "2.6.83",
   "description": "Services for running the Thousand Validator Program.",
   "main": "index.js",
   "scripts": {
@@ -8,7 +8,7 @@
     "open:telemetry": "open-cli http://localhost:3000",
     "build": "tsc",
     "docker": "docker-compose rm -f; docker-compose build --no-cache; docker-compose up -d",
-    "clean": "../../node_modules/.bin/rimraf ./build tsconfig.tsbuildinfo combined.log ./node_modules",
+    "clean": "../../node_modules/.bin/rimraf ./build tsconfig.tsbuildinfo combined.log",
     "clean:build": "yarn clean && yarn build",
     "create-config": "cp ./config/main.sample.json ./config/main.json && cp ./config/secret.sample.json ./config/secret.json",
     "lint": "tsc --noEmit && eslint 'src/**/*.{js,ts,tsx}' --quiet",
@@ -23,6 +23,9 @@
   "author": "Web3 Foundation <teched@web3.foundation>",
   "license": "GPL-3.0",
   "dependencies": {
+    "@1kv/common": "workspace:^",
+    "@1kv/gateway": "workspace:^",
+    "@1kv/telemetry": "workspace:^",
     "@koa/router": "^12.0.0",
     "@octokit/rest": "^19.0.4",
     "@polkadot/api": "^9.5.1",

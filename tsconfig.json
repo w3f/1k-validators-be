@@ -20,10 +20,10 @@
     "noEmit": false,
   },
   "references": [
-    { "path": "./packages/core" },
     { "path": "./packages/common" },
     { "path": "./packages/gateway" },
-    { "path":  "./packages/telemetry"}
+    { "path":  "./packages/telemetry"},
+    { "path": "./packages/core" }
   ],
   "files": [],
   "include": ["src/**/*.ts"],

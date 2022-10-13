@@ -4,20 +4,21 @@
   "private": true,
   "workspaces": [
     "packages/common",
-    "packages/core",
     "packages/gateway",
-    "packages/telemetry"
+    "packages/telemetry",
+    "packages/core"
   ],
   "scripts": {
     "create-config:all": "yarn workspaces foreach run create-config",
     "docker:start": "yarn build:clean && docker-compose up -d --build",
     "lint": "yarn workspaces foreach run lint",
     "lint:fix": "yarn workspaces foreach run lint:fix",
-    "clean": "yarn workspaces foreach run clean && rm -r node_modules/ ",
-    "build": "yarn workspaces foreach run build",
+    "clean": "yarn workspaces foreach run clean",
+    "build": "yarn workspaces foreach -t run build",
     "build:clean": "yarn workspaces foreach run clean:build",
     "start:dev:gateway": "yarn workspace @1kv/gateway run start:dev",
     "start:dev:core": "yarn workspace @1kv/core run start:dev",
+    "start:js:core": "NODE_OPTIONS='--max-old-space-size=6096' node packages/core/build/index.js start",
     "start:dev:telemetry": "yarn workspace @1kv/telemetry run start:dev"
   },
   "devDependencies": {

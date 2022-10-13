@@ -19,7 +19,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@1kv/common@2.6.82, @1kv/common@workspace:packages/common":
+"@1kv/common@2.6.82, @1kv/common@workspace:^, @1kv/common@workspace:packages/common":
   version: 0.0.0-use.local
   resolution: "@1kv/common@workspace:packages/common"
   dependencies:
@@ -37,6 +37,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@1kv/core@workspace:packages/core"
   dependencies:
+    "@1kv/common": "workspace:^"
+    "@1kv/gateway": "workspace:^"
+    "@1kv/telemetry": "workspace:^"
     "@ava/typescript": ^3.0.1
     "@koa/router": ^12.0.0
     "@octokit/rest": ^19.0.4
@@ -83,7 +86,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@1kv/gateway@workspace:packages/gateway":
+"@1kv/gateway@workspace:^, @1kv/gateway@workspace:packages/gateway":
   version: 0.0.0-use.local
   resolution: "@1kv/gateway@workspace:packages/gateway"
   dependencies:
@@ -100,7 +103,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@1kv/telemetry@workspace:packages/telemetry":
+"@1kv/telemetry@workspace:^, @1kv/telemetry@workspace:packages/telemetry":
   version: 0.0.0-use.local
   resolution: "@1kv/telemetry@workspace:packages/telemetry"
   dependencies:
@@ -2020,9 +2023,9 @@ __metadata:
   linkType: hard
 
 "chalk@npm:^5.0.1":
-  version: 5.1.0
-  resolution: "chalk@npm:5.1.0"
-  checksum: c1aa0bf0064a5a59bc06e3e385685fdcc5bb122159152bb57755fc48f9ef93c30cb3a36c9a2c39ead23e5261d787c87c4c097e1a889e1370478102a0112fe0e0
+  version: 5.1.1
+  resolution: "chalk@npm:5.1.1"
+  checksum: 15c56f21618ba70e54c7988717c67a121eebbc123b10ae2eb0c288907f4a296370a7e21519e52773f3c448c99da0c3c31f809b604858ae7dbb6924db2efcc7f8
   languageName: node
   linkType: hard
 

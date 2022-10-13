@@ -3,22 +3,14 @@ import Keyring from "@polkadot/keyring";
 import { blake2AsHex } from "@polkadot/util-crypto";
 
 import { KeyringPair } from "@polkadot/keyring/types";
-import ApiHandler from "./ApiHandler";
-
-import Database from "./db";
-import logger from "./logger";
-
-import { BooleanResult, NominatorConfig, Stash } from "./types";
-import { toDecimals } from "./util";
-import { TIME_DELAY_BLOCKS } from "./constants";
-import { BotClaimEventSchema } from "./db/models";
+import { ApiHandler, Constants, logger, Types, Util, Db } from "@1kv/common";
 
 export default class Nominator {
-  public currentlyNominating: Stash[] = [];
+  public currentlyNominating: Types.Stash[] = [];
   public maxNominations: number | "auto";
 
   private _controller: string;
-  private db: Database;
+  private db: Db;
   private bot: any;
   private handler: ApiHandler;
   private signer: KeyringPair;
@@ -38,8 +30,8 @@ export default class Nominator {
 
   constructor(
     handler: ApiHandler,
-    db: Database,
-    cfg: NominatorConfig,
+    db: Db,
+    cfg: Types.NominatorConfig,
     networkPrefix = 2,
     bot: any
   ) {
@@ -50,7 +42,8 @@ export default class Nominator {
     this._isProxy = cfg.isProxy || false;
 
     // If the proxyDelay is not set in the config, default to TIME_DELAY_BLOCKS (~18 hours, 10800 blocks)
-    this._proxyDelay = cfg.proxyDelay == 0 ? cfg.proxyDelay : TIME_DELAY_BLOCKS;
+    this._proxyDelay =
+      cfg.proxyDelay == 0 ? cfg.proxyDelay : Constants.TIME_DELAY_BLOCKS;
 
     logger.info(
       `{nominator::proxyDelay} config proxy delay: ${cfg.proxyDelay}`
@@ -141,7 +134,10 @@ export default class Nominator {
     this._avgStake = avgStake;
   }
 
-  public async nominate(targets: Stash[], dryRun = false): Promise<boolean> {
+  public async nominate(
+    targets: Types.Stash[],
+    dryRun = false
+  ): Promise<boolean> {
     const now = new Date().getTime();
 
     if (dryRun) {
@@ -323,7 +319,7 @@ export default class Nominator {
   sendStakingTx = async (
     tx: SubmittableExtrinsic<"promise">,
     targets: string[]
-  ): Promise<BooleanResult> => {
+  ): Promise<Types.BooleanResult> => {
     const now = new Date().getTime();
     const api = await this.handler.getApi();
 
@@ -418,7 +414,7 @@ export default class Nominator {
           // Update the nomination record in the db
           const era = (await api.query.staking.activeEra()).toJSON()["index"];
           const decimals = (await this.db.getChainMetadata()).decimals;
-          const bonded = toDecimals(
+          const bonded = Util.toDecimals(
             (await api.query.staking.ledger(this.controller)).toJSON()[
               "active"
             ],
@@ -446,7 +442,7 @@ export default class Nominator {
   sendBondTx = async (
     tx: SubmittableExtrinsic<"promise">,
     newBondAmount: number
-  ): Promise<BooleanResult> => {
+  ): Promise<Types.BooleanResult> => {
     const now = new Date().getTime();
     const api = await this.handler.getApi();
 

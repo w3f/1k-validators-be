@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import path from "path";
-import { ClaimerConfig } from "./types";
+import { Types } from "@1kv/common";
 
 export type CandidateConfig = {
   name: string;
@@ -100,7 +100,7 @@ export type Config = {
     forceRound: boolean;
     nominating: boolean;
     nominators: NominatorConfig[][];
-    claimer: ClaimerConfig;
+    claimer: Types.ClaimerConfig;
   };
   server: {
     port: number;

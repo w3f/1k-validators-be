@@ -29,8 +29,8 @@ class ApiHandler extends EventEmitter {
       provider: new WsProvider(
         endpoints,
         undefined,
-        undefined,
-        POLKADOT_API_TIMEOUT
+        undefined
+        // POLKADOT_API_TIMEOUT
       ),
       // throwOnConnect: true,
     });

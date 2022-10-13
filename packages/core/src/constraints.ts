@@ -1,15 +1,14 @@
-import { blake2AsHex } from "@polkadot/util-crypto";
-
-import ApiHandler from "./ApiHandler";
-import ChainData from "./chaindata";
-import { WEEK, KOTVBackendEndpoint, SIXTEEN_HOURS } from "./constants";
-import logger from "./logger";
-import { CandidateData } from "./types";
+import {
+  ApiHandler,
+  ChainData,
+  Constants,
+  logger,
+  Types,
+  Util,
+  Db,
+} from "@1kv/common";
 import axios from "axios";
-import { formatAddress } from "./util";
 import { Config } from "./config";
-import Db from "./db";
-import Database from "./db";
 import semver from "semver";
 import {
   absMax,
@@ -30,7 +29,7 @@ import {
 
 export interface Constraints {
   processCandidates(
-    candidates: Set<CandidateData>
+    candidates: Set<Types.CandidateData>
   ): Promise<[Set<any>, Set<any>]>;
 }
 
@@ -50,16 +49,16 @@ export class OTV implements Constraints {
   private unclaimedEraThreshold: number;
 
   private config: Config;
-  private db: Database;
+  private db: Db;
 
   // caches
   // TODO: Remove
-  private validCache: CandidateData[] = [];
-  private invalidCache: CandidateData[] = [];
+  private validCache: Types.CandidateData[] = [];
+  private invalidCache: Types.CandidateData[] = [];
 
   // Caches - keyed by stash address
-  private validMapCache: Map<string, CandidateData> = new Map();
-  private invalidMapCache: Map<string, CandidateData> = new Map();
+  private validMapCache: Map<string, Types.CandidateData> = new Map();
+  private invalidMapCache: Map<string, Types.CandidateData> = new Map();
 
   // Weighted scores
   // Inclusion - lower is preferable (84-Era Inclusion)
@@ -103,7 +102,7 @@ export class OTV implements Constraints {
     commission = 0,
     unclaimedEraThreshold = 0,
     config: Config,
-    db: Database
+    db: Db
   ) {
     this.chaindata = new ChainData(handler);
 
@@ -138,16 +137,16 @@ export class OTV implements Constraints {
     this.DELEGATIONS_WEIGHT = Number(this.config.score.delegations);
   }
 
-  get validCandidateCache(): CandidateData[] {
+  get validCandidateCache(): Types.CandidateData[] {
     return this.validCache;
   }
 
-  get invalidCandidateCache(): CandidateData[] {
+  get invalidCandidateCache(): Types.CandidateData[] {
     return this.invalidCache;
   }
 
   // Add candidate to valid cache and remove them from invalid cache
-  addToValidCache(address: string, candidate: CandidateData) {
+  addToValidCache(address: string, candidate: Types.CandidateData) {
     if (this.invalidMapCache.has(address)) {
       this.invalidMapCache.delete(address);
     }
@@ -160,7 +159,7 @@ export class OTV implements Constraints {
   }
 
   // Add candidate to valid cache and remove them from invalid cache
-  addToInvalidCache(address: string, candidate: CandidateData) {
+  addToInvalidCache(address: string, candidate: Types.CandidateData) {
     if (this.validMapCache.has(address)) {
       this.validMapCache.delete(address);
     }
@@ -178,7 +177,7 @@ export class OTV implements Constraints {
   }
 
   // Check the candidate and set any invalidity fields
-  async checkCandidate(candidate: CandidateData): Promise<boolean> {
+  async checkCandidate(candidate: Types.CandidateData): Promise<boolean> {
     let valid = false;
 
     const onlineValid = await checkOnline(this.db, candidate);
@@ -286,7 +285,7 @@ export class OTV implements Constraints {
     await this.scoreCandidates(candidates, this.db);
   }
 
-  async scoreCandidates(candidates: CandidateData[], db: Db) {
+  async scoreCandidates(candidates: Types.CandidateData[], db: Db) {
     let rankedCandidates = [];
     const validCandidates = candidates.filter((candidate) => candidate.valid);
     if (validCandidates.length < 2) return;
@@ -919,9 +918,12 @@ export class OTV implements Constraints {
   ///     - We go through all the candidates and if they meet all constraints, they get called to the 'good' set
   ///     - If they do not meet all the constraints, they get added to the bad set
   async processCandidates(
-    candidates: Set<CandidateData>
+    candidates: Set<Types.CandidateData>
   ): Promise<
-    [Set<CandidateData>, Set<{ candidate: CandidateData; reason: string }>]
+    [
+      Set<Types.CandidateData>,
+      Set<{ candidate: Types.CandidateData; reason: string }>
+    ]
   > {
     logger.info(`(OTV::processCandidates) Processing candidates`);
 
@@ -930,8 +932,9 @@ export class OTV implements Constraints {
       throw eraErr;
     }
 
-    const good: Set<CandidateData> = new Set();
-    const bad: Set<{ candidate: CandidateData; reason: string }> = new Set();
+    const good: Set<Types.CandidateData> = new Set();
+    const bad: Set<{ candidate: Types.CandidateData; reason: string }> =
+      new Set();
 
     for (const candidate of candidates) {
       if (!candidate) {
@@ -991,7 +994,7 @@ export class OTV implements Constraints {
       }
 
       // Ensure the candidate doesn't have too much offline time
-      const totalOffline = offlineAccumulated / WEEK;
+      const totalOffline = offlineAccumulated / Constants.WEEK;
       if (totalOffline > 0.02) {
         const reason = `${name} has been offline ${
           offlineAccumulated / 1000 / 60
@@ -1026,7 +1029,7 @@ export const checkValidateIntention = async (
   candidate: any
 ) => {
   const validators = await chaindata.getValidators();
-  if (!validators.includes(formatAddress(candidate?.stash, config))) {
+  if (!validators.includes(Util.formatAddress(candidate?.stash, config))) {
     db.setValidateIntentionValidity(candidate.stash, false);
     return false;
   } else {
@@ -1044,7 +1047,7 @@ export const checkAllValidateIntentions = async (
 ) => {
   const validators = await chaindata.getValidators();
   for (const candidate of candidates) {
-    if (!validators.includes(formatAddress(candidate.stash, config))) {
+    if (!validators.includes(Util.formatAddress(candidate.stash, config))) {
       db.setValidateIntentionValidity(candidate.stash, false);
     } else {
       db.setValidateIntentionValidity(candidate.stash, true);
@@ -1064,7 +1067,7 @@ export const checkLatestClientVersion = async (
     if (
       candidate.version &&
       latestRelease &&
-      Date.now() > latestRelease.publishedAt + SIXTEEN_HOURS
+      Date.now() > latestRelease.publishedAt + Constants.SIXTEEN_HOURS
     ) {
       const nodeVersion = semver.coerce(candidate.version);
       const latestVersion = forceLatestRelease
@@ -1102,7 +1105,7 @@ export const checkConnectionTime = async (
 ) => {
   if (!config.constraints.skipConnectionTime) {
     const now = new Date().getTime();
-    if (now - candidate.discoveredAt < WEEK) {
+    if (now - candidate.discoveredAt < Constants.WEEK) {
       db.setConnectionTimeInvalidity(candidate.stash, false);
       return false;
     } else {
@@ -1136,7 +1139,7 @@ export const checkIdentity = async (
 };
 
 export const checkOffline = async (db: Db, candidate: any) => {
-  const totalOffline = candidate.offlineAccumulated / WEEK;
+  const totalOffline = candidate.offlineAccumulated / Constants.WEEK;
   if (totalOffline > 0.02) {
     db.setOfflineAccumulatedInvalidity(candidate.stash, false);
     return false;
@@ -1255,7 +1258,7 @@ export const checkBlocked = async (
 export const checkKusamaRank = async (db: Db, candidate: any) => {
   try {
     if (!!candidate.kusamaStash) {
-      const url = `${KOTVBackendEndpoint}/candidate/${candidate.kusamaStash}`;
+      const url = `${Constants.KOTVBackendEndpoint}/candidate/${candidate.kusamaStash}`;
 
       const res = await axios.get(url);
 

@@ -1,8 +1,7 @@
 import { Octokit } from "@octokit/rest";
 import semver from "semver";
 
-import Database from "./db";
-import logger from "./logger";
+import { logger, Db } from "@1kv/common";
 
 type TaggedRelease = {
   name: string;
@@ -13,10 +12,10 @@ export default class Monitor {
   public grace: number;
   public latestTaggedRelease: TaggedRelease | null = null;
 
-  private db: Database;
+  private db: Db;
   private ghApi: any;
 
-  constructor(db: Database, grace: number) {
+  constructor(db: Db, grace: number) {
     this.db = db;
     this.grace = grace;
     this.ghApi = new Octokit();

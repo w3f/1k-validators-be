@@ -4,7 +4,8 @@
   "include": ["src/**/*.ts"],
   "paths": {
     "@1kv/common": ["../common/build"],
-    "@1kv/gateway": ["../gateway/build"]
+    "@1kv/gateway": ["../gateway/build"],
+    "@1kv/telemetry": ["../telemetry/build"]
   },
   "files": [
     "src/db/index.ts",
@@ -13,7 +14,6 @@
     "src/monitor.ts",
     "src/nominator.ts",
     "src/scorekeeper.ts",
-    "src/telemetry.ts"
   ],
   "compilerOptions": {
     /* Basic Options */
@@ -74,5 +74,9 @@
     // "emitDecoratorMetadata": true,         /* Enables experimental support for emitting type metadata for decorators. */
     "resolveJsonModule": true
   },
-  "references": [{ "path": "../common" }, { "path": "../gateway" }]
+  "references": [
+    { "path": "../common" },
+    { "path": "../gateway" },
+    { "path": "../telemetry" }
+  ]
 }

@@ -6,19 +6,9 @@
     "@1kv/common": ["../common/build"]
   },
   "files": [
-//    "src/chaindata.ts",
-//    "src/constants.ts",
-//    "src/db/index.ts",
+    "src/run.ts",
     "src/index.ts",
-//    "src/logger.ts",
-//    "src/matrix.ts",
-//    "src/monitor.ts",
-//    "src/nominator.ts",
-//    "src/scorekeeper.ts",
     "src/server.ts",
-//    "src/telemetry.ts",
-//    "src/types.ts",
-//    "src/util.ts"
   ],
   "compilerOptions": {
     /* Basic Options */

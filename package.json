@@ -5,8 +5,8 @@
   "workspaces": [
     "packages/common",
     "packages/gateway",
-    "packages/core",
-    "packages/telemetry"
+    "packages/telemetry",
+    "packages/core"
   ],
   "scripts": {
     "create-config:all": "yarn workspaces foreach run create-config",

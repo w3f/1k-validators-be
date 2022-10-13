@@ -6,6 +6,7 @@
     "@1kv/common": ["../common/build"]
   },
   "files": [
+    "src/run.ts",
     "src/index.ts",
     "src/telemetry.ts",
   ],

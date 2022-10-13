@@ -29,7 +29,7 @@ const catchAndQuit = async (fn: any) => {
 const start = async (cmd: { config: string }) => {
   const config = loadConfigDir(cmd.config);
 
-  logger.info(`{Start} Starting the backend services. ${version}`);
+  logger.info(`{Core:Start} Starting the backend services. ${version}`);
 
   logger.info(`{Start} Network prefix: ${config.global.networkPrefix}`);
 

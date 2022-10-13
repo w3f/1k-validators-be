@@ -1,5 +1,4 @@
 import { CronJob } from "cron";
-import Db from "./db";
 import Monitor from "./monitor";
 import { Config } from "./config";
 import { OTV } from "./constraints";
@@ -11,6 +10,7 @@ import {
   logger,
   Types,
   Util,
+  Db,
 } from "@1kv/common";
 import Claimer from "./claimer";
 import {

@@ -1,14 +1,13 @@
 import { CronJob } from "cron";
 import { Command } from "commander";
 
-import { ApiHandler, Constants, logger, Util } from "@1kv/common";
+import { ApiHandler, Constants, logger, Util, Db } from "@1kv/common";
 import { loadConfigDir } from "./config";
-import Database from "./db";
 import MatrixBot from "./matrix";
 import Monitor from "./monitor";
 import Scorekeeper from "./scorekeeper";
 import { Server } from "@1kv/gateway";
-import TelemetryClient from "./telemetry";
+import { TelemetryClient } from "@1kv/telemetry";
 import { startTestSetup } from "./misc/testSetup";
 
 import { startClearAccumulatedOfflineTimeJob, startMonitorJob } from "./cron";
@@ -43,7 +42,7 @@ const start = async (cmd: { config: string }) => {
   const handler = await ApiHandler.create(endpoints);
 
   // Create the Database.
-  const db = await Database.create(config.db.mongo.uri);
+  const db = await Db.create(config.db.mongo.uri);
 
   // Start the API server.
   const server = new Server(db, config);

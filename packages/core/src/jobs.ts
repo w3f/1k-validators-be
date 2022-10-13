@@ -1,5 +1,4 @@
-import Db from "./db";
-import { ChainData, logger, Types } from "@1kv/common";
+import { ChainData, logger, Types, Db } from "@1kv/common";
 import { checkUnclaimed, OTV } from "./constraints";
 import Monitor from "./monitor";
 import { Subscan } from "./subscan";

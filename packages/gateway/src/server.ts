@@ -6,7 +6,6 @@ import Router from "@koa/router";
 import { Db, Config, logger } from "@1kv/common";
 import LRU from "lru-cache";
 import koaCash from "koa-cash";
-import Database from "@1kv/core/build/db";
 
 const API = {
   Accounting: "/accounting/:stashOrController",
@@ -49,10 +48,10 @@ const API = {
 
 export default class Server {
   public app: Koa;
-  private db: Database;
+  private db: Db;
   private port: number;
 
-  constructor(db: Database, config: Config.ConfigSchema) {
+  constructor(db: Db, config: Config.ConfigSchema) {
     this.app = new Koa();
     this.db = db;
     this.port = config.server.port;

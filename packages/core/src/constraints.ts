@@ -5,11 +5,10 @@ import {
   logger,
   Types,
   Util,
+  Db,
 } from "@1kv/common";
 import axios from "axios";
 import { Config } from "./config";
-import Db from "./db";
-import Database from "./db";
 import semver from "semver";
 import {
   absMax,
@@ -50,7 +49,7 @@ export class OTV implements Constraints {
   private unclaimedEraThreshold: number;
 
   private config: Config;
-  private db: Database;
+  private db: Db;
 
   // caches
   // TODO: Remove
@@ -103,7 +102,7 @@ export class OTV implements Constraints {
     commission = 0,
     unclaimedEraThreshold = 0,
     config: Config,
-    db: Database
+    db: Db
   ) {
     this.chaindata = new ChainData(handler);
 

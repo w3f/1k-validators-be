@@ -1,19 +1,17 @@
 import { Keyring } from "@polkadot/api";
-import { ApiHandler, logger, Util, Types } from "@1kv/common";
-
-import Database from "./db";
+import { ApiHandler, logger, Util, Types, Db } from "@1kv/common";
 import { KeyringPair } from "@polkadot/keyring/types";
 import { SubmittableExtrinsic } from "@polkadot/api/types";
 
 export default class Claimer {
-  private db: Database;
+  private db: Db;
   private handler: ApiHandler;
   private signer: KeyringPair;
   private bot: any;
 
   constructor(
     handler: ApiHandler,
-    db: Database,
+    db: Db,
     cfg: Types.ClaimerConfig,
     networkPrefix = 2,
     bot?: any

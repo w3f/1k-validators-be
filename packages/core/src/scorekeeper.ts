@@ -9,10 +9,10 @@ import {
   logger,
   Types,
   Util,
+  Db,
 } from "@1kv/common";
 import { Config, NominatorConfig } from "./config";
 import { checkAllValidateIntentions, OTV } from "./constraints";
-import Db from "./db";
 import Nominator from "./nominator";
 import {
   startActiveValidatorJob,

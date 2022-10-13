@@ -2,7 +2,8 @@
   "name": "@1kv/telemetry",
   "version": "2.6.82",
   "description": "Services for running the Thousand Validator Program.",
-  "main": "index.js",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
   "scripts": {
     "build": "tsc --build tsconfig.json",
     "clean": "../../node_modules/.bin/rimraf ./build tsconfig.tsbuildinfo combined.log ./node_modules",

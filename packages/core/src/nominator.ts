@@ -3,16 +3,14 @@ import Keyring from "@polkadot/keyring";
 import { blake2AsHex } from "@polkadot/util-crypto";
 
 import { KeyringPair } from "@polkadot/keyring/types";
-import { ApiHandler, Constants, logger, Types, Util } from "@1kv/common";
-
-import Database from "./db";
+import { ApiHandler, Constants, logger, Types, Util, Db } from "@1kv/common";
 
 export default class Nominator {
   public currentlyNominating: Types.Stash[] = [];
   public maxNominations: number | "auto";
 
   private _controller: string;
-  private db: Database;
+  private db: Db;
   private bot: any;
   private handler: ApiHandler;
   private signer: KeyringPair;
@@ -32,7 +30,7 @@ export default class Nominator {
 
   constructor(
     handler: ApiHandler,
-    db: Database,
+    db: Db,
     cfg: Types.NominatorConfig,
     networkPrefix = 2,
     bot: any

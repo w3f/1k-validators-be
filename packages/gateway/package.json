@@ -6,7 +6,7 @@
   "types": "build/index.d.ts",
   "scripts": {
     "build": "tsc --build tsconfig.json",
-    "clean": "../../node_modules/.bin/rimraf ./build tsconfig.tsbuildinfo combined.log ./node_modules",
+    "clean": "../../node_modules/.bin/rimraf ./build tsconfig.tsbuildinfo combined.log",
     "clean:build": "yarn clean && yarn build",
     "create-config": "cp ./config/main.sample.json ./config/main.json && cp ./config/secret.sample.json ./config/secret.json",
     "docker": "docker-compose rm -f; docker-compose build --no-cache; docker-compose up -d",

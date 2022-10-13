@@ -2,7 +2,6 @@ import ReconnectingWebSocket from "reconnecting-websocket";
 import WS from "ws";
 
 import { Db, Config, logger } from "@1kv/common";
-import Database from "@1kv/core/build/db";
 
 enum TelemetryMessage {
   FeedVersion = 0x00,

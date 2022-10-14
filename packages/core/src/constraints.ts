@@ -1087,7 +1087,7 @@ export const checkLatestClientVersion = async (
         `{latestRelease} Could not set release validity for ${
           candidate.name
         } - version: ${candidate.version} Latest release: ${
-          latestRelease.name
+          latestRelease?.name
         } now: ${Date.now()}`
       );
       return true;

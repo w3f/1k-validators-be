@@ -2956,7 +2956,6 @@ export default class Db {
     }
 
     if (!data || data?.addr != addr || data?.city != city) {
-      logger.info(JSON.stringify(data ? data : null));
       const location = new this.locationModel({
         name,
         addr,

@@ -27,7 +27,7 @@
     "@1kv/gateway": "workspace:^",
     "@1kv/telemetry": "workspace:^",
     "@koa/router": "^12.0.0",
-    "@octokit/rest": "^19.0.4",
+    "@octokit/rest": "^19.0.5",
     "@polkadot/api": "^9.5.1",
     "@polkadot/keyring": "^10.1.10",
     "@types/cron": "^2.0.0",

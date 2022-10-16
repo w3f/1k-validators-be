@@ -178,24 +178,24 @@ workflows:
               only: /v[0-9]+(\.[0-9]+)*/
           requires:
             - integrationTests
-      - publishGatewayImage:
-          context: dockerhub-bot
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*/
-          requires:
-            - integrationTests
-      - publishTelemetryImage:
-          context: dockerhub-bot
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*/
-          requires:
-            - integrationTests
+#      - publishGatewayImage:
+#          context: dockerhub-bot
+#          filters:
+#            branches:
+#              ignore: /.*/
+#            tags:
+#              only: /v[0-9]+(\.[0-9]+)*/
+#          requires:
+#            - integrationTests
+#      - publishTelemetryImage:
+#          context: dockerhub-bot
+#          filters:
+#            branches:
+#              ignore: /.*/
+#            tags:
+#              only: /v[0-9]+(\.[0-9]+)*/
+#          requires:
+#            - integrationTests
       - publishChart:
           context: github-bot
           filters:

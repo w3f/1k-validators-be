@@ -31,10 +31,14 @@ export default class TelemetryClient {
 
   private offlineNodes: Map<number, boolean> = new Map();
 
+  private enable = true;
+
   constructor(config: Config.ConfigSchema, db: Db) {
     this.config = config;
     this.db = db;
     this.host = this.config.telemetry.host || DEFAULT_HOST;
+
+    this.enable = config.server.enable;
 
     const options = {
       WebSocket: WS,
@@ -46,37 +50,42 @@ export default class TelemetryClient {
   }
 
   async start(): Promise<any> {
-    return new Promise((resolve: any, reject: any) => {
-      this.socket.onopen = () => {
-        logger.info(`Connected to substrate-telemetry on host ${this.host}`);
-        for (const chain of this.config.telemetry.chains) {
-          this._subscribe(chain);
-        }
-        resolve();
-      };
+    if (!this.enable) {
+      logger.info("Telemetry Client not enabled.");
+      return;
+    } else {
+      return new Promise((resolve: any, reject: any) => {
+        this.socket.onopen = () => {
+          logger.info(`Connected to substrate-telemetry on host ${this.host}`);
+          for (const chain of this.config.telemetry.chains) {
+            this._subscribe(chain);
+          }
+          resolve();
+        };
 
-      this.socket.onclose = () => {
-        logger.info(
-          `Connection to substrate-telemetry on host ${this.host} closed`
-        );
-        reject();
-      };
+        this.socket.onclose = () => {
+          logger.info(
+            `Connection to substrate-telemetry on host ${this.host} closed`
+          );
+          reject();
+        };
 
-      this.socket.onerror = (err: any) => {
-        logger.info(
-          `Could not connect to substrate-telemetry on host ${this.host}: `
-        );
-        logger.info(err);
-        reject();
-      };
+        this.socket.onerror = (err: any) => {
+          logger.info(
+            `Could not connect to substrate-telemetry on host ${this.host}: `
+          );
+          logger.info(err);
+          reject();
+        };
 
-      this.socket.onmessage = (msg: any) => {
-        const messages = this._deserialize(msg);
-        for (const message of messages) {
-          this._handle(message);
-        }
-      };
-    });
+        this.socket.onmessage = (msg: any) => {
+          const messages = this._deserialize(msg);
+          for (const message of messages) {
+            this._handle(message);
+          }
+        };
+      });
+    }
   }
 
   private _deserialize(msg: any) {

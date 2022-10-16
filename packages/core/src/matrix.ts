@@ -1,13 +1,12 @@
 import * as Sdk from "matrix-js-sdk";
 import request from "request";
-import { logger, Db } from "@1kv/common";
-import { Config } from "./config";
+import { logger, Db, Config } from "@1kv/common";
 
 const sdk: any = Sdk;
 
 export default class MatrixBot {
   public client: any;
-  public conf: Config;
+  public conf: Config.ConfigSchema;
   public db: Db;
 
   constructor(
@@ -15,7 +14,7 @@ export default class MatrixBot {
     accessToken: string,
     userId: string,
     db: Db,
-    config: Config
+    config: Config.ConfigSchema
   ) {
     this.client = sdk.createClient({
       baseUrl,

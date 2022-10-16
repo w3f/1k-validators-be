@@ -1,6 +1,5 @@
 import { CronJob } from "cron";
 import Monitor from "./monitor";
-import { Config } from "./config";
 import { OTV } from "./constraints";
 import Nominator from "./nominator";
 import {
@@ -11,6 +10,7 @@ import {
   Types,
   Util,
   Db,
+  Config,
 } from "@1kv/common";
 import Claimer from "./claimer";
 import {
@@ -36,7 +36,7 @@ import { Subscan } from "./subscan";
 // Monitors the latest GitHub releases and ensures nodes have upgraded
 // within a timely period.
 export const startMonitorJob = async (
-  config: Config,
+  config: Config.ConfigSchema,
   db: Db,
   monitor: Monitor
 ) => {
@@ -62,7 +62,7 @@ export const startMonitorJob = async (
 
 // Once a week reset the offline accumulations of nodes.
 export const startClearAccumulatedOfflineTimeJob = async (
-  config: Config,
+  config: Config.ConfigSchema,
   db: Db
 ) => {
   const clearFrequency = config.cron.clearOffline
@@ -80,7 +80,7 @@ export const startClearAccumulatedOfflineTimeJob = async (
 };
 
 export const startValidatityJob = async (
-  config: Config,
+  config: Config.ConfigSchema,
   db: Db,
   constraints: OTV,
   chaindata: ChainData,
@@ -108,7 +108,10 @@ export const startValidatityJob = async (
 };
 
 // Runs job that updates scores of all validators
-export const startScoreJob = async (config: Config, constraints: OTV) => {
+export const startScoreJob = async (
+  config: Config.ConfigSchema,
+  constraints: OTV
+) => {
   const scoreFrequency = config.cron.score
     ? config.cron.score
     : Constants.SCORE_CRON;
@@ -132,7 +135,7 @@ export const startScoreJob = async (config: Config, constraints: OTV) => {
 // Runs job that updates the era stats
 export const startEraStatsJob = async (
   db: Db,
-  config: Config,
+  config: Config.ConfigSchema,
   chaindata: ChainData
 ) => {
   const eraStatsFrequency = config.cron.eraStats
@@ -164,7 +167,7 @@ export const startEraStatsJob = async (
 export const startExecutionJob = async (
   handler: ApiHandler,
   nominatorGroups: Array<Nominator[]>,
-  config: Config,
+  config: Config.ConfigSchema,
   db: Db,
   bot: any
 ) => {
@@ -284,7 +287,7 @@ export const startExecutionJob = async (
 
 // Chron job for claiming rewards
 export const startRewardClaimJob = async (
-  config: Config,
+  config: Config.ConfigSchema,
   handler: ApiHandler,
   db: Db,
   claimer: Claimer,
@@ -360,7 +363,7 @@ export const startRewardClaimJob = async (
 };
 
 export const startCancelCron = async (
-  config: Config,
+  config: Config.ConfigSchema,
   handler: ApiHandler,
   db: Db,
   nominatorGroups: Array<Nominator[]>,
@@ -450,7 +453,7 @@ export const startCancelCron = async (
 };
 
 export const startStaleNominationCron = async (
-  config: Config,
+  config: Config.ConfigSchema,
   handler: ApiHandler,
   db: Db,
   nominatorGroups: Array<Nominator[]>,
@@ -515,7 +518,7 @@ export const startStaleNominationCron = async (
 
 // Chron job for writing era points
 export const startEraPointsJob = async (
-  config: Config,
+  config: Config.ConfigSchema,
   db: Db,
   chaindata: ChainData
 ) => {
@@ -553,7 +556,7 @@ export const startEraPointsJob = async (
 
 // Chron job for writing the active validators in the set
 export const startActiveValidatorJob = async (
-  config: Config,
+  config: Config.ConfigSchema,
   db: Db,
   chaindata: ChainData
 ) => {
@@ -589,7 +592,7 @@ export const startActiveValidatorJob = async (
 
 // Chron job for updating inclusion rates
 export const startInclusionJob = async (
-  config: Config,
+  config: Config.ConfigSchema,
   db: Db,
   chaindata: ChainData
 ) => {
@@ -621,7 +624,7 @@ export const startInclusionJob = async (
 
 // Chron job for updating session keys
 export const startSessionKeyJob = async (
-  config: Config,
+  config: Config.ConfigSchema,
   db: Db,
   chaindata: ChainData
 ) => {
@@ -653,7 +656,7 @@ export const startSessionKeyJob = async (
 
 // Chron job for updating unclaimed eras
 export const startUnclaimedEraJob = async (
-  config: Config,
+  config: Config.ConfigSchema,
   db: Db,
   chaindata: ChainData
 ) => {
@@ -691,7 +694,7 @@ export const startUnclaimedEraJob = async (
 
 // Chron job for updating validator preferences
 export const startValidatorPrefJob = async (
-  config: Config,
+  config: Config.ConfigSchema,
   db: Db,
   chaindata: ChainData
 ) => {
@@ -725,7 +728,7 @@ export const startValidatorPrefJob = async (
 
 // Chron job for storing location stats of nodes
 export const startLocationStatsJob = async (
-  config: Config,
+  config: Config.ConfigSchema,
   db: Db,
   chaindata: ChainData
 ) => {
@@ -759,7 +762,7 @@ export const startLocationStatsJob = async (
 
 // Chron job for council and election info
 export const startCouncilJob = async (
-  config: Config,
+  config: Config.ConfigSchema,
   db: Db,
   chaindata: ChainData
 ) => {
@@ -791,7 +794,7 @@ export const startCouncilJob = async (
 
 // Chron job for querying subscan data
 export const startSubscanJob = async (
-  config: Config,
+  config: Config.ConfigSchema,
   db: Db,
   subscan: Subscan
 ) => {
@@ -823,7 +826,7 @@ export const startSubscanJob = async (
 
 // Chron job for querying democracy data
 export const startDemocracyJob = async (
-  config: Config,
+  config: Config.ConfigSchema,
   db: Db,
   chaindata: ChainData
 ) => {
@@ -853,7 +856,7 @@ export const startDemocracyJob = async (
 
 // Chron job for querying nominator data
 export const startNominatorJob = async (
-  config: Config,
+  config: Config.ConfigSchema,
   db: Db,
   chaindata: ChainData
 ) => {
@@ -885,7 +888,7 @@ export const startNominatorJob = async (
 
 // Chron job for querying delegator data
 export const startDelegationJob = async (
-  config: Config,
+  config: Config.ConfigSchema,
   db: Db,
   chaindata: ChainData
 ) => {

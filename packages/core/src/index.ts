@@ -1,8 +1,8 @@
 import { CronJob } from "cron";
 import { Command } from "commander";
 
-import { ApiHandler, Constants, logger, Util, Db } from "@1kv/common";
-import { loadConfigDir } from "./config";
+import { ApiHandler, Constants, logger, Util, Db, Config } from "@1kv/common";
+// import { loadConfigDir } from "./config";
 import MatrixBot from "./matrix";
 import Monitor from "./monitor";
 import Scorekeeper from "./scorekeeper";
@@ -26,7 +26,7 @@ const catchAndQuit = async (fn: any) => {
 };
 
 const start = async (cmd: { config: string }) => {
-  const config = loadConfigDir(cmd.config);
+  const config = Config.loadConfigDir(cmd.config);
 
   logger.info(`{Core:Start} Starting the backend services. ${version}`);
 

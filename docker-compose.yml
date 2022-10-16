@@ -132,11 +132,21 @@ services:
         dockerfile: ./Dockerfile-dev
       volumes:
         - .:/app
-#      ports:
-#        - "3300:3300"
       networks:
         testing_net:
           ipv4_address: 172.28.1.9
+
+    1kv-worker:
+      build:
+        context: .
+        args:
+          PACKAGE: worker
+        dockerfile: ./Dockerfile-dev
+      volumes:
+        - .:/app
+      networks:
+        testing_net:
+          ipv4_address: 172.28.1.16
 
 
     telemetry-backend-core:
@@ -210,6 +220,22 @@ services:
         testing_net:
           ipv4_address: 172.28.1.14
 
+    redis:
+      image: redis:alpine
+      expose:
+        - "6379"
+      volumes:
+        - ./redis:/data
+      restart: always
+      command: ["redis-server", "--bind", "redis", "--port", "6379"]
+      logging:
+        driver: "json-file"
+        options:
+          max-size: "50m"
+      networks:
+        default:
+        testing_net:
+          ipv4_address: 172.28.1.13
 
 
 

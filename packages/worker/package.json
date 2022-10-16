@@ -1,0 +1,52 @@
+{
+  "name": "@1kv/worker",
+  "version": "2.6.82",
+  "description": "Services for running the Thousand Validator Program.",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "scripts": {
+    "build": "tsc --build tsconfig.json",
+    "clean": "../../node_modules/.bin/rimraf ./build tsconfig.tsbuildinfo combined.log",
+    "clean:build": "yarn clean && yarn build",
+    "create-config": "cp ./config/main.sample.json ./config/main.json && cp ./config/secret.sample.json ./config/secret.json",
+    "docker": "docker-compose rm -f; docker-compose build --no-cache; docker-compose up -d",
+    "lint": "tsc --noEmit && eslint 'src/**/*.{js,ts,tsx}' --quiet",
+    "lint:fix": "tsc --noEmit && eslint 'src/**/*.{js,ts,tsx}' --quiet --fix",
+    "start": "NODE_OPTIONS='--max-old-space-size=4096' ts-node src/run.ts start",
+    "start:watch": "NODE_OPTIONS='--max-old-space-size=6096' nodemon --watch build --exec node build/run.js",
+    "start:dev": "concurrently \"tsc -w\"  \"yarn start:watch\"",
+    "js:start": "NODE_OPTIONS='--max-old-space-size=6096' node build/run.js start"
+  },
+  "author": "Web3 Foundation <teched@web3.foundation>",
+  "license": "GPL-3.0",
+  "config": {
+    "mongodbMemoryServer": {
+      "debug": "on"
+    }
+  },
+  "dependencies": {
+    "@1kv/common": "2.6.82",
+    "bullmq": "^2.3.1",
+    "typescript": "^4.8.4"
+  },
+  "devDependencies": {
+    "@ava/typescript": "^3.0.1",
+    "@typescript-eslint/eslint-plugin": "^5.40.0",
+    "@typescript-eslint/parser": "^5.40.0",
+    "ava": "^4.3.3",
+    "concurrently": "^7.4.0",
+    "eslint": "^8.25.0",
+    "eslint-plugin-security": "^1.5.0",
+    "nodemon": "^2.0.20"
+  },
+  "ava": {
+    "failFast": false,
+    "verbose": true,
+    "extensions": [
+      "ts"
+    ],
+    "require": [
+      "ts-node/register"
+    ]
+  }
+}

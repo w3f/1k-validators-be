@@ -53,6 +53,17 @@ jobs:
           command: |
             /scripts/build-image.sh web3f/otv-gateway . --build-arg PACKAGE=gateway
 
+  buildTelemetryImage:
+    docker:
+      - image: web3f/ci-commons:v3.1.6
+    resource_class: xlarge
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          command: |
+            /scripts/build-image.sh web3f/otv-gateway . --build-arg PACKAGE=telemetry
+
   integrationTests:
     docker:
       - image: web3f/ci-commons:v3.1.6
@@ -83,6 +94,16 @@ jobs:
       - run:
           command: |
             /scripts/publish-image.sh web3f/otv-gateway
+
+  publishTelemetryImage:
+    docker:
+      - image: web3f/ci-commons:v3.1.6
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          command: |
+            /scripts/publish-image.sh web3f/otv-telemetry
 
   publishChart:
     docker:

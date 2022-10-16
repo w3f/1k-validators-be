@@ -131,7 +131,7 @@ workflows:
               only: /.*/
           requires:
             - helmLint
-            - buildImage
+            - buildCoreImage
       - publishImage:
           context: dockerhub-bot
           filters:

@@ -64,7 +64,7 @@ jobs:
           command: |
             /scripts/integration-tests.sh kindest/node:v1.21.1
 
-  publishImage:
+  publishCoreImage:
     docker:
       - image: web3f/ci-commons:v3.1.6
     steps:
@@ -73,6 +73,16 @@ jobs:
       - run:
           command: |
             /scripts/publish-image.sh web3f/otv-backend
+
+  publishGatewayImage:
+    docker:
+      - image: web3f/ci-commons:v3.1.6
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          command: |
+            /scripts/publish-image.sh web3f/otv-gateway
 
   publishChart:
     docker:
@@ -132,7 +142,17 @@ workflows:
           requires:
             - helmLint
             - buildCoreImage
-      - publishImage:
+#            - buildGatewayImage
+      - publishCoreImage:
+          context: dockerhub-bot
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*/
+          requires:
+            - integrationTests
+      - publishGatewayImage:
           context: dockerhub-bot
           filters:
             branches:

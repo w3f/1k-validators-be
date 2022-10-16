@@ -6,9 +6,9 @@ import {
   Types,
   Util,
   Db,
+  Config,
 } from "@1kv/common";
 import axios from "axios";
-import { Config } from "./config";
 import semver from "semver";
 import {
   absMax,
@@ -48,7 +48,7 @@ export class OTV implements Constraints {
   private commission: number;
   private unclaimedEraThreshold: number;
 
-  private config: Config;
+  private config: Config.ConfigSchema;
   private db: Db;
 
   // caches
@@ -101,7 +101,7 @@ export class OTV implements Constraints {
     minSelfStake = 0,
     commission = 0,
     unclaimedEraThreshold = 0,
-    config: Config,
+    config: Config.ConfigSchema,
     db: Db
   ) {
     this.chaindata = new ChainData(handler);
@@ -1023,7 +1023,7 @@ export const checkOnline = async (db: Db, candidate: any) => {
 
 // Check the validate intention for a single validator
 export const checkValidateIntention = async (
-  config: Config,
+  config: Config.ConfigSchema,
   chaindata: ChainData,
   db: Db,
   candidate: any
@@ -1040,7 +1040,7 @@ export const checkValidateIntention = async (
 
 // checks the validate intention for all validators
 export const checkAllValidateIntentions = async (
-  config: Config,
+  config: Config.ConfigSchema,
   chaindata: ChainData,
   db: Db,
   candidates: any
@@ -1057,7 +1057,7 @@ export const checkAllValidateIntentions = async (
 
 // checks that the validator is on the latest client version
 export const checkLatestClientVersion = async (
-  config: Config,
+  config: Config.ConfigSchema,
   db: Db,
   candidate: any
 ) => {
@@ -1099,7 +1099,7 @@ export const checkLatestClientVersion = async (
 };
 
 export const checkConnectionTime = async (
-  config: Config,
+  config: Config.ConfigSchema,
   db: Db,
   candidate: any
 ) => {

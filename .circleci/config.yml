@@ -22,17 +22,6 @@ jobs:
           command: |
             yarn set version 3.2.2 && yarn install && yarn build && yarn workspace @1kv/core lint
 
-#  unitTests:
-#    docker:
-#      - image: node:slim
-#    steps:
-#      - checkout
-#      - run:
-#          environment:
-#            YARN_ENABLE_IMMUTABLE_INSTALLS: false
-#          command: |
-#            yarn
-
   helmLint:
     docker:
       - image: web3f/ci-commons:v3.1.6
@@ -42,7 +31,7 @@ jobs:
           command: |
             helm lint ./charts/otv-backend
 
-  buildImage:
+  buildCoreImage:
     docker:
       - image: web3f/ci-commons:v3.1.6
     resource_class: xlarge
@@ -52,6 +41,28 @@ jobs:
       - run:
           command: |
             /scripts/build-image.sh web3f/otv-backend . --build-arg PACKAGE=core
+
+  buildGatewayImage:
+    docker:
+      - image: web3f/ci-commons:v3.1.6
+    resource_class: xlarge
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          command: |
+            /scripts/build-image.sh web3f/otv-gateway . --build-arg PACKAGE=gateway
+
+  buildTelemetryImage:
+    docker:
+      - image: web3f/ci-commons:v3.1.6
+    resource_class: xlarge
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          command: |
+            /scripts/build-image.sh web3f/otv-gateway . --build-arg PACKAGE=telemetry
 
   integrationTests:
     docker:
@@ -64,7 +75,7 @@ jobs:
           command: |
             /scripts/integration-tests.sh kindest/node:v1.21.1
 
-  publishImage:
+  publishCoreImage:
     docker:
       - image: web3f/ci-commons:v3.1.6
     steps:
@@ -73,6 +84,26 @@ jobs:
       - run:
           command: |
             /scripts/publish-image.sh web3f/otv-backend
+
+  publishGatewayImage:
+    docker:
+      - image: web3f/ci-commons:v3.1.6
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          command: |
+            /scripts/publish-image.sh web3f/otv-gateway
+
+  publishTelemetryImage:
+    docker:
+      - image: web3f/ci-commons:v3.1.6
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          command: |
+            /scripts/publish-image.sh web3f/otv-telemetry
 
   publishChart:
     docker:
@@ -115,21 +146,30 @@ workflows:
           filters:
             tags:
               only: /.*/
-      - buildImage:
+      - buildCoreImage:
           context: dockerhub-bot
           filters:
             tags:
               only: /.*/
-          requires:
-#            - unitTests
+#      - buildGatewayImage:
+#          context: dockerhub-bot
+#          filters:
+#            tags:
+#              only: /.*/
+#      - buildTelemetryImage:
+#          context: dockerhub-bot
+#          filters:
+#            tags:
+#              only: /.*/
       - integrationTests:
           filters:
             tags:
               only: /.*/
           requires:
             - helmLint
-            - buildImage
-      - publishImage:
+            - buildCoreImage
+#            - buildGatewayImage
+      - publishCoreImage:
           context: dockerhub-bot
           filters:
             branches:
@@ -138,6 +178,24 @@ workflows:
               only: /v[0-9]+(\.[0-9]+)*/
           requires:
             - integrationTests
+#      - publishGatewayImage:
+#          context: dockerhub-bot
+#          filters:
+#            branches:
+#              ignore: /.*/
+#            tags:
+#              only: /v[0-9]+(\.[0-9]+)*/
+#          requires:
+#            - integrationTests
+#      - publishTelemetryImage:
+#          context: dockerhub-bot
+#          filters:
+#            branches:
+#              ignore: /.*/
+#            tags:
+#              only: /v[0-9]+(\.[0-9]+)*/
+#          requires:
+#            - integrationTests
       - publishChart:
           context: github-bot
           filters:
@@ -157,7 +215,7 @@ workflows:
             tags:
               only: /v[0-9]+(\.[0-9]+)*/
           requires:
-            - publishImage
+            - publishCoreImage
             - publishChart
 
 

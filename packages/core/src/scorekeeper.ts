@@ -10,8 +10,9 @@ import {
   Types,
   Util,
   Db,
+  Config,
 } from "@1kv/common";
-import { Config, NominatorConfig } from "./config";
+// import { NominatorConfig } from "./config";
 import { checkAllValidateIntentions, OTV } from "./constraints";
 import Nominator from "./nominator";
 import {
@@ -51,7 +52,7 @@ import Monitor from "./monitor";
 import { Subscan } from "./subscan";
 import { asc } from "./score";
 
-type NominatorGroup = NominatorConfig[];
+type NominatorGroup = Config.NominatorConfig[];
 
 type SpawnedNominatorGroup = Nominator[];
 
@@ -158,7 +159,7 @@ export default class ScoreKeeper {
   public handler: ApiHandler;
   public bot: any;
   public chaindata: ChainData;
-  public config: Config;
+  public config: Config.ConfigSchema;
   public constraints: OTV;
   public currentEra = 0;
   public currentTargets: string[];
@@ -180,7 +181,12 @@ export default class ScoreKeeper {
   private monitor: Monitor;
   private subscan: Subscan;
 
-  constructor(handler: ApiHandler, db: Db, config: Config, bot: any = false) {
+  constructor(
+    handler: ApiHandler,
+    db: Db,
+    config: Config.ConfigSchema,
+    bot: any = false
+  ) {
     this.handler = handler;
     this.db = db;
     this.chaindata = new ChainData(this.handler);
@@ -360,7 +366,7 @@ export default class ScoreKeeper {
   }
 
   /// Spawns a new nominator.
-  _spawn(cfg: NominatorConfig, networkPrefix = 2): Nominator {
+  _spawn(cfg: Config.NominatorConfig, networkPrefix = 2): Nominator {
     return new Nominator(this.handler, this.db, cfg, networkPrefix, this.bot);
   }
 

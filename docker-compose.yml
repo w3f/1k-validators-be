@@ -110,29 +110,33 @@ services:
         testing_net:
           ipv4_address: 172.28.1.7
 
-#    1kv-gateway:
-#      build:
-#        context: .
-#        dockerfile: ./packages/gateway/Dockerfile-dev
-#      volumes:
-#        - .:/app
+    1kv-gateway:
+      build:
+        context: .
+        args:
+          PACKAGE: gateway
+        dockerfile: ./Dockerfile-dev
+      volumes:
+        - .:/app
+      ports:
+        - "3301:3301"
+      networks:
+        testing_net:
+          ipv4_address: 172.28.1.8
+
+    1kv-telemetry:
+      build:
+        context: .
+        args:
+          PACKAGE: telemetry
+        dockerfile: ./Dockerfile-dev
+      volumes:
+        - .:/app
 #      ports:
-#        - "3301:3301"
-#      networks:
-#        testing_net:
-#          ipv4_address: 172.28.1.8
-#
-#    1kv-telemetry:
-#      build:
-#        context: .
-#        dockerfile: ./packages/telemetry/Dockerfile-dev
-#      volumes:
-#        - .:/app
-##      ports:
-##        - "3300:3300"
-#      networks:
-#        testing_net:
-#          ipv4_address: 172.28.1.9
+#        - "3300:3300"
+      networks:
+        testing_net:
+          ipv4_address: 172.28.1.9
 
 
     telemetry-backend-core:

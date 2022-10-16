@@ -103,9 +103,11 @@ export type ConfigSchema = {
     claimer: ClaimerConfig;
   };
   server: {
+    enable: boolean;
     port: number;
   };
   telemetry: {
+    enable: boolean;
     chains: string[];
     host: string;
   };

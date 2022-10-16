@@ -50,11 +50,13 @@ export default class Server {
   public app: Koa;
   private db: Db;
   private port: number;
+  private enable = true;
 
   constructor(db: Db, config: Config.ConfigSchema) {
     this.app = new Koa();
     this.db = db;
     this.port = config.server.port;
+    this.enable = config.server.enable;
 
     this.app.use(cors());
     this.app.use(bodyparser());
@@ -479,7 +481,11 @@ export default class Server {
   }
 
   start(): void {
-    logger.info(`Now listening on ${this.port}`);
-    this.app.listen(this.port);
+    if (!this.enable) {
+      logger.info(`Server not enabled;`);
+    } else {
+      logger.info(`Now listening on ${this.port}`);
+      this.app.listen(this.port);
+    }
   }
 }

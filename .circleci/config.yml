@@ -22,17 +22,6 @@ jobs:
           command: |
             yarn set version 3.2.2 && yarn install && yarn build && yarn workspace @1kv/core lint
 
-#  unitTests:
-#    docker:
-#      - image: node:slim
-#    steps:
-#      - checkout
-#      - run:
-#          environment:
-#            YARN_ENABLE_IMMUTABLE_INSTALLS: false
-#          command: |
-#            yarn
-
   helmLint:
     docker:
       - image: web3f/ci-commons:v3.1.6
@@ -42,7 +31,7 @@ jobs:
           command: |
             helm lint ./charts/otv-backend
 
-  buildImage:
+  buildCoreImage:
     docker:
       - image: web3f/ci-commons:v3.1.6
     resource_class: xlarge
@@ -52,6 +41,17 @@ jobs:
       - run:
           command: |
             /scripts/build-image.sh web3f/otv-backend . --build-arg PACKAGE=core
+
+  buildGatewayImage:
+    docker:
+      - image: web3f/ci-commons:v3.1.6
+    resource_class: xlarge
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          command: |
+            /scripts/build-image.sh web3f/otv-gateway . --build-arg PACKAGE=gateway
 
   integrationTests:
     docker:
@@ -115,13 +115,16 @@ workflows:
           filters:
             tags:
               only: /.*/
-      - buildImage:
+      - buildCoreImage:
           context: dockerhub-bot
           filters:
             tags:
               only: /.*/
-          requires:
-#            - unitTests
+      - buildGatewayImage:
+          context: dockerhub-bot
+          filters:
+            tags:
+              only: /.*/
       - integrationTests:
           filters:
             tags:

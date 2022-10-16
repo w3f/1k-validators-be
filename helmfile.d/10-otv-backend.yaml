@@ -1,6 +1,7 @@
 environments:
   production:
   ci:
+  local:
 
 repositories:
   - name: w3f
@@ -19,6 +20,8 @@ releases:
     - ./config/otv-backend.yaml.gotmpl
     {{ if eq .Environment.Name "production" }}
     - ./config/kusama/otv-backend-prod.yaml.gotmpl
+    {{ else if eq .Environment.Name "local" }}
+    - ./config/kusama/otv-backend-local.yaml.gotmpl
     {{ else }}
     - ./config/kusama/otv-backend-ci.yaml.gotmpl
     {{ end }}
@@ -35,6 +38,8 @@ releases:
     - ./config/otv-backend.yaml.gotmpl
     {{ if eq .Environment.Name "production" }}
     - ./config/polkadot/otv-backend-prod.yaml.gotmpl
+    {{ else if eq .Environment.Name "local" }}
+    - ./config/polkadot/otv-backend-local.yaml.gotmpl
     {{ else }}
     - ./config/polkadot/otv-backend-ci.yaml.gotmpl
     {{ end }}

@@ -1,6 +1,7 @@
 environments:
   production:
   ci:
+  local:
 repositories:
   - name: bitnami
     url: https://charts.bitnami.com/bitnami

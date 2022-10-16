@@ -2,7 +2,6 @@ import { CronJob } from "cron";
 import { Command } from "commander";
 
 import { ApiHandler, Constants, logger, Util, Db, Config } from "@1kv/common";
-// import { loadConfigDir } from "./config";
 import MatrixBot from "./matrix";
 import Monitor from "./monitor";
 import Scorekeeper from "./scorekeeper";

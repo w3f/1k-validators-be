@@ -9,7 +9,6 @@ import {
   Config,
 } from "@1kv/common";
 import axios from "axios";
-// import { Config } from "./config";
 import semver from "semver";
 import {
   absMax,

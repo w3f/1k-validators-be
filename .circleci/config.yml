@@ -151,16 +151,16 @@ workflows:
           filters:
             tags:
               only: /.*/
-      - buildGatewayImage:
-          context: dockerhub-bot
-          filters:
-            tags:
-              only: /.*/
-      - buildTelemetryImage:
-          context: dockerhub-bot
-          filters:
-            tags:
-              only: /.*/
+#      - buildGatewayImage:
+#          context: dockerhub-bot
+#          filters:
+#            tags:
+#              only: /.*/
+#      - buildTelemetryImage:
+#          context: dockerhub-bot
+#          filters:
+#            tags:
+#              only: /.*/
       - integrationTests:
           filters:
             tags:

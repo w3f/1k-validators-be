@@ -2,7 +2,7 @@ import Server from "./server";
 import { Command } from "commander";
 import { Db, Config, logger } from "@1kv/common";
 
-const version = "v3.0.0";
+const version = "v2.6.87";
 
 const catchAndQuit = async (fn: any) => {
   try {

@@ -1,6 +1,6 @@
 {
   "name": "@1kv/gateway",
-  "version": "2.6.82",
+  "version": "2.6.87",
   "description": "Services for running the Thousand Validator Program.",
   "main": "build/index.js",
   "types": "build/index.d.ts",

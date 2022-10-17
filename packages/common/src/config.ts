@@ -65,6 +65,7 @@ export type ConfigSchema = {
     test: boolean;
     retroactive: boolean;
     historicalNominations: boolean;
+    apiEndpoints: string[];
   };
   matrix: {
     accessToken: string;

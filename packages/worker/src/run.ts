@@ -1,8 +1,8 @@
-import Server from "./server";
+import Worker from "./worker";
 import { Command } from "commander";
 import { Db, Config, logger } from "@1kv/common";
 
-const version = "v2.6.87";
+const version = "v3.0.0";
 
 const catchAndQuit = async (fn: any) => {
   try {
@@ -16,10 +16,10 @@ const catchAndQuit = async (fn: any) => {
 const start = async (cmd: { config: string }) => {
   const config = Config.loadConfigDir(cmd.config);
 
-  logger.info(`{Gateway:Start} Starting the backend services. ${version}`);
+  logger.info(`{Worker:Start} Starting the backend services. ${version}`);
   const db = await Db.create(config.db.mongo.uri);
-  const server = new Server(db, config);
-  server.start();
+  const worker = new Worker(db, config);
+  await worker.startWorker();
 };
 
 const program = new Command();

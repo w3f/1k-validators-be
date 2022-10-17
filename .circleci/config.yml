@@ -62,7 +62,18 @@ jobs:
       - setup_remote_docker
       - run:
           command: |
-            /scripts/build-image.sh web3f/otv-gateway . --build-arg PACKAGE=telemetry
+            /scripts/build-image.sh web3f/otv-telemetry . --build-arg PACKAGE=telemetry
+
+  buildWorkerImage:
+    docker:
+      - image: web3f/ci-commons:v3.1.6
+    resource_class: xlarge
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          command: |
+            /scripts/build-image.sh web3f/otv-worker . --build-arg PACKAGE=worker
 
   integrationTests:
     docker:
@@ -104,6 +115,16 @@ jobs:
       - run:
           command: |
             /scripts/publish-image.sh web3f/otv-telemetry
+
+  publishWorkerImage:
+    docker:
+      - image: web3f/ci-commons:v3.1.6
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          command: |
+            /scripts/publish-image.sh web3f/otv-worker
 
   publishChart:
     docker:
@@ -161,6 +182,11 @@ workflows:
 #          filters:
 #            tags:
 #              only: /.*/
+#      - buildWorkerImage:
+#          context: dockerhub-bot
+#          filters:
+#            tags:
+#              only: /.*/
       - integrationTests:
           filters:
             tags:
@@ -188,6 +214,15 @@ workflows:
 #          requires:
 #            - integrationTests
 #      - publishTelemetryImage:
+#          context: dockerhub-bot
+#          filters:
+#            branches:
+#              ignore: /.*/
+#            tags:
+#              only: /v[0-9]+(\.[0-9]+)*/
+#          requires:
+#            - integrationTests
+#      - publishWorkerImage:
 #          context: dockerhub-bot
 #          filters:
 #            branches:

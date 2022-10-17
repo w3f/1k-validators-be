@@ -1,5 +1,5 @@
 {
-  "name": "@1kv/gateway",
+  "name": "@1kv/worker",
   "version": "2.6.87",
   "description": "Services for running the Thousand Validator Program.",
   "main": "build/index.js",
@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "@1kv/common": "workspace:^",
+    "bullmq": "^2.3.1",
     "typescript": "^4.8.4"
   },
   "devDependencies": {

@@ -2,6 +2,8 @@ import { CronJob } from "cron";
 import { ApiPromise } from "@polkadot/api";
 import { bnToBn } from "@polkadot/util";
 
+import { otvWorker } from "@1kv/worker";
+
 import {
   ApiHandler,
   ChainData,
@@ -281,25 +283,7 @@ export default class ScoreKeeper {
 
     this.config = config;
     this.bot = bot;
-    this.constraints = new OTV(
-      this.handler,
-      this.config.constraints.skipConnectionTime,
-      this.config.constraints.skipIdentity,
-      this.config.constraints.skipStakedDestination,
-      this.config.constraints.skipClientUpgrade,
-      this.config.constraints.skipUnclaimed,
-      this.config.global.networkPrefix == 2
-        ? Constants.TEN_KSM
-        : Constants.FIVE_THOUSAND_DOT,
-      this.config.global.networkPrefix == 2
-        ? Constants.FIFTEEN_PERCENT
-        : Constants.FIVE_PERCENT,
-      this.config.global.networkPrefix == 2
-        ? Constants.KUSAMA_FOUR_DAYS_ERAS
-        : Constants.POLKADOT_FOUR_DAYS_ERAS,
-      this.config,
-      this.db
-    );
+    this.constraints = new OTV(this.handler, this.config, this.db);
     this.monitor = new Monitor(db, Constants.SIXTEEN_HOURS);
 
     this.subscan = new Subscan(
@@ -584,7 +568,18 @@ export default class ScoreKeeper {
 
     // Start all Cron Jobs
     try {
-      // await startMonitorJob(this.config, this.db, this.monitor);
+      if (this.config.redis.host && this.config.redis.port) {
+        logger.info(`starting bullmq release monitor worker`);
+        const releaseMonitorQueue =
+          await otvWorker.queues.createReleaseMonitorQueue(
+            this.config.redis.host,
+            this.config.redis.port
+          );
+        await otvWorker.queues.addReleaseMonitorJob(releaseMonitorQueue, 10000);
+      } else {
+        await otvWorker.jobs.getLatestTaggedRelease(this.db);
+      }
+
       await startValidatityJob(
         this.config,
         this.db,

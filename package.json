@@ -27,10 +27,11 @@
     "start:js:worker": "NODE_OPTIONS='--max-old-space-size=6096' node packages/worker/build/index.js start"
   },
   "devDependencies": {
+    "@types/eslint": "^8",
     "@types/node": "^18.8.4",
     "@typescript-eslint/eslint-plugin": "^5.40.0",
     "@typescript-eslint/parser": "^5.40.0",
-    "eslint": "^8.25.0",
+    "eslint": "8.22.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
     "prettier": "^2.7.1"

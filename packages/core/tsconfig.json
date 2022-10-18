@@ -5,7 +5,8 @@
   "paths": {
     "@1kv/common": ["../common/build"],
     "@1kv/gateway": ["../gateway/build"],
-    "@1kv/telemetry": ["../telemetry/build"]
+    "@1kv/telemetry": ["../telemetry/build"],
+    "@1kv/worker": ["../worker/build"]
   },
   "files": [
     "src/index.ts",
@@ -76,6 +77,7 @@
   "references": [
     { "path": "../common" },
     { "path": "../gateway" },
-    { "path": "../telemetry" }
+    { "path": "../telemetry" },
+    { "path": "../worker" }
   ]
 }

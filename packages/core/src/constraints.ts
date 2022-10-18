@@ -91,30 +91,19 @@ export class OTV implements Constraints {
   private NOMINATIONS_WEIGHT = 100;
   private DELEGATIONS_WEIGHT = 60;
 
-  constructor(
-    handler: ApiHandler,
-    skipConnectionTime = false,
-    skipIdentity = false,
-    skipStakedDestination = false,
-    skipClientUpgrade = false,
-    skipUnclaimed = false,
-    minSelfStake = 0,
-    commission = 0,
-    unclaimedEraThreshold = 0,
-    config: Config.ConfigSchema,
-    db: Db
-  ) {
+  constructor(handler: ApiHandler, config: Config.ConfigSchema, db: Db) {
     this.chaindata = new ChainData(handler);
 
-    this.skipConnectionTime = skipConnectionTime;
-    this.skipIdentity = skipIdentity;
-    this.skipStakedDesitnation = skipStakedDestination;
-    this.skipClientUpgrade = skipClientUpgrade;
-    this.skipUnclaimed = skipUnclaimed;
+    // Constraints
+    this.skipConnectionTime = this.config.constraints.skipConnectionTime;
+    this.skipIdentity = this.config.constraints.skipIdentity;
+    this.skipStakedDesitnation = this.config.constraints.skipStakedDestination;
+    this.skipClientUpgrade = this.config.constraints.skipClientUpgrade;
+    this.skipUnclaimed = this.config.constraints.skipUnclaimed;
 
-    this.minSelfStake = minSelfStake;
-    this.commission = commission;
-    this.unclaimedEraThreshold = unclaimedEraThreshold;
+    this.minSelfStake = this.config.constraints.minSelfStake;
+    this.commission = this.config.constraints.commission;
+    this.unclaimedEraThreshold = this.config.constraints.unclaimedEraThreshold;
 
     this.config = config;
     this.db = db;

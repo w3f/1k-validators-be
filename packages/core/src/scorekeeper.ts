@@ -755,7 +755,7 @@ export default class ScoreKeeper {
         // The number of nominations to do per nominator account
         // This is either hard coded, or set to "auto", meaning it will find a dynamic amount of validators
         //    to nominate based on the lowest staked validator in the validator set
-        const api = await this.chaindata.handler.getApi();
+        const api = await this.handler.getApi();
         const denom = await this.chaindata.getDenom();
         const autoNom = await autoNumNominations(api, nominator, this.db);
         const {

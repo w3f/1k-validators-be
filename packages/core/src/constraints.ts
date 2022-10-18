@@ -100,7 +100,6 @@ export class OTV implements Constraints {
     this.skipStakedDesitnation = this.config.constraints.skipStakedDestination;
     this.skipClientUpgrade = this.config.constraints.skipClientUpgrade;
     this.skipUnclaimed = this.config.constraints.skipUnclaimed;
-
     this.minSelfStake = this.config.constraints.minSelfStake;
     this.commission = this.config.constraints.commission;
     this.unclaimedEraThreshold = this.config.constraints.unclaimedEraThreshold;
@@ -108,6 +107,7 @@ export class OTV implements Constraints {
     this.config = config;
     this.db = db;
 
+    // Weights
     this.INCLUSION_WEIGHT = Number(this.config.score.inclusion);
     this.SPAN_INCLUSION_WEIGHT = Number(this.config.score.spanInclusion);
     this.DISCOVERED_WEIGHT = Number(this.config.score.discovered);

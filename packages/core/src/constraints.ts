@@ -93,19 +93,24 @@ export class OTV implements Constraints {
 
   constructor(handler: ApiHandler, config: Config.ConfigSchema, db: Db) {
     this.chaindata = new ChainData(handler);
-
-    // Constraints
-    this.skipConnectionTime = this.config.constraints.skipConnectionTime;
-    this.skipIdentity = this.config.constraints.skipIdentity;
-    this.skipStakedDesitnation = this.config.constraints.skipStakedDestination;
-    this.skipClientUpgrade = this.config.constraints.skipClientUpgrade;
-    this.skipUnclaimed = this.config.constraints.skipUnclaimed;
-    this.minSelfStake = this.config.constraints.minSelfStake;
-    this.commission = this.config.constraints.commission;
-    this.unclaimedEraThreshold = this.config.constraints.unclaimedEraThreshold;
-
     this.config = config;
     this.db = db;
+
+    // Constraints
+    this.skipConnectionTime =
+      this.config?.constraints?.skipConnectionTime || false;
+    logger.info(`skip connection time: ${this.skipConnectionTime}`);
+    this.skipIdentity = this.config?.constraints?.skipIdentity || false;
+    this.skipStakedDesitnation =
+      this.config?.constraints?.skipStakedDestination || false;
+    this.skipClientUpgrade =
+      this.config?.constraints?.skipClientUpgrade || false;
+    this.skipUnclaimed = this.config?.constraints?.skipUnclaimed || false;
+    this.minSelfStake =
+      this.config?.constraints?.minSelfStake || 10000000000000000000;
+    this.commission = this.config?.constraints?.commission || 150000000;
+    this.unclaimedEraThreshold =
+      this.config?.constraints?.unclaimedEraThreshold || 4;
 
     // Weights
     this.INCLUSION_WEIGHT = Number(this.config.score.inclusion);
@@ -124,14 +129,6 @@ export class OTV implements Constraints {
     this.DEMOCRACY_WEIGHT = Number(this.config.score.democracy);
     this.NOMINATIONS_WEIGHT = Number(this.config.score.nominations);
     this.DELEGATIONS_WEIGHT = Number(this.config.score.delegations);
-  }
-
-  get validCandidateCache(): Types.CandidateData[] {
-    return this.validCache;
-  }
-
-  get invalidCandidateCache(): Types.CandidateData[] {
-    return this.invalidCache;
   }
 
   // Add candidate to valid cache and remove them from invalid cache
@@ -271,10 +268,10 @@ export class OTV implements Constraints {
 
   async scoreAllCandidates() {
     const candidates = await this.db.allCandidates();
-    await this.scoreCandidates(candidates, this.db);
+    await this.scoreCandidates(candidates);
   }
 
-  async scoreCandidates(candidates: Types.CandidateData[], db: Db) {
+  async scoreCandidates(candidates: Types.CandidateData[]) {
     let rankedCandidates = [];
     const validCandidates = candidates.filter((candidate) => candidate.valid);
     if (validCandidates.length < 2) return;
@@ -283,276 +280,62 @@ export class OTV implements Constraints {
     //    A validators individual parameter is then scaled to how it compares to others that are also deemed valid
 
     // Bonded
-    const bondedValues = validCandidates.map((candidate) => {
-      return candidate.bonded ? candidate.bonded : 0;
-    });
-    const bondedStats = bondedValues.length > 0 ? getStats(bondedValues) : [];
+    const { bondedValues, bondedStats } = getBondedValues(validCandidates);
 
     // Faults
-    const faultsValues = validCandidates.map((candidate) => {
-      return candidate.faults ? candidate.faults : 0;
-    });
-    const faultsStats = getStats(faultsValues);
+    const { faultsValues, faultsStats } = getFaultsValues(validCandidates);
 
     //  Inclusion
-    const inclusionValues = validCandidates.map((candidate) => {
-      return candidate.inclusion ? candidate.inclusion : 0;
-    });
-    const inclusionStats = getStats(inclusionValues);
+    const { inclusionValues, inclusionStats } =
+      getInclusionValues(validCandidates);
 
     // Span Inclusion
-    const spanInclusionValues = validCandidates.map((candidate) => {
-      return candidate.spanInclusion ? candidate.spanInclusion : 0;
-    });
-    const spanInclusionStats = getStats(spanInclusionValues);
+    const { spanInclusionValues, spanInclusionStats } =
+      getSpanInclusionValues(validCandidates);
 
     // Discovered At
-    const discoveredAtValues = validCandidates.map((candidate) => {
-      return candidate.discoveredAt ? candidate.discoveredAt : 0;
-    });
-    const discoveredAtStats = getStats(discoveredAtValues);
+    const { discoveredAtValues, discoveredAtStats } =
+      getDiscoveredAtValues(validCandidates);
 
     // Nominated At
-    const nominatedAtValues = validCandidates.map((candidate) => {
-      return candidate.nominatedAt ? candidate.nominatedAt : 0;
-    });
-    const nominatedAtStats = getStats(nominatedAtValues);
+    const { nominatedAtValues, nominatedAtStats } =
+      getNominatedAtValues(validCandidates);
 
     // Downtime
-    const offlineValues = validCandidates.map((candidate) => {
-      return candidate.offlineAccumulated ? candidate.offlineAccumulated : 0;
-    });
-    const offlineStats = getStats(offlineValues);
+    const { offlineValues, offlineStats } = getOfflineValues(validCandidates);
 
     // Rank
-    const rankValues = validCandidates.map((candidate) => {
-      return candidate.rank ? candidate.rank : 0;
-    });
-    const rankStats = getStats(rankValues);
+    const { rankValues, rankStats } = getRankValues(validCandidates);
 
     // Unclaimed Rewards
-    const unclaimedValues = validCandidates.map((candidate) => {
-      return candidate.unclaimedEras && candidate.unclaimedEras.length
-        ? candidate.unclaimedEras.length
-        : 0;
-    });
-    const unclaimedStats = getStats(unclaimedValues);
+    const { unclaimedValues, unclaimedStats } =
+      getUnclaimedValues(validCandidates);
 
     // Location
-    const locationMap = new Map();
-    const locationArr = [];
-    for (const candidate of validCandidates) {
-      const location = candidate.location || "No Location";
-
-      const locationCount = locationMap.get(location);
-      if (!locationCount) {
-        locationMap.set(location, 1);
-      } else {
-        locationMap.set(location, locationCount + 1);
-      }
-    }
-
-    for (const location of locationMap.entries()) {
-      const [name, numberOfNodes] = location;
-      locationArr.push({ name, numberOfNodes });
-    }
-
-    const locationValues = locationArr.map((location) => {
-      return location.numberOfNodes;
-    });
-    const locationStats = getStats(locationValues);
-
-    // ---------------- CITY -----------------------------------
-    const cityMap = new Map();
-    const cityArr = [];
-    for (const candidate of validCandidates) {
-      const city =
-        candidate.infrastructureLocation &&
-        candidate.infrastructureLocation.city
-          ? candidate.infrastructureLocation.city
-          : "No Location";
-
-      const cityCount = cityMap.get(city);
-      if (!cityCount) {
-        cityMap.set(city, 1);
-      } else {
-        cityMap.set(city, cityCount + 1);
-      }
-    }
-
-    for (const city of cityMap.entries()) {
-      const [name, numberOfNodes] = city;
-      cityArr.push({ name, numberOfNodes });
-    }
-    const cityValues = cityArr.map((city) => {
-      return city.numberOfNodes;
-    });
-    const cityStats = getStats(cityValues);
+    const { locationArr, locationValues, locationStats } =
+      getLocationValues(validCandidates);
 
     // ---------------- REGION -----------------------------------
-    const regionMap = new Map();
-    const regionArr = [];
-    for (const candidate of validCandidates) {
-      const region =
-        candidate.infrastructureLocation &&
-        candidate.infrastructureLocation.region
-          ? candidate.infrastructureLocation.region
-          : "No Location";
-
-      const regionCount = regionMap.get(region);
-      if (!regionCount) {
-        regionMap.set(region, 1);
-      } else {
-        regionMap.set(region, regionCount + 1);
-      }
-    }
-
-    for (const region of regionMap.entries()) {
-      const [name, numberOfNodes] = region;
-      regionArr.push({ name, numberOfNodes });
-    }
-    const regionValues = regionArr.map((region) => {
-      return region.numberOfNodes;
-    });
-    const regionStats = getStats(regionValues);
+    const { regionArr, regionValues, regionStats } =
+      getRegionValues(validCandidates);
 
     // ---------------- COUNTRY -----------------------------------
-    const countryMap = new Map();
-    const countryArr = [];
-    for (const candidate of validCandidates) {
-      const country =
-        candidate.infrastructureLocation &&
-        candidate.infrastructureLocation.country
-          ? candidate.infrastructureLocation.country
-          : "No Location";
-
-      const countryCount = countryMap.get(country);
-      if (!countryCount) {
-        countryMap.set(country, 1);
-      } else {
-        countryMap.set(country, countryCount + 1);
-      }
-    }
-
-    for (const country of countryMap.entries()) {
-      const [name, numberOfNodes] = country;
-      countryArr.push({ name, numberOfNodes });
-    }
-    const countryValues = countryArr.map((country) => {
-      return country.numberOfNodes;
-    });
-    const countryStats = getStats(countryValues);
-
-    // ---------------- ASN -----------------------------------
-    const asnMap = new Map();
-    const asnArr = [];
-    for (const candidate of validCandidates) {
-      const asn =
-        candidate.infrastructureLocation && candidate.infrastructureLocation.asn
-          ? candidate.infrastructureLocation.asn
-          : "No Location";
-
-      const asnCount = asnMap.get(asn);
-      if (!asnCount) {
-        asnMap.set(asn, 1);
-      } else {
-        asnMap.set(asn, asnCount + 1);
-      }
-    }
-
-    for (const asn of asnMap.entries()) {
-      const [name, numberOfNodes] = asn;
-      asnArr.push({ name, numberOfNodes });
-    }
-    const asnValues = asnArr.map((asn) => {
-      return asn.numberOfNodes;
-    });
-    const asnStats = getStats(asnValues);
+    const { countryArr, countryValues, countryStats } =
+      getCountryValues(validCandidates);
 
     // ---------------- PROVIDER -----------------------------------
-    const providerMap = new Map();
-    const providerArr = [];
-    for (const candidate of validCandidates) {
-      const provider =
-        candidate.infrastructureLocation &&
-        candidate.infrastructureLocation.provider
-          ? candidate.infrastructureLocation.provider
-          : "No Location";
-
-      const providerCount = providerMap.get(provider);
-      if (!providerCount) {
-        providerMap.set(provider, 1);
-      } else {
-        providerMap.set(provider, providerCount + 1);
-      }
-    }
-
-    for (const provider of providerMap.entries()) {
-      const [name, numberOfNodes] = provider;
-      providerArr.push({ name, numberOfNodes });
-    }
-    const providerValues = providerArr.map((provider) => {
-      return provider.numberOfNodes;
-    });
-    const providerStats = getStats(providerValues);
+    const { providerArr, providerValues, providerStats } =
+      getProviderValues(validCandidates);
 
     // Nominator Stake
-    const ownNominators = await db.allNominators();
-    const ownNominatorAddresses = ownNominators.map((nom) => {
-      return nom.address;
-    });
-    const nominatorStakeValues = [];
-    for (const candidate of validCandidates) {
-      const nomStake = await db.getLatestNominatorStake(candidate.stash);
-      if (
-        nomStake != undefined &&
-        nomStake?.activeNominators &&
-        nomStake?.inactiveNominators
-      ) {
-        try {
-          const { activeNominators, inactiveNominators } = nomStake;
-
-          let total = 0;
-          for (const active of activeNominators) {
-            if (!ownNominatorAddresses.includes(active.address)) {
-              total += Math.sqrt(active.bonded);
-            }
-          }
-          for (const inactive of inactiveNominators) {
-            if (!ownNominatorAddresses.includes(inactive.address)) {
-              total += Math.sqrt(inactive.bonded);
-            }
-          }
-          nominatorStakeValues.push(total);
-        } catch (e) {
-          logger.info(`{nominatorStake} Can't find nominator stake values`);
-          logger.info(JSON.stringify(nomStake));
-        }
-      }
-    }
-    if (nominatorStakeValues.length == 0) nominatorStakeValues.push(0);
-    const nominatorStats = getStats(nominatorStakeValues);
+    const { ownNominatorAddresses, nominatorStakeValues, nominatorStakeStats } =
+      await getNominatorStakeValues(validCandidates, this.db);
 
     // Delegations
-    const delegationValues = [];
-    for (const candidate of validCandidates) {
-      const delegations = await db.getDelegations(candidate.stash);
-      if (delegations != undefined && delegations?.delegators) {
-        try {
-          const { totalBalance, delegators } = delegations;
-
-          let total = 0;
-          for (const delegator of delegators) {
-            total += Math.sqrt(delegator.effectiveBalance);
-          }
-          delegationValues.push(total);
-        } catch (e) {
-          logger.info(`{delegations} Can't find delegation values`);
-          logger.info(JSON.stringify(delegations));
-        }
-      }
-    }
-    const delegationStats = getStats(delegationValues);
+    const { delegationValues, delegationStats } = await getDelegationValues(
+      validCandidates,
+      this.db
+    );
 
     // Council Stake
     const councilStakeValues = validCandidates.map((candidate) => {
@@ -561,7 +344,8 @@ export class OTV implements Constraints {
     const councilStakeStats = getStats(councilStakeValues);
 
     // index of the last democracy referendum
-    const lastReferendum = (await db.getLastReferenda())[0]?.referendumIndex;
+    const lastReferendum = (await this.db.getLastReferenda())[0]
+      ?.referendumIndex;
 
     // Democracy
     const democracyValues = validCandidates.map((candidate) => {
@@ -576,7 +360,7 @@ export class OTV implements Constraints {
     const democracyStats = getStats(democracyValues);
 
     // Create DB entry for Validator Score Metadata
-    await db.setValidatorScoreMetadata(
+    await this.db.setValidatorScoreMetadata(
       bondedStats,
       this.BONDED_WEIGHT,
       faultsStats,
@@ -687,17 +471,6 @@ export class OTV implements Constraints {
         scaledDefined(candidateCountry, countryValues, 0.1, 0.95) || 0;
       const countryScore = (1 - scaledCountry) * this.LOCATION_WEIGHT || 0;
 
-      const candidateASN = asnArr.filter((asn) => {
-        if (
-          candidate.infrastructureLocation &&
-          candidate.infrastructureLocation.asn == asn.name
-        )
-          return asn.numberOfNodes;
-      })[0]?.numberOfNodes;
-      // Scale the value to between the 10th and 95th percentile
-      const scaledASN = scaledDefined(candidateASN, asnValues, 0.1, 0.95) || 0;
-      const asnScore = (1 - scaledASN) * this.LOCATION_WEIGHT || 0;
-
       const candidateProvider = providerArr.filter((provider) => {
         if (
           candidate.infrastructureLocation &&
@@ -710,7 +483,7 @@ export class OTV implements Constraints {
         scaledDefined(candidateProvider, providerValues, 0.1, 0.95) || 0;
       const providerScore = (1 - scaledProvider) * this.LOCATION_WEIGHT || 0;
 
-      const nomStake = await db.getLatestNominatorStake(candidate.stash);
+      const nomStake = await this.db.getLatestNominatorStake(candidate.stash);
       let totalNominatorStake = 0;
       if (
         nomStake != undefined &&
@@ -736,7 +509,7 @@ export class OTV implements Constraints {
       const nominatorStakeScore =
         scaledNominatorStake * this.NOMINATIONS_WEIGHT;
 
-      const delegations = await db.getDelegations(candidate.stash);
+      const delegations = await this.db.getDelegations(candidate.stash);
       let totalDelegations = 0;
       if (
         delegations != undefined &&
@@ -835,7 +608,6 @@ export class OTV implements Constraints {
         location: locationScore,
         region: regionScore,
         country: countryScore,
-        asn: asnScore,
         provider: providerScore,
         councilStake: councilStakeScore,
         democracy: scaledDemocracyScore,
@@ -845,7 +617,7 @@ export class OTV implements Constraints {
         updated: Date.now(),
       };
 
-      await db.setValidatorScore(
+      await this.db.setValidatorScore(
         candidate.stash,
         score.updated,
         score.total,
@@ -862,7 +634,6 @@ export class OTV implements Constraints {
         score.location,
         score.region,
         score.country,
-        score.asn,
         score.provider,
         score.councilStake,
         score.democracy,
@@ -998,6 +769,267 @@ export class OTV implements Constraints {
     return [good, bad];
   }
 }
+
+export const getBondedValues = (validCandidates: Types.CandidateData[]) => {
+  const bondedValues = validCandidates.map((candidate) => {
+    return candidate.bonded ? candidate.bonded : 0;
+  });
+  const bondedStats = bondedValues.length > 0 ? getStats(bondedValues) : [];
+  return { bondedValues, bondedStats };
+};
+
+export const getFaultsValues = (validCandidates: Types.CandidateData[]) => {
+  const faultsValues = validCandidates.map((candidate) => {
+    return candidate.faults ? candidate.faults : 0;
+  });
+  const faultsStats = getStats(faultsValues);
+  return { faultsValues, faultsStats };
+};
+
+export const getInclusionValues = (validCandidates: Types.CandidateData[]) => {
+  const inclusionValues = validCandidates.map((candidate) => {
+    return candidate.inclusion ? candidate.inclusion : 0;
+  });
+  const inclusionStats = getStats(inclusionValues);
+  return { inclusionValues, inclusionStats };
+};
+
+export const getSpanInclusionValues = (
+  validCandidates: Types.CandidateData[]
+) => {
+  const spanInclusionValues = validCandidates.map((candidate) => {
+    return candidate.spanInclusion ? candidate.spanInclusion : 0;
+  });
+  const spanInclusionStats = getStats(spanInclusionValues);
+  return { spanInclusionValues, spanInclusionStats };
+};
+
+export const getDiscoveredAtValues = (
+  validCandidates: Types.CandidateData[]
+) => {
+  const discoveredAtValues = validCandidates.map((candidate) => {
+    return candidate.discoveredAt ? candidate.discoveredAt : 0;
+  });
+  const discoveredAtStats = getStats(discoveredAtValues);
+  return { discoveredAtValues, discoveredAtStats };
+};
+
+export const getNominatedAtValues = (
+  validCandidates: Types.CandidateData[]
+) => {
+  const nominatedAtValues = validCandidates.map((candidate) => {
+    return candidate.nominatedAt ? candidate.nominatedAt : 0;
+  });
+  const nominatedAtStats = getStats(nominatedAtValues);
+  return { nominatedAtValues, nominatedAtStats };
+};
+
+export const getOfflineValues = (validCandidates: Types.CandidateData[]) => {
+  const offlineValues = validCandidates.map((candidate) => {
+    return candidate.offlineAccumulated ? candidate.offlineAccumulated : 0;
+  });
+  const offlineStats = getStats(offlineValues);
+  return { offlineValues, offlineStats };
+};
+
+export const getRankValues = (validCandidates: Types.CandidateData[]) => {
+  const rankValues = validCandidates.map((candidate) => {
+    return candidate.rank ? candidate.rank : 0;
+  });
+  const rankStats = getStats(rankValues);
+  return { rankValues, rankStats };
+};
+
+export const getUnclaimedValues = (validCandidates: Types.CandidateData[]) => {
+  const unclaimedValues = validCandidates.map((candidate) => {
+    return candidate.unclaimedEras && candidate.unclaimedEras.length
+      ? candidate.unclaimedEras.length
+      : 0;
+  });
+  const unclaimedStats = getStats(unclaimedValues);
+  return { unclaimedValues, unclaimedStats };
+};
+
+export const getLocationValues = (validCandidates: Types.CandidateData[]) => {
+  const locationMap = new Map();
+  const locationArr = [];
+  for (const candidate of validCandidates) {
+    const location = candidate.location || "No Location";
+
+    const locationCount = locationMap.get(location);
+    if (!locationCount) {
+      locationMap.set(location, 1);
+    } else {
+      locationMap.set(location, locationCount + 1);
+    }
+  }
+
+  for (const location of locationMap.entries()) {
+    const [name, numberOfNodes] = location;
+    locationArr.push({ name, numberOfNodes });
+  }
+
+  const locationValues = locationArr.map((location) => {
+    return location.numberOfNodes;
+  });
+  const locationStats = getStats(locationValues);
+  return { locationArr, locationValues, locationStats };
+};
+
+export const getRegionValues = (validCandidates: Types.CandidateData[]) => {
+  const regionMap = new Map();
+  const regionArr = [];
+  for (const candidate of validCandidates) {
+    const region =
+      candidate.infrastructureLocation &&
+      candidate.infrastructureLocation.region
+        ? candidate.infrastructureLocation.region
+        : "No Location";
+
+    const regionCount = regionMap.get(region);
+    if (!regionCount) {
+      regionMap.set(region, 1);
+    } else {
+      regionMap.set(region, regionCount + 1);
+    }
+  }
+
+  for (const region of regionMap.entries()) {
+    const [name, numberOfNodes] = region;
+    regionArr.push({ name, numberOfNodes });
+  }
+  const regionValues = regionArr.map((region) => {
+    return region.numberOfNodes;
+  });
+  const regionStats = getStats(regionValues);
+  return { regionArr, regionValues, regionStats };
+};
+
+export const getCountryValues = (validCandidates: Types.CandidateData[]) => {
+  const countryMap = new Map();
+  const countryArr = [];
+  for (const candidate of validCandidates) {
+    const country =
+      candidate.infrastructureLocation &&
+      candidate.infrastructureLocation.country
+        ? candidate.infrastructureLocation.country
+        : "No Location";
+
+    const countryCount = countryMap.get(country);
+    if (!countryCount) {
+      countryMap.set(country, 1);
+    } else {
+      countryMap.set(country, countryCount + 1);
+    }
+  }
+
+  for (const country of countryMap.entries()) {
+    const [name, numberOfNodes] = country;
+    countryArr.push({ name, numberOfNodes });
+  }
+  const countryValues = countryArr.map((country) => {
+    return country.numberOfNodes;
+  });
+  const countryStats = getStats(countryValues);
+  return { countryArr, countryValues, countryStats };
+};
+
+export const getProviderValues = (validCandidates: Types.CandidateData[]) => {
+  const providerMap = new Map();
+  const providerArr = [];
+  for (const candidate of validCandidates) {
+    const provider =
+      candidate.infrastructureLocation &&
+      candidate.infrastructureLocation.provider
+        ? candidate.infrastructureLocation.provider
+        : "No Location";
+
+    const providerCount = providerMap.get(provider);
+    if (!providerCount) {
+      providerMap.set(provider, 1);
+    } else {
+      providerMap.set(provider, providerCount + 1);
+    }
+  }
+
+  for (const provider of providerMap.entries()) {
+    const [name, numberOfNodes] = provider;
+    providerArr.push({ name, numberOfNodes });
+  }
+  const providerValues = providerArr.map((provider) => {
+    return provider.numberOfNodes;
+  });
+  const providerStats = getStats(providerValues);
+  return { providerArr, providerValues, providerStats };
+};
+
+export const getNominatorStakeValues = async (
+  validCandidates: Types.CandidateData[],
+  db: Db
+) => {
+  const ownNominators = await db.allNominators();
+  const ownNominatorAddresses = ownNominators.map((nom) => {
+    return nom.address;
+  });
+  const nominatorStakeValues = [];
+  for (const candidate of validCandidates) {
+    const nomStake = await db.getLatestNominatorStake(candidate.stash);
+    if (
+      nomStake != undefined &&
+      nomStake?.activeNominators &&
+      nomStake?.inactiveNominators
+    ) {
+      try {
+        const { activeNominators, inactiveNominators } = nomStake;
+
+        let total = 0;
+        for (const active of activeNominators) {
+          if (!ownNominatorAddresses.includes(active.address)) {
+            total += Math.sqrt(active.bonded);
+          }
+        }
+        for (const inactive of inactiveNominators) {
+          if (!ownNominatorAddresses.includes(inactive.address)) {
+            total += Math.sqrt(inactive.bonded);
+          }
+        }
+        nominatorStakeValues.push(total);
+      } catch (e) {
+        logger.info(`{nominatorStake} Can't find nominator stake values`);
+        logger.info(JSON.stringify(nomStake));
+      }
+    }
+  }
+  if (nominatorStakeValues.length == 0) nominatorStakeValues.push(0);
+  const nominatorStakeStats = getStats(nominatorStakeValues);
+  return { ownNominatorAddresses, nominatorStakeValues, nominatorStakeStats };
+};
+
+export const getDelegationValues = async (
+  validCandidates: Types.CandidateData[],
+  db: Db
+) => {
+  const delegationValues = [];
+  for (const candidate of validCandidates) {
+    const delegations = await db.getDelegations(candidate.stash);
+    if (delegations != undefined && delegations?.delegators) {
+      try {
+        const { totalBalance, delegators } = delegations;
+
+        let total = 0;
+        for (const delegator of delegators) {
+          total += Math.sqrt(delegator.effectiveBalance);
+        }
+        delegationValues.push(total);
+      } catch (e) {
+        logger.info(`{delegations} Can't find delegation values`);
+        logger.info(JSON.stringify(delegations));
+      }
+    }
+  }
+  const delegationStats = getStats(delegationValues);
+  return { delegationValues, delegationStats };
+};
 
 // Checks the online validity of a node
 export const checkOnline = async (db: Db, candidate: any) => {

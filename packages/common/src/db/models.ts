@@ -352,7 +352,6 @@ export const ValidatorScoreSchema = new Schema({
   location: Number,
   region: Number,
   country: Number,
-  asn: Number,
   provider: Number,
   // council backing score
   councilStake: Number,

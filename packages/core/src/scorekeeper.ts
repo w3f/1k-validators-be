@@ -686,7 +686,7 @@ export default class ScoreKeeper {
       await this.constraints.checkCandidate(candidate);
     }
 
-    await this.constraints.scoreCandidates(allCandidates, this.db);
+    await this.constraints.scoreCandidates(allCandidates);
 
     await Util.sleep(6000);
 

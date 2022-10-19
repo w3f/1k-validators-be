@@ -26,6 +26,8 @@
   },
   "dependencies": {
     "@1kv/common": "workspace:^",
+    "@bull-board/api": "^4.6.0",
+    "@bull-board/koa": "^4.6.0",
     "typescript": "^4.8.4"
   },
   "devDependencies": {

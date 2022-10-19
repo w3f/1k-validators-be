@@ -6,8 +6,14 @@ import Router from "@koa/router";
 import { Db, Config, logger } from "@1kv/common";
 import LRU from "lru-cache";
 import koaCash from "koa-cash";
+import { KoaAdapter } from "@bull-board/koa";
+import { createBullBoard } from "@bull-board/api";
+import { BullMQAdapter } from "@bull-board/api/bullMQAdapter";
+import { otvWorker } from "@1kv/worker";
+import { Queue } from "bullmq";
 
 const API = {
+  BullBoard: "/bull",
   Accounting: "/accounting/:stashOrController",
   Candidate: "/candidate/:stashOrName",
   GetCandidates: "/candidates",
@@ -51,12 +57,15 @@ export default class Server {
   private db: Db;
   private port: number;
   private enable = true;
+  private config: Config.ConfigSchema;
+  private queues: Queue[] = [];
 
   constructor(db: Db, config: Config.ConfigSchema) {
     this.app = new Koa();
     this.db = db;
     this.port = config.server.port;
     this.enable = config.server.enable;
+    this.config = config;
 
     this.app.use(cors());
     this.app.use(bodyparser());
@@ -480,10 +489,40 @@ export default class Server {
     this.app.use(router.routes());
   }
 
-  start(): void {
+  async addQueues() {
+    const releaseMonitorQueue =
+      await otvWorker.queues.createReleaseMonitorQueue(
+        this.config.redis.host,
+        this.config.redis.port
+      );
+    const constraintsQueue = await otvWorker.queues.createConstraintsQueue(
+      this.config.redis.host,
+      this.config.redis.port
+    );
+    const chaindataQueue = await otvWorker.queues.createChainDataQueue(
+      this.config.redis.host,
+      this.config.redis.port
+    );
+    this.queues.push(releaseMonitorQueue, constraintsQueue, chaindataQueue);
+  }
+
+  async start(): Promise<void> {
     if (!this.enable) {
       logger.info(`Server not enabled;`);
     } else {
+      if (this.config?.redis?.host && this.config?.redis?.port) {
+        await this.addQueues();
+        // BullMQBoard
+        const serverAdapter = new KoaAdapter();
+        createBullBoard({
+          queues: this.queues.map((queue) => {
+            return new BullMQAdapter(queue);
+          }), // [new BullMQAdapter(queue), new BullMQAdapter(queue2)],
+          serverAdapter,
+        });
+        serverAdapter.setBasePath(API.BullBoard);
+        this.app.use(serverAdapter.registerPlugin());
+      }
       logger.info(`Now listening on ${this.port}`);
       this.app.listen(this.port);
     }

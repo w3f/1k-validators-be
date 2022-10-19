@@ -1,5 +1,4 @@
-import { Queue } from "bullmq";
-import { logger, Db, ChainData, ApiHandler } from "@1kv/common";
+import { logger, Db, ChainData } from "@1kv/common";
 
 export const eraPointsJob = async (db, chaindata: ChainData) => {
   const start = Date.now();
@@ -36,4 +35,13 @@ export const eraPointsJob = async (db, chaindata: ChainData) => {
       start
     ).toString()} Done. Took ${(end - start) / 1000} seconds`
   );
+};
+
+export const processEraPointsJob = async (
+  job: any,
+  db: Db,
+  chaindata: ChainData
+) => {
+  logger.info(`Processing Era Points Job....`);
+  await eraPointsJob(db, chaindata);
 };

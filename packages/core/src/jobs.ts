@@ -44,7 +44,7 @@ export const sessionKeyJob = async (db: Db, chaindata: ChainData) => {
 
 // Updates the inclusion rate of all validators
 export const inclusionJob = async (db: Db, chaindata: ChainData) => {
-  await otvWorker.jobs.InclusionJob(db, chaindata);
+  await otvWorker.jobs.inclusionJob(db, chaindata);
 };
 
 export const activeValidatorJob = async (db: Db, chaindata: ChainData) => {

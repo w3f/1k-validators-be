@@ -1,6 +1,6 @@
 export * from "./ReleaseMonitorQueue";
 export * from "./ContraintsQueue";
-export * from "./EraStatsQueue";
+export * from "./ChainDataQueue";
 import { Queue } from "bullmq";
 
 export const removeRepeatableJobsFromQueues = async (queues: Queue[]) => {

@@ -1,4 +1,5 @@
 import { ApiHandler, Db, logger, Constraints } from "@1kv/common";
+import { SCORE_JOB, VALIDITY_JOB } from "./index";
 
 export const validityJob = async (constraints: Constraints.OTV) => {
   const start = Date.now();
@@ -34,31 +35,15 @@ export const scoreJob = async (constraints: Constraints.OTV) => {
   );
 };
 
-// export const constraintsJob = async (db: Db) => {
-//   const start = Date.now();
-//
-//   logger.info(`(job::Constraints::start) Running Constraints job`);
-//
-//   const end = Date.now();
-//
-//   logger.info(
-//     `{job::Constraints::ExecutionTime} started at ${new Date(
-//       start
-//     ).toString()} Done. Took ${(end - start) / 1000} seconds`
-//   );
-// };
-
-const VALIDITYJOB = "validityJob";
-const SCOREJOB = "scoreJob";
 // Called by worker to process Job
 export const processConstraintsJob = async (job: any, otv: Constraints.OTV) => {
   const { jobType } = job.data;
   logger.info(`Processing type: ${jobType}`);
   switch (jobType) {
-    case VALIDITYJOB:
+    case VALIDITY_JOB:
       await validityJob(otv);
       break;
-    case SCOREJOB:
+    case SCORE_JOB:
       await scoreJob(otv);
       break;
   }

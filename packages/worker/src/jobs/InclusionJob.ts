@@ -1,7 +1,6 @@
-import { Queue } from "bullmq";
-import { logger, Db, ChainData, ApiHandler } from "@1kv/common";
+import { logger, Db, ChainData } from "@1kv/common";
 
-export const InclusionJob = async (db, chaindata: ChainData) => {
+export const inclusionJob = async (db, chaindata: ChainData) => {
   const start = Date.now();
 
   const [activeEra, err] = await chaindata.getActiveEraIndex();
@@ -36,4 +35,13 @@ export const InclusionJob = async (db, chaindata: ChainData) => {
       start
     ).toString()} Done. Took ${(end - start) / 1000} seconds`
   );
+};
+
+export const processInclusionJob = async (
+  job: any,
+  db: Db,
+  chaindata: ChainData
+) => {
+  logger.info(`Processing Inclusion Job....`);
+  await inclusionJob(db, chaindata);
 };

@@ -556,8 +556,6 @@ export default class ScoreKeeper {
       }
     });
 
-    const candidates = await this.db.allCandidates();
-
     // Start all Cron Jobs
     try {
       if (this.config.redis.host && this.config.redis.port) {
@@ -574,7 +572,7 @@ export default class ScoreKeeper {
           this.config.redis.host,
           this.config.redis.port
         );
-        const eraStatsQueue = await otvWorker.queues.createEraStatsQueue(
+        const chaindataQueue = await otvWorker.queues.createChainDataQueue(
           this.config.redis.host,
           this.config.redis.port
         );
@@ -583,26 +581,49 @@ export default class ScoreKeeper {
         await otvWorker.queues.removeRepeatableJobsFromQueues([
           releaseMonitorQueue,
           constraintsQueue,
-          eraStatsQueue,
+          chaindataQueue,
         ]);
 
         await otvWorker.queues.addReleaseMonitorJob(releaseMonitorQueue, 60000);
         await otvWorker.queues.addValidityJob(constraintsQueue, 600);
         await otvWorker.queues.addScoreJob(constraintsQueue, 601); // Needs to have different repeat time
-        await otvWorker.queues.addEraStatsJob(eraStatsQueue, 602);
+
+        await otvWorker.queues.addActiveValidatorJob(chaindataQueue, 601);
+        await otvWorker.queues.addCouncilJob(chaindataQueue, 602);
+        await otvWorker.queues.addDelegationJob(chaindataQueue, 603);
+        await otvWorker.queues.addEraPointsJob(chaindataQueue, 604);
+        await otvWorker.queues.addEraStatsJob(chaindataQueue, 605);
+        await otvWorker.queues.addInclusionJob(chaindataQueue, 606);
+        await otvWorker.queues.addNominatorJob(chaindataQueue, 607);
+        await otvWorker.queues.addSessionKeyJob(chaindataQueue, 608);
+        await otvWorker.queues.addValidatorPrefJob(chaindataQueue, 609);
       } else {
         // No redis connection - scorekeeper runs job
         await monitorJob(this.db);
         await startValidatityJob(this.config, this.constraints);
         await startScoreJob(this.config, this.constraints);
         await startEraPointsJob(this.config, this.db, this.chaindata);
+        await startActiveValidatorJob(this.config, this.db, this.chaindata);
+        await startInclusionJob(this.config, this.db, this.chaindata);
+        await startSessionKeyJob(this.config, this.db, this.chaindata);
+        await startValidatorPrefJob(this.config, this.db, this.chaindata);
+        await startEraStatsJob(this.db, this.config, this.chaindata);
+        await startLocationStatsJob(this.config, this.db, this.chaindata);
+        await startCouncilJob(this.config, this.db, this.chaindata);
+        await startDemocracyJob(this.config, this.db, this.chaindata);
+        await startNominatorJob(this.config, this.db, this.chaindata);
+        await startDelegationJob(this.config, this.db, this.chaindata);
       }
 
-      await startActiveValidatorJob(this.config, this.db, this.chaindata);
-      await startInclusionJob(this.config, this.db, this.chaindata);
-      await startSessionKeyJob(this.config, this.db, this.chaindata);
+      await startExecutionJob(
+        this.handler,
+        this.nominatorGroups,
+        this.config,
+        this.db,
+        this.bot
+      );
+
       // await startUnclaimedEraJob(this.config, this.db, this.chaindata);
-      await startValidatorPrefJob(this.config, this.db, this.chaindata);
       // if (this.claimer) {
       //   await startRewardClaimJob(
       //     this.config,
@@ -613,13 +634,6 @@ export default class ScoreKeeper {
       //     this.bot
       //   );
       // }
-      await startExecutionJob(
-        this.handler,
-        this.nominatorGroups,
-        this.config,
-        this.db,
-        this.bot
-      );
       // await startCancelCron(
       //   this.config,
       //   this.handler,
@@ -636,15 +650,6 @@ export default class ScoreKeeper {
       //   this.chaindata,
       //   this.bot
       // );
-
-      await startEraStatsJob(this.db, this.config, this.chaindata);
-      await startLocationStatsJob(this.config, this.db, this.chaindata);
-      await startCouncilJob(this.config, this.db, this.chaindata);
-      // Subscan job currently leads to 429 due to API rate limiting.
-      // await startSubscanJob(this.config, this.db, this.subscan);
-      await startDemocracyJob(this.config, this.db, this.chaindata);
-      await startNominatorJob(this.config, this.db, this.chaindata);
-      await startDelegationJob(this.config, this.db, this.chaindata);
     } catch (e) {
       logger.info(
         `{Scorekeeper::RunCron} There was an error running some cron jobs...`

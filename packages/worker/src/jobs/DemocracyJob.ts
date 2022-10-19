@@ -1,5 +1,4 @@
-import { Queue } from "bullmq";
-import { logger, Db, ChainData, ApiHandler, Types } from "@1kv/common";
+import { logger, Db, ChainData, Types } from "@1kv/common";
 
 export const democracyJob = async (db, chaindata: ChainData) => {
   const start = Date.now();
@@ -108,4 +107,13 @@ export const democracyJob = async (db, chaindata: ChainData) => {
       start
     ).toString()} Done. Took ${(endTime - start) / 1000} seconds`
   );
+};
+
+export const processDemocracyJob = async (
+  job: any,
+  db: Db,
+  chaindata: ChainData
+) => {
+  logger.info(`Processing Democracy Job....`);
+  await democracyJob(db, chaindata);
 };

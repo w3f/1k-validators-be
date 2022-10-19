@@ -1,5 +1,4 @@
-import { Queue } from "bullmq";
-import { logger, Db, ChainData, ApiHandler } from "@1kv/common";
+import { logger, Db, ChainData } from "@1kv/common";
 
 export const delegationJob = async (db: Db, chaindata: ChainData) => {
   const start = Date.now();
@@ -30,11 +29,11 @@ export const delegationJob = async (db: Db, chaindata: ChainData) => {
   );
 };
 
-// export const processEraStatsJob = async (
-//     job: any,
-//     db: Db,
-//     chaindata: ChainData
-// ) => {
-//     logger.info(`Processing Era Stats Job....`);
-//     await eraStatsJob(db, chaindata);
-// };
+export const processDelegationJob = async (
+  job: any,
+  db: Db,
+  chaindata: ChainData
+) => {
+  logger.info(`Processing Delegation Job....`);
+  await delegationJob(db, chaindata);
+};

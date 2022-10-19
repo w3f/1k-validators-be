@@ -13,7 +13,7 @@ import {
 import { ApiPromise } from "@polkadot/api";
 import { createReleaseMonitorWorker } from "./workers/ReleaseMonitorWorker";
 import { createConstraintsWorker } from "./workers/ConstraintsWorker";
-import { createEraStatsWorker } from "./workers";
+import { createChainDataWorker } from "./workers";
 
 class Worker {
   private api: ApiHandler;
@@ -59,7 +59,7 @@ class Worker {
       this.port,
       this.constraints
     );
-    const eraStatsWorker = await createEraStatsWorker(
+    const chaindataWorker = await createChainDataWorker(
       this.host,
       this.port,
       this.db,

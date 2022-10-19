@@ -16,7 +16,7 @@ export const getLatestTaggedRelease = async (db: Db) => {
     });
   } catch {
     logger.info(
-      "${Monitor::getLatestTaggedRelease} Could not get latest release."
+      "{Monitor::getLatestTaggedRelease} Could not get latest release."
     );
   }
   if (!latestRelease) return;

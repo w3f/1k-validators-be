@@ -1,6 +1,5 @@
 import { CronJob } from "cron";
 import Monitor from "./monitor";
-import { OTV } from "./constraints";
 import Nominator from "./nominator";
 import {
   ApiHandler,
@@ -11,6 +10,7 @@ import {
   Util,
   Db,
   Config,
+  Constraints,
 } from "@1kv/common";
 import Claimer from "./claimer";
 import {
@@ -21,12 +21,12 @@ import {
   monitorJob,
   scoreJob,
   sessionKeyJob,
-  unclaimedErasJob,
+  // unclaimedErasJob,
   validatorPrefJob,
   validityJob,
   locationStatsJob,
   councilJob,
-  subscanJob,
+  // subscanJob,
   democracyJob,
   nominatorJob,
   delegationJob,
@@ -35,11 +35,7 @@ import { Subscan } from "./subscan";
 
 // Monitors the latest GitHub releases and ensures nodes have upgraded
 // within a timely period.
-export const startMonitorJob = async (
-  config: Config.ConfigSchema,
-  db: Db,
-  monitor: Monitor
-) => {
+export const startMonitorJob = async (config: Config.ConfigSchema, db: Db) => {
   const monitorFrequency = config.cron.monitor
     ? config.cron.monitor
     : Constants.MONITOR_CRON;
@@ -54,7 +50,7 @@ export const startMonitorJob = async (
         config.global.test ? "three" : "fifteen"
       } minutes.`
     );
-    await monitorJob(db, monitor);
+    await monitorJob(db);
   });
 
   monitorCron.start();
@@ -81,10 +77,7 @@ export const startClearAccumulatedOfflineTimeJob = async (
 
 export const startValidatityJob = async (
   config: Config.ConfigSchema,
-  db: Db,
-  constraints: OTV,
-  chaindata: ChainData,
-  allCandidates: any[]
+  constraints: Constraints.OTV
 ) => {
   const validityFrequency = config.cron.validity
     ? config.cron.validity
@@ -100,8 +93,7 @@ export const startValidatityJob = async (
       return;
     }
     running = true;
-    const candidates = await db.allCandidates();
-    await validityJob(db, chaindata, candidates, constraints);
+    await validityJob(constraints);
     running = false;
   });
   validityCron.start();
@@ -110,7 +102,7 @@ export const startValidatityJob = async (
 // Runs job that updates scores of all validators
 export const startScoreJob = async (
   config: Config.ConfigSchema,
-  constraints: OTV
+  constraints: Constraints.OTV
 ) => {
   const scoreFrequency = config.cron.score
     ? config.cron.score
@@ -153,8 +145,7 @@ export const startEraStatsJob = async (
     }
     running = true;
 
-    const candidates = await db.allCandidates();
-    await eraStatsJob(db, chaindata, candidates);
+    await eraStatsJob(db, chaindata);
     running = false;
   });
   eraStatsCron.start();
@@ -580,10 +571,8 @@ export const startActiveValidatorJob = async (
       logger.info(
         `{cron::ActiveValidatorJob::start} running era points job....`
       );
-
-      const candidates = await db.allCandidates();
       // Run the active validators job
-      await activeValidatorJob(db, chaindata, candidates);
+      await activeValidatorJob(db, chaindata);
       running = false;
     }
   );
@@ -613,10 +602,8 @@ export const startInclusionJob = async (
     running = true;
     logger.info(`{cron::InclusionJob::start} running inclusion job....`);
 
-    const candidates = await db.allCandidates();
-
     // Run the active validators job
-    await inclusionJob(db, chaindata, candidates);
+    await inclusionJob(db, chaindata);
     running = false;
   });
   inclusionCron.start();
@@ -645,52 +632,50 @@ export const startSessionKeyJob = async (
     running = true;
     logger.info(`{cron::SessionKeyJob::start} running session key job....`);
 
-    const candidates = await db.allCandidates();
-
     // Run the active validators job
-    await sessionKeyJob(db, chaindata, candidates);
+    await sessionKeyJob(db, chaindata);
     running = false;
   });
   sessionKeyCron.start();
 };
 
 // Chron job for updating unclaimed eras
-export const startUnclaimedEraJob = async (
-  config: Config.ConfigSchema,
-  db: Db,
-  chaindata: ChainData
-) => {
-  const unclaimedErasFrequency = config.cron.unclaimedEras
-    ? config.cron.unclaimedEras
-    : Constants.UNCLAIMED_ERAS_CRON;
-
-  logger.info(
-    `(cron::UnclaimedEraJob::init) Running unclaimed era job with frequency: ${unclaimedErasFrequency}`
-  );
-
-  let running = false;
-
-  const unclaimedErasCron = new CronJob(unclaimedErasFrequency, async () => {
-    if (running) {
-      return;
-    }
-    running = true;
-    logger.info(
-      `{cron::UnclaimedEraJob::start} running unclaimed eras job....`
-    );
-
-    const candidates = await db.allCandidates();
-
-    // Run the active validators job
-    const unclaimedEraThreshold =
-      config.global.networkPrefix == 2
-        ? Constants.KUSAMA_FOUR_DAYS_ERAS
-        : Constants.POLKADOT_FOUR_DAYS_ERAS;
-    await unclaimedErasJob(db, chaindata, candidates, unclaimedEraThreshold);
-    running = false;
-  });
-  unclaimedErasCron.start();
-};
+// export const startUnclaimedEraJob = async (
+//   config: Config.ConfigSchema,
+//   db: Db,
+//   chaindata: ChainData
+// ) => {
+//   const unclaimedErasFrequency = config.cron.unclaimedEras
+//     ? config.cron.unclaimedEras
+//     : Constants.UNCLAIMED_ERAS_CRON;
+//
+//   logger.info(
+//     `(cron::UnclaimedEraJob::init) Running unclaimed era job with frequency: ${unclaimedErasFrequency}`
+//   );
+//
+//   let running = false;
+//
+//   const unclaimedErasCron = new CronJob(unclaimedErasFrequency, async () => {
+//     if (running) {
+//       return;
+//     }
+//     running = true;
+//     logger.info(
+//       `{cron::UnclaimedEraJob::start} running unclaimed eras job....`
+//     );
+//
+//     const candidates = await db.allCandidates();
+//
+//     // Run the active validators job
+//     const unclaimedEraThreshold =
+//       config.global.networkPrefix == 2
+//         ? Constants.KUSAMA_FOUR_DAYS_ERAS
+//         : Constants.POLKADOT_FOUR_DAYS_ERAS;
+//     await unclaimedErasJob(db, chaindata, candidates, unclaimedEraThreshold);
+//     running = false;
+//   });
+//   unclaimedErasCron.start();
+// };
 
 // Chron job for updating validator preferences
 export const startValidatorPrefJob = async (
@@ -717,10 +702,8 @@ export const startValidatorPrefJob = async (
       `{cron::ValidatorPrefJob::start} running validator pref job....`
     );
 
-    const candidates = await db.allCandidates();
-
     // Run the active validators job
-    await validatorPrefJob(db, chaindata, candidates);
+    await validatorPrefJob(db, chaindata);
     running = false;
   });
   validatorPrefCron.start();
@@ -751,10 +734,8 @@ export const startLocationStatsJob = async (
       `{cron::LocationStatsJob::start} running location stats job....`
     );
 
-    const candidates = await db.allCandidates();
-
     // Run the active validators job
-    await locationStatsJob(db, chaindata, candidates);
+    await locationStatsJob(db, chaindata);
     running = false;
   });
   locationStatsCron.start();
@@ -783,46 +764,44 @@ export const startCouncilJob = async (
     running = true;
     logger.info(`{cron::councilJob::start} running council job....`);
 
-    const candidates = await db.allCandidates();
-
     // Run the active validators job
-    await councilJob(db, chaindata, candidates);
+    await councilJob(db, chaindata);
     running = false;
   });
   councilCron.start();
 };
 
 // Chron job for querying subscan data
-export const startSubscanJob = async (
-  config: Config.ConfigSchema,
-  db: Db,
-  subscan: Subscan
-) => {
-  const subscanFrequency = config.cron.subscan
-    ? config.cron.subscan
-    : Constants.SUBSCAN_CRON;
-
-  logger.info(
-    `(cron::subscanJob::init) Running council cron with frequency: ${subscanFrequency}`
-  );
-
-  let running = false;
-
-  const subscanCron = new CronJob(subscanFrequency, async () => {
-    if (running) {
-      return;
-    }
-    running = true;
-    logger.info(`{cron::subscanJob::start} running subscan job....`);
-
-    const candidates = await db.allCandidates();
-
-    // Run the subscan  job
-    await subscanJob(db, subscan, candidates);
-    running = false;
-  });
-  subscanCron.start();
-};
+// export const startSubscanJob = async (
+//   config: Config.ConfigSchema,
+//   db: Db,
+//   subscan: Subscan
+// ) => {
+//   const subscanFrequency = config.cron.subscan
+//     ? config.cron.subscan
+//     : Constants.SUBSCAN_CRON;
+//
+//   logger.info(
+//     `(cron::subscanJob::init) Running council cron with frequency: ${subscanFrequency}`
+//   );
+//
+//   let running = false;
+//
+//   const subscanCron = new CronJob(subscanFrequency, async () => {
+//     if (running) {
+//       return;
+//     }
+//     running = true;
+//     logger.info(`{cron::subscanJob::start} running subscan job....`);
+//
+//     const candidates = await db.allCandidates();
+//
+//     // Run the subscan  job
+//     await subscanJob(db, subscan, candidates);
+//     running = false;
+//   });
+//   subscanCron.start();
+// };
 
 // Chron job for querying democracy data
 export const startDemocracyJob = async (
@@ -877,10 +856,8 @@ export const startNominatorJob = async (
     running = true;
     logger.info(`{cron::nominatorJob::start} running nominator job....`);
 
-    const candidates = await db.allCandidates();
-
     // Run the job
-    await nominatorJob(db, chaindata, candidates);
+    await nominatorJob(db, chaindata);
     running = false;
   });
   nominatorCron.start();
@@ -909,10 +886,8 @@ export const startDelegationJob = async (
     running = true;
     logger.info(`{cron::delegationJob::start} running nominator job....`);
 
-    const candidates = await db.allCandidates();
-
     // Run the job
-    await delegationJob(db, chaindata, candidates);
+    await delegationJob(db, chaindata);
     running = false;
   });
   delegationCron.start();

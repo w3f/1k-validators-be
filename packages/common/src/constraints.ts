@@ -1,13 +1,3 @@
-import {
-  ApiHandler,
-  ChainData,
-  Constants,
-  logger,
-  Types,
-  Util,
-  Db,
-  Config,
-} from "@1kv/common";
 import axios from "axios";
 import semver from "semver";
 import {
@@ -26,6 +16,9 @@ import {
   scoreDemocracyVotes,
   std,
 } from "./score";
+import { ChainData, Config, Constants, logger, Types, Util } from "./index";
+import Db from "./db";
+import ApiHandler from "./ApiHandler";
 
 export interface Constraints {
   processCandidates(
@@ -160,6 +153,13 @@ export class OTV implements Constraints {
   async checkCandidateStash(address: string): Promise<boolean> {
     const candidate = await this.db.getCandidate(address);
     return await this.checkCandidate(candidate);
+  }
+
+  async checkAllCandidates() {
+    const allCandidates = await this.db.allCandidates();
+    for (const candidate of allCandidates) {
+      await this.checkCandidate(candidate);
+    }
   }
 
   // Check the candidate and set any invalidity fields

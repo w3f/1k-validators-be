@@ -32,7 +32,7 @@ export default class Monitor {
       });
     } catch {
       logger.info(
-        "${Monitor::getLatestTaggedRelease} Could not get latest release."
+        "{Monitor::getLatestTaggedRelease} Could not get latest release."
       );
     }
 

@@ -13,9 +13,9 @@ import {
   Util,
   Db,
   Config,
+  Constraints,
 } from "@1kv/common";
-// import { NominatorConfig } from "./config";
-import { checkAllValidateIntentions, OTV } from "./constraints";
+
 import Nominator from "./nominator";
 import {
   startActiveValidatorJob,
@@ -30,29 +30,21 @@ import {
   startScoreJob,
   startSessionKeyJob,
   startStaleNominationCron,
-  startUnclaimedEraJob,
+  // startUnclaimedEraJob,
   startValidatityJob,
   startValidatorPrefJob,
   startCouncilJob,
-  startSubscanJob,
+  // startSubscanJob,
   startDemocracyJob,
   startNominatorJob,
   startDelegationJob,
 } from "./cron";
 import Claimer from "./claimer";
-import {
-  activeValidatorJob,
-  eraPointsJob,
-  inclusionJob,
-  monitorJob,
-  sessionKeyJob,
-  unclaimedErasJob,
-  validatorPrefJob,
-  validityJob,
-} from "./jobs";
 import Monitor from "./monitor";
 import { Subscan } from "./subscan";
 import { asc } from "./score";
+import { monitorJob } from "./jobs";
+// import { monitorJob } from "./jobs";
 
 type NominatorGroup = Config.NominatorConfig[];
 
@@ -162,7 +154,7 @@ export default class ScoreKeeper {
   public bot: any;
   public chaindata: ChainData;
   public config: Config.ConfigSchema;
-  public constraints: OTV;
+  public constraints: Constraints.OTV;
   public currentEra = 0;
   public currentTargets: string[];
   public db: Db;
@@ -268,7 +260,7 @@ export default class ScoreKeeper {
       const { sessionIndex } = data;
       logger.info(`{Session::NewSession} New Session Event: ${sessionIndex}`);
 
-      await checkAllValidateIntentions(
+      await Constraints.checkAllValidateIntentions(
         this.config,
         this.chaindata,
         this.db,
@@ -283,7 +275,7 @@ export default class ScoreKeeper {
 
     this.config = config;
     this.bot = bot;
-    this.constraints = new OTV(this.handler, this.config, this.db);
+    this.constraints = new Constraints.OTV(this.handler, this.config, this.db);
     this.monitor = new Monitor(db, Constants.SIXTEEN_HOURS);
 
     this.subscan = new Subscan(
@@ -569,26 +561,43 @@ export default class ScoreKeeper {
     // Start all Cron Jobs
     try {
       if (this.config.redis.host && this.config.redis.port) {
-        logger.info(`starting bullmq release monitor worker`);
+        // Jobs get run in separate worker
+        logger.info(
+          `{Scorekeeper::Workers} Starting bullmq Queues and Workers....`
+        );
         const releaseMonitorQueue =
           await otvWorker.queues.createReleaseMonitorQueue(
             this.config.redis.host,
             this.config.redis.port
           );
-        await otvWorker.queues.addReleaseMonitorJob(releaseMonitorQueue, 10000);
+        const constraintsQueue = await otvWorker.queues.createConstraintsQueue(
+          this.config.redis.host,
+          this.config.redis.port
+        );
+        const eraStatsQueue = await otvWorker.queues.createEraStatsQueue(
+          this.config.redis.host,
+          this.config.redis.port
+        );
+
+        // Remove any previous repeatable jobs
+        await otvWorker.queues.removeRepeatableJobsFromQueues([
+          releaseMonitorQueue,
+          constraintsQueue,
+          eraStatsQueue,
+        ]);
+
+        await otvWorker.queues.addReleaseMonitorJob(releaseMonitorQueue, 60000);
+        await otvWorker.queues.addValidityJob(constraintsQueue, 600);
+        await otvWorker.queues.addScoreJob(constraintsQueue, 601); // Needs to have different repeat time
+        await otvWorker.queues.addEraStatsJob(eraStatsQueue, 602);
       } else {
-        await otvWorker.jobs.getLatestTaggedRelease(this.db);
+        // No redis connection - scorekeeper runs job
+        await monitorJob(this.db);
+        await startValidatityJob(this.config, this.constraints);
+        await startScoreJob(this.config, this.constraints);
+        await startEraPointsJob(this.config, this.db, this.chaindata);
       }
 
-      await startValidatityJob(
-        this.config,
-        this.db,
-        this.constraints,
-        this.chaindata,
-        candidates
-      );
-      //
-      await startEraPointsJob(this.config, this.db, this.chaindata);
       await startActiveValidatorJob(this.config, this.db, this.chaindata);
       await startInclusionJob(this.config, this.db, this.chaindata);
       await startSessionKeyJob(this.config, this.db, this.chaindata);
@@ -627,7 +636,7 @@ export default class ScoreKeeper {
       //   this.chaindata,
       //   this.bot
       // );
-      await startScoreJob(this.config, this.constraints);
+
       await startEraStatsJob(this.db, this.config, this.chaindata);
       await startLocationStatsJob(this.config, this.db, this.chaindata);
       await startCouncilJob(this.config, this.db, this.chaindata);

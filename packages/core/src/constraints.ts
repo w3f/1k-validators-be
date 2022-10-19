@@ -279,85 +279,39 @@ export class OTV implements Constraints {
     // Get Ranges of Parameters
     //    A validators individual parameter is then scaled to how it compares to others that are also deemed valid
 
-    // Bonded
+    // Get Values and Stats
     const { bondedValues, bondedStats } = getBondedValues(validCandidates);
-
-    // Faults
     const { faultsValues, faultsStats } = getFaultsValues(validCandidates);
-
-    //  Inclusion
     const { inclusionValues, inclusionStats } =
       getInclusionValues(validCandidates);
-
-    // Span Inclusion
     const { spanInclusionValues, spanInclusionStats } =
       getSpanInclusionValues(validCandidates);
-
-    // Discovered At
     const { discoveredAtValues, discoveredAtStats } =
       getDiscoveredAtValues(validCandidates);
-
-    // Nominated At
     const { nominatedAtValues, nominatedAtStats } =
       getNominatedAtValues(validCandidates);
-
-    // Downtime
     const { offlineValues, offlineStats } = getOfflineValues(validCandidates);
-
-    // Rank
     const { rankValues, rankStats } = getRankValues(validCandidates);
-
-    // Unclaimed Rewards
     const { unclaimedValues, unclaimedStats } =
       getUnclaimedValues(validCandidates);
-
-    // Location
     const { locationArr, locationValues, locationStats } =
       getLocationValues(validCandidates);
-
-    // ---------------- REGION -----------------------------------
     const { regionArr, regionValues, regionStats } =
       getRegionValues(validCandidates);
-
-    // ---------------- COUNTRY -----------------------------------
     const { countryArr, countryValues, countryStats } =
       getCountryValues(validCandidates);
-
-    // ---------------- PROVIDER -----------------------------------
     const { providerArr, providerValues, providerStats } =
       getProviderValues(validCandidates);
-
-    // Nominator Stake
     const { ownNominatorAddresses, nominatorStakeValues, nominatorStakeStats } =
       await getNominatorStakeValues(validCandidates, this.db);
-
-    // Delegations
     const { delegationValues, delegationStats } = await getDelegationValues(
       validCandidates,
       this.db
     );
-
-    // Council Stake
-    const councilStakeValues = validCandidates.map((candidate) => {
-      return candidate.councilStake ? candidate.councilStake : 0;
-    });
-    const councilStakeStats = getStats(councilStakeValues);
-
-    // index of the last democracy referendum
-    const lastReferendum = (await this.db.getLastReferenda())[0]
-      ?.referendumIndex;
-
-    // Democracy
-    const democracyValues = validCandidates.map((candidate) => {
-      const {
-        baseDemocracyScore,
-        totalDemocracyScore,
-        totalConsistencyMultiplier,
-        lastConsistencyMultiplier,
-      } = scoreDemocracyVotes(candidate.democracyVotes, lastReferendum);
-      return totalDemocracyScore || 0;
-    });
-    const democracyStats = getStats(democracyValues);
+    const { councilStakeValues, councilStakeStats } =
+      getCouncilStakeValues(validCandidates);
+    const { lastReferendum, democracyValues, democracyStats } =
+      await getDemocracyValues(validCandidates, this.db);
 
     // Create DB entry for Validator Score Metadata
     await this.db.setValidatorScoreMetadata(
@@ -1029,6 +983,36 @@ export const getDelegationValues = async (
   }
   const delegationStats = getStats(delegationValues);
   return { delegationValues, delegationStats };
+};
+
+export const getCouncilStakeValues = (
+  validCandidates: Types.CandidateData[]
+) => {
+  const councilStakeValues = validCandidates.map((candidate) => {
+    return candidate.councilStake ? candidate.councilStake : 0;
+  });
+  const councilStakeStats = getStats(councilStakeValues);
+  return { councilStakeValues, councilStakeStats };
+};
+
+export const getDemocracyValues = async (
+  validCandidates: Types.CandidateData[],
+  db: Db
+) => {
+  const lastReferendum = (await db.getLastReferenda())[0]?.referendumIndex;
+
+  // Democracy
+  const democracyValues = validCandidates.map((candidate) => {
+    const {
+      baseDemocracyScore,
+      totalDemocracyScore,
+      totalConsistencyMultiplier,
+      lastConsistencyMultiplier,
+    } = scoreDemocracyVotes(candidate.democracyVotes, lastReferendum);
+    return totalDemocracyScore || 0;
+  });
+  const democracyStats = getStats(democracyValues);
+  return { lastReferendum, democracyValues, democracyStats };
 };
 
 // Checks the online validity of a node

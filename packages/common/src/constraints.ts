@@ -1,21 +1,6 @@
 import axios from "axios";
 import semver from "semver";
-import {
-  absMax,
-  absMin,
-  asc,
-  getStats,
-  mean,
-  median,
-  q10,
-  q25,
-  q75,
-  q90,
-  scaled,
-  scaledDefined,
-  scoreDemocracyVotes,
-  std,
-} from "./score";
+import { getStats, scaled, scaledDefined, scoreDemocracyVotes } from "./score";
 import { ChainData, Config, Constants, logger, Types, Util } from "./index";
 import Db from "./db";
 import ApiHandler from "./ApiHandler";
@@ -43,11 +28,6 @@ export class OTV implements Constraints {
 
   private config: Config.ConfigSchema;
   private db: Db;
-
-  // caches
-  // TODO: Remove
-  private validCache: Types.CandidateData[] = [];
-  private invalidCache: Types.CandidateData[] = [];
 
   // Caches - keyed by stash address
   private validMapCache: Map<string, Types.CandidateData> = new Map();
@@ -148,11 +128,6 @@ export class OTV implements Constraints {
     } else {
       this.invalidMapCache.set(address, candidate);
     }
-  }
-
-  async checkCandidateStash(address: string): Promise<boolean> {
-    const candidate = await this.db.getCandidate(address);
-    return await this.checkCandidate(candidate);
   }
 
   async checkAllCandidates() {
@@ -619,9 +594,6 @@ export class OTV implements Constraints {
     rankedCandidates = rankedCandidates.sort((a, b) => {
       return b.aggregate.total - a.aggregate.total;
     });
-
-    // Cache the value to return from the server.
-    this.validCache = rankedCandidates;
 
     return rankedCandidates;
   }

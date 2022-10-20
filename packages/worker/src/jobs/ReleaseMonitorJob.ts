@@ -25,7 +25,7 @@ export const getLatestTaggedRelease = async (db: Db) => {
 
   await db.setRelease(tag_name, publishedAt);
 
-  if (latestTaggedRelease && tag_name === latestTaggedRelease!.name) {
+  if (latestTaggedRelease && tag_name === latestTaggedRelease?.name) {
     logger.info("(Monitor::getLatestTaggedRelease) No new release found");
   } else {
     latestTaggedRelease = {
@@ -35,7 +35,7 @@ export const getLatestTaggedRelease = async (db: Db) => {
   }
 
   logger.info(
-    `(Monitor::getLatestTaggedRelease) Latest release updated: ${tag_name} | Published at: ${publishedAt}`
+    `(Monitor::getLatestTaggedRelease) Latest release updated: ${latestTaggedRelease.name} | Published at: ${publishedAt}`
   );
 
   const end = Date.now();

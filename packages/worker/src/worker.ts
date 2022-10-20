@@ -1,16 +1,5 @@
 import { Queue, Worker as BullWorker } from "bullmq";
-import {
-  ApiHandler,
-  ChainData,
-  Constants,
-  logger,
-  Types,
-  Util,
-  Db,
-  Config,
-  Constraints,
-} from "@1kv/common";
-import { ApiPromise } from "@polkadot/api";
+import { ApiHandler, logger, Db, Config, Constraints } from "@1kv/common";
 import { createReleaseMonitorWorker } from "./workers/ReleaseMonitorWorker";
 import { createConstraintsWorker } from "./workers/ConstraintsWorker";
 import { createChainDataWorker } from "./workers";
@@ -18,7 +7,6 @@ import { createChainDataWorker } from "./workers";
 class Worker {
   private api: ApiHandler;
   private apiEndpoints: string[];
-  private blockQueue: Queue;
   private config: Config.ConfigSchema;
   private db: Db;
   private host: string;
@@ -54,17 +42,22 @@ class Worker {
       this.port,
       this.db
     );
+    logger.info(
+      `{Worker} Created release monitor worker: ${releaseMonitorWorker.id}`
+    );
     const constraintsWorker = await createConstraintsWorker(
       this.host,
       this.port,
       this.constraints
     );
+    logger.info(`{Worker} Created constraints worker: ${constraintsWorker.id}`);
     const chaindataWorker = await createChainDataWorker(
       this.host,
       this.port,
       this.db,
       this.api
     );
+    logger.info(`{Worker} Created chaindata worker: ${chaindataWorker.id}`);
   }
 }
 

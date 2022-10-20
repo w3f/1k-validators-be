@@ -3,7 +3,7 @@ import { logger, Db, ChainData } from "@1kv/common";
 export const nominatorJob = async (db: Db, chaindata: ChainData) => {
   const start = Date.now();
 
-  const [activeEra, err] = await chaindata.getActiveEraIndex();
+  const [activeEra] = await chaindata.getActiveEraIndex();
 
   const nominators = await chaindata.getNominators();
 

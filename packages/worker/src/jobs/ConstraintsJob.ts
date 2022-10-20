@@ -1,4 +1,4 @@
-import { ApiHandler, Db, logger, Constraints } from "@1kv/common";
+import { logger, Constraints } from "@1kv/common";
 import { SCORE_JOB, VALIDITY_JOB } from "./index";
 
 export const validityJob = async (constraints: Constraints.OTV) => {

@@ -1,5 +1,4 @@
 import { CronJob } from "cron";
-import Monitor from "./monitor";
 import Nominator from "./nominator";
 import {
   ApiHandler,
@@ -21,17 +20,14 @@ import {
   monitorJob,
   scoreJob,
   sessionKeyJob,
-  // unclaimedErasJob,
   validatorPrefJob,
   validityJob,
   locationStatsJob,
   councilJob,
-  // subscanJob,
   democracyJob,
   nominatorJob,
   delegationJob,
 } from "./jobs";
-import { Subscan } from "./subscan";
 
 // Monitors the latest GitHub releases and ensures nodes have upgraded
 // within a timely period.
@@ -151,7 +147,7 @@ export const startEraStatsJob = async (
   eraStatsCron.start();
 };
 
-// Executes any avaible time delay proxy txs if the the current block
+// Executes any available time delay proxy txs if the current block
 // is past the time delay proxy amount. This is a parameter `timeDelayBlocks` which can be
 // specified in the config, otherwise defaults the constant of 10850 (~18 hours).
 // Runs every 15 minutesB
@@ -297,7 +293,6 @@ export const startRewardClaimJob = async (
   // Check the free balance of the account. If it doesn't have a free balance, skip.
   const balance = await chaindata.getBalance(claimer.address);
   const metadata = await db.getChainMetadata();
-  const network = metadata.name.toLowerCase();
   const free = Util.toDecimals(Number(balance.free), metadata.decimals);
   // TODO Parameterize this as a constant
   if (free < 0.5) {
@@ -311,11 +306,9 @@ export const startRewardClaimJob = async (
     return;
   }
 
-  const api = await handler.getApi();
-
   const rewardClaimingCron = new CronJob(rewardClaimingFrequency, async () => {
     const erasToClaim = [];
-    const [currentEra, err] = await chaindata.getActiveEraIndex();
+    const [currentEra] = await chaindata.getActiveEraIndex();
     const rewardClaimThreshold =
       config.global.networkPrefix == 2
         ? Constants.KUSAMA_REWARD_THRESHOLD

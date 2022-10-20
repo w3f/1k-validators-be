@@ -1,5 +1,4 @@
-import { Queue } from "bullmq";
-import { logger, Db, ChainData, ApiHandler } from "@1kv/common";
+import { logger, Db, ChainData } from "@1kv/common";
 
 export const eraStatsJob = async (db: Db, chaindata: ChainData) => {
   const start = Date.now();

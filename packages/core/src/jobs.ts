@@ -1,8 +1,4 @@
-import { ChainData, logger, Types, Db, Constraints } from "@1kv/common";
-// import { checkUnclaimed, OTV } from "./constraints";
-import Monitor from "./monitor";
-import { Subscan } from "./subscan";
-import { getStats, variance } from "./score";
+import { ChainData, Db, Constraints } from "@1kv/common";
 import { otvWorker } from "@1kv/worker";
 
 // Runs Monitor Job

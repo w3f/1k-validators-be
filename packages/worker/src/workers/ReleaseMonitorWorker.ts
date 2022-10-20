@@ -1,4 +1,4 @@
-import { Queue, Worker } from "bullmq";
+import { Worker } from "bullmq";
 import { processReleaseMonitorJob } from "../jobs/ReleaseMonitorJob";
 import { logger } from "@1kv/common";
 

@@ -17,7 +17,8 @@ export const createConstraintsWorker = async (
         host: host,
         port: port,
       },
-      concurrency: 10,
+      concurrency: 50,
+      lockDuration: 300000,
     }
   );
   return worker;

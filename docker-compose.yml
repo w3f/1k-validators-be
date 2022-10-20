@@ -146,7 +146,7 @@ services:
         - .:/app
       deploy:
         mode: replicated
-        replicas: 4
+        replicas: 10
       restart: unless-stopped
       networks:
         testing_net:

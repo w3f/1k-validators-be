@@ -12,9 +12,9 @@ export const activeValidatorJob = async (db, chaindata: ChainData) => {
     const active = activeValidators.includes(candidate.stash);
     const changed = candidate.active != active;
     if (changed) {
-      logger.info(
-        `${candidate.name} changed from being ${candidate.active} to ${active}`
-      );
+      // logger.info(
+      //   `${candidate.name} changed from being ${candidate.active} to ${active}`
+      // );
     }
     await db.setActive(candidate.stash, active);
   }

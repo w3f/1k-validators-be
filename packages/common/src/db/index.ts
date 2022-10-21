@@ -11,17 +11,17 @@ export * from "./queries";
 
 export class Db {
   static async create(uri = "mongodb://localhost:27017/otv"): Promise<Db> {
-    await mongoose.connect(uri, {});
+    logger.info(`Connecting to mongodb at: ${uri}`);
+    mongoose.connect(uri, {});
 
     return new Promise((resolve, reject) => {
       mongoose.connection.once("open", async () => {
         logger.info(`Established a connection to MongoDB.`);
-        const db = new Db();
         // Initialize lastNominatedEraIndex if it's not already set.
         if (!(await queries.getLastNominatedEraIndex())) {
           await queries.setLastNominatedEraIndex(0);
         }
-        resolve(db);
+        resolve(true);
       });
 
       mongoose.connection.on("error", (err) => {

@@ -49,11 +49,13 @@ const start = async (cmd: { config: string }) => {
   const handler = await ApiHandler.create(endpoints);
 
   // Create the Database.
+  logger.info(`Creating DB Connection`);
   const db = await Db.create(config.db.mongo.uri);
 
   // Start the API server.
+  logger.info(`Creating Server`);
   const server = new Server(config);
-  server.start();
+  await server.start();
 
   const chainMetadata = await queries.getChainMetadata();
 

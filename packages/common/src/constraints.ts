@@ -29,7 +29,6 @@ import {
   setValidatorScore,
   setValidatorScoreMetadata,
 } from "./db";
-import { candidate } from "@1kv/gateway/build/controllers";
 
 export interface Constraints {
   processCandidates(

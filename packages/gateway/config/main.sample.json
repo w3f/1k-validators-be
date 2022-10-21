@@ -2,10 +2,18 @@
   "global": {
     "test": true,
     "dryRun": false,
-    "wsEndpoint": "ws://172.28.1.1:9945",
+    "wsEndpoint": "ws://172.28.1.1:9944",
     "networkPrefix": 3,
     "retroactive": false,
-    "historicalNominations": false
+    "historicalNominations": false,
+    "apiEndpoints": [
+      "ws://172.28.1.1:9944",
+      "ws://172.28.1.2:9945",
+      "ws://172.28.1.3:9946",
+      "ws://172.28.1.4:9947",
+      "ws://172.28.1.5:9948",
+      "ws://172.28.1.6:9949"
+    ]
   },
   "constraints": {
     "skipConnectionTime": true,

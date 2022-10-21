@@ -18,7 +18,7 @@ const start = async (cmd: { config: string }) => {
 
   logger.info(`{Start:Telemetry} Starting the backend services. ${version}`);
   const db = await Db.create(config.db.mongo.uri);
-  const telemetry = new TelemetryClient(config, db);
+  const telemetry = new TelemetryClient(config);
   await telemetry.start();
 };
 

@@ -1,9 +1,9 @@
-import { logger, Db, ChainData, Score } from "@1kv/common";
+import { logger, queries, ChainData, Score } from "@1kv/common";
 
-export const locationStatsJob = async (db, chaindata: ChainData) => {
+export const locationStatsJob = async (chaindata: ChainData) => {
   const start = Date.now();
 
-  const candidates = await db.allCandidates();
+  const candidates = await queries.allCandidates();
   const session = await chaindata.getSession();
 
   const locationMap = new Map();
@@ -175,7 +175,7 @@ export const locationStatsJob = async (db, chaindata: ChainData) => {
 
   // --------------------------
 
-  await db.setLocationStats(
+  await queries.setLocationStats(
     session,
     locationArr,
     regionArr,
@@ -201,9 +201,8 @@ export const locationStatsJob = async (db, chaindata: ChainData) => {
 
 export const processLocationStatsJob = async (
   job: any,
-  db: Db,
   chaindata: ChainData
 ) => {
   logger.info(`Processing Era Stats Job....`);
-  await locationStatsJob(db, chaindata);
+  await locationStatsJob(chaindata);
 };

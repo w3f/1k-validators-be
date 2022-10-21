@@ -1,23 +1,20 @@
 import { Keyring } from "@polkadot/api";
-import { ApiHandler, logger, Util, Types, Db } from "@1kv/common";
+import { ApiHandler, logger, Util, Types, queries } from "@1kv/common";
 import { KeyringPair } from "@polkadot/keyring/types";
 import { SubmittableExtrinsic } from "@polkadot/api/types";
 
 export default class Claimer {
-  private db: Db;
   private handler: ApiHandler;
   private signer: KeyringPair;
   private bot: any;
 
   constructor(
     handler: ApiHandler,
-    db: Db,
     cfg: Types.ClaimerConfig,
     networkPrefix = 2,
     bot?: any
   ) {
     this.handler = handler;
-    this.db = db;
     this.bot = bot;
 
     const keyring = new Keyring({
@@ -38,7 +35,7 @@ export default class Claimer {
     for (const era of unclaimedEras) {
       const tx = api.tx.staking.payoutStakers(era.stash, era.era);
       await this.sendClaimTx(tx, era);
-      const candidate = await this.db.getCandidate(era.stash);
+      const candidate = await queries.getCandidate(era.stash);
       if (this.bot) {
         await this.bot.sendMessage(
           `Claimer claimed era ${era.era} for validator ${candidate.name} - ${era.stash}`
@@ -71,18 +68,18 @@ export default class Claimer {
             `(Claimer::sendClaimTx) Included in block ${finalizedBlockHash}`
           );
           const faultReason = `Era ${unclaimedEras.era} had to be claimed`;
-          const faultExists = await this.db.pushFaultEvent(
+          const faultExists = await queries.pushFaultEvent(
             unclaimedEras.stash,
             faultReason
           );
           if (!faultExists) {
             await this.dockPoints(unclaimedEras.stash, unclaimedEras.era);
 
-            await this.db.setBotClaimEvent(
-              unclaimedEras.stash,
-              unclaimedEras.era,
-              finalizedBlockHash
-            );
+            // await queries.setBotClaimEvent(
+            //   unclaimedEras.stash,
+            //   unclaimedEras.era,
+            //   finalizedBlockHash
+            // );
           }
 
           unsub();
@@ -100,9 +97,9 @@ export default class Claimer {
 
   /// Handles the docking of points from bad behaving validators.
   async dockPoints(stash: Types.Stash, era: number): Promise<boolean> {
-    await this.db.dockPointsUnclaimedReward(stash);
+    await queries.dockPointsUnclaimedReward(stash);
 
-    const candidate = await this.db.getCandidate(stash);
+    const candidate = await queries.getCandidate(stash);
     logger.info(
       `${candidate.name} docked points for not claiming era: ${era}. New rank: ${candidate.rank}`
     );

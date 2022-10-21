@@ -8,14 +8,12 @@ class Worker {
   private api: ApiHandler;
   private apiEndpoints: string[];
   private config: Config.ConfigSchema;
-  private db: Db;
   private host: string;
   private port: number;
   private constraints: Constraints.OTV;
 
-  constructor(db: Db, config: Config.ConfigSchema) {
+  constructor(config: Config.ConfigSchema) {
     this.config = config;
-    this.db = db;
     this.apiEndpoints = this.config.global.apiEndpoints;
     this.host = this.config.redis.host;
     this.port = this.config.redis.port;
@@ -29,7 +27,7 @@ class Worker {
   }
 
   async initializeConstraints(): Promise<any> {
-    this.constraints = new Constraints.OTV(this.api, this.config, this.db);
+    this.constraints = new Constraints.OTV(this.api, this.config);
   }
 
   async startWorker(): Promise<any> {
@@ -39,8 +37,7 @@ class Worker {
     logger.info(`Redis host: ${this.host} port: ${this.port}`);
     const releaseMonitorWorker = await createReleaseMonitorWorker(
       this.host,
-      this.port,
-      this.db
+      this.port
     );
     logger.info(
       `{Worker} Created release monitor worker: ${releaseMonitorWorker.id}`
@@ -54,7 +51,6 @@ class Worker {
     const chaindataWorker = await createChainDataWorker(
       this.host,
       this.port,
-      this.db,
       this.api
     );
     logger.info(`{Worker} Created chaindata worker: ${chaindataWorker.id}`);

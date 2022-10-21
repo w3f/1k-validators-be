@@ -1,7 +1,7 @@
-import { Db, logger } from "@1kv/common";
+import { queries, logger } from "@1kv/common";
 import { Octokit } from "@octokit/rest";
 
-export const getLatestTaggedRelease = async (db: Db) => {
+export const getLatestTaggedRelease = async () => {
   const start = Date.now();
 
   logger.info(`(cron::Monitor::start) Running Monitor job`);
@@ -23,7 +23,7 @@ export const getLatestTaggedRelease = async (db: Db) => {
   const { tag_name, published_at } = latestRelease.data;
   const publishedAt = new Date(published_at).getTime();
 
-  await db.setRelease(tag_name, publishedAt);
+  await queries.setRelease(tag_name, publishedAt);
 
   if (latestTaggedRelease && tag_name === latestTaggedRelease?.name) {
     logger.info("(Monitor::getLatestTaggedRelease) No new release found");
@@ -48,6 +48,6 @@ export const getLatestTaggedRelease = async (db: Db) => {
 };
 
 // Called by worker to process Job
-export const processReleaseMonitorJob = async (job: any, db: Db) => {
-  await getLatestTaggedRelease(db);
+export const processReleaseMonitorJob = async (job: any) => {
+  await getLatestTaggedRelease();
 };

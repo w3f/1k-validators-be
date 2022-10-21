@@ -10,4 +10,4 @@ RUN echo "building ${PACKAGE}... "; \
     echo "yarn install done. Building...." ; \
     yarn workspaces foreach run build ; \
     echo "building ${PACKAGE} done."
-CMD pwd && ls && yarn run start:dev:${PACKAGE}
+CMD yarn run start:dev:${PACKAGE}

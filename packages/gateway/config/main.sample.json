@@ -12,7 +12,10 @@
     "skipIdentity": false,
     "skipStakedDestination": true,
     "skipClientUpgrade": true,
-    "skipUnclaimed": true
+    "skipUnclaimed": true,
+    "minSelfStake": 10000000000000000000,
+    "commission": 150000000,
+    "unclaimedEraThreshold": 4
   },
   "proxy": {
     "timeDelayBlocks": "35"
@@ -98,8 +101,12 @@
     "forceRound": true,
     "nominating": true
   },
+  "redis": {
+    "host": "redis",
+    "port": 6379
+  },
   "server": {
-    "port": 3301
+    "port": 3300
   },
   "telemetry": {
     "chains": [

@@ -1,7 +1,7 @@
 import ReconnectingWebSocket from "reconnecting-websocket";
 import WS from "ws";
 
-import { Db, Config, logger } from "@1kv/common";
+import { queries, Config, logger } from "@1kv/common";
 
 enum TelemetryMessage {
   FeedVersion = 0x00,
@@ -23,7 +23,6 @@ const MemNodes = {};
 
 export default class TelemetryClient {
   private config: Config.ConfigSchema;
-  private db: Db;
   private host: string;
   private socket: ReconnectingWebSocket;
   // map of name -> boolean
@@ -33,9 +32,8 @@ export default class TelemetryClient {
 
   private enable = true;
 
-  constructor(config: Config.ConfigSchema, db: Db) {
+  constructor(config: Config.ConfigSchema) {
     this.config = config;
-    this.db = db;
     this.host = this.config.telemetry.host || DEFAULT_HOST;
 
     this.enable = config.server.enable;
@@ -56,7 +54,10 @@ export default class TelemetryClient {
     } else {
       return new Promise((resolve: any, reject: any) => {
         this.socket.onopen = () => {
-          logger.info(`Connected to substrate-telemetry on host ${this.host}`);
+          logger.info({
+            message: `Connected to substrate-telemetry on host ${this.host}`,
+            labels: { origin: "telemetry" },
+          });
           for (const chain of this.config.telemetry.chains) {
             this._subscribe(chain);
           }
@@ -142,7 +143,7 @@ export default class TelemetryClient {
           };
 
           await waitUntilFree(details[0]);
-          await this.db.reportOnline(id, details, now, city);
+          await queries.reportOnline(id, details, now, city);
 
           const wasOffline = this.offlineNodes.has(id);
           if (wasOffline) {
@@ -166,7 +167,7 @@ export default class TelemetryClient {
 
           logger.info(`(TELEMETRY) Reporting ${name} OFFLINE`);
           this.beingReported.set(name, true);
-          await this.db.reportOffline(id, name, now);
+          await queries.reportOffline(id, name, now);
           this.beingReported.set(name, false);
 
           this.offlineNodes.set(id, true);
@@ -186,7 +187,7 @@ export default class TelemetryClient {
           const wasOffline = this.offlineNodes.has(id);
           if (wasOffline) {
             this.offlineNodes.delete(id);
-            await this.db.reportBestBlock(id, details, now);
+            await queries.reportBestBlock(id, details, now);
           }
         }
         break;

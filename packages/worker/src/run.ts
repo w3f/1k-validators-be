@@ -18,7 +18,7 @@ const start = async (cmd: { config: string }) => {
 
   logger.info(`{Worker:Start} Starting the backend services. ${version}`);
   const db = await Db.create(config.db.mongo.uri);
-  const worker = new Worker(db, config);
+  const worker = new Worker(config);
   await worker.startWorker();
 };
 

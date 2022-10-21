@@ -1,7 +1,7 @@
 import { Octokit } from "@octokit/rest";
 import semver from "semver";
 
-import { logger, Db } from "@1kv/common";
+import { logger, queries } from "@1kv/common";
 
 type TaggedRelease = {
   name: string;
@@ -12,11 +12,9 @@ export default class Monitor {
   public grace: number;
   public latestTaggedRelease: TaggedRelease | null = null;
 
-  private db: Db;
   private ghApi: any;
 
-  constructor(db: Db, grace: number) {
-    this.db = db;
+  constructor(grace: number) {
     this.grace = grace;
     this.ghApi = new Octokit();
   }
@@ -40,7 +38,7 @@ export default class Monitor {
     const { tag_name, published_at } = latestRelease.data;
     const publishedAt = new Date(published_at).getTime();
 
-    await this.db.setRelease(tag_name, publishedAt);
+    await queries.setRelease(tag_name, publishedAt);
 
     if (
       this.latestTaggedRelease &&
@@ -70,7 +68,7 @@ export default class Monitor {
     }
 
     const now = new Date().getTime();
-    const nodes = await this.db.allNodes();
+    const nodes = await queries.allNodes();
 
     for (const node of nodes) {
       const { name, version, updated } = node;
@@ -85,7 +83,7 @@ export default class Monitor {
 
       if (!nodeVersion) {
         if (updated) {
-          await this.db.reportNotUpdated(name);
+          await queries.reportNotUpdated(name);
         }
         continue;
       }
@@ -94,7 +92,7 @@ export default class Monitor {
 
       if (isUpgraded) {
         if (!updated) {
-          await this.db.reportUpdated(name);
+          await queries.reportUpdated(name);
         }
         continue;
       }
@@ -103,12 +101,12 @@ export default class Monitor {
         // Still in grace, but check if the node is only one patch version away.
         const incremented = semver.inc(nodeVersion, "patch");
         if (semver.gte(incremented, latestVersion)) {
-          await this.db.reportUpdated(name);
+          await queries.reportUpdated(name);
           continue;
         }
       }
 
-      await this.db.reportNotUpdated(name);
+      await queries.reportNotUpdated(name);
     }
   }
 }

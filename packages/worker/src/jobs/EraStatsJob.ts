@@ -1,18 +1,18 @@
-import { logger, Db, ChainData } from "@1kv/common";
+import { logger, queries, ChainData } from "@1kv/common";
 
-export const eraStatsJob = async (db: Db, chaindata: ChainData) => {
+export const eraStatsJob = async (chaindata: ChainData) => {
   const start = Date.now();
 
   logger.info(`(cron::eraStats::start) Running era stats cron`);
 
   const currentEra = await chaindata.getCurrentEra();
 
-  const allCandidates = await db.allCandidates();
+  const allCandidates = await queries.allCandidates();
 
   const valid = allCandidates.filter((candidate) => candidate.valid);
   const active = allCandidates.filter((candidate) => candidate.active);
 
-  await db.setEraStats(
+  await queries.setEraStats(
     Number(currentEra),
     allCandidates.length,
     valid.length,
@@ -28,11 +28,7 @@ export const eraStatsJob = async (db: Db, chaindata: ChainData) => {
   );
 };
 
-export const processEraStatsJob = async (
-  job: any,
-  db: Db,
-  chaindata: ChainData
-) => {
+export const processEraStatsJob = async (job: any, chaindata: ChainData) => {
   logger.info(`Processing Era Stats Job....`);
-  await eraStatsJob(db, chaindata);
+  await eraStatsJob(chaindata);
 };

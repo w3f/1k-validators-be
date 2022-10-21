@@ -1,11 +1,11 @@
-import { logger, Db, ChainData } from "@1kv/common";
+import { logger, queries, ChainData } from "@1kv/common";
 
-export const councilJob = async (db: Db, chaindata: ChainData) => {
+export const councilJob = async (chaindata: ChainData) => {
   const start = Date.now();
 
   const session = await chaindata.getSession();
 
-  const candidates = await db.allCandidates();
+  const candidates = await queries.allCandidates();
   // An array of all candidate stashes
   const candidateAddresses = candidates.map((candidate) => {
     return candidate.stash;
@@ -16,7 +16,7 @@ export const councilJob = async (db: Db, chaindata: ChainData) => {
   for (const vote of councilVoting) {
     const isCandidate = candidateAddresses.includes(vote.who.toString());
     if (isCandidate) {
-      db.setCouncilBacking(vote.who.toString(), vote.stake, vote.votes);
+      queries.setCouncilBacking(vote.who.toString(), vote.stake, vote.votes);
     }
   }
 
@@ -33,7 +33,7 @@ export const councilJob = async (db: Db, chaindata: ChainData) => {
   const totalMembers = electionsInfo.members.length;
   const totalRunnersUp = electionsInfo.runnersUp.length;
   const totalCandidates = electionsInfo.candidates.length;
-  await db.setElectionStats(
+  await queries.setElectionStats(
     termDuration.toNumber(),
     candidacyBond,
     totalMembers,
@@ -50,7 +50,7 @@ export const councilJob = async (db: Db, chaindata: ChainData) => {
   if (totalMembers) {
     for (const member of electionsInfo.members) {
       const { address, totalBacking } = member;
-      await db.setCouncillor(address.toString(), "Member", totalBacking);
+      await queries.setCouncillor(address.toString(), "Member", totalBacking);
     }
   }
 
@@ -58,7 +58,11 @@ export const councilJob = async (db: Db, chaindata: ChainData) => {
   if (totalRunnersUp) {
     for (const member of electionsInfo.runnersUp) {
       const { address, totalBacking } = member;
-      await db.setCouncillor(address.toString(), "Runner Up", totalBacking);
+      await queries.setCouncillor(
+        address.toString(),
+        "Runner Up",
+        totalBacking
+      );
     }
   }
 
@@ -66,7 +70,11 @@ export const councilJob = async (db: Db, chaindata: ChainData) => {
   if (totalCandidates) {
     for (const member of electionsInfo.candidates) {
       const { address, totalBacking } = member;
-      await db.setCouncillor(address.toString(), "Candidate", totalBacking);
+      await queries.setCouncillor(
+        address.toString(),
+        "Candidate",
+        totalBacking
+      );
     }
   }
 
@@ -79,11 +87,7 @@ export const councilJob = async (db: Db, chaindata: ChainData) => {
   );
 };
 
-export const processCouncilJob = async (
-  job: any,
-  db: Db,
-  chaindata: ChainData
-) => {
+export const processCouncilJob = async (job: any, chaindata: ChainData) => {
   logger.info(`Processing Council Job....`);
-  await councilJob(db, chaindata);
+  await councilJob(chaindata);
 };

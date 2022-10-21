@@ -12,10 +12,10 @@
     "docker": "docker-compose rm -f; docker-compose build --no-cache; docker-compose up -d",
     "lint": "tsc --noEmit && eslint 'src/**/*.{js,ts,tsx}' --quiet",
     "lint:fix": "tsc --noEmit && eslint 'src/**/*.{js,ts,tsx}' --quiet --fix",
-    "start": "NODE_OPTIONS='--max-old-space-size=4096' ts-node src/run.ts start",
-    "start:watch": "NODE_OPTIONS='--max-old-space-size=6096' nodemon --watch build --exec node build/run.js",
+    "start": "NODE_OPTIONS='--max-old-space-size=4096' ts-node --es-module-specifier-resolution=node src/run.ts start",
+    "start:watch": "NODE_OPTIONS='--max-old-space-size=6096' nodemon --watch build --exec node --es-module-specifier-resolution=node  build/run.js",
     "start:dev": "concurrently \"tsc -w\"  \"yarn start:watch\"",
-    "js:start": "NODE_OPTIONS='--max-old-space-size=6096' node build/run.js start"
+    "js:start": "NODE_OPTIONS='--max-old-space-size=6096' node --es-module-specifier-resolution=node build/run.js start"
   },
   "author": "Web3 Foundation <teched@web3.foundation>",
   "license": "GPL-3.0",
@@ -29,6 +29,7 @@
     "@1kv/worker": "workspace:^",
     "@bull-board/api": "^4.6.0",
     "@bull-board/koa": "^4.6.0",
+    "koa-swagger-decorator": "^1.8.6",
     "typescript": "^4.8.4"
   },
   "devDependencies": {

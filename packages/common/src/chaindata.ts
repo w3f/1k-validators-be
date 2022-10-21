@@ -7,7 +7,7 @@ import {
   POLKADOT_APPROX_ERA_LENGTH_IN_BLOCKS,
   TESTNET_APPROX_ERA_LENGTH_IN_BLOCKS,
 } from "./constants";
-import Db from "./db";
+import { getChainMetadata, getEraPoints } from "./db";
 import logger from "./logger";
 import { BooleanResult, NumberResult, StringResult } from "./types";
 import { hex2a, toDecimals } from "./util";
@@ -556,13 +556,13 @@ export class ChainData {
    * @param chainType
    * @returns
    */
-  getNominationAt = async (nominatorStash: string, era: number, db: Db) => {
+  getNominationAt = async (nominatorStash: string, era: number) => {
     if (!this.api.isConnected) {
       logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
       return;
     }
 
-    const chainMetadata = await db.getChainMetadata();
+    const chainMetadata = await getChainMetadata();
     const chainType = chainMetadata.name;
     const decimals = chainMetadata.decimals;
 
@@ -617,7 +617,7 @@ export class ChainData {
    * @param validatorStash
    * @returns
    */
-  getUnclaimedEras = async (validatorStash: string, db: Db) => {
+  getUnclaimedEras = async (validatorStash: string) => {
     const start = Date.now();
     if (!this.api.isConnected) {
       logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
@@ -649,7 +649,7 @@ export class ChainData {
     const startingEra = currentEra - 83 >= 0 ? currentEra - 83 : 0;
     for (let i = startingEra; i < currentEra; i++) {
       if (claimedEras.includes(i)) continue;
-      const dbPoints = await db.getEraPoints(i, validatorStash);
+      const dbPoints = await getEraPoints(i, validatorStash);
       if (!dbPoints) continue;
       const eraPoints = dbPoints.eraPoints;
       if (eraPoints > 0 && !claimedEras.includes(i)) unclaimedEras.push(i);

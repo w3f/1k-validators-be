@@ -1,6 +1,6 @@
-import { logger, Db, ChainData } from "@1kv/common";
+import { logger, queries, ChainData } from "@1kv/common";
 
-export const eraPointsJob = async (db, chaindata: ChainData) => {
+export const eraPointsJob = async (chaindata: ChainData) => {
   const start = Date.now();
 
   // Set Era Points
@@ -11,7 +11,7 @@ export const eraPointsJob = async (db, chaindata: ChainData) => {
   logger.info(`{cron::EraPointsJob} setting era info`);
   const [activeEra, err] = await chaindata.getActiveEraIndex();
   for (let i = activeEra - 1; i > activeEra - 84 && i >= 0; i--) {
-    const erapoints = await db.getTotalEraPoints(i);
+    const erapoints = await queries.getTotalEraPoints(i);
 
     if (!!erapoints && erapoints.totalEraPoints >= 70000 && erapoints.median) {
       continue;
@@ -20,13 +20,13 @@ export const eraPointsJob = async (db, chaindata: ChainData) => {
         `{cron::EraPointsJob} era ${i} point data doesnt exist. Creating....`
       );
       const { era, total, validators } = await chaindata.getTotalEraPoints(i);
-      await db.setTotalEraPoints(era, total, validators);
+      await queries.setTotalEraPoints(era, total, validators);
     }
   }
   const { era, total, validators } = await chaindata.getTotalEraPoints(
     activeEra
   );
-  await db.setTotalEraPoints(era, total, validators);
+  await queries.setTotalEraPoints(era, total, validators);
 
   const end = Date.now();
 
@@ -37,11 +37,7 @@ export const eraPointsJob = async (db, chaindata: ChainData) => {
   );
 };
 
-export const processEraPointsJob = async (
-  job: any,
-  db: Db,
-  chaindata: ChainData
-) => {
+export const processEraPointsJob = async (job: any, chaindata: ChainData) => {
   logger.info(`Processing Era Points Job....`);
-  await eraPointsJob(db, chaindata);
+  await eraPointsJob(chaindata);
 };

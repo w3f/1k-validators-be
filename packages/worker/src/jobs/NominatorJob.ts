@@ -1,13 +1,13 @@
-import { logger, Db, ChainData } from "@1kv/common";
+import { logger, queries, ChainData } from "@1kv/common";
 
-export const nominatorJob = async (db: Db, chaindata: ChainData) => {
+export const nominatorJob = async (chaindata: ChainData) => {
   const start = Date.now();
 
   const [activeEra] = await chaindata.getActiveEraIndex();
 
   const nominators = await chaindata.getNominators();
 
-  const candidates = await db.allCandidates();
+  const candidates = await queries.allCandidates();
 
   for (const candidate of candidates) {
     // A validators active nominators
@@ -35,7 +35,7 @@ export const nominatorJob = async (db: Db, chaindata: ChainData) => {
       totalInactiveStake += nominator.bonded;
     });
 
-    await db.setNominatorStake(
+    await queries.setNominatorStake(
       candidate.stash,
       activeEra,
       total,
@@ -54,11 +54,7 @@ export const nominatorJob = async (db: Db, chaindata: ChainData) => {
   );
 };
 
-export const processNominatorJob = async (
-  job: any,
-  db: Db,
-  chaindata: ChainData
-) => {
+export const processNominatorJob = async (job: any, chaindata: ChainData) => {
   logger.info(`Processing Nominator Job....`);
-  await nominatorJob(db, chaindata);
+  await nominatorJob(chaindata);
 };

@@ -1,23 +1,23 @@
-import { logger, Db, ChainData } from "@1kv/common";
+import { logger, queries, ChainData } from "@1kv/common";
 
-export const inclusionJob = async (db, chaindata: ChainData) => {
+export const inclusionJob = async (chaindata: ChainData) => {
   const start = Date.now();
 
   const [activeEra] = await chaindata.getActiveEraIndex();
 
-  const candidates = await db.allCandidates();
+  const candidates = await queries.allCandidates();
   for (const candidate of candidates) {
     // Set inclusion Rate
-    const erasActive = await db.getHistoryDepthEraPoints(
+    const erasActive = await queries.getHistoryDepthEraPoints(
       candidate.stash,
       activeEra
     );
     const filteredEras = erasActive.filter((era) => era.eraPoints > 0);
     const inclusion = Number(filteredEras.length / 84);
-    await db.setInclusion(candidate.stash, inclusion);
+    await queries.setInclusion(candidate.stash, inclusion);
 
     // Set span inclusion Rate
-    const spanErasActive = await db.getSpanEraPoints(
+    const spanErasActive = await queries.getSpanEraPoints(
       candidate.stash,
       activeEra
     );
@@ -25,7 +25,7 @@ export const inclusionJob = async (db, chaindata: ChainData) => {
       (era: any) => era.eraPoints > 0
     );
     const spanInclusion = Number(filteredSpanEras.length / 28);
-    await db.setSpanInclusion(candidate.stash, spanInclusion);
+    await queries.setSpanInclusion(candidate.stash, spanInclusion);
   }
 
   const end = Date.now();
@@ -37,11 +37,7 @@ export const inclusionJob = async (db, chaindata: ChainData) => {
   );
 };
 
-export const processInclusionJob = async (
-  job: any,
-  db: Db,
-  chaindata: ChainData
-) => {
+export const processInclusionJob = async (job: any, chaindata: ChainData) => {
   logger.info(`Processing Inclusion Job....`);
-  await inclusionJob(db, chaindata);
+  await inclusionJob(chaindata);
 };

@@ -5,20 +5,17 @@
     "wsEndpoint": "ws://172.28.1.1:9945",
     "networkPrefix": 3,
     "retroactive": false,
-    "historicalNominations": false,
-    "apiEndpoints": [
-      "ws://172.28.1.1:9944",
-      "ws://172.28.1.2:9945",
-      "ws://172.28.1.3:9946",
-      "ws://172.28.1.4:9947"
-    ]
+    "historicalNominations": false
   },
   "constraints": {
     "skipConnectionTime": true,
     "skipIdentity": false,
     "skipStakedDestination": true,
     "skipClientUpgrade": true,
-    "skipUnclaimed": true
+    "skipUnclaimed": true,
+    "minSelfStake": 10000000000000000000,
+    "commission": 150000000,
+    "unclaimedEraThreshold": 4
   },
   "proxy": {
     "timeDelayBlocks": "35"
@@ -55,10 +52,6 @@
     "baseUrl": "https://matrix.org",
     "room": "!xxxxx:web3.foundation",
     "userId": "@1kv-stats:matrix.org"
-  },
-  "redis": {
-    "host": "redis",
-    "port": 6379
   },
   "score": {
     "inclusion": "140",
@@ -108,8 +101,12 @@
     "forceRound": true,
     "nominating": true
   },
+  "redis": {
+    "host": "redis",
+    "port": 6379
+  },
   "server": {
-    "port": 3301
+    "port": 3300
   },
   "telemetry": {
     "chains": [

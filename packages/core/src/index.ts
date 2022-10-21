@@ -1,7 +1,15 @@
 import { CronJob } from "cron";
 import { Command } from "commander";
 
-import { ApiHandler, Constants, logger, Util, Db, Config } from "@1kv/common";
+import {
+  ApiHandler,
+  Constants,
+  logger,
+  Util,
+  Db,
+  Config,
+  queries,
+} from "@1kv/common";
 import MatrixBot from "./matrix";
 import Monitor from "./monitor";
 import Scorekeeper from "./scorekeeper";
@@ -44,10 +52,10 @@ const start = async (cmd: { config: string }) => {
   const db = await Db.create(config.db.mongo.uri);
 
   // Start the API server.
-  const server = new Server(db, config);
+  const server = new Server(config);
   server.start();
 
-  const chainMetadata = await db.getChainMetadata();
+  const chainMetadata = await queries.getChainMetadata();
 
   // If the chain is a test chain, init some test chain conditions
   if (config.global.networkPrefix === 3 && !chainMetadata) {
@@ -62,29 +70,29 @@ const start = async (cmd: { config: string }) => {
     await Util.sleep(15000);
   }
 
-  await db.setChainMetadata(config.global.networkPrefix);
+  await queries.setChainMetadata(config.global.networkPrefix);
 
   // Delete the old candidate fields.
-  await db.deleteOldCandidateFields();
+  await queries.deleteOldCandidateFields();
 
   // Clear node refs and delete old fields from all nodes before starting new
   // telemetry client.
-  const allNodes = await db.allNodes();
+  const allNodes = await queries.allNodes();
   for (const node of allNodes) {
     const { name } = node;
-    await db.deleteOldFieldFrom(name);
-    await db.clearNodeRefsFrom(name);
+    await queries.deleteOldFieldFrom(name);
+    await queries.clearNodeRefsFrom(name);
   }
 
   // Start the telemetry client.
-  const telemetry = new TelemetryClient(config, db);
+  const telemetry = new TelemetryClient(config);
   await telemetry.start();
 
   // Create the matrix bot if enabled.
   let maybeBot: any = false;
   if (config.matrix.enabled && !isCI) {
     const { accessToken, baseUrl, userId } = config.matrix;
-    maybeBot = new MatrixBot(baseUrl, accessToken, userId, db, config);
+    maybeBot = new MatrixBot(baseUrl, accessToken, userId, config);
     maybeBot.start();
     await maybeBot.sendMessage(
       `<a href="https://github.com/w3f/1k-validators-be">Backend services</a> (re)-started! Version: ${version}`
@@ -94,10 +102,10 @@ const start = async (cmd: { config: string }) => {
   // Buffer some time for set up.
   await Util.sleep(1500);
 
-  await startClearAccumulatedOfflineTimeJob(config, db);
+  await startClearAccumulatedOfflineTimeJob(config);
 
   // Set up the nominators in the scorekeeper.
-  const scorekeeper = new Scorekeeper(handler, db, config, maybeBot);
+  const scorekeeper = new Scorekeeper(handler, config, maybeBot);
   for (const nominatorGroup of config.scorekeeper.nominators) {
     await scorekeeper.addNominatorGroup(nominatorGroup);
   }
@@ -109,13 +117,13 @@ const start = async (cmd: { config: string }) => {
   }
 
   const curControllers = scorekeeper.getAllNominatorControllers();
-  await db.removeStaleNominators(curControllers);
+  await queries.removeStaleNominators(curControllers);
 
   // Wipe the candidates on every start-up and re-add the ones in config.
   logger.info(
     "{Start} Wiping old candidates data and intializing latest candidates from config."
   );
-  await db.clearCandidates();
+  await queries.clearCandidates();
   if (config.scorekeeper.candidates.length) {
     for (const candidate of config.scorekeeper.candidates) {
       if (candidate === null) {
@@ -127,7 +135,13 @@ const start = async (cmd: { config: string }) => {
         const kusamaStash = candidate.kusamaStash || "";
         const skipSelfStake = candidate.skipSelfStake || false;
 
-        await db.addCandidate(name, stash, kusamaStash, skipSelfStake, bio);
+        await queries.addCandidate(
+          name,
+          stash,
+          kusamaStash,
+          skipSelfStake,
+          bio
+        );
       }
     }
   }

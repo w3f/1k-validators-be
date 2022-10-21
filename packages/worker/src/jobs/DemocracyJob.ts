@@ -1,6 +1,6 @@
-import { logger, Db, ChainData, Types } from "@1kv/common";
+import { logger, ChainData, Types, queries } from "@1kv/common";
 
-export const democracyJob = async (db, chaindata: ChainData) => {
+export const democracyJob = async (chaindata: ChainData) => {
   const start = Date.now();
 
   const latestBlockNumber = await chaindata.getLatestBlock();
@@ -74,7 +74,7 @@ export const democracyJob = async (db, chaindata: ChainData) => {
       isPassing: isPassing || false,
     };
 
-    await db.setReferendum(referendum, latestBlockNumber, latestBlockHash);
+    await queries.setReferendum(referendum, latestBlockNumber, latestBlockHash);
 
     // Go through all votes for the referendum and update db entries for them
     for (const v of votes) {
@@ -92,7 +92,7 @@ export const democracyJob = async (db, chaindata: ChainData) => {
         conviction: conviction,
       };
 
-      await db.setReferendumVote(
+      await queries.setReferendumVote(
         referendumVote,
         latestBlockNumber,
         latestBlockHash
@@ -109,11 +109,7 @@ export const democracyJob = async (db, chaindata: ChainData) => {
   );
 };
 
-export const processDemocracyJob = async (
-  job: any,
-  db: Db,
-  chaindata: ChainData
-) => {
+export const processDemocracyJob = async (job: any, chaindata: ChainData) => {
   logger.info(`Processing Democracy Job....`);
-  await democracyJob(db, chaindata);
+  await democracyJob(chaindata);
 };

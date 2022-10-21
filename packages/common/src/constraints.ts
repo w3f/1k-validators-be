@@ -2,8 +2,34 @@ import axios from "axios";
 import semver from "semver";
 import { getStats, scaled, scaledDefined, scoreDemocracyVotes } from "./score";
 import { ChainData, Config, Constants, logger, Types, Util } from "./index";
-import Db from "./db";
 import ApiHandler from "./ApiHandler";
+import {
+  allCandidates,
+  getLastReferenda,
+  getLatestRelease,
+  setBlockedInvalidity,
+  setCommissionInvalidity,
+  setConnectionTimeInvalidity,
+  setIdentityInvalidity,
+  setKusamaRankInvalidity,
+  setLatestClientReleaseValidity,
+  setOnlineValidity,
+  setRewardDestinationInvalidity,
+  setSelfStakeInvalidity,
+  setUnclaimedInvalidity,
+  setValidateIntentionValidity,
+} from "./db";
+import {
+  allNominators,
+  getDelegations,
+  getLatestNominatorStake,
+  setLastValid,
+  setOfflineAccumulatedInvalidity,
+  setValid,
+  setValidatorScore,
+  setValidatorScoreMetadata,
+} from "./db";
+import { candidate } from "@1kv/gateway/build/controllers";
 
 export interface Constraints {
   processCandidates(
@@ -27,7 +53,6 @@ export class OTV implements Constraints {
   private unclaimedEraThreshold: number;
 
   private config: Config.ConfigSchema;
-  private db: Db;
 
   // Caches - keyed by stash address
   private validMapCache: Map<string, Types.CandidateData> = new Map();
@@ -64,10 +89,9 @@ export class OTV implements Constraints {
   private NOMINATIONS_WEIGHT = 100;
   private DELEGATIONS_WEIGHT = 60;
 
-  constructor(handler: ApiHandler, config: Config.ConfigSchema, db: Db) {
+  constructor(handler: ApiHandler, config: Config.ConfigSchema) {
     this.chaindata = new ChainData(handler);
     this.config = config;
-    this.db = db;
 
     // Constraints
     this.skipConnectionTime =
@@ -131,8 +155,8 @@ export class OTV implements Constraints {
   }
 
   async checkAllCandidates() {
-    const allCandidates = await this.db.allCandidates();
-    for (const candidate of allCandidates) {
+    const candidates = await allCandidates();
+    for (const candidate of candidates) {
       await this.checkCandidate(candidate);
     }
   }
@@ -141,75 +165,55 @@ export class OTV implements Constraints {
   async checkCandidate(candidate: Types.CandidateData): Promise<boolean> {
     let valid = false;
 
-    const onlineValid = await checkOnline(this.db, candidate);
+    const onlineValid = await checkOnline(candidate);
 
     const validateValid = await checkValidateIntention(
       this.config,
       this.chaindata,
-      this.db,
       candidate
     );
 
-    const versionValid = await checkLatestClientVersion(
-      this.config,
-      this.db,
-      candidate
-    );
+    const versionValid = await checkLatestClientVersion(this.config, candidate);
 
     const monitoringWeekValid = await checkConnectionTime(
       this.config,
-      this.db,
       candidate
     );
 
-    const identityValid = await checkIdentity(
-      this.chaindata,
-      this.db,
-      candidate
-    );
+    const identityValid = await checkIdentity(this.chaindata, candidate);
 
-    const offlineValid = await checkOffline(this.db, candidate);
+    const offlineValid = await checkOffline(candidate);
 
     let rewardDestinationValid = true;
     if (!this.skipStakedDesitnation) {
       rewardDestinationValid =
-        (await checkRewardDestination(this.db, this.chaindata, candidate)) ||
-        false;
+        (await checkRewardDestination(this.chaindata, candidate)) || false;
     }
 
     const commissionValid =
-      (await checkCommission(
-        this.db,
-        this.chaindata,
-        this.commission,
-        candidate
-      )) || false;
+      (await checkCommission(this.chaindata, this.commission, candidate)) ||
+      false;
 
     const selfStakeValid =
-      (await checkSelfStake(
-        this.db,
-        this.chaindata,
-        this.minSelfStake,
-        candidate
-      )) || false;
+      (await checkSelfStake(this.chaindata, this.minSelfStake, candidate)) ||
+      false;
 
     const unclaimedValid =
       this.config.constraints.skipUnclaimed == true
         ? true
         : (await checkUnclaimed(
-            this.db,
             this.chaindata,
             this.unclaimedEraThreshold,
             candidate
           )) || false;
 
     const blockedValid =
-      (await checkBlocked(this.db, this.chaindata, candidate)) || false;
+      (await checkBlocked(this.chaindata, candidate)) || false;
 
     let kusamaValid = true;
     try {
       if (!!candidate.kusamaStash) {
-        kusamaValid = (await checkKusamaRank(this.db, candidate)) || false;
+        kusamaValid = (await checkKusamaRank(candidate)) || false;
       }
     } catch (e) {
       logger.info(`Error trying to get kusama data...`);
@@ -229,11 +233,11 @@ export class OTV implements Constraints {
       blockedValid &&
       kusamaValid;
 
-    await this.db.setValid(candidate.stash, valid);
+    await setValid(candidate.stash, valid);
 
     if (valid) {
       this.addToValidCache(candidate.stash, candidate);
-      this.db.setLastValid(candidate.stash);
+      setLastValid(candidate.stash);
     } else {
       this.addToInvalidCache(candidate.stash, candidate);
     }
@@ -242,7 +246,7 @@ export class OTV implements Constraints {
   }
 
   async scoreAllCandidates() {
-    const candidates = await this.db.allCandidates();
+    const candidates = await allCandidates();
     await this.scoreCandidates(candidates);
   }
 
@@ -278,18 +282,17 @@ export class OTV implements Constraints {
     const { providerArr, providerValues, providerStats } =
       getProviderValues(validCandidates);
     const { ownNominatorAddresses, nominatorStakeValues, nominatorStakeStats } =
-      await getNominatorStakeValues(validCandidates, this.db);
+      await getNominatorStakeValues(validCandidates);
     const { delegationValues, delegationStats } = await getDelegationValues(
-      validCandidates,
-      this.db
+      validCandidates
     );
     const { councilStakeValues, councilStakeStats } =
       getCouncilStakeValues(validCandidates);
     const { lastReferendum, democracyValues, democracyStats } =
-      await getDemocracyValues(validCandidates, this.db);
+      await getDemocracyValues(validCandidates);
 
-    // Create DB entry for Validator Score Metadata
-    await this.db.setValidatorScoreMetadata(
+    // Create  entry for Validator Score Metadata
+    await setValidatorScoreMetadata(
       bondedStats,
       this.BONDED_WEIGHT,
       faultsStats,
@@ -351,14 +354,14 @@ export class OTV implements Constraints {
         : 0;
 
       // Scale bonding based on the 5th and 85th percentile
-      const scaledBonded =
+      const scaleonded =
         scaledDefined(
           candidate.bonded ? candidate.bonded : 0,
           bondedValues,
           0.05,
           0.85
         ) || 0;
-      const bondedScore = scaledBonded * this.BONDED_WEIGHT;
+      const bondedScore = scaleonded * this.BONDED_WEIGHT;
 
       const scaledOffline =
         scaled(candidate.offlineAccumulated, offlineValues) || 0;
@@ -412,7 +415,7 @@ export class OTV implements Constraints {
         scaledDefined(candidateProvider, providerValues, 0.1, 0.95) || 0;
       const providerScore = (1 - scaledProvider) * this.LOCATION_WEIGHT || 0;
 
-      const nomStake = await this.db.getLatestNominatorStake(candidate.stash);
+      const nomStake = await getLatestNominatorStake(candidate.stash);
       let totalNominatorStake = 0;
       if (
         nomStake != undefined &&
@@ -438,7 +441,7 @@ export class OTV implements Constraints {
       const nominatorStakeScore =
         scaledNominatorStake * this.NOMINATIONS_WEIGHT;
 
-      const delegations = await this.db.getDelegations(candidate.stash);
+      const delegations = await getDelegations(candidate.stash);
       let totalDelegations = 0;
       if (
         delegations != undefined &&
@@ -457,17 +460,17 @@ export class OTV implements Constraints {
 
       // Score the council backing weight based on what percentage of their staking bond it is
       const denom = await this.chaindata.getDenom();
-      const formattedBonded = candidate.bonded / denom;
+      const formatteonded = candidate.bonded / denom;
       const councilStakeScore =
         candidate.councilStake == 0
           ? 0
-          : candidate.councilStake >= 0.75 * formattedBonded
+          : candidate.councilStake >= 0.75 * formatteonded
           ? this.COUNCIL_WEIGHT
-          : candidate.councilStake >= 0.5 * formattedBonded
+          : candidate.councilStake >= 0.5 * formatteonded
           ? 0.75 * this.COUNCIL_WEIGHT
-          : candidate.councilStake >= 0.25 * formattedBonded
+          : candidate.councilStake >= 0.25 * formatteonded
           ? 0.5 * this.COUNCIL_WEIGHT
-          : candidate.councilStake < 0.25 * formattedBonded
+          : candidate.councilStake < 0.25 * formatteonded
           ? 0.25 * this.COUNCIL_WEIGHT
           : 0;
 
@@ -546,7 +549,7 @@ export class OTV implements Constraints {
         updated: Date.now(),
       };
 
-      await this.db.setValidatorScore(
+      await setValidatorScore(
         candidate.stash,
         score.updated,
         score.total,
@@ -890,16 +893,15 @@ export const getProviderValues = (validCandidates: Types.CandidateData[]) => {
 };
 
 export const getNominatorStakeValues = async (
-  validCandidates: Types.CandidateData[],
-  db: Db
+  validCandidates: Types.CandidateData[]
 ) => {
-  const ownNominators = await db.allNominators();
+  const ownNominators = await allNominators();
   const ownNominatorAddresses = ownNominators.map((nom) => {
     return nom.address;
   });
   const nominatorStakeValues = [];
   for (const candidate of validCandidates) {
-    const nomStake = await db.getLatestNominatorStake(candidate.stash);
+    const nomStake = await getLatestNominatorStake(candidate.stash);
     if (
       nomStake != undefined &&
       nomStake?.activeNominators &&
@@ -932,12 +934,11 @@ export const getNominatorStakeValues = async (
 };
 
 export const getDelegationValues = async (
-  validCandidates: Types.CandidateData[],
-  db: Db
+  validCandidates: Types.CandidateData[]
 ) => {
   const delegationValues = [];
   for (const candidate of validCandidates) {
-    const delegations = await db.getDelegations(candidate.stash);
+    const delegations = await getDelegations(candidate.stash);
     if (delegations != undefined && delegations?.delegators) {
       try {
         const { totalBalance, delegators } = delegations;
@@ -968,10 +969,9 @@ export const getCouncilStakeValues = (
 };
 
 export const getDemocracyValues = async (
-  validCandidates: Types.CandidateData[],
-  db: Db
+  validCandidates: Types.CandidateData[]
 ) => {
-  const lastReferendum = (await db.getLastReferenda())[0]?.referendumIndex;
+  const lastReferendum = (await getLastReferenda())[0]?.referendumIndex;
 
   // Democracy
   const democracyValues = validCandidates.map((candidate) => {
@@ -988,12 +988,12 @@ export const getDemocracyValues = async (
 };
 
 // Checks the online validity of a node
-export const checkOnline = async (db: Db, candidate: any) => {
+export const checkOnline = async (candidate: any) => {
   if (candidate && Number(candidate.onlineSince) === 0) {
-    await db.setOnlineValidity(candidate.stash, false);
+    await setOnlineValidity(candidate.stash, false);
     return false;
   } else {
-    await db.setOnlineValidity(candidate.stash, true);
+    await setOnlineValidity(candidate.stash, true);
     return true;
   }
 };
@@ -1002,15 +1002,14 @@ export const checkOnline = async (db: Db, candidate: any) => {
 export const checkValidateIntention = async (
   config: Config.ConfigSchema,
   chaindata: ChainData,
-  db: Db,
   candidate: any
 ) => {
   const validators = await chaindata.getValidators();
   if (!validators.includes(Util.formatAddress(candidate?.stash, config))) {
-    db.setValidateIntentionValidity(candidate.stash, false);
+    setValidateIntentionValidity(candidate.stash, false);
     return false;
   } else {
-    db.setValidateIntentionValidity(candidate.stash, true);
+    setValidateIntentionValidity(candidate.stash, true);
     return true;
   }
 };
@@ -1019,15 +1018,14 @@ export const checkValidateIntention = async (
 export const checkAllValidateIntentions = async (
   config: Config.ConfigSchema,
   chaindata: ChainData,
-  db: Db,
   candidates: any
 ) => {
   const validators = await chaindata.getValidators();
   for (const candidate of candidates) {
     if (!validators.includes(Util.formatAddress(candidate.stash, config))) {
-      db.setValidateIntentionValidity(candidate.stash, false);
+      setValidateIntentionValidity(candidate.stash, false);
     } else {
-      db.setValidateIntentionValidity(candidate.stash, true);
+      setValidateIntentionValidity(candidate.stash, true);
     }
   }
 };
@@ -1035,12 +1033,11 @@ export const checkAllValidateIntentions = async (
 // checks that the validator is on the latest client version
 export const checkLatestClientVersion = async (
   config: Config.ConfigSchema,
-  db: Db,
   candidate: any
 ) => {
   if (!config.constraints.skipClientUpgrade) {
     const forceLatestRelease = config.constraints.forceClientVersion;
-    const latestRelease = await db.getLatestRelease();
+    const latestRelease = await getLatestRelease();
     if (
       candidate.version &&
       latestRelease &&
@@ -1053,10 +1050,10 @@ export const checkLatestClientVersion = async (
 
       const isUpgraded = semver.gte(nodeVersion, latestVersion);
       if (!isUpgraded) {
-        db.setLatestClientReleaseValidity(candidate.stash, false);
+        setLatestClientReleaseValidity(candidate.stash, false);
         return false;
       } else {
-        db.setLatestClientReleaseValidity(candidate.stash, true);
+        setLatestClientReleaseValidity(candidate.stash, true);
         return true;
       }
     } else {
@@ -1070,79 +1067,72 @@ export const checkLatestClientVersion = async (
       return true;
     }
   } else {
-    db.setLatestClientReleaseValidity(candidate.stash, true);
+    setLatestClientReleaseValidity(candidate.stash, true);
     return true;
   }
 };
 
 export const checkConnectionTime = async (
   config: Config.ConfigSchema,
-  db: Db,
   candidate: any
 ) => {
   if (!config.constraints.skipConnectionTime) {
     const now = new Date().getTime();
     if (now - candidate.discoveredAt < Constants.WEEK) {
-      db.setConnectionTimeInvalidity(candidate.stash, false);
+      setConnectionTimeInvalidity(candidate.stash, false);
       return false;
     } else {
-      db.setConnectionTimeInvalidity(candidate.stash, true);
+      setConnectionTimeInvalidity(candidate.stash, true);
       return true;
     }
   } else {
-    db.setConnectionTimeInvalidity(candidate.stash, true);
+    setConnectionTimeInvalidity(candidate.stash, true);
     return true;
   }
 };
 
-export const checkIdentity = async (
-  chaindata: ChainData,
-  db: Db,
-  candidate: any
-) => {
+export const checkIdentity = async (chaindata: ChainData, candidate: any) => {
   const [hasIdentity, verified] = await chaindata.hasIdentity(candidate.stash);
   if (!hasIdentity) {
     const invalidityString = `${candidate.name} does not have an identity set.`;
-    db.setIdentityInvalidity(candidate.stash, false, invalidityString);
+    setIdentityInvalidity(candidate.stash, false, invalidityString);
     return false;
   }
   if (!verified) {
     const invalidityString = `${candidate.name} has an identity but is not verified by the registrar.`;
-    db.setIdentityInvalidity(candidate.stash, false, invalidityString);
+    setIdentityInvalidity(candidate.stash, false, invalidityString);
     return false;
   }
-  db.setIdentityInvalidity(candidate.stash, true);
+  setIdentityInvalidity(candidate.stash, true);
   return true;
 };
 
-export const checkOffline = async (db: Db, candidate: any) => {
+export const checkOffline = async (candidate: any) => {
   const totalOffline = candidate.offlineAccumulated / Constants.WEEK;
   if (totalOffline > 0.02) {
-    db.setOfflineAccumulatedInvalidity(candidate.stash, false);
+    await setOfflineAccumulatedInvalidity(candidate.stash, false);
     return false;
   } else {
-    db.setOfflineAccumulatedInvalidity(candidate.stash, true);
+    await setOfflineAccumulatedInvalidity(candidate.stash, true);
     return true;
   }
 };
 
 export const checkRewardDestination = async (
-  db: Db,
   chaindata: ChainData,
   candidate: any
 ) => {
   const isStaked = await chaindata.destinationIsStaked(candidate.stash);
   if (!isStaked) {
-    await db.setRewardDestinationInvalidity(candidate.stash, false);
+    await setRewardDestinationInvalidity(candidate.stash, false);
     return false;
   } else {
-    await db.setRewardDestinationInvalidity(candidate.stash, true);
+    await setRewardDestinationInvalidity(candidate.stash, true);
     return true;
   }
 };
 
 export const checkCommission = async (
-  db: Db,
   chaindata: ChainData,
   targetCommission: number,
   candidate: any
@@ -1158,16 +1148,15 @@ export const checkCommission = async (
     } commission is set higher than the maximum allowed. Set: ${
       commission / Math.pow(10, 7)
     }% Allowed: ${targetCommission / Math.pow(10, 7)}%`;
-    db.setCommissionInvalidity(candidate.stash, false, invalidityString);
+    await setCommissionInvalidity(candidate.stash, false, invalidityString);
     return false;
   } else {
-    db.setCommissionInvalidity(candidate.stash, true);
+    await setCommissionInvalidity(candidate.stash, true);
     return true;
   }
 };
 
 export const checkSelfStake = async (
-  db: Db,
   chaindata: ChainData,
   targetSelfStake: number,
   candidate: any
@@ -1177,22 +1166,21 @@ export const checkSelfStake = async (
     let invalidityString;
     if (err2) {
       invalidityString = `${candidate.name} ${err2}`;
-      await db.setSelfStakeInvalidity(candidate.stash, false, invalidityString);
+      await setSelfStakeInvalidity(candidate.stash, false, invalidityString);
       return false;
     }
 
     if (bondedAmt < targetSelfStake) {
       invalidityString = `${candidate.name} has less than the minimum amount bonded: ${bondedAmt} is bonded.`;
-      await db.setSelfStakeInvalidity(candidate.stash, false, invalidityString);
+      await setSelfStakeInvalidity(candidate.stash, false, invalidityString);
       return false;
     }
   }
-  await db.setSelfStakeInvalidity(candidate.stash, true);
+  await setSelfStakeInvalidity(candidate.stash, true);
   return true;
 };
 
 export const checkUnclaimed = async (
-  db: Db,
   chaindata: ChainData,
   unclaimedEraThreshold: number,
   candidate: any
@@ -1207,32 +1195,28 @@ export const checkUnclaimed = async (
     const invalidityString = `${candidate.name} has unclaimed eras: ${
       candidate.unclaimedEras
     } prior to era: ${threshold + 1}`;
-    await db.setUnclaimedInvalidity(candidate.stash, false, invalidityString);
+    await setUnclaimedInvalidity(candidate.stash, false, invalidityString);
     return false;
   } else {
-    await db.setUnclaimedInvalidity(candidate.stash, true);
+    await setUnclaimedInvalidity(candidate.stash, true);
     return true;
   }
 };
 
 // Checks if the validator blocks external nominations
-export const checkBlocked = async (
-  db: Db,
-  chaindata: ChainData,
-  candidate: any
-) => {
+export const checkBlocked = async (chaindata: ChainData, candidate: any) => {
   const isBlocked = await chaindata.getBlocked(candidate.stash);
   if (isBlocked) {
     const invalidityString = `${candidate.name} blocks external nominations`;
-    await db.setBlockedInvalidity(candidate.stash, false, invalidityString);
+    await setBlockedInvalidity(candidate.stash, false, invalidityString);
     return false;
   } else {
-    await db.setBlockedInvalidity(candidate.stash, true);
+    await setBlockedInvalidity(candidate.stash, true);
     return true;
   }
 };
 
-export const checkKusamaRank = async (db: Db, candidate: any) => {
+export const checkKusamaRank = async (candidate: any) => {
   try {
     if (!!candidate.kusamaStash) {
       const url = `${Constants.KOTVBackendEndpoint}/candidate/${candidate.kusamaStash}`;
@@ -1241,25 +1225,17 @@ export const checkKusamaRank = async (db: Db, candidate: any) => {
 
       if (!!res.data.invalidityReasons) {
         const invalidityReason = `${candidate.name} has a kusama node that is invalid: ${res.data.invalidityReasons}`;
-        await db.setKusamaRankInvalidity(
-          candidate.stash,
-          false,
-          invalidityReason
-        );
+        await setKusamaRankInvalidity(candidate.stash, false, invalidityReason);
         return false;
       }
 
       if (Number(res.data.rank) < 25) {
         const invalidityReason = `${candidate.name} has a Kusama stash with lower than 25 rank in the Kusama OTV programme: ${res.data.rank}.`;
-        await db.setKusamaRankInvalidity(
-          candidate.stash,
-          false,
-          invalidityReason
-        );
+        await setKusamaRankInvalidity(candidate.stash, false, invalidityReason);
         return false;
       }
     }
-    await db.setKusamaRankInvalidity(candidate.stash, true);
+    await setKusamaRankInvalidity(candidate.stash, true);
     return true;
   } catch (e) {
     logger.info(`Error trying to get kusama data...`);

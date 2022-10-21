@@ -1,9 +1,9 @@
-import { logger, Db, ChainData } from "@1kv/common";
+import { logger, queries, ChainData } from "@1kv/common";
 
-export const sessionKeyJob = async (db, chaindata: ChainData) => {
+export const sessionKeyJob = async (chaindata: ChainData) => {
   const start = Date.now();
 
-  const candidates = await db.allCandidates();
+  const candidates = await queries.allCandidates();
 
   // All queued keys
   const queuedKeys = await chaindata.getQueuedKeys();
@@ -12,13 +12,13 @@ export const sessionKeyJob = async (db, chaindata: ChainData) => {
     // Set queued keys
     for (const key of queuedKeys) {
       if (key.address == candidate.stash) {
-        await db.setQueuedKeys(candidate.stash, key.keys);
+        await queries.setQueuedKeys(candidate.stash, key.keys);
       }
     }
 
     // Set Next Keys
     const nextKeys = await chaindata.getNextKeys(candidate.stash);
-    await db.setNextKeys(candidate.stash, nextKeys);
+    await queries.setNextKeys(candidate.stash, nextKeys);
   }
 
   const end = Date.now();
@@ -30,11 +30,7 @@ export const sessionKeyJob = async (db, chaindata: ChainData) => {
   );
 };
 
-export const processSessionKeyJob = async (
-  job: any,
-  db: Db,
-  chaindata: ChainData
-) => {
+export const processSessionKeyJob = async (job: any, chaindata: ChainData) => {
   logger.info(`Processing Session Key Job....`);
-  await sessionKeyJob(db, chaindata);
+  await sessionKeyJob(chaindata);
 };

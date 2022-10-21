@@ -1,11 +1,11 @@
-import { logger, Db, ChainData } from "@1kv/common";
+import { logger, queries, ChainData } from "@1kv/common";
 
-export const delegationJob = async (db: Db, chaindata: ChainData) => {
+export const delegationJob = async (chaindata: ChainData) => {
   const start = Date.now();
 
   const delegators = await chaindata.getDelegators();
 
-  const candidates = await db.allCandidates();
+  const candidates = await queries.allCandidates();
 
   for (const candidate of candidates) {
     const delegating = delegators.filter((delegator) => {
@@ -17,7 +17,7 @@ export const delegationJob = async (db: Db, chaindata: ChainData) => {
       totalBalance += delegator.effectiveBalance;
     }
 
-    await db.setDelegation(candidate.stash, totalBalance, delegating);
+    await queries.setDelegation(candidate.stash, totalBalance, delegating);
   }
 
   const end = Date.now();
@@ -29,11 +29,7 @@ export const delegationJob = async (db: Db, chaindata: ChainData) => {
   );
 };
 
-export const processDelegationJob = async (
-  job: any,
-  db: Db,
-  chaindata: ChainData
-) => {
+export const processDelegationJob = async (job: any, chaindata: ChainData) => {
   logger.info(`Processing Delegation Job....`);
-  await delegationJob(db, chaindata);
+  await delegationJob(chaindata);
 };

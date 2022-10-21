@@ -1,9 +1,9 @@
-import { ChainData, Db, Constraints } from "@1kv/common";
+import { ChainData, Constraints } from "@1kv/common";
 import { otvWorker } from "@1kv/worker";
 
 // Runs Monitor Job
-export const monitorJob = async (db: Db) => {
-  await otvWorker.jobs.getLatestTaggedRelease(db);
+export const monitorJob = async () => {
+  await otvWorker.jobs.getLatestTaggedRelease();
 };
 
 // Runs Validity Job
@@ -17,44 +17,44 @@ export const scoreJob = async (constraints: Constraints.OTV) => {
 };
 
 // Updates the era stats
-export const eraStatsJob = async (db: Db, chaindata: ChainData) => {
-  await otvWorker.jobs.eraStatsJob(db, chaindata);
+export const eraStatsJob = async (chaindata: ChainData) => {
+  await otvWorker.jobs.eraStatsJob(chaindata);
 };
 
 // Updates Era Point data for all validators
-export const eraPointsJob = async (db: Db, chaindata: ChainData) => {
-  await otvWorker.jobs.eraPointsJob(db, chaindata);
+export const eraPointsJob = async (chaindata: ChainData) => {
+  await otvWorker.jobs.eraPointsJob(chaindata);
 };
 
 // TODO:
 
 // Updates validator preferences for all validators
-export const validatorPrefJob = async (db: Db, chaindata: ChainData) => {
-  await otvWorker.jobs.validatorPrefJob(db, chaindata);
+export const validatorPrefJob = async (chaindata: ChainData) => {
+  await otvWorker.jobs.validatorPrefJob(chaindata);
 };
 
 // Updates session keys of all validators
-export const sessionKeyJob = async (db: Db, chaindata: ChainData) => {
-  await otvWorker.jobs.sessionKeyJob(db, chaindata);
+export const sessionKeyJob = async (chaindata: ChainData) => {
+  await otvWorker.jobs.sessionKeyJob(chaindata);
 };
 
 // Updates the inclusion rate of all validators
-export const inclusionJob = async (db: Db, chaindata: ChainData) => {
-  await otvWorker.jobs.inclusionJob(db, chaindata);
+export const inclusionJob = async (chaindata: ChainData) => {
+  await otvWorker.jobs.inclusionJob(chaindata);
 };
 
-export const activeValidatorJob = async (db: Db, chaindata: ChainData) => {
-  await otvWorker.jobs.activeValidatorJob(db, chaindata);
+export const activeValidatorJob = async (chaindata: ChainData) => {
+  await otvWorker.jobs.activeValidatorJob(chaindata);
 };
 
 // Job for aggregating location stats of all nodes
-export const locationStatsJob = async (db: Db, chaindata: ChainData) => {
-  await otvWorker.jobs.locationStatsJob(db, chaindata);
+export const locationStatsJob = async (chaindata: ChainData) => {
+  await otvWorker.jobs.locationStatsJob(chaindata);
 };
 
 // Job for querying and setting council and election related data
-export const councilJob = async (db: Db, chaindata: ChainData) => {
-  await otvWorker.jobs.councilJob(db, chaindata);
+export const councilJob = async (chaindata: ChainData) => {
+  await otvWorker.jobs.councilJob(chaindata);
 };
 
 // Job for querying subscan data
@@ -187,14 +187,14 @@ export const councilJob = async (db: Db, chaindata: ChainData) => {
 // };
 
 // Job for democracy related data
-export const democracyJob = async (db: Db, chaindata: ChainData) => {
-  await otvWorker.jobs.democracyJob(db, chaindata);
+export const democracyJob = async (chaindata: ChainData) => {
+  await otvWorker.jobs.democracyJob(chaindata);
 };
 
-export const nominatorJob = async (db: Db, chaindata: ChainData) => {
-  await otvWorker.jobs.nominatorJob(db, chaindata);
+export const nominatorJob = async (chaindata: ChainData) => {
+  await otvWorker.jobs.nominatorJob(chaindata);
 };
 
-export const delegationJob = async (db: Db, chaindata: ChainData) => {
-  await otvWorker.jobs.delegationJob(db, chaindata);
+export const delegationJob = async (chaindata: ChainData) => {
+  await otvWorker.jobs.delegationJob(chaindata);
 };

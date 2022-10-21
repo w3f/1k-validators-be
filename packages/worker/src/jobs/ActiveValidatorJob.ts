@@ -1,12 +1,12 @@
-import { logger, Db, ChainData } from "@1kv/common";
+import { logger, queries, ChainData } from "@1kv/common";
 
-export const activeValidatorJob = async (db, chaindata: ChainData) => {
+export const activeValidatorJob = async (chaindata: ChainData) => {
   const start = Date.now();
 
   // The current active validators in the validator set.
   const activeValidators = await chaindata.currentValidators();
 
-  const candidates = await db.allCandidates();
+  const candidates = await queries.allCandidates();
   for (const candidate of candidates) {
     // Set if the validator is active in the set
     const active = activeValidators.includes(candidate.stash);
@@ -16,7 +16,7 @@ export const activeValidatorJob = async (db, chaindata: ChainData) => {
       //   `${candidate.name} changed from being ${candidate.active} to ${active}`
       // );
     }
-    await db.setActive(candidate.stash, active);
+    await queries.setActive(candidate.stash, active);
   }
 
   const end = Date.now();
@@ -30,9 +30,8 @@ export const activeValidatorJob = async (db, chaindata: ChainData) => {
 
 export const processActiveValidatorJob = async (
   job: any,
-  db: Db,
   chaindata: ChainData
 ) => {
   logger.info(`Processing Active Validator Job....`);
-  await activeValidatorJob(db, chaindata);
+  await activeValidatorJob(chaindata);
 };

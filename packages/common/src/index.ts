@@ -1,4 +1,5 @@
-import Db from "./db/index";
+import { Db } from "./db";
+import * as queries from "./db/queries";
 import * as Config from "./config";
 import logger from "./logger";
 import { ChainData } from "./chaindata";
@@ -14,6 +15,7 @@ export {
   ChainData,
   Constants,
   Db,
+  queries,
   Config,
   logger,
   Types,

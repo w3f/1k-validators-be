@@ -7,7 +7,7 @@ import {
   logger,
   Types,
   Util,
-  Db,
+  queries,
   Config,
   Constraints,
 } from "@1kv/common";
@@ -31,7 +31,7 @@ import {
 
 // Monitors the latest GitHub releases and ensures nodes have upgraded
 // within a timely period.
-export const startMonitorJob = async (config: Config.ConfigSchema, db: Db) => {
+export const startMonitorJob = async (config: Config.ConfigSchema) => {
   const monitorFrequency = config.cron.monitor
     ? config.cron.monitor
     : Constants.MONITOR_CRON;
@@ -46,7 +46,7 @@ export const startMonitorJob = async (config: Config.ConfigSchema, db: Db) => {
         config.global.test ? "three" : "fifteen"
       } minutes.`
     );
-    await monitorJob(db);
+    await monitorJob();
   });
 
   monitorCron.start();
@@ -54,8 +54,7 @@ export const startMonitorJob = async (config: Config.ConfigSchema, db: Db) => {
 
 // Once a week reset the offline accumulations of nodes.
 export const startClearAccumulatedOfflineTimeJob = async (
-  config: Config.ConfigSchema,
-  db: Db
+  config: Config.ConfigSchema
 ) => {
   const clearFrequency = config.cron.clearOffline
     ? config.cron.clearOffline
@@ -66,7 +65,7 @@ export const startClearAccumulatedOfflineTimeJob = async (
 
   const clearCron = new CronJob(clearFrequency, () => {
     logger.info(`(cron::clearOffline) Running clear offline cron`);
-    db.clearAccumulated();
+    queries.clearAccumulated();
   });
   clearCron.start();
 };
@@ -122,7 +121,6 @@ export const startScoreJob = async (
 
 // Runs job that updates the era stats
 export const startEraStatsJob = async (
-  db: Db,
   config: Config.ConfigSchema,
   chaindata: ChainData
 ) => {
@@ -141,7 +139,7 @@ export const startEraStatsJob = async (
     }
     running = true;
 
-    await eraStatsJob(db, chaindata);
+    await eraStatsJob(chaindata);
     running = false;
   });
   eraStatsCron.start();
@@ -155,7 +153,6 @@ export const startExecutionJob = async (
   handler: ApiHandler,
   nominatorGroups: Array<Nominator[]>,
   config: Config.ConfigSchema,
-  db: Db,
   bot: any
 ) => {
   const timeDelayBlocks = config.proxy.timeDelayBlocks
@@ -174,7 +171,7 @@ export const startExecutionJob = async (
     const currentBlock = await api.rpc.chain.getBlock();
     const { number } = currentBlock.block.header;
 
-    const allDelayed = await db.getAllDelayedTxs();
+    const allDelayed = await queries.getAllDelayedTxs();
 
     for (const data of allDelayed) {
       const { number: dataNum, controller, targets } = data;
@@ -218,7 +215,7 @@ export const startExecutionJob = async (
           const validatorsMessage = (
             await Promise.all(
               targets.map(async (n) => {
-                const name = await db.getCandidate(n);
+                const name = await queries.getCandidate(n);
                 if (!name) {
                   logger.info(`did send: no entry for :${n}`);
                 }
@@ -238,7 +235,7 @@ export const startExecutionJob = async (
           const validatorsHtml = (
             await Promise.all(
               targets.map(async (n) => {
-                const name = await db.getCandidate(n);
+                const name = await queries.getCandidate(n);
                 if (name) {
                   return `- ${name.name} (${Util.addressUrl(n, config)})`;
                 } else {
@@ -263,7 +260,7 @@ export const startExecutionJob = async (
             );
           }
 
-          await db.deleteDelayedTx(dataNum, controller);
+          await queries.deleteDelayedTx(dataNum, controller);
         }
         await Util.sleep(7000);
       }
@@ -276,7 +273,6 @@ export const startExecutionJob = async (
 export const startRewardClaimJob = async (
   config: Config.ConfigSchema,
   handler: ApiHandler,
-  db: Db,
   claimer: Claimer,
   chaindata: ChainData,
   bot: any
@@ -292,7 +288,7 @@ export const startRewardClaimJob = async (
 
   // Check the free balance of the account. If it doesn't have a free balance, skip.
   const balance = await chaindata.getBalance(claimer.address);
-  const metadata = await db.getChainMetadata();
+  const metadata = await queries.getChainMetadata();
   const free = Util.toDecimals(Number(balance.free), metadata.decimals);
   // TODO Parameterize this as a constant
   if (free < 0.5) {
@@ -319,7 +315,7 @@ export const startRewardClaimJob = async (
       `{cron::RewardClaiming} running reward claiming cron with threshold of ${rewardClaimThreshold} eras. Going to try to claim rewards before era ${claimThreshold} (current era: ${currentEra})....`
     );
 
-    const allCandidates = await db.allCandidates();
+    const allCandidates = await queries.allCandidates();
     for (const candidate of allCandidates) {
       if (candidate.unclaimedEras) {
         for (const era of candidate.unclaimedEras) {
@@ -349,7 +345,6 @@ export const startRewardClaimJob = async (
 export const startCancelCron = async (
   config: Config.ConfigSchema,
   handler: ApiHandler,
-  db: Db,
   nominatorGroups: Array<Nominator[]>,
   chaindata: ChainData,
   bot: any
@@ -439,7 +434,6 @@ export const startCancelCron = async (
 export const startStaleNominationCron = async (
   config: Config.ConfigSchema,
   handler: ApiHandler,
-  db: Db,
   nominatorGroups: Array<Nominator[]>,
   chaindata: ChainData,
   bot: any
@@ -459,7 +453,7 @@ export const startStaleNominationCron = async (
     logger.info(`{cron::stale} running stale cron....`);
 
     const currentEra = await api.query.staking.currentEra();
-    const allCandidates = await db.allCandidates();
+    const allCandidates = await queries.allCandidates();
 
     for (const nomGroup of nominatorGroups) {
       for (const nom of nomGroup) {
@@ -503,7 +497,6 @@ export const startStaleNominationCron = async (
 // Chron job for writing era points
 export const startEraPointsJob = async (
   config: Config.ConfigSchema,
-  db: Db,
   chaindata: ChainData
 ) => {
   const eraPointsFrequency = config.cron.eraPoints
@@ -526,7 +519,7 @@ export const startEraPointsJob = async (
     // Run the Era Points job
     const retries = 0;
     try {
-      await eraPointsJob(db, chaindata);
+      await eraPointsJob(chaindata);
     } catch (e) {
       logger.warn(
         `(cron::EraPointsJob::warn) There was an error running. retries: ${retries}`
@@ -541,7 +534,6 @@ export const startEraPointsJob = async (
 // Chron job for writing the active validators in the set
 export const startActiveValidatorJob = async (
   config: Config.ConfigSchema,
-  db: Db,
   chaindata: ChainData
 ) => {
   const activeValidatorFrequency = config.cron.activeValidator
@@ -565,7 +557,7 @@ export const startActiveValidatorJob = async (
         `{cron::ActiveValidatorJob::start} running era points job....`
       );
       // Run the active validators job
-      await activeValidatorJob(db, chaindata);
+      await activeValidatorJob(chaindata);
       running = false;
     }
   );
@@ -575,7 +567,6 @@ export const startActiveValidatorJob = async (
 // Chron job for updating inclusion rates
 export const startInclusionJob = async (
   config: Config.ConfigSchema,
-  db: Db,
   chaindata: ChainData
 ) => {
   const inclusionFrequency = config.cron.inclusion
@@ -596,7 +587,7 @@ export const startInclusionJob = async (
     logger.info(`{cron::InclusionJob::start} running inclusion job....`);
 
     // Run the active validators job
-    await inclusionJob(db, chaindata);
+    await inclusionJob(chaindata);
     running = false;
   });
   inclusionCron.start();
@@ -605,7 +596,6 @@ export const startInclusionJob = async (
 // Chron job for updating session keys
 export const startSessionKeyJob = async (
   config: Config.ConfigSchema,
-  db: Db,
   chaindata: ChainData
 ) => {
   const sessionKeyFrequency = config.cron.sessionKey
@@ -626,7 +616,7 @@ export const startSessionKeyJob = async (
     logger.info(`{cron::SessionKeyJob::start} running session key job....`);
 
     // Run the active validators job
-    await sessionKeyJob(db, chaindata);
+    await sessionKeyJob(chaindata);
     running = false;
   });
   sessionKeyCron.start();
@@ -673,7 +663,6 @@ export const startSessionKeyJob = async (
 // Chron job for updating validator preferences
 export const startValidatorPrefJob = async (
   config: Config.ConfigSchema,
-  db: Db,
   chaindata: ChainData
 ) => {
   const validatorPrefFrequency = config.cron.validatorPref
@@ -696,7 +685,7 @@ export const startValidatorPrefJob = async (
     );
 
     // Run the active validators job
-    await validatorPrefJob(db, chaindata);
+    await validatorPrefJob(chaindata);
     running = false;
   });
   validatorPrefCron.start();
@@ -705,7 +694,6 @@ export const startValidatorPrefJob = async (
 // Chron job for storing location stats of nodes
 export const startLocationStatsJob = async (
   config: Config.ConfigSchema,
-  db: Db,
   chaindata: ChainData
 ) => {
   const locationStatsFrequency = config.cron.locationStats
@@ -728,7 +716,7 @@ export const startLocationStatsJob = async (
     );
 
     // Run the active validators job
-    await locationStatsJob(db, chaindata);
+    await locationStatsJob(chaindata);
     running = false;
   });
   locationStatsCron.start();
@@ -737,7 +725,6 @@ export const startLocationStatsJob = async (
 // Chron job for council and election info
 export const startCouncilJob = async (
   config: Config.ConfigSchema,
-  db: Db,
   chaindata: ChainData
 ) => {
   const councilFrequency = config.cron.council
@@ -758,7 +745,7 @@ export const startCouncilJob = async (
     logger.info(`{cron::councilJob::start} running council job....`);
 
     // Run the active validators job
-    await councilJob(db, chaindata);
+    await councilJob(chaindata);
     running = false;
   });
   councilCron.start();
@@ -799,7 +786,6 @@ export const startCouncilJob = async (
 // Chron job for querying democracy data
 export const startDemocracyJob = async (
   config: Config.ConfigSchema,
-  db: Db,
   chaindata: ChainData
 ) => {
   const democracyFrequency = config.cron.democracy
@@ -820,7 +806,7 @@ export const startDemocracyJob = async (
     logger.info(`{cron::democracyJob::start} running democracy job....`);
 
     // Run the democracy  job
-    await democracyJob(db, chaindata);
+    await democracyJob(chaindata);
     running = false;
   });
   democracyCron.start();
@@ -829,7 +815,6 @@ export const startDemocracyJob = async (
 // Chron job for querying nominator data
 export const startNominatorJob = async (
   config: Config.ConfigSchema,
-  db: Db,
   chaindata: ChainData
 ) => {
   const nominatorFrequency = config.cron.nominator
@@ -850,7 +835,7 @@ export const startNominatorJob = async (
     logger.info(`{cron::nominatorJob::start} running nominator job....`);
 
     // Run the job
-    await nominatorJob(db, chaindata);
+    await nominatorJob(chaindata);
     running = false;
   });
   nominatorCron.start();
@@ -859,7 +844,6 @@ export const startNominatorJob = async (
 // Chron job for querying delegator data
 export const startDelegationJob = async (
   config: Config.ConfigSchema,
-  db: Db,
   chaindata: ChainData
 ) => {
   const delegationFrequency = config.cron.delegation
@@ -880,7 +864,7 @@ export const startDelegationJob = async (
     logger.info(`{cron::delegationJob::start} running nominator job....`);
 
     // Run the job
-    await delegationJob(db, chaindata);
+    await delegationJob(chaindata);
     running = false;
   });
   delegationCron.start();

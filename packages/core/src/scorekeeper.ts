@@ -552,7 +552,7 @@ export default class ScoreKeeper {
 
     // Start all Cron Jobs
     try {
-      if (this.config.redis.host && this.config.redis.port) {
+      if (this.config?.redis?.host && this.config?.redis?.port) {
         // Jobs get run in separate worker
         logger.info(
           `{Scorekeeper::Workers} Starting bullmq Queues and Workers....`

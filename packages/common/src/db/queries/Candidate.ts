@@ -14,13 +14,16 @@ export const addCandidate = async (
   kusamaStash: string,
   skipSelfStake: boolean,
   bio: string,
+  matrix: any,
   bot?: any
 ): Promise<boolean> => {
   const network = (await getChainMetadata()).name;
   const keyring = new Keyring();
   const ss58Prefix = network == "Kusama" ? 2 : 0;
   stash = keyring.encodeAddress(stash, ss58Prefix);
-  logger.info(`(Db::addCandidate) name: ${name} stash: ${stash}`);
+  logger.info(
+    `(Db::addCandidate) name: ${name} stash: ${stash} matrix: ${matrix}`
+  );
 
   // Check to see if the candidate has already been added as a node.
   const data = await CandidateModel.findOne({ name });
@@ -35,6 +38,7 @@ export const addCandidate = async (
       kusamaStash,
       skipSelfStake,
       bio,
+      matrix,
     });
 
     if (!!bot) {
@@ -55,6 +59,7 @@ export const addCandidate = async (
       kusamaStash,
       skipSelfStake,
       bio,
+      matrix,
     }
   );
 };

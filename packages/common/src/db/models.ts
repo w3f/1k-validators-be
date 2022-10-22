@@ -226,6 +226,7 @@ export const CandidateSchema = new Schema({
   // The referenda indexes voted on
   democracyVotes: [Number],
   infrastructureLocation: LocationSchema,
+  matrix: [String],
 });
 
 export const CandidateModel = mongoose.model("Candidate", CandidateSchema);

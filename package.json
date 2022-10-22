@@ -11,10 +11,11 @@
   ],
   "scripts": {
     "create-config:all": "yarn workspaces foreach run create-config",
+    "create-kusama-config:all": "yarn workspaces foreach run create-kusama-config",
     "docker:start": "yarn build:clean && docker-compose up -d --build",
     "lint": "yarn workspaces foreach run lint",
     "lint:fix": "yarn workspaces foreach run lint:fix",
-    "clean": "yarn workspaces foreach run clean",
+    "clean": "rm -rf redis/ && yarn workspaces foreach run clean",
     "build": "yarn workspaces foreach -t run build",
     "build:clean": "yarn workspaces foreach run clean:build",
     "start:dev:gateway": "yarn workspace @1kv/gateway run start:dev",

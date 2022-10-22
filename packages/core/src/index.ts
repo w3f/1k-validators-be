@@ -131,18 +131,18 @@ const start = async (cmd: { config: string }) => {
       if (candidate === null) {
         continue;
       } else {
-        const { name, stash } = candidate;
+        const { name, stash, riotHandle } = candidate;
         const bio = candidate.bio || "";
         // Polkadot only options.
         const kusamaStash = candidate.kusamaStash || "";
         const skipSelfStake = candidate.skipSelfStake || false;
-
         await queries.addCandidate(
           name,
           stash,
           kusamaStash,
           skipSelfStake,
-          bio
+          bio,
+          riotHandle
         );
       }
     }

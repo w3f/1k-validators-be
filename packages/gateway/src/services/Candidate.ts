@@ -6,6 +6,40 @@ export const getCandidate = async (stash: any): Promise<any> => {
 
   try {
     candidate = await queries.getCandidate(stash);
+    if (candidate && candidate.stash) {
+      const score = await queries.getValidatorScore(candidate.stash);
+      return {
+        discoveredAt: candidate.discoveredAt,
+        nominatedAt: candidate.nominatedAt,
+        offlineSince: candidate.offlineSince,
+        offlineAccumulated: candidate.offlineAccumulated,
+        rank: candidate.rank,
+        faults: candidate.faults,
+        invalidityReasons: candidate.invalidityReasons,
+        unclaimedEras: candidate.unclaimedEras,
+        inclusion: candidate.inclusion,
+        name: candidate.name,
+        queuedKeys: candidate.queuedKeys,
+        nextKeys: candidate.nextKeys,
+        stash: candidate.stash,
+        rewardDestination: candidate.rewardDestination,
+        controller: candidate.controller,
+        kusamaStash: candidate.kusamaStash,
+        commission: candidate.commission,
+        identity: candidate.identity,
+        active: candidate.active,
+        valid: candidate.valid,
+        validity: candidate.invalidity,
+        score: score,
+        total: score && score.total ? score.total : 0,
+        location: candidate.location,
+        councilStake: candidate.councilStake,
+        councilVotes: candidate.councilVotes,
+        democracyVoteCount: candidate.democracyVoteCount,
+        democracyVotes: candidate.democracyVotes,
+        matrix: candidate.matrix,
+      };
+    }
   } catch (error) {
     logger.error("findCandidate", { error });
   }
@@ -43,6 +77,7 @@ export const getCandidates = async (): Promise<any> => {
         councilVotes: candidate.councilVotes,
         democracyVoteCount: candidate.democracyVoteCount,
         democracyVotes: candidate.democracyVotes,
+        matrix: candidate.matrix,
       };
     })
   );

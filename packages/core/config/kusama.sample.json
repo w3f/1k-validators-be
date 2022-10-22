@@ -4,7 +4,11 @@
     "networkPrefix": 2,
     "test": false,
     "retroactive": false,
-    "historicalNominations": false
+    "historicalNominations": false,
+    "apiEndpoints": [
+      "wss://kusama-rpc.polkadot.io",
+      "wss://kusama.api.onfinality.io/public-ws"
+    ]
   },
   "constraints": {
     "skipConnectionTime": false,

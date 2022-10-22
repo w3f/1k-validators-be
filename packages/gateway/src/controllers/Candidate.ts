@@ -1,28 +1,24 @@
-import { BaseContext } from "koa";
 import * as CandidateService from "../services/Candidate";
+import { response } from "./index";
 
 export default class CandidateController {
   public static async getCandidate(context: any): Promise<void> {
-    // await ValidationService.validateRequest(
-    //   context,
-    //   { _id: context.params.id },
-    //   requestValidationSchema,
-    //   ["_id"]
-    // );
+    const stash = context.params.stash;
 
-    response(
-      context,
-      200,
-      await CandidateService.findCandidate(context, context.params.stash)
-    );
+    response(context, 200, await CandidateService.getCandidate(stash));
+  }
+
+  public static async getCandidates(context: any): Promise<void> {
+    response(context, 200, await CandidateService.getCandidates());
+  }
+
+  public static async getNodes(context: any): Promise<void> {
+    response(context, 200, await CandidateService.getNodes());
+  }
+
+  public static async getNominatorStake(context: any): Promise<void> {
+    const address = context.params.stash;
+
+    response(context, 200, await CandidateService.getNominatorStake(address));
   }
 }
-
-export const response = (
-  context: BaseContext,
-  status: number,
-  body?: Record<string, any> | string | Array<Record<string, any>>
-): void => {
-  context.status = status;
-  context.body = body;
-};

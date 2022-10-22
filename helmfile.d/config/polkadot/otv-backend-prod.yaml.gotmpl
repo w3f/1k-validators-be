@@ -18,7 +18,10 @@ config: |
       "test": false,
       "retroactive": false,
       "historicalNominations": false,
-      "apiEndpoints": []
+      "apiEndpoints": [
+        "wss://rpc.polkadot.io",
+        "wss://polkadot.api.onfinality.io/public-ws"
+        ]
     },
     "constraints": {
       "skipConnectionTime": false,
@@ -26,7 +29,10 @@ config: |
       "skipStakedDestination": false,
       "skipClientUpgrade": false,
       "skipUnclaimed": true,
-      "forceClientVersion": "v0.9.29"
+      "forceClientVersion": "v0.9.30",
+      "minSelfStake": 50000000000000,
+      "commission": 50000000,
+      "unclaimedEraThreshold": 1
     },
     "cron": {
       "monitor": "0 */15 * * * *"

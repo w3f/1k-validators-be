@@ -4,17 +4,18 @@
   "private": true,
   "workspaces": [
     "packages/common",
+    "packages/worker",
     "packages/gateway",
     "packages/telemetry",
-    "packages/core",
-    "packages/worker"
+    "packages/core"
   ],
   "scripts": {
     "create-config:all": "yarn workspaces foreach run create-config",
+    "create-kusama-config:all": "yarn workspaces foreach run create-kusama-config",
     "docker:start": "yarn build:clean && docker-compose up -d --build",
     "lint": "yarn workspaces foreach run lint",
     "lint:fix": "yarn workspaces foreach run lint:fix",
-    "clean": "yarn workspaces foreach run clean",
+    "clean": "rm -rf redis/ && yarn workspaces foreach run clean",
     "build": "yarn workspaces foreach -t run build",
     "build:clean": "yarn workspaces foreach run clean:build",
     "start:dev:gateway": "yarn workspace @1kv/gateway run start:dev",
@@ -27,10 +28,11 @@
     "start:js:worker": "NODE_OPTIONS='--max-old-space-size=6096' node packages/worker/build/index.js start"
   },
   "devDependencies": {
-    "@types/node": "^18.8.4",
-    "@typescript-eslint/eslint-plugin": "^5.40.0",
-    "@typescript-eslint/parser": "^5.40.0",
-    "eslint": "^8.25.0",
+    "@types/eslint": "^8",
+    "@types/node": "^18.11.2",
+    "@typescript-eslint/eslint-plugin": "^5.40.1",
+    "@typescript-eslint/parser": "^5.40.1",
+    "eslint": "8.22.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
     "prettier": "^2.7.1"

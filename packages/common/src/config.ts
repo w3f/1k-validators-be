@@ -28,6 +28,9 @@ export type ConfigSchema = {
     skipUnclaimed: boolean;
     skipClaiming: boolean;
     forceClientVersion: string;
+    minSelfStake: number;
+    commission: number;
+    unclaimedEraThreshold: number;
   };
   cron: {
     monitor: string;
@@ -73,6 +76,10 @@ export type ConfigSchema = {
     enabled: boolean;
     room: string;
     userId: string;
+  };
+  redis: {
+    host: string;
+    port: number;
   };
   proxy: {
     timeDelayBlocks: number;

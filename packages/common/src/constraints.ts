@@ -1,31 +1,34 @@
-import {
-  ApiHandler,
-  ChainData,
-  Constants,
-  logger,
-  Types,
-  Util,
-  Db,
-  Config,
-} from "@1kv/common";
 import axios from "axios";
 import semver from "semver";
+import { getStats, scaled, scaledDefined, scoreDemocracyVotes } from "./score";
+import { ChainData, Config, Constants, logger, Types, Util } from "./index";
+import ApiHandler from "./ApiHandler";
 import {
-  absMax,
-  absMin,
-  asc,
-  getStats,
-  mean,
-  median,
-  q10,
-  q25,
-  q75,
-  q90,
-  scaled,
-  scaledDefined,
-  scoreDemocracyVotes,
-  std,
-} from "./score";
+  allCandidates,
+  getLastReferenda,
+  getLatestRelease,
+  setBlockedInvalidity,
+  setCommissionInvalidity,
+  setConnectionTimeInvalidity,
+  setIdentityInvalidity,
+  setKusamaRankInvalidity,
+  setLatestClientReleaseValidity,
+  setOnlineValidity,
+  setRewardDestinationInvalidity,
+  setSelfStakeInvalidity,
+  setUnclaimedInvalidity,
+  setValidateIntentionValidity,
+} from "./db";
+import {
+  allNominators,
+  getDelegations,
+  getLatestNominatorStake,
+  setLastValid,
+  setOfflineAccumulatedInvalidity,
+  setValid,
+  setValidatorScore,
+  setValidatorScoreMetadata,
+} from "./db";
 
 export interface Constraints {
   processCandidates(
@@ -49,12 +52,6 @@ export class OTV implements Constraints {
   private unclaimedEraThreshold: number;
 
   private config: Config.ConfigSchema;
-  private db: Db;
-
-  // caches
-  // TODO: Remove
-  private validCache: Types.CandidateData[] = [];
-  private invalidCache: Types.CandidateData[] = [];
 
   // Caches - keyed by stash address
   private validMapCache: Map<string, Types.CandidateData> = new Map();
@@ -91,34 +88,27 @@ export class OTV implements Constraints {
   private NOMINATIONS_WEIGHT = 100;
   private DELEGATIONS_WEIGHT = 60;
 
-  constructor(
-    handler: ApiHandler,
-    skipConnectionTime = false,
-    skipIdentity = false,
-    skipStakedDestination = false,
-    skipClientUpgrade = false,
-    skipUnclaimed = false,
-    minSelfStake = 0,
-    commission = 0,
-    unclaimedEraThreshold = 0,
-    config: Config.ConfigSchema,
-    db: Db
-  ) {
+  constructor(handler: ApiHandler, config: Config.ConfigSchema) {
     this.chaindata = new ChainData(handler);
-
-    this.skipConnectionTime = skipConnectionTime;
-    this.skipIdentity = skipIdentity;
-    this.skipStakedDesitnation = skipStakedDestination;
-    this.skipClientUpgrade = skipClientUpgrade;
-    this.skipUnclaimed = skipUnclaimed;
-
-    this.minSelfStake = minSelfStake;
-    this.commission = commission;
-    this.unclaimedEraThreshold = unclaimedEraThreshold;
-
     this.config = config;
-    this.db = db;
 
+    // Constraints
+    this.skipConnectionTime =
+      this.config?.constraints?.skipConnectionTime || false;
+    logger.info(`skip connection time: ${this.skipConnectionTime}`);
+    this.skipIdentity = this.config?.constraints?.skipIdentity || false;
+    this.skipStakedDesitnation =
+      this.config?.constraints?.skipStakedDestination || false;
+    this.skipClientUpgrade =
+      this.config?.constraints?.skipClientUpgrade || false;
+    this.skipUnclaimed = this.config?.constraints?.skipUnclaimed || false;
+    this.minSelfStake =
+      this.config?.constraints?.minSelfStake || 10000000000000000000;
+    this.commission = this.config?.constraints?.commission || 150000000;
+    this.unclaimedEraThreshold =
+      this.config?.constraints?.unclaimedEraThreshold || 4;
+
+    // Weights
     this.INCLUSION_WEIGHT = Number(this.config.score.inclusion);
     this.SPAN_INCLUSION_WEIGHT = Number(this.config.score.spanInclusion);
     this.DISCOVERED_WEIGHT = Number(this.config.score.discovered);
@@ -135,14 +125,6 @@ export class OTV implements Constraints {
     this.DEMOCRACY_WEIGHT = Number(this.config.score.democracy);
     this.NOMINATIONS_WEIGHT = Number(this.config.score.nominations);
     this.DELEGATIONS_WEIGHT = Number(this.config.score.delegations);
-  }
-
-  get validCandidateCache(): Types.CandidateData[] {
-    return this.validCache;
-  }
-
-  get invalidCandidateCache(): Types.CandidateData[] {
-    return this.invalidCache;
   }
 
   // Add candidate to valid cache and remove them from invalid cache
@@ -171,84 +153,66 @@ export class OTV implements Constraints {
     }
   }
 
-  async checkCandidateStash(address: string): Promise<boolean> {
-    const candidate = await this.db.getCandidate(address);
-    return await this.checkCandidate(candidate);
+  async checkAllCandidates() {
+    const candidates = await allCandidates();
+    for (const candidate of candidates) {
+      await this.checkCandidate(candidate);
+    }
   }
 
   // Check the candidate and set any invalidity fields
   async checkCandidate(candidate: Types.CandidateData): Promise<boolean> {
     let valid = false;
 
-    const onlineValid = await checkOnline(this.db, candidate);
+    const onlineValid = await checkOnline(candidate);
 
     const validateValid = await checkValidateIntention(
       this.config,
       this.chaindata,
-      this.db,
       candidate
     );
 
-    const versionValid = await checkLatestClientVersion(
-      this.config,
-      this.db,
-      candidate
-    );
+    const versionValid = await checkLatestClientVersion(this.config, candidate);
 
     const monitoringWeekValid = await checkConnectionTime(
       this.config,
-      this.db,
       candidate
     );
 
-    const identityValid = await checkIdentity(
-      this.chaindata,
-      this.db,
-      candidate
-    );
+    const identityValid = await checkIdentity(this.chaindata, candidate);
 
-    const offlineValid = await checkOffline(this.db, candidate);
+    const offlineValid = await checkOffline(candidate);
 
     let rewardDestinationValid = true;
     if (!this.skipStakedDesitnation) {
       rewardDestinationValid =
-        (await checkRewardDestination(this.db, this.chaindata, candidate)) ||
-        false;
+        (await checkRewardDestination(this.chaindata, candidate)) || false;
     }
 
     const commissionValid =
-      (await checkCommission(
-        this.db,
-        this.chaindata,
-        this.commission,
-        candidate
-      )) || false;
+      (await checkCommission(this.chaindata, this.commission, candidate)) ||
+      false;
 
     const selfStakeValid =
-      (await checkSelfStake(
-        this.db,
-        this.chaindata,
-        this.minSelfStake,
-        candidate
-      )) || false;
+      (await checkSelfStake(this.chaindata, this.minSelfStake, candidate)) ||
+      false;
 
     const unclaimedValid =
       this.config.constraints.skipUnclaimed == true
         ? true
         : (await checkUnclaimed(
-            this.db,
             this.chaindata,
             this.unclaimedEraThreshold,
             candidate
           )) || false;
 
     const blockedValid =
-      (await checkBlocked(this.db, this.chaindata, candidate)) || false;
+      (await checkBlocked(this.chaindata, candidate)) || false;
 
     let kusamaValid = true;
     try {
       if (!!candidate.kusamaStash) {
-        kusamaValid = (await checkKusamaRank(this.db, candidate)) || false;
+        kusamaValid = (await checkKusamaRank(candidate)) || false;
       }
     } catch (e) {
       logger.info(`Error trying to get kusama data...`);
@@ -268,11 +232,11 @@ export class OTV implements Constraints {
       blockedValid &&
       kusamaValid;
 
-    await this.db.setValid(candidate.stash, valid);
+    await setValid(candidate.stash, valid);
 
     if (valid) {
       this.addToValidCache(candidate.stash, candidate);
-      this.db.setLastValid(candidate.stash);
+      setLastValid(candidate.stash);
     } else {
       this.addToInvalidCache(candidate.stash, candidate);
     }
@@ -281,11 +245,11 @@ export class OTV implements Constraints {
   }
 
   async scoreAllCandidates() {
-    const candidates = await this.db.allCandidates();
-    await this.scoreCandidates(candidates, this.db);
+    const candidates = await allCandidates();
+    await this.scoreCandidates(candidates);
   }
 
-  async scoreCandidates(candidates: Types.CandidateData[], db: Db) {
+  async scoreCandidates(candidates: Types.CandidateData[]) {
     let rankedCandidates = [];
     const validCandidates = candidates.filter((candidate) => candidate.valid);
     if (validCandidates.length < 2) return;
@@ -293,301 +257,41 @@ export class OTV implements Constraints {
     // Get Ranges of Parameters
     //    A validators individual parameter is then scaled to how it compares to others that are also deemed valid
 
-    // Bonded
-    const bondedValues = validCandidates.map((candidate) => {
-      return candidate.bonded ? candidate.bonded : 0;
-    });
-    const bondedStats = bondedValues.length > 0 ? getStats(bondedValues) : [];
+    // Get Values and Stats
+    const { bondedValues, bondedStats } = getBondedValues(validCandidates);
+    const { faultsValues, faultsStats } = getFaultsValues(validCandidates);
+    const { inclusionValues, inclusionStats } =
+      getInclusionValues(validCandidates);
+    const { spanInclusionValues, spanInclusionStats } =
+      getSpanInclusionValues(validCandidates);
+    const { discoveredAtValues, discoveredAtStats } =
+      getDiscoveredAtValues(validCandidates);
+    const { nominatedAtValues, nominatedAtStats } =
+      getNominatedAtValues(validCandidates);
+    const { offlineValues, offlineStats } = getOfflineValues(validCandidates);
+    const { rankValues, rankStats } = getRankValues(validCandidates);
+    const { unclaimedValues, unclaimedStats } =
+      getUnclaimedValues(validCandidates);
+    const { locationArr, locationValues, locationStats } =
+      getLocationValues(validCandidates);
+    const { regionArr, regionValues, regionStats } =
+      getRegionValues(validCandidates);
+    const { countryArr, countryValues, countryStats } =
+      getCountryValues(validCandidates);
+    const { providerArr, providerValues, providerStats } =
+      getProviderValues(validCandidates);
+    const { ownNominatorAddresses, nominatorStakeValues, nominatorStakeStats } =
+      await getNominatorStakeValues(validCandidates);
+    const { delegationValues, delegationStats } = await getDelegationValues(
+      validCandidates
+    );
+    const { councilStakeValues, councilStakeStats } =
+      getCouncilStakeValues(validCandidates);
+    const { lastReferendum, democracyValues, democracyStats } =
+      await getDemocracyValues(validCandidates);
 
-    // Faults
-    const faultsValues = validCandidates.map((candidate) => {
-      return candidate.faults ? candidate.faults : 0;
-    });
-    const faultsStats = getStats(faultsValues);
-
-    //  Inclusion
-    const inclusionValues = validCandidates.map((candidate) => {
-      return candidate.inclusion ? candidate.inclusion : 0;
-    });
-    const inclusionStats = getStats(inclusionValues);
-
-    // Span Inclusion
-    const spanInclusionValues = validCandidates.map((candidate) => {
-      return candidate.spanInclusion ? candidate.spanInclusion : 0;
-    });
-    const spanInclusionStats = getStats(spanInclusionValues);
-
-    // Discovered At
-    const discoveredAtValues = validCandidates.map((candidate) => {
-      return candidate.discoveredAt ? candidate.discoveredAt : 0;
-    });
-    const discoveredAtStats = getStats(discoveredAtValues);
-
-    // Nominated At
-    const nominatedAtValues = validCandidates.map((candidate) => {
-      return candidate.nominatedAt ? candidate.nominatedAt : 0;
-    });
-    const nominatedAtStats = getStats(nominatedAtValues);
-
-    // Downtime
-    const offlineValues = validCandidates.map((candidate) => {
-      return candidate.offlineAccumulated ? candidate.offlineAccumulated : 0;
-    });
-    const offlineStats = getStats(offlineValues);
-
-    // Rank
-    const rankValues = validCandidates.map((candidate) => {
-      return candidate.rank ? candidate.rank : 0;
-    });
-    const rankStats = getStats(rankValues);
-
-    // Unclaimed Rewards
-    const unclaimedValues = validCandidates.map((candidate) => {
-      return candidate.unclaimedEras && candidate.unclaimedEras.length
-        ? candidate.unclaimedEras.length
-        : 0;
-    });
-    const unclaimedStats = getStats(unclaimedValues);
-
-    // Location
-    const locationMap = new Map();
-    const locationArr = [];
-    for (const candidate of validCandidates) {
-      const location = candidate.location || "No Location";
-
-      const locationCount = locationMap.get(location);
-      if (!locationCount) {
-        locationMap.set(location, 1);
-      } else {
-        locationMap.set(location, locationCount + 1);
-      }
-    }
-
-    for (const location of locationMap.entries()) {
-      const [name, numberOfNodes] = location;
-      locationArr.push({ name, numberOfNodes });
-    }
-
-    const locationValues = locationArr.map((location) => {
-      return location.numberOfNodes;
-    });
-    const locationStats = getStats(locationValues);
-
-    // ---------------- CITY -----------------------------------
-    const cityMap = new Map();
-    const cityArr = [];
-    for (const candidate of validCandidates) {
-      const city =
-        candidate.infrastructureLocation &&
-        candidate.infrastructureLocation.city
-          ? candidate.infrastructureLocation.city
-          : "No Location";
-
-      const cityCount = cityMap.get(city);
-      if (!cityCount) {
-        cityMap.set(city, 1);
-      } else {
-        cityMap.set(city, cityCount + 1);
-      }
-    }
-
-    for (const city of cityMap.entries()) {
-      const [name, numberOfNodes] = city;
-      cityArr.push({ name, numberOfNodes });
-    }
-    const cityValues = cityArr.map((city) => {
-      return city.numberOfNodes;
-    });
-    const cityStats = getStats(cityValues);
-
-    // ---------------- REGION -----------------------------------
-    const regionMap = new Map();
-    const regionArr = [];
-    for (const candidate of validCandidates) {
-      const region =
-        candidate.infrastructureLocation &&
-        candidate.infrastructureLocation.region
-          ? candidate.infrastructureLocation.region
-          : "No Location";
-
-      const regionCount = regionMap.get(region);
-      if (!regionCount) {
-        regionMap.set(region, 1);
-      } else {
-        regionMap.set(region, regionCount + 1);
-      }
-    }
-
-    for (const region of regionMap.entries()) {
-      const [name, numberOfNodes] = region;
-      regionArr.push({ name, numberOfNodes });
-    }
-    const regionValues = regionArr.map((region) => {
-      return region.numberOfNodes;
-    });
-    const regionStats = getStats(regionValues);
-
-    // ---------------- COUNTRY -----------------------------------
-    const countryMap = new Map();
-    const countryArr = [];
-    for (const candidate of validCandidates) {
-      const country =
-        candidate.infrastructureLocation &&
-        candidate.infrastructureLocation.country
-          ? candidate.infrastructureLocation.country
-          : "No Location";
-
-      const countryCount = countryMap.get(country);
-      if (!countryCount) {
-        countryMap.set(country, 1);
-      } else {
-        countryMap.set(country, countryCount + 1);
-      }
-    }
-
-    for (const country of countryMap.entries()) {
-      const [name, numberOfNodes] = country;
-      countryArr.push({ name, numberOfNodes });
-    }
-    const countryValues = countryArr.map((country) => {
-      return country.numberOfNodes;
-    });
-    const countryStats = getStats(countryValues);
-
-    // ---------------- ASN -----------------------------------
-    const asnMap = new Map();
-    const asnArr = [];
-    for (const candidate of validCandidates) {
-      const asn =
-        candidate.infrastructureLocation && candidate.infrastructureLocation.asn
-          ? candidate.infrastructureLocation.asn
-          : "No Location";
-
-      const asnCount = asnMap.get(asn);
-      if (!asnCount) {
-        asnMap.set(asn, 1);
-      } else {
-        asnMap.set(asn, asnCount + 1);
-      }
-    }
-
-    for (const asn of asnMap.entries()) {
-      const [name, numberOfNodes] = asn;
-      asnArr.push({ name, numberOfNodes });
-    }
-    const asnValues = asnArr.map((asn) => {
-      return asn.numberOfNodes;
-    });
-    const asnStats = getStats(asnValues);
-
-    // ---------------- PROVIDER -----------------------------------
-    const providerMap = new Map();
-    const providerArr = [];
-    for (const candidate of validCandidates) {
-      const provider =
-        candidate.infrastructureLocation &&
-        candidate.infrastructureLocation.provider
-          ? candidate.infrastructureLocation.provider
-          : "No Location";
-
-      const providerCount = providerMap.get(provider);
-      if (!providerCount) {
-        providerMap.set(provider, 1);
-      } else {
-        providerMap.set(provider, providerCount + 1);
-      }
-    }
-
-    for (const provider of providerMap.entries()) {
-      const [name, numberOfNodes] = provider;
-      providerArr.push({ name, numberOfNodes });
-    }
-    const providerValues = providerArr.map((provider) => {
-      return provider.numberOfNodes;
-    });
-    const providerStats = getStats(providerValues);
-
-    // Nominator Stake
-    const ownNominators = await db.allNominators();
-    const ownNominatorAddresses = ownNominators.map((nom) => {
-      return nom.address;
-    });
-    const nominatorStakeValues = [];
-    for (const candidate of validCandidates) {
-      const nomStake = await db.getLatestNominatorStake(candidate.stash);
-      if (
-        nomStake != undefined &&
-        nomStake?.activeNominators &&
-        nomStake?.inactiveNominators
-      ) {
-        try {
-          const { activeNominators, inactiveNominators } = nomStake;
-
-          let total = 0;
-          for (const active of activeNominators) {
-            if (!ownNominatorAddresses.includes(active.address)) {
-              total += Math.sqrt(active.bonded);
-            }
-          }
-          for (const inactive of inactiveNominators) {
-            if (!ownNominatorAddresses.includes(inactive.address)) {
-              total += Math.sqrt(inactive.bonded);
-            }
-          }
-          nominatorStakeValues.push(total);
-        } catch (e) {
-          logger.info(`{nominatorStake} Can't find nominator stake values`);
-          logger.info(JSON.stringify(nomStake));
-        }
-      }
-    }
-    if (nominatorStakeValues.length == 0) nominatorStakeValues.push(0);
-    const nominatorStats = getStats(nominatorStakeValues);
-
-    // Delegations
-    const delegationValues = [];
-    for (const candidate of validCandidates) {
-      const delegations = await db.getDelegations(candidate.stash);
-      if (delegations != undefined && delegations?.delegators) {
-        try {
-          const { totalBalance, delegators } = delegations;
-
-          let total = 0;
-          for (const delegator of delegators) {
-            total += Math.sqrt(delegator.effectiveBalance);
-          }
-          delegationValues.push(total);
-        } catch (e) {
-          logger.info(`{delegations} Can't find delegation values`);
-          logger.info(JSON.stringify(delegations));
-        }
-      }
-    }
-    const delegationStats = getStats(delegationValues);
-
-    // Council Stake
-    const councilStakeValues = validCandidates.map((candidate) => {
-      return candidate.councilStake ? candidate.councilStake : 0;
-    });
-    const councilStakeStats = getStats(councilStakeValues);
-
-    // index of the last democracy referendum
-    const lastReferendum = (await db.getLastReferenda())[0]?.referendumIndex;
-
-    // Democracy
-    const democracyValues = validCandidates.map((candidate) => {
-      const {
-        baseDemocracyScore,
-        totalDemocracyScore,
-        totalConsistencyMultiplier,
-        lastConsistencyMultiplier,
-      } = scoreDemocracyVotes(candidate.democracyVotes, lastReferendum);
-      return totalDemocracyScore || 0;
-    });
-    const democracyStats = getStats(democracyValues);
-
-    // Create DB entry for Validator Score Metadata
-    await db.setValidatorScoreMetadata(
+    // Create  entry for Validator Score Metadata
+    await setValidatorScoreMetadata(
       bondedStats,
       this.BONDED_WEIGHT,
       faultsStats,
@@ -649,14 +353,14 @@ export class OTV implements Constraints {
         : 0;
 
       // Scale bonding based on the 5th and 85th percentile
-      const scaledBonded =
+      const scaleonded =
         scaledDefined(
           candidate.bonded ? candidate.bonded : 0,
           bondedValues,
           0.05,
           0.85
         ) || 0;
-      const bondedScore = scaledBonded * this.BONDED_WEIGHT;
+      const bondedScore = scaleonded * this.BONDED_WEIGHT;
 
       const scaledOffline =
         scaled(candidate.offlineAccumulated, offlineValues) || 0;
@@ -698,17 +402,6 @@ export class OTV implements Constraints {
         scaledDefined(candidateCountry, countryValues, 0.1, 0.95) || 0;
       const countryScore = (1 - scaledCountry) * this.LOCATION_WEIGHT || 0;
 
-      const candidateASN = asnArr.filter((asn) => {
-        if (
-          candidate.infrastructureLocation &&
-          candidate.infrastructureLocation.asn == asn.name
-        )
-          return asn.numberOfNodes;
-      })[0]?.numberOfNodes;
-      // Scale the value to between the 10th and 95th percentile
-      const scaledASN = scaledDefined(candidateASN, asnValues, 0.1, 0.95) || 0;
-      const asnScore = (1 - scaledASN) * this.LOCATION_WEIGHT || 0;
-
       const candidateProvider = providerArr.filter((provider) => {
         if (
           candidate.infrastructureLocation &&
@@ -721,7 +414,7 @@ export class OTV implements Constraints {
         scaledDefined(candidateProvider, providerValues, 0.1, 0.95) || 0;
       const providerScore = (1 - scaledProvider) * this.LOCATION_WEIGHT || 0;
 
-      const nomStake = await db.getLatestNominatorStake(candidate.stash);
+      const nomStake = await getLatestNominatorStake(candidate.stash);
       let totalNominatorStake = 0;
       if (
         nomStake != undefined &&
@@ -747,7 +440,7 @@ export class OTV implements Constraints {
       const nominatorStakeScore =
         scaledNominatorStake * this.NOMINATIONS_WEIGHT;
 
-      const delegations = await db.getDelegations(candidate.stash);
+      const delegations = await getDelegations(candidate.stash);
       let totalDelegations = 0;
       if (
         delegations != undefined &&
@@ -766,17 +459,17 @@ export class OTV implements Constraints {
 
       // Score the council backing weight based on what percentage of their staking bond it is
       const denom = await this.chaindata.getDenom();
-      const formattedBonded = candidate.bonded / denom;
+      const formatteonded = candidate.bonded / denom;
       const councilStakeScore =
         candidate.councilStake == 0
           ? 0
-          : candidate.councilStake >= 0.75 * formattedBonded
+          : candidate.councilStake >= 0.75 * formatteonded
           ? this.COUNCIL_WEIGHT
-          : candidate.councilStake >= 0.5 * formattedBonded
+          : candidate.councilStake >= 0.5 * formatteonded
           ? 0.75 * this.COUNCIL_WEIGHT
-          : candidate.councilStake >= 0.25 * formattedBonded
+          : candidate.councilStake >= 0.25 * formatteonded
           ? 0.5 * this.COUNCIL_WEIGHT
-          : candidate.councilStake < 0.25 * formattedBonded
+          : candidate.councilStake < 0.25 * formatteonded
           ? 0.25 * this.COUNCIL_WEIGHT
           : 0;
 
@@ -846,7 +539,6 @@ export class OTV implements Constraints {
         location: locationScore,
         region: regionScore,
         country: countryScore,
-        asn: asnScore,
         provider: providerScore,
         councilStake: councilStakeScore,
         democracy: scaledDemocracyScore,
@@ -856,7 +548,7 @@ export class OTV implements Constraints {
         updated: Date.now(),
       };
 
-      await db.setValidatorScore(
+      await setValidatorScore(
         candidate.stash,
         score.updated,
         score.total,
@@ -873,7 +565,6 @@ export class OTV implements Constraints {
         score.location,
         score.region,
         score.country,
-        score.asn,
         score.provider,
         score.councilStake,
         score.democracy,
@@ -905,9 +596,6 @@ export class OTV implements Constraints {
     rankedCandidates = rankedCandidates.sort((a, b) => {
       return b.aggregate.total - a.aggregate.total;
     });
-
-    // Cache the value to return from the server.
-    this.validCache = rankedCandidates;
 
     return rankedCandidates;
   }
@@ -1010,13 +698,301 @@ export class OTV implements Constraints {
   }
 }
 
+export const getBondedValues = (validCandidates: Types.CandidateData[]) => {
+  const bondedValues = validCandidates.map((candidate) => {
+    return candidate.bonded ? candidate.bonded : 0;
+  });
+  const bondedStats = bondedValues.length > 0 ? getStats(bondedValues) : [];
+  return { bondedValues, bondedStats };
+};
+
+export const getFaultsValues = (validCandidates: Types.CandidateData[]) => {
+  const faultsValues = validCandidates.map((candidate) => {
+    return candidate.faults ? candidate.faults : 0;
+  });
+  const faultsStats = getStats(faultsValues);
+  return { faultsValues, faultsStats };
+};
+
+export const getInclusionValues = (validCandidates: Types.CandidateData[]) => {
+  const inclusionValues = validCandidates.map((candidate) => {
+    return candidate.inclusion ? candidate.inclusion : 0;
+  });
+  const inclusionStats = getStats(inclusionValues);
+  return { inclusionValues, inclusionStats };
+};
+
+export const getSpanInclusionValues = (
+  validCandidates: Types.CandidateData[]
+) => {
+  const spanInclusionValues = validCandidates.map((candidate) => {
+    return candidate.spanInclusion ? candidate.spanInclusion : 0;
+  });
+  const spanInclusionStats = getStats(spanInclusionValues);
+  return { spanInclusionValues, spanInclusionStats };
+};
+
+export const getDiscoveredAtValues = (
+  validCandidates: Types.CandidateData[]
+) => {
+  const discoveredAtValues = validCandidates.map((candidate) => {
+    return candidate.discoveredAt ? candidate.discoveredAt : 0;
+  });
+  const discoveredAtStats = getStats(discoveredAtValues);
+  return { discoveredAtValues, discoveredAtStats };
+};
+
+export const getNominatedAtValues = (
+  validCandidates: Types.CandidateData[]
+) => {
+  const nominatedAtValues = validCandidates.map((candidate) => {
+    return candidate.nominatedAt ? candidate.nominatedAt : 0;
+  });
+  const nominatedAtStats = getStats(nominatedAtValues);
+  return { nominatedAtValues, nominatedAtStats };
+};
+
+export const getOfflineValues = (validCandidates: Types.CandidateData[]) => {
+  const offlineValues = validCandidates.map((candidate) => {
+    return candidate.offlineAccumulated ? candidate.offlineAccumulated : 0;
+  });
+  const offlineStats = getStats(offlineValues);
+  return { offlineValues, offlineStats };
+};
+
+export const getRankValues = (validCandidates: Types.CandidateData[]) => {
+  const rankValues = validCandidates.map((candidate) => {
+    return candidate.rank ? candidate.rank : 0;
+  });
+  const rankStats = getStats(rankValues);
+  return { rankValues, rankStats };
+};
+
+export const getUnclaimedValues = (validCandidates: Types.CandidateData[]) => {
+  const unclaimedValues = validCandidates.map((candidate) => {
+    return candidate.unclaimedEras && candidate.unclaimedEras.length
+      ? candidate.unclaimedEras.length
+      : 0;
+  });
+  const unclaimedStats = getStats(unclaimedValues);
+  return { unclaimedValues, unclaimedStats };
+};
+
+export const getLocationValues = (validCandidates: Types.CandidateData[]) => {
+  const locationMap = new Map();
+  const locationArr = [];
+  for (const candidate of validCandidates) {
+    const location = candidate.location || "No Location";
+
+    const locationCount = locationMap.get(location);
+    if (!locationCount) {
+      locationMap.set(location, 1);
+    } else {
+      locationMap.set(location, locationCount + 1);
+    }
+  }
+
+  for (const location of locationMap.entries()) {
+    const [name, numberOfNodes] = location;
+    locationArr.push({ name, numberOfNodes });
+  }
+
+  const locationValues = locationArr.map((location) => {
+    return location.numberOfNodes;
+  });
+  const locationStats = getStats(locationValues);
+  return { locationArr, locationValues, locationStats };
+};
+
+export const getRegionValues = (validCandidates: Types.CandidateData[]) => {
+  const regionMap = new Map();
+  const regionArr = [];
+  for (const candidate of validCandidates) {
+    const region =
+      candidate.infrastructureLocation &&
+      candidate.infrastructureLocation.region
+        ? candidate.infrastructureLocation.region
+        : "No Location";
+
+    const regionCount = regionMap.get(region);
+    if (!regionCount) {
+      regionMap.set(region, 1);
+    } else {
+      regionMap.set(region, regionCount + 1);
+    }
+  }
+
+  for (const region of regionMap.entries()) {
+    const [name, numberOfNodes] = region;
+    regionArr.push({ name, numberOfNodes });
+  }
+  const regionValues = regionArr.map((region) => {
+    return region.numberOfNodes;
+  });
+  const regionStats = getStats(regionValues);
+  return { regionArr, regionValues, regionStats };
+};
+
+export const getCountryValues = (validCandidates: Types.CandidateData[]) => {
+  const countryMap = new Map();
+  const countryArr = [];
+  for (const candidate of validCandidates) {
+    const country =
+      candidate.infrastructureLocation &&
+      candidate.infrastructureLocation.country
+        ? candidate.infrastructureLocation.country
+        : "No Location";
+
+    const countryCount = countryMap.get(country);
+    if (!countryCount) {
+      countryMap.set(country, 1);
+    } else {
+      countryMap.set(country, countryCount + 1);
+    }
+  }
+
+  for (const country of countryMap.entries()) {
+    const [name, numberOfNodes] = country;
+    countryArr.push({ name, numberOfNodes });
+  }
+  const countryValues = countryArr.map((country) => {
+    return country.numberOfNodes;
+  });
+  const countryStats = getStats(countryValues);
+  return { countryArr, countryValues, countryStats };
+};
+
+export const getProviderValues = (validCandidates: Types.CandidateData[]) => {
+  const providerMap = new Map();
+  const providerArr = [];
+  for (const candidate of validCandidates) {
+    const provider =
+      candidate.infrastructureLocation &&
+      candidate.infrastructureLocation.provider
+        ? candidate.infrastructureLocation.provider
+        : "No Location";
+
+    const providerCount = providerMap.get(provider);
+    if (!providerCount) {
+      providerMap.set(provider, 1);
+    } else {
+      providerMap.set(provider, providerCount + 1);
+    }
+  }
+
+  for (const provider of providerMap.entries()) {
+    const [name, numberOfNodes] = provider;
+    providerArr.push({ name, numberOfNodes });
+  }
+  const providerValues = providerArr.map((provider) => {
+    return provider.numberOfNodes;
+  });
+  const providerStats = getStats(providerValues);
+  return { providerArr, providerValues, providerStats };
+};
+
+export const getNominatorStakeValues = async (
+  validCandidates: Types.CandidateData[]
+) => {
+  const ownNominators = await allNominators();
+  const ownNominatorAddresses = ownNominators.map((nom) => {
+    return nom.address;
+  });
+  const nominatorStakeValues = [];
+  for (const candidate of validCandidates) {
+    const nomStake = await getLatestNominatorStake(candidate.stash);
+    if (
+      nomStake != undefined &&
+      nomStake?.activeNominators &&
+      nomStake?.inactiveNominators
+    ) {
+      try {
+        const { activeNominators, inactiveNominators } = nomStake;
+
+        let total = 0;
+        for (const active of activeNominators) {
+          if (!ownNominatorAddresses.includes(active.address)) {
+            total += Math.sqrt(active.bonded);
+          }
+        }
+        for (const inactive of inactiveNominators) {
+          if (!ownNominatorAddresses.includes(inactive.address)) {
+            total += Math.sqrt(inactive.bonded);
+          }
+        }
+        nominatorStakeValues.push(total);
+      } catch (e) {
+        logger.info(`{nominatorStake} Can't find nominator stake values`);
+        logger.info(JSON.stringify(nomStake));
+      }
+    }
+  }
+  if (nominatorStakeValues.length == 0) nominatorStakeValues.push(0);
+  const nominatorStakeStats = getStats(nominatorStakeValues);
+  return { ownNominatorAddresses, nominatorStakeValues, nominatorStakeStats };
+};
+
+export const getDelegationValues = async (
+  validCandidates: Types.CandidateData[]
+) => {
+  const delegationValues = [];
+  for (const candidate of validCandidates) {
+    const delegations = await getDelegations(candidate.stash);
+    if (delegations != undefined && delegations?.delegators) {
+      try {
+        const { totalBalance, delegators } = delegations;
+
+        let total = 0;
+        for (const delegator of delegators) {
+          total += Math.sqrt(delegator.effectiveBalance);
+        }
+        delegationValues.push(total);
+      } catch (e) {
+        logger.info(`{delegations} Can't find delegation values`);
+        logger.info(JSON.stringify(delegations));
+      }
+    }
+  }
+  const delegationStats = getStats(delegationValues);
+  return { delegationValues, delegationStats };
+};
+
+export const getCouncilStakeValues = (
+  validCandidates: Types.CandidateData[]
+) => {
+  const councilStakeValues = validCandidates.map((candidate) => {
+    return candidate.councilStake ? candidate.councilStake : 0;
+  });
+  const councilStakeStats = getStats(councilStakeValues);
+  return { councilStakeValues, councilStakeStats };
+};
+
+export const getDemocracyValues = async (
+  validCandidates: Types.CandidateData[]
+) => {
+  const lastReferendum = (await getLastReferenda())[0]?.referendumIndex;
+
+  // Democracy
+  const democracyValues = validCandidates.map((candidate) => {
+    const {
+      baseDemocracyScore,
+      totalDemocracyScore,
+      totalConsistencyMultiplier,
+      lastConsistencyMultiplier,
+    } = scoreDemocracyVotes(candidate.democracyVotes, lastReferendum);
+    return totalDemocracyScore || 0;
+  });
+  const democracyStats = getStats(democracyValues);
+  return { lastReferendum, democracyValues, democracyStats };
+};
+
 // Checks the online validity of a node
-export const checkOnline = async (db: Db, candidate: any) => {
+export const checkOnline = async (candidate: any) => {
   if (candidate && Number(candidate.onlineSince) === 0) {
-    await db.setOnlineValidity(candidate.stash, false);
+    await setOnlineValidity(candidate.stash, false);
     return false;
   } else {
-    await db.setOnlineValidity(candidate.stash, true);
+    await setOnlineValidity(candidate.stash, true);
     return true;
   }
 };
@@ -1025,15 +1001,14 @@ export const checkOnline = async (db: Db, candidate: any) => {
 export const checkValidateIntention = async (
   config: Config.ConfigSchema,
   chaindata: ChainData,
-  db: Db,
   candidate: any
 ) => {
   const validators = await chaindata.getValidators();
   if (!validators.includes(Util.formatAddress(candidate?.stash, config))) {
-    db.setValidateIntentionValidity(candidate.stash, false);
+    setValidateIntentionValidity(candidate.stash, false);
     return false;
   } else {
-    db.setValidateIntentionValidity(candidate.stash, true);
+    setValidateIntentionValidity(candidate.stash, true);
     return true;
   }
 };
@@ -1042,15 +1017,14 @@ export const checkValidateIntention = async (
 export const checkAllValidateIntentions = async (
   config: Config.ConfigSchema,
   chaindata: ChainData,
-  db: Db,
   candidates: any
 ) => {
   const validators = await chaindata.getValidators();
   for (const candidate of candidates) {
     if (!validators.includes(Util.formatAddress(candidate.stash, config))) {
-      db.setValidateIntentionValidity(candidate.stash, false);
+      setValidateIntentionValidity(candidate.stash, false);
     } else {
-      db.setValidateIntentionValidity(candidate.stash, true);
+      setValidateIntentionValidity(candidate.stash, true);
     }
   }
 };
@@ -1058,12 +1032,11 @@ export const checkAllValidateIntentions = async (
 // checks that the validator is on the latest client version
 export const checkLatestClientVersion = async (
   config: Config.ConfigSchema,
-  db: Db,
   candidate: any
 ) => {
   if (!config.constraints.skipClientUpgrade) {
     const forceLatestRelease = config.constraints.forceClientVersion;
-    const latestRelease = await db.getLatestRelease();
+    const latestRelease = await getLatestRelease();
     if (
       candidate.version &&
       latestRelease &&
@@ -1076,10 +1049,10 @@ export const checkLatestClientVersion = async (
 
       const isUpgraded = semver.gte(nodeVersion, latestVersion);
       if (!isUpgraded) {
-        db.setLatestClientReleaseValidity(candidate.stash, false);
+        setLatestClientReleaseValidity(candidate.stash, false);
         return false;
       } else {
-        db.setLatestClientReleaseValidity(candidate.stash, true);
+        setLatestClientReleaseValidity(candidate.stash, true);
         return true;
       }
     } else {
@@ -1093,79 +1066,72 @@ export const checkLatestClientVersion = async (
       return true;
     }
   } else {
-    db.setLatestClientReleaseValidity(candidate.stash, true);
+    setLatestClientReleaseValidity(candidate.stash, true);
     return true;
   }
 };
 
 export const checkConnectionTime = async (
   config: Config.ConfigSchema,
-  db: Db,
   candidate: any
 ) => {
   if (!config.constraints.skipConnectionTime) {
     const now = new Date().getTime();
     if (now - candidate.discoveredAt < Constants.WEEK) {
-      db.setConnectionTimeInvalidity(candidate.stash, false);
+      setConnectionTimeInvalidity(candidate.stash, false);
       return false;
     } else {
-      db.setConnectionTimeInvalidity(candidate.stash, true);
+      setConnectionTimeInvalidity(candidate.stash, true);
       return true;
     }
   } else {
-    db.setConnectionTimeInvalidity(candidate.stash, true);
+    setConnectionTimeInvalidity(candidate.stash, true);
     return true;
   }
 };
 
-export const checkIdentity = async (
-  chaindata: ChainData,
-  db: Db,
-  candidate: any
-) => {
+export const checkIdentity = async (chaindata: ChainData, candidate: any) => {
   const [hasIdentity, verified] = await chaindata.hasIdentity(candidate.stash);
   if (!hasIdentity) {
     const invalidityString = `${candidate.name} does not have an identity set.`;
-    db.setIdentityInvalidity(candidate.stash, false, invalidityString);
+    setIdentityInvalidity(candidate.stash, false, invalidityString);
     return false;
   }
   if (!verified) {
     const invalidityString = `${candidate.name} has an identity but is not verified by the registrar.`;
-    db.setIdentityInvalidity(candidate.stash, false, invalidityString);
+    setIdentityInvalidity(candidate.stash, false, invalidityString);
     return false;
   }
-  db.setIdentityInvalidity(candidate.stash, true);
+  setIdentityInvalidity(candidate.stash, true);
   return true;
 };
 
-export const checkOffline = async (db: Db, candidate: any) => {
+export const checkOffline = async (candidate: any) => {
   const totalOffline = candidate.offlineAccumulated / Constants.WEEK;
   if (totalOffline > 0.02) {
-    db.setOfflineAccumulatedInvalidity(candidate.stash, false);
+    await setOfflineAccumulatedInvalidity(candidate.stash, false);
     return false;
   } else {
-    db.setOfflineAccumulatedInvalidity(candidate.stash, true);
+    await setOfflineAccumulatedInvalidity(candidate.stash, true);
     return true;
   }
 };
 
 export const checkRewardDestination = async (
-  db: Db,
   chaindata: ChainData,
   candidate: any
 ) => {
   const isStaked = await chaindata.destinationIsStaked(candidate.stash);
   if (!isStaked) {
-    await db.setRewardDestinationInvalidity(candidate.stash, false);
+    await setRewardDestinationInvalidity(candidate.stash, false);
     return false;
   } else {
-    await db.setRewardDestinationInvalidity(candidate.stash, true);
+    await setRewardDestinationInvalidity(candidate.stash, true);
     return true;
   }
 };
 
 export const checkCommission = async (
-  db: Db,
   chaindata: ChainData,
   targetCommission: number,
   candidate: any
@@ -1181,16 +1147,15 @@ export const checkCommission = async (
     } commission is set higher than the maximum allowed. Set: ${
       commission / Math.pow(10, 7)
     }% Allowed: ${targetCommission / Math.pow(10, 7)}%`;
-    db.setCommissionInvalidity(candidate.stash, false, invalidityString);
+    await setCommissionInvalidity(candidate.stash, false, invalidityString);
     return false;
   } else {
-    db.setCommissionInvalidity(candidate.stash, true);
+    await setCommissionInvalidity(candidate.stash, true);
     return true;
   }
 };
 
 export const checkSelfStake = async (
-  db: Db,
   chaindata: ChainData,
   targetSelfStake: number,
   candidate: any
@@ -1200,22 +1165,21 @@ export const checkSelfStake = async (
     let invalidityString;
     if (err2) {
       invalidityString = `${candidate.name} ${err2}`;
-      await db.setSelfStakeInvalidity(candidate.stash, false, invalidityString);
+      await setSelfStakeInvalidity(candidate.stash, false, invalidityString);
       return false;
     }
 
     if (bondedAmt < targetSelfStake) {
       invalidityString = `${candidate.name} has less than the minimum amount bonded: ${bondedAmt} is bonded.`;
-      await db.setSelfStakeInvalidity(candidate.stash, false, invalidityString);
+      await setSelfStakeInvalidity(candidate.stash, false, invalidityString);
       return false;
     }
   }
-  await db.setSelfStakeInvalidity(candidate.stash, true);
+  await setSelfStakeInvalidity(candidate.stash, true);
   return true;
 };
 
 export const checkUnclaimed = async (
-  db: Db,
   chaindata: ChainData,
   unclaimedEraThreshold: number,
   candidate: any
@@ -1230,32 +1194,28 @@ export const checkUnclaimed = async (
     const invalidityString = `${candidate.name} has unclaimed eras: ${
       candidate.unclaimedEras
     } prior to era: ${threshold + 1}`;
-    await db.setUnclaimedInvalidity(candidate.stash, false, invalidityString);
+    await setUnclaimedInvalidity(candidate.stash, false, invalidityString);
     return false;
   } else {
-    await db.setUnclaimedInvalidity(candidate.stash, true);
+    await setUnclaimedInvalidity(candidate.stash, true);
     return true;
   }
 };
 
 // Checks if the validator blocks external nominations
-export const checkBlocked = async (
-  db: Db,
-  chaindata: ChainData,
-  candidate: any
-) => {
+export const checkBlocked = async (chaindata: ChainData, candidate: any) => {
   const isBlocked = await chaindata.getBlocked(candidate.stash);
   if (isBlocked) {
     const invalidityString = `${candidate.name} blocks external nominations`;
-    await db.setBlockedInvalidity(candidate.stash, false, invalidityString);
+    await setBlockedInvalidity(candidate.stash, false, invalidityString);
     return false;
   } else {
-    await db.setBlockedInvalidity(candidate.stash, true);
+    await setBlockedInvalidity(candidate.stash, true);
     return true;
   }
 };
 
-export const checkKusamaRank = async (db: Db, candidate: any) => {
+export const checkKusamaRank = async (candidate: any) => {
   try {
     if (!!candidate.kusamaStash) {
       const url = `${Constants.KOTVBackendEndpoint}/candidate/${candidate.kusamaStash}`;
@@ -1264,25 +1224,17 @@ export const checkKusamaRank = async (db: Db, candidate: any) => {
 
       if (!!res.data.invalidityReasons) {
         const invalidityReason = `${candidate.name} has a kusama node that is invalid: ${res.data.invalidityReasons}`;
-        await db.setKusamaRankInvalidity(
-          candidate.stash,
-          false,
-          invalidityReason
-        );
+        await setKusamaRankInvalidity(candidate.stash, false, invalidityReason);
         return false;
       }
 
       if (Number(res.data.rank) < 25) {
         const invalidityReason = `${candidate.name} has a Kusama stash with lower than 25 rank in the Kusama OTV programme: ${res.data.rank}.`;
-        await db.setKusamaRankInvalidity(
-          candidate.stash,
-          false,
-          invalidityReason
-        );
+        await setKusamaRankInvalidity(candidate.stash, false, invalidityReason);
         return false;
       }
     }
-    await db.setKusamaRankInvalidity(candidate.stash, true);
+    await setKusamaRankInvalidity(candidate.stash, true);
     return true;
   } catch (e) {
     logger.info(`Error trying to get kusama data...`);

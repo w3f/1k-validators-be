@@ -3,14 +3,20 @@ import Keyring from "@polkadot/keyring";
 import { blake2AsHex } from "@polkadot/util-crypto";
 
 import { KeyringPair } from "@polkadot/keyring/types";
-import { ApiHandler, Constants, logger, Types, Util, Db } from "@1kv/common";
+import {
+  ApiHandler,
+  Constants,
+  logger,
+  Types,
+  Util,
+  queries,
+} from "@1kv/common";
 
 export default class Nominator {
   public currentlyNominating: Types.Stash[] = [];
   public maxNominations: number | "auto";
 
   private _controller: string;
-  private db: Db;
   private bot: any;
   private handler: ApiHandler;
   private signer: KeyringPair;
@@ -30,13 +36,11 @@ export default class Nominator {
 
   constructor(
     handler: ApiHandler,
-    db: Db,
     cfg: Types.NominatorConfig,
     networkPrefix = 2,
     bot: any
   ) {
     this.handler = handler;
-    this.db = db;
     this.bot = bot;
     this.maxNominations = cfg.maxNominations || 16;
     this._isProxy = cfg.isProxy || false;
@@ -143,8 +147,8 @@ export default class Nominator {
     if (dryRun) {
       logger.info(`DRY RUN - STUBBING TRANSACTIONS`);
       for (const stash of targets) {
-        await this.db.setTarget(this.controller, stash, now);
-        await this.db.setLastNomination(this.controller, now);
+        await queries.setTarget(this.controller, stash, now);
+        await queries.setLastNomination(this.controller, now);
       }
     } else {
       const api = await this.handler.getApi();
@@ -167,7 +171,7 @@ export default class Nominator {
           this.controller,
           blake2AsHex(innerTx.method.toU8a())
         );
-        await this.db.addDelayedTx(
+        await queries.addDelayedTx(
           number.toNumber(),
           this.controller,
           targets,
@@ -395,32 +399,32 @@ export default class Nominator {
           this.currentlyNominating = targets;
 
           // Get the current nominations of an address
-          const currentTargets = await this.db.getCurrentTargets(
+          const currentTargets = await queries.getCurrentTargets(
             this.controller
           );
 
           // if the current targets is populated, clear it
           if (!!currentTargets.length) {
             logger.info("(Nominator::nominate) Wiping old targets");
-            await this.db.clearCurrent(this.controller);
+            await queries.clearCurrent(this.controller);
           }
 
           // update both the list of nominator for the nominator account as well as the time period of the nomination
           for (const stash of targets) {
-            await this.db.setTarget(this.controller, stash, now);
-            await this.db.setLastNomination(this.controller, now);
+            await queries.setTarget(this.controller, stash, now);
+            await queries.setLastNomination(this.controller, now);
           }
 
           // Update the nomination record in the db
           const era = (await api.query.staking.activeEra()).toJSON()["index"];
-          const decimals = (await this.db.getChainMetadata()).decimals;
+          const decimals = (await queries.getChainMetadata()).decimals;
           const bonded = Util.toDecimals(
             (await api.query.staking.ledger(this.controller)).toJSON()[
               "active"
             ],
             decimals
           );
-          await this.db.setNomination(
+          await queries.setNomination(
             this.address,
             era,
             targets,

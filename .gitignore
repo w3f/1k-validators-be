@@ -4,6 +4,7 @@ package-lock.json
 config/main.json
 config/secret.json
 *.db
+*.log
 combined.log
 scripts/test
 config.json*
@@ -23,3 +24,5 @@ build
 *.tsbuildinfo
 **/config/main.json
 **/config/secret.json
+
+redis/

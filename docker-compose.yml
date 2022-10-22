@@ -144,9 +144,13 @@ services:
         dockerfile: ./Dockerfile-dev
       volumes:
         - .:/app
+      deploy:
+        mode: replicated
+        replicas: 2
+      restart: unless-stopped
       networks:
         testing_net:
-          ipv4_address: 172.28.1.16
+#          ipv4_address: 172.28.1.16
 
 
     telemetry-backend-core:
@@ -227,7 +231,7 @@ services:
       volumes:
         - ./redis:/data
       restart: always
-      command: ["redis-server", "--bind", "redis", "--port", "6379"]
+      command: ["redis-server", "--bind", "172.28.1.13", "--port", "6379"]
       logging:
         driver: "json-file"
         options:

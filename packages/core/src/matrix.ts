@@ -1,19 +1,17 @@
 import * as Sdk from "matrix-js-sdk";
 import request from "request";
-import { logger, Db, Config } from "@1kv/common";
+import { logger, queries, Config } from "@1kv/common";
 
 const sdk: any = Sdk;
 
 export default class MatrixBot {
   public client: any;
   public conf: Config.ConfigSchema;
-  public db: Db;
 
   constructor(
     baseUrl: string,
     accessToken: string,
     userId: string,
-    db: Db,
     config: Config.ConfigSchema
   ) {
     this.client = sdk.createClient({
@@ -22,7 +20,6 @@ export default class MatrixBot {
       accessToken,
       userId,
     });
-    this.db = db;
     this.conf = config;
   }
 
@@ -42,18 +39,18 @@ export default class MatrixBot {
         if (body.startsWith("1kv-stats")) {
           const command = body.split(" ")[1];
           if (command == "nominators") {
-            const allNominators = await this.db.allNominators();
+            const allNominators = await queries.allNominators();
             const msg = allNominators
               .map((nom: any) => `${nom.nominator} | ${nom.current}`)
               .join("\n");
             await this.sendMessage(msg);
           }
           if (command == "targets") {
-            const allNominators = await this.db.allNominators();
+            const allNominators = await queries.allNominators();
             const msg = (
               await Promise.all(
                 allNominators.map(async (nom: any) => {
-                  const targets = await this.db.getCurrentTargets(
+                  const targets = await queries.getCurrentTargets(
                     nom.nominator
                   );
                   const whos = targets.join(", ");

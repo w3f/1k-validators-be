@@ -2,17 +2,28 @@
   "global": {
     "test": true,
     "dryRun": false,
-    "wsEndpoint": "ws://172.28.1.1:9945",
+    "wsEndpoint": "ws://172.28.1.1:9944",
     "networkPrefix": 3,
     "retroactive": false,
-    "historicalNominations": false
+    "historicalNominations": false,
+    "apiEndpoints": [
+      "ws://172.28.1.1:9944",
+      "ws://172.28.1.2:9945",
+      "ws://172.28.1.3:9946",
+      "ws://172.28.1.4:9947",
+      "ws://172.28.1.5:9948",
+      "ws://172.28.1.6:9949"
+    ]
   },
   "constraints": {
     "skipConnectionTime": true,
     "skipIdentity": false,
     "skipStakedDestination": true,
     "skipClientUpgrade": true,
-    "skipUnclaimed": true
+    "skipUnclaimed": true,
+    "minSelfStake": 10000000000000000000,
+    "commission": 150000000,
+    "unclaimedEraThreshold": 4
   },
   "proxy": {
     "timeDelayBlocks": "35"
@@ -50,6 +61,24 @@
     "room": "!xxxxx:web3.foundation",
     "userId": "@1kv-stats:matrix.org"
   },
+  "score": {
+    "inclusion": "140",
+    "spanInclusion": "140",
+    "discovered": "5",
+    "nominated": "30",
+    "rank": "5",
+    "bonded": "50",
+    "faults": "5",
+    "offline": "2",
+    "location": "40",
+    "region": "10",
+    "country": "10",
+    "provider": "50",
+    "council": "50",
+    "democracy": "100",
+    "nominations": "100",
+    "delegations": "60"
+  },
   "scorekeeper": {
     "candidates": [
       {
@@ -80,8 +109,12 @@
     "forceRound": true,
     "nominating": true
   },
+  "redis": {
+    "host": "redis",
+    "port": 6379
+  },
   "server": {
-    "port": 3301
+    "port": 3300
   },
   "telemetry": {
     "chains": [

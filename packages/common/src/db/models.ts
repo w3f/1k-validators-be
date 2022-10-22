@@ -1,4 +1,5 @@
 import { Schema } from "mongoose";
+import mongoose from "mongoose";
 
 const RewardRecordScheme = new Schema({
   // Era
@@ -17,6 +18,8 @@ export const AccountingSchema = new Schema({
   // More detailed reward records.
   records: [RewardRecordScheme],
 });
+
+export const AccountingModel = mongoose.model("Accounting", AccountingSchema);
 
 const FaultEventSchema = new Schema({
   // Timestamp when the fault happened.
@@ -45,6 +48,8 @@ export const DelayedTxSchema = new Schema({
   targets: [String],
   callHash: String,
 });
+
+export const DelayedTxModel = mongoose.model("DelayedTx", DelayedTxSchema);
 
 export const Identity = new Schema({
   // The Super Identity
@@ -91,6 +96,8 @@ export const LocationSchema = new Schema({
   updated: Number,
 });
 
+export const LocationModel = mongoose.model("Location", LocationSchema);
+
 // Info about a validators nominations
 export const NominatorStakeSchema = new Schema({
   validator: String,
@@ -112,6 +119,11 @@ export const NominatorStakeSchema = new Schema({
   updated: Number,
 });
 
+export const NominatorStakeModel = mongoose.model(
+  "NominatorStake",
+  NominatorStakeSchema
+);
+
 export const DelegationSchema = new Schema({
   validator: String,
   totalBalance: Number,
@@ -125,6 +137,8 @@ export const DelegationSchema = new Schema({
   ],
   updated: Number,
 });
+
+export const DelegationModel = mongoose.model("Delegation", DelegationSchema);
 
 export const CandidateSchema = new Schema({
   // The inherited telemetry ID.
@@ -212,7 +226,10 @@ export const CandidateSchema = new Schema({
   // The referenda indexes voted on
   democracyVotes: [Number],
   infrastructureLocation: LocationSchema,
+  matrix: [String],
 });
+
+export const CandidateModel = mongoose.model("Candidate", CandidateSchema);
 
 export const EraSchema = new Schema({
   // The last era a nomination took place
@@ -222,6 +239,8 @@ export const EraSchema = new Schema({
   // The time that lastNominatedEraIndex was set
   when: Number,
 });
+
+export const EraModel = mongoose.model("Era", EraSchema);
 
 export const NominatorSchema = new Schema({
   // The controller address
@@ -247,6 +266,8 @@ export const NominatorSchema = new Schema({
   createdAt: { type: Number, default: 0 },
 });
 
+export const NominatorModel = mongoose.model("Nominator", NominatorSchema);
+
 export const NominationSchema = new Schema({
   // Nominator address
   address: String,
@@ -269,6 +290,11 @@ export const ChainMetadataSchema = new Schema({
   name: String,
 });
 
+export const ChainMetadataModel = mongoose.model(
+  "ChainMetadata",
+  ChainMetadataSchema
+);
+
 // A historical event when the bot will claim a reward on behalf of a nominator
 export const BotClaimEventSchema = new Schema({
   // Validator Address
@@ -281,6 +307,13 @@ export const BotClaimEventSchema = new Schema({
   blockHash: String,
 });
 
+export const BotClaimEventModel = mongoose.model(
+  "BotClaimEvent",
+  BotClaimEventSchema
+);
+
+export const NominationModel = mongoose.model("Nomination", NominationSchema);
+
 // The individual era points a validator has earned for a given era
 export const EraPointsSchema = new Schema({
   // The Era the era points are in
@@ -290,6 +323,8 @@ export const EraPointsSchema = new Schema({
   // The amount of era points the validator received for the given era
   eraPoints: Number,
 });
+
+export const EraPointsModel = mongoose.model("EraPoints", EraPointsSchema);
 
 export const TotalEraPointsSchema = new Schema({
   // The total era points for all validators in the era
@@ -308,6 +343,11 @@ export const TotalEraPointsSchema = new Schema({
   validatorsEraPoints: [EraPointsSchema],
 });
 
+export const TotalEraPointsModel = mongoose.model(
+  "TotalEraPoints",
+  TotalEraPointsSchema
+);
+
 export const EraStatsSchema = new Schema({
   // When the record was created
   when: Number,
@@ -320,6 +360,8 @@ export const EraStatsSchema = new Schema({
   // the number of nodes active in the set
   active: Number,
 });
+
+export const EraStatsModel = mongoose.model("EraStatsModel", EraStatsSchema);
 
 export const ValidatorScoreSchema = new Schema({
   // The last time a score was updated
@@ -352,7 +394,6 @@ export const ValidatorScoreSchema = new Schema({
   location: Number,
   region: Number,
   country: Number,
-  asn: Number,
   provider: Number,
   // council backing score
   councilStake: Number,
@@ -363,6 +404,11 @@ export const ValidatorScoreSchema = new Schema({
   // The randomness factor used to buffer the total
   randomness: Number,
 });
+
+export const ValidatorScoreModel = mongoose.model(
+  "ValidatorScore",
+  ValidatorScoreSchema
+);
 
 export const ValidatorScoreMetadataSchema = new Schema({
   // Bonded Metadata
@@ -535,10 +581,17 @@ export const ValidatorScoreMetadataSchema = new Schema({
   updated: Number,
 });
 
+export const ValidatorScoreMetadataModel = mongoose.model(
+  "ValidatorScoreMetadata",
+  ValidatorScoreMetadataSchema
+);
+
 export const ReleaseSchema = new Schema({
   name: String,
   publishedAt: Number,
 });
+
+export const ReleaseModel = mongoose.model("Release", ReleaseSchema);
 
 // Stats on the where nodes are located.
 export const LocationStatsSchema = new Schema({
@@ -585,6 +638,11 @@ export const LocationStatsSchema = new Schema({
   updated: Number,
 });
 
+export const LocationStatsModel = mongoose.model(
+  "LocationStatsModel",
+  LocationStatsSchema
+);
+
 // A council member
 export const CouncillorSchema = new Schema({
   // The councillors address
@@ -600,6 +658,8 @@ export const CouncillorSchema = new Schema({
   // the last time the record was updated
   updated: Number,
 });
+
+export const CouncillorModel = mongoose.model("Councillor", CouncillorSchema);
 
 export const ElectionStatsSchema = new Schema({
   // The duration of the term
@@ -621,6 +681,11 @@ export const ElectionStatsSchema = new Schema({
   // the epoch the record was queried in
   session: Number,
 });
+
+export const ElectionStatsModel = mongoose.model(
+  "ElectionStats",
+  ElectionStatsSchema
+);
 
 // Era payout events that happen at the end of every era
 export const EraPaidEventSchema = new Schema({
@@ -644,6 +709,8 @@ export const EraPaidEventSchema = new Schema({
   updated: Number,
 });
 
+export const EraPaidEventModel = mongoose.model("EraPaid", EraPaidEventSchema);
+
 export const EraRewardSchema = new Schema({
   era: Number,
   stash: String,
@@ -657,6 +724,8 @@ export const EraRewardSchema = new Schema({
   claimBlockDelta: Number,
   updated: Number,
 });
+
+export const EraRewardModel = mongoose.model("EraReward", EraRewardSchema);
 
 // Information about a democracy referendum
 export const ReferendumSchema = new Schema({
@@ -698,6 +767,8 @@ export const ReferendumSchema = new Schema({
   updatedBlockHash: Number,
 });
 
+export const ReferendumModel = mongoose.model("Referendum", ReferendumSchema);
+
 // Information about a particular vote in a democracy referendum
 export const ReferendumVoteSchema = new Schema({
   // The unique index of the proposal, used to identity and query by
@@ -720,6 +791,13 @@ export const ReferendumVoteSchema = new Schema({
   updatedBlockHash: String,
 });
 
+export const ReferendumVoteModel = mongoose.model(
+  "ReferendumVote",
+  ReferendumVoteSchema
+);
+
 export const IIT = new Schema({
   iit: String,
 });
+
+export const IITModel = mongoose.model("IIT", IIT);

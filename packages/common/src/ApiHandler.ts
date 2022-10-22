@@ -68,13 +68,7 @@ class ApiHandler extends EventEmitter {
     return this._api.isConnected;
   }
 
-  async getApi(): Promise<ApiPromise> {
-    if (this._reconnectLock) {
-      return new Promise((resolve) => {
-        setTimeout(() => resolve(this.getApi()), 2000);
-      });
-    }
-
+  getApi(): ApiPromise {
     return this._api;
   }
 

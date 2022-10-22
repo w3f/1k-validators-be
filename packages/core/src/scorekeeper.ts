@@ -2,6 +2,8 @@ import { CronJob } from "cron";
 import { ApiPromise } from "@polkadot/api";
 import { bnToBn } from "@polkadot/util";
 
+import { otvWorker } from "@1kv/worker";
+
 import {
   ApiHandler,
   ChainData,
@@ -9,11 +11,11 @@ import {
   logger,
   Types,
   Util,
-  Db,
+  queries,
   Config,
+  Constraints,
 } from "@1kv/common";
-// import { NominatorConfig } from "./config";
-import { checkAllValidateIntentions, OTV } from "./constraints";
+
 import Nominator from "./nominator";
 import {
   startActiveValidatorJob,
@@ -28,29 +30,21 @@ import {
   startScoreJob,
   startSessionKeyJob,
   startStaleNominationCron,
-  startUnclaimedEraJob,
+  // startUnclaimedEraJob,
   startValidatityJob,
   startValidatorPrefJob,
   startCouncilJob,
-  startSubscanJob,
+  // startSubscanJob,
   startDemocracyJob,
   startNominatorJob,
   startDelegationJob,
 } from "./cron";
 import Claimer from "./claimer";
-import {
-  activeValidatorJob,
-  eraPointsJob,
-  inclusionJob,
-  monitorJob,
-  sessionKeyJob,
-  unclaimedErasJob,
-  validatorPrefJob,
-  validityJob,
-} from "./jobs";
 import Monitor from "./monitor";
 import { Subscan } from "./subscan";
 import { asc } from "./score";
+import { monitorJob } from "./jobs";
+// import { monitorJob } from "./jobs";
 
 type NominatorGroup = Config.NominatorConfig[];
 
@@ -59,8 +53,7 @@ type SpawnedNominatorGroup = Nominator[];
 // The number of nominations a nominator can get in the set.
 export const autoNumNominations = async (
   api: ApiPromise,
-  nominator: Nominator,
-  db?: Db
+  nominator: Nominator
 ): Promise<any> => {
   // Get the denomination for the chain
   const chainType = await api.rpc.system.chain();
@@ -140,9 +133,9 @@ export const autoNumNominations = async (
   nominator.targetBond = newBondedAmount;
   nominator.avgStake = targetValStake;
 
-  if (db) {
-    await db.setNominatorAvgStake(nominator.address, targetValStake);
-  }
+  // if (db) {
+  //   await db.setNominatorAvgStake(nominator.address, targetValStake);
+  // }
 
   logger.info(
     `{Scorekeeper::autoNom} stash: ${stash} with balance ${stashBal} should adjust balance to ${newBondedAmount} and can elect ${adjustedNominationAmount} validators, each having ~${targetValStake} stake`
@@ -160,10 +153,9 @@ export default class ScoreKeeper {
   public bot: any;
   public chaindata: ChainData;
   public config: Config.ConfigSchema;
-  public constraints: OTV;
+  public constraints: Constraints.OTV;
   public currentEra = 0;
   public currentTargets: string[];
-  public db: Db;
 
   // caches all the possible reward destinations for all candidates
   private rewardDestinationCache: string[];
@@ -183,12 +175,10 @@ export default class ScoreKeeper {
 
   constructor(
     handler: ApiHandler,
-    db: Db,
     config: Config.ConfigSchema,
     bot: any = false
   ) {
     this.handler = handler;
-    this.db = db;
     this.chaindata = new ChainData(this.handler);
 
     // For every staking reward event, create an accounting record of the amount rewarded
@@ -223,7 +213,7 @@ export default class ScoreKeeper {
             if (!nomStash) continue;
             if (nomStash == stash) {
               const activeEra = await this.chaindata.getActiveEraIndex();
-              await this.db.updateAccountingRecord(
+              await queries.updateAccountingRecord(
                 nom.controller,
                 nomStash,
                 activeEra.toString(),
@@ -241,7 +231,7 @@ export default class ScoreKeeper {
       const { offlineVals } = data;
       const session = await this.chaindata.getSession();
       for (const val of offlineVals) {
-        const candidate = await this.db.getCandidate(val);
+        const candidate = await queries.getCandidate(val);
         if (!candidate) return;
         const reason = `${candidate.name} had an offline event in session ${
           session - 1
@@ -257,7 +247,7 @@ export default class ScoreKeeper {
         logger.info(`{ScoreKeeper::SomeOffline} ${reason}`);
         await this.botLog(reason);
 
-        await this.db.pushFaultEvent(candidate.stash, reason);
+        await queries.pushFaultEvent(candidate.stash, reason);
         await this.dockPoints(candidate.stash);
       }
     });
@@ -266,10 +256,9 @@ export default class ScoreKeeper {
       const { sessionIndex } = data;
       logger.info(`{Session::NewSession} New Session Event: ${sessionIndex}`);
 
-      await checkAllValidateIntentions(
+      await Constraints.checkAllValidateIntentions(
         this.config,
         this.chaindata,
-        this.db,
         this.candidateCache
       );
 
@@ -281,26 +270,8 @@ export default class ScoreKeeper {
 
     this.config = config;
     this.bot = bot;
-    this.constraints = new OTV(
-      this.handler,
-      this.config.constraints.skipConnectionTime,
-      this.config.constraints.skipIdentity,
-      this.config.constraints.skipStakedDestination,
-      this.config.constraints.skipClientUpgrade,
-      this.config.constraints.skipUnclaimed,
-      this.config.global.networkPrefix == 2
-        ? Constants.TEN_KSM
-        : Constants.FIVE_THOUSAND_DOT,
-      this.config.global.networkPrefix == 2
-        ? Constants.FIFTEEN_PERCENT
-        : Constants.FIVE_PERCENT,
-      this.config.global.networkPrefix == 2
-        ? Constants.KUSAMA_FOUR_DAYS_ERAS
-        : Constants.POLKADOT_FOUR_DAYS_ERAS,
-      this.config,
-      this.db
-    );
-    this.monitor = new Monitor(db, Constants.SIXTEEN_HOURS);
+    this.constraints = new Constraints.OTV(this.handler, this.config);
+    this.monitor = new Monitor(Constants.SIXTEEN_HOURS);
 
     this.subscan = new Subscan(
       this.config.subscan.baseV1Url,
@@ -316,11 +287,11 @@ export default class ScoreKeeper {
 
   // Populates the candidate  cache
   async populateCandidates(): Promise<void> {
-    this.candidateCache = await this.db.allCandidates();
+    this.candidateCache = await queries.allCandidates();
   }
 
   async populateRewardDestinationCache(): Promise<void> {
-    const allCandidates = await this.db.allCandidates();
+    const allCandidates = await queries.allCandidates();
     const rewardAddresses = [];
     for (const candidate of allCandidates) {
       if (
@@ -367,7 +338,7 @@ export default class ScoreKeeper {
 
   /// Spawns a new nominator.
   _spawn(cfg: Config.NominatorConfig, networkPrefix = 2): Nominator {
-    return new Nominator(this.handler, this.db, cfg, networkPrefix, this.bot);
+    return new Nominator(this.handler, cfg, networkPrefix, this.bot);
   }
 
   // Adds nominators from the config
@@ -393,8 +364,8 @@ export default class ScoreKeeper {
         const proxyDelay = nom.proxyDelay;
 
         const { nominationNum, newBondedAmount, targetValStake } =
-          await autoNumNominations(api, nom, this.db);
-        await this.db.addNominator(
+          await autoNumNominations(api, nom);
+        await queries.addNominator(
           nom.controller,
           stash,
           proxy,
@@ -407,7 +378,7 @@ export default class ScoreKeeper {
           newBondedAmount
         );
         // Create a new accounting record in case one doesn't exist.
-        await this.db.newAccountingRecord(stash, nom.controller);
+        await queries.newAccountingRecord(stash, nom.controller);
         group.push(nom);
       }
     }
@@ -428,7 +399,7 @@ export default class ScoreKeeper {
       await Promise.all(
         group.map(async (n) => {
           const stash = await n.stash();
-          const name = (await this.db.getChainMetadata()).name;
+          const name = (await queries.getChainMetadata()).name;
           const decimals = name == "Kusama" ? 12 : 10;
           const [rawBal, err] = await this.chaindata.getBondedAmount(stash);
           const bal = Util.toDecimals(rawBal, decimals);
@@ -457,7 +428,7 @@ export default class ScoreKeeper {
         group.map(async (n) => {
           const stash = await n.stash();
 
-          const nominations = await this.db.getNominator(stash);
+          const nominations = await queries.getNominator(stash);
           const current = nominations.current.map((val) => {
             return `- ${val.name}<br>`;
           });
@@ -482,7 +453,6 @@ export default class ScoreKeeper {
   async addClaimer(claimerCfg: Types.ClaimerConfig): Promise<boolean> {
     const claimer = new Claimer(
       this.handler,
-      this.db,
       claimerCfg,
       this.config.global.networkPrefix,
       this.bot
@@ -527,7 +497,7 @@ export default class ScoreKeeper {
       }
 
       const { lastNominatedEraIndex } =
-        await this.db.getLastNominatedEraIndex();
+        await queries.getLastNominatedEraIndex();
 
       // For Kusama, Nominations will happen every 4 eras
       // For Polkadot, Nominations will happen every era
@@ -559,7 +529,7 @@ export default class ScoreKeeper {
         for (const nomGroup of this.nominatorGroups) {
           for (const nominator of nomGroup) {
             // Get the current nominations of an address
-            const currentTargets = await this.db.getCurrentTargets(
+            const currentTargets = await queries.getCurrentTargets(
               nominator.controller
             );
             allCurrentTargets.push(currentTargets);
@@ -580,25 +550,73 @@ export default class ScoreKeeper {
       }
     });
 
-    const candidates = await this.db.allCandidates();
-
     // Start all Cron Jobs
     try {
-      // await startMonitorJob(this.config, this.db, this.monitor);
-      await startValidatityJob(
+      if (this.config.redis.host && this.config.redis.port) {
+        // Jobs get run in separate worker
+        logger.info(
+          `{Scorekeeper::Workers} Starting bullmq Queues and Workers....`
+        );
+        const releaseMonitorQueue =
+          await otvWorker.queues.createReleaseMonitorQueue(
+            this.config.redis.host,
+            this.config.redis.port
+          );
+        const constraintsQueue = await otvWorker.queues.createConstraintsQueue(
+          this.config.redis.host,
+          this.config.redis.port
+        );
+        const chaindataQueue = await otvWorker.queues.createChainDataQueue(
+          this.config.redis.host,
+          this.config.redis.port
+        );
+
+        // Remove any previous repeatable jobs
+        await otvWorker.queues.removeRepeatableJobsFromQueues([
+          releaseMonitorQueue,
+          constraintsQueue,
+          chaindataQueue,
+        ]);
+
+        await otvWorker.queues.addReleaseMonitorJob(releaseMonitorQueue, 60000);
+        await otvWorker.queues.addValidityJob(constraintsQueue, 600);
+        await otvWorker.queues.addScoreJob(constraintsQueue, 601); // Needs to have different repeat time
+
+        await otvWorker.queues.addActiveValidatorJob(chaindataQueue, 601);
+        await otvWorker.queues.addCouncilJob(chaindataQueue, 602);
+        await otvWorker.queues.addDelegationJob(chaindataQueue, 603);
+        await otvWorker.queues.addEraPointsJob(chaindataQueue, 604);
+        await otvWorker.queues.addEraStatsJob(chaindataQueue, 605);
+        await otvWorker.queues.addInclusionJob(chaindataQueue, 606);
+        await otvWorker.queues.addNominatorJob(chaindataQueue, 607);
+        await otvWorker.queues.addSessionKeyJob(chaindataQueue, 608);
+        await otvWorker.queues.addValidatorPrefJob(chaindataQueue, 609);
+      } else {
+        // No redis connection - scorekeeper runs job
+        await monitorJob();
+        await startValidatityJob(this.config, this.constraints);
+        await startScoreJob(this.config, this.constraints);
+        await startEraPointsJob(this.config, this.chaindata);
+        await startActiveValidatorJob(this.config, this.chaindata);
+        await startInclusionJob(this.config, this.chaindata);
+        await startSessionKeyJob(this.config, this.chaindata);
+        await startValidatorPrefJob(this.config, this.chaindata);
+        await startEraStatsJob(this.config, this.chaindata);
+        await startLocationStatsJob(this.config, this.chaindata);
+        await startCouncilJob(this.config, this.chaindata);
+        await startDemocracyJob(this.config, this.chaindata);
+        await startNominatorJob(this.config, this.chaindata);
+        await startDelegationJob(this.config, this.chaindata);
+      }
+
+      await startExecutionJob(
+        this.handler,
+        this.nominatorGroups,
         this.config,
-        this.db,
-        this.constraints,
-        this.chaindata,
-        candidates
+        this.bot
       );
-      //
-      await startEraPointsJob(this.config, this.db, this.chaindata);
-      await startActiveValidatorJob(this.config, this.db, this.chaindata);
-      await startInclusionJob(this.config, this.db, this.chaindata);
-      await startSessionKeyJob(this.config, this.db, this.chaindata);
+
       // await startUnclaimedEraJob(this.config, this.db, this.chaindata);
-      await startValidatorPrefJob(this.config, this.db, this.chaindata);
       // if (this.claimer) {
       //   await startRewardClaimJob(
       //     this.config,
@@ -609,13 +627,6 @@ export default class ScoreKeeper {
       //     this.bot
       //   );
       // }
-      await startExecutionJob(
-        this.handler,
-        this.nominatorGroups,
-        this.config,
-        this.db,
-        this.bot
-      );
       // await startCancelCron(
       //   this.config,
       //   this.handler,
@@ -632,15 +643,6 @@ export default class ScoreKeeper {
       //   this.chaindata,
       //   this.bot
       // );
-      await startScoreJob(this.config, this.constraints);
-      await startEraStatsJob(this.db, this.config, this.chaindata);
-      await startLocationStatsJob(this.config, this.db, this.chaindata);
-      await startCouncilJob(this.config, this.db, this.chaindata);
-      // Subscan job currently leads to 429 due to API rate limiting.
-      // await startSubscanJob(this.config, this.db, this.subscan);
-      await startDemocracyJob(this.config, this.db, this.chaindata);
-      await startNominatorJob(this.config, this.db, this.chaindata);
-      await startDelegationJob(this.config, this.db, this.chaindata);
     } catch (e) {
       logger.info(
         `{Scorekeeper::RunCron} There was an error running some cron jobs...`
@@ -674,7 +676,7 @@ export default class ScoreKeeper {
       `New round is starting! Era ${this.currentEra} will begin new nominations.`
     );
 
-    const proxyTxs = await this.db.getAllDelayedTxs();
+    const proxyTxs = await queries.getAllDelayedTxs();
 
     // If the round was started and there are any pending proxy txs skip the round
     const NUM_NOMINATORS = 20;
@@ -685,20 +687,20 @@ export default class ScoreKeeper {
       return;
     }
 
-    const allCandidates = await this.db.allCandidates();
+    const allCandidates = await queries.allCandidates();
 
     for (const candidate of allCandidates) {
       await this.constraints.checkCandidate(candidate);
     }
 
-    await this.constraints.scoreCandidates(allCandidates, this.db);
+    await this.constraints.scoreCandidates(allCandidates);
 
     await Util.sleep(6000);
 
     let validCandidates = allCandidates.filter((candidate) => candidate.valid);
     validCandidates = await Promise.all(
       validCandidates.map(async (candidate) => {
-        const score = await this.db.getValidatorScore(candidate.stash);
+        const score = await queries.getValidatorScore(candidate.stash);
         const scoredCandidate = {
           name: candidate.name,
           stash: candidate.stash,
@@ -724,7 +726,7 @@ export default class ScoreKeeper {
       logger.info(
         `{Scorekeeper::startRound} ${numValidatorsNominated} nominated this round, setting last nominated era to ${this.currentEra}`
       );
-      await this.db.setLastNominatedEraIndex(this.currentEra);
+      await queries.setLastNominatedEraIndex(this.currentEra);
     } else {
       logger.info(
         `{Scorekeeper::startRound} ${numValidatorsNominated} nominated this round, lastNominatedEra not set...`
@@ -760,9 +762,9 @@ export default class ScoreKeeper {
         // The number of nominations to do per nominator account
         // This is either hard coded, or set to "auto", meaning it will find a dynamic amount of validators
         //    to nominate based on the lowest staked validator in the validator set
-        const api = await this.chaindata.handler.getApi();
+        const api = await this.handler.getApi();
         const denom = await this.chaindata.getDenom();
-        const autoNom = await autoNumNominations(api, nominator, this.db);
+        const autoNom = await autoNumNominations(api, nominator);
         const {
           nominationNum,
           newBondedAmount: formattedNewBondedAmount,
@@ -781,7 +783,7 @@ export default class ScoreKeeper {
 
         // Check the free balance of the account. If it doesn't have a free balance, skip.
         const balance = await this.chaindata.getBalance(nominator.address);
-        const metadata = await this.db.getChainMetadata();
+        const metadata = await queries.getChainMetadata();
         const network = metadata.name.toLowerCase();
         const free = Util.toDecimals(Number(balance.free), metadata.decimals);
         // TODO Parameterize this as a constant
@@ -822,14 +824,14 @@ export default class ScoreKeeper {
         const targetsString = (
           await Promise.all(
             targets.map(async (target) => {
-              const name = (await this.db.getCandidate(target)).name;
+              const name = (await queries.getCandidate(target)).name;
               return `- ${name} (${target})`;
             })
           )
         ).join("\n");
 
         if (!stash) continue;
-        const name = (await this.db.getChainMetadata()).name;
+        const name = (await queries.getChainMetadata()).name;
         const decimals = name == "Kusama" ? 12 : 10;
         const [rawBal, err] = await this.chaindata.getBondedAmount(stash);
         const bal = Util.toDecimals(rawBal, decimals);
@@ -838,7 +840,7 @@ export default class ScoreKeeper {
         const targetsHtml = (
           await Promise.all(
             targets.map(async (target) => {
-              const name = (await this.db.getCandidate(target)).name;
+              const name = (await queries.getCandidate(target)).name;
               return `- ${name} (${Util.addressUrl(target, this.config)})`;
             })
           )
@@ -868,7 +870,7 @@ export default class ScoreKeeper {
     const nextTargetsString = (
       await Promise.all(
         nextTargets.map(async (target) => {
-          const name = (await this.db.getCandidate(target)).name;
+          const name = (await queries.getCandidate(target)).name;
           return `- ${name} (${target})`;
         })
       )
@@ -897,14 +899,14 @@ export default class ScoreKeeper {
     const toProcess: Map<Types.Stash, Types.CandidateData> = new Map();
 
     const { lastNominatedEraIndex: startEra } =
-      await this.db.getLastNominatedEraIndex();
+      await queries.getLastNominatedEraIndex();
 
     const [activeEra, err] = await this.chaindata.getActiveEraIndex();
     if (err) {
       throw new Error(`Error getting active era: ${err}`);
     }
 
-    const chainType = await this.db.getChainMetadata();
+    const chainType = await queries.getChainMetadata();
 
     logger.info(
       `(Scorekeeper::endRound) finding validators that were active from era ${startEra} to ${activeEra}`
@@ -925,7 +927,7 @@ export default class ScoreKeeper {
     // Gets adds candidates we nominated to the list
     for (const nomGroup of this.nominatorGroups) {
       for (const nominator of nomGroup) {
-        const current = await this.db.getCurrentTargets(nominator.controller);
+        const current = await queries.getCurrentTargets(nominator.controller);
 
         // If not nominating any... then return.
         if (!current.length) {
@@ -934,7 +936,7 @@ export default class ScoreKeeper {
         }
 
         for (const val of current) {
-          const candidate = await this.db.getCandidate(val.stash);
+          const candidate = await queries.getCandidate(val.stash);
           if (!candidate) {
             logger.warn(
               `{endRound} cannot find candidate for ${val} stash: ${val.stash}`
@@ -949,7 +951,7 @@ export default class ScoreKeeper {
     }
 
     // Adds all other valid candidates to the list
-    const allCandidates = await this.db.allCandidates();
+    const allCandidates = await queries.allCandidates();
 
     const validCandidates = allCandidates.filter(
       (candidate) => candidate.valid
@@ -985,7 +987,7 @@ export default class ScoreKeeper {
       }
 
       // They were active - increase their rank and add a rank event
-      const didRank = await this.db.pushRankEvent(stash, startEra, activeEra);
+      const didRank = await queries.pushRankEvent(stash, startEra, activeEra);
       if (didRank) await this.addPoint(stash);
     }
 
@@ -993,7 +995,7 @@ export default class ScoreKeeper {
     for (const badOne of bad.values()) {
       const { candidate, reason } = badOne;
       const { stash } = candidate;
-      const didFault = await this.db.pushFaultEvent(stash, reason);
+      const didFault = await queries.pushFaultEvent(stash, reason);
       if (didFault) await this.dockPoints(stash);
     }
 
@@ -1006,9 +1008,9 @@ export default class ScoreKeeper {
       `(Scorekeeper::dockPoints) Stash ${stash} did BAD, docking points`
     );
 
-    await this.db.dockPoints(stash);
+    await queries.dockPoints(stash);
 
-    const candidate = await this.db.getCandidate(stash);
+    const candidate = await queries.getCandidate(stash);
     this.botLog(`${candidate.name} docked points. New rank: ${candidate.rank}`);
 
     return true;
@@ -1020,9 +1022,9 @@ export default class ScoreKeeper {
       `(Scorekeeper::addPoint) Stash ${stash} did GOOD, adding points`
     );
 
-    await this.db.addPoint(stash);
+    await queries.addPoint(stash);
 
-    const candidate = await this.db.getCandidate(stash);
+    const candidate = await queries.getCandidate(stash);
     this.botLog(
       `${candidate.name} did GOOD! Adding a point. New rank: ${candidate.rank}`
     );

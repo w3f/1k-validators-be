@@ -49,7 +49,7 @@ class ApiHandler extends EventEmitter {
           logger.warn("The API has an error");
           console.log(error);
         });
-      await api.isReadyOrError;
+      await api.isReadyOrError.catch(logger.error);
       return api;
     }
   }

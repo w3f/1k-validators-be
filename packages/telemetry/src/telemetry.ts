@@ -165,7 +165,6 @@ export default class TelemetryClient {
 
           const name = details[0];
 
-          logger.info(`(TELEMETRY) Reporting ${name} OFFLINE`);
           this.beingReported.set(name, true);
           await queries.reportOffline(id, name, now);
           this.beingReported.set(name, false);

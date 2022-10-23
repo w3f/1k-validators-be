@@ -3,9 +3,9 @@ import { response } from "./index";
 
 export default class CandidateController {
   public static async getCandidate(context: any): Promise<void> {
-    const stash = context.params.stash;
+    const address = context.params.address;
 
-    response(context, 200, await CandidateService.getCandidate(stash));
+    response(context, 200, await CandidateService.getCandidate(address));
   }
 
   public static async getCandidates(context: any): Promise<void> {
@@ -17,7 +17,7 @@ export default class CandidateController {
   }
 
   public static async getNominatorStake(context: any): Promise<void> {
-    const address = context.params.stash;
+    const address = context.params.address;
 
     response(context, 200, await CandidateService.getNominatorStake(address));
   }

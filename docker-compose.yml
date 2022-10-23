@@ -161,6 +161,7 @@ services:
         - 8000:8000
         expose:
         - 8000
+        restart: always
         command: telemetry_core --listen 0.0.0.0:8000 --expose-node-ips --feed-timeout 60
         networks:
             testing_net:

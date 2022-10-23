@@ -163,3 +163,10 @@ program
 
 program.version(version);
 program.parse(process.argv);
+
+const signals = ["SIGHUP", "SIGINT", "SIGTERM"];
+for (const signal of signals) {
+  process.on(signal, () => {
+    logger.info(`process received a ${signal} signal`);
+  });
+}

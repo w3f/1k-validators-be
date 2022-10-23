@@ -353,14 +353,14 @@ export class OTV implements Constraints {
         : 0;
 
       // Scale bonding based on the 5th and 85th percentile
-      const scaleonded =
+      const scaleBonded =
         scaledDefined(
           candidate.bonded ? candidate.bonded : 0,
           bondedValues,
           0.05,
           0.85
         ) || 0;
-      const bondedScore = scaleonded * this.BONDED_WEIGHT;
+      const bondedScore = scaleBonded * this.BONDED_WEIGHT;
 
       const scaledOffline =
         scaled(candidate.offlineAccumulated, offlineValues) || 0;
@@ -483,24 +483,6 @@ export class OTV implements Constraints {
       const scaledDemocracyScore =
         scaled(totalDemocracyScore, democracyValues) * this.DEMOCRACY_WEIGHT;
 
-      logger.info(`${candidate.name} inclusionScore ${inclusionScore}`);
-      logger.info(`${candidate.name} spanInclusionScore ${spanInclusionScore}`);
-      logger.info(`${candidate.name} faultsScore ${faultsScore}`);
-      logger.info(`${candidate.name} discoveredScore ${discoveredScore}`);
-      logger.info(`${candidate.name} nominatedScore ${nominatedScore}`);
-      logger.info(`${candidate.name} rankScore ${rankScore}`);
-      logger.info(`${candidate.name} unclaimedScore ${unclaimedScore}`);
-      logger.info(`${candidate.name} bondedScore ${bondedScore}`);
-      logger.info(`${candidate.name} locationScore ${locationScore}`);
-      logger.info(`${candidate.name} councilStakeScore ${councilStakeScore}`);
-      logger.info(
-        `${candidate.name} scaledDemocracyScore ${scaledDemocracyScore}`
-      );
-      logger.info(`${candidate.name} offlineScore ${offlineScore}`);
-      logger.info(
-        `${candidate.name} nominatorStakeScore ${nominatorStakeScore}`
-      );
-
       const aggregate =
         inclusionScore +
         spanInclusionScore +
@@ -511,18 +493,18 @@ export class OTV implements Constraints {
         unclaimedScore +
         bondedScore +
         locationScore +
+        // regionScore +
+        // countryScore +
+        // providerScore +
         councilStakeScore +
         scaledDemocracyScore +
         offlineScore +
+        // delegationScore +
         nominatorStakeScore;
 
       const randomness = 1 + Math.random() * 0.15;
 
       const total = aggregate * randomness || 0;
-
-      logger.info(`aggregate: ${aggregate}`);
-      logger.info(`randomness: ${randomness}`);
-      logger.info(`total: ${total}`);
 
       const score = {
         total: total,
@@ -615,11 +597,6 @@ export class OTV implements Constraints {
   > {
     logger.info(`(OTV::processCandidates) Processing candidates`);
 
-    const [activeEraIndex, eraErr] = await this.chaindata.getActiveEraIndex();
-    if (eraErr) {
-      throw eraErr;
-    }
-
     const good: Set<Types.CandidateData> = new Set();
     const bad: Set<{ candidate: Types.CandidateData; reason: string }> =
       new Set();
@@ -631,14 +608,7 @@ export class OTV implements Constraints {
         );
         continue;
       }
-      const {
-        name,
-        offlineSince,
-        stash,
-        skipSelfStake,
-        offlineAccumulated,
-        unclaimedEras,
-      } = candidate;
+      const { name, stash, skipSelfStake, offlineAccumulated } = candidate;
       /// Ensure the commission wasn't raised/
       const [commission, err] = await this.chaindata.getCommission(stash);
       /// If it errors we assume that a validator removed their validator status.

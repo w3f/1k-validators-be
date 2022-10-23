@@ -493,14 +493,14 @@ export class OTV implements Constraints {
         unclaimedScore +
         bondedScore +
         locationScore +
-        regionScore +
-        countryScore +
-        providerScore +
+        // regionScore +
+        // countryScore +
+        // providerScore +
         councilStakeScore +
         scaledDemocracyScore +
         offlineScore +
-        nominatorStakeScore +
-        delegationScore;
+        // delegationScore +
+        nominatorStakeScore;
 
       const randomness = 1 + Math.random() * 0.15;
 

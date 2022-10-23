@@ -31,3 +31,9 @@ export class Db {
     });
   }
 }
+
+process.on("SIGINT", async () => {
+  logger.info("Shutting down mongodb connection.....");
+  await mongoose.connection.close();
+  process.exit(0);
+});

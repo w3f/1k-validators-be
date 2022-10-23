@@ -313,7 +313,7 @@ export const reportOnline = async (
 
   if (data.offlineSince && data.offlineSince !== 0) {
     logger.info(
-      `Online node ${data.name} was offline since: ${data.offlineSince}`
+      `Online node ${data.name} with id ${telemetryId} was offline since: ${data.offlineSince}`
     );
     // The node was previously offline.
     const timeOffline = now - data.offlineSince;

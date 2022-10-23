@@ -87,7 +87,23 @@ export default class Server {
         this.app.use(serverAdapter.registerPlugin());
       }
       logger.info(`Now listening on ${this.port}`);
-      this.app.listen(this.port);
+      const server = this.app.listen(this.port);
+      server.close();
     }
   }
 }
+
+// process.on("SIGTERM", () => {
+//   console.log("received SIGTERM");
+//
+//   console.log("waiting for %d sec to close server", WAIT_BEFORE_SERVER_CLOSE);
+//
+//   setTimeout(() => {
+//     console.log("calling server close");
+//
+//     server.close(() => {
+//       console.log("server closed, exit");
+//       process.exit(0);
+//     });
+//   }, WAIT_BEFORE_SERVER_CLOSE * 1000);
+// });

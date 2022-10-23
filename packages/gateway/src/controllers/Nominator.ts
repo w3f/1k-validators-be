@@ -7,7 +7,7 @@ export default class NominatorController {
   }
 
   public static async getNominator(context: any): Promise<void> {
-    const stash = context.params.stash;
-    response(context, 200, await NominatorService.getNominator(stash));
+    const address = context.params.address;
+    response(context, 200, await NominatorService.getNominator(address));
   }
 }

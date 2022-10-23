@@ -88,7 +88,6 @@ export default class Server {
       }
       logger.info(`Now listening on ${this.port}`);
       const server = this.app.listen(this.port);
-      server.close();
     }
   }
 }

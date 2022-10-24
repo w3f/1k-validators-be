@@ -366,6 +366,8 @@ export const EraStatsModel = mongoose.model("EraStatsModel", EraStatsSchema);
 export const ValidatorScoreSchema = new Schema({
   // The last time a score was updated
   updated: Number,
+  // The session a score was updated at
+  session: Number,
   // The validator stash
   address: String,
   // total score (including randomness)

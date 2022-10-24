@@ -1,7 +1,8 @@
-import { ValidatorScoreModel } from "../models";
+import { LocationStatsModel, ValidatorScoreModel } from "../models";
 
 export const setValidatorScore = async (
   address: string,
+  session: number,
   updated: number,
   total: number,
   aggregate: number,
@@ -30,11 +31,13 @@ export const setValidatorScore = async (
 
   const data = await ValidatorScoreModel.findOne({
     address: address,
+    session: session,
   });
 
   if (!data) {
     const score = new ValidatorScoreModel({
       address,
+      session,
       updated,
       total,
       aggregate,
@@ -64,6 +67,7 @@ export const setValidatorScore = async (
   await ValidatorScoreModel.findOneAndUpdate(
     {
       address: address,
+      session: session,
     },
     {
       updated,
@@ -91,8 +95,22 @@ export const setValidatorScore = async (
   ).exec();
 };
 
-export const getValidatorScore = async (address: string): Promise<any> => {
+export const getValidatorScore = async (
+  address: string,
+  session: number
+): Promise<any> => {
   return ValidatorScoreModel.findOne({
     address: address,
+    session: session,
   });
+};
+
+export const getLatestValidatorScore = async (
+  address: string
+): Promise<any> => {
+  return (
+    await ValidatorScoreModel.find({ address: address })
+      .sort("-updated")
+      .limit(1)
+  )[0];
 };

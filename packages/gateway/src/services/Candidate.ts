@@ -7,7 +7,7 @@ export const getCandidate = async (stash: any): Promise<any> => {
   try {
     candidate = await queries.getCandidate(stash);
     if (candidate && candidate.stash) {
-      const score = await queries.getValidatorScore(candidate.stash);
+      const score = await queries.getLatestValidatorScore(candidate.stash);
       return {
         discoveredAt: candidate.discoveredAt,
         nominatedAt: candidate.nominatedAt,
@@ -51,7 +51,7 @@ export const getCandidates = async (): Promise<any> => {
   let allCandidates = await queries.allCandidates();
   allCandidates = await Promise.all(
     allCandidates.map(async (candidate) => {
-      const score = await queries.getValidatorScore(candidate.stash);
+      const score = await queries.getLatestValidatorScore(candidate.stash);
       return {
         discoveredAt: candidate.discoveredAt,
         nominatedAt: candidate.nominatedAt,

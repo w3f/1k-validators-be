@@ -19,7 +19,7 @@ export const getVoters = async (): Promise<any> => {
   let allCandidates = await queries.allCandidates();
   allCandidates = await Promise.all(
     allCandidates.map(async (candidate) => {
-      const score = await queries.getValidatorScore(candidate.stash);
+      const score = await queries.getLatestValidatorScore(candidate.stash);
       if (candidate.councilStake && candidate.councilStake > 0)
         return {
           discoveredAt: candidate.discoveredAt,

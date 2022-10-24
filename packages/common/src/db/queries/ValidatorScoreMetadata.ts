@@ -1,5 +1,5 @@
 import logger from "../../logger";
-import { ValidatorScoreMetadataModel } from "../models";
+import { ValidatorScoreMetadataModel, ValidatorScoreModel } from "../models";
 
 export const setValidatorScoreMetadata = async (
   scoreMetadata: any,
@@ -131,8 +131,12 @@ export const setValidatorScoreMetadata = async (
   ).exec();
 };
 
-export const getValidatorScoreMetadata = async (): Promise<any> => {
-  return await ValidatorScoreMetadataModel.findOne({
-    updated: { $gte: 0 },
-  }).exec();
+export const getValidatorScoreMetadata = async (session): Promise<any> => {
+  return ValidatorScoreMetadataModel.findOne({ session });
+};
+
+export const getLatestValidatorScoreMetadata = async (): Promise<any> => {
+  return (
+    await ValidatorScoreMetadataModel.find({}).sort("-updated").limit(1)
+  )[0];
 };

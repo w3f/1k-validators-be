@@ -30,6 +30,7 @@ const API = {
   Score: "/score/:address",
   SessionScore: "/score/:address/:session",
   ScoreMetadata: "/scoremetadata",
+  SessionScoreMetadata: "/scoremetadata/:session",
   Release: "/release",
   LocationStats: "/locationstats",
   SessionLocationStats: "/locationstats/:session",
@@ -84,7 +85,8 @@ router.get(API.AllDelegations, Democracy.getAllDelegations);
 
 router.get(API.Score, Score.getScore);
 router.get(API.SessionScore, Score.getSessionScore);
-router.get(API.ScoreMetadata, Score.getScoreMetadata);
+router.get(API.ScoreMetadata, Score.getLatestScoreMetadata);
+router.get(API.SessionScoreMetadata, Score.getSessionScoreMetadata);
 
 router.get(API.EraStats, Stats.getEraStats);
 router.get(API.LocationStats, Stats.getLocationStats);

@@ -92,7 +92,17 @@ export const getNodes = async (): Promise<any> => {
   return allNodes;
 };
 
-export const getNominatorStake = async (address): Promise<any> => {
+export const getLatestNominatorStake = async (address): Promise<any> => {
   const stake = await queries.getLatestNominatorStake(address);
+  return stake;
+};
+
+export const getEraNominatorStake = async (address, era): Promise<any> => {
+  const stake = await queries.getEraNominatorStake(address, era);
+  return stake;
+};
+
+export const getNominatorStake = async (address, limit): Promise<any> => {
+  const stake = await queries.getNominatorStake(address, limit);
   return stake;
 };

@@ -6,13 +6,13 @@ export const asc = (arr) => arr.sort((a, b) => a - b);
 // Gets the absolute min of an array of values
 export const absMin = (arr) => {
   const sorted = asc(arr);
-  return sorted[0];
+  return Number(sorted[0]);
 };
 
 // Gets the absolute max of an array of values
 export const absMax = (arr) => {
   const sorted = asc(arr);
-  return sorted[sorted.length - 1];
+  return Number(sorted[sorted.length - 1]);
 };
 
 // Gets the total sum of an array of values

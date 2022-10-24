@@ -178,7 +178,14 @@ export default class Nominator {
           callHash
         );
 
-        await tx.signAndSend(this.signer);
+        try {
+          await tx.signAndSend(this.signer);
+        } catch (e) {
+          logger.info(
+            `{Nominator::nominate} there was an error sending the tx`
+          );
+          logger.error(e);
+        }
       } else if (this._isProxy && this._proxyDelay == 0) {
         // Start a normal proxy tx call
         logger.info(

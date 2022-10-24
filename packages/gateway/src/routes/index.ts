@@ -27,7 +27,8 @@ const API = {
   LastNomination: "/lastnomination",
   ProxyTxs: "/proxytxs",
   EraStats: "/erastats",
-  Score: "/score/:stash",
+  Score: "/score/:address",
+  SessionScore: "/score/:address/:session",
   ScoreMetadata: "/scoremetadata",
   Release: "/release",
   LocationStats: "/locationstats",
@@ -82,6 +83,7 @@ router.get(API.Delegations, Democracy.getDelegations);
 router.get(API.AllDelegations, Democracy.getAllDelegations);
 
 router.get(API.Score, Score.getScore);
+router.get(API.SessionScore, Score.getSessionScore);
 router.get(API.ScoreMetadata, Score.getScoreMetadata);
 
 router.get(API.EraStats, Stats.getEraStats);

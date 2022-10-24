@@ -2878,7 +2878,7 @@
       }
     ],
     "forceRound": false,
-    "nominating": true
+    "nominating": false
   },
   "redis": {
     "host": "redis",

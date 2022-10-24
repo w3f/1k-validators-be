@@ -700,7 +700,7 @@ export default class ScoreKeeper {
     let validCandidates = allCandidates.filter((candidate) => candidate.valid);
     validCandidates = await Promise.all(
       validCandidates.map(async (candidate) => {
-        const score = await queries.getValidatorScore(candidate.stash);
+        const score = await queries.getLatestValidatorScore(candidate.stash);
         const scoredCandidate = {
           name: candidate.name,
           stash: candidate.stash,

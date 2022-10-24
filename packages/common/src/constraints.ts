@@ -254,6 +254,8 @@ export class OTV implements Constraints {
     const validCandidates = candidates.filter((candidate) => candidate.valid);
     if (validCandidates.length < 2) return;
 
+    const session = await this.chaindata.getSession();
+
     // Get Ranges of Parameters
     //    A validators individual parameter is then scaled to how it compares to others that are also deemed valid
 
@@ -532,6 +534,7 @@ export class OTV implements Constraints {
 
       await setValidatorScore(
         candidate.stash,
+        session,
         score.updated,
         score.total,
         score.aggregate ? score.aggregate : 0,

@@ -10,7 +10,12 @@ export const getLatestScore = async (stash): Promise<any> => {
   return score;
 };
 
-export const getScoreMetadata = async (): Promise<any> => {
-  const scoreMetadata = await queries.getValidatorScoreMetadata();
+export const getScoreMetadata = async (session): Promise<any> => {
+  const scoreMetadata = await queries.getValidatorScoreMetadata(session);
+  return scoreMetadata;
+};
+
+export const getLatestScoreMetadata = async (): Promise<any> => {
+  const scoreMetadata = await queries.getLatestValidatorScoreMetadata();
   return scoreMetadata;
 };

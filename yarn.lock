@@ -60,7 +60,7 @@ __metadata:
     bree: ^9.1.2
     bs58: ^5.0.0
     commander: ^9.4.1
-    concurrently: ^7.4.0
+    concurrently: ^7.5.0
     cron: ^2.1.0
     eslint: 8.22.0
     eslint-config-prettier: ^8.5.0
@@ -100,7 +100,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": ^5.40.1
     "@typescript-eslint/parser": ^5.40.1
     ava: ^4.3.3
-    concurrently: ^7.4.0
+    concurrently: ^7.5.0
     eslint: 8.22.0
     eslint-plugin-security: ^1.5.0
     koa-swagger-decorator: ^1.8.6
@@ -118,7 +118,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": ^5.40.1
     "@typescript-eslint/parser": ^5.40.1
     ava: ^4.3.3
-    concurrently: ^7.4.0
+    concurrently: ^7.5.0
     eslint: 8.22.0
     eslint-plugin-security: ^1.5.0
     nodemon: ^2.0.20
@@ -137,7 +137,7 @@ __metadata:
     "@typescript-eslint/parser": ^5.40.1
     ava: ^4.3.3
     bullmq: ^2.3.2
-    concurrently: ^7.4.0
+    concurrently: ^7.5.0
     eslint: 8.22.0
     nodemon: ^2.0.20
     typescript: ^4.8.4
@@ -3294,9 +3294,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"concurrently@npm:^7.4.0":
-  version: 7.4.0
-  resolution: "concurrently@npm:7.4.0"
+"concurrently@npm:^7.5.0":
+  version: 7.5.0
+  resolution: "concurrently@npm:7.5.0"
   dependencies:
     chalk: ^4.1.0
     date-fns: ^2.29.1
@@ -3310,7 +3310,7 @@ __metadata:
   bin:
     conc: dist/bin/concurrently.js
     concurrently: dist/bin/concurrently.js
-  checksum: cc547866ad8d009d184ca3a7115d6636052a5f56f5429d123092d651286043d7233f6429257e30e50f509894cd12798ea831896ac18092d8135f67ffcc8ac3ea
+  checksum: 7886e1c8559d2699ae1b62be8aca5d56c226966e252a2b9dd6077b3c1fd5397e98ef537c040fffa1de50418bd2616746eb9dd589a31ffb9056d4758b850a865b
   languageName: node
   linkType: hard
 
@@ -8365,7 +8365,7 @@ __metadata:
 
 "typescript@patch:typescript@^4.8.4#~builtin<compat/typescript>":
   version: 4.8.4
-  resolution: "typescript@patch:typescript@npm%3A4.8.4#~builtin<compat/typescript>::version=4.8.4&hash=bda367"
+  resolution: "typescript@patch:typescript@npm%3A4.8.4#~builtin<compat/typescript>::version=4.8.4&hash=f456af"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver

@@ -413,6 +413,7 @@ export const ValidatorScoreModel = mongoose.model(
 );
 
 export const ValidatorScoreMetadataSchema = new Schema({
+  session: Number,
   // Bonded Metadata
   bondedStats: {
     values: [Number],
@@ -525,20 +526,6 @@ export const ValidatorScoreMetadataSchema = new Schema({
     standardDeviation: Number,
   },
   rankWeight: Number,
-  // Unclaimed Metadata
-  unclaimedStats: {
-    values: [Number],
-    absoluteMin: Number,
-    absoluteMax: Number,
-    q10: Number,
-    q25: Number,
-    q50: Number,
-    q75: Number,
-    q90: Number,
-    mean: Number,
-    standardDeviation: Number,
-  },
-  unclaimedWeight: Number,
   // Location Metadata
   locationStats: {
     values: [Number],
@@ -553,6 +540,45 @@ export const ValidatorScoreMetadataSchema = new Schema({
     standardDeviation: Number,
   },
   locationWeight: Number,
+  regionStats: {
+    values: [Number],
+    absoluteMin: Number,
+    absoluteMax: Number,
+    q10: Number,
+    q25: Number,
+    q50: Number,
+    q75: Number,
+    q90: Number,
+    mean: Number,
+    standardDeviation: Number,
+  },
+  regionWeight: Number,
+  countryStats: {
+    values: [Number],
+    absoluteMin: Number,
+    absoluteMax: Number,
+    q10: Number,
+    q25: Number,
+    q50: Number,
+    q75: Number,
+    q90: Number,
+    mean: Number,
+    standardDeviation: Number,
+  },
+  countryWeight: Number,
+  providerStats: {
+    values: [Number],
+    absoluteMin: Number,
+    absoluteMax: Number,
+    q10: Number,
+    q25: Number,
+    q50: Number,
+    q75: Number,
+    q90: Number,
+    mean: Number,
+    standardDeviation: Number,
+  },
+  providerWeight: Number,
   councilStakeWeight: Number,
   councilStakeStats: {
     values: [Number],
@@ -579,6 +605,32 @@ export const ValidatorScoreMetadataSchema = new Schema({
     standardDeviation: Number,
   },
   democracyWeight: Number,
+  nominatorStakeStats: {
+    values: [Number],
+    absoluteMin: Number,
+    absoluteMax: Number,
+    q10: Number,
+    q25: Number,
+    q50: Number,
+    q75: Number,
+    q90: Number,
+    mean: Number,
+    standardDeviation: Number,
+  },
+  nominatorStakeWeight: Number,
+  delegationStats: {
+    values: [Number],
+    absoluteMin: Number,
+    absoluteMax: Number,
+    q10: Number,
+    q25: Number,
+    q50: Number,
+    q75: Number,
+    q90: Number,
+    mean: Number,
+    standardDeviation: Number,
+  },
+  delegationWeight: Number,
   // The last time one was updated
   updated: Number,
 });

@@ -16,9 +16,33 @@ export default class CandidateController {
     response(context, 200, await CandidateService.getNodes());
   }
 
-  public static async getNominatorStake(context: any): Promise<void> {
+  public static async getLatestNominatorStake(context: any): Promise<void> {
     const address = context.params.address;
 
-    response(context, 200, await CandidateService.getNominatorStake(address));
+    response(
+      context,
+      200,
+      await CandidateService.getLatestNominatorStake(address)
+    );
+  }
+
+  public static async getEraNominatorStake(context: any): Promise<void> {
+    const { address, era } = context.params;
+
+    response(
+      context,
+      200,
+      await CandidateService.getEraNominatorStake(address, era)
+    );
+  }
+
+  public static async getLastNominatorStake(context: any): Promise<void> {
+    const { address, limit } = context.params;
+
+    response(
+      context,
+      200,
+      await CandidateService.getNominatorStake(address, limit)
+    );
   }
 }

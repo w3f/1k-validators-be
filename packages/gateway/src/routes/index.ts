@@ -47,7 +47,9 @@ const API = {
   LastReferendums: "/lastreferendums",
   ReferendumIndexVotes: "/referendumvotes/index/:index",
   ReferendumAccountVotes: "/referendumvotes/account/:address",
-  NominatorStake: "/nominatorstake/:address",
+  LastNominatorStake: "/nominatorstake/:address/last/:limit",
+  LatestNominatorStake: "/nominatorstake/:address",
+  EraNominatorStake: "/nominatorstake/:address/:era",
   Delegations: "/delegations/:address",
   AllDelegations: "/delegations",
 };
@@ -57,7 +59,9 @@ router.get(API.Accounting, Accounting.getAccounting);
 router.get(API.Candidate, Candidate.getCandidate);
 router.get(API.GetCandidates, Candidate.getCandidates);
 router.get(API.GetNodes, Candidate.getNodes);
-router.get(API.NominatorStake, Candidate.getNominatorStake);
+router.get(API.LatestNominatorStake, Candidate.getLatestNominatorStake);
+router.get(API.EraNominatorStake, Candidate.getEraNominatorStake);
+router.get(API.LastNominatorStake, Candidate.getLastNominatorStake);
 
 router.get(API.GetNominators, Nominator.getNominators);
 router.get(API.GetNominator, Nominator.getNominator);

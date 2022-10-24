@@ -944,7 +944,7 @@ export const getCouncilStakeValues = (
   validCandidates: Types.CandidateData[]
 ) => {
   const councilStakeValues = validCandidates.map((candidate) => {
-    return candidate.councilStake ? candidate.councilStake : 0;
+    return candidate.councilStake ? Number(candidate.councilStake) : 0;
   });
   const councilStakeStats = getStats(councilStakeValues);
   return { councilStakeValues, councilStakeStats };

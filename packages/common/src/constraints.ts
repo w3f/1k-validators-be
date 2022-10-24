@@ -292,34 +292,44 @@ export class OTV implements Constraints {
     const { lastReferendum, democracyValues, democracyStats } =
       await getDemocracyValues(validCandidates);
 
+    const scoreMetadata = {
+      session: session,
+      bondedStats: bondedStats,
+      bondedWeight: this.BONDED_WEIGHT,
+      faultsStats: faultsStats,
+      faultsWeight: this.FAULTS_WEIGHT,
+      inclusionStats: inclusionStats,
+      inclusionWeight: this.INCLUSION_WEIGHT,
+      spanInclusionStats: spanInclusionStats,
+      spanInclusionWeight: this.SPAN_INCLUSION_WEIGHT,
+      discoveredAtStats: discoveredAtStats,
+      discoveredAtWeight: this.DISCOVERED_WEIGHT,
+      nominatedAtStats: nominatedAtStats,
+      nominatedAtWeight: this.NOMINATED_WEIGHT,
+      offlineStats: offlineStats,
+      offlineWeight: this.OFFLINE_WEIGHT,
+      rankStats: rankStats,
+      rankWeight: this.RANK_WEIGHT,
+      locationStats: locationStats,
+      locationWeight: this.LOCATION_WEIGHT,
+      regionStats: regionStats,
+      regionWeight: this.REGION_WEIGHT,
+      countryStats: countryStats,
+      countryWeight: this.COUNTRY_WEIGHT,
+      providerStats: providerStats,
+      providerWeight: this.PROVIDER_WEIGHT,
+      nominatorStakeStats: nominatedAtStats,
+      nominatorStakeWeight: this.NOMINATIONS_WEIGHT,
+      delegationStats: delegationStats,
+      delegationWeight: this.DELEGATIONS_WEIGHT,
+      councilStakeStats: councilStakeStats,
+      councilStakeWeight: this.COUNCIL_WEIGHT,
+      democracyStats: democracyStats,
+      democracyWeight: this.DEMOCRACY_WEIGHT,
+    };
+
     // Create  entry for Validator Score Metadata
-    await setValidatorScoreMetadata(
-      bondedStats,
-      this.BONDED_WEIGHT,
-      faultsStats,
-      this.FAULTS_WEIGHT,
-      inclusionStats,
-      this.INCLUSION_WEIGHT,
-      spanInclusionStats,
-      this.SPAN_INCLUSION_WEIGHT,
-      discoveredAtStats,
-      this.DISCOVERED_WEIGHT,
-      nominatedAtStats,
-      this.NOMINATED_WEIGHT,
-      offlineStats,
-      this.OFFLINE_WEIGHT,
-      rankStats,
-      this.RANK_WEIGHT,
-      unclaimedStats,
-      this.UNCLAIMED_WEIGHT,
-      locationStats,
-      this.LOCATION_WEIGHT,
-      councilStakeStats,
-      this.COUNCIL_WEIGHT,
-      democracyStats,
-      this.DEMOCRACY_WEIGHT,
-      Date.now()
-    );
+    await setValidatorScoreMetadata(scoreMetadata, Date.now());
 
     for (const candidate of validCandidates) {
       // Scale inclusion between the 20th and 75th percentiles

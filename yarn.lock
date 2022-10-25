@@ -84,7 +84,7 @@ __metadata:
     ts-node: ^10.9.1
     typescript: ^4.8.4
     winston: ^3.8.2
-    ws: ^8.9.0
+    ws: ^8.10.0
   languageName: unknown
   linkType: soft
 
@@ -8365,7 +8365,7 @@ __metadata:
 
 "typescript@patch:typescript@^4.8.4#~builtin<compat/typescript>":
   version: 4.8.4
-  resolution: "typescript@patch:typescript@npm%3A4.8.4#~builtin<compat/typescript>::version=4.8.4&hash=bda367"
+  resolution: "typescript@patch:typescript@npm%3A4.8.4#~builtin<compat/typescript>::version=4.8.4&hash=f456af"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
@@ -8693,7 +8693,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:^8.8.1, ws@npm:^8.9.0":
+"ws@npm:^8.10.0":
+  version: 8.10.0
+  resolution: "ws@npm:8.10.0"
+  peerDependencies:
+    bufferutil: ^4.0.1
+    utf-8-validate: ^5.0.2
+  peerDependenciesMeta:
+    bufferutil:
+      optional: true
+    utf-8-validate:
+      optional: true
+  checksum: 3a32e15dffe633dd5ce99659793dbcf1440ea25d2da1060c88cbd22efdfb7986a6933e68aaa4b098fc3f1f7870cb386afd378a1ceaca4b31748471576d5a8b52
+  languageName: node
+  linkType: hard
+
+"ws@npm:^8.8.1":
   version: 8.9.0
   resolution: "ws@npm:8.9.0"
   peerDependencies:

@@ -404,6 +404,7 @@ export const reportOffline = async (
     }
   );
 };
+
 export const reportUpdated = async (name: string): Promise<boolean> => {
   await CandidateModel.findOneAndUpdate(
     {

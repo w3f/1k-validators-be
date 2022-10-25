@@ -10,7 +10,7 @@ __metadata:
   resolution: "1k-validators-be@workspace:."
   dependencies:
     "@types/eslint": ^8
-    "@types/node": ^18.11.2
+    "@types/node": ^18.11.5
     "@typescript-eslint/eslint-plugin": ^5.40.1
     "@typescript-eslint/parser": ^5.40.1
     eslint: 8.22.0
@@ -26,7 +26,7 @@ __metadata:
   dependencies:
     "@polkadot/keyring": ^10.1.11
     "@types/mongoose": ^5.11.97
-    "@types/node": ^18.11.2
+    "@types/node": ^18.11.5
     hash.js: ^1.1.7
     mongoose: ^6.6.5
     typescript: ^4.8.4
@@ -50,7 +50,7 @@ __metadata:
     "@types/cron": ^2.0.0
     "@types/koa": ^2.13.5
     "@types/koa-bodyparser": ^4.3.8
-    "@types/node": ^18.11.2
+    "@types/node": ^18.11.5
     "@types/semver": ^7.3.12
     "@types/ws": ^8.5.3
     "@typescript-eslint/eslint-plugin": ^5.40.1
@@ -2101,10 +2101,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:^18.11.2":
+"@types/node@npm:*":
   version: 18.11.2
   resolution: "@types/node@npm:18.11.2"
   checksum: 0ff5c90fb9ab653e018b858479aea4d2f763b07b31f9502383d408936f525ca37cac82ea27774a0dd0356ff9badba2792a6a3fff94f79fd7c82ee2a892c43ed5
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^18.11.5":
+  version: 18.11.5
+  resolution: "@types/node@npm:18.11.5"
+  checksum: ac54e9287dd4549ea3dc8aabc0cf7bfa04c52f02925d7fd68414789617ec770f034c8ae2e111e8bd00d446a46fcac42587b5a316a1303e2f6ea094854248c9ff
   languageName: node
   linkType: hard
 
@@ -8365,7 +8372,7 @@ __metadata:
 
 "typescript@patch:typescript@^4.8.4#~builtin<compat/typescript>":
   version: 4.8.4
-  resolution: "typescript@patch:typescript@npm%3A4.8.4#~builtin<compat/typescript>::version=4.8.4&hash=bda367"
+  resolution: "typescript@patch:typescript@npm%3A4.8.4#~builtin<compat/typescript>::version=4.8.4&hash=f456af"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver

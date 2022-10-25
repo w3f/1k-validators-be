@@ -113,13 +113,13 @@ export class OTV implements Constraints {
     this.SPAN_INCLUSION_WEIGHT = Number(this.config.score.spanInclusion);
     this.DISCOVERED_WEIGHT = Number(this.config.score.discovered);
     this.NOMINATED_WEIGHT = Number(this.config.score.nominated);
-    this.RANK_WEIGHT = Number(this.config.score.nominated);
+    this.RANK_WEIGHT = Number(this.config.score.rank);
     this.BONDED_WEIGHT = Number(this.config.score.bonded);
     this.FAULTS_WEIGHT = Number(this.config.score.faults);
     this.OFFLINE_WEIGHT = Number(this.config.score.offline);
     this.LOCATION_WEIGHT = Number(this.config.score.location);
     this.REGION_WEIGHT = Number(this.config.score.region);
-    this.COUNTRY_WEIGHT = Number(this.config.score.region);
+    this.COUNTRY_WEIGHT = Number(this.config.score.country);
     this.PROVIDER_WEIGHT = Number(this.config.score.provider);
     this.COUNCIL_WEIGHT = Number(this.config.score.council);
     this.DEMOCRACY_WEIGHT = Number(this.config.score.democracy);
@@ -505,13 +505,13 @@ export class OTV implements Constraints {
         unclaimedScore +
         bondedScore +
         locationScore +
-        // regionScore +
-        // countryScore +
-        // providerScore +
+        regionScore +
+        countryScore +
+        providerScore +
         councilStakeScore +
         scaledDemocracyScore +
         offlineScore +
-        // delegationScore +
+        delegationScore +
         nominatorStakeScore;
 
       const randomness = 1 + Math.random() * 0.15;

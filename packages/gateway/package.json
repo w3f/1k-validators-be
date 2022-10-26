@@ -28,7 +28,7 @@
   "dependencies": {
     "@1kv/common": "workspace:^",
     "@1kv/worker": "workspace:^",
-    "@bull-board/api": "^4.6.0",
+    "@bull-board/api": "^4.6.1",
     "@bull-board/koa": "^4.6.0",
     "koa-swagger-decorator": "^1.8.6",
     "typescript": "^4.8.4"

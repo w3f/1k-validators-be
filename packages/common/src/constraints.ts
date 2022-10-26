@@ -400,7 +400,7 @@ export class OTV implements Constraints {
       // Scale the value to between the 10th and 95th percentile
       const scaledRegion =
         scaledDefined(candidateRegion, regionValues, 0.1, 0.95) || 0;
-      const regionScore = (1 - scaledRegion) * this.LOCATION_WEIGHT || 0;
+      const regionScore = (1 - scaledRegion) * this.REGION_WEIGHT || 0;
 
       const candidateCountry = countryArr.filter((country) => {
         if (
@@ -412,7 +412,7 @@ export class OTV implements Constraints {
       // Scale the value to between the 10th and 95th percentile
       const scaledCountry =
         scaledDefined(candidateCountry, countryValues, 0.1, 0.95) || 0;
-      const countryScore = (1 - scaledCountry) * this.LOCATION_WEIGHT || 0;
+      const countryScore = (1 - scaledCountry) * this.COUNTRY_WEIGHT || 0;
 
       const candidateProvider = providerArr.filter((provider) => {
         if (
@@ -424,7 +424,7 @@ export class OTV implements Constraints {
       // Scale the value to between the 10th and 95th percentile
       const scaledProvider =
         scaledDefined(candidateProvider, providerValues, 0.1, 0.95) || 0;
-      const providerScore = (1 - scaledProvider) * this.LOCATION_WEIGHT || 0;
+      const providerScore = (1 - scaledProvider) * this.PROVIDER_WEIGHT || 0;
 
       const nomStake = await getLatestNominatorStake(candidate.stash);
       let totalNominatorStake = 0;
@@ -542,31 +542,7 @@ export class OTV implements Constraints {
         updated: Date.now(),
       };
 
-      await setValidatorScore(
-        candidate.stash,
-        session,
-        score.updated,
-        score.total,
-        score.aggregate ? score.aggregate : 0,
-        score.inclusion,
-        score.spanInclusion,
-        score.discovered,
-        score.nominated,
-        score.rank,
-        score.unclaimed,
-        score.bonded,
-        score.faults,
-        score.offline,
-        score.location,
-        score.region,
-        score.country,
-        score.provider,
-        score.councilStake,
-        score.democracy,
-        score.nominatorStake,
-        score.delegations,
-        score.randomness
-      );
+      await setValidatorScore(candidate.stash, session, score);
 
       const rankedCandidate = {
         aggregate: score,

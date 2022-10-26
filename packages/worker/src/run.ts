@@ -2,13 +2,14 @@ import Worker from "./worker";
 import { Command } from "commander";
 import { Db, Config, logger } from "@1kv/common";
 
-const version = "v3.0.0";
+const version = process.env.npm_package_version;
 
 const catchAndQuit = async (fn: any) => {
   try {
     await fn;
   } catch (e) {
-    console.error(e.toString());
+    logger.info("There was an error!");
+    logger.error(e.toString());
     process.exit(1);
   }
 };
@@ -30,3 +31,12 @@ program
 
 program.version(version);
 program.parse(process.argv);
+
+process
+  .on("unhandledRejection", (reason, p) => {
+    console.error(reason, "Unhandled Rejection at Promise", p);
+  })
+  .on("uncaughtException", (err) => {
+    console.error(err, "Uncaught Exception thrown");
+    process.exit(1);
+  });

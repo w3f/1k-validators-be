@@ -3,31 +3,31 @@ import { LocationStatsModel, ValidatorScoreModel } from "../models";
 export const setValidatorScore = async (
   address: string,
   session: number,
-  updated: number,
-  total: number,
-  aggregate: number,
-  inclusion: number,
-  spanInclusion: number,
-  discovered: number,
-  nominated: number,
-  rank: number,
-  unclaimed: number,
-  bonded: number,
-  faults: number,
-  offline: number,
-  location: number,
-  region: number,
-  country: number,
-  provider: number,
-  councilStake: number,
-  democracy: number,
-  nominatorStake: number,
-  delegations: number,
-  randomness: number
+  score: any
 ): Promise<boolean> => {
-  // logger.info(
-  // `(Db::setNomination) Setting validator score for ${address} with total: ${total}`
-  // );
+  const {
+    total,
+    aggregate,
+    inclusion,
+    spanInclusion,
+    discovered,
+    nominated,
+    rank,
+    unclaimed,
+    bonded,
+    faults,
+    offline,
+    location,
+    region,
+    country,
+    provider,
+    councilStake,
+    democracy,
+    nominatorStake,
+    delegations,
+    randomness,
+    updated,
+  } = score;
 
   const data = await ValidatorScoreModel.findOne({
     address: address,

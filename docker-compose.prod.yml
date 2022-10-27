@@ -1,0 +1,114 @@
+version: '3'
+services:
+  1kv-core:
+    build:
+      context: .
+      args:
+        PACKAGE: core
+      dockerfile: ./Dockerfile
+    volumes:
+      - .:/code
+    ports:
+      - "3300:3300"
+    networks:
+      testing_net:
+        ipv4_address: 172.28.1.7
+
+  1kv-gateway:
+    build:
+      context: .
+      args:
+        PACKAGE: gateway
+      dockerfile: ./Dockerfile
+    volumes:
+      - .:/code
+    ports:
+      - "3301:3301"
+    networks:
+      testing_net:
+        ipv4_address: 172.28.1.8
+
+  1kv-telemetry:
+    build:
+      context: .
+      args:
+        PACKAGE: telemetry
+      dockerfile: ./Dockerfile
+    volumes:
+      - .:/code
+    networks:
+      testing_net:
+        ipv4_address: 172.28.1.9
+
+  1kv-worker:
+    build:
+      context: .
+      args:
+        PACKAGE: worker
+      dockerfile: ./Dockerfile
+    volumes:
+      - .:/code
+    deploy:
+      mode: replicated
+      replicas: 2
+    restart: unless-stopped
+    networks:
+      testing_net:
+  #          ipv4_address: 172.28.1.16
+
+
+  mongo:
+    image: mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    networks:
+      testing_net:
+        ipv4_address: 172.28.1.12
+
+  mongo-express:
+    image: mongo-express
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongo
+      - ME_CONFIG_MONGODB_PORT=27017
+      - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
+      - ME_CONFIG_MONGODB_AUTH_DATABASE=admin
+      - ME_CONFIG_MONGODB_AUTH_USERNAME=${MONGO_ROOT_USER}
+      - ME_CONFIG_MONGODB_AUTH_PASSWORD=${MONGO_ROOT_PASSWORD}
+      - ME_CONFIG_BASICAUTH_USERNAME=${MONGOEXPRESS_LOGIN}
+      - ME_CONFIG_BASICAUTH_PASSWORD=${MONGOEXPRESS_PASSWORD}
+    depends_on:
+      - mongo
+    ports:
+      - "8888:8081"
+    networks:
+      testing_net:
+        ipv4_address: 172.28.1.14
+
+  redis:
+    image: redis:alpine
+    expose:
+      - "6379"
+    volumes:
+      - ./redis:/data
+    restart: always
+    command: ["redis-server", "--bind", "172.28.1.13", "--port", "6379"]
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+    networks:
+      default:
+      testing_net:
+        ipv4_address: 172.28.1.13
+
+
+
+#volumes:
+
+networks:
+  testing_net:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.0.0/16

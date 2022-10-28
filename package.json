@@ -10,6 +10,7 @@
     "packages/core"
   ],
   "scripts": {
+    "open:polkadot-apps": "open-cli https://polkadot.js.org/apps/?rpc=ws%3A%2F%2F127.0.0.1%3A9944#/staking",
     "create-config:all": "yarn workspaces foreach run create-config",
     "create-kusama-config:all": "yarn workspaces foreach run create-kusama-config",
     "docker:start": "yarn build:clean && docker-compose up -d --build",

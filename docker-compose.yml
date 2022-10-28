@@ -102,6 +102,7 @@ services:
         args:
           PACKAGE: core
         dockerfile: ./Dockerfile-dev
+      restart: always
       volumes:
         - .:/app
       ports:
@@ -116,6 +117,7 @@ services:
         args:
           PACKAGE: gateway
         dockerfile: ./Dockerfile-dev
+      restart: always
       volumes:
         - .:/app
       ports:
@@ -130,6 +132,7 @@ services:
         args:
           PACKAGE: telemetry
         dockerfile: ./Dockerfile-dev
+      restart: always
       volumes:
         - .:/app
       networks:
@@ -147,7 +150,7 @@ services:
       deploy:
         mode: replicated
         replicas: 2
-      restart: unless-stopped
+      restart: always
       networks:
         testing_net:
 #          ipv4_address: 172.28.1.16

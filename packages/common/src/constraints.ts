@@ -250,6 +250,7 @@ export class OTV implements Constraints {
   }
 
   async scoreCandidates(candidates: Types.CandidateData[]) {
+    logger.info(`{Scored} scoring all candidates`, { label: "Constraints" });
     let rankedCandidates = [];
     const validCandidates = candidates.filter((candidate) => candidate.valid);
     if (validCandidates.length < 2) return;
@@ -332,6 +333,10 @@ export class OTV implements Constraints {
     await setValidatorScoreMetadata(scoreMetadata, Date.now());
 
     for (const candidate of validCandidates) {
+      logger.info(`{Scored} scoring ${candidate.name}`, {
+        label: "Constraints",
+      });
+
       // Scale inclusion between the 20th and 75th percentiles
       const scaledInclusion =
         scaledDefined(candidate.inclusion, inclusionValues, 0.2, 0.75) || 0;
@@ -543,7 +548,10 @@ export class OTV implements Constraints {
       };
 
       logger.info(
-        `{Scored} ${Date.now().toString()} ${name} ${aggregate} region: ${regionScore}`
+        `{Scored} ${Date.now().toString()} ${
+          candidate.name
+        } ${aggregate} region: ${regionScore}`,
+        { label: "Constraints" }
       );
 
       await setValidatorScore(candidate.stash, session, score);

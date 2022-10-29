@@ -824,8 +824,10 @@ export default class ScoreKeeper {
         const targetsString = (
           await Promise.all(
             targets.map(async (target) => {
-              const name = (await queries.getCandidate(target)).name;
-              return `- ${name} (${target})`;
+              const candidate = await queries.getCandidate(target);
+              const name = candidate.name;
+              const score = candidate.total;
+              return `- ${name} (${target}) [${score}]`;
             })
           )
         ).join("\n");

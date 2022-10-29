@@ -542,6 +542,10 @@ export class OTV implements Constraints {
         updated: Date.now(),
       };
 
+      logger.info(
+        `{Scored} ${Date.now().toString()} ${name} ${aggregate} region: ${regionScore}`
+      );
+
       await setValidatorScore(candidate.stash, session, score);
 
       const rankedCandidate = {

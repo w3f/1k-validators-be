@@ -125,16 +125,16 @@ export default class TelemetryClient {
           ] = payload;
 
           const now = Date.now();
-          logger.info(`node stats`);
-          logger.info(JSON.stringify(nodeStats));
-          logger.info(`node io`);
-          logger.info(JSON.stringify(nodeIO));
-          logger.info("node hardware");
-          logger.info(JSON.stringify(nodeHardware));
-          logger.info("block deatils");
-          logger.info(JSON.stringify(blockDetails));
-          logger.info("startup time");
-          logger.info(JSON.stringify(new Date(startupTime).toString()));
+          // logger.info(`node stats`);
+          // logger.info(JSON.stringify(nodeStats));
+          // logger.info(`node io`);
+          // logger.info(JSON.stringify(nodeIO));
+          // logger.info("node hardware");
+          // logger.info(JSON.stringify(nodeHardware));
+          // logger.info("block deatils");
+          // logger.info(JSON.stringify(blockDetails));
+          // logger.info("startup time");
+          // logger.info(JSON.stringify(new Date(startupTime).toString()));
 
           // Cache the node details, key'd by telemetry id
           MemNodes[parseInt(id)] = details;

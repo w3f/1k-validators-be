@@ -210,7 +210,7 @@ export const reportOnline = async (
   telemetryId: number,
   details: NodeDetails,
   now: number,
-  location: string
+  startupTime: number
 ): Promise<boolean> => {
   const [name, nodeImplementation, version, address, networkId, addr] = details;
 
@@ -244,8 +244,8 @@ export const reportOnline = async (
       nodeRefs: 1,
       name,
       version,
-      discoveredAt: now,
-      onlineSince: now,
+      discoveredAt: startupTime,
+      onlineSince: startupTime,
       offlineSince: 0,
       infrastructureLocation: locationData,
     });
@@ -253,11 +253,13 @@ export const reportOnline = async (
     await candidate.save();
     return true;
   }
+
   // Get the list of all other validtity reasons besides online
   const invalidityReasons = data.invalidity.filter((invalidityReason) => {
     return invalidityReason.type !== "ONLINE";
   });
 
+  // T
   if (!data.discoveredAt) {
     await CandidateModel.findOneAndUpdate(
       { name },
@@ -372,10 +374,10 @@ export const reportOffline = async (
         invalidity: [
           ...invalidityReasons,
           {
-            valid: false,
+            valid: true,
             type: "ONLINE",
             updated: Date.now(),
-            details: `${data.name} offline. Offline since ${data.offlineSince}.`,
+            details: ``,
           },
         ],
       }

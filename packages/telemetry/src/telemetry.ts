@@ -36,7 +36,7 @@ export default class TelemetryClient {
     this.config = config;
     this.host = this.config.telemetry.host || DEFAULT_HOST;
 
-    this.enable = config.server.enable;
+    this.enable = config.telemetry.enable;
 
     const options = {
       WebSocket: WS,
@@ -123,31 +123,46 @@ export default class TelemetryClient {
             location,
             startupTime,
           ] = payload;
-          const [lat, lon, city] = location || ["", "", "No Location"];
-          const now = Date.now();
 
+          const now = Date.now();
+          logger.info(`node stats`);
+          logger.info(JSON.stringify(nodeStats));
+          logger.info(`node io`);
+          logger.info(JSON.stringify(nodeIO));
+          logger.info("node hardware");
+          logger.info(JSON.stringify(nodeHardware));
+          logger.info("block deatils");
+          logger.info(JSON.stringify(blockDetails));
+          logger.info("startup time");
+          logger.info(JSON.stringify(new Date(startupTime).toString()));
+
+          // Cache the node details, key'd by telemetry id
           MemNodes[parseInt(id)] = details;
 
           // a mutex that will only update after its free to avoid race conditions
-          const waitUntilFree = async (name: string): Promise<void> => {
-            if (this.beingReported.get(name)) {
-              return new Promise((resolve) => {
-                const intervalId = setInterval(() => {
-                  if (!this.beingReported.get(name)) {
-                    clearInterval(intervalId);
-                    resolve();
-                  }
-                }, 1000);
-              });
-            }
-          };
+          // const waitUntilFree = async (name: string): Promise<void> => {
+          //   if (this.beingReported.get(name)) {
+          //     return new Promise((resolve) => {
+          //       const intervalId = setInterval(() => {
+          //         if (!this.beingReported.get(name)) {
+          //           clearInterval(intervalId);
+          //           resolve();
+          //         }
+          //       }, 1000);
+          //     });
+          //   }
+          // };
+          //
+          // await waitUntilFree(details[0]);
 
-          await waitUntilFree(details[0]);
-          await queries.reportOnline(id, details, now, city);
+          // Report the node as online
+          await queries.reportOnline(id, details, now, startupTime);
 
+          // If the node was offline
           const wasOffline = this.offlineNodes.has(id);
           if (wasOffline) {
             this.offlineNodes.delete(id);
+            logger.info(`node ${details?.name} that was offline is now online`);
           }
         }
         break;
@@ -161,13 +176,14 @@ export default class TelemetryClient {
 
           if (!details) {
             logger.info(`Unknown node with ${id} reported offline.`);
+            break;
           }
 
           const name = details[0];
 
-          this.beingReported.set(name, true);
+          // this.beingReported.set(name, true);
           await queries.reportOffline(id, name, now);
-          this.beingReported.set(name, false);
+          // this.beingReported.set(name, false);
 
           this.offlineNodes.set(id, true);
         }

@@ -25,7 +25,7 @@ export default class MatrixBot {
 
   start(): void {
     this.client.startClient();
-    this.listenForCommands();
+    // this.listenForCommands();
   }
 
   listenForCommands(): void {

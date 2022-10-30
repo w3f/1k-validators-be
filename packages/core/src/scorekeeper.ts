@@ -687,12 +687,18 @@ export default class ScoreKeeper {
       return;
     }
 
+    // Get all Candidates and set validity
     const allCandidates = await queries.allCandidates();
 
-    for (const candidate of allCandidates) {
+    // Set Validity
+    for (const [index, candidate] of allCandidates.entries()) {
+      logger.info(
+        `{Scorekeeper::startRound} checking candidate ${candidate.name} [${index}/${allCandidates.length}]`
+      );
       await this.constraints.checkCandidate(candidate);
     }
 
+    // Score all candidates
     await this.constraints.scoreCandidates(allCandidates);
 
     await Util.sleep(6000);

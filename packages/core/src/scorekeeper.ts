@@ -649,7 +649,7 @@ export default class ScoreKeeper {
       );
       logger.error(e);
     }
-    mainCron.start();
+    await mainCron.start();
   }
 
   /// Handles the beginning of a new round.

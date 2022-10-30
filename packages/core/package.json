@@ -17,7 +17,7 @@
     "start": "NODE_OPTIONS='--max-old-space-size=4096' ts-node src/index.ts start",
     "start:watch": "NODE_OPTIONS='--max-old-space-size=6096' nodemon --watch build --exec node build/index.js",
     "start:dev": "concurrently \"tsc -w\"  \"yarn start:watch\"",
-    "js:start": "NODE_OPTIONS='--max-old-space-size=6096' node build/index.js start",
+    "js:start": "NODE_OPTIONS='--max-old-space-size=10096' node build/index.js start",
     "test": "ava test/*.spec.ts --timeout=10m",
     "test:api": "ts-node test/api/chaindata.ts"
   },

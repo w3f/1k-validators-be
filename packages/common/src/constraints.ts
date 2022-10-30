@@ -332,10 +332,13 @@ export class OTV implements Constraints {
     // Create  entry for Validator Score Metadata
     await setValidatorScoreMetadata(scoreMetadata, Date.now());
 
-    for (const candidate of validCandidates) {
-      logger.info(`{Scored} scoring ${candidate.name}`, {
-        label: "Constraints",
-      });
+    for (const [index, candidate] of validCandidates.entries()) {
+      logger.info(
+        `{Scored} scoring ${candidate.name} [${index} / ${validCandidates.length}]`,
+        {
+          label: "Constraints",
+        }
+      );
 
       // Scale inclusion between the 20th and 75th percentiles
       const scaledInclusion =

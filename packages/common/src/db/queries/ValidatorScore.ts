@@ -1,4 +1,5 @@
 import { LocationStatsModel, ValidatorScoreModel } from "../models";
+import logger from "../../logger";
 
 export const setValidatorScore = async (
   address: string,
@@ -93,6 +94,7 @@ export const setValidatorScore = async (
       randomness,
     }
   ).exec();
+  logger.info(`{Scored} score updated for ${address} for session ${session}`);
 };
 
 export const getValidatorScore = async (

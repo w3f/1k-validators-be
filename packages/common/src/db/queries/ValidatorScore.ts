@@ -1,4 +1,4 @@
-import { LocationStatsModel, ValidatorScoreModel } from "../models";
+import { ValidatorScoreModel } from "../models";
 import logger from "../../logger";
 
 export const setValidatorScore = async (

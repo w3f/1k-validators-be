@@ -236,7 +236,7 @@ export class OTV implements Constraints {
 
     if (valid) {
       this.addToValidCache(candidate.stash, candidate);
-      setLastValid(candidate.stash);
+      await setLastValid(candidate.stash);
     } else {
       this.addToInvalidCache(candidate.stash, candidate);
     }

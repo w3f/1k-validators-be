@@ -20,13 +20,13 @@
     "build": "yarn workspaces foreach -t run build",
     "build:clean": "yarn workspaces foreach run clean:build",
     "start:dev:gateway": "yarn workspace @1kv/gateway run start:dev",
-    "start:js:gateway": "NODE_OPTIONS='--max-old-space-size=6096' node packages/gateway/build/index.js start",
+    "start:js:gateway": "NODE_OPTIONS='--max-old-space-size=10096' node packages/gateway/build/index.js start",
     "start:dev:core": "yarn workspace @1kv/core run start:dev",
-    "start:js:core": "NODE_OPTIONS='--max-old-space-size=6096' node packages/core/build/index.js start",
+    "start:js:core": "NODE_OPTIONS='--max-old-space-size=10096' node packages/core/build/index.js start",
     "start:dev:telemetry": "yarn workspace @1kv/telemetry run start:dev",
-    "start:js:telemetry": "NODE_OPTIONS='--max-old-space-size=6096' node packages/telemetry/build/index.js start",
+    "start:js:telemetry": "NODE_OPTIONS='--max-old-space-size=10096' node packages/telemetry/build/index.js start",
     "start:dev:worker": "yarn workspace @1kv/worker run start:dev",
-    "start:js:worker": "NODE_OPTIONS='--max-old-space-size=6096' node packages/worker/build/index.js start"
+    "start:js:worker": "NODE_OPTIONS='--max-old-space-size=10096' node packages/worker/build/index.js start"
   },
   "devDependencies": {
     "@types/eslint": "^8.4.8",

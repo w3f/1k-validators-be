@@ -346,9 +346,9 @@ export const reportOffline = async (
   name: string,
   now: number
 ): Promise<boolean> => {
-  logger.info(
-    `(Db::reportOffline) Reporting ${name} with telemetry id ${telemetryId} offline at ${now}.`
-  );
+  // logger.info(
+  //   `(Db::reportOffline) Reporting ${name} with telemetry id ${telemetryId} offline at ${now}.`
+  // );
 
   const data = await CandidateModel.findOne({ telemetryId });
 

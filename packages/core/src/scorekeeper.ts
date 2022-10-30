@@ -647,7 +647,7 @@ export default class ScoreKeeper {
       logger.info(
         `{Scorekeeper::RunCron} There was an error running some cron jobs...`
       );
-      console.log(e);
+      logger.error(e);
     }
     mainCron.start();
   }

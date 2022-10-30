@@ -1226,7 +1226,7 @@ export const setKusamaRankInvalidity = async (
   });
 
   if (!data) {
-    console.log(`{Self Stake} NO CANDIDATE DATA FOUND FOR ${address}`);
+    logger.warn(`{Self Stake} NO CANDIDATE DATA FOUND FOR ${address}`);
     return;
   }
 
@@ -1266,7 +1266,7 @@ export const setValid = async (
   });
 
   if (!data) {
-    console.log(`{Valid} NO CANDIDATE DATA FOUND FOR ${address}`);
+    logger.warn(`{Valid} NO CANDIDATE DATA FOUND FOR ${address}`);
     return;
   }
 

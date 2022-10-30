@@ -979,10 +979,10 @@ export const checkValidateIntention = async (
 ) => {
   const validators = await chaindata.getValidators();
   if (!validators.includes(Util.formatAddress(candidate?.stash, config))) {
-    setValidateIntentionValidity(candidate.stash, false);
+    await setValidateIntentionValidity(candidate.stash, false);
     return false;
   } else {
-    setValidateIntentionValidity(candidate.stash, true);
+    await setValidateIntentionValidity(candidate.stash, true);
     return true;
   }
 };
@@ -996,9 +996,9 @@ export const checkAllValidateIntentions = async (
   const validators = await chaindata.getValidators();
   for (const candidate of candidates) {
     if (!validators.includes(Util.formatAddress(candidate.stash, config))) {
-      setValidateIntentionValidity(candidate.stash, false);
+      await setValidateIntentionValidity(candidate.stash, false);
     } else {
-      setValidateIntentionValidity(candidate.stash, true);
+      await setValidateIntentionValidity(candidate.stash, true);
     }
   }
 };

@@ -113,7 +113,7 @@ export const CANCEL_CRON = "0 0-59/25 * * * *";
 export const STALE_CRON = "0 0-59/45 * * * *";
 
 // Score Cron Job. This runs every 5 minutes by default
-export const SCORE_CRON = "0 0-59/5 * * * *";
+export const SCORE_CRON = "0 */5 * * * *";
 
 // Era Stats Cron Job. This runs every 5 minutes by default
 export const ERA_STATS_CRON = "0 0-59/35 * * * *";

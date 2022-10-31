@@ -76,7 +76,7 @@ __metadata:
     koa2-cors: ^2.0.6
     matrix-js-sdk: ^20.1.0
     mongodb: 4.11.0
-    mongodb-memory-server: ^8.9.3
+    mongodb-memory-server: ^8.9.4
     mongoose: ^6.7.0
     nodemon: ^2.0.20
     open-cli: ^7.1.0
@@ -6268,9 +6268,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mongodb-memory-server-core@npm:8.9.3":
-  version: 8.9.3
-  resolution: "mongodb-memory-server-core@npm:8.9.3"
+"mongodb-memory-server-core@npm:8.9.4":
+  version: 8.9.4
+  resolution: "mongodb-memory-server-core@npm:8.9.4"
   dependencies:
     "@types/tmp": ^0.2.3
     async-mutex: ^0.3.2
@@ -6288,17 +6288,17 @@ __metadata:
     tslib: ^2.4.0
     uuid: ^8.3.1
     yauzl: ^2.10.0
-  checksum: 2a8669253bd5fcb4431c013db41e4afed68d56a57002e45dde1f6a894ae79cfb237c09408b1aa5c15306b6db296ee4bbf0568313cd708f096266e925732a2665
+  checksum: 428310c744ebd0868b01c8a162a5a17325f88cebfb1aff6ea5921778623745955a2ef214a64669c9e6ea40cb134a32c5c3d47e73f92b5a434d416fde82dbab48
   languageName: node
   linkType: hard
 
-"mongodb-memory-server@npm:^8.9.3":
-  version: 8.9.3
-  resolution: "mongodb-memory-server@npm:8.9.3"
+"mongodb-memory-server@npm:^8.9.4":
+  version: 8.9.4
+  resolution: "mongodb-memory-server@npm:8.9.4"
   dependencies:
-    mongodb-memory-server-core: 8.9.3
+    mongodb-memory-server-core: 8.9.4
     tslib: ^2.4.0
-  checksum: a3181256ba987d2c78f45632242e4aa71e1b4d7c95c3330315fa56c38e15f75874a90adaea54591b25d817d0e9da65da55908e2c883258655ccb7a03ba8a9448
+  checksum: dce59170c01224a4245f26eca62b82c6dc8c827568a2dee438518f56c5ec8e6365e6f78b8844f3c5e1974a2dc00b26f5a9d53049f8812697494b04f34a3eaf39
   languageName: node
   linkType: hard
 

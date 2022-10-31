@@ -27,7 +27,7 @@ const catchAndQuit = async (fn: any) => {
   try {
     await fn;
   } catch (e) {
-    console.error(e.toString());
+    logger.error(e.toString());
     process.exit(1);
   }
 };
@@ -123,7 +123,7 @@ const start = async (cmd: { config: string }) => {
 
   // Wipe the candidates on every start-up and re-add the ones in config.
   logger.info(
-    "{Start} Wiping old candidates data and intializing latest candidates from config."
+    "{Start} Wiping old candidates data and initializing latest candidates from config."
   );
   await queries.clearCandidates();
   if (config.scorekeeper.candidates.length) {
@@ -149,10 +149,10 @@ const start = async (cmd: { config: string }) => {
   }
 
   // Buffer more time.
-  Util.sleep(3000);
+  await Util.sleep(3000);
 
   // Start the scorekeeper
-  scorekeeper.begin();
+  await scorekeeper.begin();
 };
 
 const program = new Command();
@@ -163,10 +163,3 @@ program
 
 program.version(version);
 program.parse(process.argv);
-
-const signals = ["SIGHUP", "SIGINT", "SIGTERM"];
-for (const signal of signals) {
-  process.on(signal, () => {
-    logger.info(`process received a ${signal} signal`);
-  });
-}

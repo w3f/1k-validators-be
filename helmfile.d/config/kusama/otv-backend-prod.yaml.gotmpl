@@ -2,10 +2,10 @@ domain: kusama.w3f.community
 
 resources:
   limits:
-    cpu: 2500m
-    memory: 10Gi
+    cpu: 3000m
+    memory: 8Gi
   requests:
-    cpu: 700m
+    cpu: 1000m
     memory: 3Gi
 
 secret: {{ "ref+vault://op/vaults/k8s-community-secrets/items/otv-kusama-backend-secret?proto=http#password" | fetchSecretValue }}
@@ -2906,7 +2906,7 @@ config: |
               "riotHandle": "@fmonza:matrix.org"
           }
       ],
-      "forceRound": false,
+      "forceRound": true,
       "nominating": true
     },
     "server": {

@@ -1,4 +1,5 @@
 import * as Sdk from "matrix-js-sdk";
+import request from "request";
 import { logger, queries, Config } from "@1kv/common";
 
 const sdk: any = Sdk;
@@ -15,6 +16,7 @@ export default class MatrixBot {
   ) {
     this.client = sdk.createClient({
       baseUrl,
+      request,
       accessToken,
       userId,
     });

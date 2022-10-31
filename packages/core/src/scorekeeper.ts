@@ -182,48 +182,48 @@ export default class ScoreKeeper {
     this.chaindata = new ChainData(this.handler);
 
     // For every staking reward event, create an accounting record of the amount rewarded
-    this.handler.on(
-      "reward",
-      async (data: { stash: string; amount: string }) => {
-        const { stash, amount } = data;
-
-        // check if the address was a candidate, and if so, update their unclaimed eras
-        if (
-          this.rewardDestinationCache &&
-          this.rewardDestinationCache.includes(stash)
-        ) {
-          logger.info(
-            `{scorekeeper::reward} ${stash} claimed reward of ${amount}. Updating eras....`
-          );
-
-          // const unclaimedEras = await this.chaindata.getUnclaimedEras(
-          //   stash,
-          //   db
-          // );
-          //
-          // await db.setUnclaimedEras(stash, unclaimedEras);
-          // await this.constraints.checkCandidateStash(stash);
-          // await this.constraints.scoreAllCandidates();
-        }
-
-        // check if it was a nominator address that earned the reward
-        for (const nomGroup of this.nominatorGroups) {
-          for (const nom of nomGroup) {
-            const nomStash = await nom.stash();
-            if (!nomStash) continue;
-            if (nomStash == stash) {
-              const activeEra = await this.chaindata.getActiveEraIndex();
-              await queries.updateAccountingRecord(
-                nom.controller,
-                nomStash,
-                activeEra.toString(),
-                amount
-              );
-            }
-          }
-        }
-      }
-    );
+    // this.handler.on(
+    //   "reward",
+    //   async (data: { stash: string; amount: string }) => {
+    //     const { stash, amount } = data;
+    //
+    //     // check if the address was a candidate, and if so, update their unclaimed eras
+    //     if (
+    //       this.rewardDestinationCache &&
+    //       this.rewardDestinationCache.includes(stash)
+    //     ) {
+    //       logger.info(
+    //         `{scorekeeper::reward} ${stash} claimed reward of ${amount}. Updating eras....`
+    //       );
+    //
+    //       // const unclaimedEras = await this.chaindata.getUnclaimedEras(
+    //       //   stash,
+    //       //   db
+    //       // );
+    //       //
+    //       // await db.setUnclaimedEras(stash, unclaimedEras);
+    //       // await this.constraints.checkCandidateStash(stash);
+    //       // await this.constraints.scoreAllCandidates();
+    //     }
+    //
+    //     // check if it was a nominator address that earned the reward
+    //     for (const nomGroup of this.nominatorGroups) {
+    //       for (const nom of nomGroup) {
+    //         const nomStash = await nom.stash();
+    //         if (!nomStash) continue;
+    //         if (nomStash == stash) {
+    //           const activeEra = await this.chaindata.getActiveEraIndex();
+    //           await queries.updateAccountingRecord(
+    //             nom.controller,
+    //             nomStash,
+    //             activeEra.toString(),
+    //             amount
+    //           );
+    //         }
+    //       }
+    //     }
+    //   }
+    // );
 
     // Handles offline event. Validators will be faulted for each session they are offline.
     //     If they have already reaceived an offline fault for that session, it is skipped

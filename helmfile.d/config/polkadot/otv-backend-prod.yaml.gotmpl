@@ -2,11 +2,11 @@ domain: polkadot.w3f.community
 
 resources:
   limits:
-    cpu: 2000m
-    memory: 6Gi
+    cpu: 3000m
+    memory: 9Gi
   requests:
-    cpu: 700m
-    memory: 3Gi
+    cpu: 1000m
+    memory: 4Gi
 
 secret: {{ "ref+vault://op/vaults/k8s-community-secrets/items/otv-polkadot-backend-secret?proto=http#password" | fetchSecretValue }}
 

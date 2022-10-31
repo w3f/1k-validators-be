@@ -106,17 +106,15 @@
         "stash": "5CiPPseXPECbkjWCa6MnjNokrgYjMqmKndv2rSnekmSK2DjL"
       }
     ],
-    "forceRound": true,
+    "forceRound": false,
     "nominating": true
   },
-  "redis": {
-    "host": "redis",
-    "port": 6379
-  },
   "server": {
+    "enable": true,
     "port": 3300
   },
   "telemetry": {
+    "enable": true,
     "chains": [
       "0x60d398b81708a71e17fa66a1427568205a817671f31d14dc01a35123c35557e2"
     ],

@@ -155,7 +155,7 @@ export class OTV implements Constraints {
 
   async checkAllCandidates() {
     const candidates = await allCandidates();
-    for (const candidate of candidates) {
+    for (const [index, candidate] of candidates.entries()) {
       await this.checkCandidate(candidate);
     }
   }
@@ -246,16 +246,30 @@ export class OTV implements Constraints {
 
   async scoreAllCandidates() {
     const candidates = await allCandidates();
+    logger.info(
+      `{Constraints::scoreAllCandidates} scoring ${candidates.length} candidates....`
+    );
     await this.scoreCandidates(candidates);
   }
 
   async scoreCandidates(candidates: Types.CandidateData[]) {
-    logger.info(`{Scored} scoring all candidates`, { label: "Constraints" });
+    logger.info(`{Scored} scoring all ${candidates.length} candidates`, {
+      label: "Constraints",
+    });
     let rankedCandidates = [];
     const validCandidates = candidates.filter((candidate) => candidate.valid);
     if (validCandidates.length < 2) return;
 
     const session = await this.chaindata.getSession();
+
+    logger.info(
+      `{Scored} scoring ${
+        validCandidates.length
+      } candidates for session ${JSON.stringify(session)}`,
+      {
+        label: "Constraints",
+      }
+    );
 
     // Get Ranges of Parameters
     //    A validators individual parameter is then scaled to how it compares to others that are also deemed valid
@@ -331,6 +345,10 @@ export class OTV implements Constraints {
 
     // Create  entry for Validator Score Metadata
     await setValidatorScoreMetadata(scoreMetadata, Date.now());
+
+    logger.info(`{Scored} validator score metadata set.`, {
+      label: "Constraints",
+    });
 
     for (const [index, candidate] of validCandidates.entries()) {
       logger.info(

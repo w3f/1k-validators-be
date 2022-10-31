@@ -140,20 +140,20 @@ export default class TelemetryClient {
           MemNodes[parseInt(id)] = details;
 
           // a mutex that will only update after its free to avoid race conditions
-          // const waitUntilFree = async (name: string): Promise<void> => {
-          //   if (this.beingReported.get(name)) {
-          //     return new Promise((resolve) => {
-          //       const intervalId = setInterval(() => {
-          //         if (!this.beingReported.get(name)) {
-          //           clearInterval(intervalId);
-          //           resolve();
-          //         }
-          //       }, 1000);
-          //     });
-          //   }
-          // };
-          //
-          // await waitUntilFree(details[0]);
+          const waitUntilFree = async (name: string): Promise<void> => {
+            if (this.beingReported.get(name)) {
+              return new Promise((resolve) => {
+                const intervalId = setInterval(() => {
+                  if (!this.beingReported.get(name)) {
+                    clearInterval(intervalId);
+                    resolve();
+                  }
+                }, 1000);
+              });
+            }
+          };
+
+          await waitUntilFree(details[0]);
 
           // Report the node as online
           await queries.reportOnline(id, details, now, startupTime);
@@ -162,7 +162,7 @@ export default class TelemetryClient {
           const wasOffline = this.offlineNodes.has(id);
           if (wasOffline) {
             this.offlineNodes.delete(id);
-            logger.info(`node ${details?.name} that was offline is now online`);
+            logger.info(`node ${details[0]} that was offline is now online`);
           }
         }
         break;

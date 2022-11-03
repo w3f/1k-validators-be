@@ -98,7 +98,7 @@ __metadata:
     "@1kv/worker": "workspace:^"
     "@ava/typescript": ^3.0.1
     "@bull-board/api": ^4.6.1
-    "@bull-board/koa": ^4.6.1
+    "@bull-board/koa": ^4.6.2
     "@typescript-eslint/eslint-plugin": ^5.41.0
     "@typescript-eslint/parser": ^5.41.0
     ava: ^5.0.1
@@ -999,7 +999,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@bull-board/api@npm:4.6.1, @bull-board/api@npm:^4.6.1":
+"@bull-board/api@npm:4.6.2":
+  version: 4.6.2
+  resolution: "@bull-board/api@npm:4.6.2"
+  dependencies:
+    redis-info: ^3.0.8
+  checksum: 61eba44ce88a43f9caccc940ddc8169170eb00073939bd917e9e840fd266752a904bfdfb8e4f4b027287cddd4bc93300e98e4125d1f526fb8a2e55910347e297
+  languageName: node
+  linkType: hard
+
+"@bull-board/api@npm:^4.6.1":
   version: 4.6.1
   resolution: "@bull-board/api@npm:4.6.1"
   dependencies:
@@ -1008,28 +1017,28 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@bull-board/koa@npm:^4.6.1":
-  version: 4.6.1
-  resolution: "@bull-board/koa@npm:4.6.1"
+"@bull-board/koa@npm:^4.6.2":
+  version: 4.6.2
+  resolution: "@bull-board/koa@npm:4.6.2"
   dependencies:
-    "@bull-board/api": 4.6.1
-    "@bull-board/ui": 4.6.1
+    "@bull-board/api": 4.6.2
+    "@bull-board/ui": 4.6.2
     ejs: ^3.1.7
     koa: ^2.13.1
     koa-mount: ^4.0.0
     koa-router: ^10.0.0
     koa-static: ^5.0.0
     koa-views: ^7.0.1
-  checksum: 71af18a3fbb6534a3bd01e3c8f7a7b19f2840930cd0642f591ff94b20f8a8ae3e18d7c3ceaf7de7903461f1ed241a286ed3dcf3e8ad99b550d560fcb0c6e6a14
+  checksum: 52532af3abc3eaefeb6a781d876c07216f58122be329c5a42ce1e7471210811e3400ae5431a4b141c2b8d805be75fb81cf3f1c04970c43117a2f505c9b42bd0d
   languageName: node
   linkType: hard
 
-"@bull-board/ui@npm:4.6.1":
-  version: 4.6.1
-  resolution: "@bull-board/ui@npm:4.6.1"
+"@bull-board/ui@npm:4.6.2":
+  version: 4.6.2
+  resolution: "@bull-board/ui@npm:4.6.2"
   dependencies:
-    "@bull-board/api": 4.6.1
-  checksum: cff6d6fc8b5f50e808b6716b7554cf1938ae6c474ae097e03da421a0787c1021154afd6ee7285f06623f465120a160593f32932c8cad1e0a3ff9d737a45bd45b
+    "@bull-board/api": 4.6.2
+  checksum: 12cccee69a7c1dee95c613c802074bb616d31292b103048e7012e21a22328aa8af300deb5aa03168dc40d092ddc33eb1277e7eee55f48f681caa3b58746a07e0
   languageName: node
   linkType: hard
 

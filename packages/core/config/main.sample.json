@@ -21,7 +21,7 @@
     "skipStakedDestination": true,
     "skipClientUpgrade": true,
     "skipUnclaimed": true,
-    "minSelfStake": 10000000000000000000,
+    "minSelfStake": 100000000000,
     "commission": 150000000,
     "unclaimedEraThreshold": 4
   },
@@ -114,6 +114,11 @@
     "port": 3300
   },
   "telemetry": {
+    "blacklistedProviders": [
+      "Hetzner Online GmbH",
+      "Contabo Inc.",
+      "Contabo GmbH"
+    ],
     "enable": true,
     "chains": [
       "0x60d398b81708a71e17fa66a1427568205a817671f31d14dc01a35123c35557e2"

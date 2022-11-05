@@ -2904,9 +2904,14 @@ config: |
               "name": "😻 Stake Kat 😻",
               "stash": "GefTiMd4roQrRkJzurdLdGsoAUkmMkiGoYd6Cvu5oqCgamX",
               "riotHandle": "@fmonza:matrix.org"
+          },
+          {
+              "name": "Powerstake-k2",
+              "stash": "J6ikoEFkP3Fp5wTK3vCdmVWaZv2UPcBiN3KneB9RFqZbvHS",
+              "riotHandle": "@powerstake:matrix.org"
           }
       ],
-      "forceRound": true,
+      "forceRound": false,
       "nominating": true
     },
     "server": {
@@ -2917,6 +2922,12 @@ config: |
       "enable": true,
       "chains": [
           "0xb0a8d493285c2df73290dfb7e61f870f17b41801197a149ca93654499ea3dafe"
+      ],
+      "blacklistedProviders": [
+        "Hetzner Online GmbH",
+        "Contabo Inc.",
+        "Contabo GmbH",
+
       ],
       "host": "wss://telemetry-backend.w3f.community/feed"
     },

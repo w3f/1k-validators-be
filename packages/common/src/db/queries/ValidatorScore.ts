@@ -112,7 +112,7 @@ export const getLatestValidatorScore = async (
 ): Promise<any> => {
   return (
     await ValidatorScoreModel.find({ address: address })
-      .sort("-updated")
+      .sort("-session")
       .limit(1)
   )[0];
 };

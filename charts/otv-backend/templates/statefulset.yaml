@@ -29,12 +29,14 @@ spec:
         ports:
         - name: backend
           containerPort: {{ .Values.backendPort }}
-        readinessProbe:
+        livenessProbe:
           httpGet:
             path: /healthcheck
             port: {{ .Values.backendPort }}
+          failureThreshold: 6
           initialDelaySeconds: 30
-          timeoutSeconds: 3
+          periodSeconds: 10
+          timeoutSeconds: 5
         volumeMounts:
         - name: data
           mountPath: /data

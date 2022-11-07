@@ -5,8 +5,8 @@ resources:
     cpu: 3500m
     memory: 9Gi
   requests:
-    cpu: 1200m
-    memory: 4Gi
+    cpu: 700m
+    memory: 3Gi
 
 secret: {{ "ref+vault://op/vaults/k8s-community-secrets/items/otv-kusama-backend-secret?proto=http#password" | fetchSecretValue }}
 
@@ -2926,8 +2926,7 @@ config: |
       "blacklistedProviders": [
         "Hetzner Online GmbH",
         "Contabo Inc.",
-        "Contabo GmbH",
-
+        "Contabo GmbH"
       ],
       "host": "wss://telemetry-backend.w3f.community/feed"
     },

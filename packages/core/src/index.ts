@@ -42,9 +42,9 @@ const start = async (cmd: { config: string }) => {
   // Create the API handler.
   const endpoints =
     config.global.networkPrefix == 2
-      ? Constants.KusamaEndpoints
+      ? config.global.apiEndpoints
       : config.global.networkPrefix == 0
-      ? Constants.PolkadotEndpoints
+      ? config.global.apiEndpoints
       : Constants.LocalEndpoints;
   const handler = await ApiHandler.create(endpoints);
 
@@ -91,15 +91,15 @@ const start = async (cmd: { config: string }) => {
   await telemetry.start();
 
   // Create the matrix bot if enabled.
-  let maybeBot: any = false;
-  if (config.matrix.enabled && !isCI) {
-    const { accessToken, baseUrl, userId } = config.matrix;
-    maybeBot = new MatrixBot(baseUrl, accessToken, userId, config);
-    maybeBot.start();
-    await maybeBot.sendMessage(
-      `<a href="https://github.com/w3f/1k-validators-be">Backend services</a> (re)-started! Version: ${version}`
-    );
-  }
+  const maybeBot: any = false;
+  // if (config.matrix.enabled && !isCI) {
+  //   const { accessToken, baseUrl, userId } = config.matrix;
+  //   maybeBot = new MatrixBot(baseUrl, accessToken, userId, config);
+  //   await maybeBot.start();
+  //   await maybeBot.sendMessage(
+  //     `<a href="https://github.com/w3f/1k-validators-be">Backend services</a> (re)-started! Version: ${version}`
+  //   );
+  // }
 
   // Buffer some time for set up.
   await Util.sleep(1500);

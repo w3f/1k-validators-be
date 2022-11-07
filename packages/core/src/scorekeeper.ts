@@ -120,7 +120,7 @@ export const autoNumNominations = async (
   }
 
   // How many additional validator to nominate above the amount to get in the set
-  const additional = 1.35;
+  const additional = 1.25;
 
   // The total amount of validators to nominate
   const adjustedNominationAmount = Math.min(Math.ceil(amount * additional), 24);
@@ -133,12 +133,8 @@ export const autoNumNominations = async (
   nominator.targetBond = newBondedAmount;
   nominator.avgStake = targetValStake;
 
-  // if (db) {
-  //   await db.setNominatorAvgStake(nominator.address, targetValStake);
-  // }
-
   logger.info(
-    `{Scorekeeper::autoNom} stash: ${stash} with balance ${stashBal} should adjust balance to ${newBondedAmount} and can elect ${adjustedNominationAmount} validators, each having ~${targetValStake} stake`
+    `{Scorekeeper::autoNom} stash: ${stash} with balance ${stashBal} can elect ${adjustedNominationAmount} validators, each having ~${targetValStake} stake`
   );
 
   return {
@@ -771,21 +767,17 @@ export default class ScoreKeeper {
         const api = await this.handler.getApi();
         const denom = await this.chaindata.getDenom();
         const autoNom = await autoNumNominations(api, nominator);
-        const {
-          nominationNum,
-          newBondedAmount: formattedNewBondedAmount,
-          targetValStake,
-        } = autoNom;
+        const { nominationNum } = autoNom;
         const stash = await nominator.stash();
         // Planck Denominated Bonded Amount
         const [currentBondedAmount, bondErr] =
           await this.chaindata.getBondedAmount(stash);
         // Planck Denominated New Bonded Amount
-        const newBondedAmount = formattedNewBondedAmount * denom;
+        // const newBondedAmount = formattedNewBondedAmount * denom;
 
-        logger.info(
-          `{Scorekeepr::_doNominations} ${nominator.address} number of nominations: ${nominationNum} newBondedAmount: ${newBondedAmount} targetValStake: ${targetValStake}`
-        );
+        // logger.info(
+        //   `{Scorekeepr::_doNominations} ${nominator.address} number of nominations: ${nominationNum} newBondedAmount: ${newBondedAmount} targetValStake: ${targetValStake}`
+        // );
 
         // Check the free balance of the account. If it doesn't have a free balance, skip.
         const balance = await this.chaindata.getBalance(nominator.address);

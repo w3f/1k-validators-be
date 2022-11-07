@@ -156,6 +156,9 @@ export class OTV implements Constraints {
   async checkAllCandidates() {
     const candidates = await allCandidates();
     for (const [index, candidate] of candidates.entries()) {
+      logger.info(
+        `Checking candidate: ${candidate.name} [${index}/${candidates.length}]`
+      );
       await this.checkCandidate(candidate);
     }
   }
@@ -257,16 +260,20 @@ export class OTV implements Constraints {
       label: "Constraints",
     });
     let rankedCandidates = [];
-    logger.info(JSON.stringify(candidates));
-    const validCandidates = candidates.filter((candidate) => candidate.valid);
+    let validCandidates = [];
+    validCandidates = candidates.filter((candidate) => candidate.valid);
     if (validCandidates.length < 2) {
       logger.info(
-        `{Scored} valid candidates length was ${validCandidates.length} out of ${candidates.length} candidates. Returning....`,
+        `{Scored} valid candidates length was ${validCandidates.length} out of ${candidates.length} candidates. Checking validity....`,
         {
           label: "Constraints",
         }
       );
-      return;
+      await this.checkAllCandidates();
+      validCandidates = candidates.filter((candidate) => candidate.valid);
+      logger.info(
+        `{Scored} Checked candidates has ${validCandidates.length} valid candidates. Scoring...`
+      );
     }
 
     const session = await this.chaindata.getSession();

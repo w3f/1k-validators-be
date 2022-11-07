@@ -260,7 +260,8 @@ export class OTV implements Constraints {
       label: "Constraints",
     });
     let rankedCandidates = [];
-    const validCandidates = candidates.filter((candidate) => candidate.valid);
+    let validCandidates = [];
+    validCandidates = candidates.filter((candidate) => candidate.valid);
     if (validCandidates.length < 2) {
       logger.info(
         `{Scored} valid candidates length was ${validCandidates.length} out of ${candidates.length} candidates. Checking validity....`,
@@ -269,6 +270,10 @@ export class OTV implements Constraints {
         }
       );
       await this.checkAllCandidates();
+      validCandidates = candidates.filter((candidate) => candidate.valid);
+      logger.info(
+        `{Scored} Checked candidates has ${validCandidates.length} valid candidates. Scoring...`
+      );
     }
 
     const session = await this.chaindata.getSession();

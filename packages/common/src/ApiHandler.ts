@@ -20,7 +20,7 @@ class ApiHandler extends EventEmitter {
   constructor(api: ApiPromise, endpoints: string[]) {
     super();
     this._api = api;
-    this._endpoints = endpoints;
+    this._endpoints = endpoints.sort(() => Math.random() - 0.5);
     this._registerEventHandlers(api);
   }
 
@@ -37,13 +37,13 @@ class ApiHandler extends EventEmitter {
     if (api) {
       api
         .on("connected", () => {
-          logger.info(`Connected to chain`);
+          logger.info(`Connected to chain ${endpoints[0]}`);
         })
         .on("disconnected", async () => {
           logger.warn(`Disconnected from chain`);
         })
         .on("ready", () => {
-          logger.info(`API connection ready`);
+          logger.info(`API connection ready ${endpoints[0]}`);
         })
         .on("error", (error) => {
           logger.warn("The API has an error");

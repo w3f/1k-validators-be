@@ -54,7 +54,7 @@ config: |
     },
     "score": {
       "inclusion": "160",
-      "spanInclusion": "160",
+      "spanInclusion": "200",
       "discovered": "5",
       "nominated": "30",
       "rank": "5",
@@ -64,7 +64,7 @@ config: |
       "location": "40",
       "region": "10",
       "country": "10",
-      "provider": "50",
+      "provider": "100",
       "council": "50",
       "democracy": "100",
       "nominations": "100",
@@ -2904,9 +2904,14 @@ config: |
               "name": "😻 Stake Kat 😻",
               "stash": "GefTiMd4roQrRkJzurdLdGsoAUkmMkiGoYd6Cvu5oqCgamX",
               "riotHandle": "@fmonza:matrix.org"
+          },
+          {
+              "name": "Powerstake-k2",
+              "stash": "J6ikoEFkP3Fp5wTK3vCdmVWaZv2UPcBiN3KneB9RFqZbvHS",
+              "riotHandle": "@powerstake:matrix.org"
           }
       ],
-      "forceRound": true,
+      "forceRound": false,
       "nominating": true
     },
     "server": {
@@ -2917,6 +2922,12 @@ config: |
       "enable": true,
       "chains": [
           "0xb0a8d493285c2df73290dfb7e61f870f17b41801197a149ca93654499ea3dafe"
+      ],
+      "blacklistedProviders": [
+        "Hetzner Online GmbH",
+        "Contabo Inc.",
+        "Contabo GmbH",
+
       ],
       "host": "wss://telemetry-backend.w3f.community/feed"
     },

@@ -53,7 +53,7 @@ config: |
     },
     "score": {
       "inclusion": "160",
-      "spanInclusion": "160",
+      "spanInclusion": "200",
       "discovered": "5",
       "nominated": "30",
       "rank": "5",
@@ -63,7 +63,7 @@ config: |
       "location": "40",
       "region": "10",
       "country": "10",
-      "provider": "50",
+      "provider": "100",
       "council": "50",
       "democracy": "100",
       "nominations": "100",
@@ -1281,6 +1281,13 @@ config: |
           "kusamaStash": "JHamburgTPv9fRKwTPeBEjyVHmbQK2ayRBpBujb4rx2sHzJ",
           "riotHandle": ["@kev.funke:matrix.org", "@bkzland:matrix.org"],
           "skipSelfStake": true
+         },
+         {
+          "name": "web3:stakenode",
+          "stash": "14MKRNHaJY2yC84SkW7oXhnzVdV3obogoH5s8H4AkzxaFmAS",
+          "kusamaStash": "FvdwMNP57nRWEsNZZsrHWKqnbmduy4jBAC8MeLmgi9Yp8sA",
+          "riotHandle": "@stakenode:matrix.org",
+          "skipSelfStake": true
          }
       ],
       "forceRound": false,
@@ -1294,6 +1301,11 @@ config: |
       "enable": true,
       "chains": [
           "0x91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3"
+      ],
+      "blacklistedProviders": [
+        "Hetzner Online GmbH",
+        "Contabo Inc.",
+        "Contabo GmbH"
       ],
       "host": "wss://telemetry-backend.w3f.community/feed"
     },

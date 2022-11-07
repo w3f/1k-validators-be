@@ -257,8 +257,17 @@ export class OTV implements Constraints {
       label: "Constraints",
     });
     let rankedCandidates = [];
+    logger.info(JSON.stringify(candidates));
     const validCandidates = candidates.filter((candidate) => candidate.valid);
-    if (validCandidates.length < 2) return;
+    if (validCandidates.length < 2) {
+      logger.info(
+        `{Scored} valid candidates length was ${validCandidates.length} out of ${candidates.length} candidates. Returning....`,
+        {
+          label: "Constraints",
+        }
+      );
+      return;
+    }
 
     const session = await this.chaindata.getSession();
 
@@ -407,6 +416,15 @@ export class OTV implements Constraints {
       const scaledFaults = scaled(candidate.faults, faultsValues) || 0;
       const faultsScore = (1 - scaledFaults) * this.FAULTS_WEIGHT;
 
+      const provider = candidate?.infrastructureLocation?.provider;
+      const bannedProviders = this.config.telemetry?.blacklistedProviders;
+      let bannedProvider = false;
+      if (provider && bannedProviders?.includes(provider)) {
+        logger.info(
+          `{Constraints} ${candidate.name} has banned provider: ${provider}`
+        );
+        bannedProvider = true;
+      }
       // Get the total number of nodes for the location a candidate has their node in
       const candidateLocation = locationArr.filter((location) => {
         if (candidate.location == location.name) return location.numberOfNodes;
@@ -414,7 +432,9 @@ export class OTV implements Constraints {
       // Scale the location value to between the 10th and 95th percentile
       const scaledLocation =
         scaledDefined(candidateLocation, locationValues, 0.1, 0.95) || 0;
-      const locationScore = (1 - scaledLocation) * this.LOCATION_WEIGHT || 0;
+      const locationScore = bannedProvider
+        ? 0
+        : (1 - scaledLocation) * this.LOCATION_WEIGHT || 0;
 
       const candidateRegion = regionArr.filter((region) => {
         if (
@@ -426,7 +446,9 @@ export class OTV implements Constraints {
       // Scale the value to between the 10th and 95th percentile
       const scaledRegion =
         scaledDefined(candidateRegion, regionValues, 0.1, 0.95) || 0;
-      const regionScore = (1 - scaledRegion) * this.REGION_WEIGHT || 0;
+      const regionScore = bannedProvider
+        ? 0
+        : (1 - scaledRegion) * this.REGION_WEIGHT || 0;
 
       const candidateCountry = countryArr.filter((country) => {
         if (
@@ -438,7 +460,9 @@ export class OTV implements Constraints {
       // Scale the value to between the 10th and 95th percentile
       const scaledCountry =
         scaledDefined(candidateCountry, countryValues, 0.1, 0.95) || 0;
-      const countryScore = (1 - scaledCountry) * this.COUNTRY_WEIGHT || 0;
+      const countryScore = bannedProvider
+        ? 0
+        : (1 - scaledCountry) * this.COUNTRY_WEIGHT || 0;
 
       const candidateProvider = providerArr.filter((provider) => {
         if (
@@ -450,7 +474,9 @@ export class OTV implements Constraints {
       // Scale the value to between the 10th and 95th percentile
       const scaledProvider =
         scaledDefined(candidateProvider, providerValues, 0.1, 0.95) || 0;
-      const providerScore = (1 - scaledProvider) * this.PROVIDER_WEIGHT || 0;
+      const providerScore = bannedProvider
+        ? 0
+        : (1 - scaledProvider) * this.PROVIDER_WEIGHT || 0;
 
       const nomStake = await getLatestNominatorStake(candidate.stash);
       let totalNominatorStake = 0;
@@ -1160,9 +1186,12 @@ export const checkSelfStake = async (
       await setSelfStakeInvalidity(candidate.stash, false, invalidityString);
       return false;
     }
-
-    if (bondedAmt < targetSelfStake) {
-      invalidityString = `${candidate.name} has less than the minimum amount bonded: ${bondedAmt} is bonded.`;
+    if (parseInt(bondedAmt.toString()) < targetSelfStake) {
+      invalidityString = `${
+        candidate.name
+      } has less than the minimum amount bonded: ${parseInt(
+        bondedAmt.toString()
+      )} is bonded.`;
       await setSelfStakeInvalidity(candidate.stash, false, invalidityString);
       return false;
     }

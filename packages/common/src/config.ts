@@ -117,6 +117,7 @@ export type ConfigSchema = {
   telemetry: {
     enable: boolean;
     chains: string[];
+    blacklistedProviders: string[];
     host: string;
   };
   subscan: {

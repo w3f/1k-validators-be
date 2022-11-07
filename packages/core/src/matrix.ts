@@ -20,8 +20,8 @@ export default class MatrixBot {
     this.conf = config;
   }
 
-  start(): void {
-    this.client.startClient();
+  async start(): Promise<void> {
+    await this.client.startClient();
     // this.listenForCommands();
   }
 

@@ -120,7 +120,7 @@ export const autoNumNominations = async (
   }
 
   // How many additional validator to nominate above the amount to get in the set
-  const additional = 1.25;
+  const additional = 1.15;
 
   // The total amount of validators to nominate
   const adjustedNominationAmount = Math.min(Math.ceil(amount * additional), 24);
@@ -277,8 +277,8 @@ export default class ScoreKeeper {
         : Math.pow(10, 10)
     );
 
-    this.populateCandidates();
-    this.populateRewardDestinationCache();
+    // this.populateCandidates();
+    // this.populateRewardDestinationCache();
   }
 
   // Populates the candidate  cache

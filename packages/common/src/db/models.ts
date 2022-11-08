@@ -3,14 +3,14 @@ import mongoose from "mongoose";
 
 const RewardRecordScheme = new Schema({
   // Era
-  era: String,
+  era: { type: String, index: true },
   // reward for era
   reward: String,
 });
 
 export const AccountingSchema = new Schema({
   // The nominator's stash account.
-  stash: String,
+  stash: { type: String, index: true },
   // The nominator's controller account.
   controller: String,
   // Total rewards since starting the service.
@@ -23,7 +23,7 @@ export const AccountingModel = mongoose.model("Accounting", AccountingSchema);
 
 const FaultEventSchema = new Schema({
   // Timestamp when the fault happened.
-  when: Number,
+  when: { type: Number, index: true },
   // The reason the fault took place.
   reason: String,
   // The previous rank before the deduction takes place
@@ -32,7 +32,7 @@ const FaultEventSchema = new Schema({
 
 const RankEventSchema = new Schema({
   // Timestamp when this event happened.
-  when: Number,
+  when: { type: Number, index: true },
   // Start era for this rank event.
   startEra: Number,
   // Active era (end era) for this rank event.
@@ -43,7 +43,7 @@ export const DelayedTxSchema = new Schema({
   // The block number the transaction was announced in
   number: Number,
   // The controller address
-  controller: String,
+  controller: { type: Number, index: true },
   // The validators to nominate
   targets: [String],
   callHash: String,
@@ -53,7 +53,7 @@ export const DelayedTxModel = mongoose.model("DelayedTx", DelayedTxSchema);
 
 export const Identity = new Schema({
   // The Super Identity
-  name: String,
+  name: { type: Number, index: true },
   // The sub identity (if one exists)
   sub: String,
   // Whether or not the identity has been verified by a registrar
@@ -119,6 +119,8 @@ export const NominatorStakeSchema = new Schema({
   updated: Number,
 });
 
+NominatorStakeSchema.index({ validator: 1, era: -1 });
+
 export const NominatorStakeModel = mongoose.model(
   "NominatorStake",
   NominatorStakeSchema
@@ -148,7 +150,7 @@ export const CandidateSchema = new Schema({
   // The number of nodes that are online for this candidate (this handles upgrade situations).
   nodeRefs: Number,
   // The name registered on the candidates list.
-  name: String,
+  name: { type: String, index: true },
   // The inherited telemetry details.
   telemetryDetails: [],
   // Stores the version string directly.
@@ -324,6 +326,8 @@ export const EraPointsSchema = new Schema({
   eraPoints: Number,
 });
 
+EraPointsSchema.index({ address: 1, era: -1 });
+
 export const EraPointsModel = mongoose.model("EraPoints", EraPointsSchema);
 
 export const TotalEraPointsSchema = new Schema({
@@ -352,7 +356,7 @@ export const EraStatsSchema = new Schema({
   // When the record was created
   when: Number,
   // The era the stat is taken from
-  era: Number,
+  era: { type: Number, index: true },
   // The total number of validators in the programme
   totalNodes: Number,
   // The amount of valid nodes in the programme
@@ -406,6 +410,8 @@ export const ValidatorScoreSchema = new Schema({
   // The randomness factor used to buffer the total
   randomness: Number,
 });
+
+ValidatorScoreSchema.index({ address: 1, session: -1 });
 
 export const ValidatorScoreModel = mongoose.model(
   "ValidatorScore",
@@ -650,7 +656,7 @@ export const ReleaseModel = mongoose.model("Release", ReleaseSchema);
 // Stats on the where nodes are located.
 export const LocationStatsSchema = new Schema({
   // Session number the record was created at
-  session: Number,
+  session: { type: Number, index: true },
   // The number of nodes for each location
   locations: [
     {
@@ -844,6 +850,8 @@ export const ReferendumVoteSchema = new Schema({
   // last block hash the record was updated at
   updatedBlockHash: String,
 });
+
+ReferendumVoteSchema.index({ accountId: 1, referendumIndex: -1 });
 
 export const ReferendumVoteModel = mongoose.model(
   "ReferendumVote",

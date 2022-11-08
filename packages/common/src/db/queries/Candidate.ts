@@ -74,7 +74,7 @@ export const deleteOldCandidateFields = async (): Promise<boolean> => {
         sentryOnlineSince: 1,
         sentryOfflineSince: 1,
         telemetryId: 1,
-        valid: 1,
+        rankEvents: 1,
         invalidityReasons: 1,
       },
     },
@@ -93,6 +93,7 @@ export const deleteOldFieldFrom = async (name: string): Promise<boolean> => {
         sentryOnlineSince: 1,
         sentryOfflineSince: 1,
         telemetryId: 1,
+        rankEvents: 1,
       },
     }
   ).exec();

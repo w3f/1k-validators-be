@@ -119,7 +119,8 @@ export const NominatorStakeSchema = new Schema({
   updated: Number,
 });
 
-NominatorStakeSchema.index({ validator: 1, era: -1 });
+NominatorStakeSchema.index({ validator: 1 });
+NominatorStakeSchema.index({ era: -1 });
 
 export const NominatorStakeModel = mongoose.model(
   "NominatorStake",
@@ -326,7 +327,8 @@ export const EraPointsSchema = new Schema({
   eraPoints: Number,
 });
 
-EraPointsSchema.index({ address: 1, era: -1 });
+EraPointsSchema.index({ address: 1 });
+EraPointsSchema.index({ era: -1 });
 
 export const EraPointsModel = mongoose.model("EraPoints", EraPointsSchema);
 
@@ -411,7 +413,8 @@ export const ValidatorScoreSchema = new Schema({
   randomness: Number,
 });
 
-ValidatorScoreSchema.index({ address: 1, session: -1 });
+ValidatorScoreSchema.index({ address: 1 });
+ValidatorScoreSchema.index({ session: -1 });
 
 export const ValidatorScoreModel = mongoose.model(
   "ValidatorScore",

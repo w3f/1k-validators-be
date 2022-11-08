@@ -14,7 +14,7 @@ export const setElectionStats = async (
   // Try and find an existing record
   const data = await ElectionStatsModel.findOne({
     session,
-  });
+  }).lean();
 
   // If election stats for that session doesnt yet exist
   if (!data) {
@@ -52,5 +52,7 @@ export const setElectionStats = async (
 
 // Retrieves the last election stats record (by the time it was updated)
 export const getLatestElectionStats = async (): Promise<any> => {
-  return (await ElectionStatsModel.find({}).sort("-updated").limit(1))[0];
+  return (
+    await ElectionStatsModel.find({}).lean().sort("-updated").limit(1)
+  )[0];
 };

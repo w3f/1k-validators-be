@@ -14,7 +14,7 @@ export const newAccountingRecord = async (
     `(Db::newAccountingRecord) Adding stash ${stash} and controller ${controller}`
   );
 
-  const record = await AccountingModel.findOne({ stash, controller });
+  const record = await AccountingModel.findOne({ stash, controller }).lean();
   if (!record) {
     const accounting = new AccountingModel({
       stash,
@@ -39,7 +39,7 @@ export const updateAccountingRecord = async (
     `(Db::updateAccountingRecord) Adding era ${era} and reward ${reward}`
   );
 
-  const record = await AccountingModel.findOne({ stash, controller });
+  const record = await AccountingModel.findOne({ stash, controller }).lean();
   if (!record) {
     // record doesn't exist just return false
     return false;
@@ -63,7 +63,9 @@ export const getAccounting = async (
 ): Promise<any> => {
   const stashResult = await AccountingModel.findOne({
     stash: controllerOrStash,
-  }).exec();
+  })
+    .lean()
+    .exec();
 
   if (stashResult) {
     return stashResult;
@@ -71,7 +73,9 @@ export const getAccounting = async (
 
   const controllerResult = await AccountingModel.findOne({
     controller: controllerOrStash,
-  }).exec();
+  })
+    .lean()
+    .exec();
 
   if (controllerResult) {
     return controllerResult;

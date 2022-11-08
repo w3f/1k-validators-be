@@ -26,7 +26,7 @@ export const addCandidate = async (
   );
 
   // Check to see if the candidate has already been added as a node.
-  const data = await CandidateModel.findOne({ name });
+  const data = await CandidateModel.findOne({ name }).lean();
   if (!data) {
     logger.info(
       `(Db::addCandidate) Did not find candidate data for ${name} - inserting new document.`
@@ -168,7 +168,7 @@ export const reportBestBlock = async (
   now: number
 ): Promise<boolean> => {
   const block = details[0];
-  const data = await CandidateModel.findOne({ telemetryId });
+  const data = await CandidateModel.findOne({ telemetryId }).lean();
 
   if (!data) return false;
 
@@ -233,7 +233,7 @@ export const reportOnline = async (
     logger.info(`{reportOnline}: no addr sent for ${name}`);
   }
 
-  const data = await CandidateModel.findOne({ name });
+  const data = await CandidateModel.findOne({ name }).lean();
   if (!data) {
     // A new node that is not already registered as a candidate.
     const candidate = new CandidateModel({
@@ -350,7 +350,7 @@ export const reportOffline = async (
   //   `(Db::reportOffline) Reporting ${name} with telemetry id ${telemetryId} offline at ${now}.`
   // );
 
-  const data = await CandidateModel.findOne({ telemetryId });
+  const data = await CandidateModel.findOne({ telemetryId }).lean();
 
   if (!data) {
     logger.info(`(Db::reportOffline) No data for node named ${name}.`);
@@ -436,7 +436,7 @@ export const pushRankEvent = async (
   startEra: number,
   activeEra: number
 ): Promise<boolean> => {
-  const record = await CandidateModel.findOne({ stash });
+  const record = await CandidateModel.findOne({ stash }).lean();
   if (!record) {
     return false;
   }
@@ -475,7 +475,7 @@ export const pushFaultEvent = async (
     `(Db::pushFault) Adding new fault for ${stash} for reason ${reason}`
   );
 
-  const record = await CandidateModel.findOne({ stash });
+  const record = await CandidateModel.findOne({ stash }).lean();
   if (!record) {
     return false;
   }
@@ -508,7 +508,7 @@ export const pushFaultEvent = async (
 export const addPoint = async (stash: string): Promise<boolean> => {
   logger.info(`Adding a point to ${stash}.`);
 
-  const data = await CandidateModel.findOne({ stash });
+  const data = await CandidateModel.findOne({ stash }).lean();
   await CandidateModel.findOneAndUpdate(
     {
       stash,
@@ -524,7 +524,7 @@ export const addPoint = async (stash: string): Promise<boolean> => {
 export const dockPoints = async (stash: string): Promise<boolean> => {
   logger.info(`Docking points for ${stash}.`);
 
-  const data = await CandidateModel.findOne({ stash });
+  const data = await CandidateModel.findOne({ stash }).lean();
   await CandidateModel.findOneAndUpdate(
     {
       stash,
@@ -544,7 +544,7 @@ export const dockPointsUnclaimedReward = async (
 ): Promise<boolean> => {
   logger.info(`Docking points for ${stash}.`);
 
-  const data = await CandidateModel.findOne({ stash });
+  const data = await CandidateModel.findOne({ stash }).lean();
   await CandidateModel.findOneAndUpdate(
     {
       stash,
@@ -612,11 +612,11 @@ export const clearCandidates = async (): Promise<boolean> => {
 };
 
 export const allCandidates = async (): Promise<any[]> => {
-  return CandidateModel.find({ stash: /.*/ }).exec();
+  return CandidateModel.find({ stash: /.*/ }).lean().exec();
 };
 
 export const allNodes = async (): Promise<any[]> => {
-  return CandidateModel.find({ name: /.*/ }).exec();
+  return CandidateModel.find({ name: /.*/ }).lean().exec();
 };
 
 /**
@@ -624,17 +624,17 @@ export const allNodes = async (): Promise<any[]> => {
  * @param stashOrName The DOT / KSM address or the name of the validator.
  */
 export const getCandidate = async (stashOrName: string): Promise<any> => {
-  let data = await CandidateModel.findOne({ stash: stashOrName }).exec();
+  let data = await CandidateModel.findOne({ stash: stashOrName }).lean().exec();
 
   if (!data) {
-    data = await CandidateModel.findOne({ name: stashOrName }).exec();
+    data = await CandidateModel.findOne({ name: stashOrName }).lean().exec();
   }
 
   return data;
 };
 
 export const getNodeByName = async (name: string): Promise<any> => {
-  return CandidateModel.findOne({ name }).exec();
+  return CandidateModel.findOne({ name }).lean().exec();
 };
 
 export const setInclusion = async (
@@ -788,7 +788,7 @@ export const setOnlineValidity = async (
 ): Promise<any> => {
   const data = await CandidateModel.findOne({
     stash: address,
-  });
+  }).lean();
 
   if (!data) {
     console.log(`{Validate Intention} NO CANDIDATE DATA FOUND FOR ${address}`);
@@ -826,7 +826,7 @@ export const setValidateIntentionValidity = async (
 ): Promise<any> => {
   const data = await CandidateModel.findOne({
     stash: address,
-  });
+  }).lean();
 
   if (!data) {
     console.log(`{Validate Intention} NO CANDIDATE DATA FOUND FOR ${address}`);
@@ -864,7 +864,7 @@ export const setLatestClientReleaseValidity = async (
 ): Promise<any> => {
   const data = await CandidateModel.findOne({
     stash: address,
-  });
+  }).lean();
 
   if (!data) {
     console.log(`{Latest Client} NO CANDIDATE DATA FOUND FOR ${address}`);
@@ -902,7 +902,7 @@ export const setConnectionTimeInvalidity = async (
 ): Promise<any> => {
   const data = await CandidateModel.findOne({
     stash: address,
-  });
+  }).lean();
 
   if (!data) {
     console.log(`{Connection Time} NO CANDIDATE DATA FOUND FOR ${address}`);
@@ -941,7 +941,7 @@ export const setIdentityInvalidity = async (
 ): Promise<any> => {
   const data = await CandidateModel.findOne({
     stash: address,
-  });
+  }).lean();
 
   if (!data) {
     console.log(`{Identity} NO CANDIDATE DATA FOUND FOR ${address}`);
@@ -981,7 +981,7 @@ export const setOfflineAccumulatedInvalidity = async (
 ): Promise<any> => {
   const data = await CandidateModel.findOne({
     stash: address,
-  });
+  }).lean();
 
   if (!data) {
     console.log(`{Offline Accumulated} NO CANDIDATE DATA FOUND FOR ${address}`);
@@ -1021,7 +1021,7 @@ export const setRewardDestinationInvalidity = async (
 ): Promise<any> => {
   const data = await CandidateModel.findOne({
     stash: address,
-  });
+  }).lean();
 
   if (!data) {
     console.log(`{Reward Destination} NO CANDIDATE DATA FOUND FOR ${address}`);
@@ -1060,7 +1060,7 @@ export const setCommissionInvalidity = async (
 ): Promise<any> => {
   const data = await CandidateModel.findOne({
     stash: address,
-  });
+  }).lean();
 
   if (!data) {
     console.log(`{Commission} NO CANDIDATE DATA FOUND FOR ${address}`);
@@ -1101,7 +1101,7 @@ export const setSelfStakeInvalidity = async (
 ): Promise<any> => {
   const data = await CandidateModel.findOne({
     stash: address,
-  });
+  }).lean();
 
   if (!data) {
     console.log(`{Self Stake} NO CANDIDATE DATA FOUND FOR ${address}`);
@@ -1142,7 +1142,7 @@ export const setUnclaimedInvalidity = async (
 ): Promise<any> => {
   const data = await CandidateModel.findOne({
     stash: address,
-  });
+  }).lean();
 
   if (!data) {
     console.log(`{Self Stake} NO CANDIDATE DATA FOUND FOR ${address}`);
@@ -1183,7 +1183,7 @@ export const setBlockedInvalidity = async (
 ): Promise<any> => {
   const data = await CandidateModel.findOne({
     stash: address,
-  });
+  }).lean();
 
   if (!data) {
     console.log(`{Self Stake} NO CANDIDATE DATA FOUND FOR ${address}`);
@@ -1223,7 +1223,7 @@ export const setKusamaRankInvalidity = async (
 ): Promise<any> => {
   const data = await CandidateModel.findOne({
     stash: address,
-  });
+  }).lean();
 
   if (!data) {
     logger.warn(`{Self Stake} NO CANDIDATE DATA FOUND FOR ${address}`);
@@ -1263,7 +1263,7 @@ export const setValid = async (
 ): Promise<any> => {
   const data = await CandidateModel.findOne({
     stash: address,
-  });
+  }).lean();
 
   if (!data) {
     logger.warn(`{Valid} NO CANDIDATE DATA FOUND FOR ${address}`);

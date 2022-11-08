@@ -12,7 +12,7 @@ export const setNominatorStake = async (
   const data = await NominatorStakeModel.findOne({
     era,
     validator,
-  });
+  }).lean();
 
   // If it already exist and are the same as before, return
   if (!!data && data.inactiveStake == inactiveStake) return;
@@ -51,7 +51,7 @@ export const getLatestNominatorStake = async (
   validator: string
 ): Promise<any> => {
   return (
-    await NominatorStakeModel.find({ validator }).sort("-era").limit(1)
+    await NominatorStakeModel.find({ validator }).lean().sort("-era").limit(1)
   )[0];
 };
 
@@ -59,7 +59,7 @@ export const getEraNominatorStake = async (
   validator: string,
   era: number
 ): Promise<any> => {
-  return (await NominatorStakeModel.find({ validator, era }))[0];
+  return (await NominatorStakeModel.find({ validator, era }).lean())[0];
 };
 
 export const getNominatorStake = async (
@@ -67,6 +67,7 @@ export const getNominatorStake = async (
   limit?: number
 ): Promise<any> => {
   await NominatorStakeModel.find({ validator })
+    .lean()
     .sort("-era")
     .limit(limit ? limit : 100)[0];
 };

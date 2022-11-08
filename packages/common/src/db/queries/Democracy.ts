@@ -14,7 +14,7 @@ export const setReferendum = async (
   // Try and find an existing record
   const data = await ReferendumModel.findOne({
     referendumIndex: referendum.referendumIndex,
-  });
+  }).lean();
 
   // If an referendum object doesnt yet exist
   if (!data) {
@@ -72,18 +72,18 @@ export const setReferendum = async (
 export const getReferendum = async (index: number): Promise<any> => {
   const data = await ReferendumModel.findOne({
     referendumIndex: index,
-  });
+  }).lean();
   return data;
 };
 
 // returns a referendum by index
 export const getAllReferenda = async (): Promise<any> => {
-  return ReferendumModel.find({}).exec();
+  return ReferendumModel.find({}).lean().exec();
 };
 
 // Retrieves the last referenda (by index)
 export const getLastReferenda = async (): Promise<any> => {
-  return await ReferendumModel.find({}).sort("-referendumIndex").exec();
+  return await ReferendumModel.find({}).lean().sort("-referendumIndex").exec();
 };
 
 // Sets a Referendum record in the db
@@ -96,7 +96,7 @@ export const setReferendumVote = async (
   const data = await ReferendumVoteModel.findOne({
     referendumIndex: referendumVote.referendumIndex,
     accountId: referendumVote.accountId,
-  });
+  }).lean();
 
   // If an referendum vote object doesnt yet exist
   if (!data) {
@@ -113,7 +113,7 @@ export const setReferendumVote = async (
 
     const candidate = await CandidateModel.findOne({
       stash: referendumVote.accountId,
-    });
+    }).lean();
 
     // If the vote was done by a candidate, add the referendum and increase the vote count
     if (
@@ -151,12 +151,12 @@ export const setReferendumVote = async (
 
 // returns all votes for a referendum by index
 export const getVoteReferendumIndex = async (index: number): Promise<any> => {
-  return ReferendumVoteModel.find({ referendumIndex: index }).exec();
+  return ReferendumVoteModel.find({ referendumIndex: index }).lean().exec();
 };
 
 // returns all votes for a referendum by account
 export const getAccountVoteReferendum = async (
   accountId: string
 ): Promise<any> => {
-  return ReferendumVoteModel.find({ accountId: accountId }).exec();
+  return ReferendumVoteModel.find({ accountId: accountId }).lean().exec();
 };

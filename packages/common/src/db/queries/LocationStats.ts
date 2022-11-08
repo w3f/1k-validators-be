@@ -18,7 +18,7 @@ export const setLocationStats = async (
   // Try and find an existing record
   const data = await LocationStatsModel.findOne({
     session,
-  });
+  }).lean();
 
   // If the location stats already exist and are the same as before, return
   if (!!data && data.locations == locations) return;
@@ -71,11 +71,13 @@ export const getSessionLocationStats = async (
 ): Promise<any> => {
   const data = await LocationStatsModel.findOne({
     session,
-  });
+  }).lean();
   return data;
 };
 
 // Retrieves the last location stats record (by the time it was updated)
 export const getLatestLocationStats = async (): Promise<any> => {
-  return (await LocationStatsModel.find({}).sort("-updated").limit(1))[0];
+  return (
+    await LocationStatsModel.find({}).lean().sort("-updated").limit(1)
+  )[0];
 };

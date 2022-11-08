@@ -14,7 +14,7 @@ export const setChainMetadata = async (networkPrefix: number): Promise<any> => {
     `(Db::setChainMetadata) Setting chain metadata: ${networkName} with ${decimals} decimals`
   );
 
-  const data = await ChainMetadataModel.findOne({ name: /.*/ });
+  const data = await ChainMetadataModel.findOne({ name: /.*/ }).lean();
   if (!data) {
     const chainMetadata = new ChainMetadataModel({
       name: networkName,
@@ -30,5 +30,5 @@ export const setChainMetadata = async (networkPrefix: number): Promise<any> => {
 };
 
 export const getChainMetadata = async (): Promise<any> => {
-  return ChainMetadataModel.findOne({ name: /.*/ }).exec();
+  return ChainMetadataModel.findOne({ name: /.*/ }).lean().exec();
 };

@@ -9,7 +9,7 @@ export const setCouncillor = async (
   // Try and find an existing record
   const data = await CouncillorModel.findOne({
     address,
-  });
+  }).lean();
 
   // if the data is the same, return
   if (!!data && data.backing == backing && data.status == membershipStatus)
@@ -43,11 +43,11 @@ export const setCouncillor = async (
 export const getCouncillor = async (address: string): Promise<any> => {
   const data = await CouncillorModel.findOne({
     address,
-  });
+  }).lean();
   return data;
 };
 
 // return all council members
 export const getAllCouncillors = async (): Promise<any> => {
-  return CouncillorModel.find({});
+  return CouncillorModel.find({}).lean();
 };

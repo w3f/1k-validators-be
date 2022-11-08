@@ -17,7 +17,7 @@ export const addDelayedTx = async (
 };
 
 export const getAllDelayedTxs = async (): Promise<any[]> => {
-  return DelayedTxModel.find({ controller: /.*/ }).exec();
+  return DelayedTxModel.find({ controller: /.*/ }).lean().exec();
 };
 
 export const deleteDelayedTx = async (

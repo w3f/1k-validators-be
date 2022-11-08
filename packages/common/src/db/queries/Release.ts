@@ -17,5 +17,5 @@ export const setRelease = async (
 };
 
 export const getLatestRelease = async (): Promise<any> => {
-  return (await ReleaseModel.find({}).sort("-publishedAt").limit(1))[0];
+  return (await ReleaseModel.find({}).lean().sort("-publishedAt").limit(1))[0];
 };

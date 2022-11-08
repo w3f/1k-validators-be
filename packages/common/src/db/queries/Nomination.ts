@@ -15,7 +15,7 @@ export const setNomination = async (
   const data = await NominationModel.findOne({
     address: address,
     era: era,
-  });
+  }).lean();
 
   if (!!data && data.blockHash) return;
 
@@ -49,7 +49,7 @@ export const getNomination = async (
   const data = await NominationModel.findOne({
     address: address,
     era: era,
-  });
+  }).lean();
   return data;
 };
 
@@ -59,11 +59,12 @@ export const getLastNominations = async (
 ): Promise<any[]> => {
   // Returns the last nominations for a given nominator controller
   const data = await NominationModel.find({ address })
+    .lean()
     .sort("-era")
     .limit(Number(eras));
   return data;
 };
 
 export const allNominations = async (): Promise<any[]> => {
-  return await NominationModel.find({ address: /.*/ }).exec();
+  return await NominationModel.find({ address: /.*/ }).lean().exec();
 };

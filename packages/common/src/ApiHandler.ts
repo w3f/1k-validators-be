@@ -56,7 +56,9 @@ class ApiHandler extends EventEmitter {
 
   static async create(endpoints: string[]): Promise<ApiHandler> {
     try {
-      const api = await this.createApi(endpoints);
+      const api = await this.createApi(
+        endpoints.sort(() => Math.random() - 0.5)
+      );
       return new ApiHandler(api, endpoints);
     } catch (e) {
       logger.info(`there was an error: `);

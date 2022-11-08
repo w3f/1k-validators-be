@@ -43,7 +43,7 @@ config: |
     },
     "db": {
       "mongo": {
-          "uri": "mongodb://{{ "ref+vault://op/vaults/k8s-community-secrets/items/otv-polkadot-mongodb-username?proto=http#password" | fetchSecretValue }}:{{ "ref+vault://op/vaults/k8s-community-secrets/items/otv-polkadot-mongodb-password?proto=http#password" | fetchSecretValue }}@polkadot-mongodb-0.polkadot-mongodb-headless:27017,polkadot-mongodb-1.polkadot-mongodb-headless:27017/{{ "ref+vault://op/vaults/k8s-community-secrets/items/otv-polkadot-mongodb-db?proto=http#password" | fetchSecretValue }}"
+          "uri": "mongodb://{{ "ref+vault://op/vaults/k8s-community-secrets/items/otv-polkadot-mongodb-username?proto=http#password" | fetchSecretValue }}:{{ "ref+vault://op/vaults/k8s-community-secrets/items/otv-polkadot-mongodb-password?proto=http#password" | fetchSecretValue }}@polkadot-mongodb-0.polkadot-mongodb-headless:27017,polkadot-mongodb-1.polkadot-mongodb-headless:27017,polkadot-mongodb-2.polkadot-mongodb-headless:27017/{{ "ref+vault://op/vaults/k8s-community-secrets/items/otv-polkadot-mongodb-db?proto=http#password" | fetchSecretValue }}"
       }
     },
     "matrix": {

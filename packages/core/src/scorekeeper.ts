@@ -251,11 +251,11 @@ export default class ScoreKeeper {
     this.handler.on("newSession", async (data: { sessionIndex: string }) => {
       const { sessionIndex } = data;
       logger.info(`{Session::NewSession} New Session Event: ${sessionIndex}`);
-
+      const candidates = await queries.allCandidates();
       await Constraints.checkAllValidateIntentions(
         this.config,
         this.chaindata,
-        this.candidateCache
+        candidates
       );
 
       // await sessionKeyJob(this.db, this.chaindata, this.candidateCache);

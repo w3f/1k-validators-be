@@ -155,7 +155,8 @@ export class OTV implements Constraints {
   }
 
   async checkAllCandidates() {
-    const candidates = await allCandidates();
+    const candidates = await validCandidates();
+    logger.info(`{Check} valid candidates: ${candidates.length}`);
     for (const [index, candidate] of candidates.entries()) {
       logger.info(
         `Checking candidate: ${candidate.name} [${index}/${candidates.length}]`
@@ -261,18 +262,13 @@ export class OTV implements Constraints {
       label: "Constraints",
     });
     let rankedCandidates = [];
-    let validCandidates = candidates;
+    const validCandidates = candidates;
     if (candidates.length < 2) {
       logger.info(
         `{Scored} valid candidates length was ${validCandidates.length} out of ${candidates.length} candidates. Checking validity....`,
         {
           label: "Constraints",
         }
-      );
-      await this.checkAllCandidates();
-      validCandidates = candidates.filter((candidate) => candidate.valid);
-      logger.info(
-        `{Scored} Checked candidates has ${validCandidates.length} valid candidates out of ${candidates.length}. Scoring...`
       );
     }
 

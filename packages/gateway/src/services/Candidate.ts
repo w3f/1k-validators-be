@@ -50,6 +50,11 @@ export const getCandidate = async (stash: any): Promise<any> => {
   return candidate;
 };
 
+export const getValidCandidates = async (): Promise<any> => {
+  const validCandidates = await queries.validCandidates();
+  return validCandidates;
+};
+
 export const getCandidates = async (): Promise<any> => {
   let allCandidates = await queries.allCandidates();
   allCandidates = await Promise.all(

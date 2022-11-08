@@ -18,6 +18,7 @@ import {
   setSelfStakeInvalidity,
   setUnclaimedInvalidity,
   setValidateIntentionValidity,
+  validCandidates,
 } from "./db";
 import {
   allNominators,
@@ -248,7 +249,7 @@ export class OTV implements Constraints {
   }
 
   async scoreAllCandidates() {
-    const candidates = await allCandidates();
+    const candidates = await validCandidates();
     logger.info(
       `{Constraints::scoreAllCandidates} scoring ${candidates.length} candidates....`
     );
@@ -260,9 +261,8 @@ export class OTV implements Constraints {
       label: "Constraints",
     });
     let rankedCandidates = [];
-    let validCandidates = [];
-    validCandidates = candidates.filter((candidate) => candidate.valid);
-    if (validCandidates.length < 2) {
+    let validCandidates = candidates;
+    if (candidates.length < 2) {
       logger.info(
         `{Scored} valid candidates length was ${validCandidates.length} out of ${candidates.length} candidates. Checking validity....`,
         {
@@ -272,7 +272,7 @@ export class OTV implements Constraints {
       await this.checkAllCandidates();
       validCandidates = candidates.filter((candidate) => candidate.valid);
       logger.info(
-        `{Scored} Checked candidates has ${validCandidates.length} valid candidates. Scoring...`
+        `{Scored} Checked candidates has ${validCandidates.length} valid candidates out of ${candidates.length}. Scoring...`
       );
     }
 
@@ -545,12 +545,15 @@ export class OTV implements Constraints {
           : 0;
 
       // Score democracy based on how many proposals have been voted on
+      const candidateVotes = candidate?.democracyVotes
+        ? candidate.democracyVotes
+        : [];
       const {
         baseDemocracyScore,
         totalDemocracyScore,
         totalConsistencyMultiplier,
         lastConsistencyMultiplier,
-      } = scoreDemocracyVotes(candidate.democracyVotes, lastReferendum);
+      } = scoreDemocracyVotes(candidateVotes, lastReferendum);
       const scaledDemocracyScore =
         scaled(totalDemocracyScore, democracyValues) * this.DEMOCRACY_WEIGHT;
 

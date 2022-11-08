@@ -615,6 +615,10 @@ export const allCandidates = async (): Promise<any[]> => {
   return CandidateModel.find({ stash: /.*/ }).lean().exec();
 };
 
+export const validCandidates = async (): Promise<any[]> => {
+  return CandidateModel.find({ valid: true }).lean().exec();
+};
+
 export const allNodes = async (): Promise<any[]> => {
   return CandidateModel.find({ name: /.*/ }).lean().exec();
 };

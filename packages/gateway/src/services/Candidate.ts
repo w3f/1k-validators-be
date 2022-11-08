@@ -51,7 +51,42 @@ export const getCandidate = async (stash: any): Promise<any> => {
 };
 
 export const getValidCandidates = async (): Promise<any> => {
-  const validCandidates = await queries.validCandidates();
+  let validCandidates = await queries.validCandidates();
+  validCandidates = await Promise.all(
+    validCandidates.map(async (candidate) => {
+      const score = await queries.getLatestValidatorScore(candidate.stash);
+      return {
+        discoveredAt: candidate.discoveredAt,
+        nominatedAt: candidate.nominatedAt,
+        offlineSince: candidate.offlineSince,
+        offlineAccumulated: candidate.offlineAccumulated,
+        rank: candidate.rank,
+        faults: candidate.faults,
+        invalidityReasons: candidate.invalidityReasons,
+        unclaimedEras: candidate.unclaimedEras,
+        inclusion: candidate.inclusion,
+        name: candidate.name,
+        stash: candidate.stash,
+        kusamaStash: candidate.kusamaStash,
+        commission: candidate.commission,
+        identity: candidate.identity,
+        active: candidate.active,
+        valid: candidate.valid,
+        validity: candidate.invalidity,
+        score: score,
+        total: score && score.total ? score.total : 0,
+        location: candidate.location,
+        provider: candidate.infrastructureLocation?.provider
+          ? candidate.infrastructureLocation?.provider
+          : "No Provider",
+        councilStake: candidate.councilStake,
+        councilVotes: candidate.councilVotes,
+        democracyVoteCount: candidate.democracyVoteCount,
+        democracyVotes: candidate.democracyVotes,
+        matrix: candidate.matrix,
+      };
+    })
+  );
   return validCandidates;
 };
 

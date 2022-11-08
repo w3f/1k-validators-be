@@ -43,7 +43,7 @@ export const DelayedTxSchema = new Schema({
   // The block number the transaction was announced in
   number: Number,
   // The controller address
-  controller: { type: Number, index: true },
+  controller: { type: String, index: true },
   // The validators to nominate
   targets: [String],
   callHash: String,

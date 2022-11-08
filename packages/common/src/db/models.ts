@@ -413,8 +413,7 @@ export const ValidatorScoreSchema = new Schema({
   randomness: Number,
 });
 
-ValidatorScoreSchema.index({ address: 1 });
-ValidatorScoreSchema.index({ session: -1 });
+ValidatorScoreSchema.index({ address: 1, session: -1 });
 
 export const ValidatorScoreModel = mongoose.model(
   "ValidatorScore",

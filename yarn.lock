@@ -74,7 +74,7 @@ __metadata:
     koa-bodyparser: ^4.3.0
     koa-cash: ^4.1.1
     koa2-cors: ^2.0.6
-    matrix-js-sdk: ^21.0.1
+    matrix-js-sdk: ^20.1.0
     mongodb: 4.11.0
     mongodb-memory-server: ^8.9.5
     mongoose: ^6.7.1
@@ -2868,6 +2868,13 @@ __metadata:
     p-wait-for: 3
     safe-timers: ^1.1.0
   checksum: c23c6f1fc3aa27b33c0649668534806140f8fa0d80991d322304d669993ab1188b097c431b633735cd11ca0a49eff2a8b464d8eb781fcaa8e976b2c1098fc4ed
+  languageName: node
+  linkType: hard
+
+"browser-request@npm:^0.3.3":
+  version: 0.3.3
+  resolution: "browser-request@npm:0.3.3"
+  checksum: 8f8db4f95aa33341ffa8d83dd069033310144f439d90bf5aafd4ec0a9495f4cc3fc1515a7d3e15d6968552169f72b7dd90b62efa3647adc4ce9e8be91f907240
   languageName: node
   linkType: hard
 
@@ -5982,20 +5989,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"matrix-js-sdk@npm:^21.0.1":
-  version: 21.0.1
-  resolution: "matrix-js-sdk@npm:21.0.1"
+"matrix-js-sdk@npm:^20.1.0":
+  version: 20.1.0
+  resolution: "matrix-js-sdk@npm:20.1.0"
   dependencies:
     "@babel/runtime": ^7.12.5
     another-json: ^0.2.0
+    browser-request: ^0.3.3
     bs58: ^5.0.0
     content-type: ^1.0.4
     loglevel: ^1.7.1
     matrix-events-sdk: ^0.0.1-beta.7
     p-retry: 4
     qs: ^6.9.6
+    request: ^2.88.2
     unhomoglyph: ^1.0.6
-  checksum: 2d2b320049365edd80066215f876826ba9c272ff737eb962033d3d89140070b013db8954fcb13edac389728767f1e22ff50719d2895e13d715866b7905115e3a
+  checksum: 7900429edf3342f36ca86c9a143a1b8b27f462b368c5fea526e16d73f5174221800bb2d5dd390716d42460cbb18ca30d14ddbc5030e4be8158c8e6c02a967675
   languageName: node
   linkType: hard
 

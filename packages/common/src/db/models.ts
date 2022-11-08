@@ -1,5 +1,6 @@
 import { Schema } from "mongoose";
 import mongoose from "mongoose";
+import { logger } from "../index";
 
 const RewardRecordScheme = new Schema({
   // Era
@@ -421,6 +422,8 @@ export const ValidatorScoreModel = mongoose.model(
   ValidatorScoreSchema
 );
 
+ValidatorScoreModel.syncIndexes().then((r) => logger.info(`indexes synced`));
+
 export const ValidatorScoreMetadataSchema = new Schema({
   session: Number,
   // Bonded Metadata
@@ -835,9 +838,9 @@ export const ReferendumModel = mongoose.model("Referendum", ReferendumSchema);
 // Information about a particular vote in a democracy referendum
 export const ReferendumVoteSchema = new Schema({
   // The unique index of the proposal, used to identity and query by
-  referendumIndex: Number,
+  referendumIndex: { type: Number, index: true },
   // The account the vote is from
-  accountId: String,
+  accountId: { type: String, index: true },
   // Whether or not the vote was delegated
   isDelegating: Boolean,
   // the human denominated amount of tokens voting

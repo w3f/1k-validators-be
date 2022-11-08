@@ -442,15 +442,6 @@ export const pushRankEvent = async (
     return false;
   }
 
-  let alreadyRank = false;
-  for (const rank of record.rankEvents) {
-    if (rank.startEra == startEra) {
-      alreadyRank = true;
-    }
-  }
-
-  if (alreadyRank) return false;
-
   await CandidateModel.findOneAndUpdate(
     {
       stash,

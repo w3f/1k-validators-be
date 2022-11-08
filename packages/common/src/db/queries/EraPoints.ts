@@ -9,7 +9,7 @@ export const setEraPoints = async (
   const data = await EraPointsModel.findOne({
     address: address,
     era: era,
-  });
+  }).lean();
 
   // If the era points already exist and are the same as before, return
   if (!!data && data.eraPoints == points) return;
@@ -43,7 +43,7 @@ export const getEraPoints = async (
   return EraPointsModel.findOne({
     address: address,
     era: era,
-  });
+  }).lean();
 };
 
 // Creates new record of era points for all validators for an era
@@ -60,7 +60,7 @@ export const setTotalEraPoints = async (
   // Check if a record already exists
   const data = await TotalEraPointsModel.findOne({
     era: era,
-  });
+  }).lean();
 
   // If it exists and the total era points are the same, return
   if (!!data && data.totalEraPoints == total && data.median) return;
@@ -138,11 +138,14 @@ export const setTotalEraPoints = async (
 export const getTotalEraPoints = async (era: number): Promise<any> => {
   return TotalEraPointsModel.findOne({
     era: era,
-  });
+  }).lean();
 };
 
 export const getLastTotalEraPoints = async (): Promise<any> => {
-  const eraPoints = await TotalEraPointsModel.find({}).sort("-era").limit(1);
+  const eraPoints = await TotalEraPointsModel.find({})
+    .lean()
+    .sort("-era")
+    .limit(1);
   return eraPoints;
 };
 
@@ -153,7 +156,9 @@ export const getSpanEraPoints = async (
   return await EraPointsModel.find({
     address: address,
     era: { $gte: currentEra - 27 },
-  }).exec();
+  })
+    .lean()
+    .exec();
 };
 
 // Gets the era points for a validator for the past 84 eras from a current era
@@ -164,7 +169,9 @@ export const getHistoryDepthEraPoints = async (
   return await EraPointsModel.find({
     address: address,
     era: { $gte: currentEra - 83 },
-  }).exec();
+  })
+    .lean()
+    .exec();
 };
 
 export const getHistoryDepthTotalEraPoints = async (
@@ -172,5 +179,7 @@ export const getHistoryDepthTotalEraPoints = async (
 ): Promise<any> => {
   return await TotalEraPointsModel.find({
     era: { $gte: currentEra - 83 },
-  }).exec();
+  })
+    .lean()
+    .exec();
 };

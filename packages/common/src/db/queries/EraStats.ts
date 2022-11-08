@@ -8,7 +8,7 @@ export const setEraStats = async (
 ): Promise<boolean> => {
   const data = await EraStatsModel.findOne({
     era: era,
-  });
+  }).lean();
 
   // If the era stats already exist and are the same as before, return
   if (
@@ -47,5 +47,5 @@ export const setEraStats = async (
 };
 
 export const getLatestEraStats = async (): Promise<any> => {
-  return EraStatsModel.find({}).sort("-era").limit(1);
+  return EraStatsModel.find({}).lean().sort("-era").limit(1);
 };

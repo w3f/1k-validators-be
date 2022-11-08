@@ -5,11 +5,15 @@ export const getLocation = async (name: string, addr: string): Promise<any> => {
   // First try to get by telemetry name
   data = await LocationModel.findOne({
     addr,
-  }).exec();
+  })
+    .lean()
+    .exec();
   if (!data) {
     data = await LocationModel.findOne({
       name,
-    }).exec();
+    })
+      .lean()
+      .exec();
   }
   return data;
 };
@@ -27,11 +31,11 @@ export const setLocation = async (
   let data;
   data = await LocationModel.findOne({
     name,
-  });
+  }).lean();
   if (!data) {
     data = await LocationModel.findOne({
       addr,
-    });
+    }).lean();
   }
 
   if (!data || data?.addr != addr || data?.city != city) {
@@ -50,5 +54,5 @@ export const setLocation = async (
 };
 
 export const getIIT = async (): Promise<any> => {
-  return IITModel.findOne({}).exec();
+  return IITModel.findOne({}).lean().exec();
 };

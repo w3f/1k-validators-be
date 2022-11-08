@@ -53,7 +53,7 @@ export const DelayedTxModel = mongoose.model("DelayedTx", DelayedTxSchema);
 
 export const Identity = new Schema({
   // The Super Identity
-  name: { type: Number, index: true },
+  name: { type: String, index: true },
   // The sub identity (if one exists)
   sub: String,
   // Whether or not the identity has been verified by a registrar

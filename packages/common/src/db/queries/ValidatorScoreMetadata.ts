@@ -44,7 +44,9 @@ export const setValidatorScoreMetadata = async (
 
   const data = await ValidatorScoreMetadataModel.findOne({
     session: session,
-  }).exec();
+  })
+    .lean()
+    .exec();
 
   // If they don't exist
   if (!data) {
@@ -132,11 +134,11 @@ export const setValidatorScoreMetadata = async (
 };
 
 export const getValidatorScoreMetadata = async (session): Promise<any> => {
-  return ValidatorScoreMetadataModel.findOne({ session });
+  return ValidatorScoreMetadataModel.findOne({ session }).lean();
 };
 
 export const getLatestValidatorScoreMetadata = async (): Promise<any> => {
   return (
-    await ValidatorScoreMetadataModel.find({}).sort("-updated").limit(1)
+    await ValidatorScoreMetadataModel.find({}).lean().sort("-updated").limit(1)
   )[0];
 };

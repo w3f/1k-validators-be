@@ -15,7 +15,7 @@ export const setEraReward = async (
   const data = await EraRewardModel.findOne({
     era: era,
     stash: stash,
-  });
+  }).lean();
 
   // If the era rewards already exist and are the same as before, return
   if (!!data && data.blockTimestamp == blockTimestamp) return;
@@ -63,7 +63,7 @@ export const getLastEraRewards = async (
   stash: string,
   limit: number
 ): Promise<any> => {
-  return EraRewardModel.find({ stash: stash }).sort("-era").limit(limit);
+  return EraRewardModel.find({ stash: stash }).sort("-era").lean().limit(limit);
 };
 
 // returns a era paid event for a given era
@@ -74,6 +74,6 @@ export const getEraReward = async (
   const data = await EraRewardModel.findOne({
     stash: stash,
     era: era,
-  });
+  }).lean();
   return data;
 };

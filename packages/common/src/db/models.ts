@@ -336,7 +336,7 @@ export const TotalEraPointsSchema = new Schema({
   // The total era points for all validators in the era
   totalEraPoints: Number,
   // The era
-  era: Number,
+  era: { type: Number, index: true },
   // Median Era points,
   median: Number,
   // average era points
@@ -854,7 +854,8 @@ export const ReferendumVoteSchema = new Schema({
   updatedBlockHash: String,
 });
 
-ReferendumVoteSchema.index({ accountId: 1, referendumIndex: -1 });
+ReferendumVoteSchema.index({ accountId: 1 });
+ReferendumVoteSchema.index({ referendumIndex: -1 });
 
 export const ReferendumVoteModel = mongoose.model(
   "ReferendumVote",

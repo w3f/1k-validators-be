@@ -15,6 +15,7 @@ const API = {
   Accounting: "/accounting/:address",
   Candidate: "/candidate/:address",
   GetCandidates: "/candidates",
+  GetValidCandidates: "/candidates/valid",
   GetNodes: "/nodes",
   GetNominators: "/nominators",
   GetNominator: "/nominator/:address",
@@ -58,6 +59,7 @@ router.get(API.Accounting, Accounting.getAccounting);
 
 router.get(API.Candidate, Candidate.getCandidate);
 router.get(API.GetCandidates, Candidate.getCandidates);
+router.get(API.GetValidCandidates, Candidate.getValidCandidates);
 router.get(API.GetNodes, Candidate.getNodes);
 router.get(API.LatestNominatorStake, Candidate.getLatestNominatorStake);
 router.get(API.EraNominatorStake, Candidate.getEraNominatorStake);

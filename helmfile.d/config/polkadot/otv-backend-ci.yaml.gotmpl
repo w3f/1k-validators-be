@@ -36,7 +36,7 @@ config: |
     },
     "db": {
       "mongo": {
-          "uri": "mongodb://username:password123@polkadot-mongodb-0.polkadot-mongodb-headless:27017,polkadot-mongodb-1.polkadot-mongodb-headless:27017/otv"
+          "uri": "mongodb://username:password123@polkadot-mongodb-headless.polkadot.svc.cluster.local/otv?tls=false&replicaSet=rs0"
       }
     },
     "matrix": {

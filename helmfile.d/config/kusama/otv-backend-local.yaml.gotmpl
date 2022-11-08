@@ -35,7 +35,7 @@ config: |
     },
     "db": {
       "mongo": {
-          "uri": "mongodb://username:password123@kusama-mongodb-0.kusama-mongodb-headless:27017,kusama-mongodb-1.kusama-mongodb-headless:27017/otv"
+          "uri": "mongodb://username:password123@kusama-mongodb-headless.kusama.svc.cluster.local/otv?tls=false&replicaSet=rs0"
       }
     },
     "matrix": {

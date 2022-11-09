@@ -262,26 +262,26 @@ export class OTV implements Constraints {
       label: "Constraints",
     });
     let rankedCandidates = [];
+    let session;
     const validCandidates = candidates;
-    if (candidates.length < 2) {
+    if (validCandidates.length < 2) {
       logger.info(
         `{Scored} valid candidates length was ${validCandidates.length} out of ${candidates.length} candidates. Checking validity....`,
         {
           label: "Constraints",
         }
       );
+    } else {
+      session = await this.chaindata.getSession();
+      logger.info(
+        `{Scored} scoring ${
+          validCandidates.length
+        } candidates for session ${JSON.stringify(session)}`,
+        {
+          label: "Constraints",
+        }
+      );
     }
-
-    const session = await this.chaindata.getSession();
-
-    logger.info(
-      `{Scored} scoring ${
-        validCandidates.length
-      } candidates for session ${JSON.stringify(session)}`,
-      {
-        label: "Constraints",
-      }
-    );
 
     // Get Ranges of Parameters
     //    A validators individual parameter is then scaled to how it compares to others that are also deemed valid
@@ -354,6 +354,8 @@ export class OTV implements Constraints {
       democracyStats: democracyStats,
       democracyWeight: this.DEMOCRACY_WEIGHT,
     };
+
+    logger.info(`{Scored} score metadata available for session ${session}`);
 
     // Create  entry for Validator Score Metadata
     await setValidatorScoreMetadata(scoreMetadata, Date.now());

@@ -1035,13 +1035,17 @@ export const getDemocracyValues = async (
   const lastReferendum = (await getLastReferenda())[0]?.referendumIndex;
 
   // Democracy
+
   const democracyValues = validCandidates.map((candidate) => {
+    const democracyVotes = candidate.democracyVotes
+      ? candidate.democracyVotes
+      : [];
     const {
       baseDemocracyScore,
       totalDemocracyScore,
       totalConsistencyMultiplier,
       lastConsistencyMultiplier,
-    } = scoreDemocracyVotes(candidate.democracyVotes, lastReferendum);
+    } = scoreDemocracyVotes(democracyVotes, lastReferendum);
     return totalDemocracyScore || 0;
   });
   const democracyStats = getStats(democracyValues);

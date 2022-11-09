@@ -786,7 +786,7 @@ export const setOnlineValidity = async (
     stash: address,
   }).lean();
 
-  if (!data) {
+  if (!data || !data?.invalidity) {
     console.log(`{Validate Intention} NO CANDIDATE DATA FOUND FOR ${address}`);
     return;
   }
@@ -824,7 +824,7 @@ export const setValidateIntentionValidity = async (
     stash: address,
   }).lean();
 
-  if (!data) {
+  if (!data || !data?.invalidity) {
     console.log(`{Validate Intention} NO CANDIDATE DATA FOUND FOR ${address}`);
     return;
   }
@@ -862,7 +862,7 @@ export const setLatestClientReleaseValidity = async (
     stash: address,
   }).lean();
 
-  if (!data) {
+  if (!data || !data?.invalidity) {
     console.log(`{Latest Client} NO CANDIDATE DATA FOUND FOR ${address}`);
     return;
   }
@@ -900,7 +900,7 @@ export const setConnectionTimeInvalidity = async (
     stash: address,
   }).lean();
 
-  if (!data) {
+  if (!data || !data?.invalidity) {
     console.log(`{Connection Time} NO CANDIDATE DATA FOUND FOR ${address}`);
     return;
   }
@@ -939,7 +939,7 @@ export const setIdentityInvalidity = async (
     stash: address,
   }).lean();
 
-  if (!data) {
+  if (!data || !data?.invalidity) {
     console.log(`{Identity} NO CANDIDATE DATA FOUND FOR ${address}`);
     return;
   }
@@ -979,7 +979,7 @@ export const setOfflineAccumulatedInvalidity = async (
     stash: address,
   }).lean();
 
-  if (!data) {
+  if (!data || !data?.invalidity) {
     console.log(`{Offline Accumulated} NO CANDIDATE DATA FOUND FOR ${address}`);
     return;
   }
@@ -1019,7 +1019,7 @@ export const setRewardDestinationInvalidity = async (
     stash: address,
   }).lean();
 
-  if (!data) {
+  if (!data || !data?.invalidity) {
     console.log(`{Reward Destination} NO CANDIDATE DATA FOUND FOR ${address}`);
     return;
   }
@@ -1058,7 +1058,7 @@ export const setCommissionInvalidity = async (
     stash: address,
   }).lean();
 
-  if (!data) {
+  if (!data || !data?.invalidity) {
     console.log(`{Commission} NO CANDIDATE DATA FOUND FOR ${address}`);
     return;
   }
@@ -1099,7 +1099,7 @@ export const setSelfStakeInvalidity = async (
     stash: address,
   }).lean();
 
-  if (!data) {
+  if (!data || !data?.invalidity) {
     console.log(`{Self Stake} NO CANDIDATE DATA FOUND FOR ${address}`);
     return;
   }
@@ -1140,7 +1140,7 @@ export const setUnclaimedInvalidity = async (
     stash: address,
   }).lean();
 
-  if (!data) {
+  if (!data || !data?.invalidity) {
     console.log(`{Self Stake} NO CANDIDATE DATA FOUND FOR ${address}`);
     return;
   }
@@ -1181,7 +1181,7 @@ export const setBlockedInvalidity = async (
     stash: address,
   }).lean();
 
-  if (!data) {
+  if (!data || !data?.invalidity) {
     console.log(`{Self Stake} NO CANDIDATE DATA FOUND FOR ${address}`);
     return;
   }
@@ -1221,7 +1221,7 @@ export const setKusamaRankInvalidity = async (
     stash: address,
   }).lean();
 
-  if (!data) {
+  if (!data || !data?.invalidity) {
     logger.warn(`{Self Stake} NO CANDIDATE DATA FOUND FOR ${address}`);
     return;
   }
@@ -1261,7 +1261,7 @@ export const setValid = async (
     stash: address,
   }).lean();
 
-  if (!data) {
+  if (!data || !data?.invalidity) {
     logger.warn(`{Valid} NO CANDIDATE DATA FOUND FOR ${address}`);
     return;
   }

@@ -259,6 +259,9 @@ export const reportOnline = async (
   const invalidityReasons = data?.invalidity?.filter((invalidityReason) => {
     return invalidityReason.type !== "ONLINE";
   });
+  if (!invalidityReasons || invalidityReasons.length == 0) return;
+
+  logger.info(data);
 
   // T
   if (!data.discoveredAt) {
@@ -1201,26 +1204,31 @@ export const setBlockedInvalidity = async (
   });
   if (!invalidityReasons || invalidityReasons.length == 0) return;
 
-  await CandidateModel.findOneAndUpdate(
-    {
-      stash: address,
-    },
-    {
-      invalidity: [
-        ...invalidityReasons,
-        {
-          valid: validity,
-          type: "BLOCKED",
-          updated: Date.now(),
-          details: validity
-            ? ""
-            : details
-            ? details
-            : `${data.name} blocks external nominations`,
-        },
-      ],
-    }
-  ).exec();
+  logger.info(data);
+  try {
+    await CandidateModel.findOneAndUpdate(
+      {
+        stash: address,
+      },
+      {
+        invalidity: [
+          ...invalidityReasons,
+          {
+            valid: validity,
+            type: "BLOCKED",
+            updated: Date.now(),
+            details: validity
+              ? ""
+              : details
+              ? details
+              : `${data.name} blocks external nominations`,
+          },
+        ],
+      }
+    ).exec();
+  } catch (e) {
+    logger.info(`error setting online`);
+  }
 };
 
 // Set Kusama Rank Validity Status

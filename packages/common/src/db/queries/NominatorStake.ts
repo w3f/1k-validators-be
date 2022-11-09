@@ -52,7 +52,6 @@ export const getLatestNominatorStake = async (
 ): Promise<any> => {
   return (
     await NominatorStakeModel.find({ validator: validator })
-      .hint({ validator: 1, era: -1 })
       .sort({ era: -1 })
       .limit(1)
       .lean()

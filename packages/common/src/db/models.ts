@@ -101,7 +101,7 @@ export const LocationModel = mongoose.model("Location", LocationSchema);
 
 // Info about a validators nominations
 export const NominatorStakeSchema = new Schema({
-  validator: String,
+  validator: { type: String, index: true },
   era: Number,
   totalStake: Number,
   inactiveStake: Number,
@@ -120,7 +120,7 @@ export const NominatorStakeSchema = new Schema({
   updated: Number,
 });
 
-NominatorStakeSchema.index({ validator: 1, era: -1 });
+// NominatorStakeSchema.index({ validator: 1, era: -1 });
 // NominatorStakeSchema.index({ era: -1 });
 
 export const NominatorStakeModel = mongoose.model(
@@ -376,7 +376,7 @@ export const ValidatorScoreSchema = new Schema({
   // The session a score was updated at
   session: Number,
   // The validator stash
-  address: String,
+  address: { type: String, index: true },
   // total score (including randomness)
   total: Number,
   // aggregate score
@@ -414,7 +414,7 @@ export const ValidatorScoreSchema = new Schema({
   randomness: Number,
 });
 
-ValidatorScoreSchema.index({ address: 1, session: -1 });
+// ValidatorScoreSchema.index({ address: 1, session: -1 });
 // ValidatorScoreSchema.index({ session: -1 });
 
 export const ValidatorScoreModel = mongoose.model(

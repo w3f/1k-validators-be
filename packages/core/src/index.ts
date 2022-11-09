@@ -76,19 +76,25 @@ const start = async (cmd: { config: string }) => {
 
   // Delete the old candidate fields.
   await queries.deleteOldCandidateFields();
+  logger.info(`{Start} old candidate fields removed.`);
 
   // Clear node refs and delete old fields from all nodes before starting new
   // telemetry client.
   const allNodes = await queries.allNodes();
-  for (const node of allNodes) {
+  logger.info(`{Start} clearing old info from ${allNodes.length} nodes..`);
+  for (const [index, node] of allNodes.entries()) {
     const { name } = node;
     await queries.deleteOldFieldFrom(name);
     await queries.clearNodeRefsFrom(name);
+    logger.info(
+      `{Start} info cleared for ${name} [${index}/${allNodes.length}]`
+    );
   }
 
   // Start the telemetry client.
   const telemetry = new TelemetryClient(config);
   await telemetry.start();
+  logger.info(`{Start} telemetry client started.`);
 
   // Create the matrix bot if enabled.
   let maybeBot: any = false;
@@ -100,6 +106,7 @@ const start = async (cmd: { config: string }) => {
       `<a href="https://github.com/w3f/1k-validators-be">Backend services</a> (re)-started! Version: ${version}`
     );
   }
+  logger.info(`{Start} matrix client started.`);
 
   // Buffer some time for set up.
   await Util.sleep(1500);

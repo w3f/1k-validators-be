@@ -942,7 +942,13 @@ export const getNominatorStakeValues = async (
     return nom.address;
   });
   const nominatorStakeValues = [];
-  for (const candidate of validCandidates) {
+  logger.info(
+    `{getNominatorStakeValues} getting nominator stakes for ${validCandidates.length} candidates..`
+  );
+  for (const [index, candidate] of validCandidates.entries()) {
+    logger.info(
+      `{getNomiantorStakeValues} getting for ${candidate.name} [${index}/${validCandidates.length}]`
+    );
     const nomStake = await getLatestNominatorStake(candidate.stash);
     if (
       nomStake != undefined &&

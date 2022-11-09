@@ -1,4 +1,3 @@
-import { CronJob } from "cron";
 import { Command } from "commander";
 
 import {
@@ -11,7 +10,6 @@ import {
   queries,
 } from "@1kv/common";
 import MatrixBot from "./matrix";
-import Monitor from "./monitor";
 import Scorekeeper from "./scorekeeper";
 import { Server } from "@1kv/gateway";
 import { TelemetryClient } from "@1kv/telemetry";
@@ -21,7 +19,7 @@ import { startClearAccumulatedOfflineTimeJob, startMonitorJob } from "./cron";
 
 const isCI = process.env.CI;
 
-const version = process.env.npm_package_version || "v2.6.98";
+const version = process.env.npm_package_version || "v2.7.29";
 
 const catchAndQuit = async (fn: any) => {
   try {

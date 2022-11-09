@@ -19,7 +19,7 @@ import { startClearAccumulatedOfflineTimeJob, startMonitorJob } from "./cron";
 
 const isCI = process.env.CI;
 
-const version = process.env.npm_package_version || "v2.7.30";
+const version = process.env.npm_package_version || "v2.7.31";
 
 const catchAndQuit = async (fn: any) => {
   try {
@@ -74,7 +74,7 @@ const start = async (cmd: { config: string }) => {
 
   logger.info(`{Start} removing old candidate fields.....`);
   // Delete the old candidate fields.
-  // await queries.deleteOldCandidateFields();
+  await queries.deleteOldCandidateFields();
   logger.info(`{Start} old candidate fields removed.`);
 
   // Clear node refs and delete old fields from all nodes before starting new
@@ -83,8 +83,8 @@ const start = async (cmd: { config: string }) => {
   logger.info(`{Start} clearing old info from ${allNodes.length} nodes..`);
   for (const [index, node] of allNodes.entries()) {
     const { name } = node;
-    // await queries.deleteOldFieldFrom(name);
-    // await queries.clearNodeRefsFrom(name);
+    await queries.deleteOldFieldFrom(name);
+    await queries.clearNodeRefsFrom(name);
     logger.info(
       `{Start} info cleared for ${name} [${index}/${allNodes.length}]`
     );

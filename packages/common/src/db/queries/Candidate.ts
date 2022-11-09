@@ -794,6 +794,7 @@ export const setOnlineValidity = async (
   const invalidityReasons = data?.invalidity?.filter((invalidityReason) => {
     return invalidityReason.type !== "ONLINE";
   });
+  if (!invalidityReasons || invalidityReasons.length == 0) return;
 
   await CandidateModel.findOneAndUpdate(
     {
@@ -832,6 +833,7 @@ export const setValidateIntentionValidity = async (
   const invalidityReasons = data?.invalidity?.filter((invalidityReason) => {
     return invalidityReason.type !== "VALIDATE_INTENTION";
   });
+  if (!invalidityReasons || invalidityReasons.length == 0) return;
 
   await CandidateModel.findOneAndUpdate(
     {
@@ -870,6 +872,7 @@ export const setLatestClientReleaseValidity = async (
   const invalidityReasons = data?.invalidity?.filter((invalidityReason) => {
     return invalidityReason.type !== "CLIENT_UPGRADE";
   });
+  if (!invalidityReasons || invalidityReasons.length == 0) return;
 
   await CandidateModel.findOneAndUpdate(
     {
@@ -908,6 +911,7 @@ export const setConnectionTimeInvalidity = async (
   const invalidityReasons = data?.invalidity?.filter((invalidityReason) => {
     return invalidityReason.type !== "CONNECTION_TIME";
   });
+  if (!invalidityReasons || invalidityReasons.length == 0) return;
 
   await CandidateModel.findOneAndUpdate(
     {
@@ -947,6 +951,7 @@ export const setIdentityInvalidity = async (
   const invalidityReasons = data?.invalidity?.filter((invalidityReason) => {
     return invalidityReason.type !== "IDENTITY";
   });
+  if (!invalidityReasons || invalidityReasons.length == 0) return;
 
   await CandidateModel.findOneAndUpdate(
     {
@@ -987,6 +992,7 @@ export const setOfflineAccumulatedInvalidity = async (
   const invalidityReasons = data?.invalidity?.filter((invalidityReason) => {
     return invalidityReason.type !== "ACCUMULATED_OFFLINE_TIME";
   });
+  if (!invalidityReasons || invalidityReasons.length == 0) return;
 
   await CandidateModel.findOneAndUpdate(
     {
@@ -1027,6 +1033,7 @@ export const setRewardDestinationInvalidity = async (
   const invalidityReasons = data?.invalidity?.filter((invalidityReason) => {
     return invalidityReason.type !== "REWARD_DESTINATION";
   });
+  if (!invalidityReasons || invalidityReasons.length == 0) return;
 
   await CandidateModel.findOneAndUpdate(
     {
@@ -1066,6 +1073,7 @@ export const setCommissionInvalidity = async (
   const invalidityReasons = data?.invalidity?.filter((invalidityReason) => {
     return invalidityReason.type !== "COMMISION";
   });
+  if (!invalidityReasons || invalidityReasons.length == 0) return;
 
   await CandidateModel.findOneAndUpdate(
     {
@@ -1107,6 +1115,7 @@ export const setSelfStakeInvalidity = async (
   const invalidityReasons = data?.invalidity?.filter((invalidityReason) => {
     return invalidityReason.type !== "SELF_STAKE";
   });
+  if (!invalidityReasons || invalidityReasons.length == 0) return;
 
   await CandidateModel.findOneAndUpdate(
     {
@@ -1148,6 +1157,7 @@ export const setUnclaimedInvalidity = async (
   const invalidityReasons = data?.invalidity?.filter((invalidityReason) => {
     return invalidityReason.type !== "UNCLAIMED_REWARDS";
   });
+  if (!invalidityReasons || invalidityReasons.length == 0) return;
 
   await CandidateModel.findOneAndUpdate(
     {
@@ -1189,6 +1199,8 @@ export const setBlockedInvalidity = async (
   const invalidityReasons = data?.invalidity?.filter((invalidityReason) => {
     return invalidityReason.type !== "BLOCKED";
   });
+  if (!invalidityReasons || invalidityReasons.length == 0) return;
+
   await CandidateModel.findOneAndUpdate(
     {
       stash: address,
@@ -1229,6 +1241,8 @@ export const setKusamaRankInvalidity = async (
   const invalidityReasons = data?.invalidity?.filter((invalidityReason) => {
     return invalidityReason.type !== "KUSAMA_RANK";
   });
+
+  if (!invalidityReasons || invalidityReasons.length == 0) return;
 
   await CandidateModel.findOneAndUpdate(
     {

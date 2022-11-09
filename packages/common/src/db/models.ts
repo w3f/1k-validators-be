@@ -425,7 +425,7 @@ export const ValidatorScoreModel = mongoose.model(
 // ValidatorScoreModel.syncIndexes().then((r) => logger.info(`indexes synced`));
 
 export const ValidatorScoreMetadataSchema = new Schema({
-  session: Number,
+  session: { type: Number, index: true },
   // Bonded Metadata
   bondedStats: {
     values: [Number],

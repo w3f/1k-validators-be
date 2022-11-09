@@ -176,7 +176,7 @@ export const scoreDemocracyVotes = (
   votes: number[],
   lastReferendum: number
 ) => {
-  if (votes?.length == 0) {
+  if (votes && votes?.length == 0) {
     return {
       baseDemocracyScore: 0,
       totalConsistencyMultiplier: 0,

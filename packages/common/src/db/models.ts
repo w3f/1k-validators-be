@@ -175,7 +175,7 @@ export const CandidateSchema = new Schema({
   // wrong during a nomination round.
   faults: { type: Number, default: 0 },
   // The stash account of the candidate. May be empty if no stash is registered.
-  stash: String,
+  stash: { type: String, index: true },
   // The controller of the candidates
   controller: String,
   // The reasons a candidate is not meeting the programme requirements.
@@ -413,9 +413,6 @@ export const ValidatorScoreSchema = new Schema({
   // The randomness factor used to buffer the total
   randomness: Number,
 });
-
-// ValidatorScoreSchema.index({ address: 1, session: -1 });
-// ValidatorScoreSchema.index({ session: -1 });
 
 export const ValidatorScoreModel = mongoose.model(
   "ValidatorScore",

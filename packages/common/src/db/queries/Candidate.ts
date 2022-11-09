@@ -178,7 +178,7 @@ export const reportBestBlock = async (
   // If the node was previously deemed offline
   if (data.offlineSince && data.offlineSince !== 0) {
     // Get the list of all other validtity reasons besides online
-    const invalidityReasons = data.invalidity.filter((invalidityReason) => {
+    const invalidityReasons = data?.invalidity?.filter((invalidityReason) => {
       return invalidityReason.type !== "ONLINE";
     });
 
@@ -256,7 +256,7 @@ export const reportOnline = async (
   }
 
   // Get the list of all other validtity reasons besides online
-  const invalidityReasons = data.invalidity.filter((invalidityReason) => {
+  const invalidityReasons = data?.invalidity?.filter((invalidityReason) => {
     return invalidityReason.type !== "ONLINE";
   });
 
@@ -359,7 +359,7 @@ export const reportOffline = async (
   }
 
   // Get the list of all other validtity reasons besides online
-  const invalidityReasons = data.invalidity.filter((invalidityReason) => {
+  const invalidityReasons = data?.invalidity?.filter((invalidityReason) => {
     return invalidityReason.type !== "ONLINE";
   });
 
@@ -786,12 +786,12 @@ export const setOnlineValidity = async (
     stash: address,
   }).lean();
 
-  if (!data) {
+  if (!data || !data?.invalidity) {
     console.log(`{Validate Intention} NO CANDIDATE DATA FOUND FOR ${address}`);
     return;
   }
 
-  const invalidityReasons = data.invalidity.filter((invalidityReason) => {
+  const invalidityReasons = data?.invalidity?.filter((invalidityReason) => {
     return invalidityReason.type !== "ONLINE";
   });
 
@@ -824,12 +824,12 @@ export const setValidateIntentionValidity = async (
     stash: address,
   }).lean();
 
-  if (!data) {
+  if (!data || !data?.invalidity) {
     console.log(`{Validate Intention} NO CANDIDATE DATA FOUND FOR ${address}`);
     return;
   }
 
-  const invalidityReasons = data.invalidity.filter((invalidityReason) => {
+  const invalidityReasons = data?.invalidity?.filter((invalidityReason) => {
     return invalidityReason.type !== "VALIDATE_INTENTION";
   });
 
@@ -862,12 +862,12 @@ export const setLatestClientReleaseValidity = async (
     stash: address,
   }).lean();
 
-  if (!data) {
+  if (!data || !data?.invalidity) {
     console.log(`{Latest Client} NO CANDIDATE DATA FOUND FOR ${address}`);
     return;
   }
 
-  const invalidityReasons = data.invalidity.filter((invalidityReason) => {
+  const invalidityReasons = data?.invalidity?.filter((invalidityReason) => {
     return invalidityReason.type !== "CLIENT_UPGRADE";
   });
 
@@ -900,12 +900,12 @@ export const setConnectionTimeInvalidity = async (
     stash: address,
   }).lean();
 
-  if (!data) {
+  if (!data || !data?.invalidity) {
     console.log(`{Connection Time} NO CANDIDATE DATA FOUND FOR ${address}`);
     return;
   }
 
-  const invalidityReasons = data.invalidity.filter((invalidityReason) => {
+  const invalidityReasons = data?.invalidity?.filter((invalidityReason) => {
     return invalidityReason.type !== "CONNECTION_TIME";
   });
 
@@ -939,12 +939,12 @@ export const setIdentityInvalidity = async (
     stash: address,
   }).lean();
 
-  if (!data) {
+  if (!data || !data?.invalidity) {
     console.log(`{Identity} NO CANDIDATE DATA FOUND FOR ${address}`);
     return;
   }
 
-  const invalidityReasons = data.invalidity.filter((invalidityReason) => {
+  const invalidityReasons = data?.invalidity?.filter((invalidityReason) => {
     return invalidityReason.type !== "IDENTITY";
   });
 
@@ -979,12 +979,12 @@ export const setOfflineAccumulatedInvalidity = async (
     stash: address,
   }).lean();
 
-  if (!data) {
+  if (!data || !data?.invalidity) {
     console.log(`{Offline Accumulated} NO CANDIDATE DATA FOUND FOR ${address}`);
     return;
   }
 
-  const invalidityReasons = data.invalidity.filter((invalidityReason) => {
+  const invalidityReasons = data?.invalidity?.filter((invalidityReason) => {
     return invalidityReason.type !== "ACCUMULATED_OFFLINE_TIME";
   });
 
@@ -1019,12 +1019,12 @@ export const setRewardDestinationInvalidity = async (
     stash: address,
   }).lean();
 
-  if (!data) {
+  if (!data || !data?.invalidity) {
     console.log(`{Reward Destination} NO CANDIDATE DATA FOUND FOR ${address}`);
     return;
   }
 
-  const invalidityReasons = data.invalidity.filter((invalidityReason) => {
+  const invalidityReasons = data?.invalidity?.filter((invalidityReason) => {
     return invalidityReason.type !== "REWARD_DESTINATION";
   });
 
@@ -1058,12 +1058,12 @@ export const setCommissionInvalidity = async (
     stash: address,
   }).lean();
 
-  if (!data) {
+  if (!data || !data?.invalidity) {
     console.log(`{Commission} NO CANDIDATE DATA FOUND FOR ${address}`);
     return;
   }
 
-  const invalidityReasons = data.invalidity.filter((invalidityReason) => {
+  const invalidityReasons = data?.invalidity?.filter((invalidityReason) => {
     return invalidityReason.type !== "COMMISION";
   });
 
@@ -1099,12 +1099,12 @@ export const setSelfStakeInvalidity = async (
     stash: address,
   }).lean();
 
-  if (!data) {
+  if (!data || !data?.invalidity) {
     console.log(`{Self Stake} NO CANDIDATE DATA FOUND FOR ${address}`);
     return;
   }
 
-  const invalidityReasons = data.invalidity.filter((invalidityReason) => {
+  const invalidityReasons = data?.invalidity?.filter((invalidityReason) => {
     return invalidityReason.type !== "SELF_STAKE";
   });
 
@@ -1140,12 +1140,12 @@ export const setUnclaimedInvalidity = async (
     stash: address,
   }).lean();
 
-  if (!data) {
+  if (!data || !data?.invalidity) {
     console.log(`{Self Stake} NO CANDIDATE DATA FOUND FOR ${address}`);
     return;
   }
 
-  const invalidityReasons = data.invalidity.filter((invalidityReason) => {
+  const invalidityReasons = data?.invalidity?.filter((invalidityReason) => {
     return invalidityReason.type !== "UNCLAIMED_REWARDS";
   });
 
@@ -1181,12 +1181,12 @@ export const setBlockedInvalidity = async (
     stash: address,
   }).lean();
 
-  if (!data) {
+  if (!data || !data?.invalidity) {
     console.log(`{Self Stake} NO CANDIDATE DATA FOUND FOR ${address}`);
     return;
   }
 
-  const invalidityReasons = data.invalidity.filter((invalidityReason) => {
+  const invalidityReasons = data?.invalidity?.filter((invalidityReason) => {
     return invalidityReason.type !== "BLOCKED";
   });
   await CandidateModel.findOneAndUpdate(
@@ -1221,12 +1221,12 @@ export const setKusamaRankInvalidity = async (
     stash: address,
   }).lean();
 
-  if (!data) {
+  if (!data || !data?.invalidity) {
     logger.warn(`{Self Stake} NO CANDIDATE DATA FOUND FOR ${address}`);
     return;
   }
 
-  const invalidityReasons = data.invalidity.filter((invalidityReason) => {
+  const invalidityReasons = data?.invalidity?.filter((invalidityReason) => {
     return invalidityReason.type !== "KUSAMA_RANK";
   });
 
@@ -1261,7 +1261,7 @@ export const setValid = async (
     stash: address,
   }).lean();
 
-  if (!data) {
+  if (!data || !data?.invalidity) {
     logger.warn(`{Valid} NO CANDIDATE DATA FOUND FOR ${address}`);
     return;
   }

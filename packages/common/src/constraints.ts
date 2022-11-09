@@ -288,36 +288,53 @@ export class OTV implements Constraints {
 
     // Get Values and Stats
     const { bondedValues, bondedStats } = getBondedValues(validCandidates);
+    logger.info(`{Scored} got bonded values`);
     const { faultsValues, faultsStats } = getFaultsValues(validCandidates);
+    logger.info(`{Scored} got faults values`);
     const { inclusionValues, inclusionStats } =
       getInclusionValues(validCandidates);
+    logger.info(`{Scored} got inclusion values`);
     const { spanInclusionValues, spanInclusionStats } =
       getSpanInclusionValues(validCandidates);
+    logger.info(`{Scored} got span inclusion values`);
     const { discoveredAtValues, discoveredAtStats } =
       getDiscoveredAtValues(validCandidates);
+    logger.info(`{Scored} got discovered values`);
     const { nominatedAtValues, nominatedAtStats } =
       getNominatedAtValues(validCandidates);
+    logger.info(`{Scored} got nominated values`);
     const { offlineValues, offlineStats } = getOfflineValues(validCandidates);
+    logger.info(`{Scored} got offline values`);
     const { rankValues, rankStats } = getRankValues(validCandidates);
+    logger.info(`{Scored} got rank values`);
     const { unclaimedValues, unclaimedStats } =
       getUnclaimedValues(validCandidates);
+    logger.info(`{Scored} got unclaimed values`);
     const { locationArr, locationValues, locationStats } =
       getLocationValues(validCandidates);
+    logger.info(`{Scored} got location values`);
     const { regionArr, regionValues, regionStats } =
       getRegionValues(validCandidates);
+    logger.info(`{Scored} got region values`);
     const { countryArr, countryValues, countryStats } =
       getCountryValues(validCandidates);
+    logger.info(`{Scored} got country values`);
     const { providerArr, providerValues, providerStats } =
       getProviderValues(validCandidates);
+    logger.info(`{Scored} got provider values`);
     const { ownNominatorAddresses, nominatorStakeValues, nominatorStakeStats } =
       await getNominatorStakeValues(validCandidates);
+    logger.info(`{Scored} got nominator stake values`);
     const { delegationValues, delegationStats } = await getDelegationValues(
       validCandidates
     );
+    logger.info(`{Scored} got delegation values`);
     const { councilStakeValues, councilStakeStats } =
       getCouncilStakeValues(validCandidates);
+    logger.info(`{Scored} got council values`);
     const { lastReferendum, democracyValues, democracyStats } =
       await getDemocracyValues(validCandidates);
+    logger.info(`{Scored} got democracy values`);
 
     const scoreMetadata = {
       session: session,

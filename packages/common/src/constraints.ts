@@ -947,9 +947,16 @@ export const getNominatorStakeValues = async (
   );
   for (const [index, candidate] of validCandidates.entries()) {
     logger.info(
-      `{getNomiantorStakeValues} getting for ${candidate.name} [${index}/${validCandidates.length}]`
+      `{getNominatorStakeValues} getting for ${candidate.name} [${index}/${validCandidates.length}]`
     );
+    const s1 = Date.now();
     const nomStake = await getLatestNominatorStake(candidate.stash);
+    const s2 = Date.now();
+    logger.info(
+      `{getNominatorStakeValues} getLatestNominatorStake ${
+        candidate.name
+      } [${index}/${validCandidates.length}] took ${(s2 - s1) / 1000} s`
+    );
     if (
       nomStake != undefined &&
       nomStake?.activeNominators &&
@@ -970,6 +977,12 @@ export const getNominatorStakeValues = async (
           }
         }
         nominatorStakeValues.push(total);
+        const s3 = Date.now();
+        logger.info(
+          `{getNominatorStakeValues} total ${candidate.name} [${index}/${
+            validCandidates.length
+          }] took ${(s3 - s1) / 1000} s`
+        );
       } catch (e) {
         logger.info(`{nominatorStake} Can't find nominator stake values`);
         logger.info(JSON.stringify(nomStake));

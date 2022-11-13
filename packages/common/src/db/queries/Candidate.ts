@@ -836,7 +836,26 @@ export const setValidateIntentionValidity = async (
   const invalidityReasons = data?.invalidity?.filter((invalidityReason) => {
     return invalidityReason.type !== "VALIDATE_INTENTION";
   });
-  if (!invalidityReasons || invalidityReasons.length == 0) return;
+  if (!invalidityReasons || invalidityReasons.length == 0) {
+    await CandidateModel.findOneAndUpdate(
+      {
+        stash: address,
+      },
+      {
+        invalidity: [
+          {
+            valid: validity,
+            type: "VALIDATE_INTENTION",
+            updated: Date.now(),
+            details: validity
+              ? ""
+              : `${data.name} does not have a validate intention.`,
+          },
+        ],
+      }
+    ).exec();
+    return;
+  }
 
   await CandidateModel.findOneAndUpdate(
     {
@@ -1204,7 +1223,6 @@ export const setBlockedInvalidity = async (
   });
   if (!invalidityReasons || invalidityReasons.length == 0) return;
 
-  logger.info(data);
   try {
     await CandidateModel.findOneAndUpdate(
       {

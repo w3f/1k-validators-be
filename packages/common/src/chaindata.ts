@@ -33,6 +33,15 @@ export class ChainData {
     return denom;
   };
 
+  getBlockHash = async (blockNumber: number): Promise<string> => {
+    return (await this.api.rpc.chain.getBlockHash(blockNumber)).toString();
+  };
+
+  getBlock = async (blockNumber): Promise<any> => {
+    const hash = await this.getBlockHash(blockNumber);
+    const apiAt = await this.api.at(hash);
+  };
+
   // Gets the active era index
   getActiveEraIndex = async (): Promise<NumberResult> => {
     if (!this.api.isConnected) {

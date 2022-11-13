@@ -7,11 +7,10 @@ services:
             - "9944:9944"
         volumes:
             - "polkadot-data-alice:/alice"
-        command: polkadot --chain=polkadot-local --telemetry-url 'ws://172.28.1.15:8001/submit 9' --validator --unsafe-ws-external --rpc-methods Unsafe --unsafe-rpc-external --ws-port 9944 --rpc-cors all --pruning archive --alice --node-key aa788920201122290fc7d3faf00698d9a8e061d7173424da2a31a8130a882a5f
+        command: --chain=polkadot-local --telemetry-url 'ws://172.28.1.15:8001/submit 9' --validator --unsafe-ws-external --rpc-methods Unsafe --unsafe-rpc-external --ws-port 9944 --rpc-cors all --pruning archive --alice --node-key aa788920201122290fc7d3faf00698d9a8e061d7173424da2a31a8130a882a5f
         depends_on:
             - telemetry-backend-core
             - mongo
-            - 1kv-core
         networks:
             testing_net:
                 ipv4_address: 172.28.1.1
@@ -23,11 +22,10 @@ services:
             - "9945:9945"
         volumes:
             - "polkadot-data-bob:/bob"
-        command: polkadot --chain=polkadot-local --telemetry-url 'ws://172.28.1.15:8001/submit 9' --validator --unsafe-ws-external --rpc-methods Unsafe --unsafe-rpc-external --rpc-cors all --ws-port 9945 --pruning archive --bob --bootnodes /ip4/172.28.1.1/tcp/30333/p2p/12D3KooWCJC43YRmb5WJcJmskPSxbkWY4Vp6jPKdFeggnXPxgBCw --port 30334
+        command: --chain=polkadot-local --telemetry-url 'ws://172.28.1.15:8001/submit 9' --validator --unsafe-ws-external --rpc-methods Unsafe --unsafe-rpc-external --rpc-cors all --ws-port 9945 --pruning archive --bob --bootnodes /ip4/172.28.1.1/tcp/30333/p2p/12D3KooWCJC43YRmb5WJcJmskPSxbkWY4Vp6jPKdFeggnXPxgBCw --port 30334
         depends_on:
             - telemetry-backend-core
             - mongo
-            - 1kv-core
         networks:
             testing_net:
                 ipv4_address: 172.28.1.2
@@ -39,11 +37,10 @@ services:
             - "9946:9946"
         volumes:
             - "polkadot-data-charlie:/charlie"
-        command: polkadot --chain=polkadot-local --telemetry-url 'ws://172.28.1.15:8001/submit 9' --validator --unsafe-ws-external --rpc-methods Unsafe --unsafe-rpc-external --rpc-cors all --ws-port 9946 --pruning archive --charlie --bootnodes /ip4/172.28.1.1/tcp/30333/p2p/12D3KooWCJC43YRmb5WJcJmskPSxbkWY4Vp6jPKdFeggnXPxgBCw --port 30335
+        command: --chain=polkadot-local --telemetry-url 'ws://172.28.1.15:8001/submit 9' --validator --unsafe-ws-external --rpc-methods Unsafe --unsafe-rpc-external --rpc-cors all --ws-port 9946 --pruning archive --charlie --bootnodes /ip4/172.28.1.1/tcp/30333/p2p/12D3KooWCJC43YRmb5WJcJmskPSxbkWY4Vp6jPKdFeggnXPxgBCw --port 30335
         depends_on:
             - telemetry-backend-core
             - mongo
-            - 1kv-core
         networks:
             testing_net:
                 ipv4_address: 172.28.1.3
@@ -55,11 +52,10 @@ services:
             - "9947:9947"
         volumes:
             - "polkadot-data-dave:/dave"
-        command: polkadot --chain=polkadot-local --telemetry-url 'ws://172.28.1.15:8001/submit 9' --validator --unsafe-ws-external --rpc-methods Unsafe --unsafe-rpc-external --rpc-cors all --ws-port 9947 --pruning archive --dave --bootnodes /ip4/172.28.1.1/tcp/30333/p2p/12D3KooWCJC43YRmb5WJcJmskPSxbkWY4Vp6jPKdFeggnXPxgBCw --port 30336
+        command: --chain=polkadot-local --telemetry-url 'ws://172.28.1.15:8001/submit 9' --validator --unsafe-ws-external --rpc-methods Unsafe --unsafe-rpc-external --rpc-cors all --ws-port 9947 --pruning archive --dave --bootnodes /ip4/172.28.1.1/tcp/30333/p2p/12D3KooWCJC43YRmb5WJcJmskPSxbkWY4Vp6jPKdFeggnXPxgBCw --port 30336
         depends_on:
             - telemetry-backend-core
             - mongo
-            - 1kv-core
         networks:
             testing_net:
                 ipv4_address: 172.28.1.4
@@ -71,11 +67,10 @@ services:
             - "9948:9948"
         volumes:
             - "polkadot-data-eve:/eve"
-        command: polkadot --chain=polkadot-local --telemetry-url 'ws://172.28.1.15:8001/submit 9' --validator --unsafe-ws-external --rpc-methods Unsafe --unsafe-rpc-external --rpc-cors all --ws-port 9948 --pruning archive --eve --bootnodes /ip4/172.28.1.1/tcp/30333/p2p/12D3KooWCJC43YRmb5WJcJmskPSxbkWY4Vp6jPKdFeggnXPxgBCw --port 30337
+        command: --chain=polkadot-local --telemetry-url 'ws://172.28.1.15:8001/submit 9' --validator --unsafe-ws-external --rpc-methods Unsafe --unsafe-rpc-external --rpc-cors all --ws-port 9948 --pruning archive --eve --bootnodes /ip4/172.28.1.1/tcp/30333/p2p/12D3KooWCJC43YRmb5WJcJmskPSxbkWY4Vp6jPKdFeggnXPxgBCw --port 30337
         depends_on:
             - telemetry-backend-core
             - mongo
-            - 1kv-core
         networks:
             testing_net:
                 ipv4_address: 172.28.1.5
@@ -87,11 +82,10 @@ services:
             - "9949:9949"
         volumes:
             - "polkadot-data-ferdie:/ferdie"
-        command: polkadot --chain=polkadot-local --telemetry-url 'ws://172.28.1.15:8001/submit 9' --validator --unsafe-ws-external --rpc-methods Unsafe --unsafe-rpc-external --rpc-cors all --ws-port 9949 --pruning archive --ferdie --bootnodes /ip4/172.28.1.1/tcp/30333/p2p/12D3KooWCJC43YRmb5WJcJmskPSxbkWY4Vp6jPKdFeggnXPxgBCw --port 30338
+        command: --chain=polkadot-local --telemetry-url 'ws://172.28.1.15:8001/submit 9' --validator --unsafe-ws-external --rpc-methods Unsafe --unsafe-rpc-external --rpc-cors all --ws-port 9949 --pruning archive --ferdie --bootnodes /ip4/172.28.1.1/tcp/30333/p2p/12D3KooWCJC43YRmb5WJcJmskPSxbkWY4Vp6jPKdFeggnXPxgBCw --port 30338
         depends_on:
             - telemetry-backend-core
             - mongo
-            - 1kv-core
         networks:
             testing_net:
                 ipv4_address: 172.28.1.6
@@ -102,7 +96,9 @@ services:
         args:
           PACKAGE: core
         dockerfile: ./Dockerfile-dev
-      restart: always
+      restart: unless-stopped
+      depends_on:
+        - node_alice
       volumes:
         - .:/app
       ports:

@@ -323,7 +323,9 @@ export class ChainData {
     let testBlockNumber =
       latestBlock.block.header.number.toNumber() - approxBlocksAgo;
     while (true) {
-      const blockHash = await this.api.rpc.chain.getBlockHash(testBlockNumber);
+      const blockHash = await this.api.rpc.chain.getBlockHash(
+        parseInt(String(testBlockNumber))
+      );
       const testEra = await this.api.query.staking.activeEra.at(blockHash);
       if (testEra.isNone) {
         logger.info(`Test era is none`);

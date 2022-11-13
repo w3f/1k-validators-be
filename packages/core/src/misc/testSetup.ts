@@ -22,6 +22,7 @@ export const setProxy = async (
   const keyring = new Keyring({ type: "sr25519" });
   const tx = api.tx.proxy.addProxy(proxyAddress, proxyType, proxyDelay);
   const hash = await tx.signAndSend(key, { nonce: -1 });
+  await Util.sleep(1000);
 };
 
 export const bond = async (
@@ -37,6 +38,7 @@ export const bond = async (
     rewardDestination
   );
   const hash = await tx.signAndSend(key, { nonce: -1 });
+  await Util.sleep(1000);
 };
 
 export const increaseValidatorSetSize = async (api, additionalValidators) => {
@@ -44,6 +46,7 @@ export const increaseValidatorSetSize = async (api, additionalValidators) => {
   const tx = api.tx.staking.increaseValidatorCount(additionalValidators);
   const sudoTx = api.tx.sudo.sudo(tx);
   await sudoTx.signAndSend(keyring.addFromUri("//Alice"), { nonce: -1 });
+  await Util.sleep(1000);
 };
 
 export const addRegistrar = async (api, registrarAddress) => {
@@ -51,6 +54,7 @@ export const addRegistrar = async (api, registrarAddress) => {
   const tx = api.tx.identity.addRegistrar(registrarAddress);
   const sudoTx = api.tx.sudo.sudo(tx);
   await sudoTx.signAndSend(keyring.addFromUri("//Alice"), { nonce: -1 });
+  await Util.sleep(1000);
 };
 
 export const forceNewEraAlways = async (api) => {
@@ -58,6 +62,7 @@ export const forceNewEraAlways = async (api) => {
   const tx = api.tx.staking.forceNewEraAlways();
   const sudoTx = api.tx.sudo.sudo(tx);
   await sudoTx.signAndSend(keyring.addFromUri("//Alice"), { nonce: -1 });
+  await Util.sleep(1000);
 };
 
 export const setIdentity = async (api, name, address, key) => {
@@ -76,10 +81,11 @@ export const setIdentity = async (api, name, address, key) => {
   };
   const tx = api.tx.identity.setIdentity(identityInfo);
   const hash = await tx.signAndSend(key, { nonce: -1 });
-  await Util.sleep(2000);
+  await Util.sleep(3000);
   const identityInfos = await api.query.identity.identityOf(address);
   const identityHash = identityInfos.unwrap().info.hash.toHex();
   await verifyIdentity(api, address, identityHash);
+  await Util.sleep(1000);
 };
 
 export const verifyIdentity = async (api, addressToVerify, identityHash) => {
@@ -100,11 +106,13 @@ export const setSessionKeys = async (api, endpoint, controllerKey) => {
   const tx = nodeApi.tx.session.setKeys(sessionKeys.toHex(), "0x");
   const hash = await tx.signAndSend(controllerKey, { nonce: -1 });
   await nodeApi.disconnect();
+  await Util.sleep(1000);
 };
 
 export const setValidateIntention = async (api, commission, controllerKey) => {
   const tx = api.tx.staking.validate(commission);
   await tx.signAndSend(controllerKey, { nonce: -1 });
+  await Util.sleep(1000);
 };
 
 export const startTestSetup = async () => {
@@ -330,12 +338,6 @@ export const startTestSetup = async () => {
       `{TestSetup::${node.name}} setting identity for ${node.name} ${node.address}`
     );
     await setIdentity(api, node.name, node.address, node.keyring);
-
-    // await Util.sleep(3000);
-
-    console.log(
-      `{TestSetup::${node.name}} verifying identity for ${node.name}`
-    );
 
     if (
       node.name === "alice" ||

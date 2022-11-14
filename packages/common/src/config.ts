@@ -56,6 +56,7 @@ export type ConfigSchema = {
     democracy: string;
     nominator: string;
     delegation: string;
+    block: string;
   };
   db: {
     mongo: {

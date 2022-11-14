@@ -140,3 +140,12 @@ export type ReferendumVote = {
   // The conviction that was used to vote with
   conviction: string;
 };
+
+export interface AvailabilityCoreState {
+  blockNumber: number;
+  core: number;
+  paraId: number;
+  kind: string;
+  groupIdx: number;
+  validators: string[];
+}

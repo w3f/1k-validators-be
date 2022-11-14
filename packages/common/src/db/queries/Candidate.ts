@@ -221,12 +221,12 @@ export const reportOnline = async (
     !locationData || (locationData?.addr && locationData?.addr != addr);
   if (shouldFetch) {
     const iit = await getIIT();
-    const { city, region, country, asn, provider } = await fetchLocationInfo(
+    const { city, region, country, provider } = await fetchLocationInfo(
       addr,
       iit && iit.iit ? iit.iit : null
     );
 
-    await setLocation(name, addr, city, region, country, asn, provider);
+    await setLocation(name, addr, city, region, country, provider);
     locationData = await getLocation(name, addr);
   }
 
@@ -260,8 +260,6 @@ export const reportOnline = async (
     return invalidityReason.type !== "ONLINE";
   });
   if (!invalidityReasons || invalidityReasons.length == 0) return;
-
-  logger.info(data);
 
   // T
   if (!data.discoveredAt) {

@@ -88,11 +88,12 @@ export const InvalidityReason = new Schema({
 
 export const LocationSchema = new Schema({
   name: String, // The Telemetry name of the node
+  address: String, // The Validator Address
   addr: String,
+  port: Number,
   city: String,
   region: String,
   country: String,
-  asn: String,
   provider: String,
   updated: Number,
 });

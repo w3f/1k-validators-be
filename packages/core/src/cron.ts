@@ -28,6 +28,7 @@ import {
   nominatorJob,
   delegationJob,
 } from "./jobs";
+import { blockDataJob } from "@1kv/worker/build/jobs";
 
 // Monitors the latest GitHub releases and ensures nodes have upgraded
 // within a timely period.
@@ -868,4 +869,33 @@ export const startDelegationJob = async (
     running = false;
   });
   delegationCron.start();
+};
+
+// Chron job for querying delegator data
+export const startBlockDataJob = async (
+  config: Config.ConfigSchema,
+  chaindata: ChainData
+) => {
+  const blockFrequency = config.cron.block
+    ? config.cron.block
+    : Constants.BLOCK_CRON;
+
+  logger.info(
+    `(cron::blockJob::init) Running block cron with frequency: ${blockFrequency}`
+  );
+
+  let running = false;
+
+  const blockCron = new CronJob(blockFrequency, async () => {
+    if (running) {
+      return;
+    }
+    running = true;
+    logger.info(`{cron::blockJob::start} running block job....`);
+
+    // Run the job
+    await blockDataJob(chaindata);
+    running = false;
+  });
+  blockCron.start();
 };

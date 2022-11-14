@@ -9,8 +9,13 @@ import {
 } from "./constants";
 import { getChainMetadata, getEraPoints } from "./db";
 import logger from "./logger";
-import { BooleanResult, NumberResult, StringResult } from "./types";
-import { hex2a, toDecimals } from "./util";
+import {
+  AvailabilityCoreState,
+  BooleanResult,
+  NumberResult,
+  StringResult,
+} from "./types";
+import { getParaValIndex, hex2a, toDecimals } from "./util";
 
 type JSON = any;
 
@@ -33,13 +38,111 @@ export class ChainData {
     return denom;
   };
 
+  getApiAt = async (blockNumber: number): Promise<any> => {
+    const hash = await this.getBlockHash(blockNumber);
+    return await this.api.at(hash);
+  };
+
   getBlockHash = async (blockNumber: number): Promise<string> => {
     return (await this.api.rpc.chain.getBlockHash(blockNumber)).toString();
   };
 
   getBlock = async (blockNumber): Promise<any> => {
     const hash = await this.getBlockHash(blockNumber);
-    const apiAt = await this.api.at(hash);
+    return await this.api.rpc.chain.getBlock(hash);
+  };
+
+  // Given a block, return it's corresponding type (Primary, Secondary, Secondary VRF)
+  getBlockType = (block: any): string => {
+    const digest = block.block.header.digest;
+
+    const blockType = digest.logs[0].asPreRuntime[1].toString().substring(0, 4);
+    let type = "";
+    switch (blockType) {
+      case "0x01":
+        type = "Primary";
+        break;
+      case "0x02":
+        type = "Secondary";
+        break;
+      case "0x03":
+        type = "Secondary VRF";
+        break;
+      default:
+        break;
+    }
+    return type;
+  };
+
+  getSessionAt = async (apiAt: ApiPromise) => {
+    const session = (await apiAt.query.session.currentIndex()).toString();
+    return parseInt(session.replace(/,/g, ""));
+  };
+
+  getEraAt = async (apiAt: ApiPromise) => {
+    return ((await apiAt.query.staking.activeEra()).toJSON() as any)
+      .index as number;
+  };
+
+  getValidatorsAt = async (apiAt: ApiPromise): Promise<any> => {
+    return (await apiAt.query.session.validators()).toHuman();
+  };
+
+  getValidatorGroupsAt = async (apiAt: ApiPromise): Promise<any> => {
+    // The list of validator groups
+    const validatorGroups = await apiAt.query.paraScheduler.validatorGroups();
+    return validatorGroups.toHuman();
+  };
+
+  getParaIdsAt = async (apiAt: ApiPromise) => {
+    // The list of parachain id's
+    const paraIds: any = (await apiAt.query.paras.parachains()).toHuman();
+    return paraIds;
+  };
+
+  getParaValIndicesAt = async (prevApiAt: ApiPromise) => {
+    // There is an offset by one - need to query shared validator indices for the block before
+    // @ts-ignore
+    const paraValIndices = (
+      await prevApiAt.query.parasShared.activeValidatorIndices()
+    )
+      .toHuman()
+      // @ts-ignore
+      .map((i) => {
+        return Number(i);
+      });
+    return paraValIndices;
+  };
+
+  getAvailabilityCoreStatesAt = async (
+    apiAt: ApiPromise,
+    validatorGroups: any,
+    validators: any,
+    paraValIndices: any,
+    blockNum: number
+  ) => {
+    // The scheduled availability cores and which validator groups are assigned to which parachains
+    const scheduledAvailabilityCores = (
+      await apiAt.query.paraScheduler.scheduled()
+    ).toHuman() as any;
+
+    const availabilityCoreStates: AvailabilityCoreState[] =
+      scheduledAvailabilityCores.map((availabilityCore: any) => {
+        const validatorGroup = validatorGroups[availabilityCore.groupIdx].map(
+          (idx: number) => {
+            return getParaValIndex(idx, validators, paraValIndices);
+          }
+        );
+        return {
+          blockNumber: blockNum,
+          core: parseInt(availabilityCore.core),
+          paraId: parseInt(availabilityCore.paraId.replace(/,/g, "")),
+          kind: availabilityCore.kind,
+          groupIdx: parseInt(availabilityCore.groupIdx),
+          validators: validatorGroup,
+        };
+      });
+    return availabilityCoreStates;
   };
 
   // Gets the active era index

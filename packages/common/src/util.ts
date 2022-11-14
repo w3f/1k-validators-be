@@ -5,6 +5,7 @@ import { ConfigSchema } from "./config";
 import fetch from "node-fetch";
 import logger from "./logger";
 import { LOCATION_URL } from "./constants";
+import { ApiPromise } from "@polkadot/api";
 
 export const sleep = (ms: number): Promise<void> =>
   new Promise((resolve) => {
@@ -131,4 +132,145 @@ export const fetchLocationInfo = async (addr: any, iit: any) => {
     logger.info(e);
     return blank;
   }
+};
+
+// Convert a string of bits from MSB ordering to LSB ordering
+export const toLSB = (msb: string): string => {
+  const ar = msb.match(/.{1,8}/g);
+  if (ar) {
+    const lsb = ar.map((byte: string) => {
+      const reverse = byte.split("").reverse().join("");
+      return reverse;
+    });
+    return lsb.join("");
+  } else {
+    return "";
+  }
+};
+
+// # HELPER
+// lookup which validators were assigned in a group to a parachain
+export const getGroup = (
+  paraId: number,
+  scheduledAvailabilityCores: any,
+  validatorGroups: any,
+  valIndices: string[],
+  paraValIndices: number[]
+) => {
+  // console.log(`searching for para: ${paraId}`);
+  const core = scheduledAvailabilityCores.find((core: any) => {
+    return core.paraId == paraId;
+  });
+  if (!core) {
+    console.log(`no paraId found for ${paraId}. Skipping`);
+    return;
+  }
+  return validatorGroups[core.groupIdx].map((validatorIdx: number) => {
+    return getParaValIndex(validatorIdx, valIndices, paraValIndices);
+  });
+};
+
+// Lookup the para val index from the list of validators and para validators
+export const getParaValIndex = (
+  index: number,
+  valIndices: string[],
+  paraValIndices: number[]
+) => {
+  return valIndices[paraValIndices[index]];
+};
+
+// Get the validator indices in a given group
+export const getGroupIndices = (groupIdx: any) => {
+  const arr = [];
+  for (let x = 0; x < 5; x++) {
+    const y = groupIdx * 5 + x;
+    arr.push(y);
+  }
+  return arr;
+};
+
+// Given a validator index, get the group it belongs to
+export const getGroupIdx = (valIndex: any) => {
+  let count = 0;
+  for (let x = 0; x <= valIndex; x += 5) {
+    ++count;
+  }
+  return count - 1;
+};
+
+// given a block, get it's timestamp inherent
+export const getTimestamp = (block: any) => {
+  let timestamp = 0;
+  const extrinsics = block.block.extrinsics;
+  for (const extrinsic of extrinsics) {
+    const decoded = extrinsic.toHuman();
+    //@ts-ignore
+    const {
+      isSigned,
+      signer,
+      method: { args, method: palletMethod, section },
+    } = decoded;
+
+    switch (section) {
+      case "timestamp":
+        const { now } = args;
+        timestamp = parseInt(now.replace(/,/g, ""));
+        break;
+      default:
+        break;
+    }
+  }
+  return timestamp;
+};
+
+// get the block time of a block, given the prev block
+export const getBlockTime = (block: any, prevBlock: any) => {
+  const blockTimestamp = getTimestamp(block);
+  const prevBlocktimestamp = getTimestamp(prevBlock);
+  return (blockTimestamp - prevBlocktimestamp) / 1000;
+};
+
+// Takes a multiaddress and return the ip address and port
+export const parseIP = (address: string) => {
+  const ip = address.split("/")[2];
+  const port = address.split("/")[4];
+  return { ip: ip, port: port };
+};
+
+// Given an address, return the identity
+export const getFormattedIdentity = async (api: ApiPromise, addr: string) => {
+  let identity, verified, sub;
+  identity = await api.query.identity.identityOf(addr);
+  //@ts-ignore
+  if (!identity.isSome) {
+    identity = await api.query.identity.superOf(addr);
+    //@ts-ignore
+    if (!identity.isSome) return { name: addr, verified: false, sub: null };
+    //@ts-ignore
+    const subRaw = identity.toJSON()[1].raw;
+    if (subRaw && subRaw.substring(0, 2) === "0x") {
+      sub = hex2a(subRaw.substring(2));
+    } else {
+      sub = subRaw;
+    }
+    //@ts-ignore
+    const superAddress = identity.toJSON()[0];
+    identity = await api.query.identity.identityOf(superAddress);
+  }
+
+  //@ts-ignore
+  const raw = identity.toJSON().info.display.raw;
+  //@ts-ignore
+  const { judgements } = identity.unwrap();
+  for (const judgement of judgements) {
+    const status = judgement[1];
+    if (status.isReasonable || status.isKnownGood) {
+      verified = status.isReasonable || status.isKnownGood;
+      continue;
+    }
+  }
+
+  if (raw && raw.substring(0, 2) === "0x") {
+    return { name: hex2a(raw.substring(2)), verified: verified, sub: sub };
+  } else return { name: raw, verified: verified, sub: sub };
 };

@@ -30,7 +30,7 @@
     ]
   },
   "dependencies": {
-    "@polkadot/keyring": "^10.1.11",
+    "@polkadot/keyring": "^10.1.12",
     "@types/mongoose": "^5.11.97",
     "@types/node": "^18.11.9",
     "hash.js": "^1.1.7",

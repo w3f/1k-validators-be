@@ -18,3 +18,4 @@ export * from "./NominatorStake";
 export * from "./Release";
 export * from "./ValidatorScore";
 export * from "./ValidatorScoreMetadata";
+export * from "./Session";

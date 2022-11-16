@@ -42,8 +42,8 @@ export const KUSAMA_APPROX_ERA_LENGTH_IN_BLOCKS = 3600;
 /// On Polkadot eras are 24 hours with 6 second blocks.
 export const POLKADOT_APPROX_ERA_LENGTH_IN_BLOCKS = 14400;
 
-/// On a Local Testnet eras are 3 minutes with 3 second blocks.
-export const TESTNET_APPROX_ERA_LENGTH_IN_BLOCKS = 20;
+/// On a Local Testnet eras are 2 minutes with 3 second blocks.
+export const TESTNET_APPROX_ERA_LENGTH_IN_BLOCKS = 40;
 
 // The buffer % we want to remain free in an account - 0.2%
 export const BALANCE_BUFFER_PERCENT = 0.002;
@@ -119,7 +119,7 @@ export const SCORE_CRON = "0 */2 * * * *";
 export const ERA_STATS_CRON = "0 0-59/35 * * * *";
 
 // Location Stats Cron Job. This runs every 15 minutes by default
-export const LOCATION_STATS_CRON = "0 0-59/15 * * * *";
+export const LOCATION_STATS_CRON = "0 0-59/3 * * * *";
 
 // Chain Querying Cron Jobs:
 

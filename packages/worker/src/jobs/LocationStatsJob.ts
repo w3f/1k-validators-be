@@ -5,6 +5,7 @@ export const locationStatsJob = async (chaindata: ChainData) => {
 
   const candidates = await queries.allCandidates();
   const session = await chaindata.getSession();
+  await queries.setLatestSession(session);
 
   const locationMap = new Map();
   const locationArr = [];

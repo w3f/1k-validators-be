@@ -9,17 +9,20 @@ export const blockDataJob = async (chaindata: ChainData) => {
 
   logger.info(`Starting blockDataJob`);
   const latestBlock = await chaindata.getLatestBlock();
-  const threshold = 100000;
+  const threshold = 10000;
   for (let i = latestBlock - threshold; i < latestBlock; i++) {
     // logger.info(`processing block: ${i}`);
     await processBlock(chaindata, i);
   }
+  logger.info(`Done, processed all blocks`);
 };
 
 export const processBlock = async (
   chaindata: ChainData,
   blockNumber: number
 ) => {
+  if (blockNumber < 0) return;
+
   const block = await chaindata.getBlock(blockNumber);
 
   const apiAt = await chaindata.getApiAt(blockNumber);
@@ -33,7 +36,7 @@ export const processBlock = async (
   const blockAuthor = extractAuthor(
     block.block.header.digest,
     validators
-  ).toString();
+  )?.toString();
 
   await parseExtrinsics(
     blockExtrinsics,

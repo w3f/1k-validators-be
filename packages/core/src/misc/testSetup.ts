@@ -85,7 +85,7 @@ export const setIdentity = async (api, name, address, key) => {
   const identityInfos = await api.query.identity.identityOf(address);
   const identityHash = identityInfos.unwrap().info.hash.toHex();
   await verifyIdentity(api, address, identityHash);
-  await Util.sleep(1000);
+  await Util.sleep(2000);
 };
 
 export const verifyIdentity = async (api, addressToVerify, identityHash) => {
@@ -97,6 +97,7 @@ export const verifyIdentity = async (api, addressToVerify, identityHash) => {
     identityHash
   );
   await tx.signAndSend(keyring.addFromUri("//Alice"), { nonce: -1 });
+  await Util.sleep(2000);
 };
 
 export const setSessionKeys = async (api, endpoint, controllerKey) => {
@@ -106,16 +107,17 @@ export const setSessionKeys = async (api, endpoint, controllerKey) => {
   const tx = nodeApi.tx.session.setKeys(sessionKeys.toHex(), "0x");
   const hash = await tx.signAndSend(controllerKey, { nonce: -1 });
   await nodeApi.disconnect();
-  await Util.sleep(1000);
+  await Util.sleep(2000);
 };
 
 export const setValidateIntention = async (api, commission, controllerKey) => {
   const tx = api.tx.staking.validate(commission);
   await tx.signAndSend(controllerKey, { nonce: -1 });
-  await Util.sleep(1000);
+  await Util.sleep(2000);
 };
 
 export const startTestSetup = async () => {
+  Util.sleep(25000);
   const handler = await ApiHandler.create(["ws://172.28.1.1:9944"]);
   const api = await handler.getApi();
   console.log(
@@ -285,6 +287,7 @@ export const startTestSetup = async () => {
       `{TestSetup::${nominator.name}} Sending funds to nominator controller account: ${nominator.controllerAddress}`
     );
     await fundFromSudo(api, nominator.controllerAddress, amount);
+    await Util.sleep(1000);
 
     // Bond the Nominator stash to the Nominator controller
     console.log(
@@ -293,6 +296,7 @@ export const startTestSetup = async () => {
     const key = keyring.addFromUri(nominator.seed);
     const bondAmount = "10000000000000000";
     await bond(api, nominator.controllerAddress, bondAmount, "Staked", key);
+    await Util.sleep(1000);
 
     // Transfer to Proxy Address, and set Proxy account as a proxy to the Controller
     if (nominator.proxyAddress) {
@@ -301,6 +305,7 @@ export const startTestSetup = async () => {
       );
 
       await fundFromSudo(api, nominator.proxyAddress, amount);
+      await Util.sleep(1000);
       await setProxy(
         api,
         nominator.proxyAddress,
@@ -314,14 +319,17 @@ export const startTestSetup = async () => {
   // Set Alice as a registrar
   console.log(`{TestSetup} Setting Alice as a Registrar`);
   await addRegistrar(api, "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY");
+  await Util.sleep(1000);
 
   // Set Force New Era Always
   console.log(`{TestSetup} set Force New Era Always`);
   await forceNewEraAlways(api);
+  await Util.sleep(1000);
 
   // Increase Validator Set Size to 5
   console.log(`{TestSetup} Increase validator set size to 5`);
   await increaseValidatorSetSize(api, 3);
+  await Util.sleep(1000);
 
   // For each node:
   // - add the keyring
@@ -338,6 +346,7 @@ export const startTestSetup = async () => {
       `{TestSetup::${node.name}} setting identity for ${node.name} ${node.address}`
     );
     await setIdentity(api, node.name, node.address, node.keyring);
+    await Util.sleep(1000);
 
     if (
       node.name === "alice" ||
@@ -350,6 +359,7 @@ export const startTestSetup = async () => {
     const controllerKeyring = keyring.addFromUri(node.controllerSeed);
     console.log(`{TestSetup:${node.name}} Sending Funds to Controller...`);
     await fundFromSudo(api, node.controllerAddress, amount);
+    await Util.sleep(2000);
     console.log(`{TestSetup:${node.name}} Bonding Stash...`);
     await bond(
       api,
@@ -358,7 +368,9 @@ export const startTestSetup = async () => {
       "Staked",
       node.keyring
     );
+    await Util.sleep(1000);
     await setSessionKeys(api, node.endpoint, controllerKeyring);
+    await Util.sleep(1000);
     await setValidateIntention(api, "0x10", controllerKeyring);
 
     console.log(`{TestSetup::${node.name}} setup done`);

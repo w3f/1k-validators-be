@@ -14,6 +14,7 @@ import {
   setKusamaRankInvalidity,
   setLatestClientReleaseValidity,
   setOnlineValidity,
+  setProviderInvalidity,
   setRewardDestinationInvalidity,
   setSelfStakeInvalidity,
   setUnclaimedInvalidity,
@@ -223,6 +224,9 @@ export class OTV implements Constraints {
       logger.info(`Error trying to get kusama data...`);
     }
 
+    const providerValid =
+      (await checkProvider(this.config, candidate)) || false;
+
     valid =
       onlineValid &&
       validateValid &&
@@ -235,7 +239,8 @@ export class OTV implements Constraints {
       selfStakeValid &&
       unclaimedValid &&
       blockedValid &&
-      kusamaValid;
+      kusamaValid &&
+      providerValid;
 
     await setValid(candidate.stash, valid);
 
@@ -288,53 +293,36 @@ export class OTV implements Constraints {
 
     // Get Values and Stats
     const { bondedValues, bondedStats } = getBondedValues(validCandidates);
-    logger.info(`{Scored} got bonded values`);
     const { faultsValues, faultsStats } = getFaultsValues(validCandidates);
-    logger.info(`{Scored} got faults values`);
     const { inclusionValues, inclusionStats } =
       getInclusionValues(validCandidates);
-    logger.info(`{Scored} got inclusion values`);
     const { spanInclusionValues, spanInclusionStats } =
       getSpanInclusionValues(validCandidates);
-    logger.info(`{Scored} got span inclusion values`);
     const { discoveredAtValues, discoveredAtStats } =
       getDiscoveredAtValues(validCandidates);
-    logger.info(`{Scored} got discovered values`);
     const { nominatedAtValues, nominatedAtStats } =
       getNominatedAtValues(validCandidates);
-    logger.info(`{Scored} got nominated values`);
     const { offlineValues, offlineStats } = getOfflineValues(validCandidates);
-    logger.info(`{Scored} got offline values`);
     const { rankValues, rankStats } = getRankValues(validCandidates);
-    logger.info(`{Scored} got rank values`);
     const { unclaimedValues, unclaimedStats } =
       getUnclaimedValues(validCandidates);
-    logger.info(`{Scored} got unclaimed values`);
     const { locationArr, locationValues, locationStats } =
       getLocationValues(validCandidates);
-    logger.info(`{Scored} got location values`);
     const { regionArr, regionValues, regionStats } =
       getRegionValues(validCandidates);
-    logger.info(`{Scored} got region values`);
     const { countryArr, countryValues, countryStats } =
       getCountryValues(validCandidates);
-    logger.info(`{Scored} got country values`);
     const { providerArr, providerValues, providerStats } =
       getProviderValues(validCandidates);
-    logger.info(`{Scored} got provider values`);
     const { ownNominatorAddresses, nominatorStakeValues, nominatorStakeStats } =
       await getNominatorStakeValues(validCandidates);
-    logger.info(`{Scored} got nominator stake values`);
     const { delegationValues, delegationStats } = await getDelegationValues(
       validCandidates
     );
-    logger.info(`{Scored} got delegation values`);
     const { councilStakeValues, councilStakeStats } =
       getCouncilStakeValues(validCandidates);
-    logger.info(`{Scored} got council values`);
     const { lastReferendum, democracyValues, democracyStats } =
       await getDemocracyValues(validCandidates);
-    logger.info(`{Scored} got democracy values`);
 
     const scoreMetadata = {
       session: session,
@@ -372,18 +360,16 @@ export class OTV implements Constraints {
       democracyWeight: this.DEMOCRACY_WEIGHT,
     };
 
-    logger.info(`{Scored} score metadata available for session ${session}`);
-
     // Create  entry for Validator Score Metadata
     await setValidatorScoreMetadata(scoreMetadata, Date.now());
 
-    logger.info(`{Scored} validator score metadata set.`, {
+    logger.info(`validator score metadata set.`, {
       label: "Constraints",
     });
 
     for (const [index, candidate] of validCandidates.entries()) {
       logger.info(
-        `{Scored} scoring ${candidate.name} [${index} / ${validCandidates.length}]`,
+        `scoring ${candidate.name} [${index} / ${validCandidates.length}]`,
         {
           label: "Constraints",
         }
@@ -442,9 +428,9 @@ export class OTV implements Constraints {
       const bannedProviders = this.config.telemetry?.blacklistedProviders;
       let bannedProvider = false;
       if (provider && bannedProviders?.includes(provider)) {
-        logger.info(
-          `{Constraints} ${candidate.name} has banned provider: ${provider}`
-        );
+        logger.info(`${candidate.name} has banned provider: ${provider}`, {
+          label: "Constraints",
+        });
         bannedProvider = true;
       }
       // Get the total number of nodes for the location a candidate has their node in
@@ -1280,6 +1266,25 @@ export const checkBlocked = async (chaindata: ChainData, candidate: any) => {
     return false;
   } else {
     await setBlockedInvalidity(candidate.stash, true);
+    return true;
+  }
+};
+
+// Checks if the candidate has a banned infrastructure provider
+export const checkProvider = async (
+  config: Config.ConfigSchema,
+  candidate: any
+) => {
+  const provider = candidate?.infrastructureLocation?.provider;
+  const bannedProviders = config.telemetry?.blacklistedProviders;
+  if (provider && bannedProviders?.includes(provider)) {
+    logger.info(`${candidate.name} has banned provider: ${provider}`, {
+      label: "Constraints",
+    });
+    await setProviderInvalidity(candidate.stash, false);
+    return false;
+  } else {
+    await setProviderInvalidity(candidate.stash, true);
     return true;
   }
 };

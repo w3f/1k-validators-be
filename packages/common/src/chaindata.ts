@@ -56,20 +56,27 @@ export class ChainData {
   getBlockType = (block: any): string => {
     const digest = block.block.header.digest;
 
-    const blockType = digest.logs[0].asPreRuntime[1].toString().substring(0, 4);
     let type = "";
-    switch (blockType) {
-      case "0x01":
-        type = "Primary";
-        break;
-      case "0x02":
-        type = "Secondary";
-        break;
-      case "0x03":
-        type = "Secondary VRF";
-        break;
-      default:
-        break;
+    if (digest.logs) {
+      const blockType = digest?.logs[0]?.asPreRuntime[1]
+        ?.toString()
+        .substring(0, 4);
+
+      switch (blockType) {
+        case "0x01":
+          type = "Primary";
+          break;
+        case "0x02":
+          type = "Secondary";
+          break;
+        case "0x03":
+          type = "Secondary VRF";
+          break;
+        default:
+          break;
+      }
+    } else {
+      logger.info(digest);
     }
     return type;
   };
@@ -434,7 +441,7 @@ export class ChainData {
 
     let testBlockNumber =
       latestBlock.block.header.number.toNumber() - approxBlocksAgo;
-    while (true) {
+    while (true && testBlockNumber > 0) {
       const blockHash = await this.api.rpc.chain.getBlockHash(
         parseInt(String(testBlockNumber))
       );

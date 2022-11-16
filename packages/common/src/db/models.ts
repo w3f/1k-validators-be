@@ -79,12 +79,22 @@ export const InvalidityReason = new Schema({
       "UNCLAIMED_REWARDS",
       "BLOCKED",
       "KUSAMA_RANK",
+      "PROVIDER",
     ],
     default: "NEW",
   },
   details: {},
   updated: Number,
 });
+export const LatestSessionSchema = new Schema({
+  session: Number,
+  updated: Number,
+});
+
+export const LatestSessionModel = mongoose.model(
+  "LatestSession",
+  LatestSessionSchema
+);
 
 export const LocationSchema = new Schema({
   name: String, // The Telemetry name of the node
@@ -96,6 +106,8 @@ export const LocationSchema = new Schema({
   country: String,
   provider: String,
   updated: Number,
+  session: Number,
+  source: String,
 });
 
 export const LocationModel = mongoose.model("Location", LocationSchema);

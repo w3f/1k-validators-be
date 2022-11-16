@@ -218,7 +218,10 @@ export const reportOnline = async (
   let locationData;
   locationData = await getLocation(name, addr);
   const shouldFetch =
-    !locationData || (locationData?.addr && locationData?.addr != addr);
+    !locationData ||
+    (locationData?.addr && locationData?.addr != addr) ||
+    !locationData.address ||
+    !locationData.session;
   if (shouldFetch) {
     const iit = await getIIT();
     const { city, region, country, provider } = await fetchLocationInfo(
@@ -1244,6 +1247,52 @@ export const setBlockedInvalidity = async (
     ).exec();
   } catch (e) {
     logger.info(`error setting online`);
+  }
+};
+
+// Set Blocked Validity Status
+export const setProviderInvalidity = async (
+  address: string,
+  validity: boolean,
+  details?: string
+): Promise<any> => {
+  const data = await CandidateModel.findOne({
+    stash: address,
+  }).lean();
+
+  if (!data || !data?.invalidity) {
+    console.log(`{Self Stake} NO CANDIDATE DATA FOUND FOR ${address}`);
+    return;
+  }
+
+  const invalidityReasons = data?.invalidity?.filter((invalidityReason) => {
+    return invalidityReason.type !== "PROVIDER";
+  });
+  if (!invalidityReasons || invalidityReasons.length == 0) return;
+
+  try {
+    await CandidateModel.findOneAndUpdate(
+      {
+        stash: address,
+      },
+      {
+        invalidity: [
+          ...invalidityReasons,
+          {
+            valid: validity,
+            type: "PROVIDER",
+            updated: Date.now(),
+            details: validity
+              ? ""
+              : details
+              ? details
+              : `${data.name} has bannded infrastructure provider: ${data?.infrastructureLocation?.provider}`,
+          },
+        ],
+      }
+    ).exec();
+  } catch (e) {
+    logger.info(`error setting provider validity`);
   }
 };
 

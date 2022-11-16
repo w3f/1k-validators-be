@@ -615,6 +615,10 @@ export const validCandidates = async (): Promise<any[]> => {
   return CandidateModel.find({ valid: true }).lean().exec();
 };
 
+export const invalidCandidates = async (): Promise<any[]> => {
+  return CandidateModel.find({ valid: false }).lean().exec();
+};
+
 export const allNodes = async (): Promise<any[]> => {
   return CandidateModel.find({ name: /.*/ }).lean().exec();
 };
@@ -1286,7 +1290,7 @@ export const setProviderInvalidity = async (
               ? ""
               : details
               ? details
-              : `${data.name} has bannded infrastructure provider: ${data?.infrastructureLocation?.provider}`,
+              : `${data.name} has banned infrastructure provider: ${data?.infrastructureLocation?.provider}`,
           },
         ],
       }

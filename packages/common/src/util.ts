@@ -88,14 +88,18 @@ export const addressUrl = (address: string, config: ConfigSchema) => {
 
 export const fetchLocationInfo = async (addr: any, iit: any) => {
   const blank = {
-    city: "city",
-    region: "region",
-    country: "country",
-    asn: "asn",
-    provider: "provider",
+    city: "None",
+    region: "None",
+    country: "None",
+    provider: "None",
   };
   if (!iit || !addr) {
-    logger.info(`fetch info for ${addr} isn't there.`);
+    if (!iit) {
+      logger.warn(`ipinfo api token not set`, { label: "Location" });
+    }
+    if (!addr) {
+      logger.warn("No address to query location info for");
+    }
     return blank;
   }
   let json;
@@ -124,7 +128,6 @@ export const fetchLocationInfo = async (addr: any, iit: any) => {
       city: city,
       region: region,
       country: country,
-      asn: asn,
       provider: provider,
     };
   } catch (e) {
@@ -273,4 +276,14 @@ export const getFormattedIdentity = async (api: ApiPromise, addr: string) => {
   if (raw && raw.substring(0, 2) === "0x") {
     return { name: hex2a(raw.substring(2)), verified: verified, sub: sub };
   } else return { name: raw, verified: verified, sub: sub };
+};
+
+export const percentage = (index, total) => {
+  return `${((index / total) * 100).toFixed(2)}%`;
+};
+
+export const timeRemaining = (index, total, time) => {
+  const remaining = total - index;
+  const timeRemaining = ((remaining * time) / 1000).toFixed(2);
+  return `(${timeRemaining}s remaining)`;
 };

@@ -21,6 +21,14 @@ export default class CandidateController {
     response(context, 200, await CandidateService.getValidCandidates());
   }
 
+  public static async getInvalidCandidates(context: any): Promise<void> {
+    if (await context.cashed()) {
+      logger.info(`{Gateway} getInvalidCandidates is cached`);
+      return;
+    }
+    response(context, 200, await CandidateService.getInvalidCandidates());
+  }
+
   public static async getCandidates(context: any): Promise<void> {
     if (await context.cashed()) {
       logger.info(`{Gateway} getCandidates is cached`);

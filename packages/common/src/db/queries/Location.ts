@@ -53,9 +53,6 @@ export const setLocation = async (
   const candidateAddress = candidate?.stash ? candidate?.stash : "";
 
   if (!data || data?.addr != addr || data?.city != city) {
-    logger.info(`Creating new location model, data doesnt exist`, {
-      label: "Location",
-    });
     const location = new LocationModel({
       address: candidateAddress,
       name,
@@ -71,12 +68,6 @@ export const setLocation = async (
     });
     return location.save();
   } else if (data.session != session || data.address != candidateAddress) {
-    logger.info(
-      `Updating location model, session: ${data.sesssion != session} address: ${
-        data.address != candidateAddress
-      }`,
-      { label: "Location" }
-    );
     await LocationModel.findOneAndUpdate(
       { addr, name },
       {
@@ -111,10 +102,6 @@ export const setHeartbeatLocation = async (
 
   // Location doesn't exist, fetch it
   if (!data) {
-    logger.info(
-      `Imoneline heartbeat doesn't exist for session ${session}, querying`,
-      { label: "Location" }
-    );
     const iit = await getIIT();
     const { city, region, country, provider } = await fetchLocationInfo(
       addr,
@@ -142,13 +129,6 @@ export const setHeartbeatLocation = async (
     return location.save();
   } else if (data.addr != addr) {
     // the record exists, but has a different address or port - update it
-    logger.info(`updating location from imoneline heartbeat`, {
-      label: "Location",
-    });
-    logger.info(
-      `data addr: ${data.addr} addr: ${addr} data port: ${data.port} port: ${port}`,
-      { label: "Location" }
-    );
 
     const iit = await getIIT();
     const { city, region, country, provider } = await fetchLocationInfo(
@@ -179,9 +159,6 @@ export const setHeartbeatLocation = async (
       }
     ).exec();
   } else if (data.port != port) {
-    logger.info(`port is different: ${data.port} ${port}`, {
-      label: "Location",
-    });
     const location = new LocationModel({
       name: data.name,
       address,

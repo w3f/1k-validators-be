@@ -31,12 +31,15 @@ import {
   setValidatorScore,
   setValidatorScoreMetadata,
 } from "./db";
+import { percentage, timeRemaining } from "./util";
 
 export interface Constraints {
   processCandidates(
     candidates: Set<Types.CandidateData>
   ): Promise<[Set<any>, Set<any>]>;
 }
+
+export const constraintsLabel = { label: "Constraints" };
 
 export class OTV implements Constraints {
   private chaindata: ChainData;
@@ -97,7 +100,6 @@ export class OTV implements Constraints {
     // Constraints
     this.skipConnectionTime =
       this.config?.constraints?.skipConnectionTime || false;
-    logger.info(`skip connection time: ${this.skipConnectionTime}`);
     this.skipIdentity = this.config?.constraints?.skipIdentity || false;
     this.skipStakedDesitnation =
       this.config?.constraints?.skipStakedDestination || false;
@@ -155,14 +157,27 @@ export class OTV implements Constraints {
     }
   }
 
+  // Checks the validity of all candidates
   async checkAllCandidates() {
-    const candidates = await validCandidates();
-    logger.info(`{Check} valid candidates: ${candidates.length}`);
+    const candidates = await allCandidates();
+    logger.info(`checking ${candidates.length} candidates`, constraintsLabel);
     for (const [index, candidate] of candidates.entries()) {
-      logger.info(
-        `Checking candidate: ${candidate.name} [${index}/${candidates.length}]`
+      const start = Date.now();
+
+      const isValid = await this.checkCandidate(candidate);
+      const end = Date.now();
+      const time = `(${end - start}ms)`;
+      const remaining = timeRemaining(
+        index + 1,
+        candidates.length,
+        end - start
       );
-      await this.checkCandidate(candidate);
+      logger.info(
+        `Checked ${candidate.name}: ${isValid} [${index + 1}/${
+          candidates.length
+        }] ${percentage(index + 1, candidates.length)} ${time} ${remaining}`,
+        constraintsLabel
+      );
     }
   }
 
@@ -227,6 +242,12 @@ export class OTV implements Constraints {
     const providerValid =
       (await checkProvider(this.config, candidate)) || false;
 
+    const intentionValid = await checkValidateIntention(
+      this.config,
+      this.chaindata,
+      candidate
+    );
+
     valid =
       onlineValid &&
       validateValid &&
@@ -240,6 +261,7 @@ export class OTV implements Constraints {
       unclaimedValid &&
       blockedValid &&
       kusamaValid &&
+      intentionValid &&
       providerValid;
 
     await setValid(candidate.stash, valid);
@@ -257,36 +279,15 @@ export class OTV implements Constraints {
   async scoreAllCandidates() {
     const candidates = await validCandidates();
     logger.info(
-      `{Constraints::scoreAllCandidates} scoring ${candidates.length} candidates....`
+      `scoring ${candidates.length} valid candidates..`,
+      constraintsLabel
     );
     await this.scoreCandidates(candidates);
   }
 
   async scoreCandidates(candidates: Types.CandidateData[]) {
-    logger.info(`{Scored} scoring all ${candidates.length} candidates`, {
-      label: "Constraints",
-    });
-    let rankedCandidates = [];
-    let session;
+    const session = await this.chaindata.getSession();
     const validCandidates = candidates;
-    if (validCandidates.length < 2) {
-      logger.info(
-        `{Scored} valid candidates length was ${validCandidates.length} out of ${candidates.length} candidates. Checking validity....`,
-        {
-          label: "Constraints",
-        }
-      );
-    } else {
-      session = await this.chaindata.getSession();
-      logger.info(
-        `{Scored} scoring ${
-          validCandidates.length
-        } candidates for session ${JSON.stringify(session)}`,
-        {
-          label: "Constraints",
-        }
-      );
-    }
 
     // Get Ranges of Parameters
     //    A validators individual parameter is then scaled to how it compares to others that are also deemed valid
@@ -368,12 +369,7 @@ export class OTV implements Constraints {
     });
 
     for (const [index, candidate] of validCandidates.entries()) {
-      logger.info(
-        `scoring ${candidate.name} [${index} / ${validCandidates.length}]`,
-        {
-          label: "Constraints",
-        }
-      );
+      const start = Date.now();
 
       // Scale inclusion between the 20th and 75th percentiles
       const scaledInclusion =
@@ -428,9 +424,6 @@ export class OTV implements Constraints {
       const bannedProviders = this.config.telemetry?.blacklistedProviders;
       let bannedProvider = false;
       if (provider && bannedProviders?.includes(provider)) {
-        logger.info(`${candidate.name} has banned provider: ${provider}`, {
-          label: "Constraints",
-        });
         bannedProvider = true;
       }
       // Get the total number of nodes for the location a candidate has their node in
@@ -605,13 +598,6 @@ export class OTV implements Constraints {
         updated: Date.now(),
       };
 
-      logger.info(
-        `{Scored} ${Date.now().toString()} ${
-          candidate.name
-        } ${aggregate} region: ${regionScore}`,
-        { label: "Constraints" }
-      );
-
       await setValidatorScore(candidate.stash, session, score);
 
       const rankedCandidate = {
@@ -631,14 +617,19 @@ export class OTV implements Constraints {
           otherNodes: candidateLocation,
         },
       };
-      rankedCandidates.push(rankedCandidate);
+
+      const end = Date.now();
+      const time = `(${end - start}ms)`;
+
+      logger.info(
+        `scored ${candidate.name}: ${score.total} [${index + 1} / ${
+          validCandidates.length
+        }] ${percentage(index + 1, validCandidates.length)} ${time}`,
+        {
+          label: "Constraints",
+        }
+      );
     }
-
-    rankedCandidates = rankedCandidates.sort((a, b) => {
-      return b.aggregate.total - a.aggregate.total;
-    });
-
-    return rankedCandidates;
   }
 
   /// At the end of a nomination round this is the logic that separates the
@@ -654,7 +645,7 @@ export class OTV implements Constraints {
       Set<{ candidate: Types.CandidateData; reason: string }>
     ]
   > {
-    logger.info(`(OTV::processCandidates) Processing candidates`);
+    logger.info(`Processing ${candidates.size} candidates`, constraintsLabel);
 
     const good: Set<Types.CandidateData> = new Set();
     const bad: Set<{ candidate: Types.CandidateData; reason: string }> =
@@ -662,8 +653,9 @@ export class OTV implements Constraints {
 
     for (const candidate of candidates) {
       if (!candidate) {
-        logger.info(
-          `{Constraints::processCandidates} candidate is null. Skipping..`
+        logger.warn(
+          `candidate is null. Skipping processing..`,
+          constraintsLabel
         );
         continue;
       }
@@ -673,14 +665,14 @@ export class OTV implements Constraints {
       /// If it errors we assume that a validator removed their validator status.
       if (err) {
         const reason = `${name} ${err}`;
-        logger.info(reason);
+        logger.warn(reason, constraintsLabel);
         bad.add({ candidate, reason });
         continue;
       }
 
       if (commission > this.commission) {
         const reason = `${name} found commission higher than ten percent: ${commission}`;
-        logger.info(reason);
+        logger.warn(reason, constraintsLabel);
         bad.add({ candidate, reason });
         continue;
       }
@@ -689,13 +681,13 @@ export class OTV implements Constraints {
         const [bondedAmt, err2] = await this.chaindata.getBondedAmount(stash);
         if (err2) {
           const reason = `${name} ${err2}`;
-          logger.info(reason);
+          logger.warn(reason, constraintsLabel);
           bad.add({ candidate, reason });
           continue;
         }
         if (bondedAmt < this.minSelfStake) {
           const reason = `${name} has less than the minimum required amount bonded: ${bondedAmt}`;
-          logger.info(reason);
+          logger.warn(reason, constraintsLabel);
           bad.add({ candidate, reason });
           continue;
         }
@@ -928,21 +920,8 @@ export const getNominatorStakeValues = async (
     return nom.address;
   });
   const nominatorStakeValues = [];
-  logger.info(
-    `{getNominatorStakeValues} getting nominator stakes for ${validCandidates.length} candidates..`
-  );
   for (const [index, candidate] of validCandidates.entries()) {
-    logger.info(
-      `{getNominatorStakeValues} getting for ${candidate.name} [${index}/${validCandidates.length}]`
-    );
-    const s1 = Date.now();
     const nomStake = await getLatestNominatorStake(candidate.stash);
-    const s2 = Date.now();
-    logger.info(
-      `{getNominatorStakeValues} getLatestNominatorStake ${
-        candidate.name
-      } [${index}/${validCandidates.length}] took ${(s2 - s1) / 1000} s`
-    );
     if (
       nomStake != undefined &&
       nomStake?.activeNominators &&
@@ -963,15 +942,11 @@ export const getNominatorStakeValues = async (
           }
         }
         nominatorStakeValues.push(total);
-        const s3 = Date.now();
-        logger.info(
-          `{getNominatorStakeValues} total ${candidate.name} [${index}/${
-            validCandidates.length
-          }] took ${(s3 - s1) / 1000} s`
-        );
       } catch (e) {
-        logger.info(`{nominatorStake} Can't find nominator stake values`);
-        logger.info(JSON.stringify(nomStake));
+        logger.warn(
+          `Can't find nominator stake values for ${candidate.name}`,
+          constraintsLabel
+        );
       }
     }
   }
@@ -1130,14 +1105,14 @@ export const checkConnectionTime = async (
   if (!config.constraints.skipConnectionTime) {
     const now = new Date().getTime();
     if (now - candidate.discoveredAt < Constants.WEEK) {
-      setConnectionTimeInvalidity(candidate.stash, false);
+      await setConnectionTimeInvalidity(candidate.stash, false);
       return false;
     } else {
-      setConnectionTimeInvalidity(candidate.stash, true);
+      await setConnectionTimeInvalidity(candidate.stash, true);
       return true;
     }
   } else {
-    setConnectionTimeInvalidity(candidate.stash, true);
+    await setConnectionTimeInvalidity(candidate.stash, true);
     return true;
   }
 };
@@ -1146,15 +1121,15 @@ export const checkIdentity = async (chaindata: ChainData, candidate: any) => {
   const [hasIdentity, verified] = await chaindata.hasIdentity(candidate.stash);
   if (!hasIdentity) {
     const invalidityString = `${candidate.name} does not have an identity set.`;
-    setIdentityInvalidity(candidate.stash, false, invalidityString);
+    await setIdentityInvalidity(candidate.stash, false, invalidityString);
     return false;
   }
   if (!verified) {
     const invalidityString = `${candidate.name} has an identity but is not verified by the registrar.`;
-    setIdentityInvalidity(candidate.stash, false, invalidityString);
+    await setIdentityInvalidity(candidate.stash, false, invalidityString);
     return false;
   }
-  setIdentityInvalidity(candidate.stash, true);
+  await setIdentityInvalidity(candidate.stash, true);
   return true;
 };
 

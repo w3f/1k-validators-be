@@ -285,5 +285,5 @@ export const percentage = (index, total) => {
 export const timeRemaining = (index, total, time) => {
   const remaining = total - index;
   const timeRemaining = ((remaining * time) / 1000).toFixed(2);
-  return `(${timeRemaining}s remaining)`;
+  return `(~${timeRemaining}s remaining)`;
 };

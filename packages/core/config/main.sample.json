@@ -13,7 +13,10 @@
       "ws://172.28.1.4:9947",
       "ws://172.28.1.5:9948",
       "ws://172.28.1.6:9949"
-    ]
+    ],
+    "bootstrap": false,
+    "kusamaBootstrapEndpoint": "https://kusama.w3f.community",
+    "polkadotBootstrapEndpoint": "https://polkadot.w3f.community"
   },
   "constraints": {
     "skipConnectionTime": true,
@@ -112,6 +115,10 @@
   "server": {
     "enable": true,
     "port": 3300
+  },
+  "redis": {
+    "host": "redis",
+    "port": 6379
   },
   "telemetry": {
     "blacklistedProviders": [

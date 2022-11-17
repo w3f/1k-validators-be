@@ -70,6 +70,9 @@ export type ConfigSchema = {
     retroactive: boolean;
     historicalNominations: boolean;
     apiEndpoints: string[];
+    bootstrap: boolean;
+    kusamaBootstrapEndpoint: string;
+    polkadotBootstrapEndpoint: string;
   };
   matrix: {
     accessToken: string;

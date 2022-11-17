@@ -173,7 +173,7 @@ export class OTV implements Constraints {
         end - start
       );
       logger.info(
-        `Checked ${candidate.name}: ${isValid} [${index + 1}/${
+        `checked ${candidate.name}: ${isValid} [${index + 1}/${
           candidates.length
         }] ${percentage(index + 1, candidates.length)} ${time} ${remaining}`,
         constraintsLabel
@@ -620,11 +620,19 @@ export class OTV implements Constraints {
 
       const end = Date.now();
       const time = `(${end - start}ms)`;
+      const remaining = timeRemaining(
+        index + 1,
+        candidates.length,
+        end - start
+      );
 
       logger.info(
         `scored ${candidate.name}: ${score.total} [${index + 1} / ${
           validCandidates.length
-        }] ${percentage(index + 1, validCandidates.length)} ${time}`,
+        }] ${percentage(
+          index + 1,
+          validCandidates.length
+        )} ${time} ${remaining}`,
         {
           label: "Constraints",
         }
@@ -1286,6 +1294,6 @@ export const checkKusamaRank = async (candidate: any) => {
     await setKusamaRankInvalidity(candidate.stash, true);
     return true;
   } catch (e) {
-    logger.info(`Error trying to get kusama data...`);
+    logger.warn(`Error trying to get kusama data...`);
   }
 };

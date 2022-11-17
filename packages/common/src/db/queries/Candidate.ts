@@ -107,6 +107,42 @@ export const clearNodeRefsFrom = async (name: string): Promise<boolean> => {
   return true;
 };
 
+// Set a candidates data to the data returned from a 'canonical' 1kv instance
+export const bootstrapCandidate = async (
+  name: string,
+  stash: string,
+  discoveredAt: number,
+  nominatedAt: number,
+  offlineSince: number,
+  offlineAccumulated: number,
+  rank: number,
+  faults: number,
+  inclusion: number,
+  location: string,
+  provider: string,
+  democracyVoteCount: number,
+  democracyVotes: number[]
+): Promise<any> => {
+  await CandidateModel.findOneAndUpdate(
+    { stash },
+    {
+      discoveredAt,
+      nominatedAt,
+      offlineSince,
+      offlineAccumulated,
+      rank,
+      faults,
+      inclusion,
+      location,
+      provider,
+      democracyVoteCount,
+      democracyVotes,
+    }
+  ).exec();
+
+  return true;
+};
+
 // Sets an invalidityReason for a candidate.
 export const setInvalidityReason = async (
   stash: string,

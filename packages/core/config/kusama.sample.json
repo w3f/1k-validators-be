@@ -8,7 +8,10 @@
     "apiEndpoints": [
       "wss://kusama-rpc.polkadot.io",
       "wss://kusama.api.onfinality.io/public-ws"
-    ]
+    ],
+    "bootstrap": true,
+    "kusamaBootstrapEndpoint": "https://kusama.w3f.community",
+    "polkadotBootstrapEndpoint": "https://polkadot.w3f.community"
   },
   "constraints": {
     "skipConnectionTime": true,

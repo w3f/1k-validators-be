@@ -1,5 +1,7 @@
 import { logger, queries, ChainData } from "@1kv/common";
 
+export const sessionkeyLabel = { label: "SessionKeyJob" };
+
 export const sessionKeyJob = async (chaindata: ChainData) => {
   const start = Date.now();
 
@@ -23,14 +25,10 @@ export const sessionKeyJob = async (chaindata: ChainData) => {
 
   const end = Date.now();
 
-  logger.info(
-    `{cron::SessionKeyJob::ExecutionTime} started at ${new Date(
-      start
-    ).toString()} Done. Took ${(end - start) / 1000} seconds`
-  );
+  logger.info(`Done. Took ${(end - start) / 1000} seconds`, sessionkeyLabel);
 };
 
 export const processSessionKeyJob = async (job: any, chaindata: ChainData) => {
-  logger.info(`Processing Session Key Job....`);
+  logger.info(`Processing Session Key Job....`, sessionkeyLabel);
   await sessionKeyJob(chaindata);
 };

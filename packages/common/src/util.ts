@@ -95,7 +95,10 @@ export const fetchLocationInfo = async (addr: any, iit: any) => {
   };
   if (!iit || !addr) {
     if (!iit) {
-      logger.warn(`ipinfo api token not set`, { label: "Location" });
+      logger.warn(
+        `Tried to query location data, but ipinfo api token not set`,
+        { label: "Location" }
+      );
     }
     if (!addr) {
       logger.warn("No address to query location info for");

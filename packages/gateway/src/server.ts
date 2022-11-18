@@ -12,7 +12,6 @@ import { otvWorker } from "@1kv/worker";
 import { Queue } from "bullmq";
 
 import router from "./routes";
-import { gatewayLabel } from "./run";
 
 export default class Server {
   public app: Koa;
@@ -72,7 +71,7 @@ export default class Server {
 
   async start(): Promise<void> {
     if (!this.enable) {
-      logger.info(`Server not enabled`, gatewayLabel);
+      logger.info(`Server not enabled`, { label: "Gateway" });
     } else {
       if (this.config?.redis?.host && this.config?.redis?.port) {
         await this.addQueues();
@@ -87,7 +86,7 @@ export default class Server {
         serverAdapter.setBasePath("/bull");
         this.app.use(serverAdapter.registerPlugin());
       }
-      logger.info(`Now listening on ${this.port}`, gatewayLabel);
+      logger.info(`Now listening on ${this.port}`, { label: "Gateway" });
       const server = this.app.listen(this.port);
     }
   }

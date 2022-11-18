@@ -99,6 +99,7 @@ services:
       restart: unless-stopped
       depends_on:
         - node_alice
+        - redis
       volumes:
         - .:/app
       ports:
@@ -146,6 +147,9 @@ services:
       deploy:
         mode: replicated
         replicas: 2
+      depends_on:
+        - node_alice
+        - redis
       restart: always
       networks:
         testing_net:

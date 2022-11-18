@@ -1,5 +1,7 @@
 import { logger, queries, ChainData } from "@1kv/common";
 
+export const activeLabel = { label: "ActiveValidatorJob" };
+
 export const activeValidatorJob = async (chaindata: ChainData) => {
   const start = Date.now();
 
@@ -21,17 +23,13 @@ export const activeValidatorJob = async (chaindata: ChainData) => {
 
   const end = Date.now();
 
-  logger.info(
-    `{cron::ActiveValidatorJob::ExecutionTime} started at ${new Date(
-      start
-    ).toString()} Done. Took ${(end - start) / 1000} seconds`
-  );
+  logger.info(`Done. Took ${(end - start) / 1000} seconds`, activeLabel);
 };
 
 export const processActiveValidatorJob = async (
   job: any,
   chaindata: ChainData
 ) => {
-  logger.info(`Processing Active Validator Job....`);
+  logger.info(`Processing Active Validator Job....`, activeLabel);
   await activeValidatorJob(chaindata);
 };

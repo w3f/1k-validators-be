@@ -46,6 +46,10 @@ export const setLocation = async (
   }
 
   const session = (await getLatestSession())?.session;
+  if (session && session == 0) {
+    return;
+  }
+
   const candidate = await CandidateModel.findOne({ name: name })
     .select({ name: 1, stash: 1 })
     .lean();
@@ -99,6 +103,9 @@ export const setHeartbeatLocation = async (
   }).lean();
 
   const session = (await getLatestSession())?.session;
+  if (session && session == 0) {
+    return;
+  }
 
   // Location doesn't exist, fetch it
   if (!data) {

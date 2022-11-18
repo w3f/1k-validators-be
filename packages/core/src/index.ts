@@ -34,15 +34,9 @@ const start = async (cmd: { config: string }) => {
   const config = Config.loadConfigDir(cmd.config);
   const winstonLabel = { label: "start" };
 
-  logger.info(
-    `{Core:Start} Starting the backend services. ${version}`,
-    winstonLabel
-  );
+  logger.info(`Starting the backend services. ${version}`, winstonLabel);
 
-  logger.info(
-    `{Start} Network prefix: ${config.global.networkPrefix}`,
-    winstonLabel
-  );
+  logger.info(`Network prefix: ${config.global.networkPrefix}`, winstonLabel);
 
   // Create the API handler.
   const endpoints =
@@ -125,11 +119,11 @@ const start = async (cmd: { config: string }) => {
     await scorekeeper.addNominatorGroup(nominatorGroup);
   }
 
-  if (config.scorekeeper.claimer) {
-    logger.info(`Claimer in config. Adding to scorekeeper`, winstonLabel);
-    // Setup claimer in the scorekeeper
-    await scorekeeper.addClaimer(config.scorekeeper.claimer);
-  }
+  // if (config.scorekeeper.claimer) {
+  //   logger.info(`Claimer in config. Adding to scorekeeper`, winstonLabel);
+  //   // Setup claimer in the scorekeeper
+  //   await scorekeeper.addClaimer(config.scorekeeper.claimer);
+  // }
 
   const curControllers = scorekeeper.getAllNominatorControllers();
   await queries.removeStaleNominators(curControllers);

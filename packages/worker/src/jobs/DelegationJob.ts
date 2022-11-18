@@ -1,5 +1,7 @@
 import { logger, queries, ChainData } from "@1kv/common";
 
+export const delegationLabel = { label: "DelegationJob" };
+
 export const delegationJob = async (chaindata: ChainData) => {
   const start = Date.now();
 
@@ -22,14 +24,10 @@ export const delegationJob = async (chaindata: ChainData) => {
 
   const end = Date.now();
 
-  logger.info(
-    `{cron::delegationJob::ExecutionTime} started at ${new Date(
-      start
-    ).toString()} Done. Took ${(end - start) / 1000} seconds`
-  );
+  logger.info(`Done. Took ${(end - start) / 1000} seconds`, delegationLabel);
 };
 
 export const processDelegationJob = async (job: any, chaindata: ChainData) => {
-  logger.info(`Processing Delegation Job....`);
+  logger.info(`Processing Delegation Job....`, delegationLabel);
   await delegationJob(chaindata);
 };

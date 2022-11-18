@@ -617,8 +617,6 @@ export const clearAccumulated = async (): Promise<boolean> => {
 };
 
 export const clearCandidates = async (): Promise<boolean> => {
-  logger.info(`(Db::clearCandidates) Clearing stale candidate data.`);
-
   const candidates = await allCandidates();
   if (!candidates.length) {
     // nothing to do

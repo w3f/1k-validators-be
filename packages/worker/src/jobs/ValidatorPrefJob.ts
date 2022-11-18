@@ -1,5 +1,7 @@
 import { logger, queries, ChainData } from "@1kv/common";
 
+export const validatorPrefLabel = { label: "ValidatorPrefJob" };
+
 export const validatorPrefJob = async (chaindata: ChainData) => {
   const start = Date.now();
 
@@ -33,17 +35,13 @@ export const validatorPrefJob = async (chaindata: ChainData) => {
 
   const end = Date.now();
 
-  logger.info(
-    `{cron::ValidatorPrefJob::ExecutionTime} started at ${new Date(
-      start
-    ).toString()} Done. Took ${(end - start) / 1000} seconds`
-  );
+  logger.info(`Done. Took ${(end - start) / 1000} seconds`, validatorPrefLabel);
 };
 
 export const processValidatorPrefJob = async (
   job: any,
   chaindata: ChainData
 ) => {
-  logger.info(`Processing Validator Pref Job....`);
+  logger.info(`Processing Validator Pref Job....`, validatorPrefLabel);
   await validatorPrefJob(chaindata);
 };

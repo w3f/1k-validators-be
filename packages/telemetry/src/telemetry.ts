@@ -53,7 +53,9 @@ export default class TelemetryClient {
 
   async start(): Promise<any> {
     if (!this.enable) {
-      logger.info("Telemetry Client not enabled.");
+      logger.warn("Telemetry Client not enabled.", {
+        label: "Telemetry",
+      });
       return;
     } else {
       return new Promise((resolve: any, reject: any) => {
@@ -108,6 +110,7 @@ export default class TelemetryClient {
   private async _handle(message: any) {
     const { action, payload } = message;
 
+    // Check if there were any disconnected nodes that reach the threshold of being 'offline'
     if (this.disconnectedNodes.size > 0) {
       await this.checkOffline();
     }
@@ -115,7 +118,9 @@ export default class TelemetryClient {
     switch (action) {
       case TelemetryMessage.FeedVersion:
         {
-          logger.info(`feed version: ${JSON.stringify(payload)}`);
+          logger.info(`feed version: ${JSON.stringify(payload)}`, {
+            label: "Telemetry",
+          });
         }
         break;
       case TelemetryMessage.AddedNode:
@@ -140,22 +145,6 @@ export default class TelemetryClient {
           logger.warn(`node ${details[0]} with id: ${id} is  online`, {
             label: "Telemetry",
           });
-
-          // a mutex that will only update after its free to avoid race conditions
-          // const waitUntilFree = async (name: string): Promise<void> => {
-          //   if (this.beingReported.get(name)) {
-          //     return new Promise((resolve) => {
-          //       const intervalId = setInterval(() => {
-          //         if (!this.beingReported.get(name)) {
-          //           clearInterval(intervalId);
-          //           resolve();
-          //         }
-          //       }, 1000);
-          //     });
-          //   }
-          // };
-
-          // await waitUntilFree(details[0]);
 
           // Report the node as online
           await queries.reportOnline(id, details, now, startupTime);
@@ -277,7 +266,9 @@ export default class TelemetryClient {
     if (this.config.telemetry.chains.includes(chain)) {
       this.socket.send(`ping:${chain}`);
       this.socket.send(`subscribe:${chain}`);
-      logger.info(`Subscribed to ${chain}`);
+      logger.info(`Subscribed to ${chain}`, {
+        label: "Telemetry",
+      });
     }
   }
 

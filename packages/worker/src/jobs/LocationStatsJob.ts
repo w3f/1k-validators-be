@@ -1,5 +1,7 @@
 import { logger, queries, ChainData, Score } from "@1kv/common";
 
+export const locationstatsLabel = { label: "LocationStatsJob" };
+
 export const locationStatsJob = async (chaindata: ChainData) => {
   const start = Date.now();
 
@@ -193,17 +195,13 @@ export const locationStatsJob = async (chaindata: ChainData) => {
 
   const end = Date.now();
 
-  logger.info(
-    `{cron::locationStatsJob::ExecutionTime} started at ${new Date(
-      start
-    ).toString()} Done. Took ${(end - start) / 1000} seconds`
-  );
+  logger.info(`Done. Took ${(end - start) / 1000} seconds`, locationstatsLabel);
 };
 
 export const processLocationStatsJob = async (
   job: any,
   chaindata: ChainData
 ) => {
-  logger.info(`Processing Era Stats Job....`);
+  logger.info(`Processing Era Stats Job....`, locationstatsLabel);
   await locationStatsJob(chaindata);
 };

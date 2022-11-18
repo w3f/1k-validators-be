@@ -4,17 +4,19 @@ import { ApiPromise } from "@polkadot/api";
 import { extractAuthor } from "@polkadot/api-derive/type/util";
 import { validatorPrefJob } from "./ValidatorPrefJob";
 
+export const blockdataLabel = { label: "Block" };
+
 export const blockDataJob = async (chaindata: ChainData) => {
   const start = Date.now();
 
-  logger.info(`Starting blockDataJob`);
+  logger.info(`Starting blockDataJob`, blockdataLabel);
   const latestBlock = await chaindata.getLatestBlock();
   const threshold = 10000;
   for (let i = latestBlock - threshold; i < latestBlock; i++) {
     // logger.info(`processing block: ${i}`);
     await processBlock(chaindata, i);
   }
-  logger.info(`Done, processed all blocks`);
+  logger.info(`Done, processed all blocks`, blockdataLabel);
 };
 
 export const processBlock = async (
@@ -83,9 +85,14 @@ export const parseExtrinsics = async (
         const ips = await Promise.all(
           externalAddresses.map(async (address: string) => {
             const { ip, port } = Util.parseIP(address);
+            const ipv6_regex =
+              // eslint-disable-next-line security/detect-unsafe-regex
+              /(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))/gi;
 
+            const isIPV6 = ipv6_regex.test(address);
             if (
               !ip ||
+              isIPV6 ||
               ip.indexOf("10.") == 0 ||
               ip.indexOf("100.") == 0 ||
               ip.indexOf("127.") == 0 ||
@@ -154,6 +161,9 @@ export const parseExtrinsics = async (
 
 export const processBlockDataJob = async (job: any, chaindata: ChainData) => {
   const { blockNumber } = job.data;
-  logger.info(`Processing Blockdata Job for block #${blockNumber}....`);
+  logger.info(
+    `Processing Blockdata Job for block #${blockNumber}....`,
+    blockdataLabel
+  );
   await blockDataJob(chaindata);
 };

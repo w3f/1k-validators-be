@@ -5,7 +5,6 @@ export const setValidatorScoreMetadata = async (
   scoreMetadata: any,
   updated: number
 ): Promise<boolean> => {
-  logger.info(`(Db::SetScoreMetadata) Setting validator score metadata`);
   const {
     session,
     bondedStats,

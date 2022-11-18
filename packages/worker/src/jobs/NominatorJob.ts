@@ -1,5 +1,7 @@
 import { logger, queries, ChainData } from "@1kv/common";
 
+export const nominatorLabel = { label: "NominatorJob" };
+
 export const nominatorJob = async (chaindata: ChainData) => {
   const start = Date.now();
 
@@ -47,14 +49,10 @@ export const nominatorJob = async (chaindata: ChainData) => {
 
   const end = Date.now();
 
-  logger.info(
-    `{cron::NominatorStakeJob::ExecutionTime} started at ${new Date(
-      start
-    ).toString()} Done. Took ${(end - start) / 1000} seconds`
-  );
+  logger.info(`Done. Took ${(end - start) / 1000} seconds`, nominatorLabel);
 };
 
 export const processNominatorJob = async (job: any, chaindata: ChainData) => {
-  logger.info(`Processing Nominator Job....`);
+  logger.info(`Processing Nominator Job....`, nominatorLabel);
   await nominatorJob(chaindata);
 };

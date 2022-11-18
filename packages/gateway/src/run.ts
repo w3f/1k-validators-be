@@ -21,7 +21,7 @@ const start = async (cmd: { config: string }) => {
   logger.info(`starting the backend services. ${version}`, gatewayLabel);
   const db = await Db.create(config.db.mongo.uri);
   const server = new Server(config);
-  await server.start();
+  server.start();
 };
 
 const program = new Command();

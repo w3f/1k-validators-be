@@ -1,44 +1,42 @@
 import { logger, Constraints } from "@1kv/common";
 import { SCORE_JOB, VALIDITY_JOB } from "./index";
 
+export const constraintsLabel = { label: "ConstraintsJob" };
+
 export const validityJob = async (constraints: Constraints.OTV) => {
   const start = Date.now();
 
-  logger.info(
-    `(job::Constraints:Validity::start) Running Constraints:Validity job`
-  );
+  logger.info(`Running Constraints:Validity job`, constraintsLabel);
 
   await constraints.checkAllCandidates();
 
   const end = Date.now();
 
   logger.info(
-    `{job::Constraints:Validity::ExecutionTime} started at ${new Date(
-      start
-    ).toString()} Done. Took ${(end - start) / 1000} seconds`
+    `Validity Done. Took ${(end - start) / 1000} seconds`,
+    constraintsLabel
   );
 };
 
 export const scoreJob = async (constraints: Constraints.OTV) => {
   const start = Date.now();
 
-  logger.info(`(job::Constraints:Score::start) Running Constraints:Score job`);
+  logger.info(`Running Constraints:Score job`, constraintsLabel);
 
   await constraints.scoreAllCandidates();
 
   const end = Date.now();
 
   logger.info(
-    `{job::Constraints:Score::ExecutionTime} started at ${new Date(
-      start
-    ).toString()} Done. Took ${(end - start) / 1000} seconds`
+    `Score Done. Took ${(end - start) / 1000} seconds`,
+    constraintsLabel
   );
 };
 
 // Called by worker to process Job
 export const processConstraintsJob = async (job: any, otv: Constraints.OTV) => {
   const { jobType } = job.data;
-  logger.info(`Processing type: ${jobType}`);
+  logger.info(`Processing type: ${jobType}`, constraintsLabel);
   switch (jobType) {
     case VALIDITY_JOB:
       await validityJob(otv);

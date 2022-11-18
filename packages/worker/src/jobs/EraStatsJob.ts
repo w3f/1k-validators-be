@@ -1,9 +1,11 @@
 import { logger, queries, ChainData } from "@1kv/common";
 
+export const erastatsLabel = { label: "EraStatsJob" };
+
 export const eraStatsJob = async (chaindata: ChainData) => {
   const start = Date.now();
 
-  logger.info(`(cron::eraStats::start) Running era stats cron`);
+  logger.info(`Running era stats cron`, erastatsLabel);
 
   const currentEra = await chaindata.getCurrentEra();
 
@@ -21,14 +23,10 @@ export const eraStatsJob = async (chaindata: ChainData) => {
 
   const end = Date.now();
 
-  logger.info(
-    `{cron::eraStats::ExecutionTime} started at ${new Date(
-      start
-    ).toString()} Done. Took ${(end - start) / 1000} seconds`
-  );
+  logger.info(`Done. Took ${(end - start) / 1000} seconds`, erastatsLabel);
 };
 
 export const processEraStatsJob = async (job: any, chaindata: ChainData) => {
-  logger.info(`Processing Era Stats Job....`);
+  logger.info(`Processing Era Stats Job....`, erastatsLabel);
   await eraStatsJob(chaindata);
 };

@@ -1,5 +1,7 @@
 import { logger, ChainData, Types, queries } from "@1kv/common";
 
+export const democracyLabel = { label: "DemocracyJob" };
+
 export const democracyJob = async (chaindata: ChainData) => {
   const start = Date.now();
 
@@ -102,14 +104,10 @@ export const democracyJob = async (chaindata: ChainData) => {
 
   const endTime = Date.now();
 
-  logger.info(
-    `{cron::councilJob::ExecutionTime} started at ${new Date(
-      start
-    ).toString()} Done. Took ${(endTime - start) / 1000} seconds`
-  );
+  logger.info(`Done. Took ${(endTime - start) / 1000} seconds`, democracyLabel);
 };
 
 export const processDemocracyJob = async (job: any, chaindata: ChainData) => {
-  logger.info(`Processing Democracy Job....`);
+  logger.info(`Processing Democracy Job....`, democracyLabel);
   await democracyJob(chaindata);
 };

@@ -1084,24 +1084,17 @@ export const checkLatestClientVersion = async (
 
       const isUpgraded = semver.gte(nodeVersion, latestVersion);
       if (!isUpgraded) {
-        setLatestClientReleaseValidity(candidate.stash, false);
+        await setLatestClientReleaseValidity(candidate.stash, false);
         return false;
       } else {
-        setLatestClientReleaseValidity(candidate.stash, true);
+        await setLatestClientReleaseValidity(candidate.stash, true);
         return true;
       }
     } else {
-      logger.warn(
-        `{latestRelease} Could not set release validity for ${
-          candidate.name
-        } - version: ${candidate.version} Latest release: ${
-          latestRelease?.name
-        } now: ${Date.now()}`
-      );
-      return true;
+      return false;
     }
   } else {
-    setLatestClientReleaseValidity(candidate.stash, true);
+    await setLatestClientReleaseValidity(candidate.stash, true);
     return true;
   }
 };

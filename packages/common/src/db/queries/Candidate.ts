@@ -21,15 +21,16 @@ export const addCandidate = async (
   const keyring = new Keyring();
   const ss58Prefix = network == "Kusama" ? 2 : 0;
   stash = keyring.encodeAddress(stash, ss58Prefix);
-  logger.info(
-    `(Db::addCandidate) name: ${name} stash: ${stash} matrix: ${matrix}`
-  );
+  // logger.info(
+  //   `(Db::addCandidate) name: ${name} stash: ${stash} matrix: ${matrix}`
+  // );
 
   // Check to see if the candidate has already been added as a node.
   const data = await CandidateModel.findOne({ name }).lean();
   if (!data) {
     logger.info(
-      `(Db::addCandidate) Did not find candidate data for ${name} - inserting new document.`
+      `Did not find candidate data for ${name} - inserting new document.`,
+      { label: "Candidate" }
     );
 
     const candidate = new CandidateModel({
@@ -209,7 +210,9 @@ export const reportBestBlock = async (
 
   if (!data) return false;
 
-  // logger.info(`Reporting best block for ${data.name}: ${details}`);
+  logger.info(`Reporting best block for ${data.name}: ${details}`, {
+    label: "Online",
+  });
 
   // If the node was previously deemed offline
   if (data.offlineSince && data.offlineSince !== 0) {
@@ -383,15 +386,12 @@ export const reportOnline = async (
  * @param now The timestamp for now (in ms).
  */
 export const reportOffline = async (
-  telemetryId: number,
   name: string,
   now: number
 ): Promise<boolean> => {
-  // logger.info(
-  //   `(Db::reportOffline) Reporting ${name} with telemetry id ${telemetryId} offline at ${now}.`
-  // );
+  logger.warn(`Reporting ${name} offline at ${now}.`, { label: "Online" });
 
-  const data = await CandidateModel.findOne({ telemetryId }).lean();
+  const data = await CandidateModel.findOne({ name }).lean();
 
   if (!data) {
     logger.info(`(Db::reportOffline) No data for node named ${name}.`);
@@ -407,7 +407,7 @@ export const reportOffline = async (
   // Only decrement the nodeRefs, don't mark offline.
   if (data.nodeRefs > 1) {
     return CandidateModel.findOneAndUpdate(
-      { telemetryId },
+      { name },
       {
         $inc: {
           nodeRefs: -1,
@@ -427,7 +427,7 @@ export const reportOffline = async (
 
   return CandidateModel.findOneAndUpdate(
     {
-      telemetryId,
+      name,
     },
     {
       offlineSince: now,

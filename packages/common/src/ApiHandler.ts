@@ -5,6 +5,8 @@ import logger from "./logger";
 import { sleep } from "./util";
 import { POLKADOT_API_TIMEOUT } from "./constants";
 
+export const apiLabel = { label: "ApiHandler" };
+
 /**
  * A higher level handler for the Polkadot-Js API that can handle reconnecting
  * to a different provider if one proves troublesome.
@@ -37,16 +39,16 @@ class ApiHandler extends EventEmitter {
     if (api) {
       api
         .on("connected", () => {
-          logger.info(`Connected to chain ${endpoints[0]}`);
+          logger.info(`Connected to chain ${endpoints[0]}`, apiLabel);
         })
         .on("disconnected", async () => {
-          logger.warn(`Disconnected from chain`);
+          logger.warn(`Disconnected from chain`, apiLabel);
         })
         .on("ready", () => {
-          logger.info(`API connection ready ${endpoints[0]}`);
+          logger.info(`API connection ready ${endpoints[0]}`, apiLabel);
         })
         .on("error", (error) => {
-          logger.warn("The API has an error");
+          logger.warn("The API has an error", apiLabel);
           logger.error(error);
         });
       await api.isReadyOrError.catch(logger.error);
@@ -61,8 +63,8 @@ class ApiHandler extends EventEmitter {
       );
       return new ApiHandler(api, endpoints);
     } catch (e) {
-      logger.info(`there was an error: `);
-      logger.error(e);
+      logger.info(`there was an error: `, apiLabel);
+      logger.error(e, apiLabel);
     }
   }
 
@@ -110,29 +112,6 @@ class ApiHandler extends EventEmitter {
         }
       });
     });
-  }
-
-  async _reconnect(): Promise<void> {
-    if (this._reconnectLock) {
-      logger.info(`API Already Trying Reconnect...`);
-      return;
-    }
-
-    logger.info(
-      `API Disconnected... Reconnecting... (reconnect tries: ${this._reconnectTries})`
-    );
-    this._reconnectLock = true;
-    this._reconnectTries++;
-    // disconnect from the old one
-    this._api.disconnect();
-    // do the actual reconnection
-    const nextEndpoint = this._endpoints[this._reconnectTries % 5];
-    const api = await ApiPromise.create({
-      provider: new WsProvider(nextEndpoint),
-    });
-    this._registerEventHandlers(api);
-    this._api = api;
-    this._reconnectLock = false;
   }
 }
 

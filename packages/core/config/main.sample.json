@@ -24,7 +24,7 @@
     "skipStakedDestination": true,
     "skipClientUpgrade": true,
     "skipUnclaimed": true,
-    "minSelfStake": 100000000000,
+    "minSelfStake": 100000,
     "commission": 150000000,
     "unclaimedEraThreshold": 4
   },
@@ -128,7 +128,7 @@
     ],
     "enable": true,
     "chains": [
-      "0x60d398b81708a71e17fa66a1427568205a817671f31d14dc01a35123c35557e2"
+      "0x5d0651b626322800236cde59a5036d5d7ff241d7520d6646168784965a4e8bae"
     ],
     "host": "ws://172.28.1.10:8000/feed"
   },

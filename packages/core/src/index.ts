@@ -89,19 +89,13 @@ const start = async (cmd: { config: string }) => {
   // Clear node refs and delete old fields from all nodes before starting new
   // telemetry client.
   const allNodes = await queries.allNodes();
-  logger.info(
-    `clearing old info from ${allNodes.length} nodes..`,
-    winstonLabel
-  );
+
   for (const [index, node] of allNodes.entries()) {
     const { name } = node;
     await queries.deleteOldFieldFrom(name);
     await queries.clearNodeRefsFrom(name);
-    logger.info(
-      `info cleared for ${name} [${index}/${allNodes.length}]`,
-      winstonLabel
-    );
   }
+  logger.info(`cleared old info for ${allNodes.length} nodes.`, winstonLabel);
 
   // Start the telemetry client.
   const telemetry = new TelemetryClient(config);

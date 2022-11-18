@@ -120,7 +120,7 @@ export const fetchLocationInfo = async (addr: any, iit: any) => {
     const { city, region, country, loc, org, postal, timezone } = json;
 
     if (!org) {
-      logger.info(`no org: ${json}`);
+      logger.info(`no org: for ${addr} ${JSON.stringify(json)}`);
     }
     const asn = org.substring(0, org.indexOf(" "));
     const provider = org.substring(org.indexOf(" ") + 1);

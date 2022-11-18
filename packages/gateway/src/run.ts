@@ -13,13 +13,15 @@ const catchAndQuit = async (fn: any) => {
   }
 };
 
+export const gatewayLabel = { label: "Gateway" };
+
 const start = async (cmd: { config: string }) => {
   const config = Config.loadConfigDir(cmd.config);
 
-  logger.info(`{Gateway:Start} Starting the backend services. ${version}`);
+  logger.info(`starting the backend services. ${version}`, gatewayLabel);
   const db = await Db.create(config.db.mongo.uri);
   const server = new Server(config);
-  server.start();
+  await server.start();
 };
 
 const program = new Command();

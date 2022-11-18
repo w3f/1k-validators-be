@@ -86,6 +86,7 @@ export const InvalidityReason = new Schema({
   details: {},
   updated: Number,
 });
+
 export const LatestSessionSchema = new Schema({
   session: Number,
   updated: Number,
@@ -94,6 +95,17 @@ export const LatestSessionSchema = new Schema({
 export const LatestSessionModel = mongoose.model(
   "LatestSession",
   LatestSessionSchema
+);
+
+export const LatestValidatorSetSchema = new Schema({
+  session: Number,
+  era: Number,
+  validators: [String],
+});
+
+export const LatestValidatorSetModel = mongoose.model(
+  "LatestValidatorSet",
+  LatestValidatorSetSchema
 );
 
 export const LocationSchema = new Schema({
@@ -671,6 +683,8 @@ export const ReleaseModel = mongoose.model("Release", ReleaseSchema);
 
 // Stats on the where nodes are located.
 export const LocationStatsSchema = new Schema({
+  // The number of total nodes that were taken account of for this session
+  totalNodes: Number,
   // Session number the record was created at
   session: { type: Number, index: true },
   // The number of nodes for each location
@@ -695,13 +709,6 @@ export const LocationStatsSchema = new Schema({
     },
   ],
   countryVariance: Number,
-  asns: [
-    {
-      name: String,
-      numberOfNodes: Number,
-    },
-  ],
-  asnVariance: Number,
   providers: [
     {
       name: String,

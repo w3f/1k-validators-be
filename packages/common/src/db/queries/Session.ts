@@ -11,7 +11,7 @@ export const setLatestSession = async (index: number): Promise<boolean> => {
     return true;
   }
 
-  await EraModel.findOneAndUpdate(
+  await LatestSessionModel.findOneAndUpdate(
     {},
     {
       $set: {

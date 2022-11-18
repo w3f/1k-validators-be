@@ -7,6 +7,7 @@ import EraPoints from "../controllers/EraPoints";
 import Democracy from "../controllers/Democracy";
 import Score from "../controllers/Score";
 import Stats from "../controllers/Stats";
+import Location from "../controllers/Location";
 
 const router = new Router();
 
@@ -34,6 +35,8 @@ const API = {
   ScoreMetadata: "/scoremetadata",
   SessionScoreMetadata: "/scoremetadata/:session",
   Release: "/release",
+  LocationsCurrentValidatorSet: "/location/currentvalidatorset",
+  LocationValidator: "/location/validator/:address",
   LocationStats: "/locationstats",
   SessionLocationStats: "/locationstats/:session",
   Councillors: "/councillor",
@@ -95,6 +98,12 @@ router.get(API.Score, Score.getScore);
 router.get(API.SessionScore, Score.getSessionScore);
 router.get(API.ScoreMetadata, Score.getLatestScoreMetadata);
 router.get(API.SessionScoreMetadata, Score.getSessionScoreMetadata);
+
+router.get(
+  API.LocationsCurrentValidatorSet,
+  Location.getLocationCurrentValidatorSet
+);
+router.get(API.LocationValidator, Location.getValidatorLocation);
 
 router.get(API.EraStats, Stats.getEraStats);
 router.get(API.LocationStats, Stats.getLocationStats);

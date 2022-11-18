@@ -3,6 +3,51 @@ import { fetchLocationInfo } from "../../util";
 import { logger } from "../../index";
 import { getLatestSession } from "./Session";
 
+export const getAllLocations = async (address: string): Promise<any> => {
+  const locations = await LocationModel.find({
+    address,
+  })
+    .sort("-session")
+    .select({
+      session: 1,
+      name: 1,
+      address: 1,
+      city: 1,
+      region: 1,
+      country: 1,
+      provider: 1,
+      updated: 1,
+      source: 1,
+    })
+    .lean()
+    .exec();
+  return locations;
+};
+
+export const getLocations = async (address: string): Promise<any> => {
+  // Try to find if there's a latest session
+  const latestSession = await LocationModel.find({
+    address,
+  })
+    .sort("-session")
+    .select({ session: 1 })
+    .limit(1)
+    .lean()
+    .exec();
+  if (latestSession[0] && latestSession[0].session) {
+    const locations = await LocationModel.find({
+      address: address,
+      session: latestSession[0].session,
+    })
+      .lean()
+      .exec();
+    return locations;
+  } else {
+  }
+};
+
+// Returns a single location object for a given telemetry name or ip address of the most recent session
+// Note: there may be multiple ip addresses, this will only return one of them
 export const getLocation = async (name: string, addr: string): Promise<any> => {
   let data;
   // First try to get by telemetry name
@@ -146,7 +191,6 @@ export const setHeartbeatLocation = async (
       .select({ name: 1, stash: 1 })
       .lean();
 
-    // @ts-ignore
     const candidateName = candidate?.name ? candidate?.name : name;
 
     await LocationModel.findOneAndUpdate(

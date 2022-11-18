@@ -7,7 +7,11 @@ export const eraStatsJob = async (chaindata: ChainData) => {
 
   logger.info(`Running era stats cron`, erastatsLabel);
 
+  const currentSession = await chaindata.getSession();
   const currentEra = await chaindata.getCurrentEra();
+  const validators = await chaindata.getValidators();
+
+  await queries.setLatestValidatorSet(currentSession, currentEra, validators);
 
   const allCandidates = await queries.allCandidates();
 

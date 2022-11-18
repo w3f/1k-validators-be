@@ -116,7 +116,7 @@ export const STALE_CRON = "0 0-59/45 * * * *";
 export const SCORE_CRON = "0 */2 * * * *";
 
 // Era Stats Cron Job. This runs every 5 minutes by default
-export const ERA_STATS_CRON = "0 0-59/35 * * * *";
+export const ERA_STATS_CRON = "0 0-59/3 * * * *";
 
 // Location Stats Cron Job. This runs every 15 minutes by default
 export const LOCATION_STATS_CRON = "0 0-59/3 * * * *";

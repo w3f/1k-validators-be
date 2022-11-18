@@ -5,6 +5,8 @@ export const locationstatsLabel = { label: "LocationStatsJob" };
 export const locationStatsJob = async (chaindata: ChainData) => {
   const start = Date.now();
 
+  let totalNodes = [];
+
   const candidates = await queries.allCandidates();
   const session = await chaindata.getSession();
   await queries.setLatestSession(session);
@@ -12,10 +14,78 @@ export const locationStatsJob = async (chaindata: ChainData) => {
   const locationMap = new Map();
   const locationArr = [];
 
-  // Iterate through all candidates and set
+  // Add all candidate entries to the list of nodes
   for (const candidate of candidates) {
-    const location = candidate.location || "No Location";
-    const address = candidate.stash;
+    if (
+      candidate.location != "None" &&
+      candidate.region != "None" &&
+      candidate.country != "None" &&
+      candidate.provider != "None"
+    ) {
+      totalNodes.push({
+        address: candidate.stash,
+        location: candidate?.infrastructureLocation?.city,
+        region: candidate?.infrastructureLocation?.region,
+        country: candidate?.infrastructureLocation?.country,
+        provider: candidate?.infrastructureLocation?.provider,
+      });
+    }
+  }
+
+  // add any additional validators from the validator set to the list of nodes
+  const validatorset = await queries.getLatestValidatorSet();
+  if (
+    validatorset &&
+    validatorset?.validators &&
+    validatorset.validators.length > 0
+  ) {
+    for (const validatorAddress of validatorset.validators) {
+      // If there's a validator that isn't already in the list of candidates
+      if (
+        !totalNodes.some((validator) => validator.address == validatorAddress)
+      ) {
+        const locations = await queries.getLocations(validatorAddress);
+        const location =
+          locations?.length > 0 && locations[0] ? locations[0] : null;
+        if (
+          location &&
+          location.city != "None" &&
+          location.region != "None" &&
+          location.country != "None" &&
+          location.provider != "None"
+        ) {
+          totalNodes.push({
+            address: validatorAddress,
+            location: location.city,
+            region: location.region,
+            country: location.country,
+            provider: location.provider,
+          });
+        }
+      }
+    }
+  }
+  totalNodes = totalNodes.filter((node) => {
+    {
+      return (
+        !!node.location &&
+        !!node.region &&
+        !!node.country &&
+        !!node.provider &&
+        node.location != "None" &&
+        node.region != "None" &&
+        node.country != "None" &&
+        node.provider != "None"
+      );
+    }
+  });
+
+  // Iterate through all candidates and the active validator set
+  for (const node of totalNodes) {
+    const location = node.location;
+    if (!location) {
+      continue;
+    }
 
     const locationCount = locationMap.get(location);
     if (!locationCount) {
@@ -34,42 +104,15 @@ export const locationStatsJob = async (chaindata: ChainData) => {
   });
   const locationVariance = Score.variance(locationValues);
 
-  // ---------------- CITY -----------------------------------
-  const cityMap = new Map();
-  const cityArr = [];
-  for (const candidate of candidates) {
-    const city =
-      candidate.infrastructureLocation && candidate.infrastructureLocation.city
-        ? candidate.infrastructureLocation.city
-        : "No Location";
-
-    const cityCount = cityMap.get(city);
-    if (!cityCount) {
-      cityMap.set(city, 1);
-    } else {
-      cityMap.set(city, cityCount + 1);
-    }
-  }
-
-  for (const city of cityMap.entries()) {
-    const [name, numberOfNodes] = city;
-    cityArr.push({ name, numberOfNodes });
-  }
-
-  const cityValues = cityArr.map((city) => {
-    return city.numberOfNodes;
-  });
-  const cityVariance = Score.variance(cityValues);
-
   // ---------------- REGION -----------------------------------
   const regionMap = new Map();
   const regionArr = [];
-  for (const candidate of candidates) {
-    const region =
-      candidate.infrastructureLocation &&
-      candidate.infrastructureLocation.region
-        ? candidate.infrastructureLocation.region
-        : "No Location";
+  for (const node of totalNodes) {
+    const region = node?.region;
+
+    if (!region) {
+      continue;
+    }
 
     const regionCount = regionMap.get(region);
     if (!regionCount) {
@@ -91,12 +134,12 @@ export const locationStatsJob = async (chaindata: ChainData) => {
   // ---------------- COUNTRY -----------------------------------
   const countryMap = new Map();
   const countryArr = [];
-  for (const candidate of candidates) {
-    const country =
-      candidate.infrastructureLocation &&
-      candidate.infrastructureLocation.country
-        ? candidate.infrastructureLocation.country
-        : "No Location";
+  for (const node of totalNodes) {
+    const country = node?.country;
+
+    if (!country) {
+      continue;
+    }
 
     const countryCount = countryMap.get(country);
     if (!countryCount) {
@@ -115,41 +158,15 @@ export const locationStatsJob = async (chaindata: ChainData) => {
   });
   const countryVariance = Score.variance(countryValues);
 
-  // ---------------- ASN -----------------------------------
-  const asnMap = new Map();
-  const asnArr = [];
-  for (const candidate of candidates) {
-    const asn =
-      candidate.infrastructureLocation && candidate.infrastructureLocation.asn
-        ? candidate.infrastructureLocation.asn
-        : "No Location";
-
-    const asnCount = asnMap.get(asn);
-    if (!asnCount) {
-      asnMap.set(asn, 1);
-    } else {
-      asnMap.set(asn, asnCount + 1);
-    }
-  }
-
-  for (const asn of asnMap.entries()) {
-    const [name, numberOfNodes] = asn;
-    asnArr.push({ name, numberOfNodes });
-  }
-  const asnValues = asnArr.map((asn) => {
-    return asn.numberOfNodes;
-  });
-  const asnVariance = Score.variance(asnValues);
-
   // ---------------- PROVIDER -----------------------------------
   const providerMap = new Map();
   const providerArr = [];
-  for (const candidate of candidates) {
-    const provider =
-      candidate.infrastructureLocation &&
-      candidate.infrastructureLocation.provider
-        ? candidate.infrastructureLocation.provider
-        : "No Location";
+  for (const node of totalNodes) {
+    const provider = node?.provider;
+
+    if (!provider) {
+      continue;
+    }
 
     const providerCount = providerMap.get(provider);
     if (!providerCount) {
@@ -169,26 +186,21 @@ export const locationStatsJob = async (chaindata: ChainData) => {
   const providerVariance = Score.variance(providerValues);
 
   const decentralization =
-    (locationVariance +
-      regionVariance +
-      countryVariance +
-      asnVariance +
-      providerVariance) /
-    5;
+    (locationVariance + regionVariance + countryVariance + providerVariance) /
+    4;
 
   // --------------------------
 
   await queries.setLocationStats(
+    totalNodes.length,
     session,
     locationArr,
     regionArr,
     countryArr,
-    asnArr,
     providerArr,
     locationVariance,
     regionVariance,
     countryVariance,
-    asnVariance,
     providerVariance,
     decentralization
   );

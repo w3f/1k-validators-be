@@ -9,7 +9,7 @@ export const eraStatsJob = async (chaindata: ChainData) => {
 
   const currentSession = await chaindata.getSession();
   const currentEra = await chaindata.getCurrentEra();
-  const validators = await chaindata.getValidators();
+  const validators = await chaindata.currentValidators();
 
   await queries.setLatestValidatorSet(currentSession, currentEra, validators);
 

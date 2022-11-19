@@ -2,7 +2,6 @@ import { ChainData, logger, Util, queries } from "@1kv/common";
 import { ApiPromise } from "@polkadot/api";
 
 import { extractAuthor } from "@polkadot/api-derive/type/util";
-import { validatorPrefJob } from "./ValidatorPrefJob";
 
 export const blockdataLabel = { label: "Block" };
 
@@ -11,10 +10,10 @@ export const blockDataJob = async (chaindata: ChainData) => {
 
   logger.info(`Starting blockDataJob`, blockdataLabel);
   const latestBlock = await chaindata.getLatestBlock();
-  const threshold = 500000;
+  const threshold = 2000000;
   for (let i = latestBlock - threshold; i < latestBlock; i++) {
-    // logger.info(`processing block: ${i}`);
     await processBlock(chaindata, i);
+    logger.info(`processed block: ${i}`, blockdataLabel);
   }
   logger.info(`Done, processed all blocks`, blockdataLabel);
 };

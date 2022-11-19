@@ -8,6 +8,7 @@ import Democracy from "../controllers/Democracy";
 import Score from "../controllers/Score";
 import Stats from "../controllers/Stats";
 import Location from "../controllers/Location";
+import Validator from "../controllers/Validators";
 
 const router = new Router();
 
@@ -57,6 +58,7 @@ const API = {
   EraNominatorStake: "/nominatorstake/:address/:era",
   Delegations: "/delegations/:address",
   AllDelegations: "/delegations",
+  CurrentValidatorSet: "/validators/current",
 };
 
 router.get(API.Accounting, Accounting.getAccounting);
@@ -98,6 +100,8 @@ router.get(API.Score, Score.getScore);
 router.get(API.SessionScore, Score.getSessionScore);
 router.get(API.ScoreMetadata, Score.getLatestScoreMetadata);
 router.get(API.SessionScoreMetadata, Score.getSessionScoreMetadata);
+
+router.get(API.CurrentValidatorSet, Validator.getLatestValidatorSet);
 
 router.get(
   API.LocationsCurrentValidatorSet,

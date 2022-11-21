@@ -17,7 +17,7 @@ const catchAndQuit = async (fn: any) => {
 const start = async (cmd: { config: string }) => {
   const config = Config.loadConfigDir(cmd.config);
 
-  logger.info(`{Worker:Start} Starting the backend services. ${version}`);
+  logger.info(`Starting the backend services. ${version}`, { label: "Worker" });
   const db = await Db.create(config.db.mongo.uri);
   const worker = new Worker(config);
   await worker.startWorker();

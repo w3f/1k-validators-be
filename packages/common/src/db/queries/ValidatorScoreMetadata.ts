@@ -49,45 +49,48 @@ export const setValidatorScoreMetadata = async (
 
   // If they don't exist
   if (!data) {
-    logger.info(`score metadata doesn't exist... creating...`);
-    const validatorScoreMetadata = new ValidatorScoreMetadataModel({
-      session,
-      bondedStats,
-      bondedWeight,
-      faultsStats,
-      faultsWeight,
-      inclusionStats,
-      inclusionWeight,
-      spanInclusionStats,
-      spanInclusionWeight,
-      discoveredAtStats,
-      discoveredAtWeight,
-      nominatedAtStats,
-      nominatedAtWeight,
-      offlineStats,
-      offlineWeight,
-      rankStats,
-      rankWeight,
-      locationStats,
-      locationWeight,
-      regionStats,
-      regionWeight,
-      countryStats,
-      countryWeight,
-      providerStats,
-      providerWeight,
-      nominatorStakeStats,
-      nominatorStakeWeight,
-      delegationStats,
-      delegationWeight,
-      councilStakeStats,
-      councilStakeWeight,
-      democracyStats,
-      democracyWeight,
-      updated,
-    });
-    await validatorScoreMetadata.save();
-    return true;
+    try {
+      const validatorScoreMetadata = new ValidatorScoreMetadataModel({
+        session,
+        bondedStats,
+        bondedWeight,
+        faultsStats,
+        faultsWeight,
+        inclusionStats,
+        inclusionWeight,
+        spanInclusionStats,
+        spanInclusionWeight,
+        discoveredAtStats,
+        discoveredAtWeight,
+        nominatedAtStats,
+        nominatedAtWeight,
+        offlineStats,
+        offlineWeight,
+        rankStats,
+        rankWeight,
+        locationStats,
+        locationWeight,
+        regionStats,
+        regionWeight,
+        countryStats,
+        countryWeight,
+        providerStats,
+        providerWeight,
+        nominatorStakeStats,
+        nominatorStakeWeight,
+        delegationStats,
+        delegationWeight,
+        councilStakeStats,
+        councilStakeWeight,
+        democracyStats,
+        democracyWeight,
+        updated,
+      });
+      await validatorScoreMetadata.save();
+      return true;
+    } catch (e) {
+      logger.error(JSON.stringify(e));
+    }
   }
 
   // It exists, but has a different value - update it

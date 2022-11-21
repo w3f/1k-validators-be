@@ -46,8 +46,23 @@ export type InvalidityReason = {
 
 export type Identity = {
   name: string;
-  sub: string;
+  address: string;
   verified: boolean;
+  subIdentities: {
+    name: string;
+    address: string;
+  }[];
+  display: string;
+  email: string;
+  image: string;
+  judgements: string[];
+  legal: string;
+  // other: string;
+  // parent: string;
+  pgp: string;
+  riot: string;
+  twitter: string;
+  web: string;
 };
 
 /// The data for a candidate that's kept in the DB.
@@ -77,6 +92,8 @@ export type CandidateData = {
   kusamaStash: string;
   skipSelfStake: boolean;
   bio: string;
+  commission: number;
+  active: boolean;
   unclaimedEras: [number];
   version: string;
   valid: boolean;
@@ -148,4 +165,15 @@ export interface AvailabilityCoreState {
   kind: string;
   groupIdx: number;
   validators: string[];
+}
+
+export interface AvailabilityBitfield {
+  blockNumber: number;
+  validator: string;
+  session: number;
+  valIdx: number;
+  bitfield: string;
+  candidateChunkCount: number;
+  availableCandidates: number[];
+  signature?: string;
 }

@@ -19,10 +19,10 @@ class ApiHandler extends EventEmitter {
   static isConnected: any;
   static _reconnect: any;
 
-  constructor(api: ApiPromise, endpoints: string[]) {
+  constructor(api: ApiPromise, endpoints?: string[]) {
     super();
     this._api = api;
-    this._endpoints = endpoints.sort(() => Math.random() - 0.5);
+    // this._endpoints = endpoints.sort(() => Math.random() - 0.5);
     this._registerEventHandlers(api);
   }
 

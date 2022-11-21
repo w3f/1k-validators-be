@@ -470,6 +470,18 @@ export default class ScoreKeeper {
   async begin(): Promise<void> {
     logger.info(`Starting Scorekeeper.`, scorekeeperLabel);
 
+    // Ensure Candidate Identity is set
+    const candidates = await queries.allCandidates();
+    for (const candidate of candidates) {
+      const id = await queries.getIdentity(candidate.stash);
+      if (!id) {
+        const identity = await this.chaindata.getFormattedIdentity(
+          candidate.stash
+        );
+        await queries.setCandidateIdentity(candidate.stash, identity);
+      }
+    }
+
     // If `forceRound` is on - start immediately.
     if (this.config.scorekeeper.forceRound) {
       logger.info(
@@ -576,27 +588,48 @@ export default class ScoreKeeper {
           this.config.redis.host,
           this.config.redis.port
         );
+        const blockQueue = await otvWorker.queues.createBlockQueue(
+          this.config.redis.host,
+          this.config.redis.port
+        );
 
-        // Remove any previous repeatable jobs
-        await otvWorker.queues.removeRepeatableJobsFromQueues([
-          releaseMonitorQueue,
-          constraintsQueue,
-          chaindataQueue,
-        ]);
+        const removeRepeatableJobs = true;
+        if (removeRepeatableJobs) {
+          logger.info(`remove jobs: ${removeRepeatableJobs}`);
+          // Remove any previous repeatable jobs
+          await otvWorker.queues.removeRepeatableJobsFromQueues([
+            releaseMonitorQueue,
+            constraintsQueue,
+            chaindataQueue,
+            blockQueue,
+          ]);
+        }
+
+        const obliterateQueues = false;
+        if (obliterateQueues) {
+          await otvWorker.queues.obliterateQueues([
+            releaseMonitorQueue,
+            constraintsQueue,
+            chaindataQueue,
+            blockQueue,
+          ]);
+        }
 
         await otvWorker.queues.addReleaseMonitorJob(releaseMonitorQueue, 60000);
-        await otvWorker.queues.addValidityJob(constraintsQueue, 600);
-        await otvWorker.queues.addScoreJob(constraintsQueue, 601); // Needs to have different repeat time
+        await otvWorker.queues.addValidityJob(constraintsQueue, 1000001);
+        await otvWorker.queues.addScoreJob(constraintsQueue, 100002); // Needs to have different repeat time
 
-        await otvWorker.queues.addActiveValidatorJob(chaindataQueue, 601);
-        await otvWorker.queues.addCouncilJob(chaindataQueue, 602);
-        await otvWorker.queues.addDelegationJob(chaindataQueue, 603);
-        await otvWorker.queues.addEraPointsJob(chaindataQueue, 604);
-        await otvWorker.queues.addEraStatsJob(chaindataQueue, 605);
-        await otvWorker.queues.addInclusionJob(chaindataQueue, 606);
-        await otvWorker.queues.addNominatorJob(chaindataQueue, 607);
-        await otvWorker.queues.addSessionKeyJob(chaindataQueue, 608);
-        await otvWorker.queues.addValidatorPrefJob(chaindataQueue, 609);
+        await otvWorker.queues.addActiveValidatorJob(chaindataQueue, 100003);
+        await otvWorker.queues.addCouncilJob(chaindataQueue, 100004);
+        await otvWorker.queues.addDelegationJob(chaindataQueue, 100005);
+        await otvWorker.queues.addEraPointsJob(chaindataQueue, 100006);
+        await otvWorker.queues.addEraStatsJob(chaindataQueue, 110008);
+        await otvWorker.queues.addInclusionJob(chaindataQueue, 100008);
+        await otvWorker.queues.addNominatorJob(chaindataQueue, 100009);
+        await otvWorker.queues.addSessionKeyJob(chaindataQueue, 100010);
+        // await otvWorker.queues.addValidatorPrefJob(chaindataQueue, 100101);
+        await otvWorker.queues.addAllBlocks(blockQueue, this.chaindata);
+        await startLocationStatsJob(this.config, this.chaindata);
       } else {
         // No redis connection - scorekeeper runs job
         await monitorJob();

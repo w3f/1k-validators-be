@@ -1,4 +1,4 @@
-import { ChainData, logger, Util, queries } from "@1kv/common";
+import { ChainData, logger, Util, queries, ApiHandler } from "@1kv/common";
 import { ApiPromise } from "@polkadot/api";
 
 import { extractAuthor } from "@polkadot/api-derive/type/util";
@@ -10,10 +10,9 @@ export const blockDataJob = async (chaindata: ChainData) => {
 
   logger.info(`Starting blockDataJob`, blockdataLabel);
   const latestBlock = await chaindata.getLatestBlock();
-  const threshold = 2000000;
+  const threshold = 200;
   for (let i = latestBlock - threshold; i < latestBlock; i++) {
     await processBlock(chaindata, i);
-    logger.info(`processed block: ${i}`, blockdataLabel);
   }
   logger.info(`Done, processed all blocks`, blockdataLabel);
 };
@@ -58,6 +57,7 @@ export const parseExtrinsics = async (
   era: number,
   session: number
 ) => {
+  const chaindata = new ChainData(new ApiHandler(apiAt));
   for (const extrinsic of extrinsics) {
     const decoded = extrinsic.toHuman();
     //@ts-ignore
@@ -104,7 +104,8 @@ export const parseExtrinsics = async (
                 identity.name,
                 validator,
                 ip,
-                Number(port)
+                Number(port),
+                session
               );
             }
           })
@@ -113,44 +114,50 @@ export const parseExtrinsics = async (
         //const { heartbeat: {blockNumber, networkState: {peerId, externalAddresses}, sessionIndex, authorityIndex, validatorsLen, signature}}} = args.data;
         break;
       case "paraInherent":
-        const { bitfields, backedCandidates, disputes, parentHeader } =
-          args.data;
+        // const { bitfields, backedCandidates, disputes, parentHeader } =
+        //   args.data;
+        //
+        // for (const bitfield of bitfields) {
+        //   const { payload, validatorIndex, signature } = bitfield;
+        //
+        //   const session = await chaindata.getSessionAt(apiAt);
+        //   const paraValIndices = await chaindata.getParaValIndicesAt(apiAt);
+        //   const val = validators[paraValIndices[validatorIndex]];
+        //
+        //   const bit: AvailabilityBitfield = {
+        //     blockNumber: blockNumber,
+        //     validator: val,
+        //     candidateChunkCount: payload.toString().split("1").length - 1,
+        //     bitfield: payload.toString(),
+        //     signature: signature.toString(),
+        //     session: session,
+        //     valIdx: validatorIndex,
+        //     availableCandidates: [],
+        //   };
+        //   // AvailabilityBitfield.addAvailibilityBitfield(bit);
+        //   logger.info(bit);
+        // }
+        //
+        // for (const candidate of backedCandidates) {
+        //   const {
+        //     candidate: {
+        //       descriptor: {
+        //         paraId,
+        //         relayParent,
+        //         collator,
+        //         povHash,
+        //         erasureRoot,
+        //         signature,
+        //         paraHead,
+        //         validationCodeHash,
+        //       },
+        //     },
+        //     validityVotes,
+        //     validatorIndices,
+        //   } = candidate;
 
-        for (const bitfield of bitfields) {
-          const { payload, validatorIndex, signature } = bitfield;
-
-          // const val = validators[paraValIndices[validatorIndex]];
-
-          // const bit: AvailabilityBitfield.AvailabilityBitfield = {
-          //     blockNumber: blockNum,
-          //     validator: val,
-          //     candidateChunkCount: payload.toString().split('1').length - 1,
-          //     bitfield: payload.toString(),
-          //     signature: signature.toString(),
-          // }
-          // AvailabilityBitfield.addAvailibilityBitfield(bit);
-        }
-
-        for (const candidate of backedCandidates) {
-          const {
-            candidate: {
-              descriptor: {
-                paraId,
-                relayParent,
-                collator,
-                povHash,
-                erasureRoot,
-                signature,
-                paraHead,
-                validationCodeHash,
-              },
-            },
-            validityVotes,
-            validatorIndices,
-          } = candidate;
-
-          // console.log(candidate);
-        }
+        // console.log(candidate);
+        // }
         break;
       default:
         break;
@@ -160,9 +167,13 @@ export const parseExtrinsics = async (
 
 export const processBlockDataJob = async (job: any, chaindata: ChainData) => {
   const { blockNumber } = job.data;
-  logger.info(
-    `Processing Blockdata Job for block #${blockNumber}....`,
-    blockdataLabel
-  );
-  await blockDataJob(chaindata);
+  const start = Date.now();
+  await processBlock(chaindata, blockNumber);
+  const end = Date.now();
+
+  // logger.info(
+  //   `#${blockNumber} Done (${(end - start) / 1000}s)`,
+  //   blockdataLabel
+  // );
+  return (end - start) / 1000;
 };

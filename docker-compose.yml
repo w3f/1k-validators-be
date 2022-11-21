@@ -14,6 +14,10 @@ services:
         networks:
             testing_net:
                 ipv4_address: 172.28.1.1
+        logging:
+          driver: "json-file"
+          options:
+            max-size: "50m"
 
     node_bob:
         image: wpank/polkadot-super-fast
@@ -29,6 +33,10 @@ services:
         networks:
             testing_net:
                 ipv4_address: 172.28.1.2
+        logging:
+          driver: "json-file"
+          options:
+            max-size: "50m"
 
     node_charlie:
         image: wpank/polkadot-super-fast
@@ -44,6 +52,10 @@ services:
         networks:
             testing_net:
                 ipv4_address: 172.28.1.3
+        logging:
+          driver: "json-file"
+          options:
+            max-size: "50m"
 
     node_dave:
         image: wpank/polkadot-super-fast
@@ -59,6 +71,10 @@ services:
         networks:
             testing_net:
                 ipv4_address: 172.28.1.4
+        logging:
+          driver: "json-file"
+          options:
+            max-size: "50m"
 
     node_eve:
         image: wpank/polkadot-super-fast
@@ -74,6 +90,10 @@ services:
         networks:
             testing_net:
                 ipv4_address: 172.28.1.5
+        logging:
+          driver: "json-file"
+          options:
+            max-size: "50m"
 
     node_ferdie:
         image: wpank/polkadot-super-fast
@@ -89,6 +109,10 @@ services:
         networks:
             testing_net:
                 ipv4_address: 172.28.1.6
+        logging:
+          driver: "json-file"
+          options:
+            max-size: "50m"
 
     1kv-core:
       build:
@@ -107,6 +131,10 @@ services:
       networks:
         testing_net:
           ipv4_address: 172.28.1.7
+      logging:
+        driver: "json-file"
+        options:
+          max-size: "50m"
 
     1kv-gateway:
       build:
@@ -122,6 +150,10 @@ services:
       networks:
         testing_net:
           ipv4_address: 172.28.1.8
+      logging:
+        driver: "json-file"
+        options:
+          max-size: "50m"
 
     1kv-telemetry:
       build:
@@ -135,6 +167,10 @@ services:
       networks:
         testing_net:
           ipv4_address: 172.28.1.9
+      logging:
+        driver: "json-file"
+        options:
+          max-size: "50m"
 
     1kv-worker:
       build:
@@ -146,7 +182,7 @@ services:
         - .:/app
       deploy:
         mode: replicated
-        replicas: 2
+        replicas: 4
       depends_on:
         - node_alice
         - redis
@@ -154,7 +190,10 @@ services:
       networks:
         testing_net:
 #          ipv4_address: 172.28.1.16
-
+      logging:
+        driver: "json-file"
+        options:
+          max-size: "50m"
 
     telemetry-backend-core:
         image: parity/substrate-telemetry-backend:latest
@@ -169,6 +208,10 @@ services:
         networks:
             testing_net:
                 ipv4_address: 172.28.1.10
+        logging:
+          driver: "json-file"
+          options:
+            max-size: "50m"
 
     telemetry-backend-shard:
         image: parity/substrate-telemetry-backend:latest
@@ -182,7 +225,11 @@ services:
         networks:
             testing_net:
                 ipv4_address: 172.28.1.15
-    
+        logging:
+          driver: "json-file"
+          options:
+            max-size: "50m"
+
     telemetry-frontend:
         image: parity/substrate-telemetry-frontend:latest
         ports:
@@ -199,6 +246,10 @@ services:
         networks:
             testing_net:
                 ipv4_address: 172.28.1.11
+        logging:
+          driver: "json-file"
+          options:
+            max-size: "50m"
 
     mongo:
         image: mongo
@@ -208,6 +259,10 @@ services:
         networks:
             testing_net:
                 ipv4_address: 172.28.1.12
+        logging:
+          driver: "json-file"
+          options:
+            max-size: "50m"
 
     mongo-express:
       image: mongo-express
@@ -227,7 +282,10 @@ services:
       networks:
         testing_net:
           ipv4_address: 172.28.1.14
-
+      logging:
+        driver: "json-file"
+        options:
+          max-size: "50m"
     redis:
       image: redis:alpine
       expose:
@@ -244,7 +302,6 @@ services:
         default:
         testing_net:
           ipv4_address: 172.28.1.13
-
 
 
 

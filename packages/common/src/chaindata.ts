@@ -12,6 +12,7 @@ import logger from "./logger";
 import {
   AvailabilityCoreState,
   BooleanResult,
+  Identity,
   NumberResult,
   StringResult,
 } from "./types";
@@ -577,35 +578,137 @@ export class ChainData {
       return;
     }
 
-    let identity, verified, sub;
-    identity = await this.api.query.identity.identityOf(addr);
-    if (!identity.isSome) {
-      identity = await this.api.query.identity.superOf(addr);
-      if (!identity.isSome) return { name: addr, verified: false, sub: null };
+    let identity: Identity, verified, sub;
 
-      const subRaw = identity.toJSON()[1].raw;
-      if (subRaw && subRaw.substring(0, 2) === "0x") {
-        sub = hex2a(subRaw.substring(2));
-      } else {
-        sub = subRaw;
+    let superAccount;
+    const subAccounts: { name: string; address: string }[] = [];
+    const hasId = await this.api.derive.accounts.hasIdentity(addr);
+
+    // The address is a sub identity
+    if (hasId.hasIdentity && hasId.parentId) {
+      const parentAddress = hasId.parentId;
+      // the address is a subidentity, query the superIdentity
+      const superIdentity = await this.api.derive.accounts.identity(
+        parentAddress
+      );
+      superAccount = {
+        name: superIdentity.display,
+        address: parentAddress,
+      };
+      const {
+        display,
+        displayParent,
+        email,
+        image,
+        judgements,
+        legal,
+        other,
+        parent,
+        pgp,
+        riot,
+        twitter,
+        web,
+      } = superIdentity;
+      const subs = await this.api.query.identity.subsOf(parentAddress);
+
+      // Iterate through all the sub accounts
+      for (const subaccountAddress of subs[1]) {
+        const identityQuery = await this.api.derive.accounts.identity(
+          subaccountAddress
+        );
+        const subAccount: { name: string; address: string } = {
+          name: identityQuery.display,
+          address: subaccountAddress.toString(),
+        };
+        subAccounts.push(subAccount);
       }
-      const superAddress = identity.toJSON()[0];
-      identity = await this.api.query.identity.identityOf(superAddress);
-    }
 
-    const raw = identity.toJSON().info.display.raw;
-    const { judgements } = identity.unwrap();
-    for (const judgement of judgements) {
-      const status = judgement[1];
-      if (status.isReasonable || status.isKnownGood) {
-        verified = status.isReasonable || status.isKnownGood;
-        continue;
+      const judgementKinds = [];
+      for (const judgement of judgements) {
+        const status = judgement[1];
+        if (status.isReasonable || status.isKnownGood) {
+          judgementKinds.push(status.toString());
+          verified = status.isReasonable || status.isKnownGood;
+          continue;
+        }
       }
-    }
 
-    if (raw && raw.substring(0, 2) === "0x") {
-      return { name: hex2a(raw.substring(2)), verified: verified, sub: sub };
-    } else return { name: raw, verified: verified, sub: sub };
+      identity = {
+        address: superAccount.address,
+        name: superAccount.name,
+        subIdentities: subAccounts,
+        display,
+        email,
+        image,
+        verified,
+        judgements: judgementKinds,
+        legal,
+        pgp,
+        riot,
+        twitter,
+        web,
+      };
+      return identity;
+    } else if (hasId.hasIdentity) {
+      const ident = await this.api.derive.accounts.identity(addr);
+      const {
+        display,
+        displayParent,
+        email,
+        image,
+        judgements,
+        legal,
+        other,
+        parent,
+        pgp,
+        riot,
+        twitter,
+        web,
+      } = ident;
+
+      const judgementKinds = [];
+      for (const judgement of judgements) {
+        const status = judgement[1];
+        if (status.isReasonable || status.isKnownGood) {
+          judgementKinds.push(status.toString());
+          verified = status.isReasonable || status.isKnownGood;
+          continue;
+        }
+      }
+
+      // Check to see if the address is a super-identity and has sub-identities
+      const subidentities = await this.api.query.identity.subsOf(addr);
+      if (subidentities[1].length > 0) {
+        // This account has sub-identities
+        for (const subaccountAddress of subidentities[1]) {
+          const identityQuery = await this.api.derive.accounts.identity(
+            subaccountAddress
+          );
+          const subAccount: { name: string; address: string } = {
+            name: identityQuery.display,
+            address: subaccountAddress.toString(),
+          };
+          subAccounts.push(subAccount);
+        }
+      }
+
+      identity = {
+        name: display,
+        address: addr,
+        verified,
+        subIdentities: subAccounts,
+        display,
+        email,
+        image,
+        judgements: judgementKinds,
+        legal,
+        pgp,
+        riot,
+        twitter,
+        web,
+      };
+      return identity;
+    }
   };
 
   getStashFromController = async (

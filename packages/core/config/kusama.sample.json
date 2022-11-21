@@ -7,7 +7,11 @@
     "historicalNominations": false,
     "apiEndpoints": [
       "wss://kusama-rpc.polkadot.io",
-      "wss://kusama.api.onfinality.io/public-ws"
+      "wss://kusama.api.onfinality.io/public-ws",
+      "wss://kusama-rpc.dwellir.com",
+      "wss://kusama.public.curie.radiumblock.xyz/ws",
+      "wss://public-rpc.pinknode.io/kusama",
+      "wss://1rpc.io/ksm"
     ],
     "bootstrap": true,
     "kusamaBootstrapEndpoint": "https://kusama.w3f.community",

@@ -1,11 +1,12 @@
 // Adds a new candidate from the configuration file data.
 import { Keyring } from "@polkadot/keyring";
 import logger from "../../logger";
-import { CandidateModel } from "../models";
+import { CandidateModel, IdentityModel } from "../models";
 import { NodeDetails } from "../index";
 import { fetchLocationInfo } from "../../util";
 import { getChainMetadata } from "./ChainMetadata";
 import { getIIT, getLocation, setLocation } from "./Location";
+import { Identity } from "../../types";
 
 // Adds a new candidate from the configuration file data.
 export const addCandidate = async (
@@ -189,15 +190,92 @@ export const setController = async (
   return true;
 };
 
-export const setIdentity = async (
+// Creates an Identity Record
+export const setIdentity = async (identity: Identity): Promise<boolean> => {
+  if (!identity || !identity?.name) return false;
+  const data = await IdentityModel.findOne({ name: identity.name });
+  if (!data) {
+    const ident = new IdentityModel({
+      name: identity.name,
+      address: identity.address,
+      verified: identity.verified,
+      subIdentities: identity.subIdentities,
+      display: identity.display,
+      email: identity.email,
+      image: identity.image,
+      judgements: identity.judgements,
+      legal: identity.legal,
+      pgp: identity.pgp,
+      riot: identity.riot,
+      twitter: identity.twitter,
+      web: identity.web,
+    });
+    await ident.save();
+    return true;
+  } else {
+    await IdentityModel.findOneAndUpdate(
+      {
+        name: identity.name,
+      },
+      {
+        address: identity.address,
+        verified: identity.verified,
+        subIdentities: identity.subIdentities,
+        display: identity.display,
+        email: identity.email,
+        image: identity.image,
+        judgements: identity.judgements,
+        legal: identity.legal,
+        pgp: identity.pgp,
+        riot: identity.riot,
+        twitter: identity.twitter,
+        web: identity.web,
+      }
+    );
+    return true;
+  }
+};
+
+// both create an `Identity` record, and add the identity to the candidate
+export const setCandidateIdentity = async (
   stash: string,
-  identity: { name: string; sub: string; verified: boolean }
+  identity: Identity
 ): Promise<boolean> => {
-  await CandidateModel.findOneAndUpdate(
-    { stash },
-    { identity: identity }
-  ).exec();
-  return true;
+  if (identity) {
+    let data;
+    data = await getIdentity(stash);
+    if (!data) {
+      await setIdentity(identity);
+      data = await getIdentity(stash);
+    }
+
+    await CandidateModel.findOneAndUpdate({ stash }, { identity: data }).exec();
+    return true;
+  }
+};
+
+export const getIdentity = async (address: string) => {
+  const superIdentity = await IdentityModel.findOne({ address: address });
+  if (!superIdentity) {
+    const identity = await IdentityModel.findOne({
+      "subIdentities.address": address,
+    });
+    return identity;
+  }
+  return superIdentity;
+};
+
+// Given an address, get all the other addresses that are a part of the identity
+export const getIdentityAddresses = async (address: string) => {
+  const identity = await getIdentity(address);
+  const addresses = [];
+  if (identity) {
+    addresses.push(identity.address);
+    for (const subIdentity of identity.subIdentities) {
+      addresses.push(subIdentity.address);
+    }
+  }
+  return addresses;
 };
 
 export const reportBestBlock = async (

@@ -5,11 +5,19 @@ export const erastatsLabel = { label: "EraStatsJob" };
 export const eraStatsJob = async (chaindata: ChainData) => {
   const start = Date.now();
 
-  logger.info(`Running era stats cron`, erastatsLabel);
-
   const currentSession = await chaindata.getSession();
   const currentEra = await chaindata.getCurrentEra();
   const validators = await chaindata.currentValidators();
+
+  // Try and store identities:
+  for (const validator of validators) {
+    const exists = await queries.getIdentity(validator);
+    if (!exists) {
+      // If an identity doesn't already exist, query and store it.
+      const identity = await chaindata.getFormattedIdentity(validator);
+      await queries.setIdentity(identity);
+    }
+  }
 
   await queries.setLatestValidatorSet(currentSession, currentEra, validators);
 
@@ -26,11 +34,11 @@ export const eraStatsJob = async (chaindata: ChainData) => {
   );
 
   const end = Date.now();
+  const executionTime = (end - start) / 1000;
 
-  logger.info(`Done. Took ${(end - start) / 1000} seconds`, erastatsLabel);
+  logger.info(`Done (${executionTime}s)`, erastatsLabel);
 };
 
 export const processEraStatsJob = async (job: any, chaindata: ChainData) => {
-  logger.info(`Processing Era Stats Job....`, erastatsLabel);
   await eraStatsJob(chaindata);
 };

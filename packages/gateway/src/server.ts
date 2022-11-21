@@ -66,7 +66,16 @@ export default class Server {
       this.config.redis.host,
       this.config.redis.port
     );
-    this.queues.push(releaseMonitorQueue, constraintsQueue, chaindataQueue);
+    const blockQueue = await otvWorker.queues.createBlockQueue(
+      this.config.redis.host,
+      this.config.redis.port
+    );
+    this.queues.push(
+      releaseMonitorQueue,
+      constraintsQueue,
+      chaindataQueue,
+      blockQueue
+    );
   }
 
   async start(): Promise<void> {

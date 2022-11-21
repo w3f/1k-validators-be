@@ -34,7 +34,7 @@ export const getLocations = async (address: string): Promise<any> => {
     .limit(1)
     .lean()
     .exec();
-  if (latestSession[0] && latestSession[0].session) {
+  if (latestSession[0]) {
     const locations = await LocationModel.find({
       address: address,
       session: latestSession[0].session,
@@ -140,17 +140,13 @@ export const setHeartbeatLocation = async (
   name: string,
   address: string, // Validator Stash Address
   addr: string,
-  port: number
+  port: number,
+  session: number
 ): Promise<any> => {
   // Try and find an existing record
   const data = await LocationModel.findOne({
     addr,
   }).lean();
-
-  const session = (await getLatestSession())?.session;
-  if (session && session == 0) {
-    return;
-  }
 
   // Location doesn't exist, fetch it
   if (!data) {
@@ -228,4 +224,17 @@ export const setHeartbeatLocation = async (
 
 export const getIIT = async (): Promise<any> => {
   return IITModel.findOne({}).lean().exec();
+};
+
+export const setIIT = async (accessToken: string): Promise<any> => {
+  const exists = await IITModel.findOne({ iit: accessToken }).exec();
+  if (!exists) {
+    const token = await new IITModel({ iit: accessToken });
+    await token.save();
+    return;
+  } else {
+    await IITModel.findOneAndUpdate({
+      iit: accessToken,
+    }).exec();
+  }
 };

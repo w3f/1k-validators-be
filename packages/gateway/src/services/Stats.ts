@@ -2,10 +2,11 @@ import { queries } from "@1kv/common";
 
 export const getLocationStats = async () => {
   const locationStats = await queries.getLatestLocationStats();
+  if (!locationStats) return;
   const sortedLocations = locationStats?.locations?.sort((a, b) => {
     return b.numberOfNodes - a.numberOfNodes;
   });
-  const sortedRegions = locationStats.regions.sort((a, b) => {
+  const sortedRegions = locationStats?.regions.sort((a, b) => {
     return b.numberOfNodes - a.numberOfNodes;
   });
   const sortedCountries = locationStats.countries.sort((a, b) => {
@@ -35,7 +36,7 @@ export const getSessionLocationStats = async (session) => {
   const sortedLocations = locationStats.locations.sort((a, b) => {
     return b.numberOfNodes - a.numberOfNodes;
   });
-  const sortedRegions = locationStats.regions.sort((a, b) => {
+  const sortedRegions = locationStats?.regions.sort((a, b) => {
     return b.numberOfNodes - a.numberOfNodes;
   });
   const sortedCountries = locationStats.countries.sort((a, b) => {

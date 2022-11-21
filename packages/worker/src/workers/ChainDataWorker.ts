@@ -13,8 +13,8 @@ export const createChainDataWorker = async (host, port, api: ApiHandler) => {
         host: host,
         port: port,
       },
-      concurrency: 50,
-      lockDuration: 300000,
+      concurrency: 6,
+      lockDuration: 3000000,
     }
   );
   return worker;

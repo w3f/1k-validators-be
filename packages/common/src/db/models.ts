@@ -53,13 +53,27 @@ export const DelayedTxSchema = new Schema({
 export const DelayedTxModel = mongoose.model("DelayedTx", DelayedTxSchema);
 
 export const Identity = new Schema({
-  // The Super Identity
   name: { type: String, index: true },
-  // The sub identity (if one exists)
-  sub: String,
-  // Whether or not the identity has been verified by a registrar
+  address: String,
   verified: Boolean,
+  subIdentities: [
+    {
+      name: String,
+      address: String,
+    },
+  ],
+  display: String,
+  email: String,
+  image: String,
+  judgements: [String],
+  legal: String,
+  pgp: String,
+  riot: String,
+  twitter: String,
+  web: String,
 });
+
+export const IdentityModel = mongoose.model("Identity", Identity);
 
 export const InvalidityReason = new Schema({
   valid: Boolean,
@@ -562,7 +576,7 @@ export const ValidatorScoreMetadataSchema = new Schema({
   rankWeight: Number,
   // Location Metadata
   locationStats: {
-    values: [Number],
+    values: [{ name: String, numberOfNodes: Number }],
     absoluteMin: Number,
     absoluteMax: Number,
     q10: Number,
@@ -575,7 +589,7 @@ export const ValidatorScoreMetadataSchema = new Schema({
   },
   locationWeight: Number,
   regionStats: {
-    values: [Number],
+    values: [{ name: String, numberOfNodes: Number }],
     absoluteMin: Number,
     absoluteMax: Number,
     q10: Number,
@@ -588,7 +602,7 @@ export const ValidatorScoreMetadataSchema = new Schema({
   },
   regionWeight: Number,
   countryStats: {
-    values: [Number],
+    values: [{ name: String, numberOfNodes: Number }],
     absoluteMin: Number,
     absoluteMax: Number,
     q10: Number,
@@ -601,7 +615,7 @@ export const ValidatorScoreMetadataSchema = new Schema({
   },
   countryWeight: Number,
   providerStats: {
-    values: [Number],
+    values: [{ name: String, numberOfNodes: Number }],
     absoluteMin: Number,
     absoluteMax: Number,
     q10: Number,
@@ -887,3 +901,19 @@ export const IIT = new Schema({
 });
 
 export const IITModel = mongoose.model("IIT", IIT);
+
+export const EraInfo = new Schema({
+  index: Number,
+  startBlock: Number,
+  endBlock: Number,
+});
+
+export const EraInfoModel = mongoose.model("EraInfo", EraInfo);
+
+export const Session = new Schema({
+  index: Number,
+  startBlock: Number,
+  endBlock: Number,
+});
+
+export const SessionModel = mongoose.model("Session", Session);

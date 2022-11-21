@@ -45,8 +45,7 @@ export const locationStatsJob = async (chaindata: ChainData) => {
         !totalNodes.some((validator) => validator.address == validatorAddress)
       ) {
         const locations = await queries.getLocations(validatorAddress);
-        const location =
-          locations?.length > 0 && locations[0] ? locations[0] : null;
+        const location = locations && locations[0] ? locations[0] : null;
         if (
           location &&
           location.city != "None" &&

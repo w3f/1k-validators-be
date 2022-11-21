@@ -123,6 +123,7 @@ export type ConfigSchema = {
     chains: string[];
     blacklistedProviders: string[];
     host: string;
+    ipinfoToken: string;
   };
   subscan: {
     baseV1Url: string;

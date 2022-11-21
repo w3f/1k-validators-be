@@ -58,6 +58,13 @@ export default class TelemetryClient {
       });
       return;
     } else {
+      // configure ipinfo
+      const iitExists = await queries.getIIT();
+      if (this.config.telemetry.ipinfoToken || !iitExists) {
+        await queries.setIIT(this.config.telemetry.ipinfoToken);
+      } else {
+        logger.warn(`ip info not enabled`, { label: "Telemetry" });
+      }
       return new Promise((resolve: any, reject: any) => {
         this.socket.onopen = () => {
           logger.info(`Connected to substrate-telemetry on host ${this.host}`, {
@@ -142,7 +149,7 @@ export default class TelemetryClient {
           MemNodes[parseInt(id)] = details;
           const name = details[0];
 
-          logger.warn(`node ${details[0]} with id: ${id} is  online`, {
+          logger.info(`node ${details[0]} with id: ${id} is  online`, {
             label: "Telemetry",
           });
 
@@ -206,9 +213,9 @@ export default class TelemetryClient {
             label: "Telemetry",
           });
           this.disconnectedNodes.set(name, now);
-          logger.warn(JSON.stringify([...this.disconnectedNodes.entries()]), {
-            label: "Telemetry",
-          });
+          // logger.warn(JSON.stringify([...this.disconnectedNodes.entries()]), {
+          //   label: "Telemetry",
+          // });
         }
         break;
       case TelemetryMessage.LocatedNode:

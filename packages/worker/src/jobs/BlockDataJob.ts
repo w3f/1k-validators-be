@@ -10,7 +10,7 @@ export const blockDataJob = async (chaindata: ChainData) => {
 
   logger.info(`Starting blockDataJob`, blockdataLabel);
   const latestBlock = await chaindata.getLatestBlock();
-  const threshold = 200;
+  const threshold = 20000;
   for (let i = latestBlock - threshold; i < latestBlock; i++) {
     await processBlock(chaindata, i);
   }

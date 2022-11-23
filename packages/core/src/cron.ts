@@ -908,18 +908,20 @@ export const startBlockDataJob = async (
     cronLabel
   );
 
-  let running = false;
+  // let running = false;
 
-  const blockCron = new CronJob(blockFrequency, async () => {
-    if (running) {
-      return;
-    }
-    running = true;
-    logger.info(`running block job....`, cronLabel);
+  // const blockCron = new CronJob(blockFrequency, async () => {
+  //   if (running) {
+  //     return;
+  //   }
+  //   running = true;
+  //   logger.info(`running block job....`, cronLabel);
+  //
+  //   // Run the job
+  //   await blockDataJob(chaindata);
+  //   running = false;
+  // });
+  // blockCron.start();
 
-    // Run the job
-    await blockDataJob(chaindata);
-    running = false;
-  });
-  blockCron.start();
+  await blockDataJob(chaindata);
 };

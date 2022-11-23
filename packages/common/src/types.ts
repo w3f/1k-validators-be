@@ -158,7 +158,7 @@ export type ReferendumVote = {
   conviction: string;
 };
 
-export type ConvictionVotingVote = {
+export type ConvictionVote = {
   // The particular governance track
   track: number;
   // The account that is voting

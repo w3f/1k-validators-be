@@ -10,10 +10,6 @@ export const setChainMetadata = async (networkPrefix: number): Promise<any> => {
       : "Local Testnet";
   const decimals = networkPrefix == 2 ? 12 : networkPrefix == 0 ? 10 : 12;
 
-  logger.info(
-    `(Db::setChainMetadata) Setting chain metadata: ${networkName} with ${decimals} decimals`
-  );
-
   const data = await ChainMetadataModel.findOne({ name: /.*/ }).lean();
   if (!data) {
     const chainMetadata = new ChainMetadataModel({

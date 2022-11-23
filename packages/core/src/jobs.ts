@@ -26,8 +26,6 @@ export const eraPointsJob = async (chaindata: ChainData) => {
   await otvWorker.jobs.eraPointsJob(chaindata);
 };
 
-// TODO:
-
 // Updates validator preferences for all validators
 export const validatorPrefJob = async (chaindata: ChainData) => {
   await otvWorker.jobs.validatorPrefJob(chaindata);
@@ -197,4 +195,8 @@ export const nominatorJob = async (chaindata: ChainData) => {
 
 export const delegationJob = async (chaindata: ChainData) => {
   await otvWorker.jobs.delegationJob(chaindata);
+};
+
+export const blockJob = async (chaindata: ChainData) => {
+  await otvWorker.jobs.blockDataJob(chaindata);
 };

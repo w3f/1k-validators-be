@@ -53,13 +53,27 @@ export const DelayedTxSchema = new Schema({
 export const DelayedTxModel = mongoose.model("DelayedTx", DelayedTxSchema);
 
 export const Identity = new Schema({
-  // The Super Identity
   name: { type: String, index: true },
-  // The sub identity (if one exists)
-  sub: String,
-  // Whether or not the identity has been verified by a registrar
+  address: String,
   verified: Boolean,
+  subIdentities: [
+    {
+      name: String,
+      address: String,
+    },
+  ],
+  display: String,
+  email: String,
+  image: String,
+  judgements: [String],
+  legal: String,
+  pgp: String,
+  riot: String,
+  twitter: String,
+  web: String,
 });
+
+export const IdentityModel = mongoose.model("Identity", Identity);
 
 export const InvalidityReason = new Schema({
   valid: Boolean,
@@ -79,6 +93,7 @@ export const InvalidityReason = new Schema({
       "UNCLAIMED_REWARDS",
       "BLOCKED",
       "KUSAMA_RANK",
+      "PROVIDER",
     ],
     default: "NEW",
   },
@@ -86,15 +101,39 @@ export const InvalidityReason = new Schema({
   updated: Number,
 });
 
+export const LatestSessionSchema = new Schema({
+  session: Number,
+  updated: Number,
+});
+
+export const LatestSessionModel = mongoose.model(
+  "LatestSession",
+  LatestSessionSchema
+);
+
+export const LatestValidatorSetSchema = new Schema({
+  session: Number,
+  era: Number,
+  validators: [String],
+});
+
+export const LatestValidatorSetModel = mongoose.model(
+  "LatestValidatorSet",
+  LatestValidatorSetSchema
+);
+
 export const LocationSchema = new Schema({
   name: String, // The Telemetry name of the node
+  address: String, // The Validator Address
   addr: String,
+  port: Number,
   city: String,
   region: String,
   country: String,
-  asn: String,
   provider: String,
   updated: Number,
+  session: Number,
+  source: String,
 });
 
 export const LocationModel = mongoose.model("Location", LocationSchema);
@@ -537,7 +576,7 @@ export const ValidatorScoreMetadataSchema = new Schema({
   rankWeight: Number,
   // Location Metadata
   locationStats: {
-    values: [Number],
+    values: [{ name: String, numberOfNodes: Number }],
     absoluteMin: Number,
     absoluteMax: Number,
     q10: Number,
@@ -550,7 +589,7 @@ export const ValidatorScoreMetadataSchema = new Schema({
   },
   locationWeight: Number,
   regionStats: {
-    values: [Number],
+    values: [{ name: String, numberOfNodes: Number }],
     absoluteMin: Number,
     absoluteMax: Number,
     q10: Number,
@@ -563,7 +602,7 @@ export const ValidatorScoreMetadataSchema = new Schema({
   },
   regionWeight: Number,
   countryStats: {
-    values: [Number],
+    values: [{ name: String, numberOfNodes: Number }],
     absoluteMin: Number,
     absoluteMax: Number,
     q10: Number,
@@ -576,7 +615,7 @@ export const ValidatorScoreMetadataSchema = new Schema({
   },
   countryWeight: Number,
   providerStats: {
-    values: [Number],
+    values: [{ name: String, numberOfNodes: Number }],
     absoluteMin: Number,
     absoluteMax: Number,
     q10: Number,
@@ -658,6 +697,8 @@ export const ReleaseModel = mongoose.model("Release", ReleaseSchema);
 
 // Stats on the where nodes are located.
 export const LocationStatsSchema = new Schema({
+  // The number of total nodes that were taken account of for this session
+  totalNodes: Number,
   // Session number the record was created at
   session: { type: Number, index: true },
   // The number of nodes for each location
@@ -682,13 +723,6 @@ export const LocationStatsSchema = new Schema({
     },
   ],
   countryVariance: Number,
-  asns: [
-    {
-      name: String,
-      numberOfNodes: Number,
-    },
-  ],
-  asnVariance: Number,
   providers: [
     {
       name: String,
@@ -867,3 +901,19 @@ export const IIT = new Schema({
 });
 
 export const IITModel = mongoose.model("IIT", IIT);
+
+export const EraInfo = new Schema({
+  index: Number,
+  startBlock: Number,
+  endBlock: Number,
+});
+
+export const EraInfoModel = mongoose.model("EraInfo", EraInfo);
+
+export const Session = new Schema({
+  index: Number,
+  startBlock: Number,
+  endBlock: Number,
+});
+
+export const SessionModel = mongoose.model("Session", Session);

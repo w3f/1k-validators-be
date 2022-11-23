@@ -94,7 +94,6 @@ export const setValidatorScore = async (
       randomness,
     }
   ).exec();
-  logger.info(`{Scored} score updated for ${address} for session ${session}`);
 };
 
 export const getValidatorScore = async (

@@ -1,5 +1,25 @@
 import { logger, queries, ChainData } from "@1kv/common";
 
+export const erapointsLabel = { label: "EraPointsJob" };
+
+// Gets and sets the total era points for a given era
+export const individualEraPointsJob = async (
+  chaindata: ChainData,
+  eraIndex: number
+) => {
+  const erapoints = await queries.getTotalEraPoints(eraIndex);
+
+  // If Era Points for the era exist, and are what the total should be, skip
+  if (!!erapoints && erapoints.totalEraPoints >= 70000 && erapoints.median) {
+    return;
+  } else {
+    const { era, total, validators } = await chaindata.getTotalEraPoints(
+      eraIndex
+    );
+    await queries.setTotalEraPoints(era, total, validators);
+  }
+};
+
 export const eraPointsJob = async (chaindata: ChainData) => {
   const start = Date.now();
 
@@ -8,36 +28,17 @@ export const eraPointsJob = async (chaindata: ChainData) => {
   //    - iterate through the previous 84 eras
   //    - if a record for era points for that era already exists, skip it
   //    - if a record doesn't exist, create it
-  logger.info(`{cron::EraPointsJob} setting era info`);
   const [activeEra, err] = await chaindata.getActiveEraIndex();
   for (let i = activeEra - 1; i > activeEra - 84 && i >= 0; i--) {
-    const erapoints = await queries.getTotalEraPoints(i);
-
-    if (!!erapoints && erapoints.totalEraPoints >= 70000 && erapoints.median) {
-      continue;
-    } else {
-      logger.info(
-        `{cron::EraPointsJob} era ${i} point data doesnt exist. Creating....`
-      );
-      const { era, total, validators } = await chaindata.getTotalEraPoints(i);
-      await queries.setTotalEraPoints(era, total, validators);
-    }
+    await individualEraPointsJob(chaindata, i);
   }
-  const { era, total, validators } = await chaindata.getTotalEraPoints(
-    activeEra
-  );
-  await queries.setTotalEraPoints(era, total, validators);
 
   const end = Date.now();
+  const executionTime = (end - start) / 1000;
 
-  logger.info(
-    `{cron::EraPointsJob::ExecutionTime} started at ${new Date(
-      start
-    ).toString()} Done. Took ${(end - start) / 1000} seconds`
-  );
+  logger.info(`Done. (${executionTime}s)`, erapointsLabel);
 };
 
 export const processEraPointsJob = async (job: any, chaindata: ChainData) => {
-  logger.info(`Processing Era Points Job....`);
   await eraPointsJob(chaindata);
 };

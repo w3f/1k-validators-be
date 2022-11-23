@@ -66,12 +66,21 @@ export default class Server {
       this.config.redis.host,
       this.config.redis.port
     );
-    this.queues.push(releaseMonitorQueue, constraintsQueue, chaindataQueue);
+    const blockQueue = await otvWorker.queues.createBlockQueue(
+      this.config.redis.host,
+      this.config.redis.port
+    );
+    this.queues.push(
+      releaseMonitorQueue,
+      constraintsQueue,
+      chaindataQueue,
+      blockQueue
+    );
   }
 
   async start(): Promise<void> {
     if (!this.enable) {
-      logger.info(`Server not enabled;`);
+      logger.info(`Server not enabled`, { label: "Gateway" });
     } else {
       if (this.config?.redis?.host && this.config?.redis?.port) {
         await this.addQueues();
@@ -86,7 +95,7 @@ export default class Server {
         serverAdapter.setBasePath("/bull");
         this.app.use(serverAdapter.registerPlugin());
       }
-      logger.info(`Now listening on ${this.port}`);
+      logger.info(`Now listening on ${this.port}`, { label: "Gateway" });
       const server = this.app.listen(this.port);
     }
   }

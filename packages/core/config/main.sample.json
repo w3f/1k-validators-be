@@ -13,7 +13,10 @@
       "ws://172.28.1.4:9947",
       "ws://172.28.1.5:9948",
       "ws://172.28.1.6:9949"
-    ]
+    ],
+    "bootstrap": false,
+    "kusamaBootstrapEndpoint": "https://kusama.w3f.community",
+    "polkadotBootstrapEndpoint": "https://polkadot.w3f.community"
   },
   "constraints": {
     "skipConnectionTime": true,
@@ -21,7 +24,7 @@
     "skipStakedDestination": true,
     "skipClientUpgrade": true,
     "skipUnclaimed": true,
-    "minSelfStake": 100000000000,
+    "minSelfStake": 100000,
     "commission": 150000000,
     "unclaimedEraThreshold": 4
   },
@@ -31,9 +34,9 @@
   "cron": {
     "monitor": "0 */15 * * * *",
     "clearOffline": "0 0 0 * * 0",
-    "validity": "0 0-59/5 * * * *",
+    "validity": "0 0-59/1 * * * *",
     "execution": "0 0-59/1 * * * *",
-    "scorekeeper": "0 0-59/3 * * * *",
+    "scorekeeper": "0 0-59/1 * * * *",
     "rewardClaiming": "0 0-59/10 * * * *",
     "cancel": "0 0-59/1 * * * *",
     "stale": "0 0-59/1 * * * *",
@@ -113,6 +116,10 @@
     "enable": true,
     "port": 3300
   },
+  "redis": {
+    "host": "redis",
+    "port": 6379
+  },
   "telemetry": {
     "blacklistedProviders": [
       "Hetzner Online GmbH",
@@ -121,7 +128,7 @@
     ],
     "enable": true,
     "chains": [
-      "0x60d398b81708a71e17fa66a1427568205a817671f31d14dc01a35123c35557e2"
+      "0x5d0651b626322800236cde59a5036d5d7ff241d7520d6646168784965a4e8bae"
     ],
     "host": "ws://172.28.1.10:8000/feed"
   },

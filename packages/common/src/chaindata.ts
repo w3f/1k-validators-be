@@ -1,5 +1,4 @@
 import { ApiPromise } from "@polkadot/api";
-import "@polkadot/api-augment";
 import ApiHandler from "./ApiHandler";
 
 import {
@@ -9,8 +8,26 @@ import {
 } from "./constants";
 import { getChainMetadata, getEraPoints } from "./db";
 import logger from "./logger";
-import { BooleanResult, NumberResult, StringResult } from "./types";
-import { hex2a, toDecimals } from "./util";
+import {
+  AvailabilityCoreState,
+  BooleanResult,
+  Identity,
+  NumberResult,
+  StringResult,
+  ConvictionVotingVote,
+  ConvictionDelegation,
+} from "./types";
+import { getParaValIndex, hex2a, toDecimals } from "./util";
+import type {
+  Hash,
+  ReferendumInfoTo239,
+  Tally,
+} from "@polkadot/types/interfaces";
+import type {
+  PalletDemocracyReferendumInfo,
+  PalletDemocracyReferendumStatus,
+  PalletDemocracyVoteVoting,
+} from "@polkadot/types/lookup";
 
 type JSON = any;
 
@@ -31,6 +48,120 @@ export class ChainData {
     const denom =
       chainType.toString() == "Polkadot" ? 10000000000 : 1000000000000;
     return denom;
+  };
+
+  getApiAt = async (blockNumber: number): Promise<any> => {
+    const hash = await this.getBlockHash(blockNumber);
+    return await this.api.at(hash);
+  };
+
+  getBlockHash = async (blockNumber: number): Promise<string> => {
+    return (await this.api.rpc.chain.getBlockHash(blockNumber)).toString();
+  };
+
+  getBlock = async (blockNumber): Promise<any> => {
+    const hash = await this.getBlockHash(blockNumber);
+    return await this.api.rpc.chain.getBlock(hash);
+  };
+
+  // Given a block, return it's corresponding type (Primary, Secondary, Secondary VRF)
+  getBlockType = (block: any): string => {
+    const digest = block.block.header.digest;
+
+    let type = "";
+    if (digest.logs) {
+      const blockType = digest?.logs[0]?.asPreRuntime[1]
+        ?.toString()
+        .substring(0, 4);
+
+      switch (blockType) {
+        case "0x01":
+          type = "Primary";
+          break;
+        case "0x02":
+          type = "Secondary";
+          break;
+        case "0x03":
+          type = "Secondary VRF";
+          break;
+        default:
+          break;
+      }
+    } else {
+      logger.info(digest);
+    }
+    return type;
+  };
+
+  getSessionAt = async (apiAt: ApiPromise) => {
+    const session = (await apiAt.query.session.currentIndex()).toString();
+    return parseInt(session.replace(/,/g, ""));
+  };
+
+  getEraAt = async (apiAt: ApiPromise) => {
+    return ((await apiAt.query.staking.activeEra()).toJSON() as any)
+      .index as number;
+  };
+
+  getValidatorsAt = async (apiAt: ApiPromise): Promise<any> => {
+    return (await apiAt.query.session.validators()).toHuman();
+  };
+
+  getValidatorGroupsAt = async (apiAt: ApiPromise): Promise<any> => {
+    // The list of validator groups
+    const validatorGroups = await apiAt.query.paraScheduler.validatorGroups();
+    return validatorGroups.toHuman();
+  };
+
+  getParaIdsAt = async (apiAt: ApiPromise) => {
+    // The list of parachain id's
+    const paraIds: any = (await apiAt.query.paras.parachains()).toHuman();
+    return paraIds;
+  };
+
+  getParaValIndicesAt = async (prevApiAt: ApiPromise) => {
+    // There is an offset by one - need to query shared validator indices for the block before
+    // @ts-ignore
+    const paraValIndices = (
+      await prevApiAt.query.parasShared.activeValidatorIndices()
+    )
+      .toHuman()
+      // @ts-ignore
+      .map((i) => {
+        return Number(i);
+      });
+    return paraValIndices;
+  };
+
+  getAvailabilityCoreStatesAt = async (
+    apiAt: ApiPromise,
+    validatorGroups: any,
+    validators: any,
+    paraValIndices: any,
+    blockNum: number
+  ) => {
+    // The scheduled availability cores and which validator groups are assigned to which parachains
+    const scheduledAvailabilityCores = (
+      await apiAt.query.paraScheduler.scheduled()
+    ).toHuman() as any;
+
+    const availabilityCoreStates: AvailabilityCoreState[] =
+      scheduledAvailabilityCores.map((availabilityCore: any) => {
+        const validatorGroup = validatorGroups[availabilityCore.groupIdx].map(
+          (idx: number) => {
+            return getParaValIndex(idx, validators, paraValIndices);
+          }
+        );
+        return {
+          blockNumber: blockNum,
+          core: parseInt(availabilityCore.core),
+          paraId: parseInt(availabilityCore.paraId.replace(/,/g, "")),
+          kind: availabilityCore.kind,
+          groupIdx: parseInt(availabilityCore.groupIdx),
+          validators: validatorGroup,
+        };
+      });
+    return availabilityCoreStates;
   };
 
   // Gets the active era index
@@ -178,7 +309,7 @@ export class ChainData {
         // @ts-ignore
         const bondedAmount = bonded?.active ? bonded?.active / denom : 0;
         // @ts-ignore
-        const targets = value.toHuman().targets;
+        const targets = value?.toHuman()?.targets;
         return {
           address: address.toString(),
           bonded: bondedAmount,
@@ -322,8 +453,10 @@ export class ChainData {
 
     let testBlockNumber =
       latestBlock.block.header.number.toNumber() - approxBlocksAgo;
-    while (true) {
-      const blockHash = await this.api.rpc.chain.getBlockHash(testBlockNumber);
+    while (true && testBlockNumber > 0) {
+      const blockHash = await this.api.rpc.chain.getBlockHash(
+        parseInt(String(testBlockNumber))
+      );
       const testEra = await this.api.query.staking.activeEra.at(blockHash);
       if (testEra.isNone) {
         logger.info(`Test era is none`);
@@ -456,35 +589,137 @@ export class ChainData {
       return;
     }
 
-    let identity, verified, sub;
-    identity = await this.api.query.identity.identityOf(addr);
-    if (!identity.isSome) {
-      identity = await this.api.query.identity.superOf(addr);
-      if (!identity.isSome) return { name: addr, verified: false, sub: null };
+    let identity: Identity, verified, sub;
 
-      const subRaw = identity.toJSON()[1].raw;
-      if (subRaw && subRaw.substring(0, 2) === "0x") {
-        sub = hex2a(subRaw.substring(2));
-      } else {
-        sub = subRaw;
+    let superAccount;
+    const subAccounts: { name: string; address: string }[] = [];
+    const hasId = await this.api.derive.accounts.hasIdentity(addr);
+
+    // The address is a sub identity
+    if (hasId.hasIdentity && hasId.parentId) {
+      const parentAddress = hasId.parentId;
+      // the address is a subidentity, query the superIdentity
+      const superIdentity = await this.api.derive.accounts.identity(
+        parentAddress
+      );
+      superAccount = {
+        name: superIdentity.display,
+        address: parentAddress,
+      };
+      const {
+        display,
+        displayParent,
+        email,
+        image,
+        judgements,
+        legal,
+        other,
+        parent,
+        pgp,
+        riot,
+        twitter,
+        web,
+      } = superIdentity;
+      const subs = await this.api.query.identity.subsOf(parentAddress);
+
+      // Iterate through all the sub accounts
+      for (const subaccountAddress of subs[1]) {
+        const identityQuery = await this.api.derive.accounts.identity(
+          subaccountAddress
+        );
+        const subAccount: { name: string; address: string } = {
+          name: identityQuery.display,
+          address: subaccountAddress.toString(),
+        };
+        subAccounts.push(subAccount);
       }
-      const superAddress = identity.toJSON()[0];
-      identity = await this.api.query.identity.identityOf(superAddress);
-    }
 
-    const raw = identity.toJSON().info.display.raw;
-    const { judgements } = identity.unwrap();
-    for (const judgement of judgements) {
-      const status = judgement[1];
-      if (status.isReasonable || status.isKnownGood) {
-        verified = status.isReasonable || status.isKnownGood;
-        continue;
+      const judgementKinds = [];
+      for (const judgement of judgements) {
+        const status = judgement[1];
+        if (status.isReasonable || status.isKnownGood) {
+          judgementKinds.push(status.toString());
+          verified = status.isReasonable || status.isKnownGood;
+          continue;
+        }
       }
-    }
 
-    if (raw && raw.substring(0, 2) === "0x") {
-      return { name: hex2a(raw.substring(2)), verified: verified, sub: sub };
-    } else return { name: raw, verified: verified, sub: sub };
+      identity = {
+        address: superAccount.address,
+        name: superAccount.name,
+        subIdentities: subAccounts,
+        display,
+        email,
+        image,
+        verified,
+        judgements: judgementKinds,
+        legal,
+        pgp,
+        riot,
+        twitter,
+        web,
+      };
+      return identity;
+    } else if (hasId.hasIdentity) {
+      const ident = await this.api.derive.accounts.identity(addr);
+      const {
+        display,
+        displayParent,
+        email,
+        image,
+        judgements,
+        legal,
+        other,
+        parent,
+        pgp,
+        riot,
+        twitter,
+        web,
+      } = ident;
+
+      const judgementKinds = [];
+      for (const judgement of judgements) {
+        const status = judgement[1];
+        if (status.isReasonable || status.isKnownGood) {
+          judgementKinds.push(status.toString());
+          verified = status.isReasonable || status.isKnownGood;
+          continue;
+        }
+      }
+
+      // Check to see if the address is a super-identity and has sub-identities
+      const subidentities = await this.api.query.identity.subsOf(addr);
+      if (subidentities[1].length > 0) {
+        // This account has sub-identities
+        for (const subaccountAddress of subidentities[1]) {
+          const identityQuery = await this.api.derive.accounts.identity(
+            subaccountAddress
+          );
+          const subAccount: { name: string; address: string } = {
+            name: identityQuery.display,
+            address: subaccountAddress.toString(),
+          };
+          subAccounts.push(subAccount);
+        }
+      }
+
+      identity = {
+        name: display,
+        address: addr,
+        verified,
+        subIdentities: subAccounts,
+        display,
+        email,
+        image,
+        judgements: judgementKinds,
+        legal,
+        pgp,
+        riot,
+        twitter,
+        web,
+      };
+      return identity;
+    }
   };
 
   getStashFromController = async (
@@ -860,6 +1095,53 @@ export class ChainData {
     };
   };
 
+  // Legacy Referendum Info
+  // getRerendumInfo = async (referendumIndex: number) => {
+  //   if (!this.api.isConnected) {
+  //     logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
+  //     return;
+  //   }
+  //   const referendumInfo = await this.api.query.democracy.referendumInfoOf(
+  //     referendumIndex
+  //   );
+  //
+  //   const referendum = await this.api.query.democracy.referendumInfoOf(248);
+  //   const isFinished = referendum.unwrap().isFinished;
+  //   const isOngoing = referendum.unwrap().isOngoing;
+  //   if (isFinished) {
+  //     const { approved, end } = referendum.unwrap().asFinished;
+  //   } else if (isOngoing) {
+  //     const asOngoing = referendum.unwrap().asOngoing;
+  //     const {
+  //       end,
+  //       proposal,
+  //       threshold,
+  //       delay,
+  //       tally: { ayes, nays, turnout },
+  //     } = asOngoing;
+  //
+  //     const isLegacy = proposal.isLegacy;
+  //     if (isLegacy) {
+  //       const { hash_: proposalHash } = proposal.asLegacy;
+  //       console.log(proposalHash);
+  //     }
+  //
+  //     const proposalHash =
+  //       (asOngoing as PalletDemocracyReferendumStatus).proposal ||
+  //       (asOngoing as unknown as { proposalHash: Hash }).proposalHash;
+  //
+  //     const status = {
+  //       end,
+  //       threshold,
+  //       delay,
+  //     };
+  //
+  //     const preimage = await this.api.query.democracy.preimages(proposalHash);
+  //     const { data, provider, deposit, since, expiry } =
+  //       preimage.unwrap().asAvailable;
+  //   }
+  // };
+
   // Returns the response from the derive referenda query
   getDerivedReferenda = async () => {
     if (!this.api.isConnected) {
@@ -926,6 +1208,181 @@ export class ChainData {
     const referendaQuery = await this.api.derive.democracy.referendums();
 
     return referendaQuery;
+  };
+
+  // OpenGov Conviction Voting
+  getConvictionVoting = async () => {
+    const allVotes: ConvictionVotingVote[] = [];
+    const allDelegations: ConvictionDelegation[] = [];
+    // Query the keys and storage of all the entries of `votingFor`
+    // These are all the accounts voting, for which tracks, for which referenda
+    // And whether they are delegating or not.
+
+    const votingFor = await this.api.query.convictionVoting.votingFor.entries();
+    for (const [key, entry] of votingFor) {
+      // Each of these is the votingFor for an account for a given governance track
+      // @ts-ignore
+      const [address, track] = key.toHuman();
+
+      // For each track, an account is either voting themselves, or delegating to another account
+
+      // The account is voting themselves
+      // @ts-ignore
+      if (entry.isCasting) {
+        // For each given track, these are the invididual votes for that track,
+        //     as well as the total delegation amounts for that particular track
+        // @ts-ignore
+        const { votes, delegations } = entry.asCasting;
+
+        // The total delegation amounts.
+        //     delegationVotes - the _total_ amount of tokens applied in voting. This takes the conviction into account
+        //     delegationCapital - the base level of tokens delegated to this address
+        const { votes: delegationVotes, capital: delegationCapital } =
+          delegations;
+
+        // The list of votes for that track
+        for (const referendumVote of votes) {
+          // The vote for each referendum - this is the referendum index,the conviction, the vote type (aye,nay), and the balance
+          const [referendumIndex, voteType] = referendumVote;
+          const { vote: refVote, balance } = voteType.asStandard;
+          const { conviction, vote: voteDirection } = refVote.toHuman();
+
+          // The formatted vote
+          const v: ConvictionVotingVote = {
+            // The particular governance track
+            track: Number(track.toString()),
+            // The account that is voting
+            address: address.toString(),
+            // The index of the referendum
+            referendumIndex: Number(referendumIndex.toString()),
+            // The conviction being voted with, ie `None`, `Locked1x`, `Locked5x`, etc
+            conviction: conviction.toString(),
+            // The balance they are voting with themselves, sans delegated balance
+            balance: Number(balance.toJSON()),
+            // The total amount of tokens that were delegated to them (including conviction)
+            delegatedConvictionBalance: Number(delegationVotes.toString()),
+            // the total amount of tokens that were delegated to them (without conviction)
+            delegatedBalance: Number(delegationCapital.toString()),
+            // The vote type, either 'aye', or 'nay'
+            voteDirection: voteDirection.toString(),
+            // Whether the person is voting themselves or delegating
+            voteType: "Casting",
+            // Who the person is delegating to
+            delegatedTo: null,
+          };
+          allVotes.push(v);
+        }
+        //console.log(delegationCapital)
+        // @ts-ignore
+      } else if (entry.isDelegating) {
+        // The address is delegating to another address for this particular track
+
+        const {
+          balance,
+          target,
+          conviction,
+          delegations: { votes: delegationVotes, capital: delegationCapital },
+          prior,
+          // @ts-ignore
+        } = entry.asDelegating;
+        const delegation: ConvictionDelegation = {
+          track: track,
+          address: address.toString(),
+          target: target.toString(),
+          balance: balance.toString(),
+          conviction: conviction.toString(),
+          // The total amount of tokens that were delegated to them (including conviction)
+          delegatedConvictionBalance: delegationVotes.toString(),
+          // the total amount of tokens that were delegated to them (without conviction)
+          delegatedBalance: delegationCapital.toString(),
+          prior: prior,
+        };
+        allDelegations.push(delegation);
+      }
+    }
+
+    // Create a vote entry for everyone that is delegating
+    for (const delegation of allDelegations) {
+      // Find the vote of the person they are delegating to
+      const v = allVotes.filter((vote) => {
+        return (
+          vote.address == delegation.target && vote.track == delegation.track
+        );
+      });
+
+      // There is a vote from the delegation, add it to the list of total votes
+      if (v.length == 1) {
+        const delegatedVote: ConvictionVotingVote = {
+          // The particular governance track
+          track: v[0].track,
+          // The account that is voting
+          address: delegation.address,
+          // The index of the referendum
+          referendumIndex: v[0].referendumIndex,
+          // The conviction being voted with, ie `None`, `Locked1x`, `Locked5x`, etc
+          conviction: v[0].conviction,
+          // The balance they are voting with themselves, sans delegated balance
+          balance: delegation.balance,
+          // The total amount of tokens that were delegated to them (including conviction)
+          delegatedConvictionBalance: delegation.delegatedConvictionBalance,
+          // the total amount of tokens that were delegated to them (without conviction)
+          delegatedBalance: delegation.delegatedBalance,
+          // The vote type, either 'aye', or 'nay'
+          voteDirection: v[0].voteDirection,
+          // Whether the person is voting themselves or delegating
+          voteType: "Delegating",
+          // Who the person is delegating to
+          delegatedTo: v[0].address,
+        };
+        allVotes.push(delegatedVote);
+      } else if (v.length == 0) {
+        // the person they're delegating to isn't voting themselves, they are also delegating, find the top level vote
+        const d = allDelegations.filter((del) => {
+          return del.address == delegation.target;
+        });
+        // The person they are delegating to's delegation
+        if (d.length > 0) {
+          const { address: dAddress, target: dTarget, track: dTrack } = d[0];
+
+          // Go through all votes and find any with that target for the track
+          const dVotes = allVotes.filter((dVote) => {
+            return dVote.address == dTarget && dVote.track == dTrack;
+          });
+          if (dVotes.length > 0) {
+            const delegatedVote: ConvictionVotingVote = {
+              // The particular governance track
+              track: dVotes[0].track,
+              // The account that is voting
+              address: delegation.address,
+              // The index of the referendum
+              referendumIndex: dVotes[0].referendumIndex,
+              // The conviction being voted with, ie `None`, `Locked1x`, `Locked5x`, etc
+              conviction: dVotes[0].conviction,
+              // The balance they are voting with themselves, sans delegated balance
+              balance: delegation.balance,
+              // The total amount of tokens that were delegated to them (including conviction)
+              delegatedConvictionBalance: delegation.delegatedConvictionBalance,
+              // the total amount of tokens that were delegated to them (without conviction)
+              delegatedBalance: delegation.delegatedBalance,
+              // The vote type, either 'aye', or 'nay'
+              voteDirection: dVotes[0].voteDirection,
+              // Whether the person is voting themselves or delegating
+              voteType: "Delegating",
+              // Who the person is delegating to that actually voted
+              delegatedTo: dVotes[0].address,
+            };
+            allVotes.push(delegatedVote);
+          }
+        } else {
+          // There either isn't any votes, or there might be another top level lookup
+        }
+      }
+    }
+    const convictionVoting = {
+      votes: allVotes,
+      delegations: allDelegations,
+    };
+    return convictionVoting;
   };
 
   getDelegators = async () => {

@@ -42,8 +42,8 @@ export const KUSAMA_APPROX_ERA_LENGTH_IN_BLOCKS = 3600;
 /// On Polkadot eras are 24 hours with 6 second blocks.
 export const POLKADOT_APPROX_ERA_LENGTH_IN_BLOCKS = 14400;
 
-/// On a Local Testnet eras are 3 minutes with 3 second blocks.
-export const TESTNET_APPROX_ERA_LENGTH_IN_BLOCKS = 60;
+/// On a Local Testnet eras are 2 minutes with 3 second blocks.
+export const TESTNET_APPROX_ERA_LENGTH_IN_BLOCKS = 40;
 
 // The buffer % we want to remain free in an account - 0.2%
 export const BALANCE_BUFFER_PERCENT = 0.002;
@@ -116,10 +116,10 @@ export const STALE_CRON = "0 0-59/45 * * * *";
 export const SCORE_CRON = "0 */2 * * * *";
 
 // Era Stats Cron Job. This runs every 5 minutes by default
-export const ERA_STATS_CRON = "0 0-59/35 * * * *";
+export const ERA_STATS_CRON = "0 0-59/3 * * * *";
 
 // Location Stats Cron Job. This runs every 15 minutes by default
-export const LOCATION_STATS_CRON = "0 0-59/15 * * * *";
+export const LOCATION_STATS_CRON = "0 0-59/3 * * * *";
 
 // Chain Querying Cron Jobs:
 
@@ -142,19 +142,22 @@ export const VALIDATOR_PREF_CRON = "0 0-59/15 * * * *";
 // Sesion Key Cron Job. This runs every 45 minutes by default
 export const SESSION_KEY_CRON = "0 0-59/45 * * * *";
 
-// Council Cron Job. This runs ever 15 minutes by default
+// Council Cron Job. This runs every 15 minutes by default
 export const COUNCIL_CRON = "0 0-59/25 * * * *";
 
-// Subscan Cron Job. This runs ever 10 minutes by default
+// Subscan Cron Job. This runs every 10 minutes by default
 export const SUBSCAN_CRON = "0 0-59/10 * * * *";
 
-// Democracy Cron Job. This runs ever 15 minutes by default
+// Democracy Cron Job. This runs every 15 minutes by default
 export const DEMOCRACY_CRON = "0 0-59/17 * * * *";
 
-// Nominator Cron Job. This runs ever 15 minutes by default
+// Nominator Cron Job. This runs every 15 minutes by default
 export const NOMINATOR_CRON = "0 0-59/17 * * * *";
 
-// Delegation Cron Job. This runs ever 20 minutes by default
+// Delegation Cron Job. This runs every 20 minutes by default
 export const DELEGATION_CRON = "0 0-59/20 * * * *";
+
+// Delegation Cron Job. This runs every 1 minute by default
+export const BLOCK_CRON = "0 0-59/1 * * * *";
 
 export const LOCATION_URL = "https://ipinfo.io/";

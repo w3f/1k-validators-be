@@ -32,10 +32,11 @@ const catchAndQuit = async (fn: any) => {
 
 const start = async (cmd: { config: string }) => {
   const config = Config.loadConfigDir(cmd.config);
+  const winstonLabel = { label: "start" };
 
-  logger.info(`{Core:Start} Starting the backend services. ${version}`);
+  logger.info(`Starting the backend services. ${version}`, winstonLabel);
 
-  logger.info(`{Start} Network prefix: ${config.global.networkPrefix}`);
+  logger.info(`Network prefix: ${config.global.networkPrefix}`, winstonLabel);
 
   // Create the API handler.
   const endpoints =
@@ -47,11 +48,11 @@ const start = async (cmd: { config: string }) => {
   const handler = await ApiHandler.create(endpoints);
 
   // Create the Database.
-  logger.info(`Creating DB Connection`);
+  logger.info(`Creating DB Connection`, winstonLabel);
   const db = await Db.create(config.db.mongo.uri);
 
   // Start the API server.
-  logger.info(`Creating Server`);
+  logger.info(`Creating Server`, winstonLabel);
   const server = new Server(config);
   await server.start();
 
@@ -60,40 +61,40 @@ const start = async (cmd: { config: string }) => {
   // If the chain is a test chain, init some test chain conditions
   if (config.global.networkPrefix === 3 && !chainMetadata) {
     logger.info(
-      `{Start::testSetup} chain index is ${config.global.networkPrefix}, starting init script...`
+      `chain index is ${config.global.networkPrefix}, starting init script...`,
+      winstonLabel
     );
     await startTestSetup();
     await Util.sleep(1500);
     logger.info(
-      `{Start::testSetup} init script done ----------------------------------------------------`
+      `init script done ----------------------------------------------------`,
+      winstonLabel
     );
     await Util.sleep(15000);
   }
 
   await queries.setChainMetadata(config.global.networkPrefix);
 
-  logger.info(`{Start} removing old candidate fields.....`);
+  logger.info(`removing old candidate fields.....`, winstonLabel);
   // Delete the old candidate fields.
   await queries.deleteOldCandidateFields();
-  logger.info(`{Start} old candidate fields removed.`);
+  logger.info(`old candidate fields removed.`, winstonLabel);
 
   // Clear node refs and delete old fields from all nodes before starting new
   // telemetry client.
   const allNodes = await queries.allNodes();
-  logger.info(`{Start} clearing old info from ${allNodes.length} nodes..`);
+
   for (const [index, node] of allNodes.entries()) {
     const { name } = node;
     await queries.deleteOldFieldFrom(name);
     await queries.clearNodeRefsFrom(name);
-    logger.info(
-      `{Start} info cleared for ${name} [${index}/${allNodes.length}]`
-    );
   }
+  logger.info(`cleared old info for ${allNodes.length} nodes.`, winstonLabel);
 
   // Start the telemetry client.
   const telemetry = new TelemetryClient(config);
   await telemetry.start();
-  logger.info(`{Start} telemetry client started.`);
+  logger.info(`telemetry client started.`, winstonLabel);
 
   // Create the matrix bot if enabled.
   let maybeBot: any = false;
@@ -105,7 +106,7 @@ const start = async (cmd: { config: string }) => {
       `<a href="https://github.com/w3f/1k-validators-be">Backend services</a> (re)-started! Version: ${version}`
     );
   }
-  logger.info(`{Start} matrix client started.`);
+  logger.info(`matrix client started.`, winstonLabel);
 
   // Buffer some time for set up.
   await Util.sleep(1500);
@@ -118,18 +119,19 @@ const start = async (cmd: { config: string }) => {
     await scorekeeper.addNominatorGroup(nominatorGroup);
   }
 
-  if (config.scorekeeper.claimer) {
-    logger.info(`Claimer in config. Adding to scorekeeper`);
-    // Setup claimer in the scorekeeper
-    await scorekeeper.addClaimer(config.scorekeeper.claimer);
-  }
+  // if (config.scorekeeper.claimer) {
+  //   logger.info(`Claimer in config. Adding to scorekeeper`, winstonLabel);
+  //   // Setup claimer in the scorekeeper
+  //   await scorekeeper.addClaimer(config.scorekeeper.claimer);
+  // }
 
   const curControllers = scorekeeper.getAllNominatorControllers();
   await queries.removeStaleNominators(curControllers);
 
   // Wipe the candidates on every start-up and re-add the ones in config.
   logger.info(
-    "{Start} Wiping old candidates data and initializing latest candidates from config."
+    "Wiping old candidates data and initializing latest candidates from config.",
+    winstonLabel
   );
   await queries.clearCandidates();
   if (config.scorekeeper.candidates.length) {

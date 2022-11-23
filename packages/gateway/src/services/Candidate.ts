@@ -90,6 +90,46 @@ export const getValidCandidates = async (): Promise<any> => {
   return validCandidates;
 };
 
+export const getInvalidCandidates = async (): Promise<any> => {
+  let invalidCandidates = await queries.invalidCandidates();
+  invalidCandidates = await Promise.all(
+    invalidCandidates.map(async (candidate) => {
+      const score = await queries.getLatestValidatorScore(candidate.stash);
+      return {
+        discoveredAt: candidate.discoveredAt,
+        nominatedAt: candidate.nominatedAt,
+        offlineSince: candidate.offlineSince,
+        offlineAccumulated: candidate.offlineAccumulated,
+        rank: candidate.rank,
+        faults: candidate.faults,
+        invalidityReasons: candidate.invalidityReasons,
+        unclaimedEras: candidate.unclaimedEras,
+        inclusion: candidate.inclusion,
+        name: candidate.name,
+        stash: candidate.stash,
+        kusamaStash: candidate.kusamaStash,
+        commission: candidate.commission,
+        identity: candidate.identity,
+        active: candidate.active,
+        valid: candidate.valid,
+        validity: candidate.invalidity,
+        score: score,
+        total: score && score.total ? score.total : 0,
+        location: candidate.location,
+        provider: candidate.infrastructureLocation?.provider
+          ? candidate.infrastructureLocation?.provider
+          : "No Provider",
+        councilStake: candidate.councilStake,
+        councilVotes: candidate.councilVotes,
+        democracyVoteCount: candidate.democracyVoteCount,
+        democracyVotes: candidate.democracyVotes,
+        matrix: candidate.matrix,
+      };
+    })
+  );
+  return invalidCandidates;
+};
+
 export const getCandidates = async (): Promise<any> => {
   let allCandidates = await queries.allCandidates();
   allCandidates = await Promise.all(

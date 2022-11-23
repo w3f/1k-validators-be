@@ -1,10 +1,12 @@
 import { queries, logger } from "@1kv/common";
 import { Octokit } from "@octokit/rest";
 
+export const monitorLabel = { label: "Monitor" };
+
 export const getLatestTaggedRelease = async () => {
   const start = Date.now();
 
-  logger.info(`(cron::Monitor::start) Running Monitor job`);
+  logger.info(`Running Monitor job`, monitorLabel);
 
   let latestRelease, latestTaggedRelease;
   const ghApi = new Octokit();
@@ -15,9 +17,7 @@ export const getLatestTaggedRelease = async () => {
       repo: "polkadot",
     });
   } catch {
-    logger.info(
-      "{Monitor::getLatestTaggedRelease} Could not get latest release."
-    );
+    logger.warn("Could not get latest release.", monitorLabel);
   }
   if (!latestRelease) return;
   const { tag_name, published_at } = latestRelease.data;
@@ -26,7 +26,7 @@ export const getLatestTaggedRelease = async () => {
   await queries.setRelease(tag_name, publishedAt);
 
   if (latestTaggedRelease && tag_name === latestTaggedRelease?.name) {
-    logger.info("(Monitor::getLatestTaggedRelease) No new release found");
+    logger.info("No new release found", monitorLabel);
   } else {
     latestTaggedRelease = {
       name: tag_name.split(`-`)[0],
@@ -35,16 +35,13 @@ export const getLatestTaggedRelease = async () => {
   }
 
   logger.info(
-    `(Monitor::getLatestTaggedRelease) Latest release updated: ${latestTaggedRelease.name} | Published at: ${publishedAt}`
+    `Latest release updated: ${latestTaggedRelease.name} | Published at: ${publishedAt}`,
+    monitorLabel
   );
 
   const end = Date.now();
 
-  logger.info(
-    `{cron::Monitor::ExecutionTime} started at ${new Date(
-      start
-    ).toString()} Done. Took ${(end - start) / 1000} seconds`
-  );
+  logger.info(`Done. Took ${(end - start) / 1000} seconds`, monitorLabel);
 };
 
 // Called by worker to process Job

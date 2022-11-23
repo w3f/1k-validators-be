@@ -7,22 +7,44 @@
     "historicalNominations": false,
     "apiEndpoints": [
       "wss://kusama-rpc.polkadot.io",
-      "wss://kusama.api.onfinality.io/public-ws"
-    ]
+      "wss://kusama.api.onfinality.io/public-ws",
+      "wss://kusama-rpc.dwellir.com",
+      "wss://kusama.public.curie.radiumblock.xyz/ws",
+      "wss://public-rpc.pinknode.io/kusama",
+      "wss://1rpc.io/ksm"
+    ],
+    "bootstrap": true,
+    "kusamaBootstrapEndpoint": "https://kusama.w3f.community",
+    "polkadotBootstrapEndpoint": "https://polkadot.w3f.community"
   },
   "constraints": {
-    "skipConnectionTime": false,
+    "skipConnectionTime": true,
     "skipIdentity": false,
     "skipStakedDestination": true,
     "skipClientUpgrade": false,
     "skipUnclaimed": false,
     "forceClientVersion": "v0.9.30",
-    "minSelfStake": 10000000000000000000,
+    "minSelfStake": 10000000000000,
     "commission": 150000000,
     "unclaimedEraThreshold": 4
   },
   "cron": {
-    "monitor": "0 */15 * * * *"
+    "monitor": "0 */15 * * * *",
+    "clearOffline": "0 0 0 * * 0",
+    "validity": "0 0-59/1 * * * *",
+    "execution": "0 0-59/1 * * * *",
+    "scorekeeper": "0 0-59/1 * * * *",
+    "rewardClaiming": "0 0-59/10 * * * *",
+    "cancel": "0 0-59/1 * * * *",
+    "stale": "0 0-59/1 * * * *",
+    "eraPoints": "0 0-59/3 * * * *",
+    "activeValidator": "0 0-59/3 * * * *",
+    "inclusion": "0 0-59/3 * * * *",
+    "sessionKey": "0 0-59/3 * * * *",
+    "unclaimedEras": "0 0-59/3 * * * *",
+    "validatorPref": "0 0-59/3 * * * *",
+    "nominator": "0 0-59/1 * * * *",
+    "delegation": "0 0-59/1 * * * *"
   },
   "db": {
     "migrate": false,
@@ -2885,6 +2907,11 @@
     "port": 3300
   },
   "telemetry": {
+    "blacklistedProviders": [
+      "Hetzner Online GmbH",
+      "Contabo Inc.",
+      "Contabo GmbH"
+    ],
     "enable": true,
     "chains": [
       "0xb0a8d493285c2df73290dfb7e61f870f17b41801197a149ca93654499ea3dafe"

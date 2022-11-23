@@ -1,11 +1,12 @@
 // Adds a new candidate from the configuration file data.
 import { Keyring } from "@polkadot/keyring";
 import logger from "../../logger";
-import { CandidateModel } from "../models";
+import { CandidateModel, IdentityModel } from "../models";
 import { NodeDetails } from "../index";
 import { fetchLocationInfo } from "../../util";
 import { getChainMetadata } from "./ChainMetadata";
 import { getIIT, getLocation, setLocation } from "./Location";
+import { Identity } from "../../types";
 
 // Adds a new candidate from the configuration file data.
 export const addCandidate = async (
@@ -21,15 +22,16 @@ export const addCandidate = async (
   const keyring = new Keyring();
   const ss58Prefix = network == "Kusama" ? 2 : 0;
   stash = keyring.encodeAddress(stash, ss58Prefix);
-  logger.info(
-    `(Db::addCandidate) name: ${name} stash: ${stash} matrix: ${matrix}`
-  );
+  // logger.info(
+  //   `(Db::addCandidate) name: ${name} stash: ${stash} matrix: ${matrix}`
+  // );
 
   // Check to see if the candidate has already been added as a node.
   const data = await CandidateModel.findOne({ name }).lean();
   if (!data) {
     logger.info(
-      `(Db::addCandidate) Did not find candidate data for ${name} - inserting new document.`
+      `Did not find candidate data for ${name} - inserting new document.`,
+      { label: "Candidate" }
     );
 
     const candidate = new CandidateModel({
@@ -107,6 +109,42 @@ export const clearNodeRefsFrom = async (name: string): Promise<boolean> => {
   return true;
 };
 
+// Set a candidates data to the data returned from a 'canonical' 1kv instance
+export const bootstrapCandidate = async (
+  name: string,
+  stash: string,
+  discoveredAt: number,
+  nominatedAt: number,
+  offlineSince: number,
+  offlineAccumulated: number,
+  rank: number,
+  faults: number,
+  inclusion: number,
+  location: string,
+  provider: string,
+  democracyVoteCount: number,
+  democracyVotes: number[]
+): Promise<any> => {
+  await CandidateModel.findOneAndUpdate(
+    { stash },
+    {
+      discoveredAt,
+      nominatedAt,
+      offlineSince,
+      offlineAccumulated,
+      rank,
+      faults,
+      inclusion,
+      location,
+      provider,
+      democracyVoteCount,
+      democracyVotes,
+    }
+  ).exec();
+
+  return true;
+};
+
 // Sets an invalidityReason for a candidate.
 export const setInvalidityReason = async (
   stash: string,
@@ -152,15 +190,92 @@ export const setController = async (
   return true;
 };
 
-export const setIdentity = async (
+// Creates an Identity Record
+export const setIdentity = async (identity: Identity): Promise<boolean> => {
+  if (!identity || !identity?.name) return false;
+  const data = await IdentityModel.findOne({ name: identity.name });
+  if (!data) {
+    const ident = new IdentityModel({
+      name: identity.name,
+      address: identity.address,
+      verified: identity.verified,
+      subIdentities: identity.subIdentities,
+      display: identity.display,
+      email: identity.email,
+      image: identity.image,
+      judgements: identity.judgements,
+      legal: identity.legal,
+      pgp: identity.pgp,
+      riot: identity.riot,
+      twitter: identity.twitter,
+      web: identity.web,
+    });
+    await ident.save();
+    return true;
+  } else {
+    await IdentityModel.findOneAndUpdate(
+      {
+        name: identity.name,
+      },
+      {
+        address: identity.address,
+        verified: identity.verified,
+        subIdentities: identity.subIdentities,
+        display: identity.display,
+        email: identity.email,
+        image: identity.image,
+        judgements: identity.judgements,
+        legal: identity.legal,
+        pgp: identity.pgp,
+        riot: identity.riot,
+        twitter: identity.twitter,
+        web: identity.web,
+      }
+    );
+    return true;
+  }
+};
+
+// both create an `Identity` record, and add the identity to the candidate
+export const setCandidateIdentity = async (
   stash: string,
-  identity: { name: string; sub: string; verified: boolean }
+  identity: Identity
 ): Promise<boolean> => {
-  await CandidateModel.findOneAndUpdate(
-    { stash },
-    { identity: identity }
-  ).exec();
-  return true;
+  if (identity) {
+    let data;
+    data = await getIdentity(stash);
+    if (!data) {
+      await setIdentity(identity);
+      data = await getIdentity(stash);
+    }
+
+    await CandidateModel.findOneAndUpdate({ stash }, { identity: data }).exec();
+    return true;
+  }
+};
+
+export const getIdentity = async (address: string) => {
+  const superIdentity = await IdentityModel.findOne({ address: address });
+  if (!superIdentity) {
+    const identity = await IdentityModel.findOne({
+      "subIdentities.address": address,
+    });
+    return identity;
+  }
+  return superIdentity;
+};
+
+// Given an address, get all the other addresses that are a part of the identity
+export const getIdentityAddresses = async (address: string) => {
+  const identity = await getIdentity(address);
+  const addresses = [];
+  if (identity) {
+    addresses.push(identity.address);
+    for (const subIdentity of identity.subIdentities) {
+      addresses.push(subIdentity.address);
+    }
+  }
+  return addresses;
 };
 
 export const reportBestBlock = async (
@@ -173,7 +288,9 @@ export const reportBestBlock = async (
 
   if (!data) return false;
 
-  // logger.info(`Reporting best block for ${data.name}: ${details}`);
+  logger.info(`Reporting best block for ${data.name}: ${details}`, {
+    label: "Online",
+  });
 
   // If the node was previously deemed offline
   if (data.offlineSince && data.offlineSince !== 0) {
@@ -218,15 +335,18 @@ export const reportOnline = async (
   let locationData;
   locationData = await getLocation(name, addr);
   const shouldFetch =
-    !locationData || (locationData?.addr && locationData?.addr != addr);
+    !locationData ||
+    (locationData?.addr && locationData?.addr != addr) ||
+    !locationData.address ||
+    !locationData.session;
   if (shouldFetch) {
     const iit = await getIIT();
-    const { city, region, country, asn, provider } = await fetchLocationInfo(
+    const { city, region, country, provider } = await fetchLocationInfo(
       addr,
       iit && iit.iit ? iit.iit : null
     );
 
-    await setLocation(name, addr, city, region, country, asn, provider);
+    await setLocation(name, addr, city, region, country, provider);
     locationData = await getLocation(name, addr);
   }
 
@@ -260,8 +380,6 @@ export const reportOnline = async (
     return invalidityReason.type !== "ONLINE";
   });
   if (!invalidityReasons || invalidityReasons.length == 0) return;
-
-  logger.info(data);
 
   // T
   if (!data.discoveredAt) {
@@ -346,15 +464,12 @@ export const reportOnline = async (
  * @param now The timestamp for now (in ms).
  */
 export const reportOffline = async (
-  telemetryId: number,
   name: string,
   now: number
 ): Promise<boolean> => {
-  // logger.info(
-  //   `(Db::reportOffline) Reporting ${name} with telemetry id ${telemetryId} offline at ${now}.`
-  // );
+  logger.warn(`Reporting ${name} offline at ${now}.`, { label: "Online" });
 
-  const data = await CandidateModel.findOne({ telemetryId }).lean();
+  const data = await CandidateModel.findOne({ name }).lean();
 
   if (!data) {
     logger.info(`(Db::reportOffline) No data for node named ${name}.`);
@@ -370,7 +485,7 @@ export const reportOffline = async (
   // Only decrement the nodeRefs, don't mark offline.
   if (data.nodeRefs > 1) {
     return CandidateModel.findOneAndUpdate(
-      { telemetryId },
+      { name },
       {
         $inc: {
           nodeRefs: -1,
@@ -390,7 +505,7 @@ export const reportOffline = async (
 
   return CandidateModel.findOneAndUpdate(
     {
-      telemetryId,
+      name,
     },
     {
       offlineSince: now,
@@ -580,8 +695,6 @@ export const clearAccumulated = async (): Promise<boolean> => {
 };
 
 export const clearCandidates = async (): Promise<boolean> => {
-  logger.info(`(Db::clearCandidates) Clearing stale candidate data.`);
-
   const candidates = await allCandidates();
   if (!candidates.length) {
     // nothing to do
@@ -612,6 +725,10 @@ export const allCandidates = async (): Promise<any[]> => {
 
 export const validCandidates = async (): Promise<any[]> => {
   return CandidateModel.find({ valid: true }).lean().exec();
+};
+
+export const invalidCandidates = async (): Promise<any[]> => {
+  return CandidateModel.find({ valid: false }).lean().exec();
 };
 
 export const allNodes = async (): Promise<any[]> => {
@@ -836,7 +953,26 @@ export const setValidateIntentionValidity = async (
   const invalidityReasons = data?.invalidity?.filter((invalidityReason) => {
     return invalidityReason.type !== "VALIDATE_INTENTION";
   });
-  if (!invalidityReasons || invalidityReasons.length == 0) return;
+  if (!invalidityReasons || invalidityReasons.length == 0) {
+    await CandidateModel.findOneAndUpdate(
+      {
+        stash: address,
+      },
+      {
+        invalidity: [
+          {
+            valid: validity,
+            type: "VALIDATE_INTENTION",
+            updated: Date.now(),
+            details: validity
+              ? ""
+              : `${data.name} does not have a validate intention.`,
+          },
+        ],
+      }
+    ).exec();
+    return;
+  }
 
   await CandidateModel.findOneAndUpdate(
     {
@@ -1204,7 +1340,6 @@ export const setBlockedInvalidity = async (
   });
   if (!invalidityReasons || invalidityReasons.length == 0) return;
 
-  logger.info(data);
   try {
     await CandidateModel.findOneAndUpdate(
       {
@@ -1228,6 +1363,52 @@ export const setBlockedInvalidity = async (
     ).exec();
   } catch (e) {
     logger.info(`error setting online`);
+  }
+};
+
+// Set Blocked Validity Status
+export const setProviderInvalidity = async (
+  address: string,
+  validity: boolean,
+  details?: string
+): Promise<any> => {
+  const data = await CandidateModel.findOne({
+    stash: address,
+  }).lean();
+
+  if (!data || !data?.invalidity) {
+    console.log(`{Self Stake} NO CANDIDATE DATA FOUND FOR ${address}`);
+    return;
+  }
+
+  const invalidityReasons = data?.invalidity?.filter((invalidityReason) => {
+    return invalidityReason.type !== "PROVIDER";
+  });
+  if (!invalidityReasons || invalidityReasons.length == 0) return;
+
+  try {
+    await CandidateModel.findOneAndUpdate(
+      {
+        stash: address,
+      },
+      {
+        invalidity: [
+          ...invalidityReasons,
+          {
+            valid: validity,
+            type: "PROVIDER",
+            updated: Date.now(),
+            details: validity
+              ? ""
+              : details
+              ? details
+              : `${data.name} has banned infrastructure provider: ${data?.infrastructureLocation?.provider}`,
+          },
+        ],
+      }
+    ).exec();
+  } catch (e) {
+    logger.info(`error setting provider validity`);
   }
 };
 

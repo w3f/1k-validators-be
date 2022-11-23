@@ -7,6 +7,8 @@ import EraPoints from "../controllers/EraPoints";
 import Democracy from "../controllers/Democracy";
 import Score from "../controllers/Score";
 import Stats from "../controllers/Stats";
+import Location from "../controllers/Location";
+import Validator from "../controllers/Validators";
 
 const router = new Router();
 
@@ -16,6 +18,7 @@ const API = {
   Candidate: "/candidate/:address",
   GetCandidates: "/candidates",
   GetValidCandidates: "/candidates/valid",
+  GetInvalidCandidates: "/candidates/invalid",
   GetNodes: "/nodes",
   GetNominators: "/nominators",
   GetNominator: "/nominator/:address",
@@ -33,6 +36,8 @@ const API = {
   ScoreMetadata: "/scoremetadata",
   SessionScoreMetadata: "/scoremetadata/:session",
   Release: "/release",
+  LocationsCurrentValidatorSet: "/location/currentvalidatorset",
+  LocationValidator: "/location/validator/:address",
   LocationStats: "/locationstats",
   SessionLocationStats: "/locationstats/:session",
   Councillors: "/councillor",
@@ -53,6 +58,7 @@ const API = {
   EraNominatorStake: "/nominatorstake/:address/:era",
   Delegations: "/delegations/:address",
   AllDelegations: "/delegations",
+  CurrentValidatorSet: "/validators/current",
 };
 
 router.get(API.Accounting, Accounting.getAccounting);
@@ -60,6 +66,7 @@ router.get(API.Accounting, Accounting.getAccounting);
 router.get(API.Candidate, Candidate.getCandidate);
 router.get(API.GetCandidates, Candidate.getCandidates);
 router.get(API.GetValidCandidates, Candidate.getValidCandidates);
+router.get(API.GetInvalidCandidates, Candidate.getInvalidCandidates);
 router.get(API.GetNodes, Candidate.getNodes);
 router.get(API.LatestNominatorStake, Candidate.getLatestNominatorStake);
 router.get(API.EraNominatorStake, Candidate.getEraNominatorStake);
@@ -93,6 +100,14 @@ router.get(API.Score, Score.getScore);
 router.get(API.SessionScore, Score.getSessionScore);
 router.get(API.ScoreMetadata, Score.getLatestScoreMetadata);
 router.get(API.SessionScoreMetadata, Score.getSessionScoreMetadata);
+
+router.get(API.CurrentValidatorSet, Validator.getLatestValidatorSet);
+
+router.get(
+  API.LocationsCurrentValidatorSet,
+  Location.getLocationCurrentValidatorSet
+);
+router.get(API.LocationValidator, Location.getValidatorLocation);
 
 router.get(API.EraStats, Stats.getEraStats);
 router.get(API.LocationStats, Stats.getLocationStats);

@@ -46,8 +46,23 @@ export type InvalidityReason = {
 
 export type Identity = {
   name: string;
-  sub: string;
+  address: string;
   verified: boolean;
+  subIdentities: {
+    name: string;
+    address: string;
+  }[];
+  display: string;
+  email: string;
+  image: string;
+  judgements: string[];
+  legal: string;
+  // other: string;
+  // parent: string;
+  pgp: string;
+  riot: string;
+  twitter: string;
+  web: string;
 };
 
 /// The data for a candidate that's kept in the DB.
@@ -77,6 +92,8 @@ export type CandidateData = {
   kusamaStash: string;
   skipSelfStake: boolean;
   bio: string;
+  commission: number;
+  active: boolean;
   unclaimedEras: [number];
   version: string;
   valid: boolean;
@@ -140,3 +157,59 @@ export type ReferendumVote = {
   // The conviction that was used to vote with
   conviction: string;
 };
+
+export type ConvictionVotingVote = {
+  // The particular governance track
+  track: number;
+  // The account that is voting
+  address: string;
+  // The index of the referendum
+  referendumIndex: number;
+  // The conviction being voted with, ie `None`, `Locked1x`, `Locked5x`, etc
+  conviction: string;
+  // The balance they are voting with themselves, sans delegated balance
+  balance: number;
+  // The total amount of tokens that were delegated to them (including conviction)
+  delegatedConvictionBalance: number;
+  // the total amount of tokens that were delegated to them (without conviction)
+  delegatedBalance: number;
+  // The vote type, either 'aye', or 'nay'
+  voteDirection: string;
+  // Whether the person is voting themselves or delegating
+  voteType: string;
+  // Who the person is delegating to
+  delegatedTo: string;
+};
+
+export type ConvictionDelegation = {
+  track: number;
+  address: string;
+  target: string;
+  balance: number;
+  conviction: string;
+  // The total amount of tokens that were delegated to them (including conviction)
+  delegatedConvictionBalance: number;
+  // the total amount of tokens that were delegated to them (without conviction)
+  delegatedBalance: number;
+  prior: any;
+};
+
+export interface AvailabilityCoreState {
+  blockNumber: number;
+  core: number;
+  paraId: number;
+  kind: string;
+  groupIdx: number;
+  validators: string[];
+}
+
+export interface AvailabilityBitfield {
+  blockNumber: number;
+  validator: string;
+  session: number;
+  valIdx: number;
+  bitfield: string;
+  candidateChunkCount: number;
+  availableCandidates: number[];
+  signature?: string;
+}

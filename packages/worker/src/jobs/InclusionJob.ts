@@ -1,5 +1,7 @@
 import { logger, queries, ChainData } from "@1kv/common";
 
+export const inclusionLabel = { label: "InclusionJob" };
+
 export const inclusionJob = async (chaindata: ChainData) => {
   const start = Date.now();
 
@@ -30,14 +32,10 @@ export const inclusionJob = async (chaindata: ChainData) => {
 
   const end = Date.now();
 
-  logger.info(
-    `{cron::InclusionJob::ExecutionTime} started at ${new Date(
-      start
-    ).toString()} Done. Took ${(end - start) / 1000} seconds`
-  );
+  logger.info(`Done. Took ${(end - start) / 1000} seconds`, inclusionLabel);
 };
 
 export const processInclusionJob = async (job: any, chaindata: ChainData) => {
-  logger.info(`Processing Inclusion Job....`);
+  logger.info(`Processing Inclusion Job....`, inclusionLabel);
   await inclusionJob(chaindata);
 };

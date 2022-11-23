@@ -28,17 +28,17 @@
   "dependencies": {
     "@1kv/common": "workspace:^",
     "@1kv/worker": "workspace:^",
-    "@bull-board/api": "^4.6.2",
-    "@bull-board/koa": "^4.6.2",
+    "@bull-board/api": "^4.6.4",
+    "@bull-board/koa": "^4.6.4",
     "koa-swagger-decorator": "^1.8.6",
-    "typescript": "^4.8.4"
+    "typescript": "^4.9.3"
   },
   "devDependencies": {
     "@ava/typescript": "^3.0.1",
     "@typescript-eslint/eslint-plugin": "^5.41.0",
     "@typescript-eslint/parser": "^5.41.0",
-    "ava": "^5.0.1",
-    "concurrently": "^7.5.0",
+    "ava": "^5.1.0",
+    "concurrently": "^7.6.0",
     "eslint": "8.22.0",
     "eslint-plugin-security": "^1.5.0",
     "nodemon": "^2.0.20"

@@ -19,6 +19,11 @@ export const addReleaseMonitorJob = async (queue: Queue, repeat: number) => {
         every: repeat,
         limit: 100,
       },
+      attempts: 10,
+      backoff: {
+        type: "exponential",
+        delay: 1000,
+      },
     }
   );
 };

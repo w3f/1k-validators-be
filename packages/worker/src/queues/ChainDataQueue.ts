@@ -1,5 +1,5 @@
 import { Queue } from "bullmq";
-import { logger } from "@1kv/common";
+import { logger, queries } from "@1kv/common";
 import {
   ACTIVE_VALIDATOR_JOB,
   COUNCIL_JOB,
@@ -33,6 +33,11 @@ export const addActiveValidatorJob = async (queue: Queue, repeat: number) => {
         every: repeat,
         // limit: 1000,
       },
+      attempts: 10,
+      backoff: {
+        type: "exponential",
+        delay: 1000,
+      },
     }
   );
 };
@@ -46,6 +51,11 @@ export const addCouncilJob = async (queue: Queue, repeat: number) => {
       repeat: {
         every: repeat,
         // limit: 1000,
+      },
+      attempts: 10,
+      backoff: {
+        type: "exponential",
+        delay: 1000,
       },
     }
   );
@@ -61,6 +71,11 @@ export const addDelegationJob = async (queue: Queue, repeat: number) => {
         every: repeat,
         // limit: 1000,
       },
+      attempts: 10,
+      backoff: {
+        type: "exponential",
+        delay: 1000,
+      },
     }
   );
 };
@@ -74,6 +89,11 @@ export const addDemocracyJob = async (queue: Queue, repeat: number) => {
       repeat: {
         every: repeat,
         // limit: 1000,
+      },
+      attempts: 10,
+      backoff: {
+        type: "exponential",
+        delay: 1000,
       },
     }
   );
@@ -89,6 +109,11 @@ export const addEraPointsJob = async (queue: Queue, repeat: number) => {
         every: repeat,
         // limit: 1000,
       },
+      attempts: 10,
+      backoff: {
+        type: "exponential",
+        delay: 1000,
+      },
     }
   );
 };
@@ -102,6 +127,11 @@ export const addEraStatsJob = async (queue: Queue, repeat: number) => {
       repeat: {
         every: repeat,
         // limit: 1000,
+      },
+      attempts: 10,
+      backoff: {
+        type: "exponential",
+        delay: 1000,
       },
     }
   );
@@ -117,6 +147,11 @@ export const addInclusionJob = async (queue: Queue, repeat: number) => {
         every: repeat,
         // limit: 1000,
       },
+      attempts: 10,
+      backoff: {
+        type: "exponential",
+        delay: 1000,
+      },
     }
   );
 };
@@ -130,6 +165,11 @@ export const addNominatorJob = async (queue: Queue, repeat: number) => {
       repeat: {
         every: repeat,
         // limit: 1000,
+      },
+      attempts: 10,
+      backoff: {
+        type: "exponential",
+        delay: 1000,
       },
     }
   );
@@ -145,12 +185,17 @@ export const addSessionKeyJob = async (queue: Queue, repeat: number) => {
         every: repeat,
         // limit: 1000,
       },
+      attempts: 10,
+      backoff: {
+        type: "exponential",
+        delay: 1000,
+      },
     }
   );
 };
 
-export const addValidatorPrefJob = async (queue: Queue, repeat: number) => {
-  logger.info(`adding Validator Pref Job to Queue.....`);
+// Adds a single job to the queue that processes all validators
+export const addValidatorPrefJobAll = async (queue: Queue, repeat: number) => {
   await queue.add(
     "chaindata",
     { jobType: VALIDATOR_PREF_JOB },
@@ -159,6 +204,33 @@ export const addValidatorPrefJob = async (queue: Queue, repeat: number) => {
         every: repeat,
         // limit: 1000,
       },
+      attempts: 10,
+      backoff: {
+        type: "exponential",
+        delay: 1000,
+      },
     }
   );
+};
+
+export const addValidatorPrefJob = async (queue: Queue, repeat: number) => {
+  logger.info(`adding Validator Pref Job to Queue.....`);
+  const candidates = await queries.allCandidates();
+  for (const [index, candidate] of candidates.entries()) {
+    await queue.add(
+      "chaindata",
+      { jobType: VALIDATOR_PREF_JOB, candidateAddress: candidate.stash },
+      {
+        repeat: {
+          every: repeat + index,
+          // limit: 1000,
+        },
+        attempts: 10,
+        backoff: {
+          type: "exponential",
+          delay: 1000,
+        },
+      }
+    );
+  }
 };

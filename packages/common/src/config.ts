@@ -56,6 +56,7 @@ export type ConfigSchema = {
     democracy: string;
     nominator: string;
     delegation: string;
+    block: string;
   };
   db: {
     mongo: {
@@ -69,6 +70,9 @@ export type ConfigSchema = {
     retroactive: boolean;
     historicalNominations: boolean;
     apiEndpoints: string[];
+    bootstrap: boolean;
+    kusamaBootstrapEndpoint: string;
+    polkadotBootstrapEndpoint: string;
   };
   matrix: {
     accessToken: string;
@@ -119,6 +123,7 @@ export type ConfigSchema = {
     chains: string[];
     blacklistedProviders: string[];
     host: string;
+    ipinfoToken: string;
   };
   subscan: {
     baseV1Url: string;

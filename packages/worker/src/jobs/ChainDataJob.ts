@@ -22,9 +22,11 @@ import {
   VALIDATOR_PREF_JOB,
 } from "./index";
 
+export const chaindataLabel = { label: "Chaindata" };
+
 export const processChainDataJob = async (job: any, chaindata: ChainData) => {
-  const { jobType } = job.data;
-  logger.info(`Processing type: ${jobType}`);
+  const { jobType, candidateAddress } = job.data;
+  // logger.info(`Processing type: ${jobType}`, chaindataLabel);
   switch (jobType) {
     case ACTIVE_VALIDATOR_JOB:
       await processActiveValidatorJob(job, chaindata);
@@ -54,7 +56,7 @@ export const processChainDataJob = async (job: any, chaindata: ChainData) => {
       await processSessionKeyJob(job, chaindata);
       break;
     case VALIDATOR_PREF_JOB:
-      await processValidatorPrefJob(job, chaindata);
+      await processValidatorPrefJob(job, chaindata, candidateAddress);
       break;
   }
 };

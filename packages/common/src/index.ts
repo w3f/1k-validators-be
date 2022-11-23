@@ -1,3 +1,4 @@
+import "@polkadot/api-augment";
 import { Db } from "./db";
 import * as queries from "./db/queries";
 import * as Config from "./config";

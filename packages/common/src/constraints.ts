@@ -655,7 +655,7 @@ export class OTV implements Constraints {
 
       logger.info(
         `scored ${candidate.name}: [${index + 1} / ${
-          validCandidates.length
+          candidates.length
         }] ${percentage(index + 1, candidates.length)} ${time} ${remaining}`,
         {
           label: "Constraints",

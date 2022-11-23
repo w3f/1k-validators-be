@@ -158,6 +158,42 @@ export type ReferendumVote = {
   conviction: string;
 };
 
+export type ConvictionVotingVote = {
+  // The particular governance track
+  track: number;
+  // The account that is voting
+  address: string;
+  // The index of the referendum
+  referendumIndex: number;
+  // The conviction being voted with, ie `None`, `Locked1x`, `Locked5x`, etc
+  conviction: string;
+  // The balance they are voting with themselves, sans delegated balance
+  balance: number;
+  // The total amount of tokens that were delegated to them (including conviction)
+  delegatedConvictionBalance: number;
+  // the total amount of tokens that were delegated to them (without conviction)
+  delegatedBalance: number;
+  // The vote type, either 'aye', or 'nay'
+  voteDirection: string;
+  // Whether the person is voting themselves or delegating
+  voteType: string;
+  // Who the person is delegating to
+  delegatedTo: string;
+};
+
+export type ConvictionDelegation = {
+  track: number;
+  address: string;
+  target: string;
+  balance: number;
+  conviction: string;
+  // The total amount of tokens that were delegated to them (including conviction)
+  delegatedConvictionBalance: number;
+  // the total amount of tokens that were delegated to them (without conviction)
+  delegatedBalance: number;
+  prior: any;
+};
+
 export interface AvailabilityCoreState {
   blockNumber: number;
   core: number;

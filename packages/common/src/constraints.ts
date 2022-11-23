@@ -1,7 +1,15 @@
 import axios from "axios";
 import semver from "semver";
 import { getStats, scaled, scaledDefined, scoreDemocracyVotes } from "./score";
-import { ChainData, Config, Constants, logger, Types, Util } from "./index";
+import {
+  ChainData,
+  Config,
+  Constants,
+  logger,
+  Types,
+  Util,
+  queries,
+} from "./index";
 import ApiHandler from "./ApiHandler";
 import {
   allCandidates,
@@ -1279,14 +1287,24 @@ export const checkProvider = async (
   config: Config.ConfigSchema,
   candidate: any
 ) => {
-  const provider = candidate?.infrastructureLocation?.provider;
-  const bannedProviders = config.telemetry?.blacklistedProviders;
-  if (provider && bannedProviders?.includes(provider)) {
-    logger.info(`${candidate.name} has banned provider: ${provider}`, {
-      label: "Constraints",
-    });
-    await setProviderInvalidity(candidate.stash, false);
-    return false;
+  const location = await queries.getLocation(candidate.name, candidate.stash);
+  if (location && location.provider) {
+    const bannedProviders = config.telemetry?.blacklistedProviders;
+    logger.info(
+      `provider: ${JSON.stringify(
+        location.provider
+      )} banned providers: ${JSON.stringify(bannedProviders)}`
+    );
+    if (bannedProviders?.includes(location.provider)) {
+      logger.info(
+        `${candidate.name} has banned provider: ${location.provider}`,
+        {
+          label: "Constraints",
+        }
+      );
+      await setProviderInvalidity(candidate.stash, false);
+      return false;
+    }
   } else {
     await setProviderInvalidity(candidate.stash, true);
     return true;

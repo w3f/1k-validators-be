@@ -14,7 +14,7 @@ import {
   Identity,
   NumberResult,
   StringResult,
-  ConvictionVotingVote,
+  ConvictionVote,
   ConvictionDelegation,
 } from "./types";
 import { getParaValIndex, hex2a, toDecimals } from "./util";
@@ -1212,7 +1212,7 @@ export class ChainData {
 
   // OpenGov Conviction Voting
   getConvictionVoting = async () => {
-    const allVotes: ConvictionVotingVote[] = [];
+    const allVotes: ConvictionVote[] = [];
     const allDelegations: ConvictionDelegation[] = [];
     // Query the keys and storage of all the entries of `votingFor`
     // These are all the accounts voting, for which tracks, for which referenda
@@ -1248,7 +1248,7 @@ export class ChainData {
           const { conviction, vote: voteDirection } = refVote.toHuman();
 
           // The formatted vote
-          const v: ConvictionVotingVote = {
+          const v: ConvictionVote = {
             // The particular governance track
             track: Number(track.toString()),
             // The account that is voting
@@ -1312,7 +1312,7 @@ export class ChainData {
 
       // There is a vote from the delegation, add it to the list of total votes
       if (v.length == 1) {
-        const delegatedVote: ConvictionVotingVote = {
+        const delegatedVote: ConvictionVote = {
           // The particular governance track
           track: v[0].track,
           // The account that is voting
@@ -1349,7 +1349,7 @@ export class ChainData {
             return dVote.address == dTarget && dVote.track == dTrack;
           });
           if (dVotes.length > 0) {
-            const delegatedVote: ConvictionVotingVote = {
+            const delegatedVote: ConvictionVote = {
               // The particular governance track
               track: dVotes[0].track,
               // The account that is voting

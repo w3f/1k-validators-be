@@ -52,7 +52,7 @@
     "koa-cash": "^4.1.1",
     "koa2-cors": "^2.0.6",
     "matrix-js-sdk": "^20.1.0",
-    "mongodb": "4.12.0",
+    "mongodb": "4.12.1",
     "mongodb-memory-server": "^8.10.0",
     "mongoose": "^6.7.2",
     "prettier": "^2.7.1",

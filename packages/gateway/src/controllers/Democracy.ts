@@ -115,4 +115,17 @@ export default class DemocracyController {
     }
     response(context, 200, await DemocracyService.getAllDelegations());
   }
+
+  public static async getAddressConvictionVotes(context: any): Promise<void> {
+    if (await context.cashed()) {
+      logger.info(`{Gateway} getAddressConvictionVotes is cached`);
+      return;
+    }
+    const { address } = context.params;
+    response(
+      context,
+      200,
+      await DemocracyService.getAddressConvictionVotes(address)
+    );
+  }
 }

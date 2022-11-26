@@ -94,3 +94,10 @@ export const getAllDelegations = async (): Promise<any> => {
   const delegations = await queries.getAllDelegations();
   return delegations;
 };
+
+export const getAddressConvictionVotes = async (
+  address: string
+): Promise<any> => {
+  const convictionVotes = await queries.getAddressConvictionVoting(address);
+  return convictionVotes;
+};

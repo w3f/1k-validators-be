@@ -1,4 +1,5 @@
 import { logger, ChainData, Types, queries } from "@1kv/common";
+import { ConvictionVote } from "@1kv/common/build/types";
 
 export const democracyLabel = { label: "DemocracyJob" };
 
@@ -100,6 +101,13 @@ export const democracyJob = async (chaindata: ChainData) => {
         latestBlockHash
       );
     }
+  }
+
+  const convictionVoting = await chaindata.getConvictionVoting();
+  // logger.info(JSON.stringify(convictionVoting));
+  const { votes, delegations } = convictionVoting;
+  for (const vote of votes) {
+    await queries.setConvictionVote(vote, latestBlockNumber);
   }
 
   const endTime = Date.now();

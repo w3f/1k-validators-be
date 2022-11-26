@@ -896,6 +896,36 @@ export const ReferendumVoteModel = mongoose.model(
   ReferendumVoteSchema
 );
 
+export const ConvictionVote = new Schema({
+  // The particular governance track
+  track: Number,
+  // The account that is voting
+  address: String,
+  // The index of the referendum
+  referendumIndex: Number,
+  // The conviction being voted with, ie `None`, `Locked1x`, `Locked5x`, etc
+  conviction: String,
+  // The balance they are voting with themselves, sans delegated balance
+  balance: Number,
+  // The total amount of tokens that were delegated to them (including conviction)
+  delegatedConvictionBalance: Number,
+  // the total amount of tokens that were delegated to them (without conviction)
+  delegatedBalance: Number,
+  // The vote type, either 'aye', or 'nay'
+  voteDirection: String,
+  // Whether the person is voting themselves or delegating
+  voteType: String,
+  // Who the person is delegating to
+  delegatedTo: String,
+  // The block number the vote was updated at
+  updatedBlockNumber: Number,
+});
+
+export const ConvictionVoteModel = mongoose.model(
+  "ConvictionVote",
+  ConvictionVote
+);
+
 export const IIT = new Schema({
   iit: String,
 });

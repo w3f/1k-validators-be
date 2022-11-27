@@ -194,6 +194,18 @@ export type ConvictionDelegation = {
   prior: any;
 };
 
+// The constant data of an OpenGov Track
+export type TrackInfo = {
+  trackIndex: string;
+  name: string;
+  maxDeciding: number;
+  decisionDeposit: number;
+  preparePeriod: number;
+  decisionPeriod: number;
+  confirmPeriod: number;
+  minEnactmentPeriod: number;
+};
+
 export interface AvailabilityCoreState {
   blockNumber: number;
   core: number;

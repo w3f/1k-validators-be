@@ -268,6 +268,8 @@ export const CandidateSchema = new Schema({
   democracyVoteCount: { type: Number, default: 0 },
   // The referenda indexes voted on
   democracyVotes: [Number],
+  convictionVotes: [Number],
+  convictionVoteCount: { type: Number, default: 0 },
   infrastructureLocation: LocationSchema,
   matrix: [String],
 });

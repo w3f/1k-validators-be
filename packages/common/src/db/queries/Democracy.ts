@@ -6,6 +6,7 @@ import {
   ReferendumModel,
   ReferendumVoteModel,
 } from "../models";
+import { getIdentity, getIdentityAddresses } from "./Candidate";
 
 // LEGACY DEMOCRACY
 export const setReferendum = async (
@@ -169,7 +170,50 @@ export const getAccountVoteReferendum = async (
   return ReferendumVoteModel.find({ accountId: accountId }).lean().exec();
 };
 
-// export const updateCandidateConvictionVotes = async (): Promise<any> => {};
+export const updateCandidateConvictionVotes = async (
+  address: string
+): Promise<any> => {
+  const candidate = await CandidateModel.findOne({
+    stash: address,
+  }).lean();
+  if (candidate) {
+    await CandidateModel.findOneAndUpdate(
+      {
+        stash: address,
+      },
+      {
+        convictionVotes: [],
+        convictionVoteCount: 0,
+      }
+    );
+
+    const identityVotes = await getIdentityConvictionVoting(address);
+    for (const vote of identityVotes?.votes) {
+      const candidateConvictionVotes = await CandidateModel.findOne({
+        stash: address,
+      })
+        .lean()
+        .select({ convictionVotes: 1 });
+      if (
+        !candidateConvictionVotes?.convictionVotes?.includes(
+          vote.referendumIndex
+        )
+      ) {
+        await CandidateModel.findOneAndUpdate(
+          {
+            stash: address,
+          },
+          {
+            $push: {
+              convictionVotes: vote.referendumIndex,
+            },
+            $inc: { convictionVoteCount: 1 },
+          }
+        );
+      }
+    }
+  }
+};
 
 // Sets an OpenGov Conviction Vote
 export const setConvictionVote = async (
@@ -227,4 +271,48 @@ export const setConvictionVote = async (
 export const getAddressConvictionVoting = async (address: string) => {
   const convictionVotes = await ConvictionVoteModel.find({ address: address });
   return convictionVotes;
+};
+
+// Gets all conviction votes for a given track
+export const getTrackConvictionVoting = async (track: number) => {
+  const convictionVotes = await ConvictionVoteModel.find({ track: track });
+  return convictionVotes;
+};
+
+// Gets all conviction votes for a given address for a given track
+export const getAddressTrackConvictionVoting = async (
+  address: string,
+  track: number
+) => {
+  const convictionVotes = await ConvictionVoteModel.find({
+    address: address,
+    track: track,
+  });
+  return convictionVotes;
+};
+
+// Gets all conviction votes for a given referendum
+export const getReferendumConvictionVoting = async (
+  referendumIndex: number
+) => {
+  // logger.info(
+  const convictionVotes = await ConvictionVoteModel.find({
+    referendumIndex: referendumIndex,
+  });
+  return convictionVotes;
+};
+
+// Gets all the conviction votes for a given identity set
+export const getIdentityConvictionVoting = async (address: string) => {
+  const votes = [];
+  // the list of identities associated with a given address
+  const identities = await getIdentityAddresses(address);
+  for (const identity of identities) {
+    const addressVotes = await getAddressConvictionVoting(identity);
+    for (const addressVote of addressVotes) {
+      votes.push(addressVote);
+    }
+  }
+  const identity = await getIdentity(address);
+  return { identity, votes };
 };

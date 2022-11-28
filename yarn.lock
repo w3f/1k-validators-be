@@ -59,7 +59,7 @@ __metadata:
     "@typescript-eslint/parser": ^5.41.0
     ava: ^5.1.0
     axios: ^1.1.3
-    bree: ^9.1.2
+    bree: ^9.1.3
     bs58: ^5.0.0
     commander: ^9.4.1
     concurrently: ^7.6.0
@@ -2862,9 +2862,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bree@npm:^9.1.2":
-  version: 9.1.2
-  resolution: "bree@npm:9.1.2"
+"bree@npm:^9.1.3":
+  version: 9.1.3
+  resolution: "bree@npm:9.1.3"
   dependencies:
     "@breejs/later": ^4.1.0
     boolean: ^3.2.0
@@ -2876,7 +2876,7 @@ __metadata:
     ms: ^2.1.3
     p-wait-for: 3
     safe-timers: ^1.1.0
-  checksum: c23c6f1fc3aa27b33c0649668534806140f8fa0d80991d322304d669993ab1188b097c431b633735cd11ca0a49eff2a8b464d8eb781fcaa8e976b2c1098fc4ed
+  checksum: ff89950eaa214342dde87de8aab460cb84744626e82873f88533bcbed2447fd965a26533e26915afce6aaa220383186200a91df78f748bedf576986bef7488e2
   languageName: node
   linkType: hard
 
@@ -8490,7 +8490,7 @@ __metadata:
 
 "typescript@patch:typescript@^4.9.3#~builtin<compat/typescript>":
   version: 4.9.3
-  resolution: "typescript@patch:typescript@npm%3A4.9.3#~builtin<compat/typescript>::version=4.9.3&hash=bda367"
+  resolution: "typescript@patch:typescript@npm%3A4.9.3#~builtin<compat/typescript>::version=4.9.3&hash=f456af"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver

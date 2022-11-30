@@ -104,17 +104,24 @@ export const democracyJob = async (chaindata: ChainData) => {
     }
   }
 
-  const trackTypes = await chaindata.getTrackInfo();
-  // TODO: store track types
+  const chainType = await chaindata.getChainType();
+  if (chainType == "Kusama") {
+    try {
+      const trackTypes = await chaindata.getTrackInfo();
+      // TODO: store track types
 
-  const convictionVoting = await chaindata.getConvictionVoting();
-  const { votes, delegations } = convictionVoting;
-  for (const vote of votes) {
-    await queries.setConvictionVote(vote, latestBlockNumber);
-  }
-  const candidates = await allCandidates();
-  for (const candidate of candidates) {
-    await queries.updateCandidateConvictionVotes(candidate.stash);
+      const convictionVoting = await chaindata.getConvictionVoting();
+      const { votes, delegations } = convictionVoting;
+      for (const vote of votes) {
+        await queries.setConvictionVote(vote, latestBlockNumber);
+      }
+      const candidates = await allCandidates();
+      for (const candidate of candidates) {
+        await queries.updateCandidateConvictionVotes(candidate.stash);
+      }
+    } catch (e) {
+      logger.warn(`could not query open gov data`);
+    }
   }
 
   const endTime = Date.now();

@@ -39,6 +39,15 @@ export class ChainData {
     this.api = handler.getApi();
   }
 
+  getChainType = async (): Promise<any> => {
+    if (!this.api.isConnected) {
+      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
+      return;
+    }
+    const chainType = await this.api.rpc.system.chain();
+    return chainType.toString();
+  };
+
   // Returns the denomination of the chain. Used for formatting planck denomianted amounts
   getDenom = async (): Promise<number> => {
     if (!this.api.isConnected) {

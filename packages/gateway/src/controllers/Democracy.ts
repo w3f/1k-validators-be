@@ -115,4 +115,60 @@ export default class DemocracyController {
     }
     response(context, 200, await DemocracyService.getAllDelegations());
   }
+
+  public static async getAddressConvictionVotes(context: any): Promise<void> {
+    if (await context.cashed()) {
+      logger.info(`{Gateway} getAddressConvictionVotes is cached`);
+      return;
+    }
+    const { address } = context.params;
+    response(
+      context,
+      200,
+      await DemocracyService.getAddressConvictionVotes(address)
+    );
+  }
+
+  public static async getAddressTrackConvictionVotes(
+    context: any
+  ): Promise<void> {
+    if (await context.cashed()) {
+      logger.info(`{Gateway} getAddressTrackConvictionVotes is cached`);
+      return;
+    }
+    const { address, track } = context.params;
+    response(
+      context,
+      200,
+      await DemocracyService.getAddressTrackConvictionVotes(address, track)
+    );
+  }
+
+  public static async getTrackConvictionVotes(context: any): Promise<void> {
+    if (await context.cashed()) {
+      logger.info(`{Gateway} getTrackConvictionVotes is cached`);
+      return;
+    }
+    const { track } = context.params;
+    response(
+      context,
+      200,
+      await DemocracyService.getTrackConvictionVotes(track)
+    );
+  }
+
+  public static async getReferendumConvictionVotes(
+    context: any
+  ): Promise<void> {
+    if (await context.cashed()) {
+      logger.info(`{Gateway} getReferendumConvictionVotes is cached`);
+      return;
+    }
+    const { index } = context.params;
+    response(
+      context,
+      200,
+      await DemocracyService.getReferendumConvictionVotes(index)
+    );
+  }
 }

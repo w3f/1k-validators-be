@@ -1,4 +1,5 @@
 import { queries } from "@1kv/common";
+import { getReferendumConvictionVoting } from "@1kv/common/build/db";
 
 export const getLatestElectionStats = async (): Promise<any> => {
   const electionStats = await queries.getLatestElectionStats();
@@ -93,4 +94,34 @@ export const getDelegations = async (address): Promise<any> => {
 export const getAllDelegations = async (): Promise<any> => {
   const delegations = await queries.getAllDelegations();
   return delegations;
+};
+
+export const getAddressConvictionVotes = async (
+  address: string
+): Promise<any> => {
+  const convictionVotes = await queries.getIdentityConvictionVoting(address);
+  return convictionVotes;
+};
+
+export const getAddressTrackConvictionVotes = async (
+  address: string,
+  track: number
+): Promise<any> => {
+  const convictionVotes = await queries.getAddressTrackConvictionVoting(
+    address,
+    track
+  );
+  return convictionVotes;
+};
+
+export const getTrackConvictionVotes = async (track: number): Promise<any> => {
+  const convictionVotes = await queries.getTrackConvictionVoting(track);
+  return convictionVotes;
+};
+
+export const getReferendumConvictionVotes = async (
+  index: number
+): Promise<any> => {
+  const convictionVotes = await queries.getReferendumConvictionVoting(index);
+  return convictionVotes;
 };

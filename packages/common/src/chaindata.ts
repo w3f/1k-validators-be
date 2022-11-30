@@ -16,6 +16,7 @@ import {
   StringResult,
   ConvictionVote,
   ConvictionDelegation,
+  TrackInfo,
 } from "./types";
 import { getParaValIndex, hex2a, toDecimals } from "./util";
 import type {
@@ -37,6 +38,15 @@ export class ChainData {
   constructor(handler: ApiHandler) {
     this.api = handler.getApi();
   }
+
+  getChainType = async (): Promise<any> => {
+    if (!this.api.isConnected) {
+      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
+      return;
+    }
+    const chainType = await this.api.rpc.system.chain();
+    return chainType.toString();
+  };
 
   // Returns the denomination of the chain. Used for formatting planck denomianted amounts
   getDenom = async (): Promise<number> => {
@@ -1210,6 +1220,39 @@ export class ChainData {
     return referendaQuery;
   };
 
+  getTrackInfo = async () => {
+    const trackTypes = [];
+    const tracks = await this.api.consts.referenda.tracks;
+
+    for (const [trackIndex, trackInfo] of tracks) {
+      const {
+        name,
+        maxDeciding,
+        decisionDeposit,
+        preparePeriod,
+        decisionPeriod,
+        confirmPeriod,
+        minEnactmentPeriod,
+        minApproval,
+        minSupport,
+      } = trackInfo;
+      const t: TrackInfo = {
+        trackIndex: trackIndex.toString(),
+        name: name.toString(),
+        maxDeciding: parseFloat(maxDeciding.toString()),
+        decisionDeposit: parseFloat(decisionDeposit.toString()),
+        preparePeriod: parseFloat(preparePeriod.toString()),
+        decisionPeriod: parseFloat(decisionPeriod.toString()),
+        confirmPeriod: parseFloat(confirmPeriod.toString()),
+        minEnactmentPeriod: parseFloat(confirmPeriod.toString()),
+        // minApproval,
+        // minSupport
+      };
+      trackTypes.push(t);
+    }
+    return trackTypes;
+  };
+
   // OpenGov Conviction Voting
   getConvictionVoting = async () => {
     const allVotes: ConvictionVote[] = [];
@@ -1217,7 +1260,7 @@ export class ChainData {
     // Query the keys and storage of all the entries of `votingFor`
     // These are all the accounts voting, for which tracks, for which referenda
     // And whether they are delegating or not.
-
+    this.api.consts.referenda.tracks;
     const votingFor = await this.api.query.convictionVoting.votingFor.entries();
     for (const [key, entry] of votingFor) {
       // Each of these is the votingFor for an account for a given governance track

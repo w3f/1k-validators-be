@@ -1,4 +1,6 @@
 import { logger, ChainData, Types, queries } from "@1kv/common";
+import { ConvictionVote } from "@1kv/common/build/types";
+import { allCandidates } from "@1kv/common/build/db";
 
 export const democracyLabel = { label: "DemocracyJob" };
 
@@ -99,6 +101,26 @@ export const democracyJob = async (chaindata: ChainData) => {
         latestBlockNumber,
         latestBlockHash
       );
+    }
+  }
+
+  const chainType = await chaindata.getChainType();
+  if (chainType == "Kusama") {
+    try {
+      const trackTypes = await chaindata.getTrackInfo();
+      // TODO: store track types
+
+      const convictionVoting = await chaindata.getConvictionVoting();
+      const { votes, delegations } = convictionVoting;
+      for (const vote of votes) {
+        await queries.setConvictionVote(vote, latestBlockNumber);
+      }
+      const candidates = await allCandidates();
+      for (const candidate of candidates) {
+        await queries.updateCandidateConvictionVotes(candidate.stash);
+      }
+    } catch (e) {
+      logger.warn(`could not query open gov data`);
     }
   }
 

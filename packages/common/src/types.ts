@@ -107,9 +107,12 @@ export type CandidateData = {
   councilVotes: any[];
   democracyVoteCount: number;
   democracyVotes: [number];
+  convictionVotes: [number];
+  convictionVoteCount: number;
   infrastructureLocation: any;
 };
 
+// LEGACY GOV
 export type Referendum = {
   // The unique index of the proposal, used to identity and query by
   referendumIndex: number;
@@ -143,6 +146,7 @@ export type Referendum = {
   isPassing: boolean;
 };
 
+// LEGACY GOV
 export type ReferendumVote = {
   // The unique index of the proposal, used to identity and query by
   referendumIndex: number;
@@ -204,6 +208,26 @@ export type TrackInfo = {
   decisionPeriod: number;
   confirmPeriod: number;
   minEnactmentPeriod: number;
+};
+
+export type OpenGovReferendum = {
+  index: number;
+  track: number;
+  origin: string;
+  proposalHash: string;
+  enactmentAfter: number;
+  submitted: number;
+  submissionWho: string | null;
+  submissionAmount: number | null;
+  decisionDepositWho: string | null;
+  decisionDepositAmount: number | null;
+  decidingSince: number | null;
+  decidingConfirming: boolean | null;
+  ayes: number;
+  nays: number;
+  support: number;
+  inQueue: boolean;
+  //alarm
 };
 
 export interface AvailabilityCoreState {

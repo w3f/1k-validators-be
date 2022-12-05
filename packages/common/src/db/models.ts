@@ -180,8 +180,26 @@ export const DelegationSchema = new Schema({
   ],
   updated: Number,
 });
-
 export const DelegationModel = mongoose.model("Delegation", DelegationSchema);
+
+export const OpenGovDelegationSchema = new Schema({
+  validator: String,
+  totalBalance: Number,
+  delegators: [
+    {
+      address: String,
+      balance: Number,
+      effectiveBalance: Number,
+      conviction: String,
+    },
+  ],
+  updated: Number,
+});
+
+export const OpenGovDelegationModel = mongoose.model(
+  "OpenGovDelegation",
+  OpenGovDelegationSchema
+);
 
 export const CandidateSchema = new Schema({
   // The inherited telemetry ID.
@@ -451,6 +469,7 @@ export const ValidatorScoreSchema = new Schema({
   democracy: Number,
   nominatorStake: Number,
   delegations: Number,
+  openGov: Number,
   // The randomness factor used to buffer the total
   randomness: Number,
 });
@@ -681,6 +700,19 @@ export const ValidatorScoreMetadataSchema = new Schema({
     standardDeviation: Number,
   },
   delegationWeight: Number,
+  openGovStats: {
+    values: [Number],
+    absoluteMin: Number,
+    absoluteMax: Number,
+    q10: Number,
+    q25: Number,
+    q50: Number,
+    q75: Number,
+    q90: Number,
+    mean: Number,
+    standardDeviation: Number,
+  },
+  openGovWeight: Number,
   // The last time one was updated
   updated: Number,
 });
@@ -926,6 +958,33 @@ export const ConvictionVote = new Schema({
 export const ConvictionVoteModel = mongoose.model(
   "ConvictionVote",
   ConvictionVote
+);
+
+export const OpenGovReferendum = new Schema({
+  index: Number,
+  track: Number,
+  origin: String,
+  proposalHash: String,
+  enactmentAfter: Number,
+  submitted: Number,
+  submissionWho: String,
+  submissionAmount: Number,
+  decisionDepositWho: String,
+  decisionDepositAmount: Number,
+  decidingSince: Number,
+  decidingConfirming: Boolean,
+  ayes: Number,
+  nays: Number,
+  support: Number,
+  inQueue: Boolean,
+  updatedBlockNumber: Number,
+  updatedBlockHash: String,
+  updatedTimestamp: Number,
+});
+
+export const OpenGovReferendumModel = mongoose.model(
+  "OpenGovReferendum",
+  OpenGovReferendum
 );
 
 export const IIT = new Schema({

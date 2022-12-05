@@ -1,6 +1,6 @@
 import { logger, ChainData, Types, queries } from "@1kv/common";
 import { ConvictionVote } from "@1kv/common/build/types";
-import { allCandidates } from "@1kv/common/build/db";
+import { allCandidates, setOpenGovReferendum } from "@1kv/common/build/db";
 
 export const democracyLabel = { label: "DemocracyJob" };
 
@@ -104,6 +104,14 @@ export const democracyJob = async (chaindata: ChainData) => {
     }
   }
 
+  const openGovReferenda = await chaindata.getOpenGovReferenda();
+  for (const referenda of openGovReferenda) {
+    await queries.setOpenGovReferendum(
+      referenda,
+      latestBlockNumber,
+      latestBlockHash
+    );
+  }
   const chainType = await chaindata.getChainType();
   if (chainType == "Kusama") {
     try {

@@ -6,10 +6,13 @@ export const delegationJob = async (chaindata: ChainData) => {
   const start = Date.now();
 
   const delegators = await chaindata.getDelegators();
+  const convictionVoting = await chaindata.getConvictionVoting();
+  const { votes, delegations } = convictionVoting;
 
   const candidates = await queries.allCandidates();
 
   for (const candidate of candidates) {
+    // LEGACY DELEGATIONS
     const delegating = delegators.filter((delegator) => {
       if (delegator.target == candidate.stash) return true;
     });
@@ -20,6 +23,11 @@ export const delegationJob = async (chaindata: ChainData) => {
     }
 
     await queries.setDelegation(candidate.stash, totalBalance, delegating);
+
+    // OPEN GOV DELEGATIONS
+    const openGovDelegating = delegations.filter((delegator) => {
+      if (delegator.target == candidate.stash) return true;
+    });
   }
 
   const end = Date.now();

@@ -104,17 +104,18 @@ export const democracyJob = async (chaindata: ChainData) => {
     }
   }
 
-  const openGovReferenda = await chaindata.getOpenGovReferenda();
-  for (const referenda of openGovReferenda) {
-    await queries.setOpenGovReferendum(
-      referenda,
-      latestBlockNumber,
-      latestBlockHash
-    );
-  }
   const chainType = await chaindata.getChainType();
   if (chainType == "Kusama") {
     try {
+      const openGovReferenda = await chaindata.getOpenGovReferenda();
+      for (const referenda of openGovReferenda) {
+        await queries.setOpenGovReferendum(
+          referenda,
+          latestBlockNumber,
+          latestBlockHash
+        );
+      }
+
       const trackTypes = await chaindata.getTrackInfo();
       // TODO: store track types
 

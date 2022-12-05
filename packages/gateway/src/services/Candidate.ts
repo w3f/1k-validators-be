@@ -123,6 +123,8 @@ export const getInvalidCandidates = async (): Promise<any> => {
         councilVotes: candidate.councilVotes,
         democracyVoteCount: candidate.democracyVoteCount,
         democracyVotes: candidate.democracyVotes,
+        convictionVotes: candidate.convictionVotes.sort((a, b) => a - b),
+        convictionVoteCount: candidate.convictionVoteCount,
         matrix: candidate.matrix,
       };
     })
@@ -163,6 +165,8 @@ export const getCandidates = async (): Promise<any> => {
         councilVotes: candidate.councilVotes,
         democracyVoteCount: candidate.democracyVoteCount,
         democracyVotes: candidate.democracyVotes,
+        convictionVotes: candidate.convictionVotes.sort((a, b) => a - b),
+        convictionVoteCount: candidate.convictionVoteCount,
         matrix: candidate.matrix,
       };
     })

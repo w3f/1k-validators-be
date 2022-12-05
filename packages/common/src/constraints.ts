@@ -13,6 +13,7 @@ import {
 import ApiHandler from "./ApiHandler";
 import {
   allCandidates,
+  getLastOpenGovReferenda,
   getLastReferenda,
   getLatestRelease,
   getLatestValidatorScoreMetadata,
@@ -101,6 +102,7 @@ export class OTV implements Constraints {
   private DEMOCRACY_WEIGHT = 100;
   private NOMINATIONS_WEIGHT = 100;
   private DELEGATIONS_WEIGHT = 60;
+  private OPENGOV_WEIGHT = 100;
 
   constructor(handler: ApiHandler, config: Config.ConfigSchema) {
     this.chaindata = new ChainData(handler);
@@ -138,6 +140,7 @@ export class OTV implements Constraints {
     this.DEMOCRACY_WEIGHT = Number(this.config.score.democracy);
     this.NOMINATIONS_WEIGHT = Number(this.config.score.nominations);
     this.DELEGATIONS_WEIGHT = Number(this.config.score.delegations);
+    this.OPENGOV_WEIGHT = Number(this.config.score.openGov);
   }
 
   // Add candidate to valid cache and remove them from invalid cache
@@ -322,6 +325,7 @@ export class OTV implements Constraints {
     const { lastReferendum, democracyStats } = await getDemocracyValues(
       candidates
     );
+    const { openGovStats } = await getOpenGovValues(candidates);
 
     const scoreMetadata = {
       session: session,
@@ -357,6 +361,8 @@ export class OTV implements Constraints {
       councilStakeWeight: this.COUNCIL_WEIGHT,
       democracyStats: democracyStats,
       democracyWeight: this.DEMOCRACY_WEIGHT,
+      openGovStats: openGovStats,
+      openGovWeight: this.OPENGOV_WEIGHT,
     };
 
     // Create  entry for Validator Score Metadata
@@ -386,6 +392,7 @@ export class OTV implements Constraints {
       democracyStats,
       nominatorStakeStats,
       delegationStats,
+      openGovStats,
     } = scoreMetadata;
 
     // Scale inclusion between the 20th and 75th percentiles
@@ -589,6 +596,19 @@ export class OTV implements Constraints {
       scaled(totalDemocracyScore, democracyStats.values) *
       this.DEMOCRACY_WEIGHT;
 
+    const lastOpenGovReferendum = (await getLastOpenGovReferenda())[0]?.index;
+    // Score democracy based on how many proposals have been voted on
+    const candidateConvictionVotes = candidate?.convictionVotes
+      ? candidate.convictionVotes
+      : [];
+    const { totalDemocracyScore: totalOpenGovScore } = scoreDemocracyVotes(
+      candidateConvictionVotes,
+      lastOpenGovReferendum
+    );
+    const openGovValues = openGovStats.values;
+    const scaledOpenGovScore =
+      scaled(totalOpenGovScore, openGovValues) * this.OPENGOV_WEIGHT;
+
     const aggregate =
       inclusionScore +
       spanInclusionScore +
@@ -606,7 +626,8 @@ export class OTV implements Constraints {
       scaledDemocracyScore +
       offlineScore +
       delegationScore +
-      nominatorStakeScore;
+      nominatorStakeScore +
+      scaledOpenGovScore;
 
     const randomness = 1 + Math.random() * 0.15;
 
@@ -632,6 +653,7 @@ export class OTV implements Constraints {
       democracy: scaledDemocracyScore,
       nominatorStake: nominatorStakeScore,
       delegations: delegationScore,
+      openGov: scaledOpenGovScore,
       randomness: randomness,
       updated: Date.now(),
     };
@@ -1055,6 +1077,27 @@ export const getDemocracyValues = async (
   });
   const democracyStats = getStats(democracyValues);
   return { lastReferendum, democracyValues, democracyStats };
+};
+
+export const getOpenGovValues = async (
+  validCandidates: Types.CandidateData[]
+) => {
+  const lastReferendum = (await getLastOpenGovReferenda())[0]?.index;
+
+  const openGovValues = validCandidates.map((candidate) => {
+    const openGovVotes = candidate.convictionVotes
+      ? candidate.convictionVotes
+      : [];
+    const {
+      baseDemocracyScore,
+      totalDemocracyScore,
+      totalConsistencyMultiplier,
+      lastConsistencyMultiplier,
+    } = scoreDemocracyVotes(openGovVotes, lastReferendum);
+    return totalDemocracyScore || 0;
+  });
+  const openGovStats = getStats(openGovValues);
+  return { lastReferendum, openGovValues, openGovStats };
 };
 
 // Checks the online validity of a node

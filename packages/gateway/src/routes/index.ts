@@ -63,6 +63,9 @@ const API = {
   AddressTrackConvictionVotes: "/opengov/votes/address/:address/track/:track",
   TrackConvictionVotes: "/opengov/votes/track/:track",
   ReferendumConvictionVotes: "/opengov/votes/referendum/:index",
+  OpenGovReferenda: "/opengov/referenda",
+  OpenGovReferendaIndex: "/opengov/referenda/:index",
+  OpenGovLastReferendum: "/opengov/referenda/last",
 };
 
 router.get(API.Accounting, Accounting.getAccounting);

@@ -39,6 +39,8 @@ export const setValidatorScoreMetadata = async (
     councilStakeWeight,
     democracyStats,
     democracyWeight,
+    openGovStats,
+    openGovWeight,
   } = scoreMetadata;
 
   const data = await ValidatorScoreMetadataModel.findOne({
@@ -84,6 +86,8 @@ export const setValidatorScoreMetadata = async (
         councilStakeWeight,
         democracyStats,
         democracyWeight,
+        openGovStats,
+        openGovWeight,
         updated,
       });
       await validatorScoreMetadata.save();
@@ -130,6 +134,8 @@ export const setValidatorScoreMetadata = async (
       councilStakeWeight,
       democracyStats,
       democracyWeight,
+      openGovStats,
+      openGovWeight,
       updated,
     }
   ).exec();

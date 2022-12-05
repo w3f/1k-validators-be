@@ -6,7 +6,7 @@ import {
   POLKADOT_APPROX_ERA_LENGTH_IN_BLOCKS,
   TESTNET_APPROX_ERA_LENGTH_IN_BLOCKS,
 } from "./constants";
-import { getChainMetadata, getEraPoints } from "./db";
+import { getChainMetadata, getEraPoints, setOpenGovReferendum } from "./db";
 import logger from "./logger";
 import {
   AvailabilityCoreState,
@@ -17,6 +17,7 @@ import {
   ConvictionVote,
   ConvictionDelegation,
   TrackInfo,
+  OpenGovReferendum,
 } from "./types";
 import { getParaValIndex, hex2a, toDecimals } from "./util";
 import type {
@@ -1218,6 +1219,62 @@ export class ChainData {
     const referendaQuery = await this.api.derive.democracy.referendums();
 
     return referendaQuery;
+  };
+
+  getOpenGovReferenda = async () => {
+    const allReferenda = [];
+    const referenda =
+      await this.api.query.referenda.referendumInfoFor.entries();
+    for (const [key, info] of referenda) {
+      const index = parseInt(key.toHuman()[0]);
+
+      const {
+        track,
+        origin: { origins },
+        proposal: {
+          lookup: { hash },
+        },
+        enactment: { after },
+        submitted,
+        submissionDeposit: { who: submissionWho, amount: submissionAmount },
+        decisionDeposit,
+        deciding,
+        tally: { ayes, nays, support },
+        inQueue,
+        alarm,
+      } = info.toJSON()["ongoing"];
+      let decisionDepositWho, decisionDepositAmount, since, confirming;
+      if (decisionDeposit) {
+        const { who: decisionDepositWho, amount: decisionDepositAmount } =
+          decisionDeposit;
+      }
+      if (deciding) {
+        const { since, confirming } = deciding;
+      }
+
+      const r: OpenGovReferendum = {
+        index: index,
+        track: track,
+        origin: origins,
+        proposalHash: hash,
+        enactmentAfter: after,
+        submitted: submitted,
+        submissionWho: submissionWho,
+        submissionAmount: submissionAmount,
+        decisionDepositWho: decisionDepositWho ? decisionDepositWho : null,
+        decisionDepositAmount: decisionDepositAmount
+          ? decisionDepositAmount
+          : null,
+        decidingSince: since ? since : null,
+        decidingConfirming: confirming ? confirming : null,
+        ayes: ayes,
+        nays: nays,
+        support: support,
+        inQueue: inQueue,
+      };
+      allReferenda.push(r);
+    }
+    return allReferenda;
   };
 
   getTrackInfo = async () => {

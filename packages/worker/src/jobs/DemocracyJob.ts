@@ -123,6 +123,13 @@ export const democracyJob = async (chaindata: ChainData) => {
       const { votes, delegations } = convictionVoting;
       for (const vote of votes) {
         await queries.setConvictionVote(vote, latestBlockNumber);
+
+        // Try to set the identity
+        const identityExists = await queries.getIdentity(vote.address);
+        if (!identityExists) {
+          const identity = await chaindata.getFormattedIdentity(vote.address);
+          await queries.setIdentity(identity);
+        }
       }
       const candidates = await allCandidates();
       for (const candidate of candidates) {

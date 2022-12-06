@@ -30,7 +30,7 @@ __metadata:
     "@types/mongoose": ^5.11.97
     "@types/node": ^18.11.9
     hash.js: ^1.1.7
-    mongoose: ^6.7.2
+    mongoose: ^6.8.0
     typescript: ^4.9.3
     winston: ^3.8.2
   languageName: unknown
@@ -77,7 +77,7 @@ __metadata:
     matrix-js-sdk: ^20.1.0
     mongodb: 4.12.0
     mongodb-memory-server: ^8.10.0
-    mongoose: ^6.7.2
+    mongoose: ^6.8.0
     nodemon: ^2.0.20
     open-cli: ^7.1.0
     prettier: ^2.7.1
@@ -5502,6 +5502,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"kareem@npm:2.5.0":
+  version: 2.5.0
+  resolution: "kareem@npm:2.5.0"
+  checksum: 292e80b32fb44e1801c5eb25b150e4b42e6ddf8a9c38ac67f99d4e7164dc7d9e874ea9b6ffaa42d6c3e76c8dd28ae5723643f3b5c8cb5c481af07118ce1475e3
+  languageName: node
+  linkType: hard
+
 "keygrip@npm:~1.1.0":
   version: 1.1.0
   resolution: "keygrip@npm:1.1.0"
@@ -6320,25 +6327,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mongodb@npm:4.11.0, mongodb@npm:~4.11.0":
-  version: 4.11.0
-  resolution: "mongodb@npm:4.11.0"
-  dependencies:
-    "@aws-sdk/credential-providers": ^3.186.0
-    bson: ^4.7.0
-    denque: ^2.1.0
-    mongodb-connection-string-url: ^2.5.4
-    saslprep: ^1.0.3
-    socks: ^2.7.1
-  dependenciesMeta:
-    "@aws-sdk/credential-providers":
-      optional: true
-    saslprep:
-      optional: true
-  checksum: 3080c2f58dc712ca6d0a34b0f4101c3ca66fbf86360b2a5ea2b64a9f757b4a0d7b77851688657fc3240ac748ddcd69c21ec2f7c785f10cb7d41e00e863f415ec
-  languageName: node
-  linkType: hard
-
 "mongodb@npm:4.12.0":
   version: 4.12.0
   resolution: "mongodb@npm:4.12.0"
@@ -6354,6 +6342,24 @@ __metadata:
     saslprep:
       optional: true
   checksum: 002a92eecfeb160d07aa83f8f9e4fa33a06816635606a85312713150eba41cb17abf92b785ca1ecc7c8de40519ef119d372896f2a1cd4902f92447d26a80b000
+  languageName: node
+  linkType: hard
+
+"mongodb@npm:4.12.1":
+  version: 4.12.1
+  resolution: "mongodb@npm:4.12.1"
+  dependencies:
+    "@aws-sdk/credential-providers": ^3.186.0
+    bson: ^4.7.0
+    mongodb-connection-string-url: ^2.5.4
+    saslprep: ^1.0.3
+    socks: ^2.7.1
+  dependenciesMeta:
+    "@aws-sdk/credential-providers":
+      optional: true
+    saslprep:
+      optional: true
+  checksum: 84590484b2c93bce849ec1e334b064e983444ed73942061c91e09556348c80db9d4a40544b927cd795bdfbfc51d1b713a7df5ced4ecf13cd00fab5e3c3e32ada
   languageName: node
   linkType: hard
 
@@ -6373,6 +6379,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"mongodb@npm:~4.11.0":
+  version: 4.11.0
+  resolution: "mongodb@npm:4.11.0"
+  dependencies:
+    "@aws-sdk/credential-providers": ^3.186.0
+    bson: ^4.7.0
+    denque: ^2.1.0
+    mongodb-connection-string-url: ^2.5.4
+    saslprep: ^1.0.3
+    socks: ^2.7.1
+  dependenciesMeta:
+    "@aws-sdk/credential-providers":
+      optional: true
+    saslprep:
+      optional: true
+  checksum: 3080c2f58dc712ca6d0a34b0f4101c3ca66fbf86360b2a5ea2b64a9f757b4a0d7b77851688657fc3240ac748ddcd69c21ec2f7c785f10cb7d41e00e863f415ec
+  languageName: node
+  linkType: hard
+
 "mongoose@npm:*":
   version: 6.6.5
   resolution: "mongoose@npm:6.6.5"
@@ -6388,18 +6413,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mongoose@npm:^6.7.2":
-  version: 6.7.2
-  resolution: "mongoose@npm:6.7.2"
+"mongoose@npm:^6.8.0":
+  version: 6.8.0
+  resolution: "mongoose@npm:6.8.0"
   dependencies:
     bson: ^4.7.0
-    kareem: 2.4.1
-    mongodb: 4.11.0
+    kareem: 2.5.0
+    mongodb: 4.12.1
     mpath: 0.9.0
     mquery: 4.0.3
     ms: 2.1.3
     sift: 16.0.1
-  checksum: 5e3822603a143dbf3739a3fe4250a23b2433fe478809d662009724bf6311e13e59b2ba6bd4f1847567fe4f4d65e4972d3b5b892c27163adec4d18aff57a5e278
+  checksum: 565fbf795cfe9b753fc4cf7787c2d3804cefb3a203705b25d41f7c67d628f96dfc644560a69d97ec0546a279339a703de72d011f5ac82b1369ba73972d5b581f
   languageName: node
   linkType: hard
 
@@ -8490,7 +8515,7 @@ __metadata:
 
 "typescript@patch:typescript@^4.9.3#~builtin<compat/typescript>":
   version: 4.9.3
-  resolution: "typescript@patch:typescript@npm%3A4.9.3#~builtin<compat/typescript>::version=4.9.3&hash=bda367"
+  resolution: "typescript@patch:typescript@npm%3A4.9.3#~builtin<compat/typescript>::version=4.9.3&hash=f456af"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver

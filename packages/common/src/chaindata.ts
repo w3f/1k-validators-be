@@ -1420,7 +1420,7 @@ export class ChainData {
           // The index of the referendum
           referendumIndex: v[0].referendumIndex,
           // The conviction being voted with, ie `None`, `Locked1x`, `Locked5x`, etc
-          conviction: v[0].conviction,
+          conviction: delegation.conviction,
           // The balance they are voting with themselves, sans delegated balance
           balance: delegation.balance,
           // The total amount of tokens that were delegated to them (including conviction)
@@ -1457,7 +1457,7 @@ export class ChainData {
               // The index of the referendum
               referendumIndex: dVotes[0].referendumIndex,
               // The conviction being voted with, ie `None`, `Locked1x`, `Locked5x`, etc
-              conviction: dVotes[0].conviction,
+              conviction: delegation.conviction,
               // The balance they are voting with themselves, sans delegated balance
               balance: delegation.balance,
               // The total amount of tokens that were delegated to them (including conviction)

@@ -313,14 +313,26 @@ export const getIdentityConvictionVoting = async (address: string) => {
   const votes = [];
   // the list of identities associated with a given address
   const identities = await getIdentityAddresses(address);
-  for (const identity of identities) {
-    const addressVotes = await getAddressConvictionVoting(identity);
-    for (const addressVote of addressVotes) {
-      votes.push(addressVote);
+  if (identities.length == 0) {
+    const identity = await getIdentity(address);
+    const votes = await getAddressConvictionVoting(address);
+    return {
+      identity: identity,
+      votes: votes.sort((a, b) => a.referendumIndex - b.referendumIndex),
+    };
+  } else {
+    for (const identity of identities) {
+      const addressVotes = await getAddressConvictionVoting(identity);
+      for (const addressVote of addressVotes) {
+        votes.push(addressVote);
+      }
     }
+    const identity = await getIdentity(address);
+    return {
+      identity,
+      votes: votes.sort((a, b) => a.referendumIndex - b.referendumIndex),
+    };
   }
-  const identity = await getIdentity(address);
-  return { identity, votes };
 };
 
 export const setOpenGovReferendum = async (

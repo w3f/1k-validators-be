@@ -6,8 +6,6 @@ export const delegationJob = async (chaindata: ChainData) => {
   const start = Date.now();
 
   const delegators = await chaindata.getDelegators();
-  const convictionVoting = await chaindata.getConvictionVoting();
-  const { votes, delegations } = convictionVoting;
 
   const candidates = await queries.allCandidates();
 
@@ -23,11 +21,22 @@ export const delegationJob = async (chaindata: ChainData) => {
     }
 
     await queries.setDelegation(candidate.stash, totalBalance, delegating);
+  }
 
-    // OPEN GOV DELEGATIONS
-    const openGovDelegating = delegations.filter((delegator) => {
-      if (delegator.target == candidate.stash) return true;
-    });
+  // OPEN GOV DELEGATIONS
+  const chainType = await chaindata.getChainType();
+  if (chainType == "Kusama") {
+    try {
+      const convictionVoting = await chaindata.getConvictionVoting();
+      const { votes, delegations } = convictionVoting;
+      for (const candidate of candidates) {
+        const openGovDelegating = delegations.filter((delegator) => {
+          if (delegator.target == candidate.stash) return true;
+        });
+      }
+    } catch (e) {
+      logger.error(e);
+    }
   }
 
   const end = Date.now();

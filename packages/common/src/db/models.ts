@@ -184,7 +184,9 @@ export const DelegationModel = mongoose.model("Delegation", DelegationSchema);
 
 export const OpenGovDelegationSchema = new Schema({
   validator: String,
+  track: Number,
   totalBalance: Number,
+  delegatorCount: Number,
   delegators: [
     {
       address: String,

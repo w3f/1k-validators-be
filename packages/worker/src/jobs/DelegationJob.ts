@@ -28,11 +28,21 @@ export const delegationJob = async (chaindata: ChainData) => {
   if (chainType == "Kusama") {
     try {
       const convictionVoting = await chaindata.getConvictionVoting();
+      const tracks = await chaindata.getTrackInfo();
       const { votes, delegations } = convictionVoting;
       for (const candidate of candidates) {
-        const openGovDelegating = delegations.filter((delegator) => {
-          if (delegator.target == candidate.stash) return true;
-        });
+        for (const track of tracks) {
+          const trackDelegations = delegations.filter((delegator) => {
+            if (
+              delegator.track == track.trackIndex &&
+              delegator.target == candidate.stash
+            )
+              return true;
+          });
+          if (trackDelegations.length > 0) {
+            // logger.info(JSON.stringify(trackDelegations));
+          }
+        }
       }
     } catch (e) {
       logger.error(e);

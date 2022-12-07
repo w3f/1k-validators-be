@@ -107,8 +107,10 @@ export const democracyJob = async (chaindata: ChainData) => {
   const chainType = await chaindata.getChainType();
   if (chainType == "Kusama") {
     try {
-      const openGovReferenda = await chaindata.getOpenGovReferenda();
-      for (const referenda of openGovReferenda) {
+      const { ongoingReferenda, approvedReferenda } =
+        await chaindata.getOpenGovReferenda();
+      // TODO: Update approved referenda
+      for (const referenda of ongoingReferenda) {
         await queries.setOpenGovReferendum(
           referenda,
           latestBlockNumber,
@@ -137,6 +139,7 @@ export const democracyJob = async (chaindata: ChainData) => {
       }
     } catch (e) {
       logger.warn(`could not query open gov data`);
+      logger.error(JSON.stringify(e));
     }
   }
 

@@ -227,6 +227,7 @@ export type OpenGovReferendum = {
   nays: number;
   support: number;
   inQueue: boolean;
+  currentStatus: string;
   //alarm
 };
 

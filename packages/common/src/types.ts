@@ -172,13 +172,19 @@ export type ConvictionVote = {
   // The conviction being voted with, ie `None`, `Locked1x`, `Locked5x`, etc
   conviction: string;
   // The balance they are voting with themselves, sans delegated balance
-  balance: number;
+  balance: {
+    aye: number;
+    nay: number;
+    abstain: number;
+  };
   // The total amount of tokens that were delegated to them (including conviction)
   delegatedConvictionBalance: number;
   // the total amount of tokens that were delegated to them (without conviction)
   delegatedBalance: number;
   // The vote type, either 'aye', or 'nay'
   voteDirection: string;
+  // Either "Standard", "Split", or "SplitAbstain",
+  voteDirectionType: string;
   // Whether the person is voting themselves or delegating
   voteType: string;
   // Who the person is delegating to

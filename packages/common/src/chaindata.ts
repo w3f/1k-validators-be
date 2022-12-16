@@ -1279,14 +1279,22 @@ export class ChainData {
         ongoingReferenda.push(r);
       } else if (trackJSON["approved"]) {
         const [confirmationBlockNumber, submitter] = trackJSON["approved"];
-        const { who, amount } = submitter;
-        const r = {
-          index: index,
-          confirmationBlockNumber: confirmationBlockNumber,
-          who: who,
-          submissionBond: amount,
-        };
-        approvedReferenda.push(r);
+        if (submitter) {
+          const { who, amount } = submitter;
+          const r = {
+            index: index,
+            confirmationBlockNumber: confirmationBlockNumber,
+            who: who,
+            submissionBond: amount,
+          };
+          approvedReferenda.push(r);
+        } else {
+          const r = {
+            index: index,
+            confirmationBlockNumber: confirmationBlockNumber,
+          };
+          approvedReferenda.push(r);
+        }
       }
     }
     return {
@@ -1537,30 +1545,14 @@ export class ChainData {
               nay: Number(delegation.balance),
               abstain: Number(0),
             };
-          } else if (voteDirectionType == "Split") {
-            const ayePercentage =
-              vote.balance.aye / (vote.balance.aye + vote.balance.nay);
-            const nayPercentage =
-              vote.balance.nay / (vote.balance.aye + vote.balance.nay);
+          } else if (
+            voteDirectionType == "Split" ||
+            voteDirectionType == "SplitAbstain"
+          ) {
             balance = {
-              aye: Number(delegation.balance) * ayePercentage,
-              nay: Number(delegation.balance) * nayPercentage,
+              aye: Number(0),
+              nay: Number(0),
               abstain: Number(0),
-            };
-          } else if (voteDirectionType == "SplitAbstain") {
-            const ayePercentage =
-              vote.balance.aye /
-              (vote.balance.aye + vote.balance.nay + vote.balance.abstain);
-            const nayPercentage =
-              vote.balance.nay /
-              (vote.balance.aye + vote.balance.nay + vote.balance.abstain);
-            const abstainPercentage =
-              vote.balance.nay /
-              (vote.balance.aye + vote.balance.nay + vote.balance.abstain);
-            balance = {
-              aye: Number(delegation.balance) * ayePercentage,
-              nay: Number(delegation.balance) * nayPercentage,
-              abstain: Number(delegation.balance) * abstainPercentage,
             };
           }
 

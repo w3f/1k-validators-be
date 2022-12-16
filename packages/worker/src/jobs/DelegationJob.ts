@@ -30,19 +30,11 @@ export const delegationJob = async (chaindata: ChainData) => {
       const convictionVoting = await chaindata.getConvictionVoting();
       const tracks = await chaindata.getTrackInfo();
       const { votes, delegations } = convictionVoting;
-      for (const candidate of candidates) {
-        for (const track of tracks) {
-          const trackDelegations = delegations.filter((delegator) => {
-            if (
-              delegator.track == track.trackIndex &&
-              delegator.target == candidate.stash
-            )
-              return true;
-          });
-          if (trackDelegations.length > 0) {
-            // logger.info(JSON.stringify(trackDelegations));
-          }
-        }
+
+      for (const track of tracks) {
+        const trackDelegations = delegations.filter((delegator) => {
+          if (delegator.track == track.trackIndex) return true;
+        });
       }
     } catch (e) {
       logger.error(e);

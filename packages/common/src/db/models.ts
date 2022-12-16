@@ -942,7 +942,11 @@ export const ConvictionVote = new Schema({
   // The conviction being voted with, ie `None`, `Locked1x`, `Locked5x`, etc
   conviction: String,
   // The balance they are voting with themselves, sans delegated balance
-  balance: Number,
+  balance: {
+    aye: Number,
+    nay: Number,
+    abstain: Number,
+  },
   // The total amount of tokens that were delegated to them (including conviction)
   delegatedConvictionBalance: Number,
   // the total amount of tokens that were delegated to them (without conviction)

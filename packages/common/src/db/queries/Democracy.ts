@@ -417,3 +417,7 @@ export const getAllOpenGovReferenda = async (): Promise<any> => {
 export const getLastOpenGovReferenda = async (): Promise<any> => {
   return await OpenGovReferendumModel.find({}).lean().sort("-index").exec();
 };
+
+export const addOpenGovDelegation = async (delegation) => {
+  console.log("");
+};

@@ -1525,8 +1525,45 @@ export class ChainData {
         for (const vote of v) {
           const voteDirectionType = vote.voteDirectionType;
           let balance;
-          if (voteDirectionType)
-          const balance =
+          if (voteDirectionType == "Aye") {
+            balance = {
+              aye: Number(delegation.balance),
+              nay: Number(0),
+              abstain: Number(0),
+            };
+          } else if (voteDirectionType == "Nay") {
+            balance = {
+              aye: Number(0),
+              nay: Number(delegation.balance),
+              abstain: Number(0),
+            };
+          } else if (voteDirectionType == "Split") {
+            const ayePercentage =
+              vote.balance.aye / (vote.balance.aye + vote.balance.nay);
+            const nayPercentage =
+              vote.balance.nay / (vote.balance.aye + vote.balance.nay);
+            balance = {
+              aye: Number(delegation.balance) * ayePercentage,
+              nay: Number(delegation.balance) * nayPercentage,
+              abstain: Number(0),
+            };
+          } else if (voteDirectionType == "SplitAbstain") {
+            const ayePercentage =
+              vote.balance.aye /
+              (vote.balance.aye + vote.balance.nay + vote.balance.abstain);
+            const nayPercentage =
+              vote.balance.nay /
+              (vote.balance.aye + vote.balance.nay + vote.balance.abstain);
+            const abstainPercentage =
+              vote.balance.nay /
+              (vote.balance.aye + vote.balance.nay + vote.balance.abstain);
+            balance = {
+              aye: Number(delegation.balance) * ayePercentage,
+              nay: Number(delegation.balance) * nayPercentage,
+              abstain: Number(delegation.balance) * abstainPercentage,
+            };
+          }
+
           const delegatedVote: ConvictionVote = {
             // The particular governance track
             track: vote.track,
@@ -1537,7 +1574,7 @@ export class ChainData {
             // The conviction being voted with, ie `None`, `Locked1x`, `Locked5x`, etc
             conviction: delegation.conviction,
             // The balance they are voting with themselves, sans delegated balance
-            balance: delegation.balance,
+            balance: balance,
             // The total amount of tokens that were delegated to them (including conviction)
             delegatedConvictionBalance: delegation.delegatedConvictionBalance,
             // the total amount of tokens that were delegated to them (without conviction)
@@ -1546,6 +1583,7 @@ export class ChainData {
             voteDirection: vote.voteDirection,
             // Whether the person is voting themselves or delegating
             voteType: "Delegating",
+            voteDirectionType: voteDirectionType,
             // Who the person is delegating to
             delegatedTo: vote.address,
           };
@@ -1582,6 +1620,53 @@ export class ChainData {
             if (v.length > 0) {
               // There are votes, ascribe them to the delegator
               for (const vote of v) {
+                const voteDirectionType = vote.voteDirectionType;
+                let balance;
+                if (voteDirectionType == "Aye") {
+                  balance = {
+                    aye: Number(delegation.balance),
+                    nay: Number(0),
+                    abstain: Number(0),
+                  };
+                } else if (voteDirectionType == "Nay") {
+                  balance = {
+                    aye: Number(0),
+                    nay: Number(delegation.balance),
+                    abstain: Number(0),
+                  };
+                } else if (voteDirectionType == "Split") {
+                  const ayePercentage =
+                    vote.balance.aye / (vote.balance.aye + vote.balance.nay);
+                  const nayPercentage =
+                    vote.balance.nay / (vote.balance.aye + vote.balance.nay);
+                  balance = {
+                    aye: Number(delegation.balance) * ayePercentage,
+                    nay: Number(delegation.balance) * nayPercentage,
+                    abstain: Number(0),
+                  };
+                } else if (voteDirectionType == "SplitAbstain") {
+                  const ayePercentage =
+                    vote.balance.aye /
+                    (vote.balance.aye +
+                      vote.balance.nay +
+                      vote.balance.abstain);
+                  const nayPercentage =
+                    vote.balance.nay /
+                    (vote.balance.aye +
+                      vote.balance.nay +
+                      vote.balance.abstain);
+                  const abstainPercentage =
+                    vote.balance.nay /
+                    (vote.balance.aye +
+                      vote.balance.nay +
+                      vote.balance.abstain);
+                  balance = {
+                    aye: Number(delegation.balance) * ayePercentage,
+                    nay: Number(delegation.balance) * nayPercentage,
+                    abstain: Number(delegation.balance) * abstainPercentage,
+                  };
+                }
+
                 const delegatedVote: ConvictionVote = {
                   // The particular governance track
                   track: vote.track,
@@ -1592,7 +1677,7 @@ export class ChainData {
                   // The conviction being voted with, ie `None`, `Locked1x`, `Locked5x`, etc
                   conviction: delegation.conviction,
                   // The balance they are voting with themselves, sans delegated balance
-                  balance: delegation.balance,
+                  balance: balance,
                   // The total amount of tokens that were delegated to them (including conviction)
                   delegatedConvictionBalance:
                     delegation.delegatedConvictionBalance,
@@ -1602,6 +1687,7 @@ export class ChainData {
                   voteDirection: vote.voteDirection,
                   // Whether the person is voting themselves or delegating
                   voteType: "Delegating",
+                  voteDirectionType: voteDirectionType,
                   // Who the person is delegating to
                   delegatedTo: vote.address,
                 };

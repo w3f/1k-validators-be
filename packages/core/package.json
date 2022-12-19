@@ -35,7 +35,7 @@
     "@types/cron": "^2.0.0",
     "@types/koa": "^2.13.5",
     "@types/koa-bodyparser": "^4.3.10",
-    "@types/node": "^18.11.13",
+    "@types/node": "^18.11.17",
     "@types/semver": "^7.3.13",
     "@types/ws": "^8.5.3",
     "axios": "^1.2.1",

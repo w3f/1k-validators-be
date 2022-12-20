@@ -30,7 +30,7 @@ __metadata:
     "@types/mongoose": ^5.11.97
     "@types/node": ^18.11.13
     hash.js: ^1.1.7
-    mongoose: ^6.8.0
+    mongoose: ^6.8.1
     typescript: ^4.9.4
     winston: ^3.8.2
   languageName: unknown
@@ -77,7 +77,7 @@ __metadata:
     matrix-js-sdk: ^20.1.0
     mongodb: 4.12.1
     mongodb-memory-server: ^8.10.2
-    mongoose: ^6.8.0
+    mongoose: ^6.8.1
     nodemon: ^2.0.20
     open-cli: ^7.1.0
     prettier: ^2.8.1
@@ -6433,9 +6433,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mongoose@npm:^6.8.0":
-  version: 6.8.0
-  resolution: "mongoose@npm:6.8.0"
+"mongoose@npm:^6.8.1":
+  version: 6.8.1
+  resolution: "mongoose@npm:6.8.1"
   dependencies:
     bson: ^4.7.0
     kareem: 2.5.0
@@ -6444,7 +6444,7 @@ __metadata:
     mquery: 4.0.3
     ms: 2.1.3
     sift: 16.0.1
-  checksum: 565fbf795cfe9b753fc4cf7787c2d3804cefb3a203705b25d41f7c67d628f96dfc644560a69d97ec0546a279339a703de72d011f5ac82b1369ba73972d5b581f
+  checksum: 8590e163a7e83a3fda929b45c6845525ca0ef3e1068558f4d5f95d5dec6613576b205ebec434bf76362d7371c92b7a890999a51d355fd3eb7679c56c34f4a7dc
   languageName: node
   linkType: hard
 
@@ -8551,7 +8551,7 @@ __metadata:
 
 "typescript@patch:typescript@^4.9.4#~builtin<compat/typescript>":
   version: 4.9.4
-  resolution: "typescript@patch:typescript@npm%3A4.9.4#~builtin<compat/typescript>::version=4.9.4&hash=bda367"
+  resolution: "typescript@patch:typescript@npm%3A4.9.4#~builtin<compat/typescript>::version=4.9.4&hash=f456af"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver

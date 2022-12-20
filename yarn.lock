@@ -75,7 +75,7 @@ __metadata:
     koa-cash: ^4.1.1
     koa2-cors: ^2.0.6
     matrix-js-sdk: ^20.1.0
-    mongodb: 4.12.1
+    mongodb: 4.13.0
     mongodb-memory-server: ^8.10.2
     mongoose: ^6.8.0
     nodemon: ^2.0.20
@@ -6383,6 +6383,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"mongodb@npm:4.13.0":
+  version: 4.13.0
+  resolution: "mongodb@npm:4.13.0"
+  dependencies:
+    "@aws-sdk/credential-providers": ^3.186.0
+    bson: ^4.7.0
+    mongodb-connection-string-url: ^2.5.4
+    saslprep: ^1.0.3
+    socks: ^2.7.1
+  dependenciesMeta:
+    "@aws-sdk/credential-providers":
+      optional: true
+    saslprep:
+      optional: true
+  checksum: 4c30eed40f639ac64069623cf7a4954e98eab81b91d61df90e7813dd2a745259cdc698f3b60bd7f37c123242b7eb0aaae6ee4e29ff2e48f5d13f187931d51f36
+  languageName: node
+  linkType: hard
+
 "mongodb@npm:4.9.1":
   version: 4.9.1
   resolution: "mongodb@npm:4.9.1"
@@ -8551,7 +8569,7 @@ __metadata:
 
 "typescript@patch:typescript@^4.9.4#~builtin<compat/typescript>":
   version: 4.9.4
-  resolution: "typescript@patch:typescript@npm%3A4.9.4#~builtin<compat/typescript>::version=4.9.4&hash=bda367"
+  resolution: "typescript@patch:typescript@npm%3A4.9.4#~builtin<compat/typescript>::version=4.9.4&hash=f456af"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver

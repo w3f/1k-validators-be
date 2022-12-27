@@ -1223,7 +1223,7 @@ export class ChainData {
 
   getOpenGovReferenda = async () => {
     const ongoingReferenda = [];
-    const approvedReferenda = [];
+    const finishedReferenda = [];
     const referenda =
       await this.api.query.referenda.referendumInfoFor.entries();
     for (const [key, info] of referenda) {
@@ -1275,31 +1275,86 @@ export class ChainData {
           support: support,
           inQueue: inQueue,
           currentStatus: "Ongoing",
+          confirmationBlockNumber: null,
         };
         ongoingReferenda.push(r);
-      } else if (trackJSON["approved"]) {
-        const [confirmationBlockNumber, submitter] = trackJSON["approved"];
-        if (submitter) {
-          const { who, amount } = submitter;
-          const r = {
-            index: index,
-            confirmationBlockNumber: confirmationBlockNumber,
-            who: who,
-            submissionBond: amount,
-          };
-          approvedReferenda.push(r);
-        } else {
-          const r = {
-            index: index,
-            confirmationBlockNumber: confirmationBlockNumber,
-          };
-          approvedReferenda.push(r);
+      } else if (
+        trackJSON["approved"] ||
+        trackJSON["cancelled"] ||
+        trackJSON["rejected"]
+      ) {
+        let status, confirmationBlockNumber;
+        if (trackJSON["approved"]) {
+          confirmationBlockNumber = trackJSON["approved"][0];
+          status = "Approved";
+        } else if (trackJSON["cancelled"]) {
+          confirmationBlockNumber = trackJSON["cancelled"][0];
+          status = "Cancelled";
+        } else if (trackJSON["rejected"]) {
+          confirmationBlockNumber = trackJSON["rejected"][0];
+          status = "Rejected";
         }
+
+        const apiAt = await this.getApiAt(confirmationBlockNumber - 1);
+        // Get the info at the last block before it closed.
+        const referendumInfo = await apiAt.query.referenda.referendumInfoFor(
+          index
+        );
+        const referendumJSON = referendumInfo.toJSON();
+
+        const {
+          track,
+          origin: { origins },
+          proposal: {
+            lookup: { hash },
+          },
+          enactment: { after },
+          submitted,
+          submissionDeposit: { who: submissionWho, amount: submissionAmount },
+          decisionDeposit,
+          deciding,
+          tally: { ayes, nays, support },
+          inQueue,
+          alarm,
+        } = referendumJSON["ongoing"];
+        let decisionDepositWho, decisionDepositAmount, since, confirming;
+        if (decisionDeposit) {
+          const { who: decisionDepositWho, amount: decisionDepositAmount } =
+            decisionDeposit;
+        }
+        if (deciding) {
+          const { since, confirming } = deciding;
+        }
+
+        const r: OpenGovReferendum = {
+          index: index,
+          track: track,
+          origin: origins,
+          proposalHash: hash,
+          enactmentAfter: after,
+          submitted: submitted,
+          submissionWho: submissionWho,
+          submissionAmount: submissionAmount,
+          decisionDepositWho: decisionDepositWho ? decisionDepositWho : null,
+          decisionDepositAmount: decisionDepositAmount
+            ? decisionDepositAmount
+            : null,
+          decidingSince: since ? since : null,
+          decidingConfirming: confirming ? confirming : null,
+          ayes: ayes,
+          nays: nays,
+          support: support,
+          inQueue: inQueue,
+          currentStatus: status,
+          confirmationBlockNumber: confirmationBlockNumber,
+        };
+
+        finishedReferenda.push(r);
       }
     }
     return {
       ongoingReferenda: ongoingReferenda,
-      approvedReferenda: approvedReferenda,
+      finishedReferenda: finishedReferenda,
     };
   };
 
@@ -1517,11 +1572,6 @@ export class ChainData {
 
     // Create a vote entry for everyone that is delegating
     for (const delegation of allDelegations) {
-      // Boolean if the delegation has other people delegating to them
-      const hasDelegations =
-        delegation.delegatedBalance > 0 ||
-        delegation.delegatedConvictionBalance > 0;
-
       // Find the vote of the person they are delegating to
       const v = allVotes.filter((vote) => {
         return (

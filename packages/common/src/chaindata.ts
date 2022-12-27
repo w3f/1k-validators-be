@@ -1281,7 +1281,8 @@ export class ChainData {
       } else if (
         trackJSON["approved"] ||
         trackJSON["cancelled"] ||
-        trackJSON["rejected"]
+        trackJSON["rejected"] ||
+        trackJSON["timedOut"]
       ) {
         let status, confirmationBlockNumber;
         if (trackJSON["approved"]) {
@@ -1293,6 +1294,9 @@ export class ChainData {
         } else if (trackJSON["rejected"]) {
           confirmationBlockNumber = trackJSON["rejected"][0];
           status = "Rejected";
+        } else if (trackJSON["timedOut"]) {
+          confirmationBlockNumber = trackJSON["timedOut"][0];
+          status = "TimedOut";
         }
 
         const apiAt = await this.getApiAt(confirmationBlockNumber - 1);
@@ -1395,10 +1399,23 @@ export class ChainData {
   getConvictionVoting = async () => {
     const allVotes: ConvictionVote[] = [];
     const allDelegations: ConvictionDelegation[] = [];
+
+    // Create a map to more easily check the status of a referenda, is it ongoing or finished
+    const referendaMap = new Map();
+    const { ongoingReferenda, finishedReferenda } =
+      await this.getOpenGovReferenda();
+    for (const ref of ongoingReferenda) {
+      referendaMap.set(ref.index, ref);
+    }
+    for (const ref of finishedReferenda) {
+      referendaMap.set(ref.index, ref);
+    }
+
+    const tracks = this.api.consts.referenda.tracks;
+
     // Query the keys and storage of all the entries of `votingFor`
     // These are all the accounts voting, for which tracks, for which referenda
     // And whether they are delegating or not.
-    const tracks = this.api.consts.referenda.tracks;
     const votingFor = await this.api.query.convictionVoting.votingFor.entries();
     for (const [key, entry] of votingFor) {
       // Each of these is the votingFor for an account for a given governance track
@@ -1541,7 +1558,6 @@ export class ChainData {
             }
           }
         }
-        //console.log(delegationCapital)
         // @ts-ignore
       } else if (entry.isDelegating) {
         // The address is delegating to another address for this particular track
@@ -1570,12 +1586,16 @@ export class ChainData {
       }
     }
 
-    // Create a vote entry for everyone that is delegating
+    // Create a vote entry for everyone that is delegating for current ongoing referenda
     for (const delegation of allDelegations) {
       // Find the vote of the person they are delegating to
       const v = allVotes.filter((vote) => {
+        const isReferendumOngoing =
+          referendaMap.get(vote.referendumIndex)?.currentStatus == "Ongoing";
         return (
-          vote.address == delegation.target && vote.track == delegation.track
+          isReferendumOngoing &&
+          vote.address == delegation.target &&
+          vote.track == delegation.track
         );
       });
       if (v.length > 0) {
@@ -1745,6 +1765,220 @@ export class ChainData {
         }
       }
     }
+
+    // Query the delegations for finished referenda at previous block heights
+    for (const referendum of finishedReferenda) {
+      const apiAt = await this.getApiAt(referendum.confirmationBlockNumber - 1);
+
+      const votingFor = await apiAt.query.convictionVoting.votingFor.entries();
+      for (const [key, entry] of votingFor) {
+        // Each of these is the votingFor for an account for a given governance track
+        // @ts-ignore
+        const [address, track] = key.toHuman();
+        // @ts-ignore
+        if (entry.isDelegating) {
+          // The address is delegating to another address for this particular track
+
+          const {
+            balance,
+            target,
+            conviction,
+            delegations: { votes: delegationVotes, capital: delegationCapital },
+            prior,
+            // @ts-ignore
+          } = entry.asDelegating;
+          const delegation: ConvictionDelegation = {
+            track: track,
+            address: address.toString(),
+            target: target.toString(),
+            balance: balance.toString(),
+            conviction: conviction.toString(),
+            // The total amount of tokens that were delegated to them (including conviction)
+            delegatedConvictionBalance: delegationVotes.toString(),
+            // the total amount of tokens that were delegated to them (without conviction)
+            delegatedBalance: delegationCapital.toString(),
+            prior: prior,
+          };
+          // Try and find the delegated vote from the existing votes
+          const v = allVotes.filter((vote) => {
+            return (
+              vote.address == delegation.target &&
+              vote.track == delegation.track
+            );
+          });
+          if (v.length > 0) {
+            // There are votes for a given track that a person delegating will have votes for.
+            for (const vote of v) {
+              const voteDirectionType = vote.voteDirectionType;
+              let balance;
+              if (voteDirectionType == "Aye") {
+                balance = {
+                  aye: Number(delegation.balance),
+                  nay: Number(0),
+                  abstain: Number(0),
+                };
+              } else if (voteDirectionType == "Nay") {
+                balance = {
+                  aye: Number(0),
+                  nay: Number(delegation.balance),
+                  abstain: Number(0),
+                };
+              } else if (
+                voteDirectionType == "Split" ||
+                voteDirectionType == "SplitAbstain"
+              ) {
+                balance = {
+                  aye: Number(0),
+                  nay: Number(0),
+                  abstain: Number(0),
+                };
+              }
+
+              const delegatedVote: ConvictionVote = {
+                // The particular governance track
+                track: vote.track,
+                // The account that is voting
+                address: delegation.address,
+                // The index of the referendum
+                referendumIndex: vote.referendumIndex,
+                // The conviction being voted with, ie `None`, `Locked1x`, `Locked5x`, etc
+                conviction: delegation.conviction,
+                // The balance they are voting with themselves, sans delegated balance
+                balance: balance,
+                // The total amount of tokens that were delegated to them (including conviction)
+                delegatedConvictionBalance:
+                  delegation.delegatedConvictionBalance,
+                // the total amount of tokens that were delegated to them (without conviction)
+                delegatedBalance: delegation.delegatedBalance,
+                // The vote type, either 'aye', or 'nay'
+                voteDirection: vote.voteDirection,
+                // Whether the person is voting themselves or delegating
+                voteType: "Delegating",
+                voteDirectionType: voteDirectionType,
+                // Who the person is delegating to
+                delegatedTo: vote.address,
+              };
+              allVotes.push(delegatedVote);
+            }
+          } else if (v.length == 0) {
+            // There are no direct votes from the person the delegator is delegating to,
+            // but that person may also be delegating, so search for nested delegations
+
+            let found = false;
+            // The end vote of the chain of delegations
+            let delegatedVote;
+
+            delegatedVote = delegation;
+            while (!found) {
+              // Find the delegation of the person who is delegating to
+              const d = allDelegations.filter((del) => {
+                return (
+                  del.address == delegatedVote.target &&
+                  del.track == delegatedVote.track
+                );
+              });
+
+              if (d.length == 0) {
+                // There are no additional delegations, try to find if there are any votes
+
+                found = true;
+                const v = allVotes.filter((vote) => {
+                  return (
+                    vote.address == delegatedVote.target &&
+                    vote.track == delegatedVote.track
+                  );
+                });
+                if (v.length > 0) {
+                  // There are votes, ascribe them to the delegator
+                  for (const vote of v) {
+                    const voteDirectionType = vote.voteDirectionType;
+                    let balance;
+                    if (voteDirectionType == "Aye") {
+                      balance = {
+                        aye: Number(delegation.balance),
+                        nay: Number(0),
+                        abstain: Number(0),
+                      };
+                    } else if (voteDirectionType == "Nay") {
+                      balance = {
+                        aye: Number(0),
+                        nay: Number(delegation.balance),
+                        abstain: Number(0),
+                      };
+                    } else if (voteDirectionType == "Split") {
+                      const ayePercentage =
+                        vote.balance.aye /
+                        (vote.balance.aye + vote.balance.nay);
+                      const nayPercentage =
+                        vote.balance.nay /
+                        (vote.balance.aye + vote.balance.nay);
+                      balance = {
+                        aye: Number(delegation.balance) * ayePercentage,
+                        nay: Number(delegation.balance) * nayPercentage,
+                        abstain: Number(0),
+                      };
+                    } else if (voteDirectionType == "SplitAbstain") {
+                      const ayePercentage =
+                        vote.balance.aye /
+                        (vote.balance.aye +
+                          vote.balance.nay +
+                          vote.balance.abstain);
+                      const nayPercentage =
+                        vote.balance.nay /
+                        (vote.balance.aye +
+                          vote.balance.nay +
+                          vote.balance.abstain);
+                      const abstainPercentage =
+                        vote.balance.nay /
+                        (vote.balance.aye +
+                          vote.balance.nay +
+                          vote.balance.abstain);
+                      balance = {
+                        aye: Number(delegation.balance) * ayePercentage,
+                        nay: Number(delegation.balance) * nayPercentage,
+                        abstain: Number(delegation.balance) * abstainPercentage,
+                      };
+                    }
+
+                    const delegatedVote: ConvictionVote = {
+                      // The particular governance track
+                      track: vote.track,
+                      // The account that is voting
+                      address: delegation.address,
+                      // The index of the referendum
+                      referendumIndex: vote.referendumIndex,
+                      // The conviction being voted with, ie `None`, `Locked1x`, `Locked5x`, etc
+                      conviction: delegation.conviction,
+                      // The balance they are voting with themselves, sans delegated balance
+                      balance: balance,
+                      // The total amount of tokens that were delegated to them (including conviction)
+                      delegatedConvictionBalance:
+                        delegation.delegatedConvictionBalance,
+                      // the total amount of tokens that were delegated to them (without conviction)
+                      delegatedBalance: delegation.delegatedBalance,
+                      // The vote type, either 'aye', or 'nay'
+                      voteDirection: vote.voteDirection,
+                      // Whether the person is voting themselves or delegating
+                      voteType: "Delegating",
+                      voteDirectionType: voteDirectionType,
+                      // Who the person is delegating to
+                      delegatedTo: vote.address,
+                    };
+                    allVotes.push(delegatedVote);
+                  }
+                } else {
+                  // The person they are delegating to does not have any votes.
+                }
+              } else if (d.length == 1) {
+                // There is a delegated delegation
+                delegatedVote = d[0];
+              }
+            }
+          }
+        }
+      }
+    }
+
     const convictionVoting = {
       votes: allVotes,
       delegations: allDelegations,

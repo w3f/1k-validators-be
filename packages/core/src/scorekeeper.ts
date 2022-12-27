@@ -125,8 +125,12 @@ export const autoNumNominations = async (
   // How many additional validator to nominate above the amount to get in the set
   const additional = 1.15;
 
+  const maxNominations = chainType.toString() == "Polkadot" ? 16 : 24;
   // The total amount of validators to nominate
-  const adjustedNominationAmount = Math.min(Math.ceil(amount * additional), 24);
+  const adjustedNominationAmount = Math.min(
+    Math.ceil(amount * additional),
+    maxNominations
+  );
   // The total amount of funds the nominator should have bonded
   const newBondedAmount = (1 + Constants.BALANCE_BUFFER_PERCENT) * sum;
   // The target amount for each validator

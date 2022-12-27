@@ -234,6 +234,7 @@ export type OpenGovReferendum = {
   support: number;
   inQueue: boolean;
   currentStatus: string;
+  confirmationBlockNumber: number | null;
   //alarm
 };
 

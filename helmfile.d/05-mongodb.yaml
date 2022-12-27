@@ -4,7 +4,7 @@ environments:
   local:
 repositories:
   - name: bitnami
-    url: https://charts.bitnami.com/bitnami
+    url: https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
 releases:
   - name: kusama-mongodb
     namespace: kusama

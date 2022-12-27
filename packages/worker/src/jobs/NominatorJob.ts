@@ -19,7 +19,7 @@ export const nominatorJob = async (chaindata: ChainData) => {
     );
     const allNominators = await Promise.all(
       nominators.filter((nom) => {
-        return nom.targets.includes(candidate.stash);
+        return nom?.targets?.includes(candidate.stash);
       })
     );
     const inactiveNominators = allNominators.filter((nominator) => {

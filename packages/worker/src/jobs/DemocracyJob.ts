@@ -107,7 +107,7 @@ export const democracyJob = async (chaindata: ChainData) => {
   const chainType = await chaindata.getChainType();
   if (chainType == "Kusama") {
     try {
-      const { ongoingReferenda, approvedReferenda } =
+      const { ongoingReferenda, finishedReferenda } =
         await chaindata.getOpenGovReferenda();
       // TODO: Update approved referenda
       for (const referenda of ongoingReferenda) {

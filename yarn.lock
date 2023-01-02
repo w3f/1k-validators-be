@@ -98,7 +98,7 @@ __metadata:
     "@1kv/worker": "workspace:^"
     "@ava/typescript": ^3.0.1
     "@bull-board/api": ^4.9.0
-    "@bull-board/koa": ^4.9.0
+    "@bull-board/koa": ^4.10.0
     "@typescript-eslint/eslint-plugin": ^5.47.1
     "@typescript-eslint/parser": ^5.47.1
     ava: ^5.1.0
@@ -999,7 +999,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@bull-board/api@npm:4.9.0, @bull-board/api@npm:^4.9.0":
+"@bull-board/api@npm:4.10.0":
+  version: 4.10.0
+  resolution: "@bull-board/api@npm:4.10.0"
+  dependencies:
+    redis-info: ^3.0.8
+  checksum: 886ee7955283056fd40b75bfa63bd174c06bedd8086a3a54804548015ebfc1ba9ff8ec5e76ed2f0a3beeda4b5b5ab32531f35cd77cd6ab5ed7e4978fe426ae84
+  languageName: node
+  linkType: hard
+
+"@bull-board/api@npm:^4.9.0":
   version: 4.9.0
   resolution: "@bull-board/api@npm:4.9.0"
   dependencies:
@@ -1008,28 +1017,28 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@bull-board/koa@npm:^4.9.0":
-  version: 4.9.0
-  resolution: "@bull-board/koa@npm:4.9.0"
+"@bull-board/koa@npm:^4.10.0":
+  version: 4.10.0
+  resolution: "@bull-board/koa@npm:4.10.0"
   dependencies:
-    "@bull-board/api": 4.9.0
-    "@bull-board/ui": 4.9.0
+    "@bull-board/api": 4.10.0
+    "@bull-board/ui": 4.10.0
     ejs: ^3.1.7
     koa: ^2.13.1
     koa-mount: ^4.0.0
     koa-router: ^10.0.0
     koa-static: ^5.0.0
     koa-views: ^7.0.1
-  checksum: 1a7ea23b4d633163a61890aba32615011ae96fd8efa48fd1f61cf07302889ad6f25c17818777d9f9bbf5c83fd642485fdd312f89fa41257f2ae541ea9f94d2ab
+  checksum: 2c8a1b13787ce649b1138cf5579c16ef7fa323c5b82de295f14b1bacb3d04fd4752cba4e68baf9782fabe43b38906473bfada9fa2fa6b45947877503af1f263c
   languageName: node
   linkType: hard
 
-"@bull-board/ui@npm:4.9.0":
-  version: 4.9.0
-  resolution: "@bull-board/ui@npm:4.9.0"
+"@bull-board/ui@npm:4.10.0":
+  version: 4.10.0
+  resolution: "@bull-board/ui@npm:4.10.0"
   dependencies:
-    "@bull-board/api": 4.9.0
-  checksum: 5dc5c2ad81c4bbc859335ba2bca2e4248463c3f6c6bd20addccc1d082ae50821e1ea2b8d9d9878e01cf4ea47d4febfbda4c2c1eb3adbce0e3f6f411dbc56cb89
+    "@bull-board/api": 4.10.0
+  checksum: 0322523c486ebeae7c31af26e286ce253ed01f09808b4370bde12ba19ac1b0cc888ecc099dc6dba74a63e65b1b14664dd216f1f9880dc893396b24a7a4b1ea90
   languageName: node
   linkType: hard
 
@@ -8577,7 +8586,7 @@ __metadata:
 
 "typescript@patch:typescript@^4.9.4#~builtin<compat/typescript>":
   version: 4.9.4
-  resolution: "typescript@patch:typescript@npm%3A4.9.4#~builtin<compat/typescript>::version=4.9.4&hash=bda367"
+  resolution: "typescript@patch:typescript@npm%3A4.9.4#~builtin<compat/typescript>::version=4.9.4&hash=f456af"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver

@@ -43,7 +43,7 @@
     "bs58": "^5.0.0",
     "commander": "^9.4.1",
     "cron": "^2.1.0",
-    "eslint-config-prettier": "^8.5.0",
+    "eslint-config-prettier": "^8.6.0",
     "eslint-plugin-prettier": "^4.2.1",
     "eventemitter3": "^5.0.0",
     "hash.js": "^1.1.7",

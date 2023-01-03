@@ -936,9 +936,9 @@ export const ConvictionVote = new Schema({
   // The particular governance track
   track: Number,
   // The account that is voting
-  address: String,
+  address: { type: String, index: true },
   // The index of the referendum
-  referendumIndex: Number,
+  referendumIndex: { type: Number, index: true },
   // The conviction being voted with, ie `None`, `Locked1x`, `Locked5x`, etc
   conviction: String,
   // The balance they are voting with themselves, sans delegated balance

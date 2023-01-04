@@ -838,7 +838,7 @@ export default class ScoreKeeper {
         const network = metadata.name.toLowerCase();
         const free = Util.toDecimals(Number(balance.free), metadata.decimals);
         // TODO Parameterize this as a constant
-        if (free < 0.5) {
+        if (free < 0.1) {
           logger.info(
             `Nominator has low free balance: ${free}`,
             scorekeeperLabel

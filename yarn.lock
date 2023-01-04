@@ -74,7 +74,7 @@ __metadata:
     koa-bodyparser: ^4.3.0
     koa-cash: ^4.1.1
     koa2-cors: ^2.0.6
-    matrix-js-sdk: ^20.1.0
+    matrix-js-sdk: ^23.0.0
     mongodb: 4.13.0
     mongodb-memory-server: ^8.10.2
     mongoose: ^6.8.2
@@ -1978,6 +1978,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/events@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@types/events@npm:3.0.0"
+  checksum: 9a424c2da210957d5636e0763e8c9fc3aaeee35bf411284ddec62a56a6abe31de9c7c2e713dabdd8a76ff98b47db2bd52f61310be6609641d6234cc842ecbbe3
+  languageName: node
+  linkType: hard
+
 "@types/express-serve-static-core@npm:^4.17.18":
   version: 4.17.31
   resolution: "@types/express-serve-static-core@npm:4.17.31"
@@ -2878,13 +2885,6 @@ __metadata:
     p-wait-for: 3
     safe-timers: ^1.1.0
   checksum: ff89950eaa214342dde87de8aab460cb84744626e82873f88533bcbed2447fd965a26533e26915afce6aaa220383186200a91df78f748bedf576986bef7488e2
-  languageName: node
-  linkType: hard
-
-"browser-request@npm:^0.3.3":
-  version: 0.3.3
-  resolution: "browser-request@npm:0.3.3"
-  checksum: 8f8db4f95aa33341ffa8d83dd069033310144f439d90bf5aafd4ec0a9495f4cc3fc1515a7d3e15d6968552169f72b7dd90b62efa3647adc4ce9e8be91f907240
   languageName: node
   linkType: hard
 
@@ -4151,6 +4151,13 @@ __metadata:
   version: 5.0.0
   resolution: "eventemitter3@npm:5.0.0"
   checksum: b974bafbab860e0a5bbb21add4c4e82f9d5691c583c03f2e4c5d44a2d6c4556d79223621bdcfc6c8e14366a4af9df6b5ea9d6caf65fbffc80b66f3e1dceacbc9
+  languageName: node
+  linkType: hard
+
+"events@npm:^3.2.0":
+  version: 3.3.0
+  resolution: "events@npm:3.3.0"
+  checksum: f6f487ad2198aa41d878fa31452f1a3c00958f46e9019286ff4787c84aac329332ab45c9cdc8c445928fc6d7ded294b9e005a7fce9426488518017831b272780
   languageName: node
   linkType: hard
 
@@ -6037,29 +6044,40 @@ __metadata:
   languageName: node
   linkType: hard
 
-"matrix-events-sdk@npm:^0.0.1-beta.7":
-  version: 0.0.1-beta.7
-  resolution: "matrix-events-sdk@npm:0.0.1-beta.7"
-  checksum: 4cc26a80d9caf754c36fe350f34513d23fea3247a647f121bc35287d395cdbf2af9f363e7816e7613915bb5ace5df8f4161f607fb8e54940f6519a697c221a44
+"matrix-events-sdk@npm:0.0.1":
+  version: 0.0.1
+  resolution: "matrix-events-sdk@npm:0.0.1"
+  checksum: 18b61a1a2cd9947e5cec4f9332186f5609e3a47c6c6e775b306e9af0e12babcdb2f68459133c4d44ebc5a7e5ee60e7528813dfccb80d8a8b55668338cd81ee49
   languageName: node
   linkType: hard
 
-"matrix-js-sdk@npm:^20.1.0":
-  version: 20.1.0
-  resolution: "matrix-js-sdk@npm:20.1.0"
+"matrix-js-sdk@npm:^23.0.0":
+  version: 23.0.0
+  resolution: "matrix-js-sdk@npm:23.0.0"
   dependencies:
     "@babel/runtime": ^7.12.5
     another-json: ^0.2.0
-    browser-request: ^0.3.3
     bs58: ^5.0.0
     content-type: ^1.0.4
     loglevel: ^1.7.1
-    matrix-events-sdk: ^0.0.1-beta.7
+    matrix-events-sdk: 0.0.1
+    matrix-widget-api: ^1.0.0
     p-retry: 4
     qs: ^6.9.6
-    request: ^2.88.2
+    sdp-transform: ^2.14.1
     unhomoglyph: ^1.0.6
-  checksum: 7900429edf3342f36ca86c9a143a1b8b27f462b368c5fea526e16d73f5174221800bb2d5dd390716d42460cbb18ca30d14ddbc5030e4be8158c8e6c02a967675
+    uuid: 7
+  checksum: 7b2687dc02388e1a97248052ee2c64b983ae8fe005d01631be0839b3e2167d3057d7a4ed2d49b0501c4c5c250f0c635cdf31de52453509cbab3b9a97f7f45487
+  languageName: node
+  linkType: hard
+
+"matrix-widget-api@npm:^1.0.0":
+  version: 1.1.1
+  resolution: "matrix-widget-api@npm:1.1.1"
+  dependencies:
+    "@types/events": ^3.0.0
+    events: ^3.2.0
+  checksum: ae88999b7247542ad4ee433d9b148d9856f633ee690b2854deb341b843180ebe5a0dff599f1775fcaa696fd2de472cebb2cb1556983d145208ebd8198c4b654a
   languageName: node
   linkType: hard
 
@@ -7721,6 +7739,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"sdp-transform@npm:^2.14.1":
+  version: 2.14.1
+  resolution: "sdp-transform@npm:2.14.1"
+  bin:
+    sdp-verify: checker.js
+  checksum: 8b3179786db1a0f1ebfdacb1ac0dfe2833e63e8c64b638884cec212455061d53beaa8d9c8bf76fdbd5f844b7885f3892adec27e87734cfbc2b3e5c65e18a489b
+  languageName: node
+  linkType: hard
+
 "semver@npm:2 || 3 || 4 || 5, semver@npm:^5.6.0, semver@npm:^5.7.1":
   version: 5.7.1
   resolution: "semver@npm:5.7.1"
@@ -8672,6 +8699,15 @@ __metadata:
   version: 1.0.2
   resolution: "util-deprecate@npm:1.0.2"
   checksum: 474acf1146cb2701fe3b074892217553dfcf9a031280919ba1b8d651a068c9b15d863b7303cb15bd00a862b498e6cf4ad7b4a08fb134edd5a6f7641681cb54a2
+  languageName: node
+  linkType: hard
+
+"uuid@npm:7":
+  version: 7.0.3
+  resolution: "uuid@npm:7.0.3"
+  bin:
+    uuid: dist/bin/uuid
+  checksum: f5b7b5cc28accac68d5c083fd51cca64896639ebd4cca88c6cfb363801aaa83aa439c86dfc8446ea250a7a98d17afd2ad9e88d9d4958c79a412eccb93bae29de
   languageName: node
   linkType: hard
 

@@ -15,14 +15,13 @@ export default class MatrixBot {
     this.client = sdk.createClient({
       baseUrl,
       accessToken,
-      request,
       userId,
     });
     this.conf = config;
   }
 
   async start(): Promise<void> {
-    await this.client.startClient();
+    this.client.startClient();
     // this.listenForCommands();
   }
 
@@ -63,30 +62,21 @@ export default class MatrixBot {
     );
   }
 
-  sendMessage(msg: string): any {
+  async sendMessage(msg: string): Promise<any> {
     const content = {
       body: msg,
       msgtype: "m.text",
       format: "org.matrix.custom.html",
       formatted_body: msg,
     };
-
-    return new Promise((resolve: any, reject: any) => {
-      try {
-        this.client.sendEvent(
-          this.conf.matrix.room,
-          "m.room.message",
-          content,
-          "",
-          (err: any) => {
-            if (err) reject(err);
-            resolve(true);
-          }
-        );
-      } catch (e) {
-        logger.info(`{Matrix::error}`);
-        logger.warn(e);
+    await this.client.sendEvent(
+      this.conf.matrix.room,
+      "m.room.message",
+      content,
+      "",
+      (err: any) => {
+        logger.error(err);
       }
-    });
+    );
   }
 }

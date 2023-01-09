@@ -17,7 +17,7 @@ __metadata:
     eslint: 8.22.0
     eslint-config-prettier: ^8.6.0
     eslint-plugin-prettier: ^4.2.1
-    prettier: ^2.8.1
+    prettier: ^2.8.2
     request: ^2.88.2
   languageName: unknown
   linkType: soft
@@ -80,7 +80,7 @@ __metadata:
     mongoose: ^6.8.2
     nodemon: ^2.0.20
     open-cli: ^7.1.0
-    prettier: ^2.8.1
+    prettier: ^2.8.2
     reconnecting-websocket: ^4.4.0
     semver: ^7.3.8
     ts-node: ^10.9.1
@@ -7232,12 +7232,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:^2.8.1":
-  version: 2.8.1
-  resolution: "prettier@npm:2.8.1"
+"prettier@npm:^2.8.2":
+  version: 2.8.2
+  resolution: "prettier@npm:2.8.2"
   bin:
     prettier: bin-prettier.js
-  checksum: 4f21a0f1269f76fb36f54e9a8a1ea4c11e27478958bf860661fb4b6d7ac69aac1581f8724fa98ea3585e56d42a2ea317a17ff6e3324f40cb11ff9e20b73785cc
+  checksum: 740c56c2128d587d656ea1dde9bc9c3503dfc94db4f3ac387259215eeb2e216680bdad9d18a0c9feecc6b42cfa188d6fa777df4c36c1d00cedd4199074fbfbd2
   languageName: node
   linkType: hard
 
@@ -8604,7 +8604,7 @@ __metadata:
 
 "typescript@patch:typescript@^4.9.4#~builtin<compat/typescript>":
   version: 4.9.4
-  resolution: "typescript@patch:typescript@npm%3A4.9.4#~builtin<compat/typescript>::version=4.9.4&hash=bda367"
+  resolution: "typescript@patch:typescript@npm%3A4.9.4#~builtin<compat/typescript>::version=4.9.4&hash=f456af"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver

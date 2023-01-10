@@ -149,13 +149,13 @@ export const COUNCIL_CRON = "0 0-59/25 * * * *";
 export const SUBSCAN_CRON = "0 0-59/10 * * * *";
 
 // Democracy Cron Job. This runs every 15 minutes by default
-export const DEMOCRACY_CRON = "0 0-59/25 * * * *";
+export const DEMOCRACY_CRON = "0 0-59/5 * * * *";
 
 // Nominator Cron Job. This runs every 15 minutes by default
 export const NOMINATOR_CRON = "0 0-59/17 * * * *";
 
 // Delegation Cron Job. This runs every 20 minutes by default
-export const DELEGATION_CRON = "0 0-59/25 * * * *";
+export const DELEGATION_CRON = "0 0-59/3 * * * *";
 
 // Delegation Cron Job. This runs every 25 minutes by default
 export const BLOCK_CRON = "0 0-59/25 * * * *";

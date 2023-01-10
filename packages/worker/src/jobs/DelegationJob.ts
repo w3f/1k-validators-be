@@ -27,14 +27,10 @@ export const delegationJob = async (chaindata: ChainData) => {
   const chainType = await chaindata.getChainType();
   if (chainType == "Kusama") {
     try {
-      const convictionVoting = await chaindata.getConvictionVoting();
-      const tracks = await chaindata.getTrackInfo();
-      const { votes, delegations } = convictionVoting;
-
-      for (const track of tracks) {
-        const trackDelegations = delegations.filter((delegator) => {
-          if (delegator.track == track.trackIndex) return true;
-        });
+      const delegations = await chaindata.getOpenGovDelegations();
+      await queries.wipeOpenGovDelegations();
+      for (const delegation of delegations) {
+        await queries.addOpenGovDelegation(delegation);
       }
     } catch (e) {
       logger.error(e);

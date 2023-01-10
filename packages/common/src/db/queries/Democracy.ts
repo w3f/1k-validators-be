@@ -1,5 +1,6 @@
 // Sets a Referendum record in the db
 import {
+  ConvictionDelegation,
   ConvictionVote,
   OpenGovReferendum,
   Referendum,
@@ -8,6 +9,7 @@ import {
 import {
   CandidateModel,
   ConvictionVoteModel,
+  OpenGovDelegationModel,
   OpenGovReferendumModel,
   ReferendumModel,
   ReferendumVoteModel,
@@ -418,6 +420,94 @@ export const getLastOpenGovReferenda = async (): Promise<any> => {
   return await OpenGovReferendumModel.find({}).lean().sort("-index").exec();
 };
 
-export const addOpenGovDelegation = async (delegation) => {
-  console.log("");
+export const wipeOpenGovDelegations = async () => {
+  const allDelegates = await OpenGovDelegationModel.find({ delegate: /.*/ })
+    .lean()
+    .exec();
+  if (!allDelegates.length) {
+    // nothing to do
+    return true;
+  }
+  for (const del of allDelegates) {
+    const { delegate, track } = del;
+    await OpenGovDelegationModel.findOneAndUpdate(
+      {
+        delegate: delegate,
+        track: track,
+      },
+      {
+        totalBalance: 0,
+        delegatorCount: 0,
+        delegators: [],
+        updated: Date.now(),
+      }
+    );
+  }
+  return true;
+};
+
+export const getAllOpenGovDelegations = async () => {
+  return await OpenGovDelegationModel.find({}).lean().exec();
+};
+
+export const getOpenGovDelegation = async (address, track) => {
+  return await OpenGovDelegationModel.find({ delegate: address, track: track })
+    .lean()
+    .exec();
+};
+
+export const getOpenGovDelegationAddress = async (address) => {
+  return await OpenGovDelegationModel.find({ delegate: address }).lean().exec();
+};
+
+export const getOpenGovDelegationTrack = async (track) => {
+  return await OpenGovDelegationModel.find({ track: track }).lean().exec();
+};
+
+export const addOpenGovDelegation = async (
+  delegation: ConvictionDelegation
+) => {
+  const delegator = {
+    address: delegation.address,
+    balance: delegation.balance,
+    effectiveBalance: delegation.effectiveBalance,
+    conviction: delegation.conviction,
+  };
+
+  // Try to find the delegate
+  const data = await OpenGovDelegationModel.findOne({
+    delegate: delegation.target,
+    track: delegation.track,
+  });
+
+  // There isn't any delegate data, add a record
+  if (!data) {
+    const delegate = await new OpenGovDelegationModel({
+      delegate: delegation.target,
+      track: delegation.track,
+      totalBalance: delegation.effectiveBalance,
+      delegatorCount: 1,
+      delegators: [delegator],
+      updated: Date.now(),
+    });
+    return await delegate.save();
+  }
+
+  // If the delegate exists and doesn't have the current delegator, add it and update
+  if (data && !data.delegators?.includes(delegator)) {
+    await OpenGovDelegationModel.findOneAndUpdate(
+      {
+        delegate: delegation.target,
+        track: delegation.track,
+      },
+      {
+        totalBalance: data.totalBalance + delegation.effectiveBalance,
+        $push: {
+          delegators: delegator,
+        },
+        $inc: { delegatorCount: 1 },
+        updated: Date.now(),
+      }
+    );
+  }
 };

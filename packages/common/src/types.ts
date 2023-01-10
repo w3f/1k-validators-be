@@ -196,6 +196,8 @@ export type ConvictionDelegation = {
   address: string;
   target: string;
   balance: number;
+  // The balance times the conviction
+  effectiveBalance: number;
   conviction: string;
   // The total amount of tokens that were delegated to them (including conviction)
   delegatedConvictionBalance: number;

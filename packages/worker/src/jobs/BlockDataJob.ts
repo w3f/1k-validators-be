@@ -10,9 +10,23 @@ export const blockDataJob = async (chaindata: ChainData) => {
 
   logger.info(`Starting blockDataJob`, blockdataLabel);
   const latestBlock = await chaindata.getLatestBlock();
-  const threshold = 20000;
-  for (let i = latestBlock - threshold; i < latestBlock; i++) {
-    await processBlock(chaindata, i);
+  const threshold = 2000000;
+  let earliest, latest;
+  for (let i = latestBlock; i > latestBlock - threshold; i--) {
+    const index = await queries.getHeartbeatIndex();
+
+    if (
+      !index?.earliest ||
+      !index?.latest ||
+      i < index?.earliest ||
+      i > index?.latest
+    ) {
+      await processBlock(chaindata, i);
+      await queries.setHeartbeatIndex(i, i);
+      logger.info(`Block Data Job: processed: ${i}`);
+    } else {
+      logger.info(`Skipping Block ${i}`);
+    }
   }
   logger.info(`Done, processed all blocks`, blockdataLabel);
 };

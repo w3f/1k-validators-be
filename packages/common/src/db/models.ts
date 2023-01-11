@@ -134,6 +134,7 @@ export const LocationSchema = new Schema({
   updated: Number,
   session: Number,
   source: String,
+  vpn: Boolean,
 });
 
 export const LocationModel = mongoose.model("Location", LocationSchema);
@@ -1014,3 +1015,13 @@ export const Session = new Schema({
 });
 
 export const SessionModel = mongoose.model("Session", Session);
+
+export const HeartbeatIndex = new Schema({
+  latest: Number,
+  earliest: Number,
+});
+
+export const HeartbeatIndexModel = mongoose.model(
+  "HeartbeatIndex",
+  HeartbeatIndex
+);

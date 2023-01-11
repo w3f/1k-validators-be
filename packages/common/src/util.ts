@@ -92,6 +92,7 @@ export const fetchLocationInfo = async (addr: any, iit: any) => {
     region: "None",
     country: "None",
     provider: "None",
+    v: false,
   };
   if (!iit || !addr) {
     if (!iit) {
@@ -134,6 +135,7 @@ export const fetchLocationInfo = async (addr: any, iit: any) => {
       region: region,
       country: country,
       provider: providerName,
+      v: vpn,
     };
   } catch (e) {
     logger.info(`There was an error fetching location data....`);

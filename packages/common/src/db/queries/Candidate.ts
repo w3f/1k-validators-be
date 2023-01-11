@@ -342,12 +342,12 @@ export const reportOnline = async (
     Date.now() - locationData?.updated > 7200000; // The location data is older than 2 hours
   if (shouldFetch) {
     const iit = await getIIT();
-    const { city, region, country, provider } = await fetchLocationInfo(
+    const { city, region, country, provider, v } = await fetchLocationInfo(
       addr,
       iit && iit.iit ? iit.iit : null
     );
 
-    await setLocation(name, addr, city, region, country, provider);
+    await setLocation(name, addr, city, region, country, provider, v);
     locationData = await getLocation(name, addr);
   }
 

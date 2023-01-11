@@ -138,7 +138,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": ^5.48.0
     "@typescript-eslint/parser": ^5.48.0
     ava: ^5.1.0
-    bullmq: ^3.5.2
+    bullmq: ^3.5.5
     concurrently: ^7.6.0
     eslint: 8.22.0
     nodemon: ^2.0.20
@@ -2933,9 +2933,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bullmq@npm:^3.5.2":
-  version: 3.5.2
-  resolution: "bullmq@npm:3.5.2"
+"bullmq@npm:^3.5.5":
+  version: 3.5.5
+  resolution: "bullmq@npm:3.5.5"
   dependencies:
     cron-parser: ^4.6.0
     glob: ^8.0.3
@@ -2945,7 +2945,7 @@ __metadata:
     semver: ^7.3.7
     tslib: ^2.0.0
     uuid: ^9.0.0
-  checksum: 089e224c4950b110705fed11d54be669aa52e818277e3185d984e8d4f8681d66a0a1a3c9e68d6e50570dbb5f7843623093e04274052d0119166a58f3812969eb
+  checksum: e0c4f610f222d56a3dc13428901f25683a7eec5e3d028fa739a10421e106ec88207d05eda2205056b0fbf02faddd7e9ba785a83ea1510819068429462fb9ada4
   languageName: node
   linkType: hard
 
@@ -8604,7 +8604,7 @@ __metadata:
 
 "typescript@patch:typescript@^4.9.4#~builtin<compat/typescript>":
   version: 4.9.4
-  resolution: "typescript@patch:typescript@npm%3A4.9.4#~builtin<compat/typescript>::version=4.9.4&hash=bda367"
+  resolution: "typescript@patch:typescript@npm%3A4.9.4#~builtin<compat/typescript>::version=4.9.4&hash=f456af"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver

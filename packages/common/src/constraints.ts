@@ -198,37 +198,73 @@ export class OTV implements Constraints {
     let valid = false;
 
     const onlineValid = await checkOnline(candidate);
+    if (!onlineValid) {
+      logger.warn(`${candidate.name} online not valid`, constraintsLabel);
+    }
 
     const validateValid = await checkValidateIntention(
       this.config,
       this.chaindata,
       candidate
     );
+    if (!validateValid) {
+      logger.warn(
+        `${candidate.name} validate intention not valid`,
+        constraintsLabel
+      );
+    }
 
     const versionValid = await checkLatestClientVersion(this.config, candidate);
+    if (!versionValid) {
+      logger.warn(`${candidate.name} version not valid`, constraintsLabel);
+    }
 
     const monitoringWeekValid = await checkConnectionTime(
       this.config,
       candidate
     );
+    if (!monitoringWeekValid) {
+      logger.warn(
+        `${candidate.name} monitoring week not valid`,
+        constraintsLabel
+      );
+    }
 
     const identityValid = await checkIdentity(this.chaindata, candidate);
+    if (!identityValid) {
+      logger.warn(`${candidate.name} identity not valid`, constraintsLabel);
+    }
 
     const offlineValid = await checkOffline(candidate);
+    if (!offlineValid) {
+      logger.warn(`${candidate.name} offline not valid`, constraintsLabel);
+    }
 
     let rewardDestinationValid = true;
     if (!this.skipStakedDesitnation) {
       rewardDestinationValid =
         (await checkRewardDestination(this.chaindata, candidate)) || false;
+      if (!rewardDestinationValid) {
+        logger.warn(
+          `${candidate.name} reward destination not valid`,
+          constraintsLabel
+        );
+      }
     }
 
     const commissionValid =
       (await checkCommission(this.chaindata, this.commission, candidate)) ||
       false;
+    if (!commissionValid) {
+      logger.warn(`${candidate.name} commission not valid`, constraintsLabel);
+    }
 
     const selfStakeValid =
       (await checkSelfStake(this.chaindata, this.minSelfStake, candidate)) ||
       false;
+    if (!selfStakeValid) {
+      logger.warn(`${candidate.name} self stake not valid`, constraintsLabel);
+    }
 
     const unclaimedValid =
       this.config.constraints.skipUnclaimed == true
@@ -241,6 +277,9 @@ export class OTV implements Constraints {
 
     const blockedValid =
       (await checkBlocked(this.chaindata, candidate)) || false;
+    if (!blockedValid) {
+      logger.warn(`${candidate.name} blocked not valid`, constraintsLabel);
+    }
 
     let kusamaValid = true;
     try {
@@ -250,15 +289,15 @@ export class OTV implements Constraints {
     } catch (e) {
       logger.info(`Error trying to get kusama data...`);
     }
+    if (!kusamaValid) {
+      logger.warn(`${candidate.name} kusama not valid`, constraintsLabel);
+    }
 
     const providerValid =
       (await checkProvider(this.config, candidate)) || false;
-
-    const intentionValid = await checkValidateIntention(
-      this.config,
-      this.chaindata,
-      candidate
-    );
+    if (!providerValid) {
+      logger.warn(`${candidate.name} provider not valid`, constraintsLabel);
+    }
 
     valid =
       onlineValid &&
@@ -273,7 +312,6 @@ export class OTV implements Constraints {
       unclaimedValid &&
       blockedValid &&
       kusamaValid &&
-      intentionValid &&
       providerValid;
 
     await setValid(candidate.stash, valid);

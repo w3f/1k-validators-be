@@ -1,4 +1,10 @@
-import { CandidateModel, IITModel, LocationModel } from "../models";
+import {
+  CandidateModel,
+  HeartbeatIndex,
+  HeartbeatIndexModel,
+  IITModel,
+  LocationModel,
+} from "../models";
 import { fetchLocationInfo } from "../../util";
 import { logger } from "../../index";
 import { getLatestSession } from "./Session";
@@ -94,6 +100,7 @@ export const setLocation = async (
   region: string,
   country: string,
   provider: string,
+  v?: boolean,
   port?: number
 ): Promise<any> => {
   // Try and find an existing record
@@ -128,6 +135,7 @@ export const setLocation = async (
       country,
       provider,
       port,
+      vpn: v,
       session: session || 0,
       updated: Date.now(),
       source: "Telemetry",
@@ -144,6 +152,7 @@ export const setLocation = async (
         country,
         provider,
         port,
+        vpn: v,
         session: session || 0,
         updated: Date.now(),
         source: "Telemetry",
@@ -168,7 +177,7 @@ export const setHeartbeatLocation = async (
   // Location doesn't exist, fetch it
   if (!data) {
     const iit = await getIIT();
-    const { city, region, country, provider } = await fetchLocationInfo(
+    const { city, region, country, provider, v } = await fetchLocationInfo(
       addr,
       iit && iit.iit ? iit.iit : null
     );
@@ -187,6 +196,7 @@ export const setHeartbeatLocation = async (
       country,
       provider,
       port,
+      vpn: v,
       session: session || 0,
       updated: Date.now(),
       source: "Heartbeat",
@@ -253,5 +263,32 @@ export const setIIT = async (accessToken: string): Promise<any> => {
     await IITModel.findOneAndUpdate({
       iit: accessToken,
     }).exec();
+  }
+};
+
+export const getHeartbeatIndex = async () => {
+  return await HeartbeatIndexModel.findOne({}).exec();
+};
+
+export const setHeartbeatIndex = async (
+  earliest: number,
+  latest: number
+): Promise<any> => {
+  const exists = await HeartbeatIndexModel.findOne({}).exec();
+  if (!exists) {
+    const data = await new HeartbeatIndexModel({
+      earliest: earliest,
+      latest: latest,
+    });
+    return data.save();
+  }
+  if (earliest < exists.earliest) {
+    await HeartbeatIndexModel.findOneAndUpdate(
+      {},
+      { earliest: earliest }
+    ).exec();
+  }
+  if (latest > exists.latest) {
+    await HeartbeatIndexModel.findOneAndUpdate({}, { latest: latest }).exec();
   }
 };

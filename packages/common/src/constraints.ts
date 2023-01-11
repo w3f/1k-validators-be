@@ -1380,6 +1380,9 @@ export const checkProvider = async (
       );
       await setProviderInvalidity(candidate.stash, false);
       return false;
+    } else {
+      await setProviderInvalidity(candidate.stash, true);
+      return true;
     }
   } else {
     await setProviderInvalidity(candidate.stash, true);

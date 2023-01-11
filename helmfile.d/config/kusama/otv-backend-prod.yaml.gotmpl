@@ -22,9 +22,7 @@ config: |
         "wss://kusama-rpc.polkadot.io",
         "wss://kusama.api.onfinality.io/public-ws",
         "wss://kusama-rpc.dwellir.com",
-        "wss://kusama.public.curie.radiumblock.xyz/ws",
-        "wss://public-rpc.pinknode.io/kusama",
-        "wss://1rpc.io/ksm"
+        "wss://kusama.public.curie.radiumblock.xyz/ws"
       ]
     },
     "constraints": {
@@ -33,7 +31,6 @@ config: |
       "skipStakedDestination": true,
       "skipClientUpgrade": false,
       "skipUnclaimed": true,
-      "forceClientVersion": "v0.9.30",
       "minSelfStake": 10000000000000,
       "commission": 150000000,
       "unclaimedEraThreshold": 4
@@ -2981,7 +2978,7 @@ config: |
               "riotHandle": "@guzo:matrix.org"
           }
       ],
-      "forceRound": false,
+      "forceRound": true,
       "nominating": true
     },
     "server": {

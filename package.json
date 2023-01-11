@@ -32,12 +32,12 @@
     "@types/eslint": "^8.4.10",
     "@types/node": "^18.11.18",
     "@types/request": "^2.48.8",
-    "@typescript-eslint/eslint-plugin": "^5.48.0",
-    "@typescript-eslint/parser": "^5.48.0",
+    "@typescript-eslint/eslint-plugin": "^5.48.1",
+    "@typescript-eslint/parser": "^5.48.1",
     "eslint": "8.22.0",
     "eslint-config-prettier": "^8.6.0",
     "eslint-plugin-prettier": "^4.2.1",
-    "prettier": "^2.8.1"
+    "prettier": "^2.8.2"
   },
   "dependencies": {
     "request": "^2.88.2"

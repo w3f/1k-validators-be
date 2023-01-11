@@ -59,14 +59,16 @@ export const getLocation = async (name: string, addr: string): Promise<any> => {
   // First try to get by telemetry name
   data = await LocationModel.find({
     addr,
+    vpn: false,
   })
     .lean()
     .sort("-session")
     .limit(1)
     .exec();
   if (!data || data.length == 0) {
-    data = await LocationModel.findOne({
+    data = await LocationModel.find({
       name,
+      vpn: false,
     })
       .lean()
       .sort("-session")
@@ -82,6 +84,7 @@ export const getCandidateLocation = async (name: string): Promise<any> => {
   // First try to get by telemetry name
   const data = await LocationModel.find({
     name,
+    vpn: false,
   })
     .lean()
     .sort("-session")
@@ -89,8 +92,9 @@ export const getCandidateLocation = async (name: string): Promise<any> => {
     .exec();
   if (!data) {
     logger.warn(`Location: can't find location for ${name}`);
+  } else {
+    return data[0];
   }
-  return data[0];
 };
 
 export const setLocation = async (

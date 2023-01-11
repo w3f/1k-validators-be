@@ -242,7 +242,17 @@ export const setConvictionVote = async (
       address: convictionVote.address,
       referendumIndex: convictionVote.referendumIndex,
       conviction: convictionVote.conviction,
-      balance: convictionVote.balance,
+      balance: {
+        aye: Number(convictionVote.balance?.aye)
+          ? Number(convictionVote.balance?.aye)
+          : 0,
+        nay: Number(convictionVote.balance?.nay)
+          ? Number(convictionVote.balance?.nay)
+          : 0,
+        abstain: Number(convictionVote.balance?.abstain)
+          ? Number(convictionVote.balance?.abstain)
+          : 0,
+      },
       delegatedConvictionBalance: convictionVote.delegatedConvictionBalance,
       delegatedBalance: convictionVote.delegatedBalance,
       voteDirection: convictionVote.voteDirection,
@@ -263,7 +273,17 @@ export const setConvictionVote = async (
       {
         track: convictionVote.track,
         conviction: convictionVote.conviction,
-        balance: convictionVote.balance,
+        balance: {
+          aye: Number(convictionVote.balance?.aye)
+            ? Number(convictionVote.balance?.aye)
+            : 0,
+          nay: Number(convictionVote.balance?.nay)
+            ? Number(convictionVote.balance?.nay)
+            : 0,
+          abstain: Number(convictionVote.balance?.abstain)
+            ? Number(convictionVote.balance?.abstain)
+            : 0,
+        },
         delegatedConvictionBalance: convictionVote.delegatedConvictionBalance,
         delegatedBalance: convictionVote.delegatedBalance,
         voteDirection: convictionVote.voteDirection,

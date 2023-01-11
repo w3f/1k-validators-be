@@ -1330,14 +1330,9 @@ export const checkProvider = async (
   config: Config.ConfigSchema,
   candidate: any
 ) => {
-  const location = await queries.getLocation(candidate.name, candidate.stash);
+  const location = await queries.getCandidateLocation(candidate.name);
   if (location && location.provider) {
     const bannedProviders = config.telemetry?.blacklistedProviders;
-    logger.info(
-      `provider: ${JSON.stringify(
-        location.provider
-      )} banned providers: ${JSON.stringify(bannedProviders)}`
-    );
     if (bannedProviders?.includes(location.provider)) {
       logger.info(
         `${candidate.name} has banned provider: ${location.provider}`,

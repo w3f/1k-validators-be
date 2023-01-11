@@ -338,7 +338,8 @@ export const reportOnline = async (
     !locationData ||
     (locationData?.addr && locationData?.addr != addr) ||
     !locationData.address ||
-    !locationData.session;
+    !locationData.session ||
+    Date.now() - locationData?.updated > 7200000; // The location data is older than 2 hours
   if (shouldFetch) {
     const iit = await getIIT();
     const { city, region, country, provider } = await fetchLocationInfo(

@@ -1590,8 +1590,8 @@ export class ChainData {
               conviction: "Locked1x",
               // The balance they are voting with themselves, sans delegated balance
               balance: {
-                aye: Number(aye) / denom,
-                nay: Number(nay) / denom,
+                aye: Number(aye.toString()) / denom,
+                nay: Number(nay.toString()) / denom,
                 abstain: 0,
               },
               // The total amount of tokens that were delegated to them (including conviction)
@@ -1650,7 +1650,7 @@ export class ChainData {
               };
             }
           }
-          if (isReferendumFinished) finishedVotes.push(v);
+          // if (isReferendumFinished) finishedVotes.push(v);
           if (isReferendumOngoing) ongoingVotes.push(v);
         }
         // @ts-ignore
@@ -2076,6 +2076,7 @@ export class ChainData {
                   };
                 }
               }
+              finishedVotes.push(v);
               refVotes.push(v);
             }
           }

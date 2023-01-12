@@ -254,6 +254,10 @@ export const setCandidateIdentity = async (
   }
 };
 
+export const getAllIdentities = async () => {
+  return await IdentityModel.find({}).lean().exec();
+};
+
 export const getIdentity = async (address: string) => {
   const superIdentity = await IdentityModel.findOne({ address: address });
   if (!superIdentity) {

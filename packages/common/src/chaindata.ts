@@ -954,6 +954,30 @@ export class ChainData {
     return validators;
   };
 
+  getAssociatedValidatorAddresses = async () => {
+    if (!this.api.isConnected) {
+      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
+      return;
+    }
+    const addresses = [];
+
+    const keys = await this.api.query.staking.validators.keys();
+    const validators = keys.map(({ args: [validatorId] }) =>
+      validatorId.toString()
+    );
+    for (const validator of validators) {
+      if (!addresses.includes(validator.toString())) {
+        addresses.push(validator.toString());
+      }
+      const controller = await this.getControllerFromStash(validator);
+      if (!addresses.includes(controller.toString())) {
+        addresses.push(controller.toString());
+      }
+    }
+
+    return addresses;
+  };
+
   /**
    * Gets the current session
    * @returns session as number
@@ -1495,6 +1519,9 @@ export class ChainData {
     for (const ref of finishedReferenda) {
       referendaMap.set(ref.index, ref);
     }
+    for (const r of finishedReferenda) {
+      logger.info(`Democracy: ${r.index}`);
+    }
 
     const tracks = this.api.consts.referenda.tracks;
 
@@ -1956,7 +1983,7 @@ export class ChainData {
           for (const referendumVote of votes) {
             // The vote for each referendum - this is the referendum index,the conviction, the vote type (aye,nay), and the balance
             const [referendumIndex, voteType] = referendumVote;
-            if (referendumIndex == finishedRefIndex) {
+            if (referendumIndex == referendum.index) {
               let v: ConvictionVote;
               if (voteType.isStandard) {
                 const { vote: refVote, balance } = voteType.asStandard;
@@ -2159,7 +2186,7 @@ export class ChainData {
         // Try and find the delegated vote from the existing votes
         const v = refVotes.filter((vote) => {
           return (
-            vote.referendumIndex == finishedRefIndex &&
+            vote.referendumIndex == referendum.index &&
             vote.address == delegation.target &&
             vote.track == delegation.track
           );
@@ -2248,7 +2275,7 @@ export class ChainData {
         // Try and find the delegated vote from the existing votes
         const v = refVotes.filter((vote) => {
           return (
-            vote.referendumIndex == finishedRefIndex &&
+            vote.referendumIndex == referendum.index &&
             vote.address == delegation.target &&
             vote.track == delegation.track
           );
@@ -2277,7 +2304,7 @@ export class ChainData {
               found = true;
               const v = refVotes.filter((vote) => {
                 return (
-                  vote.referendumIndex == finishedRefIndex &&
+                  vote.referendumIndex == referendum.index &&
                   vote.address == delegatedVote.target &&
                   vote.track == delegatedVote.track
                 );
@@ -2452,6 +2479,36 @@ export class ChainData {
       return del;
     });
     return delegators;
+  };
+
+  getFellowship = async () => {
+    if (!this.api.isConnected) {
+      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
+      return;
+    }
+    const fellowship =
+      await this.api.query.fellowshipCollective.members.entries();
+    const fellowshipMap = fellowship.map((fellow) => {
+      const [addr, r] = fellow;
+      return {
+        address: fellow[0].toHuman()[0],
+        rank: r.toJSON()["rank"],
+      };
+    });
+    return fellowshipMap;
+  };
+
+  getNominatorAddresses = async () => {
+    if (!this.api.isConnected) {
+      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
+      return;
+    }
+    const nominators = await this.api.query.staking.nominators.entries();
+    const nominatorMap = nominators.map((nominator) => {
+      const [address, targets] = nominator;
+      return address.toHuman().toString();
+    });
+    return nominatorMap;
   };
 }
 

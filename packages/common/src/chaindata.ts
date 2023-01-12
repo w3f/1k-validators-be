@@ -1519,9 +1519,6 @@ export class ChainData {
     for (const ref of finishedReferenda) {
       referendaMap.set(ref.index, ref);
     }
-    for (const r of finishedReferenda) {
-      logger.info(`Democracy: ${r.index}`);
-    }
 
     const tracks = this.api.consts.referenda.tracks;
 

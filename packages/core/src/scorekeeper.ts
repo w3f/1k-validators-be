@@ -650,7 +650,7 @@ export default class ScoreKeeper {
         await startDemocracyJob(this.config, this.chaindata);
         await startNominatorJob(this.config, this.chaindata);
         await startDelegationJob(this.config, this.chaindata);
-        await startBlockDataJob(this.config, this.chaindata);
+        // await startBlockDataJob(this.config, this.chaindata);
       }
 
       await startExecutionJob(

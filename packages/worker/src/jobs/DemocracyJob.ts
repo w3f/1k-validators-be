@@ -1,10 +1,168 @@
 import { logger, ChainData, Types, queries } from "@1kv/common";
+import { getAllIdentities } from "@1kv/common/build/db";
 
 export const democracyLabel = { label: "DemocracyJob" };
+
+export const democracyStatsJob = async (chaindata) => {
+  const nominators = await chaindata.getNominatorAddresses();
+  logger.info(`nominators length: ${nominators.length}`, democracyLabel);
+
+  // Get the list of fellowship addresses
+  const fellowship = await chaindata.getFellowship();
+  const fellowshipAddresses = [];
+  for (const fellow of fellowship) {
+    fellowshipAddresses.push(fellow.address);
+  }
+
+  // Get the list of addresses with identities
+  const allIdentityAddresses = [];
+  const identities = await queries.getAllIdentities();
+  for (const id of identities) {
+    allIdentityAddresses.push(id.address);
+    for (const subid of id.subIdentities) {
+      allIdentityAddresses.push(subid.address);
+    }
+  }
+
+  // get the list of validator addresses
+  const allValidators = [];
+  const chainValidators = await chaindata.getAssociatedValidatorAddresses();
+  for (const [index, validator] of chainValidators.entries()) {
+    allValidators.push(validator);
+    const identity = await queries.getIdentity(validator);
+    if (identity) {
+      if (!allValidators.includes(identity.address)) {
+        allValidators.push(identity.address.toString());
+      }
+
+      for (const subidentity of identity.subIdentities) {
+        if (!allValidators.includes(subidentity.address)) {
+          allValidators.push(subidentity.address.toString());
+        }
+      }
+    }
+  }
+  logger.info(`chain validators: ${chainValidators.length}`, democracyLabel);
+  logger.info(`associated validators: ${allValidators.length}`, democracyLabel);
+
+  const votes = await queries.getAllConvictionVoting();
+  const totalVotes = votes.length;
+
+  const nonValidator = votes.filter((vote) => {
+    return !allValidators.includes(vote.address);
+  });
+
+  const extremelyLowBalanceVotes = votes.filter((vote) => {
+    const totalBalance =
+      vote.balance.aye + vote.balance.nay + vote.balance.abstain;
+    if (totalBalance < 0.5) return true;
+  }).length;
+
+  const veryLowBalanceVotes = votes.filter((vote) => {
+    const totalBalance =
+      vote.balance.aye + vote.balance.nay + vote.balance.abstain;
+    if (totalBalance < 1.5) return true;
+  }).length;
+
+  const lowBalanceVotes = votes.filter((vote) => {
+    const totalBalance =
+      vote.balance.aye + vote.balance.nay + vote.balance.abstain;
+    if (totalBalance < 5) return true;
+  }).length;
+
+  const castingVotes = votes.filter((vote) => {
+    return vote.voteType == "Casting";
+  }).length;
+  const delegatedVotes = votes.filter((vote) => {
+    return vote.voteType == "Delegating";
+  }).length;
+
+  const validatorVotes = votes.filter((vote) => {
+    return allValidators.includes(vote.address);
+  }).length;
+
+  const identityVotes = votes.filter((vote) => {
+    return allIdentityAddresses.includes(vote.address);
+  }).length;
+  const nominatorVotes = votes.filter((vote) => {
+    return (
+      !allValidators.includes(vote.address) && nominators.includes(vote.address)
+    );
+  }).length;
+  const nonStakerVotes = votes.filter((vote) => {
+    return (
+      !allValidators.includes(vote.address) &&
+      !nominators.includes(vote.address)
+    );
+  }).length;
+  const fellowshipVotes = votes.filter((vote) => {
+    return fellowshipAddresses.includes(vote.address);
+  }).length;
+  logger.info(`--------------------`, democracyLabel);
+  logger.info(`Total Votes: ${totalVotes}`, democracyLabel);
+  logger.info(
+    `Casting Votes: ${castingVotes} (${(castingVotes / totalVotes) * 100}%)`,
+    democracyLabel
+  );
+  logger.info(
+    `Delegated Votes: ${delegatedVotes} (${
+      (delegatedVotes / totalVotes) * 100
+    }%)`,
+    democracyLabel
+  );
+  logger.info(
+    `Validator Votes: ${validatorVotes} (${
+      (validatorVotes / totalVotes) * 100
+    }%)`,
+    democracyLabel
+  );
+  logger.info(
+    `Nominator Votes: ${nominatorVotes} (${
+      (nominatorVotes / totalVotes) * 100
+    }%)`,
+    democracyLabel
+  );
+  logger.info(
+    `Non-Staker Votes: ${nonStakerVotes} (${
+      (nonStakerVotes / totalVotes) * 100
+    }%)`,
+    democracyLabel
+  );
+  logger.info(
+    `Identity Votes: ${identityVotes} (${(identityVotes / totalVotes) * 100}%)`,
+    democracyLabel
+  );
+  logger.info(
+    `Fellowship Votes: ${fellowshipVotes} (${
+      (fellowshipVotes / totalVotes) * 100
+    }%)`,
+    democracyLabel
+  );
+  logger.info(
+    `Extremely Low Balance Votes (<0.5 KSM):  ${extremelyLowBalanceVotes} (${
+      (extremelyLowBalanceVotes / totalVotes) * 100
+    }%)`,
+    democracyLabel
+  );
+  logger.info(
+    `Very Low Balance Votes (<1.5 KSM): ${veryLowBalanceVotes} (${
+      (veryLowBalanceVotes / totalVotes) * 100
+    }%)`,
+    democracyLabel
+  );
+  logger.info(
+    `Low Balance Votes (<5 KSM): ${lowBalanceVotes} (${
+      (lowBalanceVotes / totalVotes) * 100
+    }%)`,
+    democracyLabel
+  );
+  logger.info(`--------------------`, democracyLabel);
+};
 
 export const democracyJob = async (chaindata: ChainData) => {
   const start = Date.now();
   logger.info(`Starting Democracy Job`, democracyLabel);
+  // await democracyStatsJob(chaindata);
 
   const latestBlockNumber = await chaindata.getLatestBlock();
   const latestBlockHash = await chaindata.getLatestBlockHash();

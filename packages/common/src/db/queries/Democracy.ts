@@ -330,6 +330,11 @@ export const getReferendumConvictionVoting = async (
   return convictionVotes;
 };
 
+export const getAllConvictionVoting = async () => {
+  const convictionVotes = await ConvictionVoteModel.find({}).lean().exec();
+  return convictionVotes;
+};
+
 // Gets all the conviction votes for a given identity set
 export const getIdentityConvictionVoting = async (address: string) => {
   const votes = [];

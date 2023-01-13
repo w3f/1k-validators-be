@@ -13,10 +13,12 @@ import {
 import ApiHandler from "./ApiHandler";
 import {
   allCandidates,
+  getLargestOpenGovDelegationAddress,
   getLastOpenGovReferenda,
   getLastReferenda,
   getLatestRelease,
   getLatestValidatorScoreMetadata,
+  getOpenGovDelegationAddress,
   setBlockedInvalidity,
   setCommissionInvalidity,
   setConnectionTimeInvalidity,
@@ -103,6 +105,7 @@ export class OTV implements Constraints {
   private NOMINATIONS_WEIGHT = 100;
   private DELEGATIONS_WEIGHT = 60;
   private OPENGOV_WEIGHT = 100;
+  private OPENGOV_DELEGATION_WEIGHT = 100;
 
   constructor(handler: ApiHandler, config: Config.ConfigSchema) {
     this.chaindata = new ChainData(handler);
@@ -141,6 +144,9 @@ export class OTV implements Constraints {
     this.NOMINATIONS_WEIGHT = Number(this.config.score.nominations);
     this.DELEGATIONS_WEIGHT = Number(this.config.score.delegations);
     this.OPENGOV_WEIGHT = Number(this.config.score.openGov);
+    this.OPENGOV_DELEGATION_WEIGHT = Number(
+      this.config.score.openGovDelegation
+    );
   }
 
   // Add candidate to valid cache and remove them from invalid cache
@@ -364,6 +370,10 @@ export class OTV implements Constraints {
       candidates
     );
     const { openGovStats } = await getOpenGovValues(candidates);
+    const {
+      delegationValues: openGovDelegationValues,
+      delegationStats: openGovDelegationStats,
+    } = await getOpenGovDelegationValues(candidates);
 
     const scoreMetadata = {
       session: session,
@@ -401,6 +411,8 @@ export class OTV implements Constraints {
       democracyWeight: this.DEMOCRACY_WEIGHT,
       openGovStats: openGovStats,
       openGovWeight: this.OPENGOV_WEIGHT,
+      openGovDelegationStats: openGovDelegationStats,
+      openGovDelegationWeight: this.OPENGOV_DELEGATION_WEIGHT,
     };
 
     // Create  entry for Validator Score Metadata
@@ -431,6 +443,7 @@ export class OTV implements Constraints {
       nominatorStakeStats,
       delegationStats,
       openGovStats,
+      openGovDelegationStats,
     } = scoreMetadata;
 
     // Scale inclusion between the 20th and 75th percentiles
@@ -500,6 +513,8 @@ export class OTV implements Constraints {
       scaledDefined(candidateLocation, locationValues, 0.1, 0.95) || 0;
     const locationScore = bannedProvider
       ? 0
+      : candidate.location == "No Location"
+      ? 0.25 * this.LOCATION_WEIGHT
       : (1 - scaledLocation) * this.LOCATION_WEIGHT || 0;
 
     const candidateRegion = regionStats.values.filter((region) => {
@@ -517,6 +532,8 @@ export class OTV implements Constraints {
       scaledDefined(candidateRegion, regionValues, 0.1, 0.95) || 0;
     const regionScore = bannedProvider
       ? 0
+      : candidate.location == "No Location"
+      ? 0.25 * this.REGION_WEIGHT
       : (1 - scaledRegion) * this.REGION_WEIGHT || 0;
 
     const candidateCountry = countryStats.values.filter((country) => {
@@ -534,6 +551,8 @@ export class OTV implements Constraints {
       scaledDefined(candidateCountry, countryValues, 0.1, 0.95) || 0;
     const countryScore = bannedProvider
       ? 0
+      : candidate.location == "No Location"
+      ? 0.25 * this.COUNTRY_WEIGHT
       : (1 - scaledCountry) * this.COUNTRY_WEIGHT || 0;
 
     const candidateProvider = providerStats.values.filter((provider) => {
@@ -551,6 +570,8 @@ export class OTV implements Constraints {
       scaledDefined(candidateProvider, providerValues, 0.1, 0.95) || 0;
     const providerScore = bannedProvider
       ? 0
+      : candidate.location == "No Location"
+      ? 0.25 * this.PROVIDER_WEIGHT
       : (1 - scaledProvider) * this.PROVIDER_WEIGHT || 0;
 
     const nomStake = await getLatestNominatorStake(candidate.stash);
@@ -601,6 +622,20 @@ export class OTV implements Constraints {
     const scaledDelegations =
       scaledDefined(totalDelegations, delegationStats.values, 0.1, 0.95) || 0;
     const delegationScore = scaledDelegations * this.DELEGATIONS_WEIGHT;
+
+    let openGovDelegationScore = 0;
+    const openGovDelegation = await getLargestOpenGovDelegationAddress(
+      candidate.stash
+    );
+    const scaledOpenGovDelegations =
+      scaledDefined(
+        openGovDelegation.totalBalance,
+        openGovDelegationStats.values,
+        0.1,
+        0.6
+      ) || 0;
+    openGovDelegationScore =
+      scaledOpenGovDelegations * this.OPENGOV_DELEGATION_WEIGHT;
 
     // Score the council backing weight based on what percentage of their staking bond it is
     const denom = await this.chaindata.getDenom();
@@ -665,8 +700,8 @@ export class OTV implements Constraints {
       offlineScore +
       delegationScore +
       nominatorStakeScore +
+      // openGovDelegationScore +
       scaledOpenGovScore;
-
     const randomness = 1 + Math.random() * 0.15;
 
     const total = aggregate * randomness || 0;
@@ -692,6 +727,7 @@ export class OTV implements Constraints {
       nominatorStake: nominatorStakeScore,
       delegations: delegationScore,
       openGov: scaledOpenGovScore,
+      openGovDelegations: openGovDelegationScore,
       randomness: randomness,
       updated: Date.now(),
     };
@@ -903,7 +939,9 @@ export const getLocationValues = (validCandidates: Types.CandidateData[]) => {
   const locationMap = new Map();
   const locationArr = [];
   for (const candidate of validCandidates) {
-    const location = candidate.location || "No Location";
+    const location =
+      (candidate.location && !candidate?.infrastructureLocation?.vpn) ||
+      "No Location";
 
     const locationCount = locationMap.get(location);
     if (!locationCount) {
@@ -932,6 +970,7 @@ export const getRegionValues = (validCandidates: Types.CandidateData[]) => {
   for (const candidate of validCandidates) {
     const region =
       candidate.infrastructureLocation &&
+      !candidate.infrastructureLocation.vpn &&
       candidate.infrastructureLocation.region
         ? candidate.infrastructureLocation.region
         : "No Location";
@@ -962,6 +1001,7 @@ export const getCountryValues = (validCandidates: Types.CandidateData[]) => {
   for (const candidate of validCandidates) {
     const country =
       candidate.infrastructureLocation &&
+      !candidate.infrastructureLocation.vpn &&
       candidate.infrastructureLocation.country
         ? candidate.infrastructureLocation.country
         : "No Location";
@@ -992,6 +1032,7 @@ export const getProviderValues = (validCandidates: Types.CandidateData[]) => {
   for (const candidate of validCandidates) {
     const provider =
       candidate.infrastructureLocation &&
+      !candidate.infrastructureLocation.vpn &&
       candidate.infrastructureLocation.provider
         ? candidate.infrastructureLocation.provider
         : "No Location";
@@ -1079,6 +1120,28 @@ export const getDelegationValues = async (
         logger.info(JSON.stringify(delegations));
       }
     }
+  }
+  const delegationStats = getStats(delegationValues);
+  return { delegationValues, delegationStats };
+};
+
+export const getOpenGovDelegationValues = async (
+  validCandidates: Types.CandidateData[]
+) => {
+  const delegationValues = [];
+  for (const candidate of validCandidates) {
+    const delegations = await getOpenGovDelegationAddress(candidate.stash);
+    if (delegations.length == 0) continue;
+    const maxTrack = await delegations.reduce((prev, current) =>
+      prev.totalBalance > current.totalBalance ? prev : current
+    );
+    const totalVal = delegations.map((del) => {
+      return {
+        track: del.track,
+        totalBalance: del.totalBalance,
+      };
+    });
+    delegationValues.push(maxTrack.totalBalance);
   }
   const delegationStats = getStats(delegationValues);
   return { delegationValues, delegationStats };

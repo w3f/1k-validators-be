@@ -171,4 +171,19 @@ export default class DemocracyController {
       await DemocracyService.getReferendumConvictionVotes(index)
     );
   }
+
+  public static async getOpenGovAddressDelegations(
+    context: any
+  ): Promise<void> {
+    if (await context.cashed()) {
+      logger.info(`{Gateway} getOpenGovAddressDelegations is cached`);
+      return;
+    }
+    const { address } = context.params;
+    response(
+      context,
+      200,
+      await DemocracyService.getOpenGovAddressDelegations(address)
+    );
+  }
 }

@@ -32,6 +32,7 @@ const FaultEventSchema = new Schema({
 });
 
 const RankEventSchema = new Schema({
+  address: String,
   // Timestamp when this event happened.
   when: { type: Number, index: true },
   // Start era for this rank event.
@@ -39,6 +40,8 @@ const RankEventSchema = new Schema({
   // Active era (end era) for this rank event.
   activeEra: Number,
 });
+
+export const RankEventModel = mongoose.model("RankEvent", RankEventSchema);
 
 export const DelayedTxSchema = new Schema({
   // The block number the transaction was announced in
@@ -473,6 +476,7 @@ export const ValidatorScoreSchema = new Schema({
   nominatorStake: Number,
   delegations: Number,
   openGov: Number,
+  openGovDelegations: Number,
   // The randomness factor used to buffer the total
   randomness: Number,
 });
@@ -704,6 +708,19 @@ export const ValidatorScoreMetadataSchema = new Schema({
   },
   delegationWeight: Number,
   openGovStats: {
+    values: [Number],
+    absoluteMin: Number,
+    absoluteMax: Number,
+    q10: Number,
+    q25: Number,
+    q50: Number,
+    q75: Number,
+    q90: Number,
+    mean: Number,
+    standardDeviation: Number,
+  },
+  openGovDelegationWeight: Number,
+  openGovDelegationStats: {
     values: [Number],
     absoluteMin: Number,
     absoluteMax: Number,

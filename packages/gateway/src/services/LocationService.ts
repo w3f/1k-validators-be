@@ -37,6 +37,15 @@ export const getLocationCurrentValidatorSet = async (): Promise<any> => {
   }
 };
 
+export const getHeartbeatIndex = async (): Promise<any> => {
+  const index = await queries.getHeartbeatIndex();
+  return {
+    latest: index?.latest,
+    earliest: index?.earliest,
+    blocksIndexed: index?.latest - index?.earliest,
+  };
+};
+
 export const getLatestScore = async (stash): Promise<any> => {
   const score = await queries.getLatestValidatorScore(stash);
   return score;

@@ -125,3 +125,10 @@ export const getReferendumConvictionVotes = async (
   const convictionVotes = await queries.getReferendumConvictionVoting(index);
   return convictionVotes;
 };
+
+export const getOpenGovAddressDelegations = async (
+  address: string
+): Promise<any> => {
+  const delegations = await queries.getOpenGovDelegationAddress(address);
+  return delegations;
+};

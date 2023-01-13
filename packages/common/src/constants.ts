@@ -158,6 +158,6 @@ export const NOMINATOR_CRON = "0 0-59/17 * * * *";
 export const DELEGATION_CRON = "0 0-59/3 * * * *";
 
 // Delegation Cron Job. This runs every 25 minutes by default
-export const BLOCK_CRON = "0 0-59/25 * * * *";
+export const BLOCK_CRON = "0 0-59/1 * * * *";
 
 export const LOCATION_URL = "https://ipinfo.io/";

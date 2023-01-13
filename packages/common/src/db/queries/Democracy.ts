@@ -481,8 +481,66 @@ export const getOpenGovDelegation = async (address, track) => {
     .exec();
 };
 
+export const getLargestOpenGovDelegationAddress = async (address) => {
+  const delegations = [];
+  const identities = await getIdentityAddresses(address);
+  if (identities.length == 0) {
+    const dels = await OpenGovDelegationModel.find({ delegate: address })
+      .lean()
+      .exec();
+    for (const delegation of dels) {
+      delegations.push(delegation);
+    }
+  } else {
+    for (const identity of identities) {
+      const dels = await OpenGovDelegationModel.find({ delegate: identity })
+        .lean()
+        .exec();
+      for (const delegation of dels) {
+        delegations.push(delegation);
+      }
+    }
+  }
+
+  if (delegations.length == 0) {
+    return {
+      track: "None",
+      totalBalance: 0,
+      delegatorCount: 0,
+    };
+  } else {
+    const maxDelegation = await delegations.reduce((prev, current) =>
+      prev.totalBalance > current.totalBalance ? prev : current
+    );
+    return {
+      track: maxDelegation.track,
+      totalBalance: maxDelegation.totalBalance,
+      delegatorCount: maxDelegation.delegatorCount,
+    };
+  }
+};
+
 export const getOpenGovDelegationAddress = async (address) => {
-  return await OpenGovDelegationModel.find({ delegate: address }).lean().exec();
+  const delegations = [];
+  const identities = await getIdentityAddresses(address);
+  if (identities.length == 0) {
+    const dels = await OpenGovDelegationModel.find({ delegate: address })
+      .lean()
+      .exec();
+    for (const delegation of dels) {
+      delegations.push(delegation);
+    }
+  } else {
+    for (const identity of identities) {
+      const dels = await OpenGovDelegationModel.find({ delegate: identity })
+        .lean()
+        .exec();
+      for (const delegation of dels) {
+        delegations.push(delegation);
+      }
+    }
+  }
+  return delegations.sort((a, b) => b.totalBalance - a.totalBalance);
 };
 
 export const getOpenGovDelegationTrack = async (track) => {

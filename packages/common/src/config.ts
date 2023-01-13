@@ -107,6 +107,7 @@ export type ConfigSchema = {
     nominations: number | 0;
     delegations: number | 0;
     openGov: number | 0;
+    openGovDelegation: number | 0;
   };
   scorekeeper: {
     candidates: CandidateConfig[];

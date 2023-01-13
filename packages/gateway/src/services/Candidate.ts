@@ -8,6 +8,8 @@ export const getCandidate = async (stash: any): Promise<any> => {
     candidate = await queries.getCandidate(stash);
     if (candidate && candidate.stash) {
       const score = await queries.getLatestValidatorScore(candidate.stash);
+      const openGovDelegations =
+        await queries.getLargestOpenGovDelegationAddress(candidate.stash);
       return {
         discoveredAt: candidate.discoveredAt,
         nominatedAt: candidate.nominatedAt,
@@ -43,6 +45,8 @@ export const getCandidate = async (stash: any): Promise<any> => {
         convictionVotes: candidate.convictionVotes
           ? candidate.convictionVotes.sort((a, b) => a - b)
           : [],
+        convictionVoteCount: candidate.convictionVoteCount,
+        openGovDelegations: openGovDelegations,
         matrix: candidate.matrix,
       };
     }
@@ -145,6 +149,8 @@ export const getCandidates = async (): Promise<any> => {
   allCandidates = await Promise.all(
     allCandidates.map(async (candidate) => {
       const score = await queries.getLatestValidatorScore(candidate.stash);
+      const openGovDelegations =
+        await queries.getLargestOpenGovDelegationAddress(candidate.stash);
       return {
         discoveredAt: candidate.discoveredAt,
         nominatedAt: candidate.nominatedAt,
@@ -177,6 +183,7 @@ export const getCandidates = async (): Promise<any> => {
           ? candidate.convictionVotes.sort((a, b) => a - b)
           : [],
         convictionVoteCount: candidate.convictionVoteCount,
+        openGovDelegations: openGovDelegations,
         matrix: candidate.matrix,
       };
     })

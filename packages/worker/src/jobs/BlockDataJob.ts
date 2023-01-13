@@ -11,24 +11,62 @@ export const blockDataJob = async (chaindata: ChainData) => {
   logger.info(`Starting blockDataJob`, blockdataLabel);
   const latestBlock = await chaindata.getLatestBlock();
   const threshold = 2000000;
-  let earliest, latest;
-  for (let i = latestBlock; i > latestBlock - threshold; i--) {
-    const index = await queries.getHeartbeatIndex();
-
-    if (
-      !index?.earliest ||
-      !index?.latest ||
-      i < index?.earliest ||
-      i > index?.latest
-    ) {
-      await processBlock(chaindata, i);
-      await queries.setHeartbeatIndex(i, i);
-      logger.info(`Block Data Job: processed: ${i}`);
-    } else {
-      logger.info(`Skipping Block ${i}`);
+  let index = await queries.getHeartbeatIndex();
+  // Try to index from the latest block to the current block
+  if (index?.latest) {
+    const latestTotal = latestBlock - index.latest;
+    logger.info(
+      `Processing ${latestTotal} blocks from latest index: ${index.latest} to current block ${latestBlock}`,
+      blockdataLabel
+    );
+    let latestCount = 0;
+    for (let i = index.latest; i < latestBlock; i++) {
+      index = await queries.getHeartbeatIndex();
+      if (i > index.latest) {
+        await processBlock(chaindata, i);
+        latestCount++;
+        await queries.setHeartbeatIndex(i, i);
+        logger.info(
+          `Block Data Job: processed: ${i} (${latestCount}/${latestTotal})`,
+          blockdataLabel
+        );
+      }
     }
+    logger.info(
+      `Processed ${latestTotal} blocks up to the current block.`,
+      blockdataLabel
+    );
+  }
+  // index from the earliest block backwards
+  if (index?.earliest) {
+    const earliestTotal = index.earliest - (latestBlock - threshold);
+    logger.info(
+      `Processing ${earliestTotal} blocks from earliest index: ${
+        index.earliest
+      } to threshold block ${latestBlock - threshold}`,
+      blockdataLabel
+    );
+    let earliestCount = 0;
+    for (let i = index.earliest; i > latestBlock - threshold; i--) {
+      const index = await queries.getHeartbeatIndex();
+
+      if (i < index.earliest) {
+        await processBlock(chaindata, i);
+        await queries.setHeartbeatIndex(i, i);
+        earliestCount++;
+        logger.info(
+          `Block Data Job: processed: ${i} (${earliestCount}/${earliestTotal})`,
+          blockdataLabel
+        );
+      }
+    }
+    logger.info(
+      `Processed ${earliestTotal} blocks up to the threshold`,
+      blockdataLabel
+    );
   }
   logger.info(`Done, processed all blocks`, blockdataLabel);
+  return true;
 };
 
 export const processBlock = async (

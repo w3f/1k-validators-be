@@ -27,6 +27,15 @@ export default class LocationController {
     response(context, 200, await LocationService.getValidatorLocation(address));
   }
 
+  public static async getHeartbeatIndex(context: any): Promise<void> {
+    const { address } = context.params;
+    if (await context.cashed(300)) {
+      logger.info(`{Gateway} getHeartbeatIndex is cached`);
+      return;
+    }
+    response(context, 200, await LocationService.getHeartbeatIndex());
+  }
+
   // public static async getScore(context: any): Promise<void> {
   //   if (await context.cashed()) {
   //     logger.info(`{Gateway} getScore is cached`);

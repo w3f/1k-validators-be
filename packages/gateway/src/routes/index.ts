@@ -38,6 +38,7 @@ const API = {
   Release: "/release",
   LocationsCurrentValidatorSet: "/location/currentvalidatorset",
   LocationValidator: "/location/validator/:address",
+  HeartbeatIndex: "/location/heartbeatindex",
   LocationStats: "/locationstats",
   SessionLocationStats: "/locationstats/:session",
   Councillors: "/councillor",
@@ -66,6 +67,7 @@ const API = {
   OpenGovReferenda: "/opengov/referenda",
   OpenGovReferendaIndex: "/opengov/referenda/:index",
   OpenGovLastReferendum: "/opengov/referenda/last",
+  OpenGovAddressDelegations: "/opengov/delegations/:address",
 };
 
 router.get(API.Accounting, Accounting.getAccounting);
@@ -113,6 +115,10 @@ router.get(
   API.ReferendumConvictionVotes,
   Democracy.getReferendumConvictionVotes
 );
+router.get(
+  API.OpenGovAddressDelegations,
+  Democracy.getOpenGovAddressDelegations
+);
 
 router.get(API.Score, Score.getScore);
 router.get(API.SessionScore, Score.getSessionScore);
@@ -126,6 +132,7 @@ router.get(
   Location.getLocationCurrentValidatorSet
 );
 router.get(API.LocationValidator, Location.getValidatorLocation);
+router.get(API.HeartbeatIndex, Location.getHeartbeatIndex);
 
 router.get(API.EraStats, Stats.getEraStats);
 router.get(API.LocationStats, Stats.getLocationStats);

@@ -1,7 +1,7 @@
 // Adds a new candidate from the configuration file data.
 import { Keyring } from "@polkadot/keyring";
 import logger from "../../logger";
-import { CandidateModel, IdentityModel } from "../models";
+import { CandidateModel, IdentityModel, RankEventModel } from "../models";
 import { NodeDetails } from "../index";
 import { fetchLocationInfo } from "../../util";
 import { getChainMetadata } from "./ChainMetadata";
@@ -343,7 +343,7 @@ export const reportOnline = async (
     (locationData?.addr && locationData?.addr != addr) ||
     !locationData.address ||
     !locationData.session ||
-    Date.now() - locationData?.updated > 7200000; // The location data is older than 2 hours
+    Date.now() - locationData?.updated > 72000000; // The location data is older than 2 hours
   if (shouldFetch) {
     const iit = await getIIT();
     const { city, region, country, provider, v } = await fetchLocationInfo(
@@ -365,7 +365,9 @@ export const reportOnline = async (
     const candidate = new CandidateModel({
       telemetryId,
       location:
-        locationData && locationData?.city ? locationData?.city : "No Location",
+        locationData && locationData?.city && !locationData?.vpn
+          ? locationData?.city
+          : "No Location",
       networkId: null,
       nodeRefs: 1,
       name,
@@ -560,26 +562,23 @@ export const pushRankEvent = async (
   startEra: number,
   activeEra: number
 ): Promise<boolean> => {
-  const record = await CandidateModel.findOne({ stash }).lean();
-  if (!record) {
+  const record = await RankEventModel.findOne({
+    address: stash,
+    startEra: startEra,
+    activeEra: activeEra,
+  }).lean();
+  if (record) {
     return false;
+  } else {
+    const record = await new RankEventModel({
+      address: stash,
+      when: Date.now(),
+      startEra: startEra,
+      activeEra: activeEra,
+    });
+    await record.save();
+    return true;
   }
-
-  await CandidateModel.findOneAndUpdate(
-    {
-      stash,
-    },
-    {
-      $push: {
-        rankEvents: {
-          when: Date.now(),
-          startEra,
-          activeEra,
-        },
-      },
-    }
-  );
-  return true;
 };
 
 export const pushFaultEvent = async (

@@ -95,8 +95,10 @@ export const startValidatityJob = async (
       return;
     }
     running = true;
-    await validityJob(constraints);
-    running = false;
+    const hasFinished = await validityJob(constraints);
+    if (hasFinished) {
+      running = false;
+    }
   });
   validityCron.start();
 };
@@ -118,8 +120,10 @@ export const startScoreJob = async (
       return;
     }
     running = true;
-    await scoreJob(constraints);
-    running = false;
+    const hasFinished = await scoreJob(constraints);
+    if (hasFinished) {
+      running = false;
+    }
   });
   scoreCron.start();
 };
@@ -145,8 +149,10 @@ export const startEraStatsJob = async (
     }
     running = true;
 
-    await eraStatsJob(chaindata);
-    running = false;
+    const hasFinished = await eraStatsJob(chaindata);
+    if (hasFinished) {
+      running = false;
+    }
   });
   eraStatsCron.start();
 };
@@ -542,12 +548,13 @@ export const startEraPointsJob = async (
     // Run the Era Points job
     const retries = 0;
     try {
-      await eraPointsJob(chaindata);
+      const hasFinished = await eraPointsJob(chaindata);
+      if (hasFinished) {
+        running = false;
+      }
     } catch (e) {
       logger.warn(`There was an error running. retries: ${retries}`, cronLabel);
     }
-
-    running = false;
   });
   eraPointsCron.start();
 };
@@ -577,8 +584,10 @@ export const startActiveValidatorJob = async (
       running = true;
       logger.info(`running era points job....`, cronLabel);
       // Run the active validators job
-      await activeValidatorJob(chaindata);
-      running = false;
+      const hasFinished = await activeValidatorJob(chaindata);
+      if (hasFinished) {
+        running = false;
+      }
     }
   );
   activeValidatorCron.start();
@@ -608,8 +617,10 @@ export const startInclusionJob = async (
     logger.info(`running inclusion job....`, cronLabel);
 
     // Run the active validators job
-    await inclusionJob(chaindata);
-    running = false;
+    const hasFinished = await inclusionJob(chaindata);
+    if (hasFinished) {
+      running = false;
+    }
   });
   inclusionCron.start();
 };
@@ -638,8 +649,10 @@ export const startSessionKeyJob = async (
     logger.info(`running session key job....`, cronLabel);
 
     // Run the active validators job
-    await sessionKeyJob(chaindata);
-    running = false;
+    const hasFinished = await sessionKeyJob(chaindata);
+    if (hasFinished) {
+      running = false;
+    }
   });
   sessionKeyCron.start();
 };
@@ -706,8 +719,10 @@ export const startValidatorPrefJob = async (
     logger.info(`running validator pref job....`, cronLabel);
 
     // Run the active validators job
-    await validatorPrefJob(chaindata);
-    running = false;
+    const hasFinished = await validatorPrefJob(chaindata);
+    if (hasFinished) {
+      running = false;
+    }
   });
   validatorPrefCron.start();
 };
@@ -736,8 +751,10 @@ export const startLocationStatsJob = async (
     logger.info(`running location stats job....`, cronLabel);
 
     // Run the active validators job
-    await locationStatsJob(chaindata);
-    running = false;
+    const hasFinished = await locationStatsJob(chaindata);
+    if (hasFinished) {
+      running = false;
+    }
   });
   locationStatsCron.start();
 };
@@ -766,8 +783,10 @@ export const startCouncilJob = async (
     logger.info(`running council job....`, cronLabel);
 
     // Run the active validators job
-    await councilJob(chaindata);
-    running = false;
+    const hasFinished = await councilJob(chaindata);
+    if (hasFinished) {
+      running = false;
+    }
   });
   councilCron.start();
 };
@@ -828,8 +847,10 @@ export const startDemocracyJob = async (
     logger.info(`running democracy job....`, cronLabel);
 
     // Run the democracy  job
-    await democracyJob(chaindata);
-    running = false;
+    const hasFinished = await democracyJob(chaindata);
+    if (hasFinished) {
+      running = false;
+    }
   });
   democracyCron.start();
 };
@@ -858,8 +879,10 @@ export const startNominatorJob = async (
     logger.info(`running nominator job....`, cronLabel);
 
     // Run the job
-    await nominatorJob(chaindata);
-    running = false;
+    const hasFinished = await nominatorJob(chaindata);
+    if (hasFinished) {
+      running = false;
+    }
   });
   nominatorCron.start();
 };
@@ -888,8 +911,10 @@ export const startDelegationJob = async (
     logger.info(`running nominator job....`, cronLabel);
 
     // Run the job
-    await delegationJob(chaindata);
-    running = false;
+    const hasFinished = await delegationJob(chaindata);
+    if (hasFinished) {
+      running = false;
+    }
   });
   delegationCron.start();
 };
@@ -918,8 +943,10 @@ export const startBlockDataJob = async (
     logger.info(`running block job....`, cronLabel);
 
     // Run the job
-    await blockDataJob(chaindata);
-    running = false;
+    const hasFinished = await blockDataJob(chaindata);
+    if (hasFinished) {
+      running = false;
+    }
   });
   blockCron.start();
 

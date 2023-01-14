@@ -949,6 +949,4 @@ export const startBlockDataJob = async (
     }
   });
   blockCron.start();
-
-  await blockDataJob(chaindata);
 };

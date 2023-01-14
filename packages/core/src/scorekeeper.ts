@@ -51,7 +51,7 @@ type NominatorGroup = Config.NominatorConfig[];
 
 type SpawnedNominatorGroup = Nominator[];
 
-export const scorekeeperLabel = { label: "Scorekeper" };
+export const scorekeeperLabel = { label: "Scorekeeper" };
 
 // The number of nominations a nominator can get in the set.
 export const autoNumNominations = async (
@@ -694,6 +694,7 @@ export default class ScoreKeeper {
       );
       logger.error(e);
     }
+    logger.info(`going to start mainCron: `, scorekeeperLabel);
     await mainCron.start();
   }
 

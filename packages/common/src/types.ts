@@ -240,6 +240,104 @@ export type OpenGovReferendum = {
   //alarm
 };
 
+export type OpenGovReferendumStat = {
+  index: number;
+  track: number;
+  origin: string;
+  currentStatus: string;
+  ayeAmount: number;
+  nayAmount: number;
+  abstainAmount: number;
+  castingVoters: {
+    total: number;
+    elb: number;
+    vlb: number;
+    lb: number;
+    mb: number;
+    hb: number;
+  };
+  delegatingVoters: {
+    total: number;
+    elb: number;
+    vlb: number;
+    lb: number;
+    mb: number;
+    hb: number;
+  };
+  ayeVoters: {
+    total: number;
+    elb: number;
+    vlb: number;
+    lb: number;
+    mb: number;
+    hb: number;
+  };
+  nayVoters: {
+    total: number;
+    elb: number;
+    vlb: number;
+    lb: number;
+    mb: number;
+    hb: number;
+  };
+  abstainVoters: {
+    total: number;
+    elb: number;
+    vlb: number;
+    lb: number;
+    mb: number;
+    hb: number;
+  };
+  validatorVoters: {
+    total: number;
+    elb: number;
+    vlb: number;
+    lb: number;
+    mb: number;
+    hb: number;
+  };
+  nominatorVoters: {
+    total: number;
+    elb: number;
+    vlb: number;
+    lb: number;
+    mb: number;
+    hb: number;
+  };
+  nonStakerVoters: {
+    total: number;
+    elb: number;
+    vlb: number;
+    lb: number;
+    mb: number;
+    hb: number;
+  };
+  fellowshipVoters: {
+    total: number;
+    elb: number;
+    vlb: number;
+    lb: number;
+    mb: number;
+    hb: number;
+  };
+  identityVoters: {
+    total: number;
+    elb: number;
+    vlb: number;
+    lb: number;
+    mb: number;
+    hb: number;
+  };
+  allVoters: {
+    total: number;
+    elb: number;
+    vlb: number;
+    lb: number;
+    mb: number;
+    hb: number;
+  };
+};
+
 export interface AvailabilityCoreState {
   blockNumber: number;
   core: number;

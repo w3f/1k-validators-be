@@ -1,9 +1,5 @@
 import { response } from "./index";
 import * as DemocracyService from "../services/Democracy";
-import {
-  getReferendumAccountVotes,
-  getReferendumIndexVotes,
-} from "../services/Democracy";
 import { logger } from "@1kv/common";
 
 export default class DemocracyController {
@@ -184,6 +180,27 @@ export default class DemocracyController {
       context,
       200,
       await DemocracyService.getOpenGovAddressDelegations(address)
+    );
+  }
+
+  public static async getOpenGovReferendaStats(context: any): Promise<void> {
+    if (await context.cashed()) {
+      logger.info(`{Gateway} getOpenGovReferendaStats is cached`);
+      return;
+    }
+    response(context, 200, await DemocracyService.getOpenGovReferendaStats());
+  }
+
+  public static async getOpenGovReferendumStats(context: any): Promise<void> {
+    if (await context.cashed()) {
+      logger.info(`{Gateway} getOpenGovReferendumStats is cached`);
+      return;
+    }
+    const { index } = context.params;
+    response(
+      context,
+      200,
+      await DemocracyService.getOpenGovReferendumStats(index)
     );
   }
 }

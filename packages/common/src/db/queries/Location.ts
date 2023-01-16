@@ -59,7 +59,6 @@ export const getLocation = async (name: string, addr: string): Promise<any> => {
   // First try to get by telemetry name
   data = await LocationModel.find({
     addr,
-    vpn: false,
   })
     .lean()
     .sort("-session")
@@ -68,7 +67,6 @@ export const getLocation = async (name: string, addr: string): Promise<any> => {
   if (!data || data.length == 0) {
     data = await LocationModel.find({
       name,
-      vpn: false,
     })
       .lean()
       .sort("-session")

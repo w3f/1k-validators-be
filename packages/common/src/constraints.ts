@@ -939,9 +939,7 @@ export const getLocationValues = (validCandidates: Types.CandidateData[]) => {
   const locationMap = new Map();
   const locationArr = [];
   for (const candidate of validCandidates) {
-    const location =
-      (candidate.location && !candidate?.infrastructureLocation?.vpn) ||
-      "No Location";
+    const location = candidate.location || "No Location";
 
     const locationCount = locationMap.get(location);
     if (!locationCount) {
@@ -970,7 +968,6 @@ export const getRegionValues = (validCandidates: Types.CandidateData[]) => {
   for (const candidate of validCandidates) {
     const region =
       candidate.infrastructureLocation &&
-      !candidate.infrastructureLocation.vpn &&
       candidate.infrastructureLocation.region
         ? candidate.infrastructureLocation.region
         : "No Location";
@@ -1001,7 +998,6 @@ export const getCountryValues = (validCandidates: Types.CandidateData[]) => {
   for (const candidate of validCandidates) {
     const country =
       candidate.infrastructureLocation &&
-      !candidate.infrastructureLocation.vpn &&
       candidate.infrastructureLocation.country
         ? candidate.infrastructureLocation.country
         : "No Location";
@@ -1032,7 +1028,6 @@ export const getProviderValues = (validCandidates: Types.CandidateData[]) => {
   for (const candidate of validCandidates) {
     const provider =
       candidate.infrastructureLocation &&
-      !candidate.infrastructureLocation.vpn &&
       candidate.infrastructureLocation.provider
         ? candidate.infrastructureLocation.provider
         : "No Location";

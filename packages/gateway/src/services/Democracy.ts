@@ -1,5 +1,4 @@
 import { queries } from "@1kv/common";
-import { getReferendumConvictionVoting } from "@1kv/common/build/db";
 
 export const getLatestElectionStats = async (): Promise<any> => {
   const electionStats = await queries.getLatestElectionStats();
@@ -131,4 +130,16 @@ export const getOpenGovAddressDelegations = async (
 ): Promise<any> => {
   const delegations = await queries.getOpenGovDelegationAddress(address);
   return delegations;
+};
+
+export const getOpenGovReferendaStats = async (): Promise<any> => {
+  const refStats = await queries.getAllOpenGovReferendumStats();
+  return refStats;
+};
+
+export const getOpenGovReferendumStats = async (
+  index: number
+): Promise<any> => {
+  const refStats = await queries.getOpenGovReferendumStats(index);
+  return refStats;
 };

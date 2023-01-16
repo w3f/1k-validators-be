@@ -1,6 +1,4 @@
-import { Schema } from "mongoose";
-import mongoose from "mongoose";
-import { logger } from "../index";
+import mongoose, { Schema } from "mongoose";
 
 const RewardRecordScheme = new Schema({
   // Era
@@ -1003,12 +1001,116 @@ export const OpenGovReferendum = new Schema({
   inQueue: Boolean,
   updatedBlockNumber: Number,
   updatedBlockHash: String,
+  currentStatus: String,
   updatedTimestamp: Number,
 });
 
 export const OpenGovReferendumModel = mongoose.model(
   "OpenGovReferendum",
   OpenGovReferendum
+);
+
+export const OpenGovReferendumStats = new Schema({
+  index: Number,
+  track: Number,
+  origin: String,
+  currentStatus: String,
+  ayeAmount: Number,
+  nayAmount: Number,
+  abstainAmount: Number,
+  castingVoters: {
+    total: Number,
+    elb: Number,
+    vlb: Number,
+    lb: Number,
+    mb: Number,
+    hb: Number,
+  },
+  delegatingVoters: {
+    total: Number,
+    elb: Number,
+    vlb: Number,
+    lb: Number,
+    mb: Number,
+    hb: Number,
+  },
+  ayeVoters: {
+    total: Number,
+    elb: Number,
+    vlb: Number,
+    lb: Number,
+    mb: Number,
+    hb: Number,
+  },
+  nayVoters: {
+    total: Number,
+    elb: Number,
+    vlb: Number,
+    lb: Number,
+    mb: Number,
+    hb: Number,
+  },
+  abstainVoters: {
+    total: Number,
+    elb: Number,
+    vlb: Number,
+    lb: Number,
+    mb: Number,
+    hb: Number,
+  },
+  validatorVoters: {
+    total: Number,
+    elb: Number,
+    vlb: Number,
+    lb: Number,
+    mb: Number,
+    hb: Number,
+  },
+  nominatorVoters: {
+    total: Number,
+    elb: Number,
+    vlb: Number,
+    lb: Number,
+    mb: Number,
+    hb: Number,
+  },
+  nonStakerVoters: {
+    total: Number,
+    elb: Number,
+    vlb: Number,
+    lb: Number,
+    mb: Number,
+    hb: Number,
+  },
+  fellowshipVoters: {
+    total: Number,
+    elb: Number,
+    vlb: Number,
+    lb: Number,
+    mb: Number,
+    hb: Number,
+  },
+  identityVoters: {
+    total: Number,
+    elb: Number,
+    vlb: Number,
+    lb: Number,
+    mb: Number,
+    hb: Number,
+  },
+  allVoters: {
+    total: Number,
+    elb: Number,
+    vlb: Number,
+    lb: Number,
+    mb: Number,
+    hb: Number,
+  },
+});
+
+export const OpenGovReferendumStatsModel = mongoose.model(
+  "OpenGovReferendumStats",
+  OpenGovReferendumStats
 );
 
 export const IIT = new Schema({

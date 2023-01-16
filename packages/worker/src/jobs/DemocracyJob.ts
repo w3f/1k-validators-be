@@ -1,20 +1,22 @@
-import { logger, ChainData, Types, queries } from "@1kv/common";
-import { getAllIdentities } from "@1kv/common/build/db";
+import { ChainData, logger, queries, Types } from "@1kv/common";
+import { OpenGovReferendumStat } from "@1kv/common/build/types";
 
 export const democracyLabel = { label: "DemocracyJob" };
 
-export const democracyStatsJob = async (chaindata) => {
-  const nominators = await chaindata.getNominatorAddresses();
-  logger.info(`nominators length: ${nominators.length}`, democracyLabel);
+export const getNominatorAddresses = async (chaindata) => {
+  return await chaindata.getNominatorAddresses();
+};
 
-  // Get the list of fellowship addresses
+export const getFellowshipAddresses = async (chaindata) => {
   const fellowship = await chaindata.getFellowship();
   const fellowshipAddresses = [];
   for (const fellow of fellowship) {
     fellowshipAddresses.push(fellow.address);
   }
+  return fellowshipAddresses;
+};
 
-  // Get the list of addresses with identities
+export const getIdentityAddresses = async () => {
   const allIdentityAddresses = [];
   const identities = await queries.getAllIdentities();
   for (const id of identities) {
@@ -23,8 +25,10 @@ export const democracyStatsJob = async (chaindata) => {
       allIdentityAddresses.push(subid.address);
     }
   }
+  return allIdentityAddresses;
+};
 
-  // get the list of validator addresses
+export const getValidatorAddresses = async (chaindata) => {
   const allValidators = [];
   const chainValidators = await chaindata.getAssociatedValidatorAddresses();
   for (const [index, validator] of chainValidators.entries()) {
@@ -42,127 +46,193 @@ export const democracyStatsJob = async (chaindata) => {
       }
     }
   }
-  logger.info(`chain validators: ${chainValidators.length}`, democracyLabel);
-  logger.info(`associated validators: ${allValidators.length}`, democracyLabel);
+  return allValidators;
+};
+
+export const getBalanceVotes = (votes) => {
+  const elbThreshold = 0.5;
+  const vlbThreshold = 1.5;
+  const lbThreshold = 5;
+  const mbThreshold = 10;
+  const hbThreshold = 50;
+
+  const elbVotes = votes.filter((vote) => {
+    const totalBalance =
+      vote?.balance?.aye + vote?.balance?.nay + vote?.balance?.abstain;
+    if (totalBalance < elbThreshold) return true;
+  });
+  const vlbVotes = votes.filter((vote) => {
+    const totalBalance =
+      vote?.balance?.aye + vote?.balance?.nay + vote?.balance?.abstain;
+    if (totalBalance > elbThreshold && totalBalance <= vlbThreshold)
+      return true;
+  });
+  const lbVotes = votes.filter((vote) => {
+    const totalBalance =
+      vote?.balance?.aye + vote?.balance?.nay + vote?.balance?.abstain;
+    if (totalBalance > vlbThreshold && totalBalance <= lbThreshold) return true;
+  });
+  const mbVotes = votes.filter((vote) => {
+    const totalBalance =
+      vote?.balance?.aye + vote?.balance?.nay + vote?.balance?.abstain;
+    if (totalBalance > lbThreshold && totalBalance <= mbThreshold) return true;
+  });
+  const hbVotes = votes.filter((vote) => {
+    const totalBalance =
+      vote?.balance?.aye + vote?.balance?.nay + vote?.balance?.abstain;
+    if (totalBalance > mbThreshold) return true;
+  });
+
+  return {
+    total: votes.length,
+    elb: elbVotes.length,
+    vlb: vlbVotes.length,
+    lb: lbVotes.length,
+    mb: mbVotes.length,
+    hb: hbVotes.length,
+  };
+};
+
+export const getValidatorVotes = (validators, votes) => {
+  return votes.filter((vote) => {
+    return validators.includes(vote.address);
+  });
+};
+
+export const getCastingVotes = (votes) => {
+  return votes.filter((vote) => {
+    return vote.voteType == "Casting";
+  });
+};
+
+export const getDelegatingVotes = (votes) => {
+  return votes.filter((vote) => {
+    return vote.voteType == "Delegating";
+  });
+};
+
+export const getAyeVotes = (votes) => {
+  return votes.filter((vote) => {
+    return vote.Direction == "Aye";
+  });
+};
+
+export const getNayVotes = (votes) => {
+  return votes.filter((vote) => {
+    return vote.Direction == "Nay";
+  });
+};
+
+export const getAbstainVotes = (votes) => {
+  return votes.filter((vote) => {
+    return vote.Direction == "Abstain";
+  });
+};
+
+export const getIdentityVotes = (identities, votes) => {
+  return votes.filter((vote) => {
+    return identities.includes(vote.address);
+  });
+};
+
+export const getNominatorVotes = (nominators, validators, votes) => {
+  return votes.filter((vote) => {
+    return (
+      !validators.includes(vote.address) && nominators.includes(vote.address)
+    );
+  });
+};
+
+export const getNonStakerVotes = (nominators, validators, votes) => {
+  return votes.filter((vote) => {
+    return (
+      !validators.includes(vote.address) && !nominators.includes(vote.address)
+    );
+  });
+};
+
+export const getFellowshipVotes = (fellowship, votes) => {
+  return votes.filter((vote) => {
+    return fellowship.includes(vote.address);
+  });
+};
+
+export const getAmount = (votes) => {
+  const ayeVotes = getAyeVotes(votes);
+  const nayVotes = getNayVotes(votes);
+  const abstainVotes = getAbstainVotes(votes);
+  let ayeAmount,
+    nayAmount,
+    abstainAmount = 0;
+  for (const vote of ayeVotes) {
+    ayeAmount += vote.balance.aye;
+  }
+  for (const vote of nayVotes) {
+    nayAmount += vote.balance.nay;
+  }
+  for (const vote of abstainVotes) {
+    abstainAmount += vote.balance.abstain;
+  }
+  return {
+    ayeAmount: ayeAmount,
+    nayAmount: nayAmount,
+    abstainAmount: abstainAmount,
+  };
+};
+
+export const democracyStatsJob = async (chaindata) => {
+  const validators = await getValidatorAddresses(chaindata);
+  const nominators = await getNominatorAddresses(chaindata);
+  const fellowshipAddresses = await getFellowshipAddresses(chaindata);
+  const identityAddresses = await getIdentityAddresses();
 
   const votes = await queries.getAllConvictionVoting();
   const totalVotes = votes.length;
 
-  const nonValidator = votes.filter((vote) => {
-    return !allValidators.includes(vote.address);
-  });
+  const referenda = await queries.getAllOpenGovReferenda();
+  for (const referendum of referenda) {
+    const { track, index, origin, ayes, nays, currentStatus } = referendum;
+    const votes = await queries.getReferendumConvictionVoting(index);
 
-  const extremelyLowBalanceVotes = votes.filter((vote) => {
-    const totalBalance =
-      vote.balance.aye + vote.balance.nay + vote.balance.abstain;
-    if (totalBalance < 0.5) return true;
-  }).length;
-
-  const veryLowBalanceVotes = votes.filter((vote) => {
-    const totalBalance =
-      vote.balance.aye + vote.balance.nay + vote.balance.abstain;
-    if (totalBalance < 1.5) return true;
-  }).length;
-
-  const lowBalanceVotes = votes.filter((vote) => {
-    const totalBalance =
-      vote.balance.aye + vote.balance.nay + vote.balance.abstain;
-    if (totalBalance < 5) return true;
-  }).length;
-
-  const castingVotes = votes.filter((vote) => {
-    return vote.voteType == "Casting";
-  }).length;
-  const delegatedVotes = votes.filter((vote) => {
-    return vote.voteType == "Delegating";
-  }).length;
-
-  const validatorVotes = votes.filter((vote) => {
-    return allValidators.includes(vote.address);
-  }).length;
-
-  const identityVotes = votes.filter((vote) => {
-    return allIdentityAddresses.includes(vote.address);
-  }).length;
-  const nominatorVotes = votes.filter((vote) => {
-    return (
-      !allValidators.includes(vote.address) && nominators.includes(vote.address)
-    );
-  }).length;
-  const nonStakerVotes = votes.filter((vote) => {
-    return (
-      !allValidators.includes(vote.address) &&
-      !nominators.includes(vote.address)
-    );
-  }).length;
-  const fellowshipVotes = votes.filter((vote) => {
-    return fellowshipAddresses.includes(vote.address);
-  }).length;
-  logger.info(`--------------------`, democracyLabel);
-  logger.info(`Total Votes: ${totalVotes}`, democracyLabel);
-  logger.info(
-    `Casting Votes: ${castingVotes} (${(castingVotes / totalVotes) * 100}%)`,
-    democracyLabel
-  );
-  logger.info(
-    `Delegated Votes: ${delegatedVotes} (${
-      (delegatedVotes / totalVotes) * 100
-    }%)`,
-    democracyLabel
-  );
-  logger.info(
-    `Validator Votes: ${validatorVotes} (${
-      (validatorVotes / totalVotes) * 100
-    }%)`,
-    democracyLabel
-  );
-  logger.info(
-    `Nominator Votes: ${nominatorVotes} (${
-      (nominatorVotes / totalVotes) * 100
-    }%)`,
-    democracyLabel
-  );
-  logger.info(
-    `Non-Staker Votes: ${nonStakerVotes} (${
-      (nonStakerVotes / totalVotes) * 100
-    }%)`,
-    democracyLabel
-  );
-  logger.info(
-    `Identity Votes: ${identityVotes} (${(identityVotes / totalVotes) * 100}%)`,
-    democracyLabel
-  );
-  logger.info(
-    `Fellowship Votes: ${fellowshipVotes} (${
-      (fellowshipVotes / totalVotes) * 100
-    }%)`,
-    democracyLabel
-  );
-  logger.info(
-    `Extremely Low Balance Votes (<0.5 KSM):  ${extremelyLowBalanceVotes} (${
-      (extremelyLowBalanceVotes / totalVotes) * 100
-    }%)`,
-    democracyLabel
-  );
-  logger.info(
-    `Very Low Balance Votes (<1.5 KSM): ${veryLowBalanceVotes} (${
-      (veryLowBalanceVotes / totalVotes) * 100
-    }%)`,
-    democracyLabel
-  );
-  logger.info(
-    `Low Balance Votes (<5 KSM): ${lowBalanceVotes} (${
-      (lowBalanceVotes / totalVotes) * 100
-    }%)`,
-    democracyLabel
-  );
-  logger.info(`--------------------`, democracyLabel);
+    const amounts = getAmount(votes);
+    const ayeVotes = getAyeVotes(votes);
+    const nayVotes = getNayVotes(votes);
+    const abstainVotes = getAbstainVotes(votes);
+    const castingVotes = getCastingVotes(votes);
+    const delegatingVotes = getDelegatingVotes(votes);
+    const validatorVotes = getValidatorVotes(validators, votes);
+    const nominatorVotes = getNominatorVotes(nominators, validators, votes);
+    const nonStakerVotes = getNonStakerVotes(nominators, validators, votes);
+    const fellowshipVotes = getFellowshipVotes(fellowshipAddresses, votes);
+    const identityVotes = getIdentityVotes(identityAddresses, votes);
+    const referendumStats: OpenGovReferendumStat = {
+      index: index,
+      track: track,
+      origin: origin,
+      currentStatus: currentStatus,
+      ayeAmount: amounts.ayeAmount,
+      nayAmount: amounts.nayAmount,
+      abstainAmount: amounts.abstainAmount,
+      castingVoters: getBalanceVotes(castingVotes),
+      delegatingVoters: getBalanceVotes(delegatingVotes),
+      ayeVoters: getBalanceVotes(ayeVotes),
+      nayVoters: getBalanceVotes(nayVotes),
+      abstainVoters: getBalanceVotes(abstainVotes),
+      validatorVoters: getBalanceVotes(validatorVotes),
+      nominatorVoters: getBalanceVotes(nominatorVotes),
+      nonStakerVoters: getBalanceVotes(nonStakerVotes),
+      fellowshipVoters: getBalanceVotes(fellowshipVotes),
+      identityVoters: getBalanceVotes(identityVotes),
+      allVoters: getBalanceVotes(votes),
+    };
+    await queries.setOpenGovReferendumStats(referendumStats);
+  }
 };
 
 export const democracyJob = async (chaindata: ChainData) => {
   const start = Date.now();
   logger.info(`Starting Democracy Job`, democracyLabel);
-  // await democracyStatsJob(chaindata);
+  await democracyStatsJob(chaindata);
 
   const latestBlockNumber = await chaindata.getLatestBlock();
   const latestBlockHash = await chaindata.getLatestBlockHash();
@@ -273,8 +343,14 @@ export const democracyJob = async (chaindata: ChainData) => {
       const qstart = Date.now();
       const { ongoingReferenda, finishedReferenda } =
         await chaindata.getOpenGovReferenda();
-      // TODO: Update approved referenda
       for (const referenda of ongoingReferenda) {
+        await queries.setOpenGovReferendum(
+          referenda,
+          latestBlockNumber,
+          latestBlockHash
+        );
+      }
+      for (const referenda of finishedReferenda) {
         await queries.setOpenGovReferendum(
           referenda,
           latestBlockNumber,

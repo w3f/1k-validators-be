@@ -3,6 +3,7 @@ import {
   ConvictionDelegation,
   ConvictionVote,
   OpenGovReferendum,
+  OpenGovReferendumStat,
   Referendum,
   ReferendumVote,
 } from "../../types";
@@ -11,6 +12,7 @@ import {
   ConvictionVoteModel,
   OpenGovDelegationModel,
   OpenGovReferendumModel,
+  OpenGovReferendumStatsModel,
   ReferendumModel,
   ReferendumVoteModel,
 } from "../models";
@@ -393,6 +395,7 @@ export const setOpenGovReferendum = async (
       inQueue: openGovReferendum.inQueue,
       updatedBlockNumber: updatedBlockNumber,
       updatedBlockHash: updatedBlockHash,
+      currentStatus: openGovReferendum.currentStatus,
       updatedTimestamp: Date.now(),
     });
     return referendumData.save();
@@ -421,7 +424,82 @@ export const setOpenGovReferendum = async (
       inQueue: openGovReferendum.inQueue,
       updatedBlockNumber: updatedBlockNumber,
       updatedBlockHash: updatedBlockHash,
+      currentStatus: openGovReferendum.currentStatus,
       updatedTimestamp: Date.now(),
+    }
+  ).exec();
+};
+
+export const getOpenGovReferendumStats = async (
+  index: number
+): Promise<any> => {
+  const data = await OpenGovReferendumStatsModel.findOne({
+    index: index,
+  }).lean();
+  return data;
+};
+
+export const getAllOpenGovReferendumStats = async (): Promise<any> => {
+  const data = await OpenGovReferendumStatsModel.find({}).lean();
+  return data;
+};
+
+export const setOpenGovReferendumStats = async (
+  referendum: OpenGovReferendumStat
+): Promise<any> => {
+  // Try and find an existing record
+  const data = await OpenGovReferendumStatsModel.findOne({
+    index: referendum.index,
+  }).lean();
+
+  // If an referendum object doesnt yet exist
+  if (!data) {
+    const referendumStatsData = new OpenGovReferendumStatsModel({
+      index: referendum.index,
+      track: referendum.track,
+      origin: referendum.origin,
+      currentStatus: referendum.currentStatus,
+      ayeAmount: referendum.ayeAmount,
+      nayAmount: referendum.nayAmount,
+      abstainAmount: referendum.abstainAmount,
+      castingVoters: referendum.castingVoters,
+      delegatingVoters: referendum.delegatingVoters,
+      ayeVoters: referendum.ayeVoters,
+      nayVoters: referendum.nayVoters,
+      abstainVoters: referendum.abstainVoters,
+      validatorVoters: referendum.validatorVoters,
+      nominatorVoters: referendum.nominatorVoters,
+      nonStakerVoters: referendum.nonStakerVoters,
+      fellowshipVoters: referendum.fellowshipVoters,
+      identityVoters: referendum.identityVoters,
+      allVoters: referendum.allVoters,
+    });
+    return referendumStatsData.save();
+  }
+
+  // It exists, update it
+  await OpenGovReferendumStatsModel.findOneAndUpdate(
+    {
+      index: referendum.index,
+    },
+    {
+      track: referendum.track,
+      origin: referendum.origin,
+      currentStatus: referendum.currentStatus,
+      ayeAmount: referendum.ayeAmount,
+      nayAmount: referendum.nayAmount,
+      abstainAmount: referendum.abstainAmount,
+      castingVoters: referendum.castingVoters,
+      delegatingVoters: referendum.delegatingVoters,
+      ayeVoters: referendum.ayeVoters,
+      nayVoters: referendum.nayVoters,
+      abstainVoters: referendum.abstainVoters,
+      validatorVoters: referendum.validatorVoters,
+      nominatorVoters: referendum.nominatorVoters,
+      nonStakerVoters: referendum.nonStakerVoters,
+      fellowshipVoters: referendum.fellowshipVoters,
+      identityVoters: referendum.identityVoters,
+      allVoters: referendum.allVoters,
     }
   ).exec();
 };
@@ -436,7 +514,8 @@ export const getOpenGovReferendum = async (index: number): Promise<any> => {
 // LEGACY DEMOCRACY
 // returns a referendum by index
 export const getAllOpenGovReferenda = async (): Promise<any> => {
-  return OpenGovReferendumModel.find({}).lean().exec();
+  const referenda = await OpenGovReferendumModel.find({}).lean().exec();
+  return referenda.sort((a, b) => b.index - a.index);
 };
 
 // LEGACY DEMOCRACY

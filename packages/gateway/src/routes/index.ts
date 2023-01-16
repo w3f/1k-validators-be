@@ -66,6 +66,8 @@ const API = {
   ReferendumConvictionVotes: "/opengov/votes/referendum/:index",
   OpenGovReferenda: "/opengov/referenda",
   OpenGovReferendaIndex: "/opengov/referenda/:index",
+  OpenGovReferendaStats: "/opengov/referenda/stats/",
+  OpenGovReferendumStats: "/opengov/referenda/stats/:index",
   OpenGovLastReferendum: "/opengov/referenda/last",
   OpenGovAddressDelegations: "/opengov/delegations/:address",
 };
@@ -104,6 +106,9 @@ router.get(API.ReferendumIndexVotes, Democracy.getReferendumIndexVotes);
 router.get(API.ReferendumAccountVotes, Democracy.getReferendumAccountVotes);
 router.get(API.Delegations, Democracy.getDelegations);
 router.get(API.AllDelegations, Democracy.getAllDelegations);
+
+router.get(API.OpenGovReferendaStats, Democracy.getOpenGovReferendaStats);
+router.get(API.OpenGovReferendumStats, Democracy.getOpenGovReferendumStats);
 
 router.get(API.AddressConvictionVotes, Democracy.getAddressConvictionVotes);
 router.get(

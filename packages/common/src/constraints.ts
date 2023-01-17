@@ -6,16 +6,19 @@ import {
   Config,
   Constants,
   logger,
+  queries,
   Types,
   Util,
-  queries,
 } from "./index";
 import ApiHandler from "./ApiHandler";
 import {
   allCandidates,
+  allNominators,
+  getDelegations,
   getLargestOpenGovDelegationAddress,
   getLastOpenGovReferenda,
   getLastReferenda,
+  getLatestNominatorStake,
   getLatestRelease,
   getLatestValidatorScoreMetadata,
   getOpenGovDelegationAddress,
@@ -24,24 +27,19 @@ import {
   setConnectionTimeInvalidity,
   setIdentityInvalidity,
   setKusamaRankInvalidity,
+  setLastValid,
   setLatestClientReleaseValidity,
+  setOfflineAccumulatedInvalidity,
   setOnlineValidity,
   setProviderInvalidity,
   setRewardDestinationInvalidity,
   setSelfStakeInvalidity,
   setUnclaimedInvalidity,
-  setValidateIntentionValidity,
-  validCandidates,
-} from "./db";
-import {
-  allNominators,
-  getDelegations,
-  getLatestNominatorStake,
-  setLastValid,
-  setOfflineAccumulatedInvalidity,
   setValid,
+  setValidateIntentionValidity,
   setValidatorScore,
   setValidatorScoreMetadata,
+  validCandidates,
 } from "./db";
 import { percentage, timeRemaining } from "./util";
 

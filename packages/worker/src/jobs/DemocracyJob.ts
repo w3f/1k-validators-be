@@ -113,19 +113,19 @@ export const getDelegatingVotes = (votes) => {
 
 export const getAyeVotes = (votes) => {
   return votes.filter((vote) => {
-    return vote.Direction == "Aye";
+    return vote.voteDirection == "Aye";
   });
 };
 
 export const getNayVotes = (votes) => {
   return votes.filter((vote) => {
-    return vote.Direction == "Nay";
+    return vote.voteDirection == "Nay";
   });
 };
 
 export const getAbstainVotes = (votes) => {
   return votes.filter((vote) => {
-    return vote.Direction == "Abstain";
+    return vote.voteDirection == "Abstain";
   });
 };
 
@@ -161,9 +161,9 @@ export const getAmount = (votes) => {
   const ayeVotes = getAyeVotes(votes);
   const nayVotes = getNayVotes(votes);
   const abstainVotes = getAbstainVotes(votes);
-  let ayeAmount,
-    nayAmount,
-    abstainAmount = 0;
+  let ayeAmount = 0;
+  let nayAmount = 0;
+  let abstainAmount = 0;
   for (const vote of ayeVotes) {
     ayeAmount += vote.balance.aye;
   }

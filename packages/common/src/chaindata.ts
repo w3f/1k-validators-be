@@ -6,30 +6,20 @@ import {
   POLKADOT_APPROX_ERA_LENGTH_IN_BLOCKS,
   TESTNET_APPROX_ERA_LENGTH_IN_BLOCKS,
 } from "./constants";
-import { getChainMetadata, getEraPoints, setOpenGovReferendum } from "./db";
+import { getChainMetadata, getEraPoints } from "./db";
 import logger from "./logger";
 import {
   AvailabilityCoreState,
   BooleanResult,
+  ConvictionDelegation,
+  ConvictionVote,
   Identity,
   NumberResult,
-  StringResult,
-  ConvictionVote,
-  ConvictionDelegation,
-  TrackInfo,
   OpenGovReferendum,
+  StringResult,
+  TrackInfo,
 } from "./types";
-import { getParaValIndex, hex2a, toDecimals } from "./util";
-import type {
-  Hash,
-  ReferendumInfoTo239,
-  Tally,
-} from "@polkadot/types/interfaces";
-import type {
-  PalletDemocracyReferendumInfo,
-  PalletDemocracyReferendumStatus,
-  PalletDemocracyVoteVoting,
-} from "@polkadot/types/lookup";
+import { getParaValIndex, toDecimals } from "./util";
 
 type JSON = any;
 
@@ -1757,20 +1747,20 @@ export class ChainData {
         // There are votes for a given track that a person delegating will have votes for.
         for (const vote of v) {
           const voteDirectionType = vote.voteDirectionType;
+          const voteDirection = vote.voteDirection;
           let balance;
 
           switch (voteDirectionType) {
-            case "Aye":
+            case "Standard":
               balance = {
-                aye: Number(delegation.balance),
-                nay: Number(0),
-                abstain: Number(0),
-              };
-              break;
-            case "Nay":
-              balance = {
-                aye: Number(0),
-                nay: Number(delegation.balance),
+                aye:
+                  voteDirection == "Aye"
+                    ? Number(delegation.balance)
+                    : Number(0),
+                nay:
+                  voteDirection == "Nay"
+                    ? Number(delegation.balance)
+                    : Number(0),
                 abstain: Number(0),
               };
               break;
@@ -1784,6 +1774,7 @@ export class ChainData {
                   (vote.balance.nay / (vote.balance.aye + vote.balance.nay)),
                 abstain: Number(0),
               };
+              break;
             case "SplitAbstain":
               const ayePercentage =
                 vote.balance.aye /
@@ -1792,7 +1783,7 @@ export class ChainData {
                 vote.balance.nay /
                 (vote.balance.aye + vote.balance.nay + vote.balance.abstain);
               const abstainPercentage =
-                vote.balance.nay /
+                vote.balance.abstain /
                 (vote.balance.aye + vote.balance.nay + vote.balance.abstain);
               balance = {
                 aye: Number(delegation.balance) * ayePercentage,
@@ -1859,19 +1850,19 @@ export class ChainData {
               // There are votes, ascribe them to the delegator
               for (const vote of v) {
                 const voteDirectionType = vote.voteDirectionType;
+                const voteDirection = vote.voteDirection;
                 let balance;
                 switch (voteDirectionType) {
-                  case "Aye":
+                  case "Standard":
                     balance = {
-                      aye: Number(delegation.balance),
-                      nay: Number(0),
-                      abstain: Number(0),
-                    };
-                    break;
-                  case "Nay":
-                    balance = {
-                      aye: Number(0),
-                      nay: Number(delegation.balance),
+                      aye:
+                        voteDirection == "Aye"
+                          ? Number(delegation.balance)
+                          : Number(0),
+                      nay:
+                        voteDirection == "Nay"
+                          ? Number(delegation.balance)
+                          : Number(0),
                       abstain: Number(0),
                     };
                     break;
@@ -1887,6 +1878,7 @@ export class ChainData {
                           (vote.balance.aye + vote.balance.nay)),
                       abstain: Number(0),
                     };
+                    break;
                   case "SplitAbstain":
                     const ayePercentage =
                       vote.balance.aye /
@@ -2192,19 +2184,19 @@ export class ChainData {
           // There are votes for a given track that a person delegating will have votes for.
           for (const vote of v) {
             const voteDirectionType = vote.voteDirectionType;
+            const voteDirection = vote.voteDirection;
             let balance;
             switch (voteDirectionType) {
-              case "Aye":
+              case "Standard":
                 balance = {
-                  aye: Number(delegation.balance),
-                  nay: Number(0),
-                  abstain: Number(0),
-                };
-                break;
-              case "Nay":
-                balance = {
-                  aye: Number(0),
-                  nay: Number(delegation.balance),
+                  aye:
+                    voteDirection == "Aye"
+                      ? Number(delegation.balance)
+                      : Number(0),
+                  nay:
+                    voteDirection == "Nay"
+                      ? Number(delegation.balance)
+                      : Number(0),
                   abstain: Number(0),
                 };
                 break;
@@ -2218,6 +2210,7 @@ export class ChainData {
                     (vote.balance.nay / (vote.balance.aye + vote.balance.nay)),
                   abstain: Number(0),
                 };
+                break;
               case "SplitAbstain":
                 const ayePercentage =
                   vote.balance.aye /
@@ -2310,19 +2303,19 @@ export class ChainData {
                 // There are votes, ascribe them to the delegator
                 for (const vote of v) {
                   const voteDirectionType = vote.voteDirectionType;
+                  const voteDirection = vote.voteDirection;
                   let balance;
                   switch (voteDirectionType) {
-                    case "Aye":
+                    case "Standard":
                       balance = {
-                        aye: Number(delegation.balance),
-                        nay: Number(0),
-                        abstain: Number(0),
-                      };
-                      break;
-                    case "Nay":
-                      balance = {
-                        aye: Number(0),
-                        nay: Number(delegation.balance),
+                        aye:
+                          voteDirection == "Aye"
+                            ? Number(delegation.balance)
+                            : Number(0),
+                        nay:
+                          voteDirection == "Nay"
+                            ? Number(delegation.balance)
+                            : Number(0),
                         abstain: Number(0),
                       };
                       break;
@@ -2338,6 +2331,7 @@ export class ChainData {
                             (vote.balance.aye + vote.balance.nay)),
                         abstain: Number(0),
                       };
+                      break;
                     case "SplitAbstain":
                       const ayePercentage =
                         vote.balance.aye /

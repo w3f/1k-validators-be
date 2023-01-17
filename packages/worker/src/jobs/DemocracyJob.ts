@@ -232,7 +232,6 @@ export const democracyStatsJob = async (chaindata) => {
 export const democracyJob = async (chaindata: ChainData) => {
   const start = Date.now();
   logger.info(`Starting Democracy Job`, democracyLabel);
-  await democracyStatsJob(chaindata);
 
   const latestBlockNumber = await chaindata.getLatestBlock();
   const latestBlockHash = await chaindata.getLatestBlockHash();
@@ -341,6 +340,8 @@ export const democracyJob = async (chaindata: ChainData) => {
   if (chainType == "Kusama") {
     try {
       const qstart = Date.now();
+      await democracyStatsJob(chaindata);
+      logger.info(`Democracy stats Done`, democracyLabel);
       const { ongoingReferenda, finishedReferenda } =
         await chaindata.getOpenGovReferenda();
       for (const referenda of ongoingReferenda) {

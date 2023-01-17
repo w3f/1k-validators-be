@@ -1,6 +1,5 @@
 import {
   CandidateModel,
-  HeartbeatIndex,
   HeartbeatIndexModel,
   IITModel,
   LocationModel,
@@ -82,7 +81,6 @@ export const getCandidateLocation = async (name: string): Promise<any> => {
   // First try to get by telemetry name
   const data = await LocationModel.find({
     name,
-    vpn: false,
   })
     .lean()
     .sort("-session")

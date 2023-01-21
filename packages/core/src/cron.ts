@@ -184,12 +184,55 @@ export const startExecutionJob = async (
     const currentBlock = await api.rpc.chain.getBlock();
     const { number } = currentBlock.block.header;
 
+    const chaindata = new ChainData(handler);
+
     const allDelayed = await queries.getAllDelayedTxs();
 
     for (const data of allDelayed) {
-      const { number: dataNum, controller, targets } = data;
+      const { number: dataNum, controller, targets, callHash } = data;
+      let validCommission = true;
+
+      // find the nominator
+      const nomGroup = nominatorGroups.find((nomGroup) => {
+        return !!nomGroup.find((nom) => {
+          return nom.controller == controller;
+        });
+      });
+      const nominator = nomGroup.find((nom) => nom.controller == controller);
+
+      for (const target of targets) {
+        const [commission, err] = await chaindata.getCommission(target);
+        if (commission > config.constraints.commission) {
+          validCommission = false;
+          logger.warn(
+            `${target} has invalid commission: ${commission}`,
+            cronLabel
+          );
+          if (bot) {
+            await bot.sendMessage(
+              `@room ${target} has invalid commission: ${commission}`
+            );
+          }
+        }
+      }
+
+      if (!validCommission) {
+        const announcements = await chaindata.getProxyAnnouncements(
+          nominator.address
+        );
+        for (const announcement of announcements) {
+          if (announcement.callHash == callHash) {
+            logger.warn(`Cancelling call with hash: ${callHash}`, cronLabel);
+            if (bot) {
+              await bot.sendMessage(`Cancelling call with hash: ${callHash}`);
+            }
+            await nominator.cancelTx(announcement);
+          }
+        }
+      }
 
       const shouldExecute =
+        validCommission &&
         dataNum + Number(timeDelayBlocks) <= number.toNumber();
 
       if (shouldExecute) {
@@ -197,15 +240,8 @@ export const startExecutionJob = async (
           `tx first announced at block ${dataNum} is ready to execute. Executing....`,
           cronLabel
         );
-        // time to execute
-        // find the nominator
-        const nomGroup = nominatorGroups.find((nomGroup) => {
-          return !!nomGroup.find((nom) => {
-            return nom.controller == controller;
-          });
-        });
 
-        const nominator = nomGroup.find((nom) => nom.controller == controller);
+        // time to execute
 
         const innerTx = api.tx.staking.nominate(targets);
         const tx = api.tx.proxy.proxyAnnounced(

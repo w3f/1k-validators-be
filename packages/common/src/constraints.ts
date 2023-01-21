@@ -1428,7 +1428,7 @@ export const checkProvider = async (
   if (location && location.provider) {
     const bannedProviders = config.telemetry?.blacklistedProviders;
     if (bannedProviders?.includes(location.provider)) {
-      logger.info(
+      logger.warn(
         `${candidate.name} has banned provider: ${location.provider}`,
         {
           label: "Constraints",

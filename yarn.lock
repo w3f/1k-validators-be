@@ -67,7 +67,7 @@ __metadata:
     eslint: 8.22.0
     eslint-config-prettier: ^8.6.0
     eslint-plugin-prettier: ^4.2.1
-    eslint-plugin-security: ^1.5.0
+    eslint-plugin-security: ^1.7.0
     eventemitter3: ^5.0.0
     hash.js: ^1.1.7
     koa: ^2.14.1
@@ -104,7 +104,7 @@ __metadata:
     ava: ^5.1.0
     concurrently: ^7.6.0
     eslint: 8.22.0
-    eslint-plugin-security: ^1.5.0
+    eslint-plugin-security: ^1.7.0
     koa-swagger-decorator: ^1.8.6
     nodemon: ^2.0.20
     typescript: ^4.9.4
@@ -122,7 +122,7 @@ __metadata:
     ava: ^5.1.0
     concurrently: ^7.6.0
     eslint: 8.22.0
-    eslint-plugin-security: ^1.5.0
+    eslint-plugin-security: ^1.7.0
     nodemon: ^2.0.20
     typescript: ^4.9.4
   languageName: unknown
@@ -3989,12 +3989,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-security@npm:^1.5.0":
-  version: 1.5.0
-  resolution: "eslint-plugin-security@npm:1.5.0"
+"eslint-plugin-security@npm:^1.7.0":
+  version: 1.7.0
+  resolution: "eslint-plugin-security@npm:1.7.0"
   dependencies:
     safe-regex: ^2.1.1
-  checksum: c51c9d43d1ef1eaf803d136ae73522369f1e0b4f2633a56fc3226afd64ad3936943080bf506353c25422d1d73e8395946d016847e0ac5c0b5886c394fe848b9f
+  checksum: e6ef5123c4ae7ea0953a97cdb8b34146abec2d88d6c5f96d0c5930c8c6d3c77826f1be1fae346fe2f6c4631c107dbacf345a5952c8451bf1c4dc05375279505e
   languageName: node
   linkType: hard
 
@@ -8597,7 +8597,7 @@ __metadata:
 
 "typescript@patch:typescript@^4.9.4#~builtin<compat/typescript>":
   version: 4.9.4
-  resolution: "typescript@patch:typescript@npm%3A4.9.4#~builtin<compat/typescript>::version=4.9.4&hash=bda367"
+  resolution: "typescript@patch:typescript@npm%3A4.9.4#~builtin<compat/typescript>::version=4.9.4&hash=f456af"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver

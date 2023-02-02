@@ -5,7 +5,16 @@ import logger from "../logger";
 import * as queries from "./queries";
 
 // [name, client, version, null, networkId]
-export type NodeDetails = [string, string, string, string, string, string];
+export type NodeDetails = [
+  string,
+  string,
+  string,
+  string,
+  string,
+  string,
+  any?,
+  any?
+];
 
 export * from "./queries";
 

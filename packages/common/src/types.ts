@@ -245,96 +245,137 @@ export type OpenGovReferendumStat = {
   track: number;
   origin: string;
   currentStatus: string;
-  ayeAmount: number;
-  nayAmount: number;
-  abstainAmount: number;
   castingVoters: {
+    amount: number;
+    groupSize: number;
     total: number;
     elb: number;
     vlb: number;
     lb: number;
     mb: number;
     hb: number;
+    addresses: [string];
   };
   delegatingVoters: {
+    amount: number;
+    groupSize: number;
     total: number;
     elb: number;
     vlb: number;
     lb: number;
     mb: number;
     hb: number;
+    addresses: [string];
   };
   ayeVoters: {
+    amount: number;
+    groupSize: number;
     total: number;
     elb: number;
     vlb: number;
     lb: number;
     mb: number;
     hb: number;
+    addresses: [string];
   };
   nayVoters: {
+    amount: number;
+    groupSize: number;
     total: number;
     elb: number;
     vlb: number;
     lb: number;
     mb: number;
     hb: number;
+    addresses: [string];
   };
   abstainVoters: {
+    amount: number;
+    groupSize: number;
     total: number;
     elb: number;
     vlb: number;
     lb: number;
     mb: number;
     hb: number;
+    addresses: [string];
   };
   validatorVoters: {
+    amount: number;
+    groupSize: number;
     total: number;
     elb: number;
     vlb: number;
     lb: number;
     mb: number;
     hb: number;
+    addresses: [string];
   };
   nominatorVoters: {
+    amount: number;
+    groupSize: number;
     total: number;
     elb: number;
     vlb: number;
     lb: number;
     mb: number;
     hb: number;
+    addresses: [string];
   };
   nonStakerVoters: {
+    amount: number;
+    groupSize: number;
     total: number;
     elb: number;
     vlb: number;
     lb: number;
     mb: number;
     hb: number;
+    addresses: string[];
   };
   fellowshipVoters: {
+    amount: number;
+    groupSize: number;
     total: number;
     elb: number;
     vlb: number;
     lb: number;
     mb: number;
     hb: number;
+    addresses: string[];
+  };
+  societyVoters: {
+    amount: number;
+    groupSize: number;
+    total: number;
+    elb: number;
+    vlb: number;
+    lb: number;
+    mb: number;
+    hb: number;
+    addresses: string[];
   };
   identityVoters: {
+    amount: number;
+    groupSize: number;
     total: number;
     elb: number;
     vlb: number;
     lb: number;
     mb: number;
     hb: number;
+    addresses: string[];
   };
   allVoters: {
+    amount: number;
+    groupSize: number;
     total: number;
     elb: number;
     vlb: number;
     lb: number;
     mb: number;
     hb: number;
+    addresses: string[];
   };
 };
 

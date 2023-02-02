@@ -17,6 +17,7 @@ import {
   ReferendumVoteModel,
 } from "../models";
 import { getIdentity, getIdentityAddresses } from "./Candidate";
+import { logger } from "../../index";
 
 // LEGACY DEMOCRACY
 export const setReferendum = async (
@@ -328,7 +329,9 @@ export const getReferendumConvictionVoting = async (
   // logger.info(
   const convictionVotes = await ConvictionVoteModel.find({
     referendumIndex: referendumIndex,
-  });
+  })
+    .lean()
+    .exec();
   return convictionVotes;
 };
 
@@ -440,7 +443,262 @@ export const getOpenGovReferendumStats = async (
 };
 
 export const getAllOpenGovReferendumStats = async (): Promise<any> => {
-  const data = await OpenGovReferendumStatsModel.find({}).lean();
+  const data = await OpenGovReferendumStatsModel.find({})
+    .select({
+      index: 1,
+      track: 1,
+      origin: 1,
+      abstainAmount: {
+        amount: 1,
+        total: 1,
+        groupSize: 1,
+      },
+      castingVoters: {
+        amount: 1,
+        total: 1,
+        groupSize: 1,
+      },
+      delegatingVoters: {
+        amount: 1,
+        total: 1,
+        groupSize: 1,
+      },
+      ayeVoters: {
+        amount: 1,
+        total: 1,
+        groupSize: 1,
+      },
+      nayVoters: {
+        amount: 1,
+        total: 1,
+        groupSize: 1,
+      },
+      abstainVoters: {
+        amount: 1,
+        total: 1,
+        groupSize: 1,
+      },
+      validatorVotes: {
+        amount: 1,
+        total: 1,
+        groupSize: 1,
+      },
+      nominatorVoters: {
+        amount: 1,
+        total: 1,
+        groupSize: 1,
+      },
+      nonStakerVoters: {
+        amount: 1,
+        total: 1,
+        groupSize: 1,
+      },
+      fellowshipVoters: {
+        amount: 1,
+        total: 1,
+        groupSize: 1,
+      },
+      societyVoters: {
+        amount: 1,
+        total: 1,
+        groupSize: 1,
+      },
+      identityVoters: {
+        amount: 1,
+        total: 1,
+        groupSize: 1,
+      },
+      allVoters: {
+        amount: 1,
+        total: 1,
+        groupSize: 1,
+      },
+    })
+    .lean()
+    .exec();
+  return data;
+};
+
+export const getSegmentOpenGovReferendumStats = async (
+  index: number,
+  segment: string
+): Promise<any> => {
+  const isAbstain = segment == "abstain";
+  const isAye = segment == "aye";
+  const isNay = segment == "nay";
+  const isCasting = segment == "casting";
+  const isDelegating = segment == "delegating";
+  const isValidator = segment == "validator";
+  const isNominator = segment == "nominator";
+  const isNonStaker = segment == "nonStaker";
+  const isFellowship = segment == "fellowship";
+  const isSociety = segment == "society";
+  const isIdentity = segment == "identity";
+  const isAll = segment == "all";
+  const data = await OpenGovReferendumStatsModel.find({ index: index })
+    .select({
+      index: 1,
+      track: 1,
+      origin: 1,
+      ...(isAbstain && {
+        abstainVoters: {
+          amount: 1,
+          total: 1,
+          groupSize: 1,
+          elb: 1,
+          vlb: 1,
+          lb: 1,
+          mb: 1,
+          hb: 1,
+          addresses: 1,
+        },
+      }),
+      ...(isCasting && {
+        castingVoters: {
+          amount: 1,
+          total: 1,
+          groupSize: 1,
+          elb: 1,
+          vlb: 1,
+          lb: 1,
+          mb: 1,
+          hb: 1,
+          addresses: 1,
+        },
+      }),
+      ...(isDelegating && {
+        delegatingVoters: {
+          amount: 1,
+          total: 1,
+          groupSize: 1,
+          elb: 1,
+          vlb: 1,
+          lb: 1,
+          mb: 1,
+          hb: 1,
+          addresses: 1,
+        },
+      }),
+      ...(isAye && {
+        ayeVoters: {
+          amount: 1,
+          total: 1,
+          groupSize: 1,
+          elb: 1,
+          vlb: 1,
+          lb: 1,
+          mb: 1,
+          hb: 1,
+          addresses: 1,
+        },
+      }),
+      ...(isNay && {
+        nayVoters: {
+          amount: 1,
+          total: 1,
+          groupSize: 1,
+          elb: 1,
+          vlb: 1,
+          lb: 1,
+          mb: 1,
+          hb: 1,
+          addresses: 1,
+        },
+      }),
+      ...(isValidator && {
+        validatorVoters: {
+          amount: 1,
+          total: 1,
+          groupSize: 1,
+          elb: 1,
+          vlb: 1,
+          lb: 1,
+          mb: 1,
+          hb: 1,
+          addresses: 1,
+        },
+      }),
+      ...(isNominator && {
+        nominatorVoters: {
+          amount: 1,
+          total: 1,
+          groupSize: 1,
+          elb: 1,
+          vlb: 1,
+          lb: 1,
+          mb: 1,
+          hb: 1,
+          addresses: 1,
+        },
+      }),
+      ...(isNonStaker && {
+        nonStakerVoters: {
+          amount: 1,
+          total: 1,
+          groupSize: 1,
+          elb: 1,
+          vlb: 1,
+          lb: 1,
+          mb: 1,
+          hb: 1,
+          addresses: 1,
+        },
+      }),
+      ...(isFellowship && {
+        fellowshipVoters: {
+          amount: 1,
+          total: 1,
+          groupSize: 1,
+          elb: 1,
+          vlb: 1,
+          lb: 1,
+          mb: 1,
+          hb: 1,
+          addresses: 1,
+        },
+      }),
+      ...(isSociety && {
+        societyVoters: {
+          amount: 1,
+          total: 1,
+          groupSize: 1,
+          elb: 1,
+          vlb: 1,
+          lb: 1,
+          mb: 1,
+          hb: 1,
+          addresses: 1,
+        },
+      }),
+      ...(isIdentity && {
+        identityVoters: {
+          amount: 1,
+          total: 1,
+          groupSize: 1,
+          elb: 1,
+          vlb: 1,
+          lb: 1,
+          mb: 1,
+          hb: 1,
+          addresses: 1,
+        },
+      }),
+      ...(isAll && {
+        allVoters: {
+          amount: 1,
+          total: 1,
+          groupSize: 1,
+          elb: 1,
+          vlb: 1,
+          lb: 1,
+          mb: 1,
+          hb: 1,
+          addresses: 1,
+        },
+      }),
+    })
+    .lean()
+    .exec();
   return data;
 };
 
@@ -459,9 +717,6 @@ export const setOpenGovReferendumStats = async (
       track: referendum.track,
       origin: referendum.origin,
       currentStatus: referendum.currentStatus,
-      ayeAmount: referendum.ayeAmount,
-      nayAmount: referendum.nayAmount,
-      abstainAmount: referendum.abstainAmount,
       castingVoters: referendum.castingVoters,
       delegatingVoters: referendum.delegatingVoters,
       ayeVoters: referendum.ayeVoters,
@@ -471,6 +726,7 @@ export const setOpenGovReferendumStats = async (
       nominatorVoters: referendum.nominatorVoters,
       nonStakerVoters: referendum.nonStakerVoters,
       fellowshipVoters: referendum.fellowshipVoters,
+      societyVoters: referendum.societyVoters,
       identityVoters: referendum.identityVoters,
       allVoters: referendum.allVoters,
     });
@@ -486,9 +742,6 @@ export const setOpenGovReferendumStats = async (
       track: referendum.track,
       origin: referendum.origin,
       currentStatus: referendum.currentStatus,
-      ayeAmount: referendum.ayeAmount,
-      nayAmount: referendum.nayAmount,
-      abstainAmount: referendum.abstainAmount,
       castingVoters: referendum.castingVoters,
       delegatingVoters: referendum.delegatingVoters,
       ayeVoters: referendum.ayeVoters,
@@ -498,6 +751,7 @@ export const setOpenGovReferendumStats = async (
       nominatorVoters: referendum.nominatorVoters,
       nonStakerVoters: referendum.nonStakerVoters,
       fellowshipVoters: referendum.fellowshipVoters,
+      societyVoters: referendum.societyVoters,
       identityVoters: referendum.identityVoters,
       allVoters: referendum.allVoters,
     }

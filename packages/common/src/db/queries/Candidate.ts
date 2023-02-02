@@ -334,7 +334,44 @@ export const reportOnline = async (
   now: number,
   startupTime: number
 ): Promise<boolean> => {
-  const [name, nodeImplementation, version, address, networkId, addr] = details;
+  const [
+    name,
+    nodeImplementation,
+    version,
+    address,
+    networkId,
+    addr,
+    sys,
+    bench,
+  ] = details;
+
+  const {
+    cpu,
+    memory,
+    core_count,
+    linux_kernel,
+    linux_distro,
+    is_virtual_machine,
+  } = sys ?? {
+    cpu: "",
+    memory: 0,
+    core_count: 0,
+    linux_kernel: "",
+    linux_distro: "",
+    is_virtual_machine: false,
+  };
+
+  const {
+    cpu_hashrate_score,
+    memory_memcpy_score,
+    disk_sequential_write_score,
+    disk_random_write_score,
+  } = bench ?? {
+    cpu_hashrate_score: 0,
+    memory_memcpy_score: 0,
+    disk_sequential_write_score: 0,
+    disk_random_write_score: 0,
+  };
 
   let locationData;
   locationData = await getLocation(name, addr);

@@ -128,7 +128,7 @@
     ],
     "enable": true,
     "chains": [
-      "0x5d0651b626322800236cde59a5036d5d7ff241d7520d6646168784965a4e8bae"
+      "0x01c6f6547ef89afd1c0d2167189b7bc9fc536c44648ecd13dd49becfb0db5073"
     ],
     "host": "ws://172.28.1.10:8000/feed"
   },

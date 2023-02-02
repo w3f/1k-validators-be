@@ -1248,9 +1248,6 @@ export class ChainData {
         const {
           track,
           origin: { origins },
-          proposal: {
-            lookup: { hash },
-          },
           enactment: { after },
           submitted,
           submissionDeposit: { who: submissionWho, amount: submissionAmount },
@@ -1260,6 +1257,9 @@ export class ChainData {
           inQueue,
           alarm,
         } = trackJSON["ongoing"];
+        const hash = trackJSON["ongoing"]?.proposal?.lookup
+          ? trackJSON["ongoing"]?.proposal?.lookup?.hash
+          : trackJSON["ongoing"]?.proposal?.inline;
         let decisionDepositWho, decisionDepositAmount, since, confirming;
         if (decisionDeposit) {
           const { who: decisionDepositWho, amount: decisionDepositAmount } =
@@ -2487,6 +2487,17 @@ export class ChainData {
       };
     });
     return fellowshipMap;
+  };
+
+  getSociety = async () => {
+    if (!this.api.isConnected) {
+      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
+      return;
+    }
+    const society = await this.api.query.society.members();
+    return society.map((address) => {
+      return address.toString();
+    });
   };
 
   getNominatorAddresses = async () => {

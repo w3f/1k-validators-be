@@ -143,3 +143,38 @@ export const getOpenGovReferendumStats = async (
   const refStats = await queries.getOpenGovReferendumStats(index);
   return refStats;
 };
+
+export const getOpenGovReferendumStatsSegment = async (
+  index: number,
+  segment: string
+): Promise<any> => {
+  if (
+    segment != "aye" &&
+    segment != "nay" &&
+    segment != "abstain" &&
+    segment != "casting" &&
+    segment != "delegating" &&
+    segment != "validator" &&
+    segment != "nominator" &&
+    segment != "nonStaker" &&
+    segment != "fellowship" &&
+    segment != "society" &&
+    segment != "identity" &&
+    segment != "all"
+  )
+    return "Segment not found!";
+
+  const refStats = await queries.getSegmentOpenGovReferendumStats(
+    index,
+    segment
+  );
+  const z = refStats.map((stat) => {
+    return {
+      index: stat.index,
+      track: stat.track,
+      origin: stat.origin,
+      currentStatus: stat.currentStatus,
+    };
+  });
+  return refStats;
+};

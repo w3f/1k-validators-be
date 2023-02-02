@@ -203,4 +203,19 @@ export default class DemocracyController {
       await DemocracyService.getOpenGovReferendumStats(index)
     );
   }
+
+  public static async getOpenGovReferendumStatsSegment(
+    context: any
+  ): Promise<void> {
+    if (await context.cashed()) {
+      logger.info(`{Gateway} getOpenGovReferendumStats is cached`);
+      return;
+    }
+    const { index, segment } = context.params;
+    response(
+      context,
+      200,
+      await DemocracyService.getOpenGovReferendumStatsSegment(index, segment)
+    );
+  }
 }

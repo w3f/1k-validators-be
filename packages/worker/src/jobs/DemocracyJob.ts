@@ -12,8 +12,42 @@ export const getFellowshipAddresses = async (chaindata) => {
   const fellowshipAddresses = [];
   for (const fellow of fellowship) {
     fellowshipAddresses.push(fellow.address);
+    const identity = await queries.getIdentity(fellow.address);
+    if (identity) {
+      if (!fellowshipAddresses.includes(identity.address)) {
+        fellowshipAddresses.push(identity.address.toString());
+      }
+
+      for (const subidentity of identity.subIdentities) {
+        if (!fellowshipAddresses.includes(subidentity.address)) {
+          fellowshipAddresses.push(subidentity.address.toString());
+        }
+      }
+    }
   }
   return fellowshipAddresses;
+};
+
+export const getSocietyAddresses = async (chaindata) => {
+  const addresses = [];
+  const society = await chaindata.getSociety();
+  for (const address of society) {
+    addresses.push(address);
+    const identity = await queries.getIdentity(address);
+    if (identity) {
+      if (!addresses.includes(identity.address)) {
+        addresses.push(identity.address.toString());
+      }
+
+      for (const subidentity of identity.subIdentities) {
+        if (!addresses.includes(subidentity.address)) {
+          addresses.push(subidentity.address.toString());
+        }
+      }
+    }
+  }
+
+  return addresses;
 };
 
 export const getIdentityAddresses = async () => {
@@ -46,7 +80,7 @@ export const getValidatorAddresses = async (chaindata) => {
       }
     }
   }
-  return allValidators;
+  return { allValidators, chainValidators };
 };
 
 export const getBalanceVotes = (votes) => {
@@ -157,6 +191,12 @@ export const getFellowshipVotes = (fellowship, votes) => {
   });
 };
 
+export const getSocietyVotes = (society, votes) => {
+  return votes.filter((vote) => {
+    return society.includes(vote.address);
+  });
+};
+
 export const getAmount = (votes) => {
   const ayeVotes = getAyeVotes(votes);
   const nayVotes = getNayVotes(votes);
@@ -174,6 +214,7 @@ export const getAmount = (votes) => {
     abstainAmount += vote.balance.abstain;
   }
   return {
+    totalAmount: ayeAmount + nayAmount + abstainAmount,
     ayeAmount: ayeAmount,
     nayAmount: nayAmount,
     abstainAmount: abstainAmount,
@@ -181,49 +222,346 @@ export const getAmount = (votes) => {
 };
 
 export const democracyStatsJob = async (chaindata) => {
-  const validators = await getValidatorAddresses(chaindata);
+  const votes = await queries.getAllConvictionVoting();
+  if (votes.length == 0) return;
+
+  const { allValidators: validators, chainValidators } =
+    await getValidatorAddresses(chaindata);
   const nominators = await getNominatorAddresses(chaindata);
   const fellowshipAddresses = await getFellowshipAddresses(chaindata);
   const identityAddresses = await getIdentityAddresses();
+  const societyAddresses = await getSocietyAddresses(chaindata);
 
-  const votes = await queries.getAllConvictionVoting();
   const totalVotes = votes.length;
 
   const referenda = await queries.getAllOpenGovReferenda();
   for (const referendum of referenda) {
     const { track, index, origin, ayes, nays, currentStatus } = referendum;
     const votes = await queries.getReferendumConvictionVoting(index);
+    if (votes.length == 0) continue;
+
+    const voteAddresses = votes
+      .sort(
+        (a, b) =>
+          b.balance.aye +
+          b.balance.nay +
+          b.balance.abstain -
+          (a.balance.aye + a.balance.nay + a.balance.abstain)
+      )
+      .map((vote) => {
+        return vote.address;
+      });
 
     const amounts = getAmount(votes);
+
     const ayeVotes = getAyeVotes(votes);
+    const ayeVoteAddresses = ayeVotes
+      .sort(
+        (a, b) =>
+          b.balance.aye +
+          b.balance.nay +
+          b.balance.abstain -
+          (a.balance.aye + a.balance.nay + a.balance.abstain)
+      )
+      .map((vote) => {
+        return vote.address;
+      });
+    const ayeVoteAmount = ayeVotes.reduce(
+      (accumulator, vote) =>
+        accumulator +
+        vote?.balance?.aye +
+        vote?.balance?.nay +
+        vote?.balance?.abstain,
+      0
+    );
+
     const nayVotes = getNayVotes(votes);
+    const nayVoteAddresses = nayVotes
+      .sort(
+        (a, b) =>
+          b.balance.aye +
+          b.balance.nay +
+          b.balance.abstain -
+          (a.balance.aye + a.balance.nay + a.balance.abstain)
+      )
+      .map((vote) => {
+        return vote.address;
+      });
+    const nayVoteAmount = nayVotes.reduce(
+      (accumulator, vote) =>
+        accumulator +
+        vote?.balance?.aye +
+        vote?.balance?.nay +
+        vote?.balance?.abstain,
+      0
+    );
+
     const abstainVotes = getAbstainVotes(votes);
+    const abstainVoteAddresses = abstainVotes
+      .sort(
+        (a, b) =>
+          b.balance.aye +
+          b.balance.nay +
+          b.balance.abstain -
+          (a.balance.aye + a.balance.nay + a.balance.abstain)
+      )
+      .map((vote) => {
+        return vote.address;
+      });
+    const abstainVoteAmount = abstainVotes.reduce(
+      (accumulator, vote) =>
+        accumulator +
+        vote?.balance?.aye +
+        vote?.balance?.nay +
+        vote?.balance?.abstain,
+      0
+    );
+
     const castingVotes = getCastingVotes(votes);
+    const castingVoteAddresses = castingVotes
+      .sort(
+        (a, b) =>
+          b.balance.aye +
+          b.balance.nay +
+          b.balance.abstain -
+          (a.balance.aye + a.balance.nay + a.balance.abstain)
+      )
+      .map((vote) => {
+        return vote.address;
+      });
+    const castingVoteAmount = castingVotes.reduce(
+      (accumulator, vote) =>
+        accumulator +
+        vote?.balance?.aye +
+        vote?.balance?.nay +
+        vote?.balance?.abstain,
+      0
+    );
+
     const delegatingVotes = getDelegatingVotes(votes);
+    const delegatingVotesAddresses = delegatingVotes
+      .sort(
+        (a, b) =>
+          b.balance.aye +
+          b.balance.nay +
+          b.balance.abstain -
+          (a.balance.aye + a.balance.nay + a.balance.abstain)
+      )
+      .map((vote) => {
+        return vote.address;
+      });
+    const delegatingVoteAmount = delegatingVotes.reduce(
+      (accumulator, vote) =>
+        accumulator +
+        vote?.balance?.aye +
+        vote?.balance?.nay +
+        vote?.balance?.abstain,
+      0
+    );
+
     const validatorVotes = getValidatorVotes(validators, votes);
+    const validatorVoteAddresses = validatorVotes
+      .sort(
+        (a, b) =>
+          b.balance.aye +
+          b.balance.nay +
+          b.balance.abstain -
+          (a.balance.aye + a.balance.nay + a.balance.abstain)
+      )
+      .map((vote) => {
+        return vote.address;
+      });
+    const validatorVoteAmount = validatorVotes.reduce(
+      (accumulator, vote) =>
+        accumulator +
+        vote?.balance?.aye +
+        vote?.balance?.nay +
+        vote?.balance?.abstain,
+      0
+    );
+
     const nominatorVotes = getNominatorVotes(nominators, validators, votes);
+    const nominatorVoteAddresses = nominatorVotes
+      .sort(
+        (a, b) =>
+          b.balance.aye +
+          b.balance.nay +
+          b.balance.abstain -
+          (a.balance.aye + a.balance.nay + a.balance.abstain)
+      )
+      .map((vote) => {
+        return vote.address;
+      });
+    const nominatorVoteAmount = nominatorVotes.reduce(
+      (accumulator, vote) =>
+        accumulator +
+        vote?.balance?.aye +
+        vote?.balance?.nay +
+        vote?.balance?.abstain,
+      0
+    );
+
     const nonStakerVotes = getNonStakerVotes(nominators, validators, votes);
+    const nonStakerAddresses = nonStakerVotes
+      .sort(
+        (a, b) =>
+          b.balance.aye +
+          b.balance.nay +
+          b.balance.abstain -
+          (a.balance.aye + a.balance.nay + a.balance.abstain)
+      )
+      .map((vote) => {
+        return vote.address;
+      });
+    const nonStakerVoteAmount = nonStakerVotes.reduce(
+      (accumulator, vote) =>
+        accumulator +
+        vote?.balance?.aye +
+        vote?.balance?.nay +
+        vote?.balance?.abstain,
+      0
+    );
+
     const fellowshipVotes = getFellowshipVotes(fellowshipAddresses, votes);
+    const fellowshipVoteAddresses = fellowshipVotes
+      .sort(
+        (a, b) =>
+          b.balance.aye +
+          b.balance.nay +
+          b.balance.abstain -
+          (a.balance.aye + a.balance.nay + a.balance.abstain)
+      )
+      .map((vote) => {
+        return vote.address;
+      });
+    const fellowshipVoteAmount = fellowshipVotes.reduce(
+      (accumulator, vote) =>
+        accumulator +
+        vote?.balance?.aye +
+        vote?.balance?.nay +
+        vote?.balance?.abstain,
+      0
+    );
+
+    const societyVotes = getSocietyVotes(societyAddresses, votes);
+    const societyVoteAddresses = societyVotes
+      .sort(
+        (a, b) =>
+          b.balance.aye +
+          b.balance.nay +
+          b.balance.abstain -
+          (a.balance.aye + a.balance.nay + a.balance.abstain)
+      )
+      .map((vote) => {
+        return vote.address;
+      });
+    const societyVoteAmount = societyVotes.reduce(
+      (accumulator, vote) =>
+        accumulator +
+        vote?.balance?.aye +
+        vote?.balance?.nay +
+        vote?.balance?.abstain,
+      0
+    );
+
     const identityVotes = getIdentityVotes(identityAddresses, votes);
+    const identityVoteAddresses = identityVotes
+      .sort(
+        (a, b) =>
+          b.balance.aye +
+          b.balance.nay +
+          b.balance.abstain -
+          (a.balance.aye + a.balance.nay + a.balance.abstain)
+      )
+      .map((vote) => {
+        return vote.address;
+      });
+    const identityVoteAmount = identityVotes.reduce(
+      (accumulator, vote) =>
+        accumulator +
+        vote?.balance?.aye +
+        vote?.balance?.nay +
+        vote?.balance?.abstain,
+      0
+    );
+
     const referendumStats: OpenGovReferendumStat = {
       index: index,
       track: track,
       origin: origin,
       currentStatus: currentStatus,
-      ayeAmount: amounts.ayeAmount,
-      nayAmount: amounts.nayAmount,
-      abstainAmount: amounts.abstainAmount,
-      castingVoters: getBalanceVotes(castingVotes),
-      delegatingVoters: getBalanceVotes(delegatingVotes),
-      ayeVoters: getBalanceVotes(ayeVotes),
-      nayVoters: getBalanceVotes(nayVotes),
-      abstainVoters: getBalanceVotes(abstainVotes),
-      validatorVoters: getBalanceVotes(validatorVotes),
-      nominatorVoters: getBalanceVotes(nominatorVotes),
-      nonStakerVoters: getBalanceVotes(nonStakerVotes),
-      fellowshipVoters: getBalanceVotes(fellowshipVotes),
-      identityVoters: getBalanceVotes(identityVotes),
-      allVoters: getBalanceVotes(votes),
+      castingVoters: {
+        amount: castingVoteAmount,
+        ...getBalanceVotes(castingVotes),
+        groupSize: votes.length,
+        addresses: castingVoteAddresses,
+      },
+      delegatingVoters: {
+        amount: delegatingVoteAmount,
+        ...getBalanceVotes(delegatingVotes),
+        groupSize: votes.length,
+        addresses: delegatingVotesAddresses,
+      },
+      ayeVoters: {
+        amount: ayeVoteAmount,
+        ...getBalanceVotes(ayeVotes),
+        groupSize: votes.length,
+        addresses: ayeVoteAddresses,
+      },
+      nayVoters: {
+        amount: nayVoteAmount,
+        ...getBalanceVotes(nayVotes),
+        groupSize: votes.length,
+        addresses: nayVoteAddresses,
+      },
+      abstainVoters: {
+        amount: abstainVoteAmount,
+        ...getBalanceVotes(abstainVotes),
+        groupSize: votes.length,
+        addresses: abstainVoteAddresses,
+      },
+      validatorVoters: {
+        amount: validatorVoteAmount,
+        ...getBalanceVotes(validatorVotes),
+        groupSize: chainValidators.length,
+        addresses: validatorVoteAddresses,
+      },
+      nominatorVoters: {
+        amount: nominatorVoteAmount,
+        ...getBalanceVotes(nominatorVotes),
+        groupSize: nominators.length,
+        addresses: nominatorVoteAddresses,
+      },
+      nonStakerVoters: {
+        amount: nonStakerVoteAmount,
+        ...getBalanceVotes(nonStakerVotes),
+        groupSize: nonStakerVotes.length,
+        addresses: nonStakerAddresses,
+      },
+      fellowshipVoters: {
+        amount: fellowshipVoteAmount,
+        ...getBalanceVotes(fellowshipVotes),
+        groupSize: fellowshipAddresses.length,
+        addresses: fellowshipVoteAddresses,
+      },
+      societyVoters: {
+        amount: societyVoteAmount,
+        ...getBalanceVotes(societyVotes),
+        groupSize: societyAddresses.length,
+        addresses: societyVoteAddresses,
+      },
+      identityVoters: {
+        amount: identityVoteAmount,
+        ...getBalanceVotes(identityVotes),
+        groupSize: identityAddresses.length,
+        addresses: identityVoteAddresses,
+      },
+      allVoters: {
+        amount: amounts.totalAmount,
+        ...getBalanceVotes(votes),
+        groupSize: votes.length,
+        addresses: voteAddresses,
+      },
     };
     await queries.setOpenGovReferendumStats(referendumStats);
   }
@@ -341,9 +679,14 @@ export const democracyJob = async (chaindata: ChainData) => {
     try {
       const qstart = Date.now();
       await democracyStatsJob(chaindata);
-      logger.info(`Democracy stats Done`, democracyLabel);
+      const dmsEnd = Date.now();
+      logger.info(
+        `Democracy stats Done. Took ${(dmsEnd - qstart) / 1000} seconds`,
+        democracyLabel
+      );
       const { ongoingReferenda, finishedReferenda } =
         await chaindata.getOpenGovReferenda();
+
       for (const referenda of ongoingReferenda) {
         await queries.setOpenGovReferendum(
           referenda,
@@ -429,7 +772,7 @@ export const democracyJob = async (chaindata: ChainData) => {
       );
     } catch (e) {
       logger.warn(`could not query open gov data`, democracyLabel);
-      logger.error(JSON.stringify(e));
+      logger.error(JSON.stringify(e), democracyLabel);
     }
   }
 

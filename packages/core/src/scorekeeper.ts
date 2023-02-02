@@ -123,7 +123,7 @@ export const autoNumNominations = async (
   }
 
   // How many additional validator to nominate above the amount to get in the set
-  const additional = 1.5;
+  const additional = 1.25;
 
   const maxNominations = chainType.toString() == "Polkadot" ? 16 : 24;
   // The total amount of validators to nominate
@@ -650,7 +650,7 @@ export default class ScoreKeeper {
         await startDemocracyJob(this.config, this.chaindata);
         await startNominatorJob(this.config, this.chaindata);
         await startDelegationJob(this.config, this.chaindata);
-        await startBlockDataJob(this.config, this.chaindata);
+        // await startBlockDataJob(this.config, this.chaindata);
       }
 
       await startExecutionJob(

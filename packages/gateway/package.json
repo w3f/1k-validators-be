@@ -40,7 +40,7 @@
     "ava": "^5.1.1",
     "concurrently": "^7.6.0",
     "eslint": "8.22.0",
-    "eslint-plugin-security": "^1.7.0",
+    "eslint-plugin-security": "^1.7.1",
     "nodemon": "^2.0.20"
   },
   "ava": {

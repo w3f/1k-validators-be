@@ -1,4 +1,4 @@
-import { queries } from "@1kv/common";
+import { logger, queries } from "@1kv/common";
 
 export const getLatestElectionStats = async (): Promise<any> => {
   const electionStats = await queries.getLatestElectionStats();
@@ -168,13 +168,38 @@ export const getOpenGovReferendumStatsSegment = async (
     index,
     segment
   );
-  const z = refStats.map((stat) => {
-    return {
-      index: stat.index,
-      track: stat.track,
-      origin: stat.origin,
-      currentStatus: stat.currentStatus,
-    };
-  });
-  return refStats;
+
+  const votes = await Promise.all(
+    refStats.voters.addresses.map(async (vote) => {
+      const identity = await queries.getIdentity(vote);
+      const v = await queries.getAddressReferendumConvictionVoting(
+        vote,
+        refStats.index
+      );
+      return {
+        address: v.address,
+        conviction: v.conviction,
+        balance: v.balance.aye + v.balance.nay + v.balance.abstain,
+        direction: v.voteDirection,
+        type: v.voteType,
+        delegatedTo: v.delegatedTo,
+        identity: identity && identity?.display ? identity?.display : vote,
+      };
+    })
+  );
+  return {
+    index: refStats.index,
+    track: refStats.track,
+    origin: refStats.origin,
+    currentStatus: refStats.currentStatus,
+    amount: refStats.voters.amount,
+    groupSize: refStats.voters.groupSize,
+    segmentSize: refStats.voters.total,
+    elb: refStats.voters.elb,
+    vlb: refStats.voters.vlb,
+    lb: refStats.voters.lb,
+    mb: refStats.voters.mb,
+    hb: refStats.voters.hb,
+    votes: votes,
+  };
 };

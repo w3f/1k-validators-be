@@ -322,6 +322,28 @@ export const getAddressTrackConvictionVoting = async (
   return convictionVotes;
 };
 
+export const getAddressReferendumConvictionVoting = async (
+  address: string,
+  index: number
+) => {
+  const convictionVote = await ConvictionVoteModel.findOne({
+    address: address,
+    referendumIndex: index,
+  })
+    .select({
+      _id: 0,
+      balance: 1,
+      address: 1,
+      conviction: 1,
+      voteDirection: 1,
+      voteType: 1,
+      delegatedTo: 1,
+    })
+    .lean()
+    .exec();
+  return convictionVote;
+};
+
 // Gets all conviction votes for a given referendum
 export const getReferendumConvictionVoting = async (
   referendumIndex: number
@@ -478,7 +500,7 @@ export const getAllOpenGovReferendumStats = async (): Promise<any> => {
         total: 1,
         groupSize: 1,
       },
-      validatorVotes: {
+      validatorVoters: {
         amount: 1,
         total: 1,
         groupSize: 1,
@@ -535,7 +557,7 @@ export const getSegmentOpenGovReferendumStats = async (
   const isSociety = segment == "society";
   const isIdentity = segment == "identity";
   const isAll = segment == "all";
-  const data = await OpenGovReferendumStatsModel.find({ index: index })
+  const data = await OpenGovReferendumStatsModel.findOne({ index: index })
     .select({
       index: 1,
       track: 1,
@@ -699,7 +721,39 @@ export const getSegmentOpenGovReferendumStats = async (
     })
     .lean()
     .exec();
-  return data;
+  if (!data) return;
+  let voters;
+  if (isAbstain) {
+    voters = data.abstainVoters;
+  } else if (isAye) {
+    voters = data.ayeVoters;
+  } else if (isNay) {
+    voters = data.nayVoters;
+  } else if (isCasting) {
+    voters = data.castingVoters;
+  } else if (isDelegating) {
+    voters = data.delegatingVoters;
+  } else if (isValidator) {
+    voters = data.validatorVoters;
+  } else if (isNominator) {
+    voters = data.nominatorVoters;
+  } else if (isNonStaker) {
+    voters = data.nonStakerVoters;
+  } else if (isFellowship) {
+    voters = data.fellowshipVoters;
+  } else if (isSociety) {
+    voters = data.societyVoters;
+  } else if (isIdentity) {
+    voters = data.identityVoters;
+  } else if (isAll) {
+    voters = data.allVoters;
+  }
+  return {
+    index: data.index,
+    origin: data.origin,
+    track: data.track,
+    voters: voters,
+  };
 };
 
 export const setOpenGovReferendumStats = async (

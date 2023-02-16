@@ -1323,9 +1323,6 @@ export class ChainData {
         const {
           track,
           origin: { origins },
-          proposal: {
-            lookup: { hash },
-          },
           enactment: { after },
           submitted,
           submissionDeposit: { who: submissionWho, amount: submissionAmount },
@@ -1335,6 +1332,9 @@ export class ChainData {
           inQueue,
           alarm,
         } = referendumJSON["ongoing"];
+        const hash = referendumJSON["ongoing"]?.proposal?.lookup
+          ? referendumJSON["ongoing"]?.proposal?.lookup?.hash
+          : referendumJSON["ongoing"]?.proposal?.inline;
         let decisionDepositWho, decisionDepositAmount, since, confirming;
         if (decisionDeposit) {
           const { who: decisionDepositWho, amount: decisionDepositAmount } =
@@ -1480,9 +1480,9 @@ export class ChainData {
           effectiveBalance: effectiveBalance,
           conviction: conviction.toString(),
           // The total amount of tokens that were delegated to them (including conviction)
-          delegatedConvictionBalance: delegationVotes.toString(),
+          delegatedConvictionBalance: delegationVotes.toString() / denom,
           // the total amount of tokens that were delegated to them (without conviction)
-          delegatedBalance: delegationCapital.toString(),
+          delegatedBalance: delegationCapital.toString() / denom,
           prior: prior,
         };
         allDelegations.push(delegation);
@@ -1725,9 +1725,9 @@ export class ChainData {
           effectiveBalance: effectiveBalance,
           conviction: conviction.toString(),
           // The total amount of tokens that were delegated to them (including conviction)
-          delegatedConvictionBalance: delegationVotes.toString(),
+          delegatedConvictionBalance: delegationVotes.toString() / denom,
           // the total amount of tokens that were delegated to them (without conviction)
-          delegatedBalance: delegationCapital.toString(),
+          delegatedBalance: delegationCapital.toString() / denom,
           prior: prior,
         };
         allDelegations.push(delegation);

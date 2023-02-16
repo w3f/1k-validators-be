@@ -1,49 +1,39 @@
 import { CronJob } from "cron";
 import { ApiPromise } from "@polkadot/api";
-import { bnToBn } from "@polkadot/util";
 
 import { otvWorker } from "@1kv/worker";
-
 import {
   ApiHandler,
   ChainData,
+  Config,
   Constants,
+  Constraints,
   logger,
+  queries,
   Types,
   Util,
-  queries,
-  Config,
-  Constraints,
 } from "@1kv/common";
 
 import Nominator from "./nominator";
 import {
   startActiveValidatorJob,
-  startCancelCron,
+  startCouncilJob,
+  startDelegationJob,
+  startDemocracyJob,
   startEraPointsJob,
   startEraStatsJob,
   startExecutionJob,
   startInclusionJob,
   startLocationStatsJob,
-  startMonitorJob,
-  startRewardClaimJob,
+  startNominatorJob,
   startScoreJob,
   startSessionKeyJob,
-  startStaleNominationCron,
-  // startUnclaimedEraJob,
   startValidatityJob,
   startValidatorPrefJob,
-  startCouncilJob,
-  // startSubscanJob,
-  startDemocracyJob,
-  startNominatorJob,
-  startDelegationJob,
-  startBlockDataJob,
 } from "./cron";
 import Claimer from "./claimer";
 import Monitor from "./monitor";
 import { Subscan } from "./subscan";
-import { asc } from "./score";
 import { monitorJob } from "./jobs";
 // import { monitorJob } from "./jobs";
 
@@ -476,7 +466,20 @@ export default class ScoreKeeper {
 
     // Ensure Candidate Identity is set
     const candidates = await queries.allCandidates();
-    for (const candidate of candidates) {
+
+    for (const [index, candidate] of candidates.entries()) {
+      //   const matrix = candidate.matrix;
+      //   logger.info(`candidates length: ${candidates.length}`);
+      //
+      //   console.log(`index: ${index} JSON.stringify(matrix)`);
+      //   for (const x of matrix) {
+      //     fs.appendFile("file.txt", `${x}\n`, "utf-8", (err) => {
+      //       if (err) {
+      //         throw err;
+      //       }
+      //     });
+      //   }
+
       const id = await queries.getIdentity(candidate.stash);
       if (!id) {
         const identity = await this.chaindata.getFormattedIdentity(

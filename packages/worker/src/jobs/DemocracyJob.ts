@@ -567,6 +567,103 @@ export const democracyStatsJob = async (chaindata) => {
   }
 };
 
+export enum Network {
+  Kusama = "Kusama",
+  Polkadot = "Polkadot",
+}
+
+const referendum_posts_query = `
+query getReferendum($id: Int) {
+    posts(where: {onchain_link: {onchain_referendum_id: {_eq: $id}}}) {
+      title
+      content
+      onchain_link {
+          proposer_address
+      }
+      comments {
+          content
+          created_at
+          author {
+             username
+          }
+          replies {
+             content
+             author {
+               username
+            }
+          }
+       }
+    }
+  }`;
+
+const open_referendum_posts_query = `
+  query getReferendum($id: Int) {
+      posts(where: {onchain_link: {onchain_referendumv2_id: {_eq: $id}}}) {
+        title
+        content
+        onchain_link {
+            proposer_address
+        }
+        comments(order_by: {created_at: asc}) {
+            content
+            created_at
+            author {
+               username
+            }
+            replies {
+               content
+               author {
+                 username
+              }
+            }
+         }
+      }
+  }`;
+
+const networkUrl = (network: Network): string => {
+  switch (network) {
+    case Network.Polkadot:
+      return "https://polkadot.polkassembly.io/v1/graphql";
+    case Network.Kusama:
+      return "https://kusama.polkassembly.io/v1/graphql";
+  }
+};
+
+export async function fetchReferendaV1(
+  network: Network,
+  id: number
+): Promise<any> {
+  return fetchQuery(networkUrl(network), referendum_posts_query, { id: id });
+}
+
+export async function fetchReferenda(
+  network: Network,
+  id: number
+): Promise<any> {
+  return fetchQuery(networkUrl(network), open_referendum_posts_query, {
+    id: id,
+  });
+}
+
+export function fetchQuery<T>(
+  input: RequestInfo | URL,
+  query: string,
+  variables: Record<string, any> = {},
+  defaultInit?: RequestInit
+): Promise<T> {
+  const init = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      query,
+      variables,
+    }),
+  };
+  return fetch(input, { ...init, ...defaultInit })
+    .then((res) => res.json())
+    .then((res) => res.data);
+}
+
 export const democracyJob = async (chaindata: ChainData) => {
   const start = Date.now();
   logger.info(`Starting Democracy Job`, democracyLabel);
@@ -688,14 +785,28 @@ export const democracyJob = async (chaindata: ChainData) => {
         await chaindata.getOpenGovReferenda();
 
       for (const referenda of ongoingReferenda) {
+        const refQuery = await fetchReferenda(Network.Kusama, referenda.index);
+        const { posts } = refQuery;
+        const title = posts[0].title;
+        const content = posts[0].content;
+
         await queries.setOpenGovReferendum(
+          title,
+          content,
           referenda,
           latestBlockNumber,
           latestBlockHash
         );
       }
       for (const referenda of finishedReferenda) {
+        const refQuery = await fetchReferenda(Network.Kusama, referenda.index);
+        const { posts } = refQuery;
+        const title = posts[0].title;
+        const content = posts[0].content;
+
         await queries.setOpenGovReferendum(
+          title,
+          content,
           referenda,
           latestBlockNumber,
           latestBlockHash

@@ -1,4 +1,4 @@
-import { logger, queries } from "@1kv/common";
+import { queries } from "@1kv/common";
 
 export const getLatestElectionStats = async (): Promise<any> => {
   const electionStats = await queries.getLatestElectionStats();
@@ -130,6 +130,16 @@ export const getOpenGovAddressDelegations = async (
 ): Promise<any> => {
   const delegations = await queries.getOpenGovDelegationAddress(address);
   return delegations;
+};
+
+export const getOpenGovReferenda = async (): Promise<any> => {
+  const refs = await queries.getAllOpenGovReferenda();
+  return refs;
+};
+
+export const getOpenGovReferendaIndex = async (index: number): Promise<any> => {
+  const ref = await queries.getOpenGovReferendum(index);
+  return ref;
 };
 
 export const getOpenGovReferendaStats = async (): Promise<any> => {

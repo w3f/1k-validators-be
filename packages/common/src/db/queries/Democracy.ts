@@ -17,7 +17,6 @@ import {
   ReferendumVoteModel,
 } from "../models";
 import { getIdentity, getIdentityAddresses } from "./Candidate";
-import { logger } from "../../index";
 
 // LEGACY DEMOCRACY
 export const setReferendum = async (
@@ -390,6 +389,8 @@ export const getIdentityConvictionVoting = async (address: string) => {
 };
 
 export const setOpenGovReferendum = async (
+  title: string,
+  content: string,
   openGovReferendum: OpenGovReferendum,
   updatedBlockNumber: number,
   updatedBlockHash: string
@@ -405,9 +406,12 @@ export const setOpenGovReferendum = async (
       index: openGovReferendum.index,
       track: openGovReferendum.track,
       origin: openGovReferendum.origin,
+      title: title,
+      content: content,
       proposalHash: openGovReferendum.proposalHash,
       enactmentAfter: openGovReferendum.enactmentAfter,
       submitted: openGovReferendum.submitted,
+      confirmationBlock: openGovReferendum.confirmationBlockNumber,
       submissionWho: openGovReferendum.submissionWho,
       submissionAmount: openGovReferendum.submissionAmount,
       decisionDepositWho: openGovReferendum.decisionDepositWho,
@@ -434,9 +438,12 @@ export const setOpenGovReferendum = async (
     {
       track: openGovReferendum.track,
       origin: openGovReferendum.origin,
+      title: title,
+      content: content,
       proposalHash: openGovReferendum.proposalHash,
       enactmentAfter: openGovReferendum.enactmentAfter,
       submitted: openGovReferendum.submitted,
+      confirmationBlock: openGovReferendum.confirmationBlockNumber,
       submissionWho: openGovReferendum.submissionWho,
       submissionAmount: openGovReferendum.submissionAmount,
       decisionDepositWho: openGovReferendum.decisionDepositWho,
@@ -815,7 +822,9 @@ export const setOpenGovReferendumStats = async (
 export const getOpenGovReferendum = async (index: number): Promise<any> => {
   const data = await OpenGovReferendumModel.findOne({
     index: index,
-  }).lean();
+  })
+    .lean()
+    .exec();
   return data;
 };
 

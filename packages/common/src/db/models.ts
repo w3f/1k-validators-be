@@ -984,11 +984,14 @@ export const ConvictionVoteModel = mongoose.model(
 
 export const OpenGovReferendum = new Schema({
   index: Number,
+  title: String,
+  content: String,
   track: Number,
   origin: String,
   proposalHash: String,
   enactmentAfter: Number,
   submitted: Number,
+  confirmationBlock: Number,
   submissionWho: String,
   submissionAmount: Number,
   decisionDepositWho: String,

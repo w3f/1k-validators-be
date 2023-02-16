@@ -183,6 +183,27 @@ export default class DemocracyController {
     );
   }
 
+  public static async getOpenGovReferenda(context: any): Promise<void> {
+    if (await context.cashed()) {
+      logger.info(`{Gateway} getOpenGovReferendaStats is cached`);
+      return;
+    }
+    response(context, 200, await DemocracyService.getOpenGovReferenda());
+  }
+
+  public static async getOpenGovReferendaIndex(context: any): Promise<void> {
+    if (await context.cashed()) {
+      logger.info(`{Gateway} getOpenGovReferendaStats is cached`);
+      return;
+    }
+    const { index } = context.params;
+    response(
+      context,
+      200,
+      await DemocracyService.getOpenGovReferendaIndex(index)
+    );
+  }
+
   public static async getOpenGovReferendaStats(context: any): Promise<void> {
     if (await context.cashed()) {
       logger.info(`{Gateway} getOpenGovReferendaStats is cached`);

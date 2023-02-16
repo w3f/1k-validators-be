@@ -28,7 +28,7 @@
   "dependencies": {
     "@1kv/common": "workspace:^",
     "@polkadot/api": "^9.13.4",
-    "bullmq": "^3.6.1",
+    "bullmq": "^3.6.6",
     "typescript": "^4.9.5"
   },
   "devDependencies": {

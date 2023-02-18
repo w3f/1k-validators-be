@@ -200,7 +200,7 @@ export default class DemocracyController {
     response(
       context,
       200,
-      await DemocracyService.getOpenGovReferendaIndex(index)
+      await DemocracyService.getOpenGovReferendaIndex(Number(index))
     );
   }
 

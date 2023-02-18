@@ -29,15 +29,15 @@
     "start:js:worker": "NODE_OPTIONS='--max-old-space-size=10096' node packages/worker/build/index.js start"
   },
   "devDependencies": {
-    "@types/eslint": "^8.4.10",
-    "@types/node": "^18.11.18",
+    "@types/eslint": "^8.21.1",
+    "@types/node": "^18.14.0",
     "@types/request": "^2.48.8",
-    "@typescript-eslint/eslint-plugin": "^5.50.0",
-    "@typescript-eslint/parser": "^5.50.0",
+    "@typescript-eslint/eslint-plugin": "^5.52.0",
+    "@typescript-eslint/parser": "^5.52.0",
     "eslint": "8.22.0",
     "eslint-config-prettier": "^8.6.0",
     "eslint-plugin-prettier": "^4.2.1",
-    "prettier": "^2.8.3"
+    "prettier": "^2.8.4"
   },
   "dependencies": {
     "request": "^2.88.2"

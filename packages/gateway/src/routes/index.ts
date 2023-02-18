@@ -109,8 +109,8 @@ router.get(API.Delegations, Democracy.getDelegations);
 router.get(API.AllDelegations, Democracy.getAllDelegations);
 
 router.get(API.OpenGovReferenda, Democracy.getOpenGovReferenda);
-router.get(API.OpenGovReferendaIndex, Democracy.getOpenGovReferendaIndex);
 router.get(API.OpenGovReferendaStats, Democracy.getOpenGovReferendaStats);
+router.get(API.OpenGovReferendaIndex, Democracy.getOpenGovReferendaIndex);
 router.get(API.OpenGovReferendumStats, Democracy.getOpenGovReferendumStats);
 router.get(
   API.OpenGovReferendumStatsSegment,

@@ -467,7 +467,7 @@ export default class ScoreKeeper {
     // Ensure Candidate Identity is set
     const candidates = await queries.allCandidates();
 
-    for (const [index, candidate] of candidates.entries()) {
+    for (const candidate of candidates) {
       //   const matrix = candidate.matrix;
       //   logger.info(`candidates length: ${candidates.length}`);
       //

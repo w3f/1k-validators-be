@@ -71,6 +71,7 @@ const API = {
   OpenGovReferendumStatsSegment: "/opengov/referenda/stats/:index/:segment",
   OpenGovLastReferendum: "/opengov/referenda/last",
   OpenGovAddressDelegations: "/opengov/delegations/:address",
+  OpenGovVoters: "/opengov/voters",
 };
 
 router.get(API.Accounting, Accounting.getAccounting);
@@ -131,6 +132,7 @@ router.get(
   API.OpenGovAddressDelegations,
   Democracy.getOpenGovAddressDelegations
 );
+router.get(API.OpenGovVoters, Democracy.getOpenGovVoters);
 
 router.get(API.Score, Score.getScore);
 router.get(API.SessionScore, Score.getSessionScore);

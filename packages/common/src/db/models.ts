@@ -136,6 +136,10 @@ export const LocationSchema = new Schema({
   session: Number,
   source: String,
   vpn: Boolean,
+  cpu: String,
+  memory: String,
+  coreCount: String,
+  vm: Boolean,
 });
 
 export const LocationModel = mongoose.model("Location", LocationSchema);
@@ -993,6 +997,7 @@ export const OpenGovReferendum = new Schema({
   submitted: Number,
   confirmationBlock: Number,
   submissionWho: String,
+  submissionIdentity: String,
   submissionAmount: Number,
   decisionDepositWho: String,
   decisionDepositAmount: Number,

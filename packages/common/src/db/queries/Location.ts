@@ -100,6 +100,7 @@ export const setLocation = async (
   region: string,
   country: string,
   provider: string,
+  sys: any,
   v?: boolean,
   port?: number
 ): Promise<any> => {
@@ -135,6 +136,10 @@ export const setLocation = async (
       country,
       provider,
       port,
+      cpu: sys?.cpu,
+      memory: sys?.memory,
+      coreCount: sys?.core_count,
+      vm: sys?.is_virtual_machine,
       vpn: v,
       session: session || 0,
       updated: Date.now(),

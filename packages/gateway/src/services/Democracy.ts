@@ -132,6 +132,11 @@ export const getOpenGovAddressDelegations = async (
   return delegations;
 };
 
+export const getOpenGovVoters = async (): Promise<any> => {
+  const delegations = await queries.getOpenGovVoters();
+  return delegations;
+};
+
 export const getOpenGovReferenda = async (): Promise<any> => {
   const refs = await queries.getAllOpenGovReferenda();
   return refs;

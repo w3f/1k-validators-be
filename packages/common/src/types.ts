@@ -226,6 +226,7 @@ export type OpenGovReferendum = {
   enactmentAfter: number;
   submitted: number;
   submissionWho: string | null;
+  submissionIdentity: string | null;
   submissionAmount: number | null;
   decisionDepositWho: string | null;
   decisionDepositAmount: number | null;

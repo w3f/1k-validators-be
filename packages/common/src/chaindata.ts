@@ -6,7 +6,7 @@ import {
   POLKADOT_APPROX_ERA_LENGTH_IN_BLOCKS,
   TESTNET_APPROX_ERA_LENGTH_IN_BLOCKS,
 } from "./constants";
-import { getChainMetadata, getEraPoints } from "./db";
+import { getChainMetadata, getEraPoints, getIdentity } from "./db";
 import logger from "./logger";
 import {
   AvailabilityCoreState,
@@ -1236,6 +1236,8 @@ export class ChainData {
   };
 
   getOpenGovReferenda = async () => {
+    const denom = await this.getDenom();
+
     const ongoingReferenda = [];
     const finishedReferenda = [];
     const referenda =
@@ -1247,7 +1249,6 @@ export class ChainData {
       if (trackJSON["ongoing"]) {
         const {
           track,
-          origin: { origins },
           enactment: { after },
           submitted,
           submissionDeposit: { who: submissionWho, amount: submissionAmount },
@@ -1257,6 +1258,9 @@ export class ChainData {
           inQueue,
           alarm,
         } = trackJSON["ongoing"];
+        const origin = trackJSON["ongoing"]?.origin?.origins
+          ? trackJSON["ongoing"]?.origin?.origins
+          : "root";
         const hash = trackJSON["ongoing"]?.proposal?.lookup
           ? trackJSON["ongoing"]?.proposal?.lookup?.hash
           : trackJSON["ongoing"]?.proposal?.inline;
@@ -1269,24 +1273,27 @@ export class ChainData {
           const { since, confirming } = deciding;
         }
 
+        const identity = await getIdentity(submissionWho.toString());
+
         const r: OpenGovReferendum = {
           index: index,
           track: track,
-          origin: origins,
+          origin: origin,
           proposalHash: hash,
           enactmentAfter: after,
           submitted: submitted,
           submissionWho: submissionWho,
-          submissionAmount: submissionAmount,
+          submissionIdentity: identity?.name ? identity?.name : submissionWho,
+          submissionAmount: submissionAmount / denom,
           decisionDepositWho: decisionDepositWho ? decisionDepositWho : null,
           decisionDepositAmount: decisionDepositAmount
-            ? decisionDepositAmount
+            ? decisionDepositAmount / denom
             : null,
           decidingSince: since ? since : null,
           decidingConfirming: confirming ? confirming : null,
-          ayes: ayes,
-          nays: nays,
-          support: support,
+          ayes: ayes / denom,
+          nays: nays / denom,
+          support: support / denom,
           inQueue: inQueue,
           currentStatus: "Ongoing",
           confirmationBlockNumber: null,
@@ -1322,7 +1329,6 @@ export class ChainData {
 
         const {
           track,
-          origin: { origins },
           enactment: { after },
           submitted,
           submissionDeposit: { who: submissionWho, amount: submissionAmount },
@@ -1332,6 +1338,9 @@ export class ChainData {
           inQueue,
           alarm,
         } = referendumJSON["ongoing"];
+        const origin = referendumJSON["ongoing"]?.origin?.origins
+          ? referendumJSON["ongoing"]?.origin?.origins
+          : "root";
         const hash = referendumJSON["ongoing"]?.proposal?.lookup
           ? referendumJSON["ongoing"]?.proposal?.lookup?.hash
           : referendumJSON["ongoing"]?.proposal?.inline;
@@ -1344,24 +1353,27 @@ export class ChainData {
           const { since, confirming } = deciding;
         }
 
+        const identity = await getIdentity(submissionWho);
+
         const r: OpenGovReferendum = {
           index: index,
           track: track,
-          origin: origins,
+          origin: origin,
           proposalHash: hash,
           enactmentAfter: after,
           submitted: submitted,
           submissionWho: submissionWho,
-          submissionAmount: submissionAmount,
+          submissionIdentity: identity?.name ? identity?.name : submissionWho,
+          submissionAmount: submissionAmount / denom,
           decisionDepositWho: decisionDepositWho ? decisionDepositWho : null,
           decisionDepositAmount: decisionDepositAmount
-            ? decisionDepositAmount
+            ? decisionDepositAmount / denom
             : null,
           decidingSince: since ? since : null,
           decidingConfirming: confirming ? confirming : null,
-          ayes: ayes,
-          nays: nays,
-          support: support,
+          ayes: ayes / denom,
+          nays: nays / denom,
+          support: support / denom,
           inQueue: inQueue,
           currentStatus: status,
           confirmationBlockNumber: confirmationBlockNumber,

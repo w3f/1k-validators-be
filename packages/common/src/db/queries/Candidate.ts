@@ -388,7 +388,7 @@ export const reportOnline = async (
       iit && iit.iit ? iit.iit : null
     );
 
-    await setLocation(name, addr, city, region, country, provider, v);
+    await setLocation(name, addr, city, region, country, provider, sys, v);
     locationData = await getLocation(name, addr);
   }
 

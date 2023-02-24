@@ -413,6 +413,7 @@ export const setOpenGovReferendum = async (
       submitted: openGovReferendum.submitted,
       confirmationBlock: openGovReferendum.confirmationBlockNumber,
       submissionWho: openGovReferendum.submissionWho,
+      submissionIdentity: openGovReferendum.submissionIdentity,
       submissionAmount: openGovReferendum.submissionAmount,
       decisionDepositWho: openGovReferendum.decisionDepositWho,
       decisionDepositAmount: openGovReferendum.decisionDepositAmount,
@@ -445,6 +446,7 @@ export const setOpenGovReferendum = async (
       submitted: openGovReferendum.submitted,
       confirmationBlock: openGovReferendum.confirmationBlockNumber,
       submissionWho: openGovReferendum.submissionWho,
+      submissionIdentity: openGovReferendum.submissionIdentity,
       submissionAmount: openGovReferendum.submissionAmount,
       decisionDepositWho: openGovReferendum.decisionDepositWho,
       decisionDepositAmount: openGovReferendum.decisionDepositAmount,
@@ -937,6 +939,47 @@ export const getOpenGovDelegationAddress = async (address) => {
     }
   }
   return delegations.sort((a, b) => b.totalBalance - a.totalBalance);
+};
+
+export const getOpenGovVoters = async () => {
+  const voters = [];
+  const convictionVotes = await ConvictionVoteModel.find({}).lean().exec();
+  for (const vote of convictionVotes) {
+    if (!voters.includes(vote.address)) {
+      voters.push(vote.address);
+    }
+  }
+  const voterList = await Promise.all(
+    voters.map(async (address) => {
+      const addressVotes = convictionVotes.filter((vote) => {
+        if (vote.address == address) return true;
+      });
+      const identity = await getIdentity(address);
+      const delegations = await getOpenGovDelegationAddress(address);
+      const highestDelegation =
+        delegations.length > 0
+          ? delegations.reduce(function (prev, current) {
+              return prev.delegationCount > current.delegationCount
+                ? prev
+                : current;
+            })
+          : null;
+      return {
+        address: address,
+        identity: identity ? identity.name : address,
+        voteCount: addressVotes.length,
+        votes: [],
+        delegationCount: highestDelegation
+          ? highestDelegation.delegatorCount
+          : 0,
+        delegators: highestDelegation ? highestDelegation.delegators : [],
+        delegationAmount: highestDelegation
+          ? highestDelegation.totalBalance
+          : 0,
+      };
+    })
+  );
+  return voterList;
 };
 
 export const getOpenGovDelegationTrack = async (track) => {

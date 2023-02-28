@@ -2,12 +2,12 @@ import { Command } from "commander";
 
 import {
   ApiHandler,
-  Constants,
-  logger,
-  Util,
-  Db,
   Config,
+  Constants,
+  Db,
+  logger,
   queries,
+  Util,
 } from "@1kv/common";
 import MatrixBot from "./matrix";
 import Scorekeeper from "./scorekeeper";
@@ -15,7 +15,7 @@ import { Server } from "@1kv/gateway";
 import { TelemetryClient } from "@1kv/telemetry";
 import { startTestSetup } from "./misc/testSetup";
 
-import { startClearAccumulatedOfflineTimeJob, startMonitorJob } from "./cron";
+import { startClearAccumulatedOfflineTimeJob } from "./cron";
 
 const isCI = process.env.CI;
 
@@ -134,6 +134,7 @@ const start = async (cmd: { config: string }) => {
     winstonLabel
   );
   await queries.clearCandidates();
+  await queries.deleteOldValidatorScores();
   if (config.scorekeeper.candidates.length) {
     for (const candidate of config.scorekeeper.candidates) {
       if (candidate === null) {

@@ -1232,13 +1232,18 @@ export const getOpenGovVoter = async (address) => {
   const contextVotes = await Promise.all(
     votes.map(async (vote) => {
       const refInfo = await getOpenGovReferendum(vote.referendumIndex);
+      const delegateIdentity = await getIdentity(vote.delegatedTo);
       return {
         ...vote,
         title: refInfo.title,
         status: refInfo.currentStatus,
+        delegatingToIdentity: delegateIdentity?.name,
       };
     })
   );
+  const voteIndices = contextVotes.map((vote) => {
+    return vote.referendumIndex;
+  });
   const delegations = await getOpenGovDelegationAddress(address);
   const highestDelegation =
     delegations.length > 0
@@ -1256,6 +1261,15 @@ export const getOpenGovVoter = async (address) => {
             : current;
         })
       : null;
+
+  const latestRef = (await getAllOpenGovReferenda()).reduce(function (
+    prev,
+    current
+  ) {
+    return prev.referendumIndex > current.referendumIndex ? prev : current;
+  });
+
+  const score = scoreDemocracyVotes(voteIndices, latestRef);
 
   return {
     identity: identity,
@@ -1285,6 +1299,7 @@ export const getOpenGovVoter = async (address) => {
     delegatedVotes: votes.filter((vote) => {
       if (vote.voteType == "Delegating") return true;
     }).length,
+    score: score,
   };
 };
 

@@ -55,7 +55,7 @@ export const DelayedTxModel = mongoose.model("DelayedTx", DelayedTxSchema);
 
 export const Identity = new Schema({
   name: { type: String, index: true },
-  address: String,
+  address: { type: String, index: true },
   verified: Boolean,
   subIdentities: [
     {

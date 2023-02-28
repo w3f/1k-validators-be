@@ -132,7 +132,7 @@ export const lastValues = (array, lastValue, threshold) => {
 // The window of the last votes we want to check consistency for.
 //      For example, if the last referendum was 143 and there's a window of 5,
 //      we want to check votes [139, 140, 141, 142, 143]
-const RECENT_WINDOW = 5;
+const RECENT_WINDOW = 15;
 
 const LAST_REFERENDUM_WEIGHT = 15;
 const RECENT_REFERENDUM_WEIGHT = 5;

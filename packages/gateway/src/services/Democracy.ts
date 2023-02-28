@@ -122,7 +122,16 @@ export const getReferendumConvictionVotes = async (
   index: number
 ): Promise<any> => {
   const convictionVotes = await queries.getReferendumConvictionVoting(index);
-  return convictionVotes;
+  const votes = await Promise.all(
+    convictionVotes.map(async (vote) => {
+      const identity = await queries.getIdentity(vote.address);
+      return {
+        ...vote,
+        identity: identity ? identity?.name : vote.address,
+      };
+    })
+  );
+  return votes;
 };
 
 export const getOpenGovAddressDelegations = async (
@@ -132,9 +141,19 @@ export const getOpenGovAddressDelegations = async (
   return delegations;
 };
 
-export const getOpenGovVoters = async (): Promise<any> => {
-  const delegations = await queries.getOpenGovVoters();
+export const getOpenGovDelegates = async (): Promise<any> => {
+  const delegations = await queries.getOpenGovDelegates();
   return delegations;
+};
+
+export const getOpenGovVoters = async (): Promise<any> => {
+  const voters = await queries.getOpenGovVoters();
+  return voters;
+};
+
+export const getOpenGovVoter = async (address): Promise<any> => {
+  const voter = await queries.getOpenGovVoter(address);
+  return voter;
 };
 
 export const getOpenGovReferenda = async (): Promise<any> => {

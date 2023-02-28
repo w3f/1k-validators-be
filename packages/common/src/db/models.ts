@@ -189,7 +189,7 @@ export const DelegationSchema = new Schema({
 export const DelegationModel = mongoose.model("Delegation", DelegationSchema);
 
 export const OpenGovDelegationSchema = new Schema({
-  delegate: String,
+  delegate: { type: String, index: true },
   track: Number,
   totalBalance: Number,
   delegatorCount: Number,
@@ -987,7 +987,7 @@ export const ConvictionVoteModel = mongoose.model(
 );
 
 export const OpenGovReferendum = new Schema({
-  index: Number,
+  index: { type: Number, index: true },
   title: String,
   content: String,
   track: Number,

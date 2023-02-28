@@ -126,7 +126,7 @@ export const LatestValidatorSetModel = mongoose.model(
 export const LocationSchema = new Schema({
   name: String, // The Telemetry name of the node
   address: String, // The Validator Address
-  addr: String,
+  addr: { type: String, index: true },
   port: Number,
   city: String,
   region: String,
@@ -441,7 +441,7 @@ export const ValidatorScoreSchema = new Schema({
   // The last time a score was updated
   updated: Number,
   // The session a score was updated at
-  session: Number,
+  session: { type: Number, index: true },
   // The validator stash
   address: { type: String, index: true },
   // total score (including randomness)
@@ -1019,7 +1019,7 @@ export const OpenGovReferendumModel = mongoose.model(
 );
 
 export const OpenGovReferendumStats = new Schema({
-  index: Number,
+  index: { type: Number, index: true },
   track: Number,
   origin: String,
   currentStatus: String,

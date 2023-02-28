@@ -259,6 +259,7 @@ export const getAllIdentities = async () => {
 };
 
 export const getIdentity = async (address: string) => {
+  if (!address) return;
   const superIdentity = await IdentityModel.findOne({ address: address });
   if (!superIdentity) {
     const identity = await IdentityModel.findOne({

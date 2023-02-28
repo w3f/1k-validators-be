@@ -183,12 +183,29 @@ export default class DemocracyController {
     );
   }
 
+  public static async getOpenGovDelegates(context: any): Promise<void> {
+    if (await context.cashed()) {
+      logger.info(`{Gateway} getOpenGovDelegates is cached`);
+      return;
+    }
+    response(context, 200, await DemocracyService.getOpenGovDelegates());
+  }
+
   public static async getOpenGovVoters(context: any): Promise<void> {
     if (await context.cashed()) {
       logger.info(`{Gateway} getOpenGovVoters is cached`);
       return;
     }
     response(context, 200, await DemocracyService.getOpenGovVoters());
+  }
+
+  public static async getOpenGovVoter(context: any): Promise<void> {
+    if (await context.cashed()) {
+      logger.info(`{Gateway} getOpenGovVoter is cached`);
+      return;
+    }
+    const { address } = context.params;
+    response(context, 200, await DemocracyService.getOpenGovVoter(address));
   }
 
   public static async getOpenGovReferenda(context: any): Promise<void> {

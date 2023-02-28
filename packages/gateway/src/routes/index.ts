@@ -72,6 +72,8 @@ const API = {
   OpenGovLastReferendum: "/opengov/referenda/last",
   OpenGovAddressDelegations: "/opengov/delegations/:address",
   OpenGovVoters: "/opengov/voters",
+  OpenGovVoter: "/opengov/voter/:address",
+  OpenGovDelegates: "/opengov/delegates",
 };
 
 router.get(API.Accounting, Accounting.getAccounting);
@@ -133,6 +135,8 @@ router.get(
   Democracy.getOpenGovAddressDelegations
 );
 router.get(API.OpenGovVoters, Democracy.getOpenGovVoters);
+router.get(API.OpenGovVoter, Democracy.getOpenGovVoter);
+router.get(API.OpenGovDelegates, Democracy.getOpenGovDelegates);
 
 router.get(API.Score, Score.getScore);
 router.get(API.SessionScore, Score.getSessionScore);

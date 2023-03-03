@@ -138,7 +138,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": ^5.52.0
     "@typescript-eslint/parser": ^5.52.0
     ava: ^5.2.0
-    bullmq: ^3.7.0
+    bullmq: ^3.10.0
     concurrently: ^7.6.0
     eslint: 8.22.0
     nodemon: ^2.0.20
@@ -2976,9 +2976,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bullmq@npm:^3.7.0":
-  version: 3.7.0
-  resolution: "bullmq@npm:3.7.0"
+"bullmq@npm:^3.10.0":
+  version: 3.10.0
+  resolution: "bullmq@npm:3.10.0"
   dependencies:
     cron-parser: ^4.6.0
     glob: ^8.0.3
@@ -2988,7 +2988,7 @@ __metadata:
     semver: ^7.3.7
     tslib: ^2.0.0
     uuid: ^9.0.0
-  checksum: a5ef9b67a7f76af81bdda44c8d79334d3b3017e76a1f921e3db84dd09cccc7e100a8b1335cb7144a45c6e769b375353b0a387133f93f43ad40a803e54fab7502
+  checksum: efa652831374ea5be31d7de04cb4aa31e0ec249433bef8502c1ae4b52a81aeef5566c069fcea00e3cfe133afa618392347f216b6a9c7d4122a48600978b0ddbf
   languageName: node
   linkType: hard
 

@@ -2,7 +2,7 @@ import Koa from "koa";
 import bodyparser from "koa-bodyparser";
 import cors from "koa2-cors";
 
-import { queries, Config, logger } from "@1kv/common";
+import { Config, logger } from "@1kv/common";
 import LRU from "lru-cache";
 import koaCash from "koa-cash";
 import { KoaAdapter } from "@bull-board/koa";
@@ -30,7 +30,7 @@ export default class Server {
     this.app.use(bodyparser());
 
     const cache = new LRU({
-      maxAge: 30000, // global max age
+      maxAge: 900000, // global max age
     });
     this.app.use(
       koaCash({

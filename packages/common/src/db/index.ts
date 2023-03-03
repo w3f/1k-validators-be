@@ -23,7 +23,7 @@ export const dbLabel = { label: "DB" };
 export class Db {
   static async create(uri = "mongodb://localhost:27017/otv"): Promise<Db> {
     logger.info(`Connecting to mongodb at: ${uri}`, dbLabel);
-    mongoose.connect(uri, {});
+    mongoose.connect(uri, { maxPoolSize: 5 });
 
     return new Promise((resolve, reject) => {
       mongoose.connection.once("open", async () => {

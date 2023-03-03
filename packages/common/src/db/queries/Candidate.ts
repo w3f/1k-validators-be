@@ -193,7 +193,9 @@ export const setController = async (
 // Creates an Identity Record
 export const setIdentity = async (identity: Identity): Promise<boolean> => {
   if (!identity || !identity?.name) return false;
-  const data = await IdentityModel.findOne({ name: identity.name });
+  const data = await IdentityModel.findOne({ name: identity.name })
+    .lean()
+    .exec();
   if (!data) {
     const ident = new IdentityModel({
       name: identity.name,
@@ -258,16 +260,40 @@ export const getAllIdentities = async () => {
   return await IdentityModel.find({}).lean().exec();
 };
 
-export const getIdentity = async (address: string) => {
+export const getIdentityName = async (address: string) => {
   if (!address) return;
-  const superIdentity = await IdentityModel.findOne({ address: address });
-  if (!superIdentity) {
+  const superIdentity = await IdentityModel.findOne({ address: address })
+    .lean()
+    .select({ name: 1 })
+    .exec();
+  if (superIdentity) {
+    return superIdentity;
+  } else {
     const identity = await IdentityModel.findOne({
       "subIdentities.address": address,
-    });
+    })
+      .lean()
+      .select({ name: 1 })
+      .exec();
     return identity;
   }
-  return superIdentity;
+};
+
+export const getIdentity = async (address: string) => {
+  if (!address) return;
+  const superIdentity = await IdentityModel.findOne({ address: address })
+    .lean()
+    .exec();
+  if (superIdentity) {
+    return superIdentity;
+  } else {
+    const identity = await IdentityModel.findOne({
+      "subIdentities.address": address,
+    })
+      .lean()
+      .exec();
+    return identity;
+  }
 };
 
 // Given an address, get all the other addresses that are a part of the identity

@@ -60,7 +60,7 @@ export const Identity = new Schema({
   subIdentities: [
     {
       name: String,
-      address: String,
+      address: { type: String, unique: true, index: true },
     },
   ],
   display: String,
@@ -125,7 +125,7 @@ export const LatestValidatorSetModel = mongoose.model(
 
 export const LocationSchema = new Schema({
   name: String, // The Telemetry name of the node
-  address: String, // The Validator Address
+  address: { type: String, index: true }, // The Validator Address
   addr: { type: String, index: true },
   port: Number,
   city: String,
@@ -133,7 +133,7 @@ export const LocationSchema = new Schema({
   country: String,
   provider: String,
   updated: Number,
-  session: Number,
+  session: { type: Number, index: true },
   source: String,
   vpn: Boolean,
   cpu: String,

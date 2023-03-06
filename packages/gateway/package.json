@@ -39,7 +39,7 @@
     "@typescript-eslint/parser": "^5.54.1",
     "ava": "^5.2.0",
     "concurrently": "^7.6.0",
-    "eslint": "8.22.0",
+    "eslint": "8.35.0",
     "eslint-plugin-security": "^1.7.1",
     "nodemon": "^2.0.21"
   },

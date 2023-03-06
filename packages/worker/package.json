@@ -27,18 +27,18 @@
   },
   "dependencies": {
     "@1kv/common": "workspace:^",
-    "@polkadot/api": "^9.14.1",
-    "bullmq": "^3.7.0",
+    "@polkadot/api": "^10.0.1",
+    "bullmq": "^3.10.1",
     "typescript": "^4.9.5"
   },
   "devDependencies": {
     "@ava/typescript": "^3.0.1",
-    "@typescript-eslint/eslint-plugin": "^5.52.0",
-    "@typescript-eslint/parser": "^5.52.0",
+    "@typescript-eslint/eslint-plugin": "^5.54.1",
+    "@typescript-eslint/parser": "^5.54.1",
     "ava": "^5.2.0",
     "concurrently": "^7.6.0",
     "eslint": "8.22.0",
-    "nodemon": "^2.0.20"
+    "nodemon": "^2.0.21"
   },
   "ava": {
     "failFast": false,

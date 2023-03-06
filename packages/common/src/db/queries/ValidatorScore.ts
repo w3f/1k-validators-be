@@ -131,7 +131,8 @@ export const deleteOldValidatorScores = async (): Promise<any> => {
   const timeWindow = Date.now() - ONE_WEEK;
   const scoreToDelete = await ValidatorScoreModel.find({
     updated: { $lt: timeWindow },
-  })
-    .remove()
-    .exec();
+  }).exec();
+  for (const score of scoreToDelete) {
+    await score.deleteOne();
+  }
 };

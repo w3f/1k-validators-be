@@ -60,7 +60,7 @@ export const Identity = new Schema({
   subIdentities: [
     {
       name: String,
-      address: { type: String, unique: true, index: true },
+      address: { type: String, index: true },
     },
   ],
   display: String,

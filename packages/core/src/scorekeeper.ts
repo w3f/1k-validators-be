@@ -17,6 +17,7 @@ import {
 import Nominator from "./nominator";
 import {
   startActiveValidatorJob,
+  startCancelCron,
   startCouncilJob,
   startDelegationJob,
   startDemocracyJob,
@@ -674,14 +675,13 @@ export default class ScoreKeeper {
       //     this.bot
       //   );
       // }
-      // await startCancelCron(
-      //   this.config,
-      //   this.handler,
-      //   this.db,
-      //   this.nominatorGroups,
-      //   this.chaindata,
-      //   this.bot
-      // );
+      await startCancelCron(
+        this.config,
+        this.handler,
+        this.nominatorGroups,
+        this.chaindata,
+        this.bot
+      );
       // await startStaleNominationCron(
       //   this.config,
       //   this.handler,

@@ -52,7 +52,7 @@ export const BALANCE_BUFFER_PERCENT = 0.002;
 export const BALANCE_BUFFER_AMOUNT = 20;
 
 // Timeout threshold for polkadot js api - 360 seconds
-export const POLKADOT_API_TIMEOUT = 360000;
+export const POLKADOT_API_TIMEOUT = 1000000;
 
 /// List of Kusama endpoints we can switch between.
 export const KusamaEndpoints = [

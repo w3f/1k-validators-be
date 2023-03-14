@@ -49,7 +49,40 @@ config: |
       "userId": "@1kv-stats:matrix.org"
     },
     "proxy": {
-        "timeDelayBlocks": "10850"
+        "timeDelayBlocks": "10850",
+        "blacklistedAnnouncements": [
+           "0x39286519cc20c05dd2eadb507a612f1bad426fe6afb67aa9b69fb0aaebbd188f",
+           "0xa60b645f2e45f5db0fc6bbb96df00e72384523595e5081e8a36ca8a9c48756fe",
+           "0x9aa690a38597d7ac7ebfec08f6828d49c5b706701c82c678cb9d15a7c1be47f1",
+           "0xf6401cf4b1ad3a4c5d88c92402a25ebd0b4c57584d04b734cee0224c94f14961",
+           "0xc7e5d358fe64e605bb9d004173458dcd0e971cbed8379ce5ca0cfd772064c393",
+           "0x080c050e36aabdb0d53668c02d403f7f44a4a2814814bef8065901a4f75f4685",
+           "0x538b631ed7bdde3457df3cee7bbcb35934c78fbfb19446a008fd9a72367d1932",
+           "0xa1d3963b556a24e07b6c8821c11d7e7353683dd1ec6e0e89afd3485b12e0424d",
+           "0x9cb9635684231845204640694a7201a9255b56e1e2fc57f5c7d114009f02d2ba",
+           "0x366392dc1fb88a356e8bbe8f5c4fe080fcfa19b1e69d3a5149dd69d7c2ddf4c9",
+           "0xf1112f2be2a6108b9e7d2fbf7800ac59c47b9f52686015ccc653e5bacd766e06",
+           "0x2db093433632565595049b39eeb3423856992eebf20a5b4dfbbe8c2e85c5a321",
+           "0x4b6a0814a9440c1275ffa21d40e699450d5b4963887d25138a69f1450d30b838",
+           "0x447d3e3b2da58ec8ae336d3a6874c30bcbc0089ed4756f3e4f10ecf295f2c29f",
+           "0x83b134b71babb1b45b892b5eddcc9fa5a39a2eaf9973a7d74e8c8173566b065b",
+           "0x10078db0548c62b9f8db0a3e3f39b80a41ce5c72575efca3d97b84313c6418b5",
+           "0x649238f5656dac41c78a9cfbeadb09d371816a383a3ce44c15433dd2f1346117",
+           "0x63ad5d642a6385912b6628cdf4c38d1a8ab1f5b217bae752e7a34daa97ceb132",
+           "0x72bb79b27b1e9b2d72926fd2fcaba610907e36ed8dcad883ce2b9a32e0af5699",
+           "0xba58742def091d9a1a2e60c83637af57078a40d4d29440327a010eac41387601",
+           "0xd977364992de0cfaa3643bf721c365533e781119ea25b99c61b1b49227e6536d",
+           "0xdacf50991d7e9765db02393229cb99cde7cc7d2d7402ff91d7bf3142f5e5a888",
+           "0x4b03b46358a405e1a1400cfa8420685b86acc60b882abcba860e1a2f19a4beca",
+           "0xfa2821506a9f955db570ceff59cd3f17e0d7703f1b27525db5f30b76b8fe4c91",
+           "0x700eb7c14d5dfb5aa1690f939334afaed0975d563a94a4c0f906044ba7c274c0",
+           "0x01dfd207dd81a09886f713201317d1d228fe5ffef55eddd5765313e9905842d2",
+           "0x274fe0291bd8dfcacf908451931f3b805ff861092c2d2e2b5578fe1670784138",
+           "0x996639643af205aa2d489edd923cc9ca475dc1e1c63bdfe3a699d240140afdd3",
+           "0x7ed797fea8e4d9f1cfb1418b30c511622c6b204e074b237c482c223630813c2e",
+           "0x9448069442295ecbd8e2444489d913853102400b81599c5f38c4220e915e4b54",
+           "0xc799557ab45866c6d377dc43e59bed9e2aaa74a3b10a24afbc10b8f6b784b107"
+        ]
     },
     "score": {
       "inclusion": "200",
@@ -1334,7 +1367,7 @@ config: |
           "riotHandle": "@nrdlabs:matrix.org"
          }
       ],
-      "forceRound": false,
+      "forceRound": true,
       "nominating": true
     },
     "server": {

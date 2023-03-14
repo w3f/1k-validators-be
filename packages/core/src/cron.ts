@@ -3,30 +3,30 @@ import Nominator from "./nominator";
 import {
   ApiHandler,
   ChainData,
+  Config,
   Constants,
+  Constraints,
   logger,
+  queries,
   Types,
   Util,
-  queries,
-  Config,
-  Constraints,
 } from "@1kv/common";
 import Claimer from "./claimer";
 import {
   activeValidatorJob,
+  councilJob,
+  delegationJob,
+  democracyJob,
   eraPointsJob,
   eraStatsJob,
   inclusionJob,
+  locationStatsJob,
   monitorJob,
+  nominatorJob,
   scoreJob,
   sessionKeyJob,
   validatorPrefJob,
   validityJob,
-  locationStatsJob,
-  councilJob,
-  democracyJob,
-  nominatorJob,
-  delegationJob,
 } from "./jobs";
 import { blockDataJob } from "@1kv/worker/build/jobs";
 
@@ -450,12 +450,19 @@ export const startCancelCron = async (
 
                 // If the blacklisted announcement matches what's registered on chain, cancel it
                 if (announcement.callHash == blacklistedAnnouncement) {
+                  logger.info(
+                    `cancelling ${announcement.callHash} - ${blacklistedAnnouncement}`
+                  );
                   const didCancel = await nom.cancelTx(announcement);
                   if (didCancel) {
                     const successfulCancelMessage = `{CancelCron::cancel} ${blacklistedAnnouncement} was successfully cancelled.`;
                     logger.info(successfulCancelMessage);
                     await bot.sendMessage(successfulCancelMessage);
                   }
+                } else {
+                  logger.info(
+                    `announcement call hash: ${announcement.callHash} does not match ${blacklistedAnnouncement}`
+                  );
                 }
               }
             }

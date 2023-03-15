@@ -12,7 +12,7 @@ releases:
     namespace: kusama
     {{ if eq .Environment.Name "production" }}
     chart: w3f/otv-backend
-    version: v2.8.6
+    version: v2.8.7
     {{ else }}
     chart: ../charts/otv-backend
     {{ end }}
@@ -30,7 +30,7 @@ releases:
     namespace: polkadot
     {{ if eq .Environment.Name "production" }}
     chart: w3f/otv-backend
-    version: v2.8.6
+    version: v2.8.7
     {{ else }}
     chart: ../charts/otv-backend
     {{ end }} 

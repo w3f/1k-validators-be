@@ -421,7 +421,7 @@ export const startCancelCron = async (
     logger.info(`running cancel cron....`, cronLabel);
 
     const latestBlock = await chaindata.getLatestBlock();
-    const threshold = latestBlock - 2 * config.proxy.timeDelayBlocks;
+    const threshold = latestBlock - 1.2 * config.proxy.timeDelayBlocks;
 
     for (const nomGroup of nominatorGroups) {
       for (const nom of nomGroup) {
@@ -443,9 +443,9 @@ export const startCancelCron = async (
                   cronLabel
                 );
                 if (bot) {
-                  await bot.sendMessage(
-                    `{CancelCron::cancel} there is a blacklisted announcement to cancel: ${blacklistedAnnouncement}`
-                  );
+                  // await bot.sendMessage(
+                  //   `{CancelCron::cancel} there is a blacklisted announcement to cancel: ${blacklistedAnnouncement}`
+                  // );
                 }
 
                 // If the blacklisted announcement matches what's registered on chain, cancel it
@@ -457,7 +457,7 @@ export const startCancelCron = async (
                   if (didCancel) {
                     const successfulCancelMessage = `{CancelCron::cancel} ${blacklistedAnnouncement} was successfully cancelled.`;
                     logger.info(successfulCancelMessage);
-                    await bot.sendMessage(successfulCancelMessage);
+                    // await bot.sendMessage(successfulCancelMessage);
                   }
                 } else {
                   logger.info(

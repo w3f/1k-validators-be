@@ -469,25 +469,10 @@ export default class ScoreKeeper {
     const candidates = await queries.allCandidates();
 
     for (const candidate of candidates) {
-      //   const matrix = candidate.matrix;
-      //   logger.info(`candidates length: ${candidates.length}`);
-      //
-      //   console.log(`index: ${index} JSON.stringify(matrix)`);
-      //   for (const x of matrix) {
-      //     fs.appendFile("file.txt", `${x}\n`, "utf-8", (err) => {
-      //       if (err) {
-      //         throw err;
-      //       }
-      //     });
-      //   }
-
-      const id = await queries.getIdentity(candidate.stash);
-      if (!id) {
-        const identity = await this.chaindata.getFormattedIdentity(
-          candidate.stash
-        );
-        await queries.setCandidateIdentity(candidate.stash, identity);
-      }
+      const identity = await this.chaindata.getFormattedIdentity(
+        candidate.stash
+      );
+      await queries.setCandidateIdentity(candidate.stash, identity);
     }
 
     // If `forceRound` is on - start immediately.

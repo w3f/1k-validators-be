@@ -2,17 +2,21 @@
 import {
   ConvictionDelegation,
   ConvictionVote,
+  OpenGovDelegate,
   OpenGovReferendum,
   OpenGovReferendumStat,
+  OpenGovVoter,
   Referendum,
   ReferendumVote,
 } from "../../types";
 import {
   CandidateModel,
   ConvictionVoteModel,
+  OpenGovDelegateModel,
   OpenGovDelegationModel,
   OpenGovReferendumModel,
   OpenGovReferendumStatsModel,
+  OpenGovVoterModel,
   ReferendumModel,
   ReferendumVoteModel,
 } from "../models";
@@ -21,7 +25,6 @@ import {
   getIdentityAddresses,
   getIdentityName,
 } from "./Candidate";
-import { scaledDefined, scoreDemocracyVotes } from "../../score";
 
 // LEGACY DEMOCRACY
 export const setReferendum = async (
@@ -408,6 +411,7 @@ export const setOpenGovReferendum = async (
   title: string,
   content: string,
   openGovReferendum: OpenGovReferendum,
+  proposedCall: any,
   updatedBlockNumber: number,
   updatedBlockHash: string
 ): Promise<any> => {
@@ -424,6 +428,9 @@ export const setOpenGovReferendum = async (
       origin: openGovReferendum.origin,
       title: title,
       content: content,
+      section: proposedCall?.section,
+      method: proposedCall?.method,
+      description: proposedCall?.description,
       proposalHash: openGovReferendum.proposalHash,
       enactmentAfter: openGovReferendum.enactmentAfter,
       submitted: openGovReferendum.submitted,
@@ -457,6 +464,9 @@ export const setOpenGovReferendum = async (
       origin: openGovReferendum.origin,
       title: title,
       content: content,
+      section: proposedCall?.section,
+      method: proposedCall?.method,
+      description: proposedCall?.description,
       proposalHash: openGovReferendum.proposalHash,
       enactmentAfter: openGovReferendum.enactmentAfter,
       submitted: openGovReferendum.submitted,
@@ -992,263 +1002,140 @@ export const getOpenGovDelegationAddress = async (address) => {
   return delegations.sort((a, b) => b.totalBalance - a.totalBalance);
 };
 
-export const getOpenGovDelegates = async () => {
-  const delegates = [];
-  const delegations = [];
+export const setOpenGovVoter = async (voter: OpenGovVoter) => {
+  const data = await OpenGovVoterModel.findOne({
+    address: voter.address,
+  }).lean();
 
-  const dels = await OpenGovDelegationModel.find({}).lean().exec();
-
-  for (const delegation of dels) {
-    if (!delegates.includes(delegation.delegate)) {
-      delegates.push(delegation.delegate);
-    }
-  }
-
-  for (const delegate of delegates) {
-    const delegations = dels.filter((d) => {
-      return d.delegate == delegate;
+  if (!data) {
+    const v = new OpenGovVoterModel({
+      address: voter.address,
+      identity: voter.identity,
+      score: {
+        baseDemocracyScore: voter.score.baseDemocracyScore,
+        totalConsistencyMultiplier: voter.score.totalConsistencyMultiplier,
+        lastConsistencyMultiplier: voter.score.lastConsistencyMultiplier,
+        totalDemocracyScore: voter.score.totalDemocracyScore,
+      },
+      voteCount: voter.voteCount,
+      ayeCount: voter.ayeCount,
+      nayCount: voter.nayCount,
+      abstainCount: voter.abstainCount,
+      castedCount: voter.castedCount,
+      delegatedCount: voter.delegatedCount,
+      delegationCount: voter.delegationCount,
+      delegationAmount: voter.delegationAmount,
+      votingBalance: voter.votingBalance,
     });
-
-    const highestDelegation =
-      delegations.length > 0
-        ? delegations.reduce(function (prev, current) {
-            return prev?.totalBalance < current?.totalBalance ? prev : current;
-          })
-        : null;
-
-    const votes = await getAddressConvictionVoting(delegate);
-
-    const lastVote =
-      votes.length > 0
-        ? votes.reduce(function (prev, current) {
-            return prev.referendumIndex > current.referendumIndex
-              ? prev
-              : current;
-          })
-        : null;
-
-    const balance =
-      lastVote.balance.aye + lastVote.balance.nay + lastVote.balance.abstain;
-
-    for (const delegation of delegations) {
-      const delegators = [];
-
-      delegations.push(delegation);
-      for (const d of delegation.delegators) {
-        if (!delegators.includes(d.address)) {
-          delegators.push(d.address);
-        }
+    return await v.save();
+  } else {
+    await OpenGovVoterModel.findOneAndUpdate(
+      {
+        address: voter.address,
+      },
+      {
+        identity: voter.identity,
+        score: {
+          baseDemocracyScore: voter.score.baseDemocracyScore,
+          totalConsistencyMultiplier: voter.score.totalConsistencyMultiplier,
+          lastConsistencyMultiplier: voter.score.lastConsistencyMultiplier,
+          totalDemocracyScore: voter.score.totalDemocracyScore,
+        },
+        voteCount: voter.voteCount,
+        ayeCount: voter.ayeCount,
+        nayCount: voter.nayCount,
+        abstainCount: voter.abstainCount,
+        castedCount: voter.castedCount,
+        delegatedCount: voter.delegatedCount,
+        delegationCount: voter.delegationCount,
+        delegationAmount: voter.delegationAmount,
+        votingBalance: voter.votingBalance,
       }
-      return {
-        totalDelegators: delegators.length,
-        totalBalance: highestDelegation?.totalBalance,
-        voteCount: votes.length,
-        ayeCount: votes.filter((vote) => {
-          if (vote.voteDirection == "Aye") return true;
-        }).length,
-        nayCount: votes.filter((vote) => {
-          if (vote.voteDirection == "Nay") return true;
-        }).length,
-        abstainCount: votes.filter((vote) => {
-          if (vote.voteDirection == "Abstain") return true;
-        }).length,
-        castedVotes: votes.filter((vote) => {
-          if (vote.voteType == "Casting") return true;
-        }).length,
-        delegatedVotes: votes.filter((vote) => {
-          if (vote.voteType == "Delegating") return true;
-        }).length,
-        votes: votes,
-        delegationCount: highestDelegation
-          ? highestDelegation?.delegatorCount
-          : 0,
-        // delegators: highestDelegation ? highestDelegation.delegators : [],
-        delegationAmount: highestDelegation
-          ? highestDelegation?.totalBalance
-          : 0,
-        votingBalance: balance,
-      };
-    }
+    ).exec();
   }
+};
 
-  return delegations.sort((a, b) => b.totalBalance - a.totalBalance);
+export const setOpenGovDelegate = async (delegate: OpenGovDelegate) => {
+  const data = await OpenGovDelegateModel.findOne({
+    address: delegate.address,
+  });
+
+  if (!data) {
+    const del = new OpenGovDelegateModel({
+      address: delegate.address,
+      identity: delegate.identity,
+      score: {
+        baseDemocracyScore: delegate.score.baseDemocracyScore,
+        totalConsistencyMultiplier: delegate.score.totalConsistencyMultiplier,
+        lastConsistencyMultiplier: delegate.score.lastConsistencyMultiplier,
+        totalDemocracyScore: delegate.score.totalDemocracyScore,
+      },
+      voteCount: delegate.voteCount,
+      ayeCount: delegate.ayeCount,
+      nayCount: delegate.nayCount,
+      abstainCount: delegate.abstainCount,
+      castedCount: delegate.castedCount,
+      delegatedCount: delegate.delegatedCount,
+      delegationCount: delegate.delegationCount,
+      delegationAmount: delegate.delegationAmount,
+      votingBalance: delegate.votingBalance,
+      name: delegate.name,
+      image: delegate.image,
+      shortDescription: delegate.shortDescription,
+      longDescription: delegate.longDescription,
+      isOrganization: delegate.isOrganization,
+    });
+    return await del.save();
+  } else {
+    await OpenGovDelegateModel.findOneAndUpdate(
+      {
+        address: delegate.address,
+      },
+      {
+        identity: delegate.identity,
+        score: {
+          baseDemocracyScore: delegate.score.baseDemocracyScore,
+          totalConsistencyMultiplier: delegate.score.totalConsistencyMultiplier,
+          lastConsistencyMultiplier: delegate.score.lastConsistencyMultiplier,
+          totalDemocracyScore: delegate.score.totalDemocracyScore,
+        },
+        voteCount: delegate.voteCount,
+        ayeCount: delegate.ayeCount,
+        nayCount: delegate.nayCount,
+        abstainCount: delegate.abstainCount,
+        castedCount: delegate.castedCount,
+        delegatedCount: delegate.delegatedCount,
+        delegationCount: delegate.delegationCount,
+        delegationAmount: delegate.delegationAmount,
+        votingBalance: delegate.votingBalance,
+        name: delegate.name,
+        image: delegate.image,
+        shortDescription: delegate.shortDescription,
+        longDescription: delegate.longDescription,
+        isOrganization: delegate.isOrganization,
+      }
+    ).exec();
+  }
+};
+
+export const getOpenGovDelegate = async (address: string) => {
+  const delegate = await OpenGovDelegateModel.findOne({ address: address });
+  return delegate;
+};
+
+export const getOpenGovDelegates = async () => {
+  const delegates = await OpenGovDelegateModel.find({}).lean();
+  return delegates;
 };
 
 export const getOpenGovVoters = async () => {
-  const voters = [];
-  const convictionVotes = await ConvictionVoteModel.find({}).lean().exec();
-
-  for (const vote of convictionVotes) {
-    if (!voters.includes(vote.address)) {
-      voters.push(vote.address);
-    }
-  }
-
-  const latestRef = (
-    await OpenGovReferendumModel.find({})
-      .lean()
-      .sort("-index")
-      .select({ index: 1 })
-      .exec()
-  )[0];
-
-  const voterList = await Promise.all(
-    voters.map(async (address) => {
-      const addressVotes = convictionVotes.filter((vote) => {
-        if (vote.address == address) return true;
-      });
-      const identity = await getIdentityName(address);
-      const delegations = await getOpenGovDelegationPeak(address);
-
-      const lastVote =
-        addressVotes.length > 0
-          ? addressVotes.reduce(function (prev, current) {
-              return prev.referendumIndex > current.referendumIndex
-                ? prev
-                : current;
-            })
-          : null;
-
-      const balance =
-        lastVote.balance.aye + lastVote.balance.nay + lastVote.balance.abstain;
-
-      const votes = addressVotes
-        .map((vote) => {
-          return vote.referendumIndex;
-        })
-        .sort((a, b) => b - a);
-
-      return {
-        score: scoreDemocracyVotes(votes, latestRef.index),
-        address: address,
-        identity: identity ? identity.name : address,
-        voteCount: addressVotes.length,
-        ayeCount: addressVotes.filter((vote) => {
-          if (vote.voteDirection == "Aye") return true;
-        }).length,
-        nayCount: addressVotes.filter((vote) => {
-          if (vote.voteDirection == "Nay") return true;
-        }).length,
-        abstainCount: addressVotes.filter((vote) => {
-          if (vote.voteDirection == "Abstain") return true;
-        }).length,
-        castedVotes: addressVotes.filter((vote) => {
-          if (vote.voteType == "Casting") return true;
-        }).length,
-        delegatedVotes: addressVotes.filter((vote) => {
-          if (vote.voteType == "Delegating") return true;
-        }).length,
-        votes: votes,
-        delegationCount: delegations ? delegations.delegatorCount : 0,
-        // delegators: highestDelegation ? highestDelegation.delegators : [],
-        delegationAmount: delegations ? delegations?.totalBalance : 0,
-        votingBalance: balance,
-      };
-    })
-  );
-  const scoreValues = voterList.map((votes) => {
-    return votes.score.totalDemocracyScore;
-  });
-  const norm = voterList.map((votes) => {
-    return {
-      normalizedScore:
-        scaledDefined(votes.score.totalDemocracyScore, scoreValues, 0.2, 0.95) *
-        100,
-      ...votes,
-    };
-  });
-
-  return norm.sort(
-    (a, b) =>
-      b.normalizedScore - a.normalizedScore ||
-      b.castedVotes - a.castedVotes ||
-      b.delegationAmount - a.delegationAmount
-  );
+  const voters = await OpenGovVoterModel.find({}).lean();
+  return voters;
 };
 
 export const getOpenGovVoter = async (address) => {
-  // const voters = [];
-  const identity = await getIdentity(address);
-  const votes = await ConvictionVoteModel.find({ address: address })
-    .lean()
-    .exec();
-
-  const contextVotes = await Promise.all(
-    votes.map(async (vote) => {
-      const r = await OpenGovReferendumModel.findOne({
-        index: vote.referendumIndex,
-      })
-        .lean()
-        .select({ title: 1, currentStatus: 1 })
-        .exec();
-      const delegateIdentity = await getIdentity(vote.delegatedTo);
-      return {
-        ...vote,
-        title: r.title,
-        status: r.currentStatus,
-        delegatingToIdentity: delegateIdentity?.name,
-      };
-    })
-  );
-
-  const voteIndices = contextVotes.map((vote) => {
-    return vote.referendumIndex;
-  });
-
-  const delegations = await getOpenGovDelegationAddress(address);
-
-  const highestDelegation =
-    delegations.length > 0
-      ? delegations.reduce(function (prev, current) {
-          return prev.totalBalance < current.totalBalance ? prev : current;
-        })
-      : null;
-
-  const lastVote =
-    votes.length > 0
-      ? votes.reduce(function (prev, current) {
-          return prev.referendumIndex > current.referendumIndex
-            ? prev
-            : current;
-        })
-      : null;
-
-  const latestRef = await getLastOpenGovReferenda();
-
-  const score = scoreDemocracyVotes(voteIndices, latestRef);
-
-  return {
-    identity: identity,
-    totalVotes: votes.length,
-    balance:
-      lastVote?.balance?.aye +
-      lastVote?.balance?.nay +
-      lastVote?.balance?.abstain,
-    votes: contextVotes.sort((a, b) => b.referendumIndex - a.referendumIndex),
-    highestDelegation: highestDelegation,
-
-    delegationAmount: highestDelegation?.totalBalance,
-    delegationCount: highestDelegation?.delegatorCount,
-    delegations: delegations,
-
-    lastVote: lastVote,
-    ayeCount: votes.filter((vote) => {
-      if (vote.voteDirection == "Aye") return true;
-    }).length,
-    nayCount: votes.filter((vote) => {
-      if (vote.voteDirection == "Nay") return true;
-    }).length,
-    abstainCount: votes.filter((vote) => {
-      if (vote.voteDirection == "Abstain") return true;
-    }).length,
-    castedVotes: votes.filter((vote) => {
-      if (vote.voteType == "Casting") return true;
-    }).length,
-    delegatedVotes: votes.filter((vote) => {
-      if (vote.voteType == "Delegating") return true;
-    }).length,
-    score: score,
-  };
+  const voter = await OpenGovVoterModel.findOne({ address: address });
+  return voter;
 };
 
 export const getOpenGovDelegationTrack = async (track) => {

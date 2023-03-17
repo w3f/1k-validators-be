@@ -142,8 +142,8 @@ export const getOpenGovAddressDelegations = async (
 };
 
 export const getOpenGovDelegates = async (): Promise<any> => {
-  const delegations = await queries.getOpenGovDelegates();
-  return delegations;
+  const delegates = await queries.getOpenGovDelegates();
+  return delegates;
 };
 
 export const getOpenGovVoters = async (): Promise<any> => {

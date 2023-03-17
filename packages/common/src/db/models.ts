@@ -990,6 +990,9 @@ export const OpenGovReferendum = new Schema({
   index: { type: Number, index: true },
   title: String,
   content: String,
+  section: String,
+  description: String,
+  method: String,
   track: Number,
   origin: String,
   proposalHash: String,
@@ -1161,6 +1164,71 @@ export const OpenGovReferendumStatsModel = mongoose.model(
   "OpenGovReferendumStats",
   OpenGovReferendumStats
 );
+
+export const OpenGovVoter = new Schema({
+  address: { type: String, index: true },
+  score: {
+    baseDemocracyScore: Number,
+    totalConsistencyMultiplier: Number,
+    lastConsistencyMultiplier: Number,
+    totalDemocracyScore: Number,
+  },
+  identity: String,
+  voteCount: Number,
+  ayeCount: Number,
+  nayCount: Number,
+  abstainCount: Number,
+  castedCount: Number,
+  delegatedCount: Number,
+  delegationCount: Number,
+  delegationAmount: Number,
+  votingBalance: Number,
+});
+
+export const OpenGovVoterModel = mongoose.model("OpenGovVoter", OpenGovVoter);
+
+export const OpenGovDelegate = new Schema({
+  address: { type: String, index: true },
+  identity: String,
+  score: {
+    baseDemocracyScore: Number,
+    totalConsistencyMultiplier: Number,
+    lastConsistencyMultiplier: Number,
+    totalDemocracyScore: Number,
+  },
+  voteCount: Number,
+  ayeCount: Number,
+  nayCount: Number,
+  abstainCount: Number,
+  castedCount: Number,
+  delegatedCount: Number,
+  delegationCount: Number,
+  delegationAmount: Number,
+  votingBalance: Number,
+  name: String,
+  image: String,
+  shortDescription: String,
+  longDescription: String,
+  isOrganization: Boolean,
+});
+
+export const OpenGovDelegateModel = mongoose.model(
+  "OpenGovDelegate",
+  OpenGovDelegate
+);
+
+export const OpenGovTrack = new Schema({
+  index: { type: Number, index: true },
+  name: String,
+  maxDeciding: Number,
+  decisionDeposit: Number,
+  preparePeriod: Number,
+  decisionPeriod: Number,
+  confirmPeriod: Number,
+  minEnactmentPeriod: Number,
+});
+
+export const OpenGovTrackModel = mongoose.model("OpenGovTrack", OpenGovTrack);
 
 export const IIT = new Schema({
   iit: String,

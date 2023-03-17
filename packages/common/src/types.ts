@@ -241,6 +241,51 @@ export type OpenGovReferendum = {
   //alarm
 };
 
+export type OpenGovVoter = {
+  address: string;
+  score: {
+    baseDemocracyScore: number;
+    totalConsistencyMultiplier: number;
+    lastConsistencyMultiplier: number;
+    totalDemocracyScore: number;
+  };
+  identity: string;
+  voteCount: number;
+  ayeCount: number;
+  nayCount: number;
+  abstainCount: number;
+  castedCount: number;
+  delegatedCount: number;
+  delegationCount: number;
+  delegationAmount: number;
+  votingBalance: number;
+};
+
+export type OpenGovDelegate = {
+  address: string;
+  score: {
+    baseDemocracyScore: number;
+    totalConsistencyMultiplier: number;
+    lastConsistencyMultiplier: number;
+    totalDemocracyScore: number;
+  };
+  identity: string;
+  voteCount: number;
+  ayeCount: number;
+  nayCount: number;
+  abstainCount: number;
+  castedCount: number;
+  delegatedCount: number;
+  delegationCount: number;
+  delegationAmount: number;
+  votingBalance: number;
+  name?: string;
+  image?: string;
+  shortDescription?: string;
+  longDescription?: string;
+  isOrganization?: string;
+};
+
 export type OpenGovReferendumStat = {
   index: number;
   track: number;

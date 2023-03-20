@@ -1187,7 +1187,24 @@ export const getOpenGovDelegate = async (address: string) => {
   );
 
   return {
-    delegate,
+    abstainCount: delegate.abstainCount,
+    address: delegate.address,
+    ayeCount: delegate.ayeCount,
+    castedCount: delegate.castedCount,
+    delegatedCount: delegate.delegatedCount,
+    delegationAmount: delegate.delegationAmount,
+    delegationCount: delegate.delegationAmount,
+    identity: delegate.identity,
+    image: delegate.image,
+    isOrganization: delegate.isOrganization,
+    labels: delegate.labels,
+    longDescription: delegate.longDescription,
+    name: delegate.name,
+    nayCount: delegate.nayCount,
+    score: delegate.score,
+    shortDescription: delegate.shortDescription,
+    voteCount: delegate.voteCount,
+    votingBalance: delegate.votingBalance,
     votes: contextVotes,
     delegations: contextDelegations.sort((a, b) => a.track - b.track),
   };

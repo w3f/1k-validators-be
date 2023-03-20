@@ -16,8 +16,8 @@ import {
   Identity,
   NumberResult,
   OpenGovReferendum,
+  OpenGovTrack,
   StringResult,
-  TrackInfo,
 } from "./types";
 import { getParaValIndex, toDecimals } from "./util";
 
@@ -1404,8 +1404,8 @@ export class ChainData {
         minApproval,
         minSupport,
       } = trackInfo;
-      const t: TrackInfo = {
-        trackIndex: trackIndex.toString(),
+      const t: OpenGovTrack = {
+        index: trackIndex.toNumber(),
         name: name.toString(),
         maxDeciding: parseFloat(maxDeciding.toString()),
         decisionDeposit: parseFloat(decisionDeposit.toString()),

@@ -74,6 +74,8 @@ const API = {
   OpenGovVoters: "/opengov/voters",
   OpenGovVoter: "/opengov/voter/:address",
   OpenGovDelegates: "/opengov/delegates",
+  OpenGovDelegate: "/opengov/delegates/:address",
+  OpenGovTracks: "/opengov/tracks",
 };
 
 router.get(API.Accounting, Accounting.getAccounting);
@@ -137,6 +139,8 @@ router.get(
 router.get(API.OpenGovVoters, Democracy.getOpenGovVoters);
 router.get(API.OpenGovVoter, Democracy.getOpenGovVoter);
 router.get(API.OpenGovDelegates, Democracy.getOpenGovDelegates);
+router.get(API.OpenGovDelegate, Democracy.getOpenGovDelegate);
+router.get(API.OpenGovTracks, Democracy.getOpenGovTracks);
 
 router.get(API.Score, Score.getScore);
 router.get(API.SessionScore, Score.getSessionScore);

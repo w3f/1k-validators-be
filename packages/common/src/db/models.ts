@@ -1172,6 +1172,7 @@ export const OpenGovVoter = new Schema({
     totalConsistencyMultiplier: Number,
     lastConsistencyMultiplier: Number,
     totalDemocracyScore: Number,
+    normalizedScore: Number,
   },
   identity: String,
   voteCount: Number,
@@ -1183,6 +1184,7 @@ export const OpenGovVoter = new Schema({
   delegationCount: Number,
   delegationAmount: Number,
   votingBalance: Number,
+  labels: [String],
 });
 
 export const OpenGovVoterModel = mongoose.model("OpenGovVoter", OpenGovVoter);
@@ -1195,6 +1197,7 @@ export const OpenGovDelegate = new Schema({
     totalConsistencyMultiplier: Number,
     lastConsistencyMultiplier: Number,
     totalDemocracyScore: Number,
+    normalizedScore: Number,
   },
   voteCount: Number,
   ayeCount: Number,
@@ -1205,6 +1208,7 @@ export const OpenGovDelegate = new Schema({
   delegationCount: Number,
   delegationAmount: Number,
   votingBalance: Number,
+  labels: [String],
   name: String,
   image: String,
   shortDescription: String,

@@ -728,122 +728,169 @@ export const setReferenda = async (
   }
 };
 
-export const setVoters = async () => {
-  const voters = [];
-  const convictionVotes = await ConvictionVoteModel.find({}).lean().exec();
+export const setVoters = async (chaindata) => {
+  try {
+    const { allValidators: validators, chainValidators } =
+      await getValidatorAddresses(chaindata);
+    const nominators = await getNominatorAddresses(chaindata);
+    const fellowshipAddresses = await getFellowshipAddresses(chaindata);
+    const identityAddresses = await getIdentityAddresses();
+    const societyAddresses = await getSocietyAddresses(chaindata);
 
-  for (const vote of convictionVotes) {
-    if (!voters.includes(vote.address)) {
-      voters.push(vote.address);
+    const voters = [];
+    const convictionVotes = await ConvictionVoteModel.find({}).lean().exec();
+
+    for (const vote of convictionVotes) {
+      if (!voters.includes(vote.address)) {
+        voters.push(vote.address);
+      }
     }
-  }
 
-  const latestRef = (
-    await OpenGovReferendumModel.find({})
-      .lean()
-      .sort("-index")
-      .select({ index: 1 })
-      .exec()
-  )[0];
+    const latestRef = (
+      await OpenGovReferendumModel.find({})
+        .lean()
+        .sort("-index")
+        .select({ index: 1 })
+        .exec()
+    )[0];
 
-  const voterList = await Promise.all(
-    voters.map(async (address) => {
-      const addressVotes = convictionVotes.filter((vote) => {
-        if (vote.address == address) return true;
-      });
-      const identity = await getIdentityName(address);
-      const delegations = await getOpenGovDelegationPeak(address);
+    const voterList = await Promise.all(
+      voters.map(async (address) => {
+        const addressVotes = convictionVotes.filter((vote) => {
+          if (vote.address == address) return true;
+        });
+        const identity = await getIdentityName(address);
+        const delegations = await getOpenGovDelegationPeak(address);
 
-      const lastVote =
-        addressVotes.length > 0
-          ? addressVotes.reduce(function (prev, current) {
-              return prev.referendumIndex > current.referendumIndex
-                ? prev
-                : current;
-            })
-          : null;
+        const lastVote =
+          addressVotes.length > 0
+            ? addressVotes.reduce(function (prev, current) {
+                return prev.referendumIndex > current.referendumIndex
+                  ? prev
+                  : current;
+              })
+            : null;
 
-      const balance =
-        lastVote.balance.aye + lastVote.balance.nay + lastVote.balance.abstain;
+        const balance =
+          lastVote.balance.aye +
+          lastVote.balance.nay +
+          lastVote.balance.abstain;
 
-      const votes = addressVotes
-        .map((vote) => {
-          return vote.referendumIndex;
-        })
-        .sort((a, b) => b - a);
+        const votes = addressVotes
+          .map((vote) => {
+            return vote.referendumIndex;
+          })
+          .sort((a, b) => b - a);
 
+        const isNominator = nominators.includes(address);
+        const isValidator = validators.includes(address);
+        const isFellowship = fellowshipAddresses.includes(address);
+        const isSociety = societyAddresses.includes(address);
+        const labels = [];
+
+        if (isNominator) {
+          labels.push("Nominator");
+        }
+        if (isValidator) {
+          labels.push("Validator");
+        }
+        if (isFellowship) {
+          labels.push("Fellowship");
+        }
+        if (isSociety) {
+          labels.push("Society");
+        }
+
+        return {
+          score: scoreDemocracyVotes(votes, latestRef.index, 1500, 30),
+          address: address,
+          identity: identity ? identity.name : address,
+          voteCount: addressVotes.length,
+          ayeCount: addressVotes.filter((vote) => {
+            if (vote.voteDirection == "Aye") return true;
+          }).length,
+          nayCount: addressVotes.filter((vote) => {
+            if (vote.voteDirection == "Nay") return true;
+          }).length,
+          abstainCount: addressVotes.filter((vote) => {
+            if (vote.voteDirection == "Abstain") return true;
+          }).length,
+          castedVotes: addressVotes.filter((vote) => {
+            if (vote.voteType == "Casting") return true;
+          }).length,
+          delegatedVotes: addressVotes.filter((vote) => {
+            if (vote.voteType == "Delegating") return true;
+          }).length,
+          votes: votes,
+          delegationCount: delegations ? delegations.delegatorCount : 0,
+          // delegators: highestDelegation ? highestDelegation.delegators : [],
+          delegationAmount: delegations ? delegations?.totalBalance : 0,
+          votingBalance: balance,
+          labels: labels,
+        };
+      })
+    );
+    const scoreValues = voterList.map((votes) => {
+      return votes.score.totalDemocracyScore;
+    });
+    const norm = voterList.map((votes) => {
       return {
-        score: scoreDemocracyVotes(votes, latestRef.index),
-        address: address,
-        identity: identity ? identity.name : address,
-        voteCount: addressVotes.length,
-        ayeCount: addressVotes.filter((vote) => {
-          if (vote.voteDirection == "Aye") return true;
-        }).length,
-        nayCount: addressVotes.filter((vote) => {
-          if (vote.voteDirection == "Nay") return true;
-        }).length,
-        abstainCount: addressVotes.filter((vote) => {
-          if (vote.voteDirection == "Abstain") return true;
-        }).length,
-        castedVotes: addressVotes.filter((vote) => {
-          if (vote.voteType == "Casting") return true;
-        }).length,
-        delegatedVotes: addressVotes.filter((vote) => {
-          if (vote.voteType == "Delegating") return true;
-        }).length,
-        votes: votes,
-        delegationCount: delegations ? delegations.delegatorCount : 0,
-        // delegators: highestDelegation ? highestDelegation.delegators : [],
-        delegationAmount: delegations ? delegations?.totalBalance : 0,
-        votingBalance: balance,
+        normalizedScore:
+          scaledDefined(
+            votes.score.totalDemocracyScore,
+            scoreValues,
+            0.2,
+            0.95
+          ) * 100,
+        ...votes,
       };
-    })
-  );
-  const scoreValues = voterList.map((votes) => {
-    return votes.score.totalDemocracyScore;
-  });
-  const norm = voterList.map((votes) => {
-    return {
-      normalizedScore:
-        scaledDefined(votes.score.totalDemocracyScore, scoreValues, 0.2, 0.95) *
-        100,
-      ...votes,
-    };
-  });
+    });
 
-  for (const voter of norm) {
-    const v: Types.OpenGovVoter = {
-      abstainCount: voter.abstainCount,
-      address: voter.address,
-      ayeCount: voter.ayeCount,
-      castedCount: voter.castedVotes,
-      delegatedCount: voter.delegatedVotes,
-      delegationAmount: voter.delegationAmount,
-      delegationCount: voter.delegationCount,
-      identity: voter.identity,
-      nayCount: voter.nayCount,
-      score: {
-        baseDemocracyScore: voter.score.baseDemocracyScore,
-        lastConsistencyMultiplier: voter.score.lastConsistencyMultiplier,
-        totalConsistencyMultiplier: voter.score.totalConsistencyMultiplier,
-        totalDemocracyScore: voter.score.totalDemocracyScore,
-      },
-      voteCount: voter.voteCount,
-      votingBalance: voter.votingBalance,
-    };
-    await queries.setOpenGovVoter(v);
+    for (const voter of norm) {
+      const v: Types.OpenGovVoter = {
+        abstainCount: voter.abstainCount,
+        address: voter.address,
+        ayeCount: voter.ayeCount,
+        castedCount: voter.castedVotes,
+        delegatedCount: voter.delegatedVotes,
+        delegationAmount: voter.delegationAmount,
+        delegationCount: voter.delegationCount,
+        identity: voter.identity,
+        nayCount: voter.nayCount,
+        score: {
+          baseDemocracyScore: voter.score.baseDemocracyScore,
+          lastConsistencyMultiplier: voter.score.lastConsistencyMultiplier,
+          totalConsistencyMultiplier: voter.score.totalConsistencyMultiplier,
+          totalDemocracyScore: voter.score.totalDemocracyScore,
+          normalizedScore: voter.normalizedScore,
+        },
+        voteCount: voter.voteCount,
+        votingBalance: voter.votingBalance,
+        labels: voter.labels,
+      };
+      await queries.setOpenGovVoter(v);
+    }
+
+    return norm.sort(
+      (a, b) =>
+        b.normalizedScore - a.normalizedScore ||
+        b.castedVotes - a.castedVotes ||
+        b.delegationAmount - a.delegationAmount
+    );
+  } catch (e) {
+    logger.warn(`could not set voters`, democracyLabel);
+    logger.warn(JSON.stringify(e), democracyLabel);
   }
-
-  return norm.sort(
-    (a, b) =>
-      b.normalizedScore - a.normalizedScore ||
-      b.castedVotes - a.castedVotes ||
-      b.delegationAmount - a.delegationAmount
-  );
 };
 
-export const setDelegates = async () => {
+export const setDelegates = async (chaindata) => {
+  const { allValidators: validators, chainValidators } =
+    await getValidatorAddresses(chaindata);
+  const nominators = await getNominatorAddresses(chaindata);
+  const fellowshipAddresses = await getFellowshipAddresses(chaindata);
+  const identityAddresses = await getIdentityAddresses();
+  const societyAddresses = await getSocietyAddresses(chaindata);
+
   const voters = [];
   const convictionVotes = await ConvictionVoteModel.find({}).lean().exec();
 
@@ -887,8 +934,27 @@ export const setDelegates = async () => {
         })
         .sort((a, b) => b - a);
 
+      const isNominator = nominators.includes(address);
+      const isValidator = validators.includes(address);
+      const isFellowship = fellowshipAddresses.includes(address);
+      const isSociety = societyAddresses.includes(address);
+      const labels = [];
+
+      if (isNominator) {
+        labels.push("Nominator");
+      }
+      if (isValidator) {
+        labels.push("Validator");
+      }
+      if (isFellowship) {
+        labels.push("Fellowship");
+      }
+      if (isSociety) {
+        labels.push("Society");
+      }
+
       return {
-        score: scoreDemocracyVotes(votes, latestRef.index),
+        score: scoreDemocracyVotes(votes, latestRef.index, 1500, 30),
         address: address,
         identity: identity ? identity.name : address,
         voteCount: addressVotes.length,
@@ -912,20 +978,33 @@ export const setDelegates = async () => {
         // delegators: highestDelegation ? highestDelegation.delegators : [],
         delegationAmount: delegations ? delegations?.totalBalance : 0,
         votingBalance: balance,
+        labels: labels,
       };
     })
   );
-  const scoreValues = voterList.map((votes) => {
-    return votes.score.totalDemocracyScore;
-  });
-  const norm = voterList.map((votes) => {
-    return {
-      normalizedScore:
-        scaledDefined(votes.score.totalDemocracyScore, scoreValues, 0.2, 0.95) *
-        100,
-      ...votes,
-    };
-  });
+  const scoreValues = voterList
+    .filter((v) => {
+      if (v.delegationCount > 0) return true;
+    })
+    .map((votes) => {
+      return votes.score.totalDemocracyScore;
+    });
+  const norm = voterList
+    .filter((v) => {
+      if (v.delegationCount > 0) return true;
+    })
+    .map((votes) => {
+      return {
+        normalizedScore:
+          scaledDefined(
+            votes.score.totalDemocracyScore,
+            scoreValues,
+            0.2,
+            0.95
+          ) * 100,
+        ...votes,
+      };
+    });
 
   const registryUrl =
     "https://raw.githubusercontent.com/nova-wallet/opengov-delegate-registry/master/registry/kusama.json";
@@ -967,9 +1046,11 @@ export const setDelegates = async () => {
         lastConsistencyMultiplier: delegate.score.lastConsistencyMultiplier,
         totalConsistencyMultiplier: delegate.score.totalConsistencyMultiplier,
         totalDemocracyScore: delegate.score.totalDemocracyScore,
+        normalizedScore: delegate.normalizedScore,
       },
       voteCount: delegate.voteCount,
       votingBalance: delegate.votingBalance,
+      labels: delegate.labels,
       name: registryInfo ? registryInfo.name : "",
       image: registryInfo ? registryInfo.image : "",
       shortDescription: registryInfo ? registryInfo.shortDescription : "",
@@ -1098,9 +1179,9 @@ export const democracyJob = async (chaindata: ChainData) => {
   if (chainType == "Kusama") {
     try {
       const qstart = Date.now();
-      await setVoters();
+      await setVoters(chaindata);
       logger.info(`Set Voters Done.`, democracyLabel);
-      await setDelegates();
+      await setDelegates(chaindata);
       logger.info(`Set Delegates Done.`, democracyLabel);
 
       const { ongoingReferenda, finishedReferenda } =
@@ -1140,8 +1221,11 @@ export const democracyJob = async (chaindata: ChainData) => {
       );
 
       const trackTypes = await chaindata.getTrackInfo();
-      logger.info(JSON.stringify(trackTypes), democracyLabel);
-      // TODO: store track types
+      for (const track of trackTypes) {
+        await queries.setOpenGovTrack(track);
+
+        logger.info(`Tracks Done.`, democracyLabel);
+      }
 
       const cstart = Date.now();
       const convictionVoting = await chaindata.getConvictionVoting();

@@ -146,6 +146,11 @@ export const getOpenGovDelegates = async (): Promise<any> => {
   return delegates;
 };
 
+export const getOpenGovDelegate = async (address): Promise<any> => {
+  const delegate = await queries.getOpenGovDelegate(address);
+  return delegate;
+};
+
 export const getOpenGovVoters = async (): Promise<any> => {
   const voters = await queries.getOpenGovVoters();
   return voters;
@@ -154,6 +159,11 @@ export const getOpenGovVoters = async (): Promise<any> => {
 export const getOpenGovVoter = async (address): Promise<any> => {
   const voter = await queries.getOpenGovVoter(address);
   return voter;
+};
+
+export const getOpenGovTracks = async (): Promise<any> => {
+  const tracks = await queries.getOpenGovTracks();
+  return tracks;
 };
 
 export const getOpenGovReferenda = async (): Promise<any> => {

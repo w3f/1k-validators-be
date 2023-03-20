@@ -248,6 +248,7 @@ export type OpenGovVoter = {
     totalConsistencyMultiplier: number;
     lastConsistencyMultiplier: number;
     totalDemocracyScore: number;
+    normalizedScore: number;
   };
   identity: string;
   voteCount: number;
@@ -259,6 +260,7 @@ export type OpenGovVoter = {
   delegationCount: number;
   delegationAmount: number;
   votingBalance: number;
+  labels?: string[];
 };
 
 export type OpenGovDelegate = {
@@ -268,6 +270,7 @@ export type OpenGovDelegate = {
     totalConsistencyMultiplier: number;
     lastConsistencyMultiplier: number;
     totalDemocracyScore: number;
+    normalizedScore: number;
   };
   identity: string;
   voteCount: number;
@@ -279,11 +282,23 @@ export type OpenGovDelegate = {
   delegationCount: number;
   delegationAmount: number;
   votingBalance: number;
+  labels: string[];
   name?: string;
   image?: string;
   shortDescription?: string;
   longDescription?: string;
   isOrganization?: string;
+};
+
+export type OpenGovTrack = {
+  index: number;
+  name: string;
+  maxDeciding: number;
+  decisionDeposit: number;
+  preparePeriod: number;
+  decisionPeriod: number;
+  confirmPeriod: number;
+  minEnactmentPeriod: number;
 };
 
 export type OpenGovReferendumStat = {

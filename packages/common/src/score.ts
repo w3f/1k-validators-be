@@ -137,6 +137,9 @@ const RECENT_WINDOW = 15;
 const LAST_REFERENDUM_WEIGHT = 15;
 const RECENT_REFERENDUM_WEIGHT = 5;
 const BASE_REFERENDUM_WEIGHT = 2;
+const CAP = 400;
+const LAST_MULTIPLIER = 2.5;
+const TOTAL_MULTIPLIER = 1.5;
 
 // Inputs:
 //    votes: an array of all the votes of a validator
@@ -174,7 +177,11 @@ const BASE_REFERENDUM_WEIGHT = 2;
 //       they get from those gradually decrease over time (but still add up)
 export const scoreDemocracyVotes = (
   votes: number[],
-  lastReferendum: number
+  lastReferendum: number,
+  cap?: number,
+  recentWindow?: number,
+  lastMultiplier?: number,
+  totalMultiplier?: number
 ) => {
   if ((votes && votes?.length == 0) || !lastReferendum) {
     return {
@@ -184,6 +191,10 @@ export const scoreDemocracyVotes = (
       totalDemocracyScore: 0,
     };
   }
+
+  const maxCap = cap || CAP;
+  const recentWindowC = recentWindow || RECENT_WINDOW;
+
   // Make sure votes are in ascending order
   const sorted = asc(votes);
 
@@ -223,7 +234,7 @@ export const scoreDemocracyVotes = (
   // Calculate the total score, capping it at 400 points
   const totalDemScore = Math.min(
     demScore * totalConsistencyMultiplier * lastConsistencyMultiplier,
-    400
+    maxCap
   );
 
   return {

@@ -1137,6 +1137,7 @@ export const getOpenGovDelegate = async (address: string) => {
     _id: 0,
     __v: 0,
   });
+  if (!delegate) return {};
   const votes = await getAddressConvictionVoting(address);
   const contextVotes = await Promise.all(
     votes.map(async (vote) => {
@@ -1181,7 +1182,9 @@ export const getOpenGovDelegate = async (address: string) => {
         trackName: track?.name,
         totalBalance: delegation.totalBalance,
         delegatorCount: delegation.delegatorCount,
-        delegators: delegators,
+        delegators: delegators.sort(
+          (a, b) => b.effectiveBalance - a.effectiveBalance
+        ),
       };
     })
   );
@@ -1239,6 +1242,7 @@ export const getOpenGovVoters = async () => {
 
 export const getOpenGovVoter = async (address) => {
   const voter = await OpenGovVoterModel.findOne({ address: address });
+  if (!voter) return {};
   // return voter;
   // const voters = [];
   const identity = await getIdentity(address);
@@ -1292,21 +1296,21 @@ export const getOpenGovVoter = async (address) => {
 
   return {
     identity: identity,
-    totalVotes: voter.voteCount,
-    balance: voter.votingBalance,
+    totalVotes: voter?.voteCount,
+    balance: voter?.votingBalance,
     votes: contextVotes.sort((a, b) => b.referendumIndex - a.referendumIndex),
     highestDelegation: highestDelegation,
-    delegationAmount: voter.delegationAmount,
-    delegationCount: voter.delegationCount,
+    delegationAmount: voter?.delegationAmount,
+    delegationCount: voter?.delegationCount,
     delegations: delegations,
     lastVote: lastVote,
-    ayeCount: voter.ayeCount,
-    nayCount: voter.nayCount,
-    abstainCount: voter.abstainCount,
-    castedVotes: voter.castedCount,
-    delegatedCount: voter.delegatedCount,
-    score: voter.score,
-    labels: voter.labels,
+    ayeCount: voter?.ayeCount,
+    nayCount: voter?.nayCount,
+    abstainCount: voter?.abstainCount,
+    castedVotes: voter?.castedCount,
+    delegatedCount: voter?.delegatedCount,
+    score: voter?.score,
+    labels: voter?.labels,
   };
 };
 

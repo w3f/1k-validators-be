@@ -95,7 +95,7 @@ export const MONITOR_CRON = "0 */15 * * * *";
 export const CLEAR_OFFLINE_CRON = "0 0 * * * *";
 
 // Validity Cron Job. This runs every 20 minutes by default
-export const VALIDITY_CRON = "0 0-59/3 * * * *";
+export const VALIDITY_CRON = "0 0-59/8 * * * *";
 
 // Execution Cron Job. This runs every 15 minutes by default
 export const EXECUTION_CRON = "0 0-59/15 * * * *";
@@ -107,19 +107,19 @@ export const SCOREKEEPER_CRON = "0 0-59/30 * * * *";
 export const REWARD_CLAIMING_CRON = "0 0-59/45 * * * *";
 
 // Cancel Frequency. This runs every 25 minutes by default
-export const CANCEL_CRON = "0 0-59/2 * * * *";
+export const CANCEL_CRON = "0 0-59/25 * * * *";
 
 // Stale Nomination Frequency. This runs every 45 minutes by default
 export const STALE_CRON = "0 0-59/45 * * * *";
 
 // Score Cron Job. This runs every 5 minutes by default
-export const SCORE_CRON = "0 0-59/3 * * * *";
+export const SCORE_CRON = "0 0-59/5 * * * *";
 
 // Era Stats Cron Job. This runs every 5 minutes by default
-export const ERA_STATS_CRON = "0 0-59/3 * * * *";
+export const ERA_STATS_CRON = "0 0-59/5 * * * *";
 
 // Location Stats Cron Job. This runs every 15 minutes by default
-export const LOCATION_STATS_CRON = "0 0-59/3 * * * *";
+export const LOCATION_STATS_CRON = "0 0-59/5 * * * *";
 
 // Chain Querying Cron Jobs:
 
@@ -155,9 +155,8 @@ export const DEMOCRACY_CRON = "0 0-59/5 * * * *";
 export const NOMINATOR_CRON = "0 0-59/17 * * * *";
 
 // Delegation Cron Job. This runs every 20 minutes by default
-export const DELEGATION_CRON = "0 0-59/3 * * * *";
+export const DELEGATION_CRON = "0 0-59/5 * * * *";
 
-// Delegation Cron Job. This runs every 25 minutes by default
 export const BLOCK_CRON = "0 0-59/1 * * * *";
 
 export const LOCATION_URL = "https://ipinfo.io/";

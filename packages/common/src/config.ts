@@ -148,19 +148,19 @@ export const loadConfigDir = (configDir: string): ConfigSchema => {
   const mainPath = path.join(configDir, "main.json");
   const mainConf = loadConfig(mainPath);
 
-  if (
-    mainConf.matrix &&
-    mainConf.matrix.accessToken &&
-    secretConf?.matrix?.accessToken
-  ) {
-    mainConf.matrix.accessToken = secretConf?.matrix?.accessToken;
-  }
+  // if (
+  //   mainConf.matrix &&
+  //   mainConf.matrix.accessToken &&
+  //   secretConf?.matrix?.accessToken
+  // ) {
+  mainConf.matrix.accessToken = secretConf?.matrix?.accessToken;
+  // }
   // if (secretConf?.scorekeeper?.nominators) {
   mainConf.scorekeeper.nominators = secretConf?.scorekeeper?.nominators;
   // }
-  if (mainConf.scorekeeper && mainConf.scorekeeper.claimer) {
-    mainConf.scorekeeper.claimer = secretConf?.scorekeeper?.claimer;
-  }
+  // if (mainConf.scorekeeper && mainConf.scorekeeper.claimer) {
+  mainConf.scorekeeper.claimer = secretConf?.scorekeeper?.claimer;
+  // }
 
   return mainConf;
 };

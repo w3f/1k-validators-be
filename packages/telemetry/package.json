@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@1kv/common": "workspace:^",
-    "typescript": "^5.0.2"
+    "typescript": "^4.9.5"
   },
   "devDependencies": {
     "@ava/typescript": "^4.0.0",

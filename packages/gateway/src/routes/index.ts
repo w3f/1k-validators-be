@@ -10,7 +10,7 @@ import Stats from "../controllers/Stats";
 import Location from "../controllers/Location";
 import Validator from "../controllers/Validators";
 
-const router = new Router();
+const router: any = new Router();
 
 const API = {
   BullBoard: "/bull",

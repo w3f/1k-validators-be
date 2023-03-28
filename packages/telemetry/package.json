@@ -27,17 +27,17 @@
   },
   "dependencies": {
     "@1kv/common": "workspace:^",
-    "typescript": "^4.9.5"
+    "typescript": "^5.0.2"
   },
   "devDependencies": {
-    "@ava/typescript": "^3.0.1",
-    "@typescript-eslint/eslint-plugin": "^5.54.1",
-    "@typescript-eslint/parser": "^5.54.1",
+    "@ava/typescript": "^4.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.57.0",
+    "@typescript-eslint/parser": "^5.57.0",
     "ava": "^5.2.0",
     "concurrently": "^7.6.0",
     "eslint": "8.22.0",
     "eslint-plugin-security": "^1.7.1",
-    "nodemon": "^2.0.21"
+    "nodemon": "^2.0.22"
   },
   "ava": {
     "failFast": false,

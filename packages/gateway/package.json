@@ -31,7 +31,7 @@
     "@bull-board/api": "^5.0.0",
     "@bull-board/koa": "^5.0.0",
     "koa-swagger-decorator": "^1.8.6",
-    "typescript": "^5.0.2"
+    "typescript": "^4.9.5"
   },
   "devDependencies": {
     "@ava/typescript": "^4.0.0",
@@ -39,7 +39,7 @@
     "@typescript-eslint/parser": "^5.57.0",
     "ava": "^5.2.0",
     "concurrently": "^7.6.0",
-    "eslint": "8.22.0",
+    "eslint": "8.36.0",
     "eslint-plugin-security": "^1.7.1",
     "nodemon": "^2.0.22"
   },

@@ -31,11 +31,11 @@
   },
   "devDependencies": {
     "@ava/typescript": "^4.0.0",
-    "@typescript-eslint/eslint-plugin": "^5.57.0",
-    "@typescript-eslint/parser": "^5.57.0",
+    "@typescript-eslint/eslint-plugin": "^5.57.1",
+    "@typescript-eslint/parser": "^5.57.1",
     "ava": "^5.2.0",
-    "concurrently": "^7.6.0",
-    "eslint": "8.36.0",
+    "concurrently": "^8.0.1",
+    "eslint": "8.37.0",
     "eslint-plugin-security": "^1.7.1",
     "nodemon": "^2.0.22"
   },

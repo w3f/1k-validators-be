@@ -951,7 +951,7 @@ export const startDelegationJob = async (
       return;
     }
     running = true;
-    logger.info(`running nominator job....`, cronLabel);
+    logger.info(`running delegation job....`, cronLabel);
 
     // Run the job
     const hasFinished = await delegationJob(chaindata);

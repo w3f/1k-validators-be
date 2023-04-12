@@ -634,7 +634,7 @@ export default class ScoreKeeper {
         await startSessionKeyJob(this.config, this.chaindata);
         await startValidatorPrefJob(this.config, this.chaindata);
         await startEraStatsJob(this.config, this.chaindata);
-        await startLocationStatsJob(this.config, this.chaindata);
+        // await startLocationStatsJob(this.config, this.chaindata);
         await startCouncilJob(this.config, this.chaindata);
         await startDemocracyJob(this.config, this.chaindata);
         await startNominatorJob(this.config, this.chaindata);

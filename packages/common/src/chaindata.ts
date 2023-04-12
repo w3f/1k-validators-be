@@ -434,6 +434,7 @@ export class ChainData {
       logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
       return;
     }
+    logger.info(`trying to find era by blockhash.....`);
 
     const [activeEraIndex, err] = await this.getActiveEraIndex();
     if (err) {
@@ -465,6 +466,7 @@ export class ChainData {
       }
       const testIndex = testEra.unwrap().index.toNumber();
       if (era == testIndex) {
+        logger.info(`Found era by blockhash`);
         return [blockHash.toString(), null];
       }
 
@@ -487,6 +489,7 @@ export class ChainData {
       logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
       return;
     }
+    logger.info(`Trying to find active validators in period...`);
 
     const allValidators: Set<string> = new Set();
     let testEra = startEra;
@@ -505,6 +508,7 @@ export class ChainData {
 
       testEra++;
     }
+    logger.info(`Found active vaildators in period.`);
 
     return [Array.from(allValidators), null];
   };

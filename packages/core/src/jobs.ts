@@ -215,3 +215,8 @@ export const blockJob = async (chaindata: ChainData) => {
   await otvWorker.jobs.blockDataJob(chaindata);
   return true;
 };
+
+export const unclaimedEraJob = async (chaindata: ChainData) => {
+  await otvWorker.jobs.unclaimedErasJob(chaindata);
+  return true;
+};

@@ -28,7 +28,7 @@ import {
   validatorPrefJob,
   validityJob,
 } from "./jobs";
-import { blockDataJob } from "@1kv/worker/build/jobs";
+import { blockDataJob, unclaimedErasJob } from "@1kv/worker/build/jobs";
 
 export const cronLabel = { label: "Cron" };
 
@@ -701,42 +701,41 @@ export const startSessionKeyJob = async (
 };
 
 // Chron job for updating unclaimed eras
-// export const startUnclaimedEraJob = async (
-//   config: Config.ConfigSchema,
-//   db: Db,
-//   chaindata: ChainData
-// ) => {
-//   const unclaimedErasFrequency = config.cron.unclaimedEras
-//     ? config.cron.unclaimedEras
-//     : Constants.UNCLAIMED_ERAS_CRON;
-//
-//   logger.info(
-//     `(cron::UnclaimedEraJob::init) Running unclaimed era job with frequency: ${unclaimedErasFrequency}`
-//   );
-//
-//   let running = false;
-//
-//   const unclaimedErasCron = new CronJob(unclaimedErasFrequency, async () => {
-//     if (running) {
-//       return;
-//     }
-//     running = true;
-//     logger.info(
-//       `{cron::UnclaimedEraJob::start} running unclaimed eras job....`
-//     );
-//
-//     const candidates = await db.allCandidates();
-//
-//     // Run the active validators job
-//     const unclaimedEraThreshold =
-//       config.global.networkPrefix == 2
-//         ? Constants.KUSAMA_FOUR_DAYS_ERAS
-//         : Constants.POLKADOT_FOUR_DAYS_ERAS;
-//     await unclaimedErasJob(db, chaindata, candidates, unclaimedEraThreshold);
-//     running = false;
-//   });
-//   unclaimedErasCron.start();
-// };
+export const startUnclaimedEraJob = async (
+  config: Config.ConfigSchema,
+  chaindata: ChainData
+) => {
+  const unclaimedErasFrequency = config.cron.unclaimedEras
+    ? config.cron.unclaimedEras
+    : Constants.UNCLAIMED_ERAS_CRON;
+
+  logger.info(
+    `(cron::UnclaimedEraJob::init) Running unclaimed era job with frequency: ${unclaimedErasFrequency}`
+  );
+
+  let running = false;
+
+  const unclaimedErasCron = new CronJob(unclaimedErasFrequency, async () => {
+    if (running) {
+      return;
+    }
+    running = true;
+    logger.info(
+      `{cron::UnclaimedEraJob::start} running unclaimed eras job....`
+    );
+
+    const candidates = await queries.allCandidates();
+
+    // Run the active validators job
+    const unclaimedEraThreshold =
+      config.global.networkPrefix == 2
+        ? Constants.KUSAMA_FOUR_DAYS_ERAS
+        : Constants.POLKADOT_FOUR_DAYS_ERAS;
+    await unclaimedErasJob(chaindata);
+    running = false;
+  });
+  unclaimedErasCron.start();
+};
 
 // Chron job for updating validator preferences
 export const startValidatorPrefJob = async (

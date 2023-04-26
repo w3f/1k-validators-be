@@ -1,4 +1,4 @@
-import { logger, queries, ChainData, Types } from "@1kv/common";
+import { ChainData, logger, queries, Types } from "@1kv/common";
 
 export const validatorPrefLabel = { label: "ValidatorPrefJob" };
 

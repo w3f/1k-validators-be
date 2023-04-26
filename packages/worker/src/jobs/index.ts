@@ -12,6 +12,7 @@ export * from "./DemocracyJob";
 export * from "./NominatorJob";
 export * from "./DelegationJob";
 export * from "./BlockDataJob";
+export * from "./UnclaimedErasJob";
 
 export const ACTIVE_VALIDATOR_JOB = "activeValidatorJob";
 export const COUNCIL_JOB = "councilJob";
@@ -26,3 +27,5 @@ export const VALIDATOR_PREF_JOB = "validatorPrefJob";
 export const VALIDITY_JOB = "validityJob";
 export const SCORE_JOB = "scoreJob";
 export const BLOCK_JOB = "blockJob";
+
+export const UNCLAIMED_ERAS_JOB = "unclaimedErasJob";

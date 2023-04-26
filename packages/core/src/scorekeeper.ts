@@ -26,8 +26,11 @@ import {
   startExecutionJob,
   startInclusionJob,
   startLocationStatsJob,
+  startRewardClaimJob,
   startScoreJob,
   startSessionKeyJob,
+  startStaleNominationCron,
+  startUnclaimedEraJob,
   startValidatityJob,
   startValidatorPrefJob,
 } from "./cron";
@@ -648,17 +651,16 @@ export default class ScoreKeeper {
         this.bot
       );
 
-      // await startUnclaimedEraJob(this.config, this.db, this.chaindata);
-      // if (this.claimer) {
-      //   await startRewardClaimJob(
-      //     this.config,
-      //     this.handler,
-      //     this.db,
-      //     this.claimer,
-      //     this.chaindata,
-      //     this.bot
-      //   );
-      // }
+      await startUnclaimedEraJob(this.config, this.chaindata);
+      if (this.claimer) {
+        await startRewardClaimJob(
+          this.config,
+          this.handler,
+          this.claimer,
+          this.chaindata,
+          this.bot
+        );
+      }
       await startCancelCron(
         this.config,
         this.handler,
@@ -666,14 +668,13 @@ export default class ScoreKeeper {
         this.chaindata,
         this.bot
       );
-      // await startStaleNominationCron(
-      //   this.config,
-      //   this.handler,
-      //   this.db,
-      //   this.nominatorGroups,
-      //   this.chaindata,
-      //   this.bot
-      // );
+      await startStaleNominationCron(
+        this.config,
+        this.handler,
+        this.nominatorGroups,
+        this.chaindata,
+        this.bot
+      );
     } catch (e) {
       logger.warn(
         `There was an error running some cron jobs...`,

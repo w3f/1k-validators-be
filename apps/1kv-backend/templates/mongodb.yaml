@@ -1,0 +1,427 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kusama-mongodb
+  namespace: argocd
+  # finalizers:
+  # - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kusama
+  project: 1kv-backend
+  # syncPolicy:
+  #   automated:
+  #     prune: true
+  #     selfHeal: true
+  source:
+    repoURL: https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
+    chart: mongodb
+    targetRevision: ^10.31.5
+    plugin:
+      env:
+        - name: HELM_VALUES
+          value: |
+            clusterDomain: cluster.local
+            architecture: replicaset
+            useStatefulSet: true
+
+            auth:
+              enabled: true
+              rootPassword: <path:vaults/k8s-community-secrets/items/otv-kusama#mongo-root-password>
+              username: <path:vaults/k8s-community-secrets/items/otv-kusama#mongo-username>
+              password: <path:vaults/k8s-community-secrets/items/otv-kusama#mongo-password>
+              database: <path:vaults/k8s-community-secrets/items/otv-kusama#mongo-db>
+              replicaSetKey: <path:vaults/k8s-community-secrets/items/otv-kusama#mongo-rs-key>
+
+            directoryPerDB: true
+
+            tls:
+              enabled: false
+
+            replicaSetName: rs0
+            replicaSetHostnames: true
+
+            systemLogVerbosity: 0
+            disableSystemLog: false
+
+            annotations: {}
+            labels: {}
+            replicaCount: 2
+            updateStrategy:
+              type: RollingUpdate
+            podManagementPolicy: OrderedReady
+            affinity: {}
+            nodeSelector: {}
+            podLabels: {}
+
+            podSecurityContext:
+              enabled: true
+              fsGroup: 1001
+              ## sysctl settings
+              ## Example:
+              ## sysctls:
+              ## - name: net.core.somaxconn
+              ##   value: "10000"
+              ##
+              sysctls: []
+
+            containerSecurityContext:
+              enabled: true
+              runAsUser: 1001
+              runAsNonRoot: true
+
+            resources:
+              limits: 
+                cpu: 2000m
+                memory: "2Gi"
+              requests: 
+                cpu: 1000m
+                memory: "1Gi"
+
+            livenessProbe:
+              enabled: true
+              initialDelaySeconds: 30
+              periodSeconds: 10
+              timeoutSeconds: 5
+              failureThreshold: 6
+              successThreshold: 1
+            readinessProbe:
+              enabled: true
+              initialDelaySeconds: 5
+              periodSeconds: 10
+              timeoutSeconds: 5
+              failureThreshold: 6
+              successThreshold: 1
+
+            extraVolumeMounts: []
+            extraVolumes: []
+
+            pdb:
+              create: false
+              minAvailable: 1
+              maxUnavailable: 1
+
+            persistence:
+              enabled: true
+              # storageClass: ""
+              accessModes:
+                - ReadWriteOnce
+              size: 8Gi
+              annotations: {}
+              mountPath: /bitnami/mongodb
+              subPath: ""
+              
+            service:
+              type: ClusterIP
+              ports:
+                mongodb: 27017
+
+            externalAccess:
+              enabled: false
+
+            arbiter:
+              enabled: true
+              configuration: ""
+              # existingConfigmap:
+              annotations: {}
+              labels: {}
+              affinity: {}
+              nodeSelector: {}
+              tolerations: []
+              podLabels: {}
+              podAnnotations: {}
+
+              podSecurityContext:
+                enabled: true
+                fsGroup: 1001
+                ## sysctl settings
+                ## Example:
+                ## sysctls:
+                ## - name: net.core.somaxconn
+                ##   value: "10000"
+                ##
+                sysctls: []
+
+              containerSecurityContext:
+                enabled: true
+                runAsUser: 1001
+
+              resources:
+                limits: 
+                  cpu: 100m
+                  memory: 128Mi
+                requests: 
+                  cpu: 100m
+                  memory: 128Mi
+
+              livenessProbe:
+                enabled: true
+                initialDelaySeconds: 30
+                periodSeconds: 10
+                timeoutSeconds: 5
+                failureThreshold: 6
+                successThreshold: 1
+              readinessProbe:
+                enabled: true
+                initialDelaySeconds: 5
+                periodSeconds: 10
+                timeoutSeconds: 5
+                failureThreshold: 6
+                successThreshold: 1
+
+              pdb:
+                create: false
+                minAvailable: 1
+
+            serviceAccount:
+              create: true
+
+            rbac:
+              create: false
+
+            metrics:
+              enabled: true
+              resources:
+                limits: 
+                  cpu: 100m
+                  memory: 128Mi
+                requests: 
+                  cpu: 100m
+                  memory: 128Mi
+              service:
+                annotations:
+                  prometheus.io/scrape: "true"
+                  prometheus.io/port: "9216"
+                  prometheus.io/path: "/metrics"
+                type: ClusterIP
+                port: 9216
+              livenessProbe:
+                enabled: true
+                initialDelaySeconds: 15
+                periodSeconds: 5
+                timeoutSeconds: 5
+                failureThreshold: 3
+                successThreshold: 1
+              readinessProbe:
+                enabled: false
+                initialDelaySeconds: 15
+                periodSeconds: 5
+                timeoutSeconds: 1
+                failureThreshold: 30
+                successThreshold: 1
+
+---
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: polkadot-mongodb
+  namespace: argocd
+  # finalizers:
+  # - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: polkadot
+  project: 1kv-backend
+  # syncPolicy:
+  #   automated:
+  #     prune: true
+  #     selfHeal: true
+  source:
+    repoURL: https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
+    chart: mongodb
+    targetRevision: ^10.31.5
+    plugin:
+      env:
+        - name: HELM_VALUES
+          value: |
+            clusterDomain: cluster.local
+            architecture: replicaset
+            useStatefulSet: true
+
+            auth:
+              enabled: true
+              rootPassword: <path:vaults/k8s-community-secrets/items/otv-polkadot#mongo-root-password>
+              username: <path:vaults/k8s-community-secrets/items/otv-polkadot#mongo-username>
+              password: <path:vaults/k8s-community-secrets/items/otv-polkadot#mongo-password>
+              database: <path:vaults/k8s-community-secrets/items/otv-polkadot#mongo-db>
+              replicaSetKey: <path:vaults/k8s-community-secrets/items/otv-polkadot#mongo-rs-key>
+
+            directoryPerDB: false
+
+            tls:
+              enabled: false
+
+            replicaSetName: rs0
+            replicaSetHostnames: true
+
+            systemLogVerbosity: 0
+            disableSystemLog: false
+
+            annotations: {}
+            labels: {}
+            replicaCount: 2
+            updateStrategy:
+              type: RollingUpdate
+            podManagementPolicy: OrderedReady
+            affinity: {}
+            nodeSelector: {}
+            podLabels: {}
+
+            podSecurityContext:
+              enabled: true
+              fsGroup: 1001
+              ## sysctl settings
+              ## Example:
+              ## sysctls:
+              ## - name: net.core.somaxconn
+              ##   value: "10000"
+              ##
+              sysctls: []
+
+            containerSecurityContext:
+              enabled: true
+              runAsUser: 1001
+              runAsNonRoot: true
+
+            resources:
+              limits: 
+                cpu: 1200m
+                memory: "2Gi"
+              requests: 
+                cpu: 1000m
+                memory: "1Gi"
+
+            livenessProbe:
+              enabled: true
+              initialDelaySeconds: 30
+              periodSeconds: 10
+              timeoutSeconds: 5
+              failureThreshold: 6
+              successThreshold: 1
+            readinessProbe:
+              enabled: true
+              initialDelaySeconds: 5
+              periodSeconds: 10
+              timeoutSeconds: 5
+              failureThreshold: 6
+              successThreshold: 1
+
+            extraVolumeMounts: []
+            extraVolumes: []
+
+            pdb:
+              create: false
+              minAvailable: 1
+              maxUnavailable: 1
+
+            persistence:
+              enabled: true
+              # storageClass: ""
+              accessModes:
+                - ReadWriteOnce
+              size: 8Gi
+              annotations: {}
+              mountPath: /bitnami/mongodb
+              subPath: ""
+              
+            service:
+              type: ClusterIP
+              ports:
+                mongodb: 27017
+
+            externalAccess:
+              enabled: false
+
+            arbiter:
+              enabled: true
+              configuration: ""
+              # existingConfigmap:
+              annotations: {}
+              labels: {}
+              affinity: {}
+              nodeSelector: {}
+              tolerations: []
+              podLabels: {}
+              podAnnotations: {}
+
+              podSecurityContext:
+                enabled: true
+                fsGroup: 1001
+                ## sysctl settings
+                ## Example:
+                ## sysctls:
+                ## - name: net.core.somaxconn
+                ##   value: "10000"
+                ##
+                sysctls: []
+
+              containerSecurityContext:
+                enabled: true
+                runAsUser: 1001
+
+              resources:
+                limits: 
+                  cpu: 100m
+                  memory: 128Mi
+                requests: 
+                  cpu: 100m
+                  memory: 128Mi
+
+              livenessProbe:
+                enabled: true
+                initialDelaySeconds: 30
+                periodSeconds: 10
+                timeoutSeconds: 5
+                failureThreshold: 6
+                successThreshold: 1
+              readinessProbe:
+                enabled: true
+                initialDelaySeconds: 5
+                periodSeconds: 10
+                timeoutSeconds: 5
+                failureThreshold: 6
+                successThreshold: 1
+
+              pdb:
+                create: false
+                minAvailable: 1
+
+            serviceAccount:
+              create: true
+
+            rbac:
+              create: false
+
+            metrics:
+              enabled: true
+              resources:
+                limits: 
+                  cpu: 100m
+                  memory: 128Mi
+                requests: 
+                  cpu: 100m
+                  memory: 128Mi
+              service:
+                annotations:
+                  prometheus.io/scrape: "true"
+                  prometheus.io/port: "9216"
+                  prometheus.io/path: "/metrics"
+                type: ClusterIP
+                port: 9216
+              livenessProbe:
+                enabled: true
+                initialDelaySeconds: 15
+                periodSeconds: 5
+                timeoutSeconds: 5
+                failureThreshold: 3
+                successThreshold: 1
+              readinessProbe:
+                enabled: true
+                initialDelaySeconds: 5
+                periodSeconds: 5
+                timeoutSeconds: 1
+                failureThreshold: 3
+                successThreshold: 1

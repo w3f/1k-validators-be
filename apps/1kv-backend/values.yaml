@@ -1,0 +1,34 @@
+environment: production
+kusama:
+  db:
+    uri: "mongodb://<path:vaults/k8s-community-secrets/items/otv-kusama#mongo-username>:<path:vaults/k8s-community-secrets/items/otv-kusama#mongo-password>@kusama-mongodb-headless.kusama.svc.cluster.local/otv?tls=false&replicaSet=rs0"
+  be:
+    secret:  <path:vaults/k8s-community-secrets/items/otv-kusama#backend-secret>
+    domain: kusama.w3f.community
+    apiEndpoints: 
+      - "wss://kusama-rpc.polkadot.io"
+      - "wss://kusama.api.onfinality.io/public-ws"
+      - "wss://kusama-rpc.dwellir.com"
+      - "wss://kusama.public.curie.radiumblock.xyz/ws"
+    matrix:   
+      room: "!mdugGIKqSTweIOpTlA:web3.foundation"
+      userId: "@1kv-stats:matrix.org"
+  mongoExpress:
+    whitelistSourceIps: <path:vaults/k8s-community-secrets/items/otv-kusama#shared-vpn-ip>
+    domain: w3f.community
+polkadot: 
+  db:
+    uri: "mongodb://<path:vaults/k8s-community-secrets/items/otv-polkadot#mongo-username>:<path:vaults/k8s-community-secrets/items/otv-polkadot#mongo-password>@polkadot-mongodb-headless.polkadot.svc.cluster.local/otv?tls=false&replicaSet=rs0"
+  be:
+    secret:  <path:vaults/k8s-community-secrets/items/otv-polkadot#backend-secret>
+    domain: polkadot.w3f.community
+    apiEndpoints:
+      - "wss://rpc.polkadot.io"
+      - "wss://polkadot.api.onfinality.io/public-ws"
+      - "wss://polkadot-rpc.dwellir.com"
+    matrix:   
+      room: "!ccXWsugXuoiHnkEhKa:web3.foundation"
+      userId: "@1kv-stats:matrix.org"
+  mongoExpress:
+    whitelistSourceIps: <path:vaults/k8s-community-secrets/items/otv-polkadot#shared-vpn-ip>
+    domain: w3f.community      

@@ -1,5 +1,5 @@
 
-scoresPolkadot: {
+polkadot: {
   "inclusion": "200",
   "spanInclusion": "200",
   "discovered": "5",
@@ -19,7 +19,7 @@ scoresPolkadot: {
   "openGov": "100",
   "openGovDelegation": "100"
   }
-scoresKusama: {
+kusama: {
   "inclusion": "200",
   "spanInclusion": "200",
   "discovered": "5",

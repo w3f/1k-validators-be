@@ -27,7 +27,7 @@ spec:
             certificate:
               enabled: false
 
-            domain: {{ .Values.kusama.mongo_express.domain }}
+            domain: {{ .Values.kusama.mongoExpress.domain }}
 
             basicauth:
               username: <path:vaults/k8s-community-secrets/items/otv-kusama#express-username>
@@ -37,7 +37,7 @@ spec:
               host: "{{ .Values.kusama.db.uri }}"
             
             ingress:
-              whitelist_source_ips: {{ .Values.kusama.mongo_express.whitelist_source_ips | quote }}
+              whitelist_source_ips: {{ .Values.kusama.mongoExpress.whitelistSourceIps | quote }}
 
 ---
 
@@ -70,7 +70,7 @@ spec:
             certificate:
               enabled: true
 
-            domain: {{ .Values.polkadot.mongo_express.domain }}
+            domain: {{ .Values.polkadot.mongoExpress.domain }}
 
             basicauth:
               username: <path:vaults/k8s-community-secrets/items/otv-polkadot#express-username>
@@ -81,6 +81,6 @@ spec:
               host: "{{ .Values.polkadot.db.uri }}"
               
             ingress:
-              whitelist_source_ips: {{ .Values.polkadot.mongo_express.whitelist_source_ips }}
+              whitelist_source_ips: {{ .Values.polkadot.mongoExpress.whitelistSourceIps }}
           
 

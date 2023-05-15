@@ -13,9 +13,8 @@ kusama:
     matrix:   
       room: "!mdugGIKqSTweIOpTlA:web3.foundation"
       userId: "@1kv-stats:matrix.org"
-  mongo_express:
-    #Currently shared-vpn-ip entries in vault
-    whitelist_source_ips: <path:vaults/k8s-community-secrets/items/otv-kusama#shared-vpn-ip>
+  mongoExpress:
+    whitelistSourceIps: <path:vaults/k8s-community-secrets/items/otv-kusama#shared-vpn-ip>
     domain: w3f.community
 polkadot: 
   db:
@@ -30,7 +29,6 @@ polkadot:
     matrix:   
       room: "!ccXWsugXuoiHnkEhKa:web3.foundation"
       userId: "@1kv-stats:matrix.org"
-  mongo_express:
-    #Currently shared-vpn-ip entries in vault
-    whitelist_source_ips: <path:vaults/k8s-community-secrets/items/otv-polkadot#shared-vpn-ip>
+  mongoExpress:
+    whitelistSourceIps: <path:vaults/k8s-community-secrets/items/otv-polkadot#shared-vpn-ip>
     domain: w3f.community      

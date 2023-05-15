@@ -1,0 +1,41 @@
+auth:
+  enabled: true
+  rootPassword: {{ "ref+vault://op/vaults/k8s-community-secrets/items/otv-polkadot-mongodb-rootpassword?proto=http#password" | fetchSecretValue }}
+  username: {{ "ref+vault://op/vaults/k8s-community-secrets/items/otv-polkadot-mongodb-username?proto=http#password" | fetchSecretValue }}
+  password: {{ "ref+vault://op/vaults/k8s-community-secrets/items/otv-polkadot-mongodb-password?proto=http#password" | fetchSecretValue }}
+  database: {{ "ref+vault://op/vaults/k8s-community-secrets/items/otv-polkadot-mongodb-db?proto=http#password" | fetchSecretValue }}
+  replicaSetKey: {{ "ref+vault://op/vaults/k8s-community-secrets/items/otv-polkadot-mongodb-replicakey?proto=http#password" | fetchSecretValue }}
+
+directoryPerDB: false
+
+replicaCount: 2
+
+resources:
+  limits: 
+    cpu: 1200m
+    memory: "2Gi"
+  requests: 
+    cpu: 1000m
+    memory: "1Gi"
+
+persistence:
+  enabled: true
+  # storageClass: ""
+  accessModes:
+    - ReadWriteOnce
+  size: 8Gi
+  annotations: {}
+  mountPath: /bitnami/mongodb
+  subPath: ""
+
+arbiter:
+  enabled: true
+
+metrics:
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 5
+    periodSeconds: 5
+    timeoutSeconds: 1
+    failureThreshold: 3
+    successThreshold: 1

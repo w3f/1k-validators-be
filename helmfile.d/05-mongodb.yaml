@@ -12,15 +12,9 @@ releases:
     version: ^10.31.5
     values:
       - ./config/mongodb-common.yaml.gotmpl
-      {{ if eq .Environment.Name "production" }}
-      - ./config/kusama/mongodb.yaml.gotmpl
-      {{ end }}
   - name: polkadot-mongodb
     namespace: polkadot
     chart: bitnami/mongodb
     version: ^10.31.5
     values:
       - ./config/mongodb-common.yaml.gotmpl
-      {{ if eq .Environment.Name "production" }}
-      - ./config/polkadot/mongodb.yaml.gotmpl
-      {{ end }}

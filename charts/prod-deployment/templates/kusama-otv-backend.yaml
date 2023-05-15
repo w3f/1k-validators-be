@@ -1,0 +1,110 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kusama-otv-backend
+  namespace: argocd
+# finalizers:
+# - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kusama
+  project: 1kv-backend
+  # syncPolicy:
+  #   automated:
+  #     prune: true
+  #     selfHeal: true 
+  source:
+    repoURL: https://w3f.github.io/helm-charts/
+    chart: otv-backend
+    targetRevision: v2.8.30
+    plugin:
+      env:
+        - name: HELM_VALUES
+          value: |
+            image:
+              tag: "v2.8.30"
+            environment: {{ .Values.environment }}
+            dataPath: "/data"
+            backendPort: 3300
+            domain: {{ .Values.kusama.be.domain | quote }}
+
+            resources:
+              limits:
+                cpu: 3500m
+                memory: 9Gi
+              requests:
+                cpu: 700m
+                memory: 3Gi
+
+            secret: |
+              {{ .Values.kusama.be.secret }}
+
+            config: |
+              {
+                "global": {
+                  "dryRun": false,
+                  "networkPrefix": 2,
+                  "test": false,
+                  "retroactive": false,
+                  "historicalNominations": false,
+                  "apiEndpoints":  {{ .Values.kusama.be.apiEndpoints | toJson  }}
+                },
+                "constraints": {
+                  "skipConnectionTime": false,
+                  "skipIdentity": false,
+                  "skipStakedDestination": true,
+                  "skipClientUpgrade": false,
+                  "forceClientVersion": "v0.9.39",
+                  "skipUnclaimed": true,
+                  "minSelfStake": 10000000000000,
+                  "commission": 150000000,
+                  "unclaimedEraThreshold": 4
+                },
+                "cron": {
+                  "monitor": "0 */15 * * * *"
+                },
+                "db": {
+                  "mongo": {
+                      "uri": {{ .Values.kusama.db.uri | quote}}
+                  }
+                },
+                "matrix": {
+                  "enabled": true,
+                  "baseUrl": "https://matrix.org",
+                  "room": {{ .Values.kusama.be.matrix.room | quote}},
+                  "userId": {{ .Values.kusama.be.matrix.userId | quote}}
+                },
+                "proxy": {
+                    "timeDelayBlocks": "10850",
+                    "blacklistedAnnouncements": []
+                },
+                {{- $v := $.Files.Get "scores.yaml" | fromYaml }}
+                "score": {{ $v.scoresKusama | toJson }},                
+                "scorekeeper": {
+                  {{- $v := $.Files.Get "candidatesKusama.yaml" | fromYaml }}
+                  "candidates": {{ $v.candidates | toJson }},
+                  "forceRound": false,
+                  "nominating": true
+                },
+                "server": {
+                  "port": 3300,
+                  "enable": true
+                },
+                "telemetry": {
+                  "enable": true,
+                  "chains": [
+                      "0xb0a8d493285c2df73290dfb7e61f870f17b41801197a149ca93654499ea3dafe"
+                  ],
+                  "blacklistedProviders": [
+                    "Hetzner Online GmbH",
+                    "Contabo Inc.",
+                    "Contabo GmbH"
+                  ],
+                  "host": "wss://telemetry-backend.w3f.community/feed"
+                },
+                "subscan": {
+                    "baseV1Url": "https://kusama.api.subscan.io/api/scan",
+                    "baseV2Url": "https://kusama.api.subscan.io/api/v2/scan"
+                }
+              }

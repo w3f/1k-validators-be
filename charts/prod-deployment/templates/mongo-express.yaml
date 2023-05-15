@@ -1,0 +1,86 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kusama-otv-mongo-express
+  namespace: argocd
+  # finalizers:
+  # - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kusama
+  project: 1kv-backend
+  # syncPolicy:
+  #   automated:
+  #     prune: true
+  #     selfHeal: true
+  source:
+    repoURL: https://w3f.github.io/helm-charts/
+    chart: mongo-express
+    targetRevision: v0.3.1
+    plugin:
+      env:
+        - name: HELM_VALUES
+          value: |
+            environment: {{ .Values.environment }}
+
+            certificate:
+              enabled: false
+
+            domain: {{ .Values.kusama.mongo_express.domain }}
+
+            basicauth:
+              username: <path:vaults/k8s-community-secrets/items/otv-kusama#express-username>
+              password: <path:vaults/k8s-community-secrets/items/otv-kusama#express-password>
+
+            mongodb:
+              host: "{{ .Values.kusama.db.uri }}"
+            
+            ingress:
+              whitelist_source_ips: {{ .Values.kusama.mongo_express.whitelist_source_ips | quote }}
+
+---
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: polkadot-otv-mongo-express
+  namespace: argocd
+  # finalizers:
+  # - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: polkadot
+  project: 1kv-backend
+  # syncPolicy:
+  #   automated:
+  #     prune: true
+  #     selfHeal: true
+  source:
+    repoURL: https://w3f.github.io/helm-charts/
+    chart: mongo-express
+    targetRevision: v0.3.1
+    plugin:
+      env:
+        - name: HELM_VALUES
+          value: |
+            environment: {{ .Values.environment }}
+
+            certificate:
+              enabled: true
+
+            domain: {{ .Values.polkadot.mongo_express.domain }}
+
+            basicauth:
+              username: <path:vaults/k8s-community-secrets/items/otv-polkadot#express-username>
+              password: <path:vaults/k8s-community-secrets/items/otv-polkadot#express-password>
+
+
+            mongodb:
+              host: "{{ .Values.polkadot.db.uri }}"
+              
+            ingress:
+              whitelist_source_ips: {{ .Values.polkadot.mongo_express.whitelist_source_ips }}
+          
+

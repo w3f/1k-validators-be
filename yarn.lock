@@ -30,7 +30,7 @@ __metadata:
     "@types/mongoose": ^5.11.97
     "@types/node": ^20.1.7
     hash.js: ^1.1.7
-    mongoose: ^7.1.1
+    mongoose: ^7.0.3
     typescript: ^4.9.5
     winston: ^3.8.2
   languageName: unknown
@@ -75,9 +75,9 @@ __metadata:
     koa-cash: ^4.1.1
     koa2-cors: ^2.0.6
     matrix-js-sdk: ^25.1.1
-    mongodb: 5.5.0
+    mongodb: 5.2.0
     mongodb-memory-server: ^8.12.2
-    mongoose: ^7.1.1
+    mongoose: ^7.0.3
     nodemon: ^2.0.22
     open-cli: ^7.2.0
     prettier: ^2.8.8
@@ -2955,13 +2955,6 @@ __metadata:
   version: 5.2.0
   resolution: "bson@npm:5.2.0"
   checksum: 1297f8776a05fe3c03b5a1c73210389bc3e596ee6f1e772b76c021fff5537d0c91e523462ba196a8a839246613a87cffbd6486d387a849c7de7cde64d1af7812
-  languageName: node
-  linkType: hard
-
-"bson@npm:^5.3.0":
-  version: 5.3.0
-  resolution: "bson@npm:5.3.0"
-  checksum: c1e57630fea6b82ad8bc0fb83fd8f16a2620a836ab69f6b9433250cd19704c0c8995681a3bfab9f967eae30512f0c8ee921d42ace4c1781726600c4a367593cf
   languageName: node
   linkType: hard
 
@@ -6485,6 +6478,32 @@ __metadata:
   languageName: node
   linkType: hard
 
+"mongodb@npm:5.2.0":
+  version: 5.2.0
+  resolution: "mongodb@npm:5.2.0"
+  dependencies:
+    bson: ^5.2.0
+    mongodb-connection-string-url: ^2.6.0
+    saslprep: ^1.0.3
+    socks: ^2.7.1
+  peerDependencies:
+    "@aws-sdk/credential-providers": ^3.201.0
+    mongodb-client-encryption: ^2.3.0
+    snappy: ^7.2.2
+  dependenciesMeta:
+    saslprep:
+      optional: true
+  peerDependenciesMeta:
+    "@aws-sdk/credential-providers":
+      optional: true
+    mongodb-client-encryption:
+      optional: true
+    snappy:
+      optional: true
+  checksum: 2114175fab6a56c2d2902d97117c98c7b240155af6b7880174dbdf90bdcd8eb60c959ced7ed8b6327abfe226d6ae9933356344fc7d6e71798fef86e6eddd0173
+  languageName: node
+  linkType: hard
+
 "mongodb@npm:5.3.0":
   version: 5.3.0
   resolution: "mongodb@npm:5.3.0"
@@ -6508,32 +6527,6 @@ __metadata:
     snappy:
       optional: true
   checksum: da86069555f3f700a0ef338a4676de2254ef64f7700427c0e23ccd5bd9ca9cd5f08651f2eb5083edfdc1e7eed1b40c60041b16e6d4851f353a26d9469d274299
-  languageName: node
-  linkType: hard
-
-"mongodb@npm:5.5.0":
-  version: 5.5.0
-  resolution: "mongodb@npm:5.5.0"
-  dependencies:
-    bson: ^5.3.0
-    mongodb-connection-string-url: ^2.6.0
-    saslprep: ^1.0.3
-    socks: ^2.7.1
-  peerDependencies:
-    "@aws-sdk/credential-providers": ^3.201.0
-    mongodb-client-encryption: ">=2.3.0 <3"
-    snappy: ^7.2.2
-  dependenciesMeta:
-    saslprep:
-      optional: true
-  peerDependenciesMeta:
-    "@aws-sdk/credential-providers":
-      optional: true
-    mongodb-client-encryption:
-      optional: true
-    snappy:
-      optional: true
-  checksum: fafb75195d605767cf7269aa82a1f4704c3357240d0fef7296d55e83eab592158844988af3b94165769459ff1b2a0af2fc49bc44c9bbabd10d6ddc319668a0e0
   languageName: node
   linkType: hard
 
@@ -6570,9 +6563,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mongoose@npm:^7.1.1":
-  version: 7.1.1
-  resolution: "mongoose@npm:7.1.1"
+"mongoose@npm:^7.0.3":
+  version: 7.1.2
+  resolution: "mongoose@npm:7.1.2"
   dependencies:
     bson: ^5.2.0
     kareem: 2.5.1
@@ -6581,7 +6574,7 @@ __metadata:
     mquery: 5.0.0
     ms: 2.1.3
     sift: 16.0.1
-  checksum: bbacd407cda31e7d530ec35321caecfa3178021a92ec90c20d8a7ecf21832db225140dbaf5a1c077e898725f2944b97fe72e5a8bbe78f84012a3faa94e1e4d4b
+  checksum: b9c6ae8df8841adb00db0382297dfc654677154ddfc810713d10c796625bbc9c434f71c227a38987acfdcd3eee72ae7e1bc5a6ffa792fe567eaba52e6611d80f
   languageName: node
   linkType: hard
 

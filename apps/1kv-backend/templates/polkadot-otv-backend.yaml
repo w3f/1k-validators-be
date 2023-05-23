@@ -17,13 +17,13 @@ spec:
   source:
     repoURL: https://w3f.github.io/helm-charts/
     chart: otv-backend
-    targetRevision: v2.8.36
+    targetRevision: v2.8.37
     plugin:
       env:
         - name: HELM_VALUES
           value: |
             image:
-              tag: "v2.8.36"
+              tag: "v2.8.37"
             environment: {{ .Values.environment }}
             dataPath: "/data"
             backendPort: 3300

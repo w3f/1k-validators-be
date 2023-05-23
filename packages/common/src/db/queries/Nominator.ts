@@ -38,42 +38,55 @@ export const addNominator = async (
 ): Promise<boolean> => {
   logger.info(`(Db::addNominator) Adding ${address} at ${now}.`);
 
-  const data = await NominatorModel.findOne({ address }).lean();
-  if (!data) {
-    const nominator = new NominatorModel({
-      address,
-      stash,
-      proxy,
-      bonded,
-      proxyDelay,
-      rewardDestination,
-      avgStake,
-      nominateAmount,
-      newBondedAmount,
-      current: [],
-      lastNomination: 0,
-      createdAt: now,
-    });
-    await nominator.save();
-    return true;
-  }
-
-  return NominatorModel.findOneAndUpdate(
-    {
-      address,
-    },
-    {
-      createdAt: now,
-      stash,
-      proxy,
-      bonded,
-      proxyDelay,
-      rewardDestination,
-      avgStake,
-      nominateAmount,
-      newBondedAmount,
+  try {
+    const data = await NominatorModel.findOne({ address }).lean();
+    if (!data) {
+      const nominator = new NominatorModel({
+        address,
+        stash,
+        proxy,
+        bonded,
+        proxyDelay,
+        rewardDestination,
+        avgStake,
+        nominateAmount,
+        newBondedAmount,
+        current: [],
+        lastNomination: 0,
+        createdAt: now,
+      });
+      await nominator.save();
+      return true;
     }
-  );
+
+    return NominatorModel.findOneAndUpdate(
+      {
+        address,
+      },
+      {
+        createdAt: now,
+        stash,
+        proxy,
+        bonded,
+        proxyDelay,
+        rewardDestination,
+        avgStake,
+        nominateAmount,
+        newBondedAmount,
+      }
+    );
+  } catch (e) {
+    logger.info(JSON.stringify(e));
+    logger.info(address);
+    logger.info(stash);
+    logger.info(proxy);
+    logger.info(bonded);
+    logger.info(proxyDelay);
+    logger.info(rewardDestination);
+    logger.info(avgStake);
+    logger.info(nominateAmount);
+    logger.info(newBondedAmount);
+  }
 };
 
 // Updates the avg stake amount of a nominator

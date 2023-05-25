@@ -363,18 +363,24 @@ export default class ScoreKeeper {
 
         const { nominationNum, newBondedAmount, targetValStake } =
           await autoNumNominations(api, nom);
-        await queries.addNominator(
-          nom.controller,
-          stash,
-          proxy,
-          bonded,
-          now,
-          proxyDelay,
-          payee,
-          targetValStake,
-          nominationNum,
-          newBondedAmount
-        );
+        try {
+          await queries.addNominator(
+            nom.controller,
+            stash,
+            proxy,
+            bonded,
+            now,
+            proxyDelay,
+            payee,
+            targetValStake,
+            nominationNum,
+            newBondedAmount
+          );
+        } catch (e) {
+          logger.info(JSON.stringify(e));
+          logger.info("Scorekeeper add nominator failed");
+        }
+
         // Create a new accounting record in case one doesn't exist.
         await queries.newAccountingRecord(stash, nom.controller);
         group.push(nom);

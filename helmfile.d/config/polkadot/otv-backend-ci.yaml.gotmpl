@@ -18,7 +18,8 @@ config: |
       "test": false,
       "retroactive": false,
       "historicalNominations": false,
-      "apiEndpoints": []
+      "apiEndpoints": [],
+      "candidatesUrl": "https://raw.githubusercontent.com/w3f/1k-validators-be/master/candidates/polkadot.json"
     },
     "constraints": {
       "skipConnectionTime": false,
@@ -67,20 +68,6 @@ config: |
       "delegations": "60"
     },
     "scorekeeper": {
-      "candidates": [
-        {
-          "name": "specialized-tarmac-1",
-          "stash": "126RwaHn4MDekLWfUYfiqcVbiQHapwDSAT9vZZS15HLqfDJh",
-          "kusamaStash": "HngUT2inDFPBwiey6ZdqhhnmPKHkXayRpWw9rFj55reAqvi",
-          "riotHandle": "@joe:web3.foundation"
-        },
-        {
-          "name": "🔒stateless_money-5🔒",
-          "stash": "14Vh8S1DzzycngbAB9vqEgPFR9JpSvmF1ezihTUES1EaHAV",
-          "kusamaStash": "HZvvFHgPdhDr6DHN43xT1sP5fDyzLDFv5t5xwmXBrm6dusm",
-          "riotHandle": "@aaronschwarz:matrix.org"
-        }
-      ],
       "forceRound": true,
       "nominating": true
     },

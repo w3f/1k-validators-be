@@ -73,6 +73,7 @@ export type ConfigSchema = {
     bootstrap: boolean;
     kusamaBootstrapEndpoint: string;
     polkadotBootstrapEndpoint: string;
+    candidatesUrl: string;
   };
   matrix: {
     accessToken: string;
@@ -141,7 +142,7 @@ export const loadConfig = (configPath: string): ConfigSchema => {
   return JSON.parse(conf);
 };
 
-export const loadConfigDir = (configDir: string): ConfigSchema => {
+export const loadConfigDir = async (configDir: string) => {
   const secretPath = path.join(configDir, "secret.json");
   const secretConf = loadConfig(secretPath);
 
@@ -161,6 +162,12 @@ export const loadConfigDir = (configDir: string): ConfigSchema => {
   // if (mainConf.scorekeeper && mainConf.scorekeeper.claimer) {
   mainConf.scorekeeper.claimer = secretConf?.scorekeeper?.claimer;
   // }
+
+  const candidatesUrl = mainConf.global.candidatesUrl;
+  const response = await fetch(candidatesUrl);
+  const candidatesJSON = await response.json();
+
+  mainConf.scorekeeper.candidates = candidatesJSON.candidates;
 
   return mainConf;
 };

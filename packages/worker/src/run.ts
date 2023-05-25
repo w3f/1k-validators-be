@@ -1,6 +1,6 @@
 import Worker from "./worker";
 import { Command } from "commander";
-import { Db, Config, logger } from "@1kv/common";
+import { Config, Db, logger } from "@1kv/common";
 
 const version = process.env.npm_package_version;
 
@@ -15,7 +15,7 @@ const catchAndQuit = async (fn: any) => {
 };
 
 const start = async (cmd: { config: string }) => {
-  const config = Config.loadConfigDir(cmd.config);
+  const config = await Config.loadConfigDir(cmd.config);
 
   logger.info(`Starting the backend services. ${version}`, { label: "Worker" });
   const db = await Db.create(config.db.mongo.uri);

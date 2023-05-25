@@ -1,6 +1,6 @@
 import Server from "./server";
 import { Command } from "commander";
-import { Db, Config, logger } from "@1kv/common";
+import { Config, Db, logger } from "@1kv/common";
 
 const version = "v2.6.87";
 
@@ -16,7 +16,7 @@ const catchAndQuit = async (fn: any) => {
 export const gatewayLabel = { label: "Gateway" };
 
 const start = async (cmd: { config: string }) => {
-  const config = Config.loadConfigDir(cmd.config);
+  const config = await Config.loadConfigDir(cmd.config);
 
   logger.info(`starting the backend services. ${version}`, gatewayLabel);
   const db = await Db.create(config.db.mongo.uri);

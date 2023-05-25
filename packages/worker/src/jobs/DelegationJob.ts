@@ -1,30 +1,12 @@
-import { logger, queries, ChainData } from "@1kv/common";
+import { ChainData, logger, queries } from "@1kv/common";
 
 export const delegationLabel = { label: "DelegationJob" };
 
 export const delegationJob = async (chaindata: ChainData) => {
   const start = Date.now();
 
-  const delegators = await chaindata.getDelegators();
-
-  const candidates = await queries.allCandidates();
-
-  for (const candidate of candidates) {
-    // LEGACY DELEGATIONS
-    const delegating = delegators.filter((delegator) => {
-      if (delegator.target == candidate.stash) return true;
-    });
-
-    let totalBalance = 0;
-    for (const delegator of delegating) {
-      totalBalance += delegator.effectiveBalance;
-    }
-
-    await queries.setDelegation(candidate.stash, totalBalance, delegating);
-  }
-
-  // OPEN GOV DELEGATIONS
   const chainType = await chaindata.getChainType();
+
   if (chainType == "Kusama") {
     try {
       const delegations = await chaindata.getOpenGovDelegations();
@@ -34,6 +16,24 @@ export const delegationJob = async (chaindata: ChainData) => {
       }
     } catch (e) {
       logger.error(e);
+    }
+  } else {
+    const delegators = await chaindata.getDelegators();
+
+    const candidates = await queries.allCandidates();
+
+    for (const candidate of candidates) {
+      // LEGACY DELEGATIONS
+      const delegating = delegators.filter((delegator) => {
+        if (delegator.target == candidate.stash) return true;
+      });
+
+      let totalBalance = 0;
+      for (const delegator of delegating) {
+        totalBalance += delegator.effectiveBalance;
+      }
+
+      await queries.setDelegation(candidate.stash, totalBalance, delegating);
     }
   }
 

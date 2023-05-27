@@ -48,7 +48,13 @@ spec:
                   "test": false,
                   "retroactive": false,
                   "historicalNominations": false,
-                  "apiEndpoints":  {{ .Values.kusama.be.apiEndpoints | toJson  }}
+                  "apiEndpoints": [
+                    "wss://kusama-rpc.polkadot.io",
+                    "wss://kusama.api.onfinality.io/public-ws",
+                    "wss://kusama-rpc.dwellir.com",
+                    "wss://kusama.public.curie.radiumblock.xyz/ws"
+                  ],
+                  "candidatesUrl": "https://raw.githubusercontent.com/w3f/1k-validators-be/master/candidates/kusama.json"
                 },
                 "constraints": {
                   "skipConnectionTime": false,

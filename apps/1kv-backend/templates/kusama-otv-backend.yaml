@@ -40,6 +40,9 @@ spec:
             secret: |
               {{ .Values.kusama.be.secret }}
 
+            certificate:
+              enabled: true  
+
             config: |
               {
                 "global": {

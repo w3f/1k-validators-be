@@ -84,11 +84,28 @@ spec:
                     "timeDelayBlocks": "10850",
                     "blacklistedAnnouncements": []
                 },
-                {{- $v := $.Files.Get "scores.yaml" | fromYaml }}
-                "score": {{ $v.polkadot | toJson }},
+                "score": {
+                  "inclusion": "200",
+                  "spanInclusion": "200",
+                  "discovered": "5",
+                  "nominated": "30",
+                  "rank": "5",
+                  "bonded": "50",
+                  "faults": "5",
+                  "offline": "2",
+                  "location": "40",
+                  "region": "10",
+                  "country": "10",
+                  "provider": "100",
+                  "council": "50",
+                  "democracy": "100",
+                  "nominations": "100",
+                  "delegations": "60",
+                  "openGov": "100",
+                  "openGovDelegation": "100"
+                },
                 "scorekeeper": {
-                  {{- $v := $.Files.Get "candidatesPolkadot.yaml" | fromYaml }}
-                  "candidates": {{ $v.candidates | toJson }},              
+                  "candidates": null,              
                   "forceRound": false,
                   "nominating": true
                 },

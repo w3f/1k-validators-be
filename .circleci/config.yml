@@ -240,17 +240,17 @@ workflows:
               only: /v[0-9]+(\.[0-9]+)*/
           requires:
             - integrationTests
-      - deploy:
-          context: 
-          - digital_ocean_access
-          - vault_community
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*/
-          requires:
-            - publishCoreImage
-            - publishChart
+      # - deploy:
+      #     context: 
+      #     - digital_ocean_access
+      #     - vault_community
+      #     filters:
+      #       branches:
+      #         ignore: /.*/
+      #       tags:
+      #         only: /v[0-9]+(\.[0-9]+)*/
+      #     requires:
+      #       - publishCoreImage
+      #       - publishChart
 
 

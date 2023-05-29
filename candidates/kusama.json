@@ -3256,6 +3256,101 @@
       "name": "Activator",
       "stash": "E5hWebLmPSFSUq3nSfGuFYopAK65fooqiXV91gQwuZGuMad",
       "riotHandle": "@activatornode:matrix.org"
+    },
+    {
+      "name": "enby-collective-dominique-1",
+      "stash": "GZeiCMQMMU3yPV2GMwZoiNvC1cqMWx7HTSBXeJsd27b3Wnj",
+      "riotHandle": ["@dominique:parity.io", "@enby:matrix.org"]
+    },
+    {
+      "name": "slither_77",
+      "stash": "FAgMinzMwXahWb6UAKPCGi4LfupFVyhatjK7oUhyZxRLYqH",
+      "riotHandle": "@erk773_1:matrix.org"
+    },
+    {
+      "name": "Jesus Lives",
+      "stash": "GqC37KSFFeGAoL7YxSeP1YDwr85WJvLmDDQiSaprTDAm8Jj",
+      "riotHandle": "@asteeber:matrix.org"
+    },
+    {
+      "name": "Begimotik",
+      "stash": "G56GXDf11XFMLKDsyzRM7yZekiokZJfqtNgEF3sNdB6cbqT",
+      "riotHandle": "@Begimotik:matrix.org"
+    },
+    {
+      "name": "ProfitGen",
+      "stash": "GNoEBma3eRiXm9cF4erHzRnbJTbMC55KhxRP5xpUqm2pqFN",
+      "riotHandle": "@profitgen:matrix.org"
+    },
+    {
+      "name": "ProfitGen",
+      "stash": "GNoEBma3eRiXm9cF4erHzRnbJTbMC55KhxRP5xpUqm2pqFN",
+      "riotHandle": "@profitgen:matrix.org"
+    },
+    {
+      "name": "AltOrderCapBis",
+      "stash": "G1dK9mW88ubm2MB6mqLNy7mKt7jrqzzDpWf5DsjCryKVqJs",
+      "riotHandle": "@alt.order:matrix.org"
+    },
+    {
+      "name": "MIDAS",
+      "stash": "EyJgtqqbVsxArS7zuDq8rGTCA7m5WAqxv32msopPfWxwwpA",
+      "riotHandle": "@midas89:matrix.org"
+    },
+    {
+      "name": "papa2307",
+      "stash": "Drg6VcEh43rKxcrjFpSg6XZuQUAtR3t2Y3FTxyG7qz33RNG",
+      "riotHandle": "@denpub:matrix.org"
+    },
+    {
+      "name": "zzBeq",
+      "stash": "DAkLoGLEZ5wrfXBB5Htu84desmM6BNfdxyZjXGnt23957nK",
+      "riotHandle": "@zzBeq:matrix.org"
+    },
+    {
+      "name": "0xn00bz",
+      "stash": "CoLVrvRx43NPh8wtDMxY4UoNz1ebSwuu5FwegXj64kJaMkp",
+      "riotHandle": "@0xn00bz:matrix.org"
+    },
+    {
+      "name": "Bison Stampede",
+      "stash": "Dtdb7sR6NYGJbrHYqeW2ANwvY1mXSh1yuP2JHJm9ZmxMwyF",
+      "riotHandle": "@stampede_jon:matrix.org"
+    },
+    {
+      "name": "GontaValidator_2",
+      "stash": "Cs6cbyizgsfBnHtRY6pWZBnoVYrJAEmQE1ynWveivG2C4j2",
+      "riotHandle": "@gontajones:matrix.org"
+    },
+    {
+      "name": "slither_77",
+      "stash": "FAgMinzMwXahWb6UAKPCGi4LfupFVyhatjK7oUhyZxRLYqH",
+      "riotHandle": "@erk773_1:matrix.org"
+    },
+    {
+      "name": "WIN-WIN",
+      "stash": "DSjjUzjk3gzV2mmGuBnEucNyxVuSY7d8FKdkjKw18bWWuDo",
+      "riotHandle": "@win-win:matrix.org"
+    },
+    {
+      "name": "havik-kusama",
+      "stash": "FQ4fiDSgVg556BoLYNjqM66qVei9ATbwNSuYbHHDvSF8Hb3",
+      "riotHandle": "@havik:matrix.org"
+    },
+    {
+      "name": "Gators-QB",
+      "stash": "D4ios8nXiVpBbvNRYbi2frnybaikkcdMBFXcBBq7QaFrLKF",
+      "riotHandle": "@gators.validator:matrix.org"
+    },
+    {
+      "name": "Gators-RB",
+      "stash": "JLi64F6mkc1G1ikuknKVpB2TvYDBrRKDfvKQFMp6JvvoLeG",
+      "riotHandle": "@gators.validator:matrix.org"
+    },
+    {
+      "name": "sofiia Validator2",
+      "stash": "CuPaiAMDGZPvKmndepvT3tbRD7hGmbLoub51PYK3G1rQZ5S",
+      "riotHandle": "@sofiia.kon:matrix.org"
     }
   ]
 }

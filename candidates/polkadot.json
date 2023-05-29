@@ -1326,6 +1326,30 @@
       "stash": "13pBLqciqvBMZpZT2ZkavANK66PxyG1xZ72bBo849c5NDHgh",
       "kusamaStash": "HnqvLipy4zndzJcJWAVJDpDWNMR6ygTVDRym5BeapXHLS2K",
       "riotHandle": "@safestake:matrix.org"
+    },
+    {
+      "name": "Krawiec",
+      "stash": "16SE3e2wrVNUZmEjWcioAEox2PXzkxeTvwCW3pTTWvmDQZJi",
+      "kusamaStash": "CzB1XBwkko3Az7DNZDPigZ1bjzLxELAGnLBnFGRdQ4PXTqZ",
+      "riotHandle": "@krawiec.:matrix.org"
+    },
+    {
+      "name": "stakeHulk",
+      "stash": "15uCAG6qK9qdx3EG3kyb5TFn83PgFUSQEioUgA9GLTjMFfq",
+      "kusamaStash": "J3uneckXiaJvUiBnGf6Dp3bBgP2Bk615vGcyyXNh3NsTNBm",
+      "riotHandle": "@stakehulk:matrix.org"
+    },
+    {
+      "name": "\uD83C\uDF0CNOVASAMA\uD83C\uDF0C/NASH   ex NOVASAMA_TECHNOLOGIES/VAL_1",
+      "stash": "127zarPDhVzmCXVQ7Kfr1yyaa9wsMuJ74GJW9Q7ezHfQEgh6",
+      "kusamaStash": "127zarPDhVzmCXVQ7Kfr1yyaa9wsMuJ74GJW9Q7ezHfQEgh6",
+      "riotHandle": "@solocrack:matrix.org"
+    },
+    {
+      "name": "DARK_POLKADOT",
+      "stash": "14BnTrXDZH9diqkzKNqGCf4BXG8oJRBdiKFfsRem8LYDRQy7",
+      "kusamaStash": "JCHVzJjBWS1ZxkTZJN1jifYrDcspepCU2YCW23XhtVQnYE7",
+      "riotHandle": "@darkless2001:matrix.org"
     }
   ]
 }

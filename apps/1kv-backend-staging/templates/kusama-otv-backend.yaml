@@ -1,19 +1,19 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: polkadot-otv-backend
+  name: kusama-otv-backend
   namespace: argocd
-  # finalizers:
-  # - resources-finalizer.argocd.argoproj.io
+# finalizers:
+# - resources-finalizer.argocd.argoproj.io
 spec:
   destination:
     server: https://kubernetes.default.svc
-    namespace: polkadot
+    namespace: kusama
   project: 1kv-backend
   # syncPolicy:
   #   automated:
   #     prune: true
-  #     selfHeal: true
+  #     selfHeal: true 
   source:
     repoURL: https://w3f.github.io/helm-charts/
     chart: otv-backend
@@ -27,7 +27,7 @@ spec:
             environment: {{ .Values.environment }}
             dataPath: "/data"
             backendPort: 3300
-            domain: {{ .Values.polkadot.be.domain | quote }}
+            domain: {{ .Values.kusama.be.domain | quote }}
 
             resources:
               limits:
@@ -38,22 +38,24 @@ spec:
                 memory: 3Gi
 
             secret: |
-              {{ .Values.polkadot.be.secret }}
+              {{ .Values.kusama.be.secret }}
+
 
             config: |
               {
                 "global": {
                   "dryRun": false,
-                  "networkPrefix": 0,
+                  "networkPrefix": 2,
                   "test": false,
                   "retroactive": false,
                   "historicalNominations": false,
                   "apiEndpoints": [
-                    "wss://rpc.polkadot.io",
-                    "wss://polkadot.api.onfinality.io/public-ws",
-                    "wss://polkadot-rpc.dwellir.com"
-                    ],
-                    "candidatesUrl": "https://raw.githubusercontent.com/w3f/1k-validators-be/master/candidates/polkadot.json"
+                    "wss://kusama-rpc.polkadot.io",
+                    "wss://kusama.api.onfinality.io/public-ws",
+                    "wss://kusama-rpc.dwellir.com",
+                    "wss://kusama.public.curie.radiumblock.xyz/ws"
+                  ],
+                  "candidatesUrl": "https://raw.githubusercontent.com/w3f/1k-validators-be/master/candidates/kusama.json"
                 },
                 "constraints": {
                   "skipConnectionTime": false,
@@ -62,32 +64,32 @@ spec:
                   "skipClientUpgrade": false,
                   "forceClientVersion": "v0.9.39",
                   "skipUnclaimed": true,
-                  "minSelfStake": 50000000000000,
-                  "commission": 50000000,
-                  "unclaimedEraThreshold": 1
+                  "minSelfStake": 10000000000000,
+                  "commission": 150000000,
+                  "unclaimedEraThreshold": 4
                 },
                 "cron": {
                   "monitor": "0 */15 * * * *"
                 },
                 "db": {
                   "mongo": {
-                      "uri": {{ .Values.polkadot.db.uri | quote}}
+                      "uri": {{ .Values.kusama.db.uri | quote}}
                   }
                 },
                 "matrix": {
                   "enabled": true,
                   "baseUrl": "https://matrix.org",
-                  "room": {{ .Values.polkadot.be.matrix.room | quote}},
-                  "userId": {{ .Values.polkadot.be.matrix.userId | quote}}
+                  "room": {{ .Values.kusama.be.matrix.room | quote}},
+                  "userId": {{ .Values.kusama.be.matrix.userId | quote}}
                 },
                 "proxy": {
                     "timeDelayBlocks": "10850",
                     "blacklistedAnnouncements": []
                 },
-                "score":  {{ range .Files.Lines "config/polkadot-score.json" }}
+                "score": {{ range .Files.Lines "config/kusama-score.json" }}
                   {{ . }}{{ end }},
                 "scorekeeper": {
-                  "candidates": null,              
+                  "candidates": null,
                   "forceRound": false,
                   "nominating": true
                 },
@@ -98,7 +100,7 @@ spec:
                 "telemetry": {
                   "enable": true,
                   "chains": [
-                      "0x91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3"
+                      "0xb0a8d493285c2df73290dfb7e61f870f17b41801197a149ca93654499ea3dafe"
                   ],
                   "blacklistedProviders": [
                     "Hetzner Online GmbH",
@@ -108,7 +110,7 @@ spec:
                   "host": "wss://telemetry-backend.w3f.community/feed"
                 },
                 "subscan": {
-                    "baseV1Url": "https://polkadot.api.subscan.io/api/scan",
-                    "baseV2Url": "https://polkadot.api.subscan.io/api/v2/scan"
+                    "baseV1Url": "https://kusama.api.subscan.io/api/scan",
+                    "baseV2Url": "https://kusama.api.subscan.io/api/v2/scan"
                 }
               }

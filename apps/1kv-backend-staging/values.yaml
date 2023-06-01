@@ -4,7 +4,7 @@ kusama:
     uri: "mongodb://<path:vaults/k8s-community-secrets/items/otv-kusama#mongo-username>:<path:vaults/k8s-community-secrets/items/otv-kusama#mongo-password>@kusama-mongodb-headless.kusama.svc.cluster.local/otv?tls=false&replicaSet=rs0"
   be:
     secret:  <path:vaults/k8s-community-secrets/items/otv-kusama#backend-secret>
-    domain: kusama.w3f.community
+    domain: kusama-staging.w3f.community
     matrix:   
       room: "!mdugGIKqSTweIOpTlA:web3.foundation"
       userId: "@1kv-stats:matrix.org"
@@ -16,7 +16,7 @@ polkadot:
     uri: "mongodb://<path:vaults/k8s-community-secrets/items/otv-polkadot#mongo-username>:<path:vaults/k8s-community-secrets/items/otv-polkadot#mongo-password>@polkadot-mongodb-headless.polkadot.svc.cluster.local/otv?tls=false&replicaSet=rs0"
   be:
     secret:  <path:vaults/k8s-community-secrets/items/otv-polkadot#backend-secret>
-    domain: polkadot.w3f.community
+    domain: polkadot-staging.w3f.community
     matrix:   
       room: "!ccXWsugXuoiHnkEhKa:web3.foundation"
       userId: "@1kv-stats:matrix.org"

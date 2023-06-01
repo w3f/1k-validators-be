@@ -91,7 +91,7 @@ spec:
                 "scorekeeper": {
                   "candidates": null,
                   "forceRound": false,
-                  "nominating": true
+                  "nominating": false
                 },
                 "server": {
                   "port": 3300,

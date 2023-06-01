@@ -44,7 +44,7 @@ spec:
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: polkadot-otv-mongo-express
+  name: polkadot-otv-mongo-express-staging
   namespace: argocd
   # finalizers:
   # - resources-finalizer.argocd.argoproj.io

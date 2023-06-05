@@ -8,7 +8,7 @@ metadata:
 spec:
   destination:
     server: https://kubernetes.default.svc
-    namespace: kusama
+    namespace: kusama-1kv-staging
   project: 1kv-backend
   # syncPolicy:
   #   automated:

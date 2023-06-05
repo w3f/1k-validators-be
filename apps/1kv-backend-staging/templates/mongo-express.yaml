@@ -8,7 +8,7 @@ metadata:
 spec:
   destination:
     server: https://kubernetes.default.svc
-    namespace: kusama
+    namespace: kusama-1kv-staging
   project: 1kv-backend-staging
   # syncPolicy:
   #   automated:
@@ -51,7 +51,7 @@ metadata:
 spec:
   destination:
     server: https://kubernetes.default.svc
-    namespace: polkadot
+    namespace: polkadot-1kv-staging
   project: 1kv-backend-staging
   # syncPolicy:
   #   automated:

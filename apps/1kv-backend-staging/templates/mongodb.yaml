@@ -9,7 +9,7 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: kusama
-  project: 1kv-backend
+  project: 1kv-backend-staging
   # syncPolicy:
   #   automated:
   #     prune: true
@@ -224,7 +224,7 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: polkadot
-  project: 1kv-backend
+  project: 1kv-backend-staging
   # syncPolicy:
   #   automated:
   #     prune: true

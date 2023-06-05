@@ -73,7 +73,7 @@ spec:
                 },
                 "db": {
                   "mongo": {
-                      "uri": {{ .Values.kusama.db.uri | quote}}
+                      "uri": {{ .Values.kusama.db.uri }}
                   }
                 },
                 "matrix": {

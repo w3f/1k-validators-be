@@ -71,7 +71,7 @@ spec:
                 },
                 "db": {
                   "mongo": {
-                      "uri": {{ .Values.polkadot.db.uri | quote}}
+                      "uri": {{ .Values.polkadot.db.uri }}
                   }
                 },
                 "matrix": {

@@ -18,7 +18,6 @@ import Nominator from "./nominator";
 import {
   startActiveValidatorJob,
   startCancelCron,
-  startCouncilJob,
   startDelegationJob,
   startDemocracyJob,
   startEraPointsJob,
@@ -643,7 +642,7 @@ export default class ScoreKeeper {
         await startValidatorPrefJob(this.config, this.chaindata);
         await startEraStatsJob(this.config, this.chaindata);
         await startLocationStatsJob(this.config, this.chaindata);
-        await startCouncilJob(this.config, this.chaindata);
+        // await startCouncilJob(this.config, this.chaindata);
         await startDemocracyJob(this.config, this.chaindata);
         // await startNominatorJob(this.config, this.chaindata);
         await startDelegationJob(this.config, this.chaindata);

@@ -6,7 +6,7 @@ kusama:
     secret:  <path:vaults/k8s-community-secrets/items/otv-kusama#backend-secret>
     domain: kusama-staging.w3f.community
     matrix:   
-      room: "!wbxuOBjEolqjzFGfIq:web3.foundation"
+      room: "!DkMLvZHAkMBXsJzzcH:web3.foundation"
       userId: "@1kv-stats:matrix.org"
   mongoExpress:
     whitelistSourceIps: <path:vaults/k8s-community-secrets/items/otv-kusama#shared-vpn-ip>
@@ -18,7 +18,7 @@ polkadot:
     secret:  <path:vaults/k8s-community-secrets/items/otv-polkadot#backend-secret>
     domain: polkadot-staging.w3f.community
     matrix:   
-      room: "!KwUfAbgQENlAadHaLV:web3.foundation"
+      room: "!mAeaxHqMUzRnTUhFUM:web3.foundation"
       userId: "@1kv-stats:matrix.org"
   mongoExpress:
     whitelistSourceIps: <path:vaults/k8s-community-secrets/items/otv-polkadot#shared-vpn-ip>

@@ -9,7 +9,7 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: kusama-1kv-staging
-  project: 1kv-backend
+  project: 1kv-backend-staging
   # syncPolicy:
   #   automated:
   #     prune: true
@@ -73,7 +73,7 @@ spec:
                 },
                 "db": {
                   "mongo": {
-                      "uri": {{ .Values.kusama.db.uri }}
+                      "uri": {{ .Values.kusama.db.uri | quote }}
                   }
                 },
                 "matrix": {

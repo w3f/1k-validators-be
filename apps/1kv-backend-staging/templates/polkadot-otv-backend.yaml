@@ -71,7 +71,7 @@ spec:
                 },
                 "db": {
                   "mongo": {
-                      "uri": {{ .Values.polkadot.db.uri }}
+                      "uri": {{ .Values.polkadot.db.uri | quote }}
                   }
                 },
                 "matrix": {
@@ -84,10 +84,10 @@ spec:
                     "timeDelayBlocks": "10850",
                     "blacklistedAnnouncements": []
                 },
-                "score":  {{ range .Files.Lines "config/polkadot-score.json" }}
+                "score": {{ range .Files.Lines "config/polkadot-score.json" }}
                   {{ . }}{{ end }},
                 "scorekeeper": {
-                  "candidates": null,              
+                  "candidates": null,
                   "forceRound": false,
                   "nominating": false
                 },

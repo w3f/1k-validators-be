@@ -1350,6 +1350,24 @@
       "stash": "14BnTrXDZH9diqkzKNqGCf4BXG8oJRBdiKFfsRem8LYDRQy7",
       "kusamaStash": "JCHVzJjBWS1ZxkTZJN1jifYrDcspepCU2YCW23XhtVQnYE7",
       "riotHandle": "@darkless2001:matrix.org"
+    },
+    {
+      "name": "fortunenodes",
+      "stash": "12ZhwG3obkAYwwuHSzB5Cy5BPmWxqoK2XsPCuqHZgB9XwRFU",
+      "kusamaStash": "GUw3gm93T85i9Syb4hA3NotNMFgCB56p7osxi3hnoqforMj",
+      "riotHandle": "@gislemon:matrix.org"
+    },
+    {
+      "name": "utsa",
+      "stash": "15wnPRex2QwgWNCMRVSqgqp2syDn8Gf6LPGGabRhA8zoohpt",
+      "kusamaStash": "D5khA3qGvd8SDXepSrCGmYRWbNUzdJpjEyg6m1mFT7VtHpw",
+      "riotHandle": "@lesnik_utsa:matrix.org"
+    },
+    {
+      "name": "VLADIMIRPRO",
+      "stash": "129QVy2hCC4fdLsjK7d6vt6DrT6Mj8A3M4nr8oL1jEXcdVVm",
+      "kusamaStash": "HUE5nUANxvCRW7SoLAHcKdB2PLoUpUVyuSdviHrKKQAV5EC",
+      "riotHandle": "@gratevladimir:matrix.org"
     }
   ]
 }

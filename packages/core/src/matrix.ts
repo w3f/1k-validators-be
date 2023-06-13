@@ -1,6 +1,8 @@
 import * as sdk from "matrix-js-sdk";
 import { logger, queries, Config } from "@1kv/common";
 
+const AutojoinRoomsMixin = sdk.AutojoinRoomsMixin;
+
 export default class MatrixBot {
   public client: any;
   public conf: Config.ConfigSchema;
@@ -20,6 +22,7 @@ export default class MatrixBot {
   }
 
   async start(): Promise<void> {
+    AutojoinRoomsMixin.setupOnClient(this.client);
     this.client.startClient();
     // this.listenForCommands();
   }

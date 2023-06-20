@@ -1368,6 +1368,12 @@
       "stash": "129QVy2hCC4fdLsjK7d6vt6DrT6Mj8A3M4nr8oL1jEXcdVVm",
       "kusamaStash": "HUE5nUANxvCRW7SoLAHcKdB2PLoUpUVyuSdviHrKKQAV5EC",
       "riotHandle": "@gratevladimir:matrix.org"
+    },
+    {
+      "name": "YAO Gmbh",
+      "stash": "133JUUgdpD4DGtPgZaUQZmnW3VYu1QHt2DYTyy6GWC7HMQCn",
+      "kusamaStash": "HxVdrC3UWVvjSvcH93ntr2J7PRJgM43Duw8nYaGyKwa2VkA",
+      "riotHandle": "@lukayao:matrix.org"
     }
   ]
 }

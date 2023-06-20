@@ -1,5 +1,5 @@
 import * as sdk from "matrix-js-sdk";
-import { logger, queries, Config } from "@1kv/common";
+import { Config, logger, queries } from "@1kv/common";
 
 export default class MatrixBot {
   public client: any;
@@ -20,6 +20,16 @@ export default class MatrixBot {
   }
 
   async start(): Promise<void> {
+    this.client.on("RoomMember.membership", function (event, member) {
+      if (member.membership === "invite" && member.userId === this.userId) {
+        this.client.joinRoom(member.roomId).then(function () {
+          logger.info(
+            `User: ${this.userId} auto joined room: ${member.roomId}`,
+            { label: "matrix" }
+          );
+        });
+      }
+    });
     this.client.startClient();
     // this.listenForCommands();
   }

@@ -20,6 +20,13 @@ export default class MatrixBot {
   }
 
   async start(): Promise<void> {
+    this.client.on("RoomMember.membership", function (event, member) {
+      if (member.membership === "invite" && member.userId === this.userId) {
+        this.client.joinRoom(member.roomId).then(function () {
+          console.log("Auto-joined %s", member.roomId);
+        });
+      }
+    });
     this.client.startClient();
     // this.listenForCommands();
   }

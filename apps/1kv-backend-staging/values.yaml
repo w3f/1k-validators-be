@@ -1,7 +1,7 @@
 environment: production
 kusama:
   db:
-    uri: "mongodb://<path:vaults/k8s-community-secrets/items/otv-kusama#mongo-username>:<path:vaults/k8s-community-secrets/items/otv-kusama#mongo-password>@kusama-mongodb-staging-headless.kusama-staging.svc.cluster.local/otv?tls=false&replicaSet=rs0"
+    uri: "mongodb://<path:vaults/k8s-community-secrets/items/otv-kusama#mongo-username>:<path:vaults/k8s-community-secrets/items/otv-kusama#mongo-password>@kusama-mongodb-staging-headless.kusama-1kv-staging.svc.cluster.local/otv?tls=false&replicaSet=rs0"
   be:
     secret:  <path:vaults/k8s-community-secrets/items/otv-kusama#backend-secret>
     domain: kusama-staging.w3f.community
@@ -13,7 +13,7 @@ kusama:
     domain: w3f.community
 polkadot: 
   db:
-    uri: "mongodb://<path:vaults/k8s-community-secrets/items/otv-polkadot#mongo-username>:<path:vaults/k8s-community-secrets/items/otv-polkadot#mongo-password>@polkadot-mongodb-staging-headless.polkadot-staging.svc.cluster.local/otv?tls=false&replicaSet=rs0"
+    uri: "mongodb://<path:vaults/k8s-community-secrets/items/otv-polkadot#mongo-username>:<path:vaults/k8s-community-secrets/items/otv-polkadot#mongo-password>@polkadot-mongodb-staging-headless.polkadot-1kv-staging.svc.cluster.local/otv?tls=false&replicaSet=rs0"
   be:
     secret:  <path:vaults/k8s-community-secrets/items/otv-polkadot#backend-secret>
     domain: polkadot-staging.w3f.community

@@ -47,7 +47,7 @@ polkadot:
     domain: polkadot-staging.w3f.community
     matrix:   
       room: "!mAeaxHqMUzRnTUhFUM:web3.foundation"
-    userId: "@1kv-stats:matrix.org"
+      userId: "@1kv-stats:matrix.org"
     storage: "4Gi"
     resources:
       limits:

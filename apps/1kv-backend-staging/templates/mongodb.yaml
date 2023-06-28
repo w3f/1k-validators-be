@@ -106,7 +106,7 @@ spec:
               # storageClass: ""
               accessModes:
                 - ReadWriteOnce
-              size: {{ .Values.kusama.db.storageSize }}
+              size: {{ .Values.kusama.db.storage }}
               annotations: {}
               mountPath: /bitnami/mongodb
               subPath: ""
@@ -319,7 +319,7 @@ spec:
               # storageClass: ""
               accessModes:
                 - ReadWriteOnce
-              size: {{ .Values.polkadot.db.storageSize }}
+              size: {{ .Values.polkadot.db.storage }}
               annotations: {}
               mountPath: /bitnami/mongodb
               subPath: ""

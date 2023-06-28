@@ -3,7 +3,7 @@ kusama:
   db:
     architecture: standalone
     uri: "mongodb://<path:vaults/k8s-community-secrets/items/otv-kusama#mongo-username>:<path:vaults/k8s-community-secrets/items/otv-kusama#mongo-password>@kusama-mongodb-staging.kusama-1kv-staging/otv"
-    storageSize: "8Gi"
+    storage: "8Gi"
     resources:
       limits: 
         cpu: "600m"
@@ -33,7 +33,7 @@ polkadot:
   db:
     architecture: standalone
     uri: "mongodb://<path:vaults/k8s-community-secrets/items/otv-polkadot#mongo-username>:<path:vaults/k8s-community-secrets/items/otv-polkadot#mongo-password>@polkadot-mongodb-staging.polkadot-1kv-staging/otv"
-    storageSize: "8Gi"
+    storage: "8Gi"
     resources:
       limits: 
         cpu: "600m"

@@ -19,6 +19,7 @@ polkadot:
     uri: "mongodb://<path:vaults/k8s-community-secrets/items/otv-polkadot#mongo-username>:<path:vaults/k8s-community-secrets/items/otv-polkadot#mongo-password>@polkadot-mongodb-staging.polkadot-1kv-staging/otv"
   be:
     nominating: false
+    secret:  <path:vaults/k8s-community-secrets/items/otv-polkadot#backend-secret>
     domain: polkadot-staging.w3f.community
     matrix:   
       room: "!mAeaxHqMUzRnTUhFUM:web3.foundation"

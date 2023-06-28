@@ -30,12 +30,9 @@ spec:
             domain: {{ .Values.polkadot.be.domain | quote }}
 
             resources:
-              limits:
-                cpu: 3500m
-                memory: 9Gi
-              requests:
-                cpu: 700m
-                memory: 3Gi
+              {{- toYaml .Values.polkadot.be.resources | nindent 14 }}
+
+            storage: {{ .Values.polkadot.be.storage }}
 
             secret: |
               {{ .Values.polkadot.be.secret }}
@@ -89,7 +86,7 @@ spec:
                 "scorekeeper": {
                   "candidates": null,
                   "forceRound": false,
-                  "nominating": false
+                  "nominating": {{ .Values.polkadot.be.nominating }}
                 },
                 "server": {
                   "port": 3300,

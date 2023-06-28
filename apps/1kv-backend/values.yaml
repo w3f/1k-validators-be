@@ -1,8 +1,10 @@
 environment: production
 kusama:
   db:
+    architecture: replicaset
     uri: "mongodb://<path:vaults/k8s-community-secrets/items/otv-kusama#mongo-username>:<path:vaults/k8s-community-secrets/items/otv-kusama#mongo-password>@kusama-mongodb-headless.kusama.svc.cluster.local/otv?tls=false&replicaSet=rs0"
   be:
+    nominating: true
     secret:  <path:vaults/k8s-community-secrets/items/otv-kusama#backend-secret>
     domain: kusama.w3f.community
     matrix:   
@@ -13,8 +15,10 @@ kusama:
     domain: w3f.community
 polkadot: 
   db:
+    architecture: replicaset
     uri: "mongodb://<path:vaults/k8s-community-secrets/items/otv-polkadot#mongo-username>:<path:vaults/k8s-community-secrets/items/otv-polkadot#mongo-password>@polkadot-mongodb-headless.polkadot.svc.cluster.local/otv?tls=false&replicaSet=rs0"
   be:
+    nominating: true
     secret:  <path:vaults/k8s-community-secrets/items/otv-polkadot#backend-secret>
     domain: polkadot.w3f.community
     matrix:   
@@ -22,4 +26,44 @@ polkadot:
       userId: "@1kv-stats:matrix.org"
   mongoExpress:
     whitelistSourceIps: <path:vaults/k8s-community-secrets/items/otv-polkadot#shared-vpn-ip>
-    domain: w3f.community      
+    domain: w3f.community
+
+resources:
+  kusama:
+    db:
+      storageSize: "8Gi"
+    resources:
+      limits: 
+        cpu: "2000m"
+        memory: "2Gi"
+      requests: 
+        cpu: "1000m"
+        memory: "1Gi"
+    be:
+      storage: "20Gi"
+      resources:
+        limits:
+          cpu: "3500m"
+          memory: "9Gi"
+        requests:
+          cpu: "700m"
+          memory: "3Gi"
+  polkadot:
+    db:
+      storageSize: "8Gi"
+    resources:
+      limits: 
+        cpu: "1200m"
+        memory: "2Gi"
+      requests: 
+        cpu: "1000m"
+        memory: "1Gi"
+    be:
+      storage: "20Gi"
+      resources:
+        limits:
+          cpu: "3500m"
+          memory: "9Gi"
+        requests:
+          cpu: "700m"
+          memory: "3Gi"

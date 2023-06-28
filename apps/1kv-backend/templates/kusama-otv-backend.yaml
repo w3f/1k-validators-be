@@ -30,16 +30,12 @@ spec:
             domain: {{ .Values.kusama.be.domain | quote }}
 
             resources:
-              limits:
-                cpu: 3500m
-                memory: 9Gi
-              requests:
-                cpu: 700m
-                memory: 3Gi
+              {{- toYaml .Values.kusama.be.resources | nindent 14 }}
+
+            storage: {{ .Values.kusama.be.storage }}
 
             secret: |
               {{ .Values.kusama.be.secret }}
-
 
             config: |
               {
@@ -91,7 +87,7 @@ spec:
                 "scorekeeper": {
                   "candidates": null,
                   "forceRound": false,
-                  "nominating": true
+                  "nominating": {{ .Values.kusama.be.nominating }}
                 },
                 "server": {
                   "port": 3300,

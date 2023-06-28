@@ -30,9 +30,9 @@ spec:
             domain: {{ .Values.kusama.be.domain | quote }}
 
             resources:
-              {{- toYaml .Values.resources.kusama.be.resources | nindent 14 }}
+              {{- toYaml .Values.kusama.be.resources | nindent 14 }}
 
-            storage: {{ .Values.resources.kusama.be.storage }}
+            storage: {{ .Values.kusama.be.storage }}
 
             secret: |
               {{ .Values.kusama.be.secret }}

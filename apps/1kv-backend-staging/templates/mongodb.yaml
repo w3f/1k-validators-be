@@ -35,6 +35,7 @@ spec:
               {{ if eq .Values.kusama.db.architecture "replicaset" }}
               replicaSetKey: <path:vaults/k8s-community-secrets/items/otv-kusama#mongo-rs-key>
               {{ end }}
+
             directoryPerDB: true
 
             tls:
@@ -75,7 +76,7 @@ spec:
               runAsNonRoot: true
 
             resources:
-              {{- toYaml .Values.resources.kusama.be.resources | nindent 16 }}
+              {{- toYaml .Values.kusama.db.resources | nindent 16 }}
 
             livenessProbe:
               enabled: true
@@ -288,7 +289,7 @@ spec:
               runAsNonRoot: true
 
             resources:
-              {{- toYaml .Values.resources.polkadot.be.resources | nindent 16 }}
+              {{- toYaml .Values.polkadot.db.resources | nindent 16 }}
 
             livenessProbe:
               enabled: true

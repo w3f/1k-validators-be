@@ -3,6 +3,14 @@ kusama:
   db:
     architecture: standalone
     uri: "mongodb://<path:vaults/k8s-community-secrets/items/otv-kusama#mongo-username>:<path:vaults/k8s-community-secrets/items/otv-kusama#mongo-password>@kusama-mongodb-staging.kusama-1kv-staging/otv"
+    storageSize: "8Gi"
+    resources:
+      limits: 
+        cpu: "600m"
+        memory: "1Gi"
+      requests: 
+        cpu: "300m"
+        memory: "400Mi"  
   be:
     nominating: false
     secret:  <path:vaults/k8s-community-secrets/items/otv-kusama#backend-secret>
@@ -10,6 +18,14 @@ kusama:
     matrix:   
       room: "!DkMLvZHAkMBXsJzzcH:web3.foundation"
       userId: "@1kv-stats:matrix.org"
+    storage: "4Gi"
+    resources:
+      limits:
+        cpu: "800m"
+        memory: "2Gi"
+      requests:
+        cpu: "400m"
+        memory: "1Gi"      
   mongoExpress:
     whitelistSourceIps: <path:vaults/k8s-community-secrets/items/otv-kusama#shared-vpn-ip>
     domain: w3f.community
@@ -17,54 +33,29 @@ polkadot:
   db:
     architecture: standalone
     uri: "mongodb://<path:vaults/k8s-community-secrets/items/otv-polkadot#mongo-username>:<path:vaults/k8s-community-secrets/items/otv-polkadot#mongo-password>@polkadot-mongodb-staging.polkadot-1kv-staging/otv"
+    storageSize: "8Gi"
+    resources:
+      limits: 
+        cpu: "600m"
+        memory: "1Gi"
+      requests: 
+        cpu: "300m"
+        memory: "400Mi"
   be:
     nominating: false
     secret:  <path:vaults/k8s-community-secrets/items/otv-polkadot#backend-secret>
     domain: polkadot-staging.w3f.community
     matrix:   
       room: "!mAeaxHqMUzRnTUhFUM:web3.foundation"
-      userId: "@1kv-stats:matrix.org"
+    userId: "@1kv-stats:matrix.org"
+    storage: "4Gi"
+    resources:
+      limits:
+        cpu: "800m"
+        memory: "2Gi"
+      requests:
+        cpu: "400m"
+        memory: "1Gi"      
   mongoExpress:
     whitelistSourceIps: <path:vaults/k8s-community-secrets/items/otv-polkadot#shared-vpn-ip>
     domain: w3f.community
-
-
-resources:
-  kusama:
-    db:
-      storageSize: "8Gi"
-    resources:
-      limits: 
-        cpu: "600m"
-        memory: "1Gi"
-      requests: 
-        cpu: "300m"
-        memory: "400Mi"
-    be:
-      storage: "4Gi"
-      resources:
-        limits:
-          cpu: "800m"
-          memory: "2Gi"
-        requests:
-          cpu: "400m"
-          memory: "1Gi"
-  polkadot:
-    db:
-      storageSize: "8Gi"
-    resources:
-      limits: 
-        cpu: "600m"
-        memory: "1Gi"
-      requests: 
-        cpu: "300m"
-        memory: "400Mi"
-    be:
-      storage: "4Gi"
-      resources:
-        limits:
-          cpu: "800m"
-          memory: "2Gi"
-        requests:
-          cpu: "400m"
-          memory: "1Gi"

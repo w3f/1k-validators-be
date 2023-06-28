@@ -30,9 +30,9 @@ spec:
             domain: {{ .Values.polkadot.be.domain | quote }}
 
             resources:
-              {{- toYaml .Values.polkadot.be.resources | nindent 14 }}
+              {{- toYaml .Values.resources.polkadot.be.resources | nindent 14 }}
 
-            storage: {{ .Values.polkadot.be.storage }}
+            storage: {{ .Values.resources.polkadot.be.storage }}
 
             secret: |
               {{ .Values.polkadot.be.secret }}

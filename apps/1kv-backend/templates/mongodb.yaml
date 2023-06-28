@@ -76,7 +76,7 @@ spec:
               runAsNonRoot: true
 
             resources:
-              {{- toYaml .Values.kusama.db.resources | nindent 16 }}
+              {{- toYaml .Values.kusama.db.resources | nindent 14 }}
 
             livenessProbe:
               enabled: true
@@ -289,7 +289,7 @@ spec:
               runAsNonRoot: true
 
             resources:
-              {{- toYaml .Values.polkadot.db.resources | nindent 16 }}
+              {{- toYaml .Values.polkadot.db.resources | nindent 14 }}
 
             livenessProbe:
               enabled: true

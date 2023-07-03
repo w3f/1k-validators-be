@@ -17,7 +17,7 @@ kusama:
     domain: kusama.w3f.community
     matrix:   
       room: "!mdugGIKqSTweIOpTlA:web3.foundation"
-      userId: "@1kv-stats:matrix.org"
+      userId: "@1kvbot:web3.foundation"
     storage: "20Gi"
     resources:
       limits:
@@ -47,7 +47,7 @@ polkadot:
     domain: polkadot.w3f.community
     matrix:   
       room: "!ccXWsugXuoiHnkEhKa:web3.foundation"
-      userId: "@1kv-stats:matrix.org"
+      userId: "@1kvbot:web3.foundation"
     storage: "20Gi"
     resources:
       limits:

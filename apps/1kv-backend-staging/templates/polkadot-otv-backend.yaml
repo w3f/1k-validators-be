@@ -73,7 +73,7 @@ spec:
                 },
                 "matrix": {
                   "enabled": true,
-                  "baseUrl": "https://matrix.org",
+                  "baseUrl": "https://matrix.web3.foundation",
                   "room": {{ .Values.polkadot.be.matrix.room | quote}},
                   "userId": {{ .Values.polkadot.be.matrix.userId | quote}}
                 },

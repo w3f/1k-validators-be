@@ -74,7 +74,7 @@ spec:
                 },
                 "matrix": {
                   "enabled": true,
-                  "baseUrl": "https://matrix.org",
+                  "baseUrl": "https://matrix.web3.foundation",
                   "room": {{ .Values.kusama.be.matrix.room | quote}},
                   "userId": {{ .Values.kusama.be.matrix.userId | quote}}
                 },

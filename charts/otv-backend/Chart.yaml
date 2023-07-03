@@ -1,4 +1,5 @@
 description: 1K Validators Backend
 name: otv-backend
-version: v2.8.44
+version: v2.8.45
+appVersion: v2.8.45
 apiVersion: v2

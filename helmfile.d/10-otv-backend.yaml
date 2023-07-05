@@ -11,7 +11,7 @@ releases:
     namespace: kusama
     chart: ../charts/otv-backend
     values:
-      - ./config/otv-backend.yaml.gotmpl
+    - ./config/otv-backend.yaml.gotmpl
     {{ if eq .Environment.Name "local" }}
     - ./config/kusama/otv-backend-local.yaml.gotmpl
     {{ else }}
@@ -22,7 +22,7 @@ releases:
     namespace: polkadot
     chart: ../charts/otv-backend
     values:
-      - ./config/otv-backend.yaml.gotmpl
+    - ./config/otv-backend.yaml.gotmpl
     {{ if eq .Environment.Name "local" }}
     - ./config/polkadot/otv-backend-local.yaml.gotmpl
     {{ else }}

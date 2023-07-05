@@ -698,7 +698,7 @@ export class OTV implements Constraints {
       offlineScore +
       delegationScore +
       nominatorStakeScore +
-      // openGovDelegationScore +
+      openGovDelegationScore +
       scaledOpenGovScore;
     const randomness = 1 + Math.random() * 0.15;
 

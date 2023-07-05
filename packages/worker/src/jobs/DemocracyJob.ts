@@ -17,43 +17,54 @@ export const getNominatorAddresses = async (chaindata) => {
 };
 
 export const getFellowshipAddresses = async (chaindata) => {
-  const fellowship = await chaindata.getFellowship();
   const fellowshipAddresses = [];
-  for (const fellow of fellowship) {
-    fellowshipAddresses.push(fellow.address);
-    const identity = await queries.getIdentity(fellow.address);
-    if (identity) {
-      if (!fellowshipAddresses.includes(identity.address)) {
-        fellowshipAddresses.push(identity.address.toString());
-      }
+  try {
+    const fellowship = await chaindata.getFellowship();
 
-      for (const subidentity of identity.subIdentities) {
-        if (!fellowshipAddresses.includes(subidentity.address)) {
-          fellowshipAddresses.push(subidentity.address.toString());
+    for (const fellow of fellowship) {
+      fellowshipAddresses.push(fellow.address);
+      const identity = await queries.getIdentity(fellow.address);
+      if (identity) {
+        if (!fellowshipAddresses.includes(identity.address)) {
+          fellowshipAddresses.push(identity.address.toString());
+        }
+
+        for (const subidentity of identity.subIdentities) {
+          if (!fellowshipAddresses.includes(subidentity.address)) {
+            fellowshipAddresses.push(subidentity.address.toString());
+          }
         }
       }
     }
+  } catch (e) {
+    logger.error(`could not get fellowship addresses`);
+    logger.error(e.toString(), democracyLabel);
   }
   return fellowshipAddresses;
 };
 
 export const getSocietyAddresses = async (chaindata) => {
   const addresses = [];
-  const society = await chaindata.getSociety();
-  for (const address of society) {
-    addresses.push(address);
-    const identity = await queries.getIdentity(address);
-    if (identity) {
-      if (!addresses.includes(identity.address)) {
-        addresses.push(identity.address.toString());
-      }
+  try {
+    const society = await chaindata.getSociety();
+    for (const address of society) {
+      addresses.push(address);
+      const identity = await queries.getIdentity(address);
+      if (identity) {
+        if (!addresses.includes(identity.address)) {
+          addresses.push(identity.address.toString());
+        }
 
-      for (const subidentity of identity.subIdentities) {
-        if (!addresses.includes(subidentity.address)) {
-          addresses.push(subidentity.address.toString());
+        for (const subidentity of identity.subIdentities) {
+          if (!addresses.includes(subidentity.address)) {
+            addresses.push(subidentity.address.toString());
+          }
         }
       }
     }
+  } catch (e) {
+    logger.error(`could not get society addresses`, democracyLabel);
+    logger.error(e.toString(), democracyLabel);
   }
 
   return addresses;
@@ -730,15 +741,25 @@ export const setReferenda = async (
 
 export const setVoters = async (chaindata) => {
   try {
+    logger.info(`Getting validators`, democracyLabel);
     const { allValidators: validators, chainValidators } =
       await getValidatorAddresses(chaindata);
+    logger.info(`Getting nominators`, democracyLabel);
     const nominators = await getNominatorAddresses(chaindata);
+    logger.info(`Getting fellowship`, democracyLabel);
     const fellowshipAddresses = await getFellowshipAddresses(chaindata);
+    logger.info(`Getting identities`, democracyLabel);
     const identityAddresses = await getIdentityAddresses();
+    logger.info(`Getting society`, democracyLabel);
     const societyAddresses = await getSocietyAddresses(chaindata);
 
     const voters = [];
     const convictionVotes = await ConvictionVoteModel.find({}).lean().exec();
+
+    if (convictionVotes.length === 0) {
+      logger.info(`No conviction votes found`, democracyLabel);
+      return;
+    }
 
     for (const vote of convictionVotes) {
       if (!voters.includes(vote.address)) {
@@ -893,6 +914,11 @@ export const setDelegates = async (chaindata) => {
 
   const voters = [];
   const convictionVotes = await ConvictionVoteModel.find({}).lean().exec();
+
+  if (convictionVotes.length == 0) {
+    logger.info(`no conviction votes found`, democracyLabel);
+    return;
+  }
 
   for (const vote of convictionVotes) {
     if (!voters.includes(vote.address)) {
@@ -1077,224 +1103,121 @@ export const democracyJob = async (chaindata: ChainData) => {
   const denom = await chaindata.getDenom();
 
   const chainType = await chaindata.getChainType();
-  if (chainType == "Kusama") {
-    try {
-      const qstart = Date.now();
-      await setVoters(chaindata);
-      logger.info(`Set Voters Done.`, democracyLabel);
-      await setDelegates(chaindata);
-      logger.info(`Set Delegates Done.`, democracyLabel);
 
-      const { ongoingReferenda, finishedReferenda } =
-        await chaindata.getOpenGovReferenda();
+  try {
+    const qstart = Date.now();
+    await setVoters(chaindata);
+    logger.info(`Set Voters Done.`, democracyLabel);
 
-      logger.info(`got open gov referenda`, democracyLabel);
+    await setDelegates(chaindata);
+    logger.info(`Set Delegates Done.`, democracyLabel);
 
-      await setReferenda(
-        Network.Kusama,
-        ongoingReferenda,
-        latestBlockNumber,
-        latestBlockHash
-      );
+    const { ongoingReferenda, finishedReferenda } =
+      await chaindata.getOpenGovReferenda();
 
-      logger.info(`Set ongoing open gov referenda`, democracyLabel);
+    logger.info(`got open gov referenda`, democracyLabel);
 
-      await setReferenda(
-        Network.Kusama,
-        finishedReferenda,
-        latestBlockNumber,
-        latestBlockHash
-      );
+    await setReferenda(
+      Network.Kusama,
+      ongoingReferenda,
+      latestBlockNumber,
+      latestBlockHash
+    );
 
-      logger.info(`Set finished open gov referenda`, democracyLabel);
+    logger.info(`Set ongoing open gov referenda`, democracyLabel);
 
-      const qend = Date.now();
-      logger.info(
-        `Open Gov Referenda Done. Took ${(qend - qstart) / 1000} seconds`,
-        democracyLabel
-      );
+    await setReferenda(
+      Network.Kusama,
+      finishedReferenda,
+      latestBlockNumber,
+      latestBlockHash
+    );
 
-      await democracyStatsJob(chaindata);
-      const dmsEnd = Date.now();
-      logger.info(
-        `Democracy stats Done. Took ${(dmsEnd - qstart) / 1000} seconds`,
-        democracyLabel
-      );
+    logger.info(`Set finished open gov referenda`, democracyLabel);
 
-      const trackTypes = await chaindata.getTrackInfo();
-      for (const track of trackTypes) {
-        await queries.setOpenGovTrack(track);
-
-        logger.info(`Tracks Done.`, democracyLabel);
-      }
-
-      const cstart = Date.now();
-      const convictionVoting = await chaindata.getConvictionVoting();
-      const cend = Date.now();
-      logger.info(
-        `Conviction Voting Done. Took ${(cend - cstart) / 1000} seconds`,
-        democracyLabel
-      );
-
-      const vstart = Date.now();
-      const { finishedVotes, ongoingVotes, delegations } = convictionVoting;
-      for (const vote of finishedVotes) {
-        await queries.setConvictionVote(vote, latestBlockNumber);
-
-        // Try to set the identity
-        const identityExists = await queries.getIdentity(vote.address);
-        if (!identityExists) {
-          const identity = await chaindata.getFormattedIdentity(vote.address);
-          await queries.setIdentity(identity);
-        }
-      }
-      const vend = Date.now();
-      logger.info(
-        `Done setting finished Votes and Identities. Took ${
-          (vend - vstart) / 1000
-        } seconds`,
-        democracyLabel
-      );
-
-      const vstart2 = Date.now();
-      for (const vote of ongoingVotes) {
-        await queries.setConvictionVote(vote, latestBlockNumber);
-
-        // Try to set the identity
-        const identityExists = await queries.getIdentity(vote.address);
-        if (!identityExists) {
-          const identity = await chaindata.getFormattedIdentity(vote.address);
-          await queries.setIdentity(identity);
-        }
-      }
-
-      const vend2 = Date.now();
-      logger.info(
-        `Done setting ongoing Votes and Identities. Took ${
-          (vend2 - vstart2) / 1000
-        } seconds`,
-        democracyLabel
-      );
-
-      const canstart = Date.now();
-      const candidates = await queries.allCandidates();
-      for (const candidate of candidates) {
-        await queries.updateCandidateConvictionVotes(candidate.stash);
-      }
-      const canend = Date.now();
-      logger.info(
-        `Setting Votes and Identities. Took ${
-          (canend - canstart) / 1000
-        } seconds`,
-        democracyLabel
-      );
-    } catch (e) {
-      logger.warn(`could not query open gov data`, democracyLabel);
-      logger.error(JSON.stringify(e), democracyLabel);
-    }
-  } else {
-    const sr = Date.now();
-    const referendaQuery = await chaindata.getDerivedReferenda();
-    for (const r of referendaQuery) {
-      if (!r) continue;
-      const {
-        // The image that was proposed
-        image: {
-          // The block at which the proposal was made
-          at = 0,
-          // The planck denominated deposit made for the gov call
-          balance = 0,
-          // Details about the specific proposal, including the call
-          // proposal,
-          // the address that made the proposal
-          proposer = "0x",
-        } = {},
-        imageHash,
-        index,
-        status: {
-          // The block the referendum closes at
-          end = 0,
-          // image hash
-          // proposalHash,
-          // The kind of turnout is needed, ie 'SimplyMajority'
-          threshold = "",
-          // how many blocks after the end block that it takes for the proposal to get enacted
-          delay,
-        } = {},
-        // list of accounts that voted aye
-        // allAye,
-        // list of accounts that voted nay
-        // allNay,
-        // the total amounts of votes
-        voteCount = 0,
-        // the total amount of aye votes
-        voteCountAye = 0,
-        // the total amount of nay votes
-        voteCountNay = 0,
-        // the total amount of tokens voted aye
-        votedAye = 0,
-        // the total amount of tokens voted nay
-        votedNay = 0,
-        // the total amount of tokens voted
-        votedTotal = 0,
-        // whether the proposal is currently passing
-        isPassing,
-        // the list of votes
-        votes,
-      } = r;
-
-      const referendum: Types.Referendum = {
-        referendumIndex: index.toNumber() || 0,
-        proposedAt: Number(at) || 0,
-        proposalEnd: Number(end) || 0,
-        proposalDelay: delay.toNumber() || 0,
-        threshold: threshold.toString() || "",
-        deposit: parseFloat(balance.toString()) / denom || 0,
-        proposer: proposer.toString() || "",
-        imageHash: imageHash.toString() || "",
-        voteCount: voteCount || 0,
-        voteCountAye: voteCountAye || 0,
-        voteCountNay: voteCountNay | 0,
-        voteAyeAmount: parseFloat(votedAye.toString()) / denom || 0,
-        voteNayAmount: parseFloat(votedNay.toString()) / denom || 0,
-        voteTotalAmount: parseFloat(votedTotal.toString()) / denom || 0,
-        isPassing: isPassing || false,
-      };
-
-      await queries.setReferendum(
-        referendum,
-        latestBlockNumber,
-        latestBlockHash
-      );
-
-      // Go through all votes for the referendum and update db entries for them
-      for (const v of votes) {
-        // @ts-ignore
-        const { accountId, isDelegating, initialU8aLength, vote, balance } = v;
-        // @ts-ignore
-        const { vote: voteDirection, conviction } = vote.toHuman();
-
-        const referendumVote: Types.ReferendumVote = {
-          referendumIndex: index.toNumber(),
-          accountId: accountId.toString(),
-          isDelegating: isDelegating,
-          balance: parseFloat(balance.toString()) / denom,
-          voteDirection: voteDirection,
-          conviction: conviction,
-        };
-
-        await queries.setReferendumVote(
-          referendumVote,
-          latestBlockNumber,
-          latestBlockHash
-        );
-      }
-    }
-    const sr2 = Date.now();
+    const qend = Date.now();
     logger.info(
-      `Derived Referenda Done. Took ${(sr2 - sr) / 1000} seconds`,
+      `Open Gov Referenda Done. Took ${(qend - qstart) / 1000} seconds`,
       democracyLabel
     );
+
+    await democracyStatsJob(chaindata);
+    const dmsEnd = Date.now();
+    logger.info(
+      `Democracy stats Done. Took ${(dmsEnd - qstart) / 1000} seconds`,
+      democracyLabel
+    );
+
+    const trackTypes = await chaindata.getTrackInfo();
+    for (const track of trackTypes) {
+      await queries.setOpenGovTrack(track);
+
+      logger.info(`Tracks Done.`, democracyLabel);
+    }
+
+    const cstart = Date.now();
+    const convictionVoting = await chaindata.getConvictionVoting();
+    const cend = Date.now();
+    logger.info(
+      `Conviction Voting Done. Took ${(cend - cstart) / 1000} seconds`,
+      democracyLabel
+    );
+
+    const vstart = Date.now();
+    const { finishedVotes, ongoingVotes, delegations } = convictionVoting;
+    for (const vote of finishedVotes) {
+      await queries.setConvictionVote(vote, latestBlockNumber);
+
+      // Try to set the identity
+      const identityExists = await queries.getIdentity(vote.address);
+      if (!identityExists) {
+        const identity = await chaindata.getFormattedIdentity(vote.address);
+        await queries.setIdentity(identity);
+      }
+    }
+    const vend = Date.now();
+    logger.info(
+      `Done setting finished Votes and Identities. Took ${
+        (vend - vstart) / 1000
+      } seconds`,
+      democracyLabel
+    );
+
+    const vstart2 = Date.now();
+    for (const vote of ongoingVotes) {
+      await queries.setConvictionVote(vote, latestBlockNumber);
+
+      // Try to set the identity
+      const identityExists = await queries.getIdentity(vote.address);
+      if (!identityExists) {
+        const identity = await chaindata.getFormattedIdentity(vote.address);
+        await queries.setIdentity(identity);
+      }
+    }
+
+    const vend2 = Date.now();
+    logger.info(
+      `Done setting ongoing Votes and Identities. Took ${
+        (vend2 - vstart2) / 1000
+      } seconds`,
+      democracyLabel
+    );
+
+    const canstart = Date.now();
+    const candidates = await queries.allCandidates();
+    for (const candidate of candidates) {
+      await queries.updateCandidateConvictionVotes(candidate.stash);
+    }
+    const canend = Date.now();
+    logger.info(
+      `Setting Votes and Identities. Took ${
+        (canend - canstart) / 1000
+      } seconds`,
+      democracyLabel
+    );
+  } catch (e) {
+    logger.warn(`could not query open gov data`, democracyLabel);
+    logger.error(JSON.stringify(e), democracyLabel);
   }
 
   const endTime = Date.now();

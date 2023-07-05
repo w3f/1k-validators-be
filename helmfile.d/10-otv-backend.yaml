@@ -17,7 +17,7 @@ releases:
     {{ else }}
     - ./config/kusama/otv-backend-ci.yaml.gotmpl
     {{ end }}
-    
+
   - name: polkadot-otv-backend
     namespace: polkadot
     chart: ../charts/otv-backend

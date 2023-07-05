@@ -17,7 +17,7 @@ spec:
   source:
     repoURL: https://w3f.github.io/helm-charts/
     chart: otv-backend
-    targetRevision: v2.8.45
+    targetRevision: ^v2.8.45
     plugin:
       env:
         - name: HELM_VALUES
@@ -30,16 +30,12 @@ spec:
             domain: {{ .Values.kusama.be.domain | quote }}
 
             resources:
-              limits:
-                cpu: 3500m
-                memory: 9Gi
-              requests:
-                cpu: 700m
-                memory: 3Gi
+              {{- toYaml .Values.kusama.be.resources | nindent 14 }}
+
+            storageSize: {{ .Values.kusama.be.storage }}
 
             secret: |
               {{ .Values.kusama.be.secret }}
-
 
             config: |
               {
@@ -78,7 +74,7 @@ spec:
                 },
                 "matrix": {
                   "enabled": true,
-                  "baseUrl": "https://matrix.org",
+                  "baseUrl": "https://matrix.web3.foundation",
                   "room": {{ .Values.kusama.be.matrix.room | quote}},
                   "userId": {{ .Values.kusama.be.matrix.userId | quote}}
                 },
@@ -91,7 +87,7 @@ spec:
                 "scorekeeper": {
                   "candidates": null,
                   "forceRound": false,
-                  "nominating": true
+                  "nominating": {{ .Values.kusama.be.nominating }}
                 },
                 "server": {
                   "port": 3300,

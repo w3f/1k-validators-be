@@ -1,12 +1,15 @@
 environment: production
 
+image:
+  repo: web3f/otv-backend
+  #tag: latest
+
 domain: otv.w3f.community
+
 dataPath: "/data"
-
-namespace: default
-
 backendPort: 3300
 
+storageSize: 20Gi
 resources:
   limits:
     cpu: 600m
@@ -14,11 +17,6 @@ resources:
   requests:
     cpu: 300m
     memory: 400Mi
-
-image:
-  repo: web3f/otv-backend
-  tag: v2.8.45
-
 
 certificate:
   enabled: true

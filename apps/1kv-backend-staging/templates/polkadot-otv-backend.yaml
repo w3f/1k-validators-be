@@ -17,25 +17,22 @@ spec:
   source:
     repoURL: https://w3f.github.io/helm-charts/
     chart: otv-backend
-    targetRevision: v2.8.44
+    targetRevision: ^v2.8.44
     plugin:
       env:
         - name: HELM_VALUES
           value: |
-            image:
-              tag: "v2.8.44"
+            # image:
+            #   tag: "latest"
             environment: {{ .Values.environment }}
             dataPath: "/data"
             backendPort: 3300
             domain: {{ .Values.polkadot.be.domain | quote }}
 
             resources:
-              limits:
-                cpu: 3500m
-                memory: 9Gi
-              requests:
-                cpu: 700m
-                memory: 3Gi
+              {{- toYaml .Values.polkadot.be.resources | nindent 14 }}
+
+            storageSize: {{ .Values.polkadot.be.storage }}
 
             secret: |
               {{ .Values.polkadot.be.secret }}
@@ -76,7 +73,7 @@ spec:
                 },
                 "matrix": {
                   "enabled": true,
-                  "baseUrl": "https://matrix.org",
+                  "baseUrl": "https://matrix.web3.foundation",
                   "room": {{ .Values.polkadot.be.matrix.room | quote}},
                   "userId": {{ .Values.polkadot.be.matrix.userId | quote}}
                 },
@@ -89,7 +86,7 @@ spec:
                 "scorekeeper": {
                   "candidates": null,
                   "forceRound": false,
-                  "nominating": false
+                  "nominating": {{ .Values.polkadot.be.nominating }}
                 },
                 "server": {
                   "port": 3300,

@@ -7,34 +7,15 @@ export const delegationJob = async (chaindata: ChainData) => {
 
   const chainType = await chaindata.getChainType();
 
-  if (chainType == "Kusama") {
-    try {
-      const delegations = await chaindata.getOpenGovDelegations();
-      await queries.wipeOpenGovDelegations();
-      for (const delegation of delegations) {
-        await queries.addOpenGovDelegation(delegation);
-      }
-    } catch (e) {
-      logger.error(e);
+  try {
+    const delegations = await chaindata.getOpenGovDelegations();
+    await queries.wipeOpenGovDelegations();
+    for (const delegation of delegations) {
+      await queries.addOpenGovDelegation(delegation);
     }
-  } else {
-    const delegators = await chaindata.getDelegators();
-
-    const candidates = await queries.allCandidates();
-
-    for (const candidate of candidates) {
-      // LEGACY DELEGATIONS
-      const delegating = delegators.filter((delegator) => {
-        if (delegator.target == candidate.stash) return true;
-      });
-
-      let totalBalance = 0;
-      for (const delegator of delegating) {
-        totalBalance += delegator.effectiveBalance;
-      }
-
-      await queries.setDelegation(candidate.stash, totalBalance, delegating);
-    }
+  } catch (e) {
+    logger.error(`Could not query delegations`, delegationLabel);
+    logger.error(e, delegationLabel);
   }
 
   const end = Date.now();

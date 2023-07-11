@@ -298,6 +298,7 @@ export const CandidateSchema = new Schema({
   convictionVoteCount: { type: Number, default: 0 },
   infrastructureLocation: LocationSchema,
   matrix: [String],
+  implementation: String,
 });
 
 export const CandidateModel = mongoose.model("Candidate", CandidateSchema);

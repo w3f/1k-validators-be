@@ -3386,6 +3386,12 @@
       "name": "VALIDANDUM-IO | KSM | 02",
       "stash": "GrerymxmcLpdjdTsPzRiC8xEb2VeLYjY4onWh7dib29RA57",
       "riotHandle": "@validandum.io.lee:matrix.org"
+    },
+    {
+      "name": "kagome-kusama-validator",
+      "stash": "GZ777psWniwVo6gJV5T1ywnEy9UsQZEehWW5zu76A3Cco3z",
+      "riotHandle": "@kamilsa:matrix.org",
+      "skipSelfStake": true
     }
   ]
 }

@@ -104,6 +104,8 @@ export class OTV implements Constraints {
   private DELEGATIONS_WEIGHT = 60;
   private OPENGOV_WEIGHT = 100;
   private OPENGOV_DELEGATION_WEIGHT = 100;
+  private RPC_WEIGHT = 100;
+  private CLIENT_WEIGHT = 200;
 
   constructor(handler: ApiHandler, config: Config.ConfigSchema) {
     this.chaindata = new ChainData(handler);
@@ -145,6 +147,12 @@ export class OTV implements Constraints {
     this.OPENGOV_DELEGATION_WEIGHT = Number(
       this.config.score.openGovDelegation
     );
+
+    this.RPC_WEIGHT =
+      Number(this.config.score.openGovDelegation) || this.RPC_WEIGHT;
+
+    this.CLIENT_WEIGHT =
+      Number(this.config.score.openGovDelegation) || this.CLIENT_WEIGHT;
   }
 
   // Add candidate to valid cache and remove them from invalid cache
@@ -244,18 +252,6 @@ export class OTV implements Constraints {
       logger.warn(`${candidate.name} offline not valid`, constraintsLabel);
     }
 
-    let rewardDestinationValid = true;
-    if (!this.skipStakedDesitnation) {
-      rewardDestinationValid =
-        (await checkRewardDestination(this.chaindata, candidate)) || false;
-      if (!rewardDestinationValid) {
-        logger.warn(
-          `${candidate.name} reward destination not valid`,
-          constraintsLabel
-        );
-      }
-    }
-
     const commissionValid =
       (await checkCommission(this.chaindata, this.commission, candidate)) ||
       false;
@@ -310,7 +306,6 @@ export class OTV implements Constraints {
       monitoringWeekValid &&
       identityValid &&
       offlineValid &&
-      rewardDestinationValid &&
       commissionValid &&
       selfStakeValid &&
       unclaimedValid &&
@@ -411,6 +406,8 @@ export class OTV implements Constraints {
       openGovWeight: this.OPENGOV_WEIGHT,
       openGovDelegationStats: openGovDelegationStats,
       openGovDelegationWeight: this.OPENGOV_DELEGATION_WEIGHT,
+      rpcWeight: this.RPC_WEIGHT,
+      clientWeight: this.CLIENT_WEIGHT,
     };
 
     // Create  entry for Validator Score Metadata
@@ -680,6 +677,9 @@ export class OTV implements Constraints {
     const scaledOpenGovScore =
       scaled(totalOpenGovScore, openGovValues) * this.OPENGOV_WEIGHT;
 
+    const isAlternativeClient = candidate?.implementation != "Parity Polkadot";
+    const clientScore = isAlternativeClient ? this.CLIENT_WEIGHT : 0;
+
     const aggregate =
       inclusionScore +
       spanInclusionScore +
@@ -699,7 +699,8 @@ export class OTV implements Constraints {
       delegationScore +
       nominatorStakeScore +
       openGovDelegationScore +
-      scaledOpenGovScore;
+      scaledOpenGovScore +
+      clientScore;
     const randomness = 1 + Math.random() * 0.15;
 
     const total = aggregate * randomness || 0;
@@ -726,6 +727,7 @@ export class OTV implements Constraints {
       delegations: delegationScore,
       openGov: scaledOpenGovScore,
       openGovDelegations: openGovDelegationScore,
+      client: clientScore,
       randomness: randomness,
       updated: Date.now(),
     };

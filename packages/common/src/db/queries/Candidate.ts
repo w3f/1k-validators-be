@@ -407,7 +407,7 @@ export const reportOnline = async (
     (locationData?.addr && locationData?.addr != addr) ||
     !locationData.address ||
     !locationData.session ||
-    Date.now() - locationData?.updated > 72000000; // The location data is older than 2 hours
+    Date.now() - locationData?.updated > 720000000; // The location data is older than 2 hours
   if (shouldFetch) {
     const iit = await getIIT();
     const { city, region, country, provider, v } = await fetchLocationInfo(
@@ -440,6 +440,7 @@ export const reportOnline = async (
       onlineSince: startupTime,
       offlineSince: 0,
       infrastructureLocation: locationData,
+      implementation: nodeImplementation,
     });
 
     await candidate.save();
@@ -475,6 +476,7 @@ export const reportOnline = async (
             details: ``,
           },
         ],
+        implementation: nodeImplementation,
       }
     ).exec();
   }
@@ -493,6 +495,7 @@ export const reportOnline = async (
       infrastructureLocation: locationData,
       onlineSince: now,
       version,
+      implementation: nodeImplementation,
       invalidity: [
         ...invalidityReasons,
         {

@@ -110,6 +110,7 @@ export type CandidateData = {
   convictionVotes: [number];
   convictionVoteCount: number;
   infrastructureLocation: any;
+  implementation: string;
 };
 
 // LEGACY GOV

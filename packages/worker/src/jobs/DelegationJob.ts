@@ -5,11 +5,10 @@ export const delegationLabel = { label: "DelegationJob" };
 export const delegationJob = async (chaindata: ChainData) => {
   const start = Date.now();
 
-  const chainType = await chaindata.getChainType();
-
   try {
     const delegations = await chaindata.getOpenGovDelegations();
     await queries.wipeOpenGovDelegations();
+    logger.info(`Adding ${delegations.length} delegations`, delegationLabel);
     for (const delegation of delegations) {
       await queries.addOpenGovDelegation(delegation);
     }
@@ -26,4 +25,5 @@ export const delegationJob = async (chaindata: ChainData) => {
 export const processDelegationJob = async (job: any, chaindata: ChainData) => {
   logger.info(`Processing Delegation Job....`, delegationLabel);
   await delegationJob(chaindata);
+  logger.info(`Delegation Job Processed!`, delegationLabel);
 };

@@ -21,7 +21,7 @@ kusama:
     storage: "4Gi"
     resources:
       limits:
-        cpu: "800m"
+        cpu: "1200m"
         memory: "2Gi"
       requests:
         cpu: "400m"

@@ -10,7 +10,6 @@ export const delegationJob = async (chaindata: ChainData) => {
     await queries.wipeOpenGovDelegations();
     logger.info(`Adding ${delegations.length} delegations`, delegationLabel);
     for (const delegation of delegations) {
-      logger.info(`Adding delegation ${delegation.delegator}`, delegationLabel);
       await queries.addOpenGovDelegation(delegation);
     }
   } catch (e) {

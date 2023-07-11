@@ -17,7 +17,7 @@ spec:
   source:
     repoURL: https://w3f.github.io/helm-charts/
     chart: otv-backend
-    targetRevision: ^v2.8.48
+    targetRevision: ^v2.8.49
     plugin:
       env:
         - name: HELM_VALUES
@@ -54,7 +54,7 @@ spec:
                   "candidatesUrl": "https://raw.githubusercontent.com/w3f/1k-validators-be/master/candidates/kusama.json"
                 },
                 "constraints": {
-                  "skipConnectionTime": false,
+                  "skipConnectionTime": true,
                   "skipIdentity": false,
                   "skipStakedDestination": true,
                   "skipClientUpgrade": false,

@@ -1245,6 +1245,10 @@ export const checkLatestClientVersion = async (
   candidate: any
 ) => {
   if (!config.constraints.skipClientUpgrade) {
+    if (candidate?.implementation == "Kagome Node") {
+      return true;
+    }
+
     const forceLatestRelease = config.constraints.forceClientVersion;
     const latestRelease = await getLatestRelease();
     if (

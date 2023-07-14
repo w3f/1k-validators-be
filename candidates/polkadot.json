@@ -1368,6 +1368,12 @@
       "stash": "129QVy2hCC4fdLsjK7d6vt6DrT6Mj8A3M4nr8oL1jEXcdVVm",
       "kusamaStash": "HUE5nUANxvCRW7SoLAHcKdB2PLoUpUVyuSdviHrKKQAV5EC",
       "riotHandle": "@gratevladimir:matrix.org"
+    },
+    {
+      "name": "ULTRA-DOT-1",
+      "stash": "13xN9Mw1Xif5VTd9RdVEjaYjPsZAZeSKbukuDVHzxAjGjJ1Q",
+      "kusamaStash": "GVGsDZBoccL1YFnJS8RCpYE6aT2sXZkKtfSTJhkXD2MBrmJ",
+      "riotHandle": "@ultranode:matrix.org"
     }
   ]
 }

@@ -1368,6 +1368,60 @@
       "stash": "129QVy2hCC4fdLsjK7d6vt6DrT6Mj8A3M4nr8oL1jEXcdVVm",
       "kusamaStash": "HUE5nUANxvCRW7SoLAHcKdB2PLoUpUVyuSdviHrKKQAV5EC",
       "riotHandle": "@gratevladimir:matrix.org"
-    }
+    },
+    {
+      "name": "ULTRA-DOT-1",
+      "stash": "13xN9Mw1Xif5VTd9RdVEjaYjPsZAZeSKbukuDVHzxAjGjJ1Q",
+      "kusamaStash": "GVGsDZBoccL1YFnJS8RCpYE6aT2sXZkKtfSTJhkXD2MBrmJ",
+      "riotHandle": "@ultranode:matrix.org"
+    },
+    {
+      "name": "BlockCtrl",
+      "stash": "13b2BHxiamr5QCzLHqPUgKfTczRZvH47eQ9WqSQSP7UyMZU5",
+      "kusamaStash": "FALhH3XMMbXiKoG6u9XS8CJuxiA2eKA2HFn4oh3JpfwvBNF",
+      "riotHandle": "@alberto_bc:matrix.org"
+    },
+    {
+      "name": "YAO Gmbh",
+      "stash": "133JUUgdpD4DGtPgZaUQZmnW3VYu1QHt2DYTyy6GWC7HMQCn",
+      "kusamaStash": "HxVdrC3UWVvjSvcH93ntr2J7PRJgM43Duw8nYaGyKwa2VkA",
+      "riotHandle": "@lukayao:matrix.org"
+    },
+    {
+      "name": "ksmoon",
+      "stash": "1mxRu46U8LtWFrsBCpumjaFnBmGoSt6SgonskNR2m1A9nCM",
+      "kusamaStash": "Hpf7KTh2LmZiGQe3qaahVsMN8LSak1UFMgSJtUdDHpSiqjU",
+      "riotHandle": "@ksmoon:matrix.org"
+    },
+    {
+      "name": "anvel",
+      "stash": "12pHJra8Wm8TKmUhVjDJgcWbYQm5q7BPtzm7mmZGaJHBcf7u",
+      "kusamaStash": "EPbpqewHLsudtHdJnyMSR3SqP3fwUSSGssP18qsW1UABaFr",
+      "riotHandle": "@anvel:matrix.org"
+    },
+    {
+      "name": "Magic Tab",
+      "stash": "12bwaiu2AN7944nT1n3VX9UR2F16PuVDbtGC61Wk5DLzQJsc",
+      "kusamaStash": "G29SmTWUhXHMQrTBdC8hTMXu5G6YKwt4AsefNqFH8NMi5eq",
+      "riotHandle": "@ysnaynn:matrix.org"
+    },
+    {
+      "name": "Brilliantine",
+      "stash": "15ybn9sXnosquc4v8G1GUQrgcWD6BU5nZGpERMEyCqJygMPV",
+      "kusamaStash": "J4KJhPbV5QSFtDmjk13LUtakSBESge4LE3EBZoLBEfkAwaA",
+      "riotHandle": "@brilliantine:matrix.org"
+    },
+    {
+      "name": "Statutory",
+      "stash": "15kXizCQG5qCphnqsZvLax4zG8D9GfKdixsLbPXtP52BBU94",
+      "kusamaStash": "EcxGijR4Er3sfxVHtXnJsG4YjfMEZ6nG3GK5RgxGCnhb3fy",
+      "riotHandle": "@statutoryio:matrix.org"
+    },
+    {
+      "name": "Blockchain side",
+      "stash": "12eVBx2xjVFzHyyGVHCqEQMp2yntKiSzE2JuGYM1kQAjVKzu",
+      "kusamaStash": "G2Q8mTftjxrrVzkUTuRh1mSemdw7vQSFdxx55gneNc9ptem",
+      "riotHandle": "@sideblockchain:matrix.org"
+    },
   ]
 }

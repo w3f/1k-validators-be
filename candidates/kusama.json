@@ -3392,6 +3392,131 @@
       "stash": "GZ777psWniwVo6gJV5T1ywnEy9UsQZEehWW5zu76A3Cco3z",
       "riotHandle": "@kamilsa:matrix.org",
       "skipSelfStake": true
+    },
+    {
+      "name": "salenka 🌸",
+      "stash": "GCbjDUscmiDd9fKmui2unzbDEA7VbCYRVXzTXhUGdc7ffat",
+      "riotHandle": "@salenka:matrix.org"
+    },
+    {
+      "name": "RareShips1",
+      "stash": "HfKp8e4cD8fKZPiN3B847VmFKmv9JuZE45ZqfVZeDxcjdBU",
+      "riotHandle": "@rareships:matrix.org"
+    },
+    {
+      "name": "RareShips2",
+      "stash": "J4f4CQtYLviz82KAaQeLe2UZpV9kLY98CjuXYzkBXb6wRQ6",
+      "riotHandle": "@rareships:matrix.org"
+    },
+    {
+      "name": "ichigo02",
+      "stash": "ExACnQYbsZTNHb4kAhpA9YE7rYtD3BhrmPsExi64q3itVZN",
+      "riotHandle": "@ichigo94:matrix.org"
+    },
+    {
+      "name": "Hamburg | validierung_cc 🇩🇪",
+      "stash": "FDAugsNraejDeJHt8n4MSc5Gvn9zuAibNQ9qFQdGNVWYvtx",
+      "riotHandle": "@kev.funke:matrix.org"
+    },
+    {
+      "name": "myhaletishe",
+      "stash": "ESna9BQpJWuB34y9j2oJ7HM6MAfNniP9w4Fh4qQggc7WCPc",
+      "riotHandle": "@myhaletishe:matrix.org"
+    },
+    {
+      "name": "Freshnode1",
+      "stash": "FFqUGkoVNRvUmD1viecKj5hHWxnnKhC1gQVZUFcU8FdJBkq",
+      "riotHandle": "@freshnodek:matrix.org"
+    },
+    {
+      "name": "Freshnode2",
+      "stash": "J4f4CQtYLviz82KAaQeLe2UZpV9kLY98CjuXYzkBXb6wRQ6",
+      "riotHandle": "@freshnodek:matrix.org"
+    },
+    {
+      "name": "djandre3",
+      "stash": "EofzKajSeoukr8NabkTQaTnbdaPfoVuwf5gj6dLhiAFtGAE",
+      "riotHandle": "@djandre77:matrix.org"
+    },
+    {
+      "name": "lidertabores",
+      "stash": "G83zrjcqZ5TAM7d4TXsWS8CPuxFHBj3nj5ZUogySfDeYqyJ",
+      "riotHandle": "@lidertabores:matrix.org"
+    },
+    {
+      "name": "tutifrutinode2",
+      "stash": "HTx1PeVsnWkz99GgByorr2L7jJ9j43XRR6y3Sc3sjre3o29",
+      "riotHandle": "@telutions:matrix.org"
+    },
+    {
+      "name": "orlowski-io-kusama-validator-1",
+      "stash": "GeiwmDpbdSpqRL6DGRwiBjkpeUPSYjBvYs8K94EyWbQMN8j",
+      "riotHandle": "@orlowskilp:matrix.org"
+    },
+    {
+      "name": "havik-kusama-01",
+      "stash": "GSHE7p88bE7pZQQvzqrDmwowAsnVB7hRsnTLc8casD25hCw",
+      "riotHandle": "@havik:matrix.org"
+    },
+    {
+      "name": "KeyValidate",
+      "stash": "FD9tqLqAXLYDDRcya1NjzQKgbYkrfLnDrn39cc6jmKgsbni",
+      "riotHandle": "@keyvalidator:matrix.org"
+    },
+    {
+      "name": "Satoyama-1",
+      "stash": "5HWgqMrSH8xA6ND778jWZ5JQsEj8QhsAdHCqgLwTzt4WitU4",
+      "riotHandle": "@shawneng:matrix.org"
+    },
+    {
+      "name": "ForklessNation2",
+      "stash": "FyRsWF9bSQkK8TiJ1BdPoKtwvCwtZG7BYPoJFmZHVXnMDit",
+      "riotHandle": ["@synapticon:matrix.org", "@Darkstar/forklessnation:matrix.org"]
+    },
+    {
+      "name": "cryhel",
+      "stash": "J9xpczE5TBP36bvZmiVfEyQ14XENTJrGPbRZ32FzbtJuKNL",
+      "riotHandle": "@cryhel:matrix.org"
+    },
+    {
+      "name": "Mystique",
+      "stash": "GJWFwL8bxZszS5nJNWCV6vC5nBERLgscKSeNF3U9ZcQxL12",
+      "riotHandle": "@robin.hood:matrix.org"
+    },
+    {
+      "name": "PROXFARM2",
+      "stash": "EFS9pmTC9AvVKPgDEpi7WfGXuxYfmD67RGrDBM2miu7uJ7K",
+      "riotHandle": "@andreesken:matrix.org"
+    },
+    {
+      "name": "BigBallz K1",
+      "stash": "HCcZdQVTGZdYUsySRtxS5dVPEsiL1H5yYRNnW3ftGcgqfeQ",
+      "riotHandle": "@bigballz:matrix.org"
+    },
+    {
+      "name": "BigBallz K2",
+      "stash": "CaLNLuRcnzA2fj3rtJFx3A4tC3SefBCZXEic97B77c4m5kG",
+      "riotHandle": "@bigballz:matrix.org"
+    },
+    {
+      "name": "mysteps",
+      "stash": "Ff9GB8ZhD92fr3TiQWKaUjNivi279LDxqbnsMVzm8zckvVs ",
+      "riotHandle": "@myplan:matrix.org"
+    },
+    {
+      "name": "SMART-KUSAMA ST",
+      "stash": "GSL6QRhGA7SU2sNoF3gBvkWWPiPgSiRytHNZ7EmWF7itDSD ",
+      "riotHandle": "@smartap:matrix.org"
+    },
+    {
+      "name": "Prove Chain",
+      "stash": "HySs45Fd2GKYk96bt4bWJeFxomNZYmhwsixdtbUJB5DvbLd ",
+      "riotHandle": "@provechain:matrix.org"
+    },
+    {
+      "name": "gurustaking_gksm_01",
+      "stash": "F5j1j9TJ7xWePJmYh64Bf2b97pmer3mX1BsonCUpx3CJZpu ",
+      "riotHandle": "@gurustaking:matrix.org"
     }
   ]
 }

@@ -3517,6 +3517,46 @@
       "name": "gurustaking_gksm_01",
       "stash": "F5j1j9TJ7xWePJmYh64Bf2b97pmer3mX1BsonCUpx3CJZpu",
       "riotHandle": "@gurustaking:matrix.org"
+    },
+    {
+      "name": "Freshnode2",
+      "stash": "DYXDkk5LmAf1J1jVzVEDCp4TG5BuqRpnZmQKZG2FWTLWZhU",
+      "riotHandle": "@freshnodek:matrix.org"
+    },
+    {
+      "name": "AAronn",
+      "stash": "DBe4Bd4452xAdu9UxdNiyx9HS25TZSGzHK63ePdFK2ys2zA",
+      "riotHandle": "@AAronn"
+    },
+    {
+      "name": "Mehanikor",
+      "stash": "Enu5SHWqWN7t6GU1HdnRDBALoqCcXVquk3j1kpoDYEpQnBf",
+      "riotHandle": "@Mehanikor"
+    },
+    {
+      "name": "Greanch",
+      "stash": "F9wYAGszUHTfXvVXwRJV6385VxzkpaWQ98TUU3BCpPy4gXj",
+      "riotHandle": "@Greanch"
+    },
+    {
+      "name": "🧱 Seitan Block 🧱",
+      "stash": "Da4rJvtEDGARwq81bC2NW97L53P5yJfKZCjsxu9XTQyCVBm",
+      "riotHandle": "@seitanblock:matrix.org"
+    },
+    {
+      "name": "PASTASTAKE 🍝 Carbonara",
+      "stash": "Cd3mPZRcPxmVpGQr1UNjZccjoTkcbNdkT1xEVFoa7U4WjNv",
+      "riotHandle": "@pastastake:matrix.org"
+    },
+    {
+      "name": "crypto-jack-sparrow-1",
+      "stash": "Cbm8UMQYmgrhYt4KVah4rFyVE5MH1puA2AvBN3gYB2v2yGU",
+      "riotHandle": "@jacksparrowcrypto:matrix.org"
+    },
+    {
+      "name": "GRABBITY ✨🐇 K1",
+      "stash": "DShgED7MWc9UrfcoofsFAcK6YJqRHpMYcfDk5odpM2C34FF",
+      "riotHandle": "@grabbity:matrix.org"
     }
   ]
 }

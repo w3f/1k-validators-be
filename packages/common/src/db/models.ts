@@ -253,8 +253,6 @@ export const CandidateSchema = new Schema({
   unclaimedEras: { type: [Number], default: [] },
   // Polkadot specific: Kusama Stash
   kusamaStash: String,
-  // Polkadot specific: Case for good intentions
-  bio: String,
   // Inclusion percentage - the percent of eras active of the last 84 eras
   inclusion: { type: Number, default: 0.0 },
   // Span Inclusion percentage - the percent of eras active of the last 28 eras
@@ -288,8 +286,6 @@ export const CandidateSchema = new Schema({
   // Who the candidate is backing as a council member (an array of council addresses)
   councilVotes: [String],
   totalRewards: Number,
-  avgClaimTimestampDelta: Number,
-  avgClaimBlockDelta: Number,
   // The number of referenda voted on
   democracyVoteCount: { type: Number, default: 0 },
   // The referenda indexes voted on

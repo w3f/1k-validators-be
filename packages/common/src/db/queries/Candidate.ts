@@ -14,7 +14,6 @@ export const addCandidate = async (
   stash: string,
   kusamaStash: string,
   skipSelfStake: boolean,
-  bio: string,
   matrix: any,
   bot?: any
 ): Promise<boolean> => {
@@ -39,7 +38,6 @@ export const addCandidate = async (
       stash,
       kusamaStash,
       skipSelfStake,
-      bio,
       matrix,
     });
 
@@ -60,7 +58,6 @@ export const addCandidate = async (
       stash,
       kusamaStash,
       skipSelfStake,
-      bio,
       matrix,
     }
   );
@@ -72,12 +69,16 @@ export const deleteOldCandidateFields = async (): Promise<boolean> => {
     {},
     {
       $unset: {
+        bio: 1,
+        networkId: 1,
         sentryId: 1,
         sentryOnlineSince: 1,
         sentryOfflineSince: 1,
         telemetryId: 1,
         rankEvents: 1,
         invalidityReasons: 1,
+        avgClaimTimestampDelta: 1,
+        avgClaimBlockDelta: 1,
       },
     },
     { multi: true, safe: true }
@@ -96,6 +97,8 @@ export const deleteOldFieldFrom = async (name: string): Promise<boolean> => {
         sentryOfflineSince: 1,
         telemetryId: 1,
         rankEvents: 1,
+        avgClaimTimestampDelta: 1,
+        avgClaimBlockDelta: 1,
       },
     }
   ).exec();

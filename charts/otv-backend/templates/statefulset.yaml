@@ -35,8 +35,8 @@ spec:
             port: {{ .Values.backendPort }}
           failureThreshold: 6
           initialDelaySeconds: 30
-          periodSeconds: 10
-          timeoutSeconds: 5
+          periodSeconds: 30
+          timeoutSeconds: 20
         volumeMounts:
         - name: data
           mountPath: /data

@@ -1306,7 +1306,10 @@ export const democracyJob = async (chaindata: ChainData) => {
     logger.error(JSON.stringify(e), democracyLabel);
   }
   const endTime = Date.now();
-  logger.info(`Done. Took ${(endTime - start) / 1000} seconds`, democracyLabel);
+  logger.info(
+    `Democracy Job Done. Took ${(endTime - start) / 1000} seconds`,
+    democracyLabel
+  );
 };
 
 export const processDemocracyJob = async (job: any, chaindata: ChainData) => {

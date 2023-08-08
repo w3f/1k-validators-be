@@ -716,14 +716,17 @@ export const setReferenda = async (
   latestBlockNumber,
   latestBlockHash
 ) => {
-  for (const referenda of referendaList) {
+  for (const [i, referenda] of referendaList.entries()) {
     try {
+      const start = Date.now();
+      logger.info(`fetching referenda ${referenda.index}`, democracyLabel);
       const refQuery = await fetchReferenda(network, referenda.index);
 
       const title = refQuery?.title;
       const content = refQuery?.content;
       const proposedCall = refQuery?.proposed_call;
 
+      logger.info(`setting in db referenda ${referenda.index}`, democracyLabel);
       await queries.setOpenGovReferendum(
         title,
         content,
@@ -731,6 +734,14 @@ export const setReferenda = async (
         proposedCall,
         latestBlockNumber,
         latestBlockHash
+      );
+      const end = Date.now();
+
+      logger.info(
+        `Set contextual info for referendum ${referenda.index} [${i}/${
+          referendaList.length
+        }] (${end - start}ms)`,
+        democracyLabel
       );
     } catch (e) {
       logger.warn(`could not set referenda`, democracyLabel);
@@ -1104,6 +1115,8 @@ export const democracyJob = async (chaindata: ChainData) => {
 
   const chainType = await chaindata.getChainType();
 
+  const chain = chainType == "Kusama" ? Network.Kusama : Network.Polkadot;
+
   try {
     const qstart = Date.now();
     await setVoters(chaindata);
@@ -1115,25 +1128,36 @@ export const democracyJob = async (chaindata: ChainData) => {
     const { ongoingReferenda, finishedReferenda } =
       await chaindata.getOpenGovReferenda();
 
-    logger.info(`got open gov referenda`, democracyLabel);
+    logger.info(
+      `Queried open gov referenda: ${ongoingReferenda.length} ongoing referenda ${finishedReferenda.length} finished referenda`,
+      democracyLabel
+    );
 
+    logger.info(`Setting ongoing referenda done`, democracyLabel);
     await setReferenda(
-      Network.Kusama,
+      chain,
       ongoingReferenda,
       latestBlockNumber,
       latestBlockHash
     );
+    logger.info(`Set ongoing referenda done`, democracyLabel);
 
-    logger.info(`Set ongoing open gov referenda`, democracyLabel);
+    logger.info(
+      `Finished writing ${ongoingReferenda.length} ongoing referenda`,
+      democracyLabel
+    );
 
     await setReferenda(
-      Network.Kusama,
+      chain,
       finishedReferenda,
       latestBlockNumber,
       latestBlockHash
     );
 
-    logger.info(`Set finished open gov referenda`, democracyLabel);
+    logger.info(
+      `Finished writing ${finishedReferenda.length} finished referenda`,
+      democracyLabel
+    );
 
     const qend = Date.now();
     logger.info(
@@ -1151,12 +1175,13 @@ export const democracyJob = async (chaindata: ChainData) => {
     const trackTypes = await chaindata.getTrackInfo();
     for (const track of trackTypes) {
       await queries.setOpenGovTrack(track);
-
-      logger.info(`Tracks Done.`, democracyLabel);
     }
+    logger.info(`Tracks Done.`, democracyLabel);
 
+    logger.info(`Querying conviction Voting`, democracyLabel);
     const cstart = Date.now();
     const convictionVoting = await chaindata.getConvictionVoting();
+    logger.info(`Got conviction Voting`, democracyLabel);
     const cend = Date.now();
     logger.info(
       `Conviction Voting Done. Took ${(cend - cstart) / 1000} seconds`,

@@ -468,19 +468,32 @@ export default class ScoreKeeper {
     return true;
   }
 
+  async setCandidateIdentities(): Promise<void> {
+    const candidates = await queries.allCandidates();
+
+    logger.info(
+      `Setting candidate identities for ${candidates.length} candidates...`,
+      scorekeeperLabel
+    );
+
+    for (const [index, candidate] of candidates.entries()) {
+      const identity = await this.chaindata.getFormattedIdentity(
+        candidate.stash
+      );
+      await queries.setCandidateIdentity(candidate.stash, identity);
+      logger.info(
+        `Set candidate identity for ${candidate.stash} [${index} / ${candidates.length}]`,
+        scorekeeperLabel
+      );
+    }
+  }
+
   // Begin the main workflow of the scorekeeper
   async begin(): Promise<void> {
     logger.info(`Starting Scorekeeper.`, scorekeeperLabel);
 
     // Ensure Candidate Identity is set
-    const candidates = await queries.allCandidates();
-
-    for (const candidate of candidates) {
-      const identity = await this.chaindata.getFormattedIdentity(
-        candidate.stash
-      );
-      await queries.setCandidateIdentity(candidate.stash, identity);
-    }
+    // await this.setCandidateIdentities();
 
     // If `forceRound` is on - start immediately.
     if (this.config.scorekeeper.forceRound) {

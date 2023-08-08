@@ -1767,9 +1767,9 @@ export class ChainData {
           effectiveBalance: effectiveBalance,
           conviction: conviction.toString(),
           // The total amount of tokens that were delegated to them (including conviction)
-          delegatedConvictionBalance: delegationVotes.toString() / denom,
+          delegatedConvictionBalance: parseFloat(delegationVotes),
           // the total amount of tokens that were delegated to them (without conviction)
-          delegatedBalance: delegationCapital.toString() / denom,
+          delegatedBalance: parseFloat(delegationCapital),
           prior: prior,
         };
         allDelegations.push(delegation);

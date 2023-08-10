@@ -3519,11 +3519,6 @@
       "riotHandle": "@gurustaking:matrix.org"
     },
     {
-      "name": "Freshnode2",
-      "stash": "DYXDkk5LmAf1J1jVzVEDCp4TG5BuqRpnZmQKZG2FWTLWZhU",
-      "riotHandle": "@freshnodek:matrix.org"
-    },
-    {
       "name": "AAronn",
       "stash": "DBe4Bd4452xAdu9UxdNiyx9HS25TZSGzHK63ePdFK2ys2zA",
       "riotHandle": "@AAronn"
@@ -3557,6 +3552,61 @@
       "name": "GRABBITY ✨🐇 K1",
       "stash": "DShgED7MWc9UrfcoofsFAcK6YJqRHpMYcfDk5odpM2C34FF",
       "riotHandle": "@grabbity:matrix.org"
+    },
+    {
+      "name": "Synapticon ॐ The Magician",
+      "stash": "Fk9aoXFmsScsnmhicKDQPnuJxvN9HAaHfepxoQcbEMPNP7D",
+      "riotHandle": "@synapticon:matrix.org"
+    },
+    {
+      "name": "gurustaking_gksm_02",
+      "stash": "ESE6ka6wGpXGDJ5ykjAvH1TTuAC9Dg5VFfc1dcfoEwX9qc1",
+      "riotHandle": "@gurustaking:matrix.org"
+    },
+    {
+      "name": "pq",
+      "stash": "E7ckMbPzh2s7ZRdn5ynSedo5DPWbNzojF3mg4sgHaquhqyE",
+      "riotHandle": "@pqhost5:matrix.org"
+    },
+    {
+      "name": "itso",
+      "stash": "HHLvigJ1dBiGVjKscDiCaWnZMSEi3PV1fBHB9DnEn7wU1VG",
+      "riotHandle": "@itso9943:matrix.org"
+    },
+    {
+      "name": "polkaorange",
+      "stash": "CoLVrvRx43NPh8wtDMxY4UoNz1ebSwuu5FwegXj64kJaMkp",
+      "riotHandle": "@0xn00bz:matrix.org"
+    },
+    {
+      "name": "PASTASTAKE 🍝 Carbonara",
+      "stash": "Cd3mPZRcPxmVpGQr1UNjZccjoTkcbNdkT1xEVFoa7U4WjNv",
+      "riotHandle": "@pastastake:matrix.org"
+    },
+    {
+      "name": "BestValidatorEver4Ever",
+      "stash": "HtzPM38QSyET73oECYBhajf128s98csmmUmtg1CzJM7zFKN",
+      "riotHandle": "@bestvalidatorever:matrix.org"
+    },
+    {
+      "name": "kristy",
+      "stash": "GqAgkDmJ4CiUX4U8fVFCN5o1W2AQQtHzParjdTvsR7wJUmy",
+      "riotHandle": "@kristy:matrix.org"
+    },
+    {
+      "name": "BestValidatorEver007",
+      "stash": "DHhU5qqjPSrfnATMM6dvzjEaJpgAaUYJY7CbvFPMJLG6Ssd",
+      "riotHandle": "@bestvalidatorever:matrix.org"
+    },
+    {
+      "name": "creeps",
+      "stash": "G1qAFJH2JoNipx19Sup45rMYUmHupZraoGW67q9V5mpzo1b",
+      "riotHandle": "@creepskeep:matrix.org"
+    },
+    {
+      "name": "APPLEPIE-KSM",
+      "stash": "E7njcoMxryWRdeLuieJxsDWvnj4pDgJJ3Z7j5BCw8oZuMVX",
+      "riotHandle": "@kamelstaking:matrix.org"
     }
   ]
 }

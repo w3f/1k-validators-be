@@ -155,7 +155,7 @@ export const DEMOCRACY_CRON = "0 0-59/5 * * * *";
 export const NOMINATOR_CRON = "0 0-59/17 * * * *";
 
 // Delegation Cron Job. This runs every 20 minutes by default
-export const DELEGATION_CRON = "0 0-59/45 * * * *";
+export const DELEGATION_CRON = "0 0-59/5 * * * *";
 
 export const BLOCK_CRON = "0 0-59/1 * * * *";
 

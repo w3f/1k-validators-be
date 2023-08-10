@@ -1422,6 +1422,44 @@
       "stash": "12eVBx2xjVFzHyyGVHCqEQMp2yntKiSzE2JuGYM1kQAjVKzu",
       "kusamaStash": "G2Q8mTftjxrrVzkUTuRh1mSemdw7vQSFdxx55gneNc9ptem",
       "riotHandle": "@sideblockchain:matrix.org"
+    },
+    {
+      "name": "GameTheory-01",
+      "stash": "13Srw7dVtGJnZrV3o6RCAJ97MaGbSKShQQiSYjbGp4Jvu4Cs",
+      "kusamaStash": "DY3hczPcJjHXScXkKwJZ7vgqTE4bZaCUa56XsAQH8gDzB7x",
+      "riotHandle": "@game.theory:matrix.org",
+      "skipSelfStake": true
+    },
+    {
+      "name": "helixstreet",
+      "stash": "16WzVw5JDCXLiA3t5D4LL15S2sqSBtCsjVNXkwLCVxGdeQGj",
+      "kusamaStash": "J6K1vA6ynGo2GrotGpP5ocHKr82JFTv7NUnzJcoRfTcCn8T",
+      "riotHandle": "@helixstreet.io:matrix.org",
+      "skipSelfStake": true
+    },
+    {
+      "name": "Cryptography",
+      "stash": "14p3QPfNeBwTiSjEVCjhTDCftyyzqoe7aW6SLD7jpTLXizri",
+      "kusamaStash": "DB9bVarUeUkbdACKaBC8zHeSfLQCKdwgJmKCvpcqvC1C6Zw",
+      "riotHandle": "@cryptographyvalidator:matrix.org"
+    },
+    {
+      "name": "FUTURE",
+      "stash": "12eKXDMUnGVp2ScEKXbFNxbgktL7DEchLKTFrayspgqwDraq",
+      "kusamaStash": "JEfXUjhjjnb2RZmuthXjDGAf34T1SndetNB5gN1uJZ1372C",
+      "riotHandle": "@1futu:matrix.org"
+    },
+    {
+      "name": "Diamond",
+      "stash": "15N2nvyikmU96F5wE919Gc6YLAKGtL6NoQ5ixKLeLp4T4LBV",
+      "kusamaStash": "FergEor1g4fw7a81PqXjrQLTWCcXJcFRHJwzVdxrZf9tuQB",
+      "riotHandle": "@diamondvalidator:matrix.org"
+    },
+    {
+      "name": "Blockchain Merlin",
+      "stash": "1To8mJLPm9spZdQF1ziHMoc7ZCDHYUeCjDzQfN4j2qY6XRe",
+      "kusamaStash": "DVQzUfux1dT8CD1yrTJRsb2E9dJgy9h1wKknHhSTW44DXob",
+      "riotHandle": "@merlinvvs:matrix.org"
     }
   ]
 }

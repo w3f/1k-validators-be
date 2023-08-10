@@ -1591,8 +1591,12 @@ export class ChainData {
 
           if (isReferendumOngoing) {
             if (voteType["Standard"]) {
-              const { vote: refVote, balance } = voteType["Standard"];
+              const { vote: refVote, balance: balanceString } =
+                voteType["Standard"];
               const { conviction, vote: voteDirection } = refVote;
+
+              const balance =
+                parseFloat(balanceString.replace(/,/g, "")) / denom;
 
               // The formatted vote
               const v = {
@@ -1606,10 +1610,8 @@ export class ChainData {
                 conviction: conviction.toString(),
                 // The balance they are voting with themselves, sans delegated balance
                 balance: {
-                  aye:
-                    voteDirection.toString() == "Aye" ? parseFloat(balance) : 0,
-                  nay:
-                    voteDirection.toString() == "Nay" ? parseFloat(balance) : 0,
+                  aye: voteDirection.toString() == "Aye" ? balance : 0,
+                  nay: voteDirection.toString() == "Nay" ? balance : 0,
                   abstain: 0,
                 },
                 // The total amount of tokens that were delegated to them (including conviction)

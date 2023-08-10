@@ -242,7 +242,7 @@ export const getAmount = (votes) => {
 };
 
 export const democracyStatsJob = async (chaindata) => {
-  logger.info(`Starting democracy .stats job...`, democracyLabel);
+  logger.info(`Starting Democracy Stats Job...`, democracyLabel);
   const start = Date.now();
 
   const votes = await queries.getAllConvictionVoting();

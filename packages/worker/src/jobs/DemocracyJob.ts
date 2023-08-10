@@ -675,7 +675,10 @@ export async function fetchReferenda(
 ): Promise<any> {
   let res;
   const myHeaders = new Headers();
-  myHeaders.append("x-network", " kusama");
+  myHeaders.append(
+    "x-network",
+    network === Network.Polkadot ? "polkadot" : "kusama"
+  );
 
   res = await fetch(
     `https://api.polkassembly.io/api/v1/posts/on-chain-post?postId=${id}&proposalType=referendums_v2`,

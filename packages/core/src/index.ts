@@ -19,7 +19,7 @@ import { startClearAccumulatedOfflineTimeJob } from "./cron";
 
 const isCI = process.env.CI;
 
-const version = process.env.npm_package_version || "v2.8.51";
+const version = process.env.npm_package_version || "v2.8.54";
 
 const winstonLabel = { label: "start" };
 

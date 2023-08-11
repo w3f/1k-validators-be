@@ -30,7 +30,7 @@ export default class Server {
     this.app.use(bodyparser());
 
     const cache = new LRU({
-      max: 1800000, // global max age
+      max: 180000, // global max age
     });
     this.app.use(
       koaCash({

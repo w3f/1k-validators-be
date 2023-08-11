@@ -269,14 +269,6 @@ export default class ScoreKeeper {
     this.constraints = new Constraints.OTV(this.handler, this.config);
     this.monitor = new Monitor(Constants.SIXTEEN_HOURS);
 
-    this.subscan = new Subscan(
-      this.config.subscan.baseV1Url,
-      this.config.subscan.baseV2Url,
-      this.config.global.networkPrefix == 2
-        ? Math.pow(10, 12)
-        : Math.pow(10, 10)
-    );
-
     // this.populateCandidates();
     // this.populateRewardDestinationCache();
   }

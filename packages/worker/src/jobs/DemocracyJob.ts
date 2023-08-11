@@ -819,17 +819,25 @@ export const setVoters = async (chaindata) => {
   logger.info(`Setting voters`, democracyLabel);
   const start = Date.now();
   try {
+    const chain = await chaindata.getChainType();
+    let fellowshipAddresses = [];
+    let societyAddresses = [];
+
     logger.info(`Getting validators`, democracyLabel);
     const { allValidators: validators, chainValidators } =
       await getValidatorAddresses(chaindata);
     logger.info(`Getting nominators`, democracyLabel);
     const nominators = await getNominatorAddresses(chaindata);
-    logger.info(`Getting fellowship`, democracyLabel);
-    const fellowshipAddresses = await getFellowshipAddresses(chaindata);
+
     logger.info(`Getting identities`, democracyLabel);
     const identityAddresses = await getIdentityAddresses();
-    logger.info(`Getting society`, democracyLabel);
-    const societyAddresses = await getSocietyAddresses(chaindata);
+
+    if (chain === "Kusama") {
+      logger.info(`Getting fellowship`, democracyLabel);
+      fellowshipAddresses = await getFellowshipAddresses(chaindata);
+      logger.info(`Getting society`, democracyLabel);
+      societyAddresses = await getSocietyAddresses(chaindata);
+    }
 
     const voters = [];
     const convictionVotes = await ConvictionVoteModel.find({}).lean().exec();

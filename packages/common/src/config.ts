@@ -130,10 +130,6 @@ export type ConfigSchema = {
     host: string;
     ipinfoToken: string;
   };
-  subscan: {
-    baseV1Url: string;
-    baseV2Url: string;
-  };
 };
 
 export const loadConfig = (configPath: string): ConfigSchema => {

@@ -1717,47 +1717,48 @@ export class ChainData {
 
         // The address is delegating to another address for this particular track
         const {
-          balance,
+          balance: balanceString,
           target,
           conviction,
           delegations: { votes: delegationVotes, capital: delegationCapital },
           prior,
         } = entry.toHuman()["Delegating"];
+        const balance = parseFloat(balanceString.replace(/,/g, "")) / denom;
         let effectiveBalance = 0;
         switch (conviction) {
           case "None":
             {
-              effectiveBalance = parseFloat(balance) * 0.1;
+              effectiveBalance = balance * 0.1;
             }
             break;
           case "Locked1x":
             {
-              effectiveBalance = parseFloat(balance);
+              effectiveBalance = balance;
             }
             break;
           case "Locked2x":
             {
-              effectiveBalance = parseFloat(balance) * 2;
+              effectiveBalance = balance * 2;
             }
             break;
           case "Locked3x":
             {
-              effectiveBalance = parseFloat(balance) * 3;
+              effectiveBalance = balance * 3;
             }
             break;
           case "Locked4x":
             {
-              effectiveBalance = parseFloat(balance) * 4;
+              effectiveBalance = balance * 4;
             }
             break;
           case "Locked5x":
             {
-              effectiveBalance = parseFloat(balance) * 5;
+              effectiveBalance = balance * 5;
             }
             break;
           case "Locked6x":
             {
-              effectiveBalance = parseFloat(balance) * 6;
+              effectiveBalance = balance * 6;
             }
             break;
         }
@@ -1765,13 +1766,15 @@ export class ChainData {
           track: track,
           address: address.toString(),
           target: target.toString(),
-          balance: parseFloat(balance),
+          balance: balance,
           effectiveBalance: effectiveBalance,
           conviction: conviction.toString(),
           // The total amount of tokens that were delegated to them (including conviction)
-          delegatedConvictionBalance: parseFloat(delegationVotes),
+          delegatedConvictionBalance:
+            parseFloat(delegationVotes.replace(/,/g, "")) / denom,
           // the total amount of tokens that were delegated to them (without conviction)
-          delegatedBalance: parseFloat(delegationCapital),
+          delegatedBalance:
+            parseFloat(delegationCapital.replace(/,/g, "")) / denom,
           prior: prior,
         };
         allDelegations.push(delegation);

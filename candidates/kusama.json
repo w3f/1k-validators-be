@@ -3602,6 +3602,71 @@
       "name": "APPLEPIE-KSM",
       "stash": "E7njcoMxryWRdeLuieJxsDWvnj4pDgJJ3Z7j5BCw8oZuMVX",
       "riotHandle": "@kamelstaking:matrix.org"
+    },
+    {
+      "name": "Oracle",
+      "stash": "DczAw1iwYjCftH3NJC1Cp3oXLxUbLSKnb4d2UrXNVLMKrgo",
+      "riotHandle": "@almario:matrix.org"
+    },
+    {
+      "name": "Endeavour",
+      "stash": "D5XnQxmMaF7d2hfJdXXNvjyTDNyWGANCHy2kiQ16YMWHcHR",
+      "riotHandle": "@endeavour_1:matrix.org"
+    },
+    {
+      "name": "Space-Invader",
+      "stash": "FDL99LDYERjevxPnXBjNGHZv13FxCGHrqh2N5zWQXx1finf",
+      "riotHandle": "@space_invader:matrix.org"
+    },
+    {
+      "name": "大善 ダイゼン daizen",
+      "stash": "DTmuJeaumPsgdcbjtex1fWGw3u7CdCRhgpWwc6ryau4v1V6",
+      "riotHandle": "@daizen:matrix.org"
+    },
+    {
+      "name": "F5",
+      "stash": "GJEb4yszWSHdZFPjgBn8rWHXcmCWpzxeRAFUzSkEMUWQLj8",
+      "riotHandle": "kusama2233:matrix.org"
+    },
+    {
+      "name": "ADESERT-KSM1",
+      "stash": "FASKqqTFEvdMKyMKgTdhHQF3qpF7XtEifYnP1brBX1mCyuG",
+      "riotHandle": "@kamelstaking:matrix.org"
+    },
+    {
+      "name": "stakemagnet-server-sksm|XA",
+      "stash": "HKk5gnHuuePbKq6UbMn7sV3UxsifyZXyhYQqyrL8RPRBdq8",
+      "riotHandle": "@stakemagnet:matrix.org"
+    },
+    {
+      "name": "Stormius",
+      "stash": "DUru5CsthS4dewpujsn4hn8UXK8jRdP2ipncerUyy1h99mv",
+      "riotHandle": "@stormius:matrix.org"
+    },
+    {
+      "name": "Uvo technology",
+      "stash": "DrnTwdksJxzKQx3kb7NXuWYGy4o8Uama3hiNvzcNBnj9LkZ",
+      "riotHandle": "@uvotech:matrix.org"
+    },
+    {
+      "name": "wdmaster",
+      "stash": "HZsquaFQ3rhBxBgEokxE4ea9gqpj2ZCyZGyXDojH8JYDuzS",
+      "riotHandle": "@wdmaster:matrix.org"
+    },
+    {
+      "name": " validorange-ksm1",
+      "stash": "J47U9wGuwzccFPoz8bnMTKJt7WGpPp8ZNgvtXFDL9PHwpCt",
+      "riotHandle": "@validorange:matrix.org"
+    },
+    {
+      "name": "Inghazi-1-KSM",
+      "stash": "FxkYQVJnqzfecyKsEd4XZckzJy6gRMADAfo6ZjCa1BcNHUD",
+      "riotHandle": "@inghazi:matrix.org"
+    },
+    {
+      "name": "ANDERSEN",
+      "stash": "ESsiAML767Bxn8iXNLggxYCCBeuaysqVs86X6BY6zqXCmdT",
+      "riotHandle": "@andersen0707:matrix.org"
     }
   ]
 }

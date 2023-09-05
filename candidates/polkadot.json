@@ -1460,6 +1460,38 @@
       "stash": "1To8mJLPm9spZdQF1ziHMoc7ZCDHYUeCjDzQfN4j2qY6XRe",
       "kusamaStash": "DVQzUfux1dT8CD1yrTJRsb2E9dJgy9h1wKknHhSTW44DXob",
       "riotHandle": "@merlinvvs:matrix.org"
+    },
+    {
+      "name": "Rotko Networks - dot01 Validator",
+      "stash": "1ArdZJtNUrZsfidfn1t69xHaSWwzf6PQNdLEUpcnVmbkZc5",
+      "kusamaStash": "DKKax6uZkiNPfd2ATd8cJhyi3c1KZD24VDdoWG9CfTmwgSp",
+      "riotHandle": "@hitchhooker:matrix.org"
+    },
+    {
+      "name": "havik-polkadot",
+      "stash": "13pk9j8duuvckyNsXUch5YZFYXN82oCZZVLeKDzgJDFGZY3A",
+      "kusamsStash": "FQ4fiDSgVg556BoLYNjqM66qVei9ATbwNSuYbHHDvSF8Hb3",
+      "riotHandle": "@havik:matrix.org"
+    },
+    {
+      "name": "Activator | Serbia",
+      "stash": "12WNzfWXzogo8N27yNuE9T1xXC2VyJYmTqRDuePp2CNJLgPk",
+      "kusamaStash": "E5hWebLmPSFSUq3nSfGuFYopAK65fooqiXV91gQwuZGuMad",
+      "riotHandle": "@activatornode:matrix.org"
+    },
+    {
+      "name": "INFRASTRUCTURE CORPORATION",
+      "stash": "16fbkDCMrAo1uyC52NyA8Y2dETnYVpCofSoj3QEE2WUNnkLk",
+      "kusamaStash": "JKupaoCtkRzMjCDQJbVMbG1jmEr8ebtoRG7cmxWkc8vM2uZ",
+      "riotHandle": "@yayoi-v:matrix.org",
+      "skipSelfStake": true
+    },
+    {
+      "name": "gurustaking_gplk_01",
+      "stash": "138tCNoHg9QbhjqanRS7R8ZC8547A6CdaSmrCtJCRLpjQk6r",
+      "kusamaStash": "F5j1j9TJ7xWePJmYh64Bf2b97pmer3mX1BsonCUpx3CJZpu",
+      "riotHandle": "@gurustaking:matrix.org",
+      "skipSelfStake": true
     }
   ]
 }

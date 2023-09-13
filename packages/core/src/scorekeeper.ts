@@ -115,7 +115,7 @@ export const autoNumNominations = async (
   }
 
   // How many additional validator to nominate above the amount to get in the set
-  const additional = 1.25;
+  const additional = 1;
 
   const maxNominations = chainType.toString() == "Polkadot" ? 16 : 24;
   // The total amount of validators to nominate

@@ -1492,6 +1492,12 @@
       "kusamaStash": "F5j1j9TJ7xWePJmYh64Bf2b97pmer3mX1BsonCUpx3CJZpu",
       "riotHandle": "@gurustaking:matrix.org",
       "skipSelfStake": true
+    },
+    {
+      "name": "🏹 Robinhood",
+      "stash": "14Bf4m5CTNrtGcgCAp6xsXMgA9pPeoiVT54g3C2qY1zNvgsR",
+      "kusamaStash": "GJWFwL8bxZszS5nJNWCV6vC5nBERLgscKSeNF3U9ZcQxL12",
+      "riotHandle": "@robin.hood:matrix.org"
     }
   ]
 }

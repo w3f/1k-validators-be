@@ -1455,7 +1455,7 @@ export const checkProvider = async (
 
 export const checkKusamaRank = async (candidate: any) => {
   try {
-    if (!!candidate.kusamaStash) {
+    if (!candidate.skipSelfStake || !!candidate.kusamaStash) {
       const url = `${Constants.KOTVBackendEndpoint}/candidate/${candidate.kusamaStash}`;
 
       const res = await axios.get(url);

@@ -3626,7 +3626,7 @@
     {
       "name": "F5",
       "stash": "GJEb4yszWSHdZFPjgBn8rWHXcmCWpzxeRAFUzSkEMUWQLj8",
-      "riotHandle": "kusama2233:matrix.org"
+      "riotHandle": "@kusama2233:matrix.org"
     },
     {
       "name": "ADESERT-KSM1",
@@ -3667,6 +3667,31 @@
       "name": "ANDERSEN",
       "stash": "ESsiAML767Bxn8iXNLggxYCCBeuaysqVs86X6BY6zqXCmdT",
       "riotHandle": "@andersen0707:matrix.org"
+    },
+    {
+      "name": "SMART-KUSAMA TT",
+      "stash": "JGyCtf3AX8sewCkVUhcEqnLtRgiB1Sjjyrry5yxojLuxo9n",
+      "riotHandle": "@smartap:matrix.org"
+    },
+    {
+      "name": "KUSAMABOX",
+      "stash": "DGGDuUXKU7EGtPGu6hHykRqMeR2bGAJzgLzHGh7FJfrX1u4",
+      "riotHandle": "@antoniobox:matrix.org"
+    },
+    {
+      "name": "StasRover2",
+      "stash": "H9ZQyMjKZhMdioysqpQa7r3jEGxtfh3pLVKiZDjVxoA6JW3",
+      "riotHandle": "@ka4ok1331:matrix.org"
+    },
+    {
+      "name": "💙💛 HUB UKRAINE POLKADOT 💙💛",
+      "stash": "DQ2JCQDo7BtsxsBbURLK1djr3W3CQgumNys888pPmsF8XpU",
+      "riotHandle": "@polkadot_hub_ukraine:matrix.org"
+    },
+    {
+      "name": "regho",
+      "stash": "G4urZifj85pm9wXefakQwYfBW86C7cfnbZaLZzZSEnAZzGJ",
+      "riotHandle": "@regho_:matrix.org"
     }
   ]
 }

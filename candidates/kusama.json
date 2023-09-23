@@ -148,7 +148,10 @@
     {
       "name": "KUSAMAPROPHET",
       "stash": "HKnRS3RryHjzTHGu42u6BtVp2cNuYoRVnrUJGeRAKqagsKY",
-      "riotHandle": ["@fbranciard:matrix.org", "@vladost:matrix.org"]
+      "riotHandle": [
+        "@fbranciard:matrix.org",
+        "@vladost:matrix.org"
+      ]
     },
     {
       "name": "Genesis-Node",
@@ -558,7 +561,10 @@
     {
       "name": "PureStake_Kusama_03",
       "stash": "DVw4Zkfva2MPibAsr8vgoha1T2ow8zreoTWGyBDioQBdfMM",
-      "riotHandle": ["@artk:matrix.org", "@mitchell-g:matrix.org"]
+      "riotHandle": [
+        "@artk:matrix.org",
+        "@mitchell-g:matrix.org"
+      ]
     },
     {
       "name": "🎠 Forbole 🇭🇰",
@@ -593,7 +599,10 @@
     {
       "name": "Dionysus-sv-validator-0",
       "stash": "FWz717J6ATaYSNy2tRHAskEC9SP4uKHNJYC9mvfvimkB8GT",
-      "riotHandle": ["@syed:web3.foundation", "@remohammdi:matrix.org"]
+      "riotHandle": [
+        "@syed:web3.foundation",
+        "@remohammdi:matrix.org"
+      ]
     },
     {
       "name": "CoinStudio",
@@ -678,7 +687,11 @@
     {
       "name": "birb-01",
       "stash": "GZvxvwKGaZyq21BHnrUpdQkpcF4jrCsi23d3c6dvsmp6BF8",
-      "riotHandle": ["@azk:fairydust.space", "@valka:fairydust.space", "@s3krit:fairydust.space"]
+      "riotHandle": [
+        "@azk:fairydust.space",
+        "@valka:fairydust.space",
+        "@s3krit:fairydust.space"
+      ]
     },
     {
       "name": "Eat Pray Validate 1 🍴🙏🖥 ",
@@ -906,7 +919,7 @@
       "riotHandle": "@robert:web3.foundation"
     },
     {
-      "name": "Kusama XI Validator",
+      "name": "Rotko Networks - ksm01 Validator",
       "stash": "ESSZefozpZYVLbLF1vaGtabthQYg8PVXiTytVm6YiiwAnee",
       "riotHandle": "@hitchhooker:matrix.org"
     },
@@ -1013,7 +1026,10 @@
     {
       "name": "postchain_io",
       "stash": "EHs5p1TR3SpQXvqAUq7pL4qKWRVNmrvtCT4izncvnk6Kh5W",
-      "riotHandle": ["@postchain_p:matrix.org", "@postchain_d:matrix.org"]
+      "riotHandle": [
+        "@postchain_p:matrix.org",
+        "@postchain_d:matrix.org"
+      ]
     },
     {
       "name": "Uno Staking",
@@ -1677,7 +1693,7 @@
       "skipSelfStake": true
     },
     {
-      "name": "Kusama XI Validator 2",
+      "name": "Rotko Networks - ksm02 Validator",
       "stash": "DKKax6uZkiNPfd2ATd8cJhyi3c1KZD24VDdoWG9CfTmwgSp",
       "riotHandle": "@hitchhooker:matrix.org"
     },
@@ -2040,7 +2056,10 @@
     {
       "name": "ForklessNation ॐ 0",
       "stash": "H2hR9442doETZ5eRFaP2JHKZJKyLUzSH4xbJ56FC17tPuEC",
-      "riotHandle": ["@synapticon:matrix.org", "@Darkstar/forklessnation:matrix.org"]
+      "riotHandle": [
+        "@synapticon:matrix.org",
+        "@Darkstar/forklessnation:matrix.org"
+      ]
     },
     {
       "name": "VLADIMIR2",
@@ -2205,7 +2224,10 @@
     {
       "name": "Texas Blockchain Node 2",
       "stash": "CwUhDjLKnvtjLM5Caxh4KFEeH5B4LezYM297TxnS7xQw7aB",
-      "riotHandle":  ["@aharris:austin-harris.com", "@srivish:matrix.org"]
+      "riotHandle": [
+        "@aharris:austin-harris.com",
+        "@srivish:matrix.org"
+      ]
     },
     {
       "name": "SONYA-STAKING2",
@@ -3255,7 +3277,10 @@
     {
       "name": "enby-collective-dominique-1",
       "stash": "GZeiCMQMMU3yPV2GMwZoiNvC1cqMWx7HTSBXeJsd27b3Wnj",
-      "riotHandle": ["@dominique:parity.io", "@enby:matrix.org"]
+      "riotHandle": [
+        "@dominique:parity.io",
+        "@enby:matrix.org"
+      ]
     },
     {
       "name": "slither_77",
@@ -3466,7 +3491,10 @@
     {
       "name": "ForklessNation2",
       "stash": "FyRsWF9bSQkK8TiJ1BdPoKtwvCwtZG7BYPoJFmZHVXnMDit",
-      "riotHandle": ["@synapticon:matrix.org", "@Darkstar/forklessnation:matrix.org"]
+      "riotHandle": [
+        "@synapticon:matrix.org",
+        "@Darkstar/forklessnation:matrix.org"
+      ]
     },
     {
       "name": "cryhel",

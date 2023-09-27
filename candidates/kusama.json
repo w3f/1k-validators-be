@@ -3692,6 +3692,51 @@
       "name": "regho",
       "stash": "G4urZifj85pm9wXefakQwYfBW86C7cfnbZaLZzZSEnAZzGJ",
       "riotHandle": "@regho_:matrix.org"
+    },
+    {
+      "name": "RanvierForkless",
+      "stash": "Gv5KZ739bK3HBCDmNiKPRqoojSq4ZwzLyHrwfpdUEWJ87kR",
+      "riotHandle": "@dr.ranvier:matrix.org"
+    },
+    {
+      "name": "KUSAMABOX2",
+      "stash": "EMEavG21T6LHqinEJdNECX2Kvi5hDxYcvQtt2zy4u7eGKWx",
+      "riotHandle": "@antoniobox:matrix.org"
+    },
+    {
+      "name": "📜 Holy Consensus 📜",
+      "stash": "GhmAcucWFj6gnwJ4y61woEo1fbooXtpLRcLGnDJPuAvGCRB",
+      "riotHandle": "@mogioman:matrix.org"
+    },
+    {
+      "name": "stakemagnet-server-sksm|XB",
+      "stash": "DaCVzWm7vqbJdRd9U9Cwgqx74DC9m1dasEXNTkftdAwwaRc",
+      "riotHandle": "@stakemagnet:matrix.org"
+    },
+    {
+      "name": "大善 ダイゼン daizen/2"
+      "stash": "DjrNqGj6oQqwRi2RCffjwWAFctt2gAG9v9ikCthB77CTpdA",
+      "riotHandle": "@daizen:matrix.org"
+    },
+    {
+      "name": "Brilliantine01",
+      "stash": "GAhae9D5KtwmGDrsajvfom51i2EGgJDU41AcpfYPCPgzGUU",
+      "riotHandle": "@brilliantine:matrix.org"
+    },
+    {
+      "name": "PowerLabs",
+      "stash": "GAEP1qFK5eSpqarfRwW7h4ekPffp5Ydy2wZMZSWynho1zAd",
+      "riotHandle": "@powerlabs:matrix.org"
+    },
+    {
+      "name": "cargoksm",
+      "stash": "H7CUfkTkp2heqHZWNw4Gic9n7tQSB29ZeTVPJgPd4CsUxi3",
+      "riotHandle": "@cargolevin:matrix.org"
+    },
+    {
+      "name": "polkatruffle",
+      "stash": "HoxLWqRNR7jGxGjdaCHLA2xAfBqBHGX28LUnC4CL4uPejfa",
+      "riotHandle": "@0xn00bz:matrix.org"
     }
   ]
 }

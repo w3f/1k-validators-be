@@ -1465,7 +1465,8 @@
       "name": "Rotko Networks - dot01 Validator",
       "stash": "1ArdZJtNUrZsfidfn1t69xHaSWwzf6PQNdLEUpcnVmbkZc5",
       "kusamaStash": "DKKax6uZkiNPfd2ATd8cJhyi3c1KZD24VDdoWG9CfTmwgSp",
-      "riotHandle": "@hitchhooker:matrix.org"
+      "riotHandle": "@hitchhooker:matrix.org",
+      "skipSelfStake": true
     },
     {
       "name": "havik-polkadot",
@@ -1484,7 +1485,6 @@
       "stash": "16fbkDCMrAo1uyC52NyA8Y2dETnYVpCofSoj3QEE2WUNnkLk",
       "kusamaStash": "JKupaoCtkRzMjCDQJbVMbG1jmEr8ebtoRG7cmxWkc8vM2uZ",
       "riotHandle": "@yayoi-v:matrix.org",
-      "skipSelfStake": true
     },
     {
       "name": "gurustaking_gplk_01",

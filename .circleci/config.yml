@@ -170,7 +170,7 @@ workflows:
       - checkCandidatesFile:
           filters:
             tags:
-              only: /.*/
+              ignore: /pull\/[0-9]+/
       - checkESLint:
           filters:
             tags:

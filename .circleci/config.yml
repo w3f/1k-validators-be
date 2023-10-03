@@ -10,6 +10,15 @@ jobs:
           command: |
             yarn audit
 
+  checkCandidatesFile:
+    docker:
+      - image: node:18
+    resource_class: large
+    steps:
+      - checkout
+    command: |
+        yarn set version 3.2.2 && yarn install && yarn build && yarn workspace @1kv/core test:candidates
+
   checkESLint:
     docker:
       - image: node:18

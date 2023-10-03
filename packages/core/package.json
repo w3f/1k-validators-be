@@ -19,7 +19,8 @@
     "start:dev": "concurrently \"tsc -w\"  \"yarn start:watch\"",
     "js:start": "NODE_OPTIONS='--max-old-space-size=10096' node build/index.js start",
     "test": "ava test/*.spec.ts --timeout=10m",
-    "test:api": "ts-node test/api/chaindata.ts"
+    "test:api": "ts-node test/api/chaindata.ts",
+    "test:candidates": "ts-node test/validateCandidates.ts"
   },
   "author": "Web3 Foundation <teched@web3.foundation>",
   "license": "GPL-3.0",

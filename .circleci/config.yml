@@ -16,8 +16,11 @@ jobs:
     resource_class: large
     steps:
       - checkout
-    command: |
-        yarn set version 3.2.2 && yarn install && yarn build && yarn workspace @1kv/core test:candidates
+      - run:
+            environment:
+              YARN_ENABLE_IMMUTABLE_INSTALLS: false
+            command: |
+                yarn set version 3.2.2 && yarn install && yarn build && yarn workspace @1kv/core test:candidates
 
   checkESLint:
     docker:

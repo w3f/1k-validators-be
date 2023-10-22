@@ -334,7 +334,7 @@
       "name": "nicasio-201",
       "stash": "13zBFyK97dg4hWjXwEpigeVdu69sHa4fc8JYegpB369PAafq",
       "kusamaStash": "GCporqtiw7ybKYUqAftjvUAjZnp3x9gfrWsTy1GrvrGwmYT",
-      "riotHandle": " @zeke:matrix.parity.io"
+      "riotHandle": "@zeke:matrix.parity.io"
     },
     {
       "name": "NEWDEAL",
@@ -1495,10 +1495,29 @@
       "skipSelfStake": true
     },
     {
+      "name": "Lavender.Five Nodes",
+      "stash": "16cDjCXSYGRDpEett39taTgMAN7LKnyaafa5MgfbUmpsERW8",
+      "kusamaStash": "JBYFBcFJrAg8MTph6uwLGDCTLPvSAEcxYgLb3xCQV1qo7H4",
+      "riotHandle": "@reversesigh:matrix.org",
+      "skipSelfStake": true
+    },
+    {
       "name": "🏹 Robinhood",
       "stash": "14Bf4m5CTNrtGcgCAp6xsXMgA9pPeoiVT54g3C2qY1zNvgsR",
       "kusamaStash": "GJWFwL8bxZszS5nJNWCV6vC5nBERLgscKSeNF3U9ZcQxL12",
       "riotHandle": "@robin.hood:matrix.org"
+    },
+    {
+      "name": "APPLEPIE-DOT",
+      "stash": "12YUDdiZCHE47WqR6etGD4gfdpSUhrRFvASrVhtc1RcbLva8",
+      "kusamaStash": "E7njcoMxryWRdeLuieJxsDWvnj4pDgJJ3Z7j5BCw8oZuMVX",
+      "riotHandle": "@kamelstaking:matrix.org"
+    },
+    {
+      "name": "Rhombus",
+      "stash": "13r8ZXgYi7KZPhAVXjpznzbmyXwWBegebtr5gJwUnvNYXwp",
+      "kusamaStash": "EDKXrYEqmAnMZnZzzRSby67Fgf5yFUSpbmQMN1rJHPTWbVV",
+      "riotHandle": "@rhombusvalidator:matrix.org"
     }
   ]
 }

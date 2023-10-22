@@ -153,7 +153,7 @@
     {
       "name": "Genesis-Node",
       "stash": "Cm6QfCvV3vud3X6Zfg3yMBEnG6JFNsn6EzcZv6UyqTefkR1",
-      "riotHandle": " @v0idum:matrix.org"
+      "riotHandle": "@v0idum:matrix.org"
     },
     {
       "name": "GontaValidator_1",
@@ -373,7 +373,7 @@
     {
       "name": "ZENIT",
       "stash": "Gf7EHcqRZiXCELr2xYjQXrxAzVcEFh5pEjvQdedKS2avGAj",
-      "riotHandle": "@cash__azimut:matrix.org "
+      "riotHandle": "@cash__azimut:matrix.org"
     },
     {
       "name": "KeepNode-Carbon",
@@ -383,7 +383,7 @@
     {
       "name": "Anon-1",
       "stash": "EkWkbLnosJaPVzVmKMFay2HBQGV5FqGJ75q1x6vdvYoY19Y",
-      "riotHandle": "@rok_anonstake"
+      "riotHandle": "@rok_anonstake:matrix.org"
     },
     {
       "name": "prematurata",
@@ -1376,11 +1376,6 @@
       "riotHandle": "@connecteconomy:matrix.org"
     },
     {
-      "name": "Jesus Lives",
-      "stash": "GqC37KSFFeGAoL7YxSeP1YDwr85WJvLmDDQiSaprTDAm8Jj",
-      "riotHandle": "@asteeber:matrix.org"
-    },
-    {
       "name": "🍀LuckyFriday-KSM-09🍀",
       "stash": "EdRPifdGyiFPkTz6wPkSJoUKMua4cz7tqy5HYgXtwsUm6M2",
       "riotHandle": "@luckyfriday:matrix.org"
@@ -1797,11 +1792,6 @@
       "riotHandle": "@cryptobee:matrix.org"
     },
     {
-      "name": "Hamburg | validierung_cc 🇩🇪",
-      "stash": "JHamburgTPv9fRKwTPeBEjyVHmbQK2ayRBpBujb4rx2sHzJ",
-      "riotHandle": "@kev.funke:matrix.org"
-    },
-    {
       "name": "E-KAT",
       "stash": "DzF1mzay4Nm1vepKtMWAAMaxZeovTjCZEzBLEx6J7Bnf4bd",
       "riotHandle": "@e_k_a_t:matrix.org"
@@ -2010,7 +2000,7 @@
     {
       "name": "DeCommas",
       "stash": "D6NDcYP2JceySwC3rcS28fmA728a7Njnoud7tr1JSBEKj5Y",
-      "riotHandle": "@iosif1977:matrix_dot_org"
+      "riotHandle": "@iosif1977:matrix.org"
     },
     {
       "name": "🛸 Zooper Corp 🛸 NL",
@@ -2135,7 +2125,7 @@
     {
       "name": "DOZENODES3",
       "stash": "HnGgDUuyT97UcSpHhPaxY1h2MPFAjE1qiS9oKRMx5md6464",
-      "riotHandle": " @dozen:matrix.org"
+      "riotHandle": "@dozen:matrix.org"
     },
     {
       "name": "SONYA-STAKING",
@@ -2376,11 +2366,6 @@
       "name": "Mermaid Magic",
       "stash": "J4mt2MknXc8AsLHt5M6pzFD1odT9sZrufEHyCPjbm8FafJd",
       "riotHandle": "@mermaidonline:matrix.org"
-    },
-    {
-      "name": "Abrarad",
-      "stash": "EmDCmQ3wc2yW6gpAsBFXV22EgPpeAd8KoksFyCn5RkqqcfV",
-      "riotHandle": "@abraradi:matrix.org"
     },
     {
       "name": "Steak ♨ Noodles / 3",
@@ -3193,11 +3178,6 @@
       "riotHandle": "@kyleyoon:matrix.org"
     },
     {
-      "name": "NOKOGIRISRV",
-      "stash": "CsH4ZW4jRPZSH6JyDPQDkGZN3T3pvFstefXtfDnDihowHPj",
-      "riotHandle": "@nokogirisrv:matrix.org"
-    },
-    {
       "name": "vika_validator",
       "stash": "EaNhNy9jwJoT842wkCYxuPoMhiw5g9deP5d7PX2r5AJtJYe",
       "riotHandle": "@viktoriia.denisova:matrix.org"
@@ -3211,16 +3191,6 @@
       "name": "NOKOGIRISRV",
       "stash": "CsH4ZW4jRPZSH6JyDPQDkGZN3T3pvFstefXtfDnDihowHPj",
       "riotHandle": "@nokogirisrv:matrix.org"
-    },
-    {
-      "name": "vika_validator",
-      "stash": "EaNhNy9jwJoT842wkCYxuPoMhiw5g9deP5d7PX2r5AJtJYe",
-      "riotHandle": "@viktoriia.denisova:matrix.org"
-    },
-    {
-      "name": "kopone",
-      "stash": "D3F5XpKS18xgf8DUxeMuD29FBSM1qJPL6S55JnQWtHn7PdN",
-      "riotHandle": "@kopone:matrix.org"
     },
     {
       "name": "AlxVoy ⚡ ANODE TEAM ⚡ 1",
@@ -3240,7 +3210,7 @@
     {
       "name": "CARBONZERO3",
       "stash": "CmwjkPp55ZVoPjWz4uaLvsYY2xYE4PyVDJuPmmUiwCQijFm",
-      "riotHandle": "@shawneng:matrix.org "
+      "riotHandle": "@shawneng:matrix.org"
     },
     {
       "name": "blockops-validator-0",
@@ -3271,11 +3241,6 @@
       "name": "Begimotik",
       "stash": "G56GXDf11XFMLKDsyzRM7yZekiokZJfqtNgEF3sNdB6cbqT",
       "riotHandle": "@Begimotik:matrix.org"
-    },
-    {
-      "name": "ProfitGen",
-      "stash": "GNoEBma3eRiXm9cF4erHzRnbJTbMC55KhxRP5xpUqm2pqFN",
-      "riotHandle": "@profitgen:matrix.org"
     },
     {
       "name": "ProfitGen",
@@ -3353,11 +3318,6 @@
       "riotHandle": "@arsgg:matrix.org"
     },
     {
-      "name": "ArsGG",
-      "stash": "FdA6PTtnr1yVfCv8RYqdSBfz1UhQFbfW12mn795L8zPaXhq",
-      "riotHandle": "@arsgg:matrix.org"
-    },
-    {
       "name": "STARDUST STAKING 02",
       "stash": "FPuQ4Ym3HzWuR3xoXvEwTY6hMdvdhCkYAZBfNv3mERpqGSJ",
       "riotHandle": "@stardust-staking:matrix.org"
@@ -3396,11 +3356,6 @@
     {
       "name": "RareShips1",
       "stash": "HfKp8e4cD8fKZPiN3B847VmFKmv9JuZE45ZqfVZeDxcjdBU",
-      "riotHandle": "@rareships:matrix.org"
-    },
-    {
-      "name": "RareShips2",
-      "stash": "J4f4CQtYLviz82KAaQeLe2UZpV9kLY98CjuXYzkBXb6wRQ6",
       "riotHandle": "@rareships:matrix.org"
     },
     {
@@ -3516,27 +3471,22 @@
     {
       "name": "AAronn",
       "stash": "DBe4Bd4452xAdu9UxdNiyx9HS25TZSGzHK63ePdFK2ys2zA",
-      "riotHandle": "@AAronn"
+      "riotHandle": "@AAronn:matrix.org"
     },
     {
       "name": "Mehanikor",
       "stash": "Enu5SHWqWN7t6GU1HdnRDBALoqCcXVquk3j1kpoDYEpQnBf",
-      "riotHandle": "@Mehanikor"
+      "riotHandle": "@Mehanikor:matrix.org"
     },
     {
       "name": "Greanch",
       "stash": "F9wYAGszUHTfXvVXwRJV6385VxzkpaWQ98TUU3BCpPy4gXj",
-      "riotHandle": "@Greanch"
+      "riotHandle": "@Greanch:matrix.org"
     },
     {
       "name": "🧱 Seitan Block 🧱",
       "stash": "Da4rJvtEDGARwq81bC2NW97L53P5yJfKZCjsxu9XTQyCVBm",
       "riotHandle": "@seitanblock:matrix.org"
-    },
-    {
-      "name": "PASTASTAKE 🍝 Carbonara",
-      "stash": "Cd3mPZRcPxmVpGQr1UNjZccjoTkcbNdkT1xEVFoa7U4WjNv",
-      "riotHandle": "@pastastake:matrix.org"
     },
     {
       "name": "crypto-jack-sparrow-1",
@@ -3575,7 +3525,7 @@
     },
     {
       "name": "PASTASTAKE 🍝 Carbonara",
-      "stash": "Cd3mPZRcPxmVpGQr1UNjZccjoTkcbNdkT1xEVFoa7U4WjNv",
+      "stash": "E7qWwQx8Zvhu5HsjKDKnHVG7Sdy5cWpgavdLjUu8PHsb9CF",
       "riotHandle": "@pastastake:matrix.org"
     },
     {
@@ -3664,11 +3614,6 @@
       "riotHandle": "@inghazi:matrix.org"
     },
     {
-      "name": "ANDERSEN",
-      "stash": "ESsiAML767Bxn8iXNLggxYCCBeuaysqVs86X6BY6zqXCmdT",
-      "riotHandle": "@andersen0707:matrix.org"
-    },
-    {
       "name": "SMART-KUSAMA TT",
       "stash": "JGyCtf3AX8sewCkVUhcEqnLtRgiB1Sjjyrry5yxojLuxo9n",
       "riotHandle": "@smartap:matrix.org"
@@ -3692,6 +3637,166 @@
       "name": "regho",
       "stash": "G4urZifj85pm9wXefakQwYfBW86C7cfnbZaLZzZSEnAZzGJ",
       "riotHandle": "@regho_:matrix.org"
+    },
+    {
+      "name": "RanvierForkless",
+      "stash": "Gv5KZ739bK3HBCDmNiKPRqoojSq4ZwzLyHrwfpdUEWJ87kR",
+      "riotHandle": "@dr.ranvier:matrix.org"
+    },
+    {
+      "name": "KUSAMABOX2",
+      "stash": "EMEavG21T6LHqinEJdNECX2Kvi5hDxYcvQtt2zy4u7eGKWx",
+      "riotHandle": "@antoniobox:matrix.org"
+    },
+    {
+      "name": "📜 Holy Consensus 📜",
+      "stash": "GhmAcucWFj6gnwJ4y61woEo1fbooXtpLRcLGnDJPuAvGCRB",
+      "riotHandle": "@mogioman:matrix.org"
+    },
+    {
+      "name": "stakemagnet-server-sksm|XB",
+      "stash": "DaCVzWm7vqbJdRd9U9Cwgqx74DC9m1dasEXNTkftdAwwaRc",
+      "riotHandle": "@stakemagnet:matrix.org"
+    },
+    {
+      "name": "大善 ダイゼン daizen/2",
+      "stash": "DjrNqGj6oQqwRi2RCffjwWAFctt2gAG9v9ikCthB77CTpdA",
+      "riotHandle": "@daizen:matrix.org"
+    },
+    {
+      "name": "Brilliantine01",
+      "stash": "GAhae9D5KtwmGDrsajvfom51i2EGgJDU41AcpfYPCPgzGUU",
+      "riotHandle": "@brilliantine:matrix.org"
+    },
+    {
+      "name": "PowerLabs",
+      "stash": "GAEP1qFK5eSpqarfRwW7h4ekPffp5Ydy2wZMZSWynho1zAd",
+      "riotHandle": "@powerlabs:matrix.org"
+    },
+    {
+      "name": "cargoksm",
+      "stash": "H7CUfkTkp2heqHZWNw4Gic9n7tQSB29ZeTVPJgPd4CsUxi3",
+      "riotHandle": "@cargolevin:matrix.org"
+    },
+    {
+      "name": "polkatruffle",
+      "stash": "HoxLWqRNR7jGxGjdaCHLA2xAfBqBHGX28LUnC4CL4uPejfa",
+      "riotHandle": "@0xn00bz:matrix.org"
+    },
+    {
+      "name": "STAKELAND",
+      "stash": "HePvh2WtXPUnAE8ECNPGYxjUDtiD9xmrUnDXoj1e2JmbwQe",
+      "riotHandle": "@stakeland:matrix.org"
+    },
+    {
+      "name": "Endeavour-2",
+      "stash": "Fa75Eiok6WG1wC6TzC7DpYDrSswpNKkExcuaqqvuQRcrupe",
+      "riotHandle": "@endeavour_1:matrix.org"
+    },
+    {
+      "name": "validorange-ksm2",
+      "stash": "DiSdjgV1fEu2i5wzxerBuuAWpypUQjAbt8WgLYWMZT4PGHj",
+      "riotHandle": "@validorange:matrix.org"
+    },
+    {
+      "name": "arkawa",
+      "stash": "JKkKXFGe1j5ALRnwnbWb7dnRhTrpTS2Hk7aPs9FRvZKB2js",
+      "riotHandle": "@akrawa:matrix.org"
+    },
+    {
+      "name": "040",
+      "stash": "CuDEExW5brR4W55Ka7QdbopKDyUg5WEmr5BptP8ujL3qWNe",
+      "riotHandle": "@040net040:matrix.org"
+    },
+    {
+      "name": "helixstreet/2",
+      "stash": "13TunSyP6h8WRoukNYvqtG2pFWREWMjK2qt8r6g9VNhtUGmX",
+      "riotHandle": "@helixstreet.io:matrix.org"
+    },
+    {
+      "name": "Vovik",
+      "stash": "ESKkGVeid6pjL37e2PFugQJD2Q4FyUN3FZkmr9xb4XfbD5J",
+      "riotHandle": "@vovikpand:matrix.org"
+    },
+    {
+      "name": "onevsone",
+      "stash": "EfLb7PycrL88Gw9PpWaSmHLkevS2UTMYG1cWyWoxEEMM6X9",
+      "riotHandle": "@luddob671:matrix.org"
+    },
+    {
+      "name": "megatron",
+      "stash": "FPJeeKkKhDE8uyid4MKvTj7KJNVczkobiDsxuMmrjPA4Wec",
+      "riotHandle": "@megatron72:matrix.org"
+    },
+    {
+      "name": "megatron-2",
+      "stash": "FAcsFa8FcKRPXmsF9FXn9925crKnbfYVxJMyoDo1iPjUZ3j",
+      "riotHandle": "@megatron72:matrix.org"
+    },
+    {
+      "name": "Jekson",
+      "stash": "EaVGoBHL6DsFwZGnvhn7JhafZgTuVRCWaEP3Q2gkgyvmfgZ",
+      "riotHandle": "@jekson23:matrix.org"
+    },
+    {
+      "name": "smile",
+      "stash": "HLvv8uqSywsmrMkbH6hfHxXKH6wawfGQ3xwScQXZErejncw",
+      "riotHandle": "@smilex2007:matrix.org"
+    },
+    {
+      "name": "lightning-strike",
+      "stash": "CzPKgpYLTrhebtheB2GsM19WFtgH66fv9fjChuHGjzRyVpe",
+      "riotHandle": "@smoke26:matrix.org"
+    },
+    {
+      "name": "rodion",
+      "stash": "DAnQRPv7SbVhchaVb7tkiYhFCFf8WhfQuH7LTJJSa8yxo6t",
+      "riotHandle": "@rodionpapa007:matrix.org"
+    },
+    {
+      "name": "w3coins",
+      "stash": "FnbQ2cex1tHitGVT4t1uXDgjUmV7e2XcPCkwfNuJ9dop8po",
+      "riotHandle": "@blackmatter:matrix.org"
+    },
+    {
+      "name": "🌲🌳Plant Another Tree🌳🌲",
+      "stash": "JEtreE266UaKiTe2BhKZ7cNGaJa98zy8JJP3QahGdDQuo9a",
+      "riotHandle": "@plant-a-tree:matrix.org"
+    },
+    {
+      "name": "cyberG2",
+      "stash": "DQLt8qTc4H4Vqba1DzTg7GWcu41V3zAXF6qrn6SiQVoAgrJ",
+      "riotHandle": "@xcyberg:matrix.org"
+    },
+    {
+      "name": "Statutory-002",
+      "stash": "Cb8eMef4BPPVaKceqdJHLYxeTLY7tVJLbyQw2mcZ1UbKXe6",
+      "riotHandle": "@statutoryio:matrix.org"
+    },
+    {
+      "name": "Mantri Nodes",
+      "stash": "G4R7xgGCuuxHpg17sxpwmUFFv4RATrpm4EMiTd8w3mCvjnp",
+      "riotHandle": "@mantrinodes:matrix.org"
+    },
+    {
+      "name": "🕴️ TUXEDO 🕴️",
+      "stash": "FGHknsDq3UwZDgtvpGE6bK2Z1csVgrY5xCEA1H1kapZ8bxn",
+      "riotHandle": "@tux_in_tuxedo:matrix.org"
+    },
+    {
+      "name": "🕴️ TUXEDO--Black 🕴️",
+      "stash": "HEqt6SEaE6GZbAQQ3bWxjzmDbMhyx1HEj9sBUcs3N29Y1Em",
+      "riotHandle": "@tux_in_tuxedo:matrix.org"
+    },
+    {
+      "name": "ABGAR",
+      "stash": "GjrCYnVS59dsRkydpM6QSRLvpoR8MUPnkyVS3SNWqsxWW7r",
+      "riotHandle": "@abgar:matrix.org"
+    },
+    {
+      "name": "andersen",
+      "stash": "ESsiAML767Bxn8iXNLggxYCCBeuaysqVs86X6BY6zqXCmdT",
+      "riotHandle": "@andersen0707:matrix.org"
     }
   ]
 }

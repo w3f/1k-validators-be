@@ -1518,6 +1518,26 @@
       "stash": "13r8ZXgYi7KZPhAVXjpznzbmyXwWBegebtr5gJwUnvNYXwp",
       "kusamaStash": "EDKXrYEqmAnMZnZzzRSby67Fgf5yFUSpbmQMN1rJHPTWbVV",
       "riotHandle": "@rhombusvalidator:matrix.org"
+    },
+    {
+      "name": "MOON LAMBOS DOT COUNTACH",
+      "stash": "1311nP52HPRLCvSS4EXgWfqRfXnjexbr7t82aedpWpGCPnxV",
+      "kusamaStash": "FLamQXqxns6tVsDTVpLoqqynq7nbpHvJaHMzVwX6Yb3eThW",
+      "riotHandle": "@moonlambos:matrix.org",
+      "skipSelfStake": true
+    },
+    {
+      "name": "Brightlystake",
+      "stash": "1CUBGfKnpHCW1AZbdJGGj1dihn4QNZ623THYs59r6yuPEMq",
+      "kusamaStash": "DPyccDy3aecJqo2DTpFUFpnQAeaSEj9hbrpEzUSJnScAXpR",
+      "riotHandle": "@brightlystake:matrix.org",
+      "skipSelfStake": true
+    },
+    {
+      "name": "landeros | StakeUp",
+      "stash": "13uifUNALuwqiHZADQb2hrpwnL8kmawjqykx4yN661Tv7mR",
+      "kusamaStash": "H6q7Z9t3vuezyoicdKPHTYxVzrCU3JPKJWk3wGyxuEFaB9m",
+      "riotHandle": "@landeros:matrix.org"
     }
   ]
 }

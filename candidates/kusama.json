@@ -3634,7 +3634,7 @@
       "riotHandle": "@polkadot_hub_ukraine:matrix.org"
     },
     {
-      "name": "regho",
+      "name": "Regho",
       "stash": "G4urZifj85pm9wXefakQwYfBW86C7cfnbZaLZzZSEnAZzGJ",
       "riotHandle": "@regho_:matrix.org"
     },
@@ -3797,6 +3797,61 @@
       "name": "andersen",
       "stash": "ESsiAML767Bxn8iXNLggxYCCBeuaysqVs86X6BY6zqXCmdT",
       "riotHandle": "@andersen0707:matrix.org"
+    },
+    {
+      "name": "bbewonderful",
+      "stash": "Hvt16tq5pMsKDanoQmpBswMesbEdh9zWUHgCXaYhbFVmFD8",
+      "riotHandle": "@bbewonderful:matrix.org"
+    },
+    {
+      "name": "Faraday/1",
+      "stash": "HLsPiB2amYFPFYMcYqKxGFLgDUVd4UP1kdA4QdZsH3e91LP",
+      "riotHandle": "@faradaynodes:matrix.org"
+    },
+    {
+      "name": "Faraday/2",
+      "stash": "ET9CeDQKCoLaoESiXb6bzrwpdySs3BdT9C1FAtCUaHQq3nA",
+      "riotHandle": "@faradaynodes:matrix.org"
+    },
+    {
+      "name": "🌲🌳Plant A Tree🌳🌲",
+      "stash": "JFHtREewUeVy96gGDwMTxrGvQxBDz6jGL8E5LxnAnNbcNbh",
+      "riotHandle": "@plant-a-tree:matrix.org"
+    },
+    {
+      "name": "Nokogirisrv",
+      "stash": "HvUaoMXAcKNe17zaXGAJvH9ugQk1PRAuzGMKvtck6DV7pvr",
+      "riotHandle": "@nokogirisrv:matrix.org"
+    },
+    {
+      "name": "web34ever-2",
+      "stash": "EABjGLcjFpYUwy7WoSRgQzy3hMQEqLhdwvXDm8Xj13rhBJP",
+      "riotHandle": "@validator_posthuman:matrix.org"
+    },
+    {
+      "name": "PathrockNetwork",
+      "stash": "J6RxM7PgTM5c3tA9JCQdvoyHhkgWrNab2B4n5iDSprMTdSm",
+      "riotHandle": "@pathrock:matrix.org"
+    },
+    {
+      "name": "Nur so am rand-A",
+      "stash": "GereCvo9Fiy7dA3N3DNQGPy2YWd6G1qpKBQNbYcTBCVdf8x",
+      "riotHandle": "@nursoamrand:matrix.org"
+    },
+    {
+      "name": "Nur so am rand-B",
+      "stash": "Dw8xppg7t8JSsvq9PH1Soj2tvJ87AVGmeR97EKQUsSvnTEA",
+      "riotHandle": "@nursoamrand:matrix.org"
+    },
+    {
+      "name": "panvad",
+      "stash": "CxaLLBqYFneSXx5vT4Mwe66paz8jae14BGY1xoucBj6De4G",
+      "riotHandle": "@panvad:matrix.org"
+    },
+    {
+      "name": "ToneeForkless",
+      "stash": "GniVGXA9ThPtoEqKx5xv9m5Zec586qWz7aMj4GWXskmzuMu",
+      "riotHandle": "@0xtone0x:matrix.org"
     }
   ]
 }

@@ -3852,6 +3852,26 @@
       "name": "ToneeForkless",
       "stash": "GniVGXA9ThPtoEqKx5xv9m5Zec586qWz7aMj4GWXskmzuMu",
       "riotHandle": "@0xtone0x:matrix.org"
+    },
+    {
+      "name": "Aqupidhappy-K",
+      "stash": "CpB85LvDDrcsgs9BgDfpUHPAcze4v2cCGHnNaW4yfKQLuP4",
+      "riotHandle": "@qupidvalidator:matrix.org"
+    },
+    {
+      "name": "rainbow-axolotl",
+      "stash": "HFdj9BdtXMXNKuheqq98Nxt1GtS4dTSBuE8houEc9EGmBkP",
+      "riotHandle": "@kokenaki:matrix.org"
+    },
+    {
+      "name": "Blockchain Side1",
+      "stash": "DQjtLa5eGpPVn1wUPFTUfQmuYmyvzffTde2JX65m4egeYin",
+      "riotHandle": "@sideblockchain:matrix.org"
+    },
+    {
+      "name": "Cryptography01",
+      "stash": "E8hCYHcbVEcR1f8spXGe6EnEyd2JtwcUAqTTHw5fMnCxvf5",
+      "riotHandle": "@rhombusvalidator:matrix.org"
     }
   ]
 }

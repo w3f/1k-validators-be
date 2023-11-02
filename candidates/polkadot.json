@@ -1538,6 +1538,24 @@
       "stash": "13uifUNALuwqiHZADQb2hrpwnL8kmawjqykx4yN661Tv7mR",
       "kusamaStash": "H6q7Z9t3vuezyoicdKPHTYxVzrCU3JPKJWk3wGyxuEFaB9m",
       "riotHandle": "@landeros:matrix.org"
+    },
+    {
+      "name": "Oracle",
+      "stash": "16ZkdRYne6geWLkhaMgraDkXXiKHwSSQkCtQ2pPJPtoroURn",
+      "kusamaStash": "DczAw1iwYjCftH3NJC1Cp3oXLxUbLSKnb4d2UrXNVLMKrgo",
+      "riotHandle": "@almario:matrix.org"
+    },
+    {
+      "name": "F5",
+      "stash": "14iv55u5DvgqKSSTvcRjP3ySEeUcQTjvGY3zFdA9JeHXqyb3",
+      "kusamaStash": "GJEb4yszWSHdZFPjgBn8rWHXcmCWpzxeRAFUzSkEMUWQLj8",
+      "riotHandle": "@kusama2233:matrix.org"
+    },
+    {
+      "name": "MIDAS",
+      "stash": "131PZkz6A4fCFsXnefPnQwn5To6gvJFoit2boavU6ryUQoNE",
+      "kusamaStash": "EyJgtqqbVsxArS7zuDq8rGTCA7m5WAqxv32msopPfWxwwpA",
+      "riotHandle": "@midas89:matrix.org"
     }
   ]
 }

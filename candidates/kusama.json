@@ -2399,7 +2399,7 @@
     },
     {
       "name": "Exotic Stake-1",
-      "stash": "JMkSXXco4mxTRXNyRgYqeNpRZDXZ3i1qdKMP5FoMphCE6fq",
+      "stash": "EtuNrxRfSrBve23jguVAmz3YVCFKCJqFdaHMAW8HTUxkCaP",
       "riotHandle": "@exoticstake:matrix.org"
     },
     {
@@ -3872,6 +3872,41 @@
       "name": "Cryptography01",
       "stash": "E8hCYHcbVEcR1f8spXGe6EnEyd2JtwcUAqTTHw5fMnCxvf5",
       "riotHandle": "@rhombusvalidator:matrix.org"
+    },
+    {
+      "name": "AppliedBC-KSM",
+      "stash": "EVTu54Jg9PJZ9PqPCPu9VvKvQSMU88hmgeJ7pjmC9U745Qp",
+      "riotHandle": "@appliedbclabs:matrix.org"
+    },
+    {
+      "name": "AppliedBC-KSM-1",
+      "stash": "GvCrPNycg1UHAaBAZ3BU3AeZAuzcdeFsvVWYTVoonZQRrtC",
+      "riotHandle": "@appliedbclabs:matrix.org"
+    },
+    {
+      "name": "w3coins/2",
+      "stash": "CoYnH834695Znmqvtw9X317vKkLXvW3dCS6X3nvHsapLZfv",
+      "riotHandle": "@blackmatter:matrix.org"
+    },
+    {
+      "name": "Magic Tab-2",
+      "stash": "HUYaLWQANHf5jJwvyDkipvVphWwovJVgD4jzS3JFUHaqEaK",
+      "riotHandle": "@magictab:matrix.org"
+    },
+    {
+      "name": "YAO Gmbh-02",
+      "stash": "Fo6up1GipWicfDU5PePM4gg9yYEwvB1hf3J6LcXUUqFdhFo",
+      "riotHandle": "@lukayao:matrix.org"
+    },
+    {
+      "name": "DiamondII",
+      "stash": "HLSNwrntJUaZbQ6Kc7uJdssd32DHP5nXKso7m6JwNvnrBcx",
+      "riotHandle": "@cryptographyvalidator:matrix.org"
+    },
+    {
+      "name": "caveman",
+      "stash": "EqbjvFvZZo11txeXQjzLdUfLWHCaXsY3k2gDydpnRrShkag",
+      "riotHandle": "@cavemaaan:matrix.org"
     }
   ]
 }

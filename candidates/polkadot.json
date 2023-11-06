@@ -1556,6 +1556,12 @@
       "stash": "131PZkz6A4fCFsXnefPnQwn5To6gvJFoit2boavU6ryUQoNE",
       "kusamaStash": "EyJgtqqbVsxArS7zuDq8rGTCA7m5WAqxv32msopPfWxwwpA",
       "riotHandle": "@midas89:matrix.org"
+    },
+    {
+      "name": "🧱 Seitan Block 🧱",
+      "stash": "1zkLKr5TdWi7q2CCXRychcG36knyc3cwg6UebcYbkDzdv2p",
+      "kusamaStash": "Da4rJvtEDGARwq81bC2NW97L53P5yJfKZCjsxu9XTQyCVBm",
+      "riotHandle": "@seitanblock:matrix.org"
     }
   ]
 }

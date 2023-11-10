@@ -1562,6 +1562,31 @@
       "stash": "1zkLKr5TdWi7q2CCXRychcG36knyc3cwg6UebcYbkDzdv2p",
       "kusamaStash": "Da4rJvtEDGARwq81bC2NW97L53P5yJfKZCjsxu9XTQyCVBm",
       "riotHandle": "@seitanblock:matrix.org"
+    },
+    {
+      "name": "validorange-dot1",
+      "stash": "1D51dxpuGv1mWxstx7ERWyEWieLHSeQ8NBVX7VxkxT5PuKg",
+      "kusamaStash": "J47U9wGuwzccFPoz8bnMTKJt7WGpPp8ZNgvtXFDL9PHwpCt",
+      "riotHandle": "@validorange:matrix.org"
+    },
+    {
+      "name": "👾Space-Invader👾",
+      "stash": "15u9KTyZzjVQJaCVmAPhFNjwyyS7aHjb6m5Exa22fRXQpTp6",
+      "kusamaStash": "FDL99LDYERjevxPnXBjNGHZv13FxCGHrqh2N5zWQXx1finf",
+      "riotHandle": "@space_invader:matrix.org"
+    },
+    {
+      "name": "GRABBITY ✨🐇",
+      "stash": "14fJ6M6n36La68RVZaWrpkki1DfWuLp1L7hALxeCYeNSu7vG",
+      "kusamaStash": "DShgED7MWc9UrfcoofsFAcK6YJqRHpMYcfDk5odpM2C34FF",
+      "riotHandle": "@grabbity:matrix.org"
+    },
+    {
+      "name": "stakemagnet-server-splk|XA",
+      "stash": "13Emjax1tBfQMEKisppTMMe7jMbqpmCH1jRpTXudLocaevND",
+      "kusamaStash": "HKk5gnHuuePbKq6UbMn7sV3UxsifyZXyhYQqyrL8RPRBdq8",
+      "riotHandle": "@stakemagnet:matrix.org",
+      "skipSelfStake": true
     }
   ]
 }

@@ -26,3 +26,5 @@ build
 **/config/secret.json
 
 redis/
+
+docs/.DS_Store

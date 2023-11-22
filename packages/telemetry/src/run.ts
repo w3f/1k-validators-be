@@ -1,6 +1,7 @@
 import { Config, Db, logger } from "@1kv/common";
 import TelemetryClient from "./telemetry";
 import { Command } from "commander";
+import path from "path";
 
 const version = "v2.6.87";
 
@@ -16,7 +17,7 @@ const catchAndQuit = async (fn: any) => {
 };
 
 const start = async (cmd: { config: string }) => {
-  const config = await Config.loadConfigDir(cmd.config);
+  const config = Config.loadConfig(path.join(cmd.config, "main.json"));
 
   logger.info(`Starting the backend services: ${version}`, telemetryLabel);
   const db = await Db.create(config.db.mongo.uri);

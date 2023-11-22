@@ -8,6 +8,10 @@
     },
     "storageFile": "validator.db"
   },
+  "redis": {
+    "host": "redis",
+    "port": 6379
+  },
   "server": {
     "enable": true,
     "port": 3301

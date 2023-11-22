@@ -61,8 +61,8 @@ export const startMonitorJob = async (config: Config.ConfigSchema) => {
 export const startClearAccumulatedOfflineTimeJob = async (
   config: Config.ConfigSchema
 ) => {
-  const clearFrequency = config.cron.clearOffline
-    ? config.cron.clearOffline
+  const clearFrequency = config.cron?.clearOffline
+    ? config.cron?.clearOffline
     : Constants.CLEAR_OFFLINE_CRON;
   logger.info(
     `Starting Clear Accumulated Offline Time Job with frequency ${clearFrequency}`,
@@ -80,8 +80,8 @@ export const startValidatityJob = async (
   config: Config.ConfigSchema,
   constraints: Constraints.OTV
 ) => {
-  const validityFrequency = config.cron.validity
-    ? config.cron.validity
+  const validityFrequency = config.cron?.validity
+    ? config.cron?.validity
     : Constants.VALIDITY_CRON;
   logger.info(
     `Starting Validity Job with frequency ${validityFrequency}`,
@@ -108,8 +108,8 @@ export const startScoreJob = async (
   config: Config.ConfigSchema,
   constraints: Constraints.OTV
 ) => {
-  const scoreFrequency = config.cron.score
-    ? config.cron.score
+  const scoreFrequency = config.cron?.score
+    ? config.cron?.score
     : Constants.SCORE_CRON;
   logger.info(`Starting Score Job with frequency ${scoreFrequency}`, cronLabel);
 
@@ -133,8 +133,8 @@ export const startEraStatsJob = async (
   config: Config.ConfigSchema,
   chaindata: ChainData
 ) => {
-  const eraStatsFrequency = config.cron.eraStats
-    ? config.cron.eraStats
+  const eraStatsFrequency = config.cron?.eraStats
+    ? config.cron?.eraStats
     : Constants.ERA_STATS_CRON;
   logger.info(
     `Starting Era Stats Job with frequency ${eraStatsFrequency}`,
@@ -170,8 +170,8 @@ export const startExecutionJob = async (
   const timeDelayBlocks = config.proxy.timeDelayBlocks
     ? Number(config.proxy.timeDelayBlocks)
     : Number(Constants.TIME_DELAY_BLOCKS);
-  const executionFrequency = config.cron.execution
-    ? config.cron.execution
+  const executionFrequency = config.cron?.execution
+    ? config.cron?.execution
     : Constants.EXECUTION_CRON;
   logger.info(
     `Starting Execution Job with frequency ${executionFrequency} and time delay of ${timeDelayBlocks} blocks`,

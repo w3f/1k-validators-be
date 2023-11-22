@@ -1,9 +1,7 @@
 {
   "global": {
     "apiEndpoints": [
-      "wss://kusama-rpc.polkadot.io",
-      "wss://kusama-rpc.dwellir.com",
-      "wss://kusama.public.curie.radiumblock.xyz/ws"
+      "wss://kusama-rpc.polkadot.io"
     ]
   },
   "db": {

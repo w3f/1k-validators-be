@@ -2610,6 +2610,7 @@ export class ChainData {
       return;
     }
     const society = await this.api.query.society.members();
+    //@ts-ignore
     return society.map((address) => {
       return address.toString();
     });

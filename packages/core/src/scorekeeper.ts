@@ -17,6 +17,7 @@ import {
 import Nominator from "./nominator";
 import {
   startActiveValidatorJob,
+  startBlockDataJob,
   startCancelCron,
   startDelegationJob,
   startDemocracyJob,
@@ -497,8 +498,8 @@ export default class ScoreKeeper {
     }
 
     // Main cron job for starting rounds and ending rounds of the scorekeeper
-    const scoreKeeperFrequency = this.config.cron.scorekeeper
-      ? this.config.cron.scorekeeper
+    const scoreKeeperFrequency = this.config.cron?.scorekeeper
+      ? this.config.cron?.scorekeeper
       : Constants.SCOREKEEPER_CRON;
     const mainCron = new CronJob(scoreKeeperFrequency, async () => {
       logger.info(
@@ -600,7 +601,7 @@ export default class ScoreKeeper {
 
         const removeRepeatableJobs = true;
         if (removeRepeatableJobs) {
-          logger.info(`remove jobs: ${removeRepeatableJobs}`);
+          logger.info(`remove jobs: ${removeRepeatableJobs}`, scorekeeperLabel);
           // Remove any previous repeatable jobs
           await otvWorker.queues.removeRepeatableJobsFromQueues([
             releaseMonitorQueue,
@@ -622,17 +623,17 @@ export default class ScoreKeeper {
 
         await otvWorker.queues.addReleaseMonitorJob(releaseMonitorQueue, 60000);
         await otvWorker.queues.addValidityJob(constraintsQueue, 1000001);
-        await otvWorker.queues.addScoreJob(constraintsQueue, 100002); // Needs to have different repeat time
+        await otvWorker.queues.addScoreJob(constraintsQueue, 100002); // Needs to have different repeat times
 
         await otvWorker.queues.addActiveValidatorJob(chaindataQueue, 100003);
-        await otvWorker.queues.addCouncilJob(chaindataQueue, 100004);
+        // await otvWorker.queues.addCouncilJob(chaindataQueue, 100004);
         await otvWorker.queues.addDelegationJob(chaindataQueue, 100005);
         await otvWorker.queues.addEraPointsJob(chaindataQueue, 100006);
         await otvWorker.queues.addEraStatsJob(chaindataQueue, 110008);
         await otvWorker.queues.addInclusionJob(chaindataQueue, 100008);
         await otvWorker.queues.addNominatorJob(chaindataQueue, 100009);
         await otvWorker.queues.addSessionKeyJob(chaindataQueue, 100010);
-        // await otvWorker.queues.addValidatorPrefJob(chaindataQueue, 100101);
+        await otvWorker.queues.addValidatorPrefJob(chaindataQueue, 100101);
         await otvWorker.queues.addAllBlocks(blockQueue, this.chaindata);
         await startLocationStatsJob(this.config, this.chaindata);
       } else {
@@ -651,7 +652,7 @@ export default class ScoreKeeper {
         await startDemocracyJob(this.config, this.chaindata);
         // await startNominatorJob(this.config, this.chaindata);
         await startDelegationJob(this.config, this.chaindata);
-        // await startBlockDataJob(this.config, this.chaindata);
+        await startBlockDataJob(this.config, this.chaindata);
       }
 
       await startExecutionJob(

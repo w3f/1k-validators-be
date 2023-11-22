@@ -17,7 +17,7 @@ spec:
   source:
     repoURL: https://w3f.github.io/helm-charts/
     chart: otv-backend
-    targetRevision: ^v2.8.58
+    targetRevision: ^v2.8.59
     plugin:
       env:
         - name: HELM_VALUES
@@ -47,7 +47,6 @@ spec:
                   "historicalNominations": false,
                   "apiEndpoints": [
                     "wss://kusama-rpc.polkadot.io",
-                    "wss://kusama.api.onfinality.io/public-ws",
                     "wss://kusama-rpc.dwellir.com",
                     "wss://kusama.public.curie.radiumblock.xyz/ws"
                   ],
@@ -104,9 +103,5 @@ spec:
                     "Contabo GmbH"
                   ],
                   "host": "wss://telemetry-backend.w3f.community/feed"
-                },
-                "subscan": {
-                    "baseV1Url": "https://kusama.api.subscan.io/api/scan",
-                    "baseV2Url": "https://kusama.api.subscan.io/api/v2/scan"
                 }
               }

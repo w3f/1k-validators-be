@@ -6,23 +6,24 @@
     "retroactive": false,
     "historicalNominations": false,
     "apiEndpoints": [
-      "wss://kusama-rpc.polkadot.io"
+      "wss://rpc.polkadot.io",
+      "wss://polkadot-rpc.dwellir.com"
     ],
     "bootstrap": false,
     "kusamaBootstrapEndpoint": "https://kusama.w3f.community",
     "polkadotBootstrapEndpoint": "https://polkadot.w3f.community",
-    "candidatesUrl": "https://raw.githubusercontent.com/w3f/1k-validators-be/master/candidates/kusama.json"
+    "candidatesUrl": "https://raw.githubusercontent.com/w3f/1k-validators-be/master/candidates/polkadot.json"
   },
   "constraints": {
-    "skipConnectionTime": true,
+    "skipConnectionTime": false,
     "skipIdentity": false,
     "skipStakedDestination": true,
     "skipClientUpgrade": false,
-    "skipUnclaimed": false,
-    "forceClientVersion": "v0.9.30",
-    "minSelfStake": 10000000000000,
-    "commission": 150000000,
-    "unclaimedEraThreshold": 4
+    "forceClientVersion": "v0.9.39",
+    "skipUnclaimed": true,
+    "minSelfStake": 50000000000000,
+    "commission": 50000000,
+    "unclaimedEraThreshold": 1
   },
   "db": {
     "migrate": false,

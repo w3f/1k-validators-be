@@ -8,7 +8,7 @@
     "apiEndpoints": [
       "wss://kusama-rpc.polkadot.io"
     ],
-    "bootstrap": false,
+    "bootstrap": true,
     "kusamaBootstrapEndpoint": "https://kusama.w3f.community",
     "polkadotBootstrapEndpoint": "https://polkadot.w3f.community",
     "candidatesUrl": "https://raw.githubusercontent.com/w3f/1k-validators-be/master/candidates/kusama.json"
@@ -23,26 +23,6 @@
     "minSelfStake": 10000000000000,
     "commission": 150000000,
     "unclaimedEraThreshold": 4
-  },
-  "cron": {
-    "monitor": "0 */15* * * *",
-    "clearOffline": "0 0 0 * * 0",
-    "validity": "0 0-59/1 * * * *",
-    "score": "0 0-59/1 * * * *",
-    "execution": "0 0-59/1 * * * *",
-    "scorekeeper": "0 0-59/1 * * * *",
-    "rewardClaiming": "0 0-59/1 * * * *",
-    "cancel": "0 0-59/1 * * * *",
-    "stale": "0 0-59/1 * * * *",
-    "eraPoints": "0 0-59/10 * * * *",
-    "activeValidator": "0 0-59/1 * * * *",
-    "inclusion": "0 0-59/1 * * * *",
-    "sessionKey": "0 0-59/1 * * * *",
-    "unclaimedEras": "0 0-59/1 * * * *",
-    "validatorPref": "0 0-59/1 * * * *",
-    "nominator": "0 0-59/1 * * * *",
-    "delegation": "0 0-59/1 * * * *",
-    "democracy": "0 0-59/1 * * * *"
   },
   "db": {
     "migrate": false,

@@ -93,7 +93,9 @@ Ensure the following are installed on your machine:
 ### Yarn Installation & Docker Scripts (All in One)
 
 The following are scripts that can be run with `yarn` that will run all the required installations, config generations and build and run the docker containers. If these are not used you will need to do each separately in the following sections.
+First run:
 
+`yarn install`
 Kusama Current / Monolith Production:
 
 ```bash

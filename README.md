@@ -90,7 +90,7 @@ Ensure the following are installed on your machine:
 - [Yarn](https://yarnpkg.com/) (v1.22 or higher)
 - [Docker](https://www.docker.com/) (v19 or higher)
 
-### Yarn Installtion & Docker Scripts
+### Yarn Installation & Docker Scripts (All in One)
 
 The following are scripts that can be run with `yarn` that will run all the required installations, config generations and build and run the docker containers. If these are not used you will need to do each separately in the following sections.
 

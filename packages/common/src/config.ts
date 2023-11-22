@@ -8,7 +8,6 @@ type CandidateConfig = {
   riotHandle: string;
   kusamaStash?: string;
   skipSelfStake?: boolean;
-  bio?: string;
 };
 
 export type NominatorConfig = {
@@ -83,6 +82,7 @@ export type ConfigSchema = {
     userId: string;
   };
   redis: {
+    enable: boolean;
     host: string;
     port: number;
   };

@@ -103,9 +103,5 @@ spec:
                     "Contabo GmbH"
                   ],
                   "host": "wss://telemetry-backend.w3f.community/feed"
-                },
-                "subscan": {
-                    "baseV1Url": "https://polkadot.api.subscan.io/api/scan",
-                    "baseV2Url": "https://polkadot.api.subscan.io/api/v2/scan"
                 }
               }

@@ -1,4 +1,4 @@
-import { ChainData, logger, Util, queries, ApiHandler } from "@1kv/common";
+import { ApiHandler, ChainData, logger, queries, Util } from "@1kv/common";
 import { ApiPromise } from "@polkadot/api";
 
 import { extractAuthor } from "@polkadot/api-derive/type/util";
@@ -84,6 +84,8 @@ export const processBlock = async (
   const era = await chaindata.getEraAt(apiAt);
 
   const blockExtrinsics = block.block.extrinsics;
+  const blockEvents = block.block.events;
+
   const blockType = chaindata.getBlockType(block);
   const blockAuthor = extractAuthor(
     block.block.header.digest,

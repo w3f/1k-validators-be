@@ -1,0 +1,46 @@
+version: '3'
+services:
+  1kv-core:
+    build:
+      context: .
+      args:
+        PACKAGE: core
+      dockerfile: ./Dockerfile-prod-local
+    volumes:
+      - .:/code
+    ports:
+      - "3300:3300"
+    networks:
+      testing_net:
+        ipv4_address: 172.28.1.1
+
+  mongo:
+    image: mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    networks:
+      testing_net:
+        ipv4_address: 172.28.1.2
+
+  mongo-express:
+    image: mongo-express
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongo
+      - ME_CONFIG_MONGODB_PORT=27017
+      - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
+      - ME_CONFIG_MONGODB_AUTH_DATABASE=admin
+    depends_on:
+      - mongo
+    ports:
+      - "8888:8081"
+    networks:
+      testing_net:
+        ipv4_address: 172.28.1.3
+
+networks:
+  testing_net:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.0.0/16

@@ -36,7 +36,7 @@ jobs:
 
   helmLint:
     docker:
-      - image: web3f/ci-commons:v3.1.6
+      - image: web3f/ci-commons:v3.2.1
     steps:
       - checkout
       - run:
@@ -45,7 +45,7 @@ jobs:
 
   buildCoreImage:
     docker:
-      - image: web3f/ci-commons:v3.1.6
+      - image: web3f/ci-commons:v3.2.1
     resource_class: xlarge
     steps:
       - checkout
@@ -56,7 +56,7 @@ jobs:
 
   buildGatewayImage:
     docker:
-      - image: web3f/ci-commons:v3.1.6
+      - image: web3f/ci-commons:v3.2.1
     resource_class: xlarge
     steps:
       - checkout
@@ -67,7 +67,7 @@ jobs:
 
   buildTelemetryImage:
     docker:
-      - image: web3f/ci-commons:v3.1.6
+      - image: web3f/ci-commons:v3.2.1
     resource_class: xlarge
     steps:
       - checkout
@@ -78,7 +78,7 @@ jobs:
 
   buildWorkerImage:
     docker:
-      - image: web3f/ci-commons:v3.1.6
+      - image: web3f/ci-commons:v3.2.1
     resource_class: xlarge
     steps:
       - checkout
@@ -89,7 +89,7 @@ jobs:
 
   integrationTests:
     docker:
-      - image: web3f/ci-commons:v3.1.6
+      - image: web3f/ci-commons:v3.2.1
     resource_class: xlarge
     steps:
       - checkout
@@ -100,7 +100,7 @@ jobs:
 
   publishCoreImage:
     docker:
-      - image: web3f/ci-commons:v3.1.6
+      - image: web3f/ci-commons:v3.2.1
     steps:
       - checkout
       - setup_remote_docker
@@ -110,7 +110,7 @@ jobs:
 
   publishGatewayImage:
     docker:
-      - image: web3f/ci-commons:v3.1.6
+      - image: web3f/ci-commons:v3.2.1
     steps:
       - checkout
       - setup_remote_docker
@@ -120,7 +120,7 @@ jobs:
 
   publishTelemetryImage:
     docker:
-      - image: web3f/ci-commons:v3.1.6
+      - image: web3f/ci-commons:v3.2.1
     steps:
       - checkout
       - setup_remote_docker
@@ -130,7 +130,7 @@ jobs:
 
   publishWorkerImage:
     docker:
-      - image: web3f/ci-commons:v3.1.6
+      - image: web3f/ci-commons:v3.2.1
     steps:
       - checkout
       - setup_remote_docker
@@ -140,7 +140,7 @@ jobs:
 
   publishChart:
     docker:
-      - image: web3f/ci-commons:v3.1.6
+      - image: web3f/ci-commons:v3.2.1
     steps:
       - checkout
       - run:
@@ -149,7 +149,7 @@ jobs:
 
   deploy:
     docker:
-      - image: web3f/ci-commons:v3.1.6
+      - image: web3f/ci-commons:v3.2.1
     steps:
       - checkout
       - setup_remote_docker

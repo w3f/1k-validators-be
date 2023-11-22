@@ -10,7 +10,7 @@
       "wss://polkadot.api.onfinality.io/public-ws",
       "wss://polkadot-rpc.dwellir.com"
     ],
-    "bootstrap": false,
+    "bootstrap": true,
     "kusamaBootstrapEndpoint": "https://kusama.w3f.community",
     "polkadotBootstrapEndpoint": "https://polkadot.w3f.community",
     "candidatesUrl": "https://raw.githubusercontent.com/w3f/1k-validators-be/master/candidates/polkadot.json"

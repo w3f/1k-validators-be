@@ -498,8 +498,8 @@ export default class ScoreKeeper {
     }
 
     // Main cron job for starting rounds and ending rounds of the scorekeeper
-    const scoreKeeperFrequency = this.config.cron.scorekeeper
-      ? this.config.cron.scorekeeper
+    const scoreKeeperFrequency = this.config.cron?.scorekeeper
+      ? this.config.cron?.scorekeeper
       : Constants.SCOREKEEPER_CRON;
     const mainCron = new CronJob(scoreKeeperFrequency, async () => {
       logger.info(

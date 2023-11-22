@@ -260,7 +260,7 @@ docker logs 1k-validators-be-1kv-telemetry-1 -f
 
 Worker:
 
-```bash`
+```bash
 yarn docker:logs:worker
 ```
 

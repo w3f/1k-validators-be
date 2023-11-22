@@ -78,10 +78,10 @@ Each package contains a `Dockerfile`, which is used for running in production,  
 The difference of running as either `Current` or `Microservice` is in which docker containers get run with `docker-compose` (Microservices have services separated out as their own containers, and additionally rely on Redis for messages queues). Outside of this everything else (whether it's run as a Kusama or Polkadot instance) is determined by the JSON configuration files that get generated.
 
 ### Cloning the Repository
-\```bash
+```bash
 git clone https://github.com/w3f/1k-validators-be.git
 cd 1k-validators-be
-\```
+```
 
 ### Installing System Dependencies
 

@@ -7,6 +7,7 @@ WORKDIR /app
 RUN echo "building ${PACKAGE}... "; \
     yarn set version 3.2.2 ; \
     yarn install ; \
+    cd docs && npm install && npm run build; \
     echo "yarn install done. Building...." ; \
     yarn workspaces foreach run build ; \
     echo "building ${PACKAGE} done."

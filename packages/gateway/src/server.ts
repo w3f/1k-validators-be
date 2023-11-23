@@ -10,8 +10,11 @@ import { createBullBoard } from "@bull-board/api";
 import { BullMQAdapter } from "@bull-board/api/bullMQAdapter";
 import { otvWorker } from "@1kv/worker";
 import { Queue } from "bullmq";
+import path from "path";
+import serve from "koa-static";
 
 import router from "./routes";
+import mount from "koa-mount";
 
 export default class Server {
   public app: Koa;
@@ -42,6 +45,15 @@ export default class Server {
         },
       })
     );
+
+    const docsPath = path.join(__dirname, "../../../docs/build");
+    // const serveDocs = serve(docsPath);
+    // // this.app.use(mount("/docs", serve(docsPath)));
+    // router.get("/docs", (ctx) => {
+    //   ctx.body = serve(docsPath);
+    // });
+
+    this.app.use(mount("/docs", serve(docsPath)));
 
     router.get("/healthcheck", (ctx) => {
       const network = config.global.networkPrefix == 2 ? "Kusama" : "Polkadot";

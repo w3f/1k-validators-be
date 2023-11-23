@@ -10,6 +10,7 @@ __metadata:
   resolution: "1k-validators-be@workspace:."
   dependencies:
     "@types/eslint": ^8.44.7
+    "@types/koa-mount": ^4
     "@types/node": ^20.2.5
     "@types/request": ^2.48.12
     "@typescript-eslint/eslint-plugin": ^5.59.9
@@ -17,6 +18,8 @@ __metadata:
     eslint: 8.42.0
     eslint-config-prettier: ^8.8.0
     eslint-plugin-prettier: ^4.2.1
+    koa-mount: ^4.0.0
+    koa-static: ^5.0.0
     node-fetch: 2.6.1
     prettier: ^2.8.8
     request: ^2.88.2
@@ -2247,6 +2250,15 @@ __metadata:
   dependencies:
     "@types/koa": "*"
   checksum: 5d1147c4b057eb158195f442f0384f06503f3e69dba99fb517b30a05261a9f92928945c12bb1cfc17a5b7d60db003f38b455a3a9b125f12e4fc81fffa396b3cf
+  languageName: node
+  linkType: hard
+
+"@types/koa-mount@npm:^4":
+  version: 4.0.5
+  resolution: "@types/koa-mount@npm:4.0.5"
+  dependencies:
+    "@types/koa": "*"
+  checksum: 2b794f618b44e5a6810a829fd6fc29c17dd6b7adde81d26f270215197c01184434922db7078502947f48144344471129f533a3db2b0d86b836c60fddc32e2a3c
   languageName: node
   linkType: hard
 

@@ -1,11 +1,11 @@
 @font-face {
   font-family: "Socicon";
-  src: url("../../../../1k-validators-be/docs/static/fonts/Socicon.eot?484r1f");
-  src: url("../../../../1k-validators-be/docs/static/fonts/Socicon.eot?484r1f#iefix") format("embedded-opentype"),
-    url("../../../../1k-validators-be/docs/static/fonts/Socicon.woff2?484r1f") format("woff2"),
-    url("../../../../1k-validators-be/docs/static/fonts/Socicon.ttf?484r1f") format("truetype"),
-    url("../../../../1k-validators-be/docs/static/fonts/Socicon.woff?484r1f") format("woff"),
-    url("../fonts/Socicon.svg?484r1f#Socicon") format("svg");
+  src: url("../fonts/Socicon.eot?484r1f");
+  src: url("../fonts/Socicon.eot?484r1f#iefix") format("embedded-opentype"),
+  url("../fonts/Socicon.woff2?484r1f") format("woff2"),
+  url("../fonts/Socicon.ttf?484r1f") format("truetype"),
+  url("../fonts/Socicon.woff?484r1f") format("woff"),
+  url("../fonts/Socicon.svg?484r1f#Socicon") format("svg");
   font-weight: normal;
   font-style: normal;
 }

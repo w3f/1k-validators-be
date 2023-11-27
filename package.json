@@ -36,7 +36,7 @@
     "docker:logs:gateway": "docker logs 1k-validators-be-1kv-gateway-1 -f",
     "docker:logs:telemetry": "docker logs 1k-validators-be-1kv-telemetry-1 -f",
     "docker:logs:worker": "docker logs 1k-validators-be-1kv-worker-1 -f",
-    "docker:stop": "docker-compose down",
+    "docker:stop": "docker compose down",
     "lint": "yarn workspaces foreach run lint",
     "lint:fix": "yarn workspaces foreach run lint:fix",
     "clean": "rm -rf redis/ && yarn workspaces foreach run clean",

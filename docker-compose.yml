@@ -10,7 +10,7 @@ services:
       depends_on:
         - redis
       volumes:
-        - .:/app
+        - .:/code
       ports:
         - "127.0.0.1:3300:3300"
       networks:
@@ -29,7 +29,7 @@ services:
         dockerfile: ./Dockerfile-dev
       restart: always
       volumes:
-        - .:/app
+        - .:/code
       ports:
         - "127.0.0.1:3301:3301"
       networks:
@@ -48,7 +48,7 @@ services:
         dockerfile: ./Dockerfile-dev
       restart: always
       volumes:
-        - .:/app
+        - .:/code
       networks:
         testing_net:
           ipv4_address: 172.28.1.9
@@ -64,7 +64,7 @@ services:
           PACKAGE: worker
         dockerfile: ./Dockerfile-dev
       volumes:
-        - .:/app
+        - .:/code
       deploy:
         mode: replicated
         replicas: 4

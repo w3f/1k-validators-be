@@ -1,6 +1,7 @@
 {
   "name": "1k-validators-be",
   "packageManager": "yarn@3.2.2",
+  "yarnPath": ".yarn/releases/yarn-3.2.2.cjs",
   "private": true,
   "workspaces": [
     "packages/common",

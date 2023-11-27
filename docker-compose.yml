@@ -12,7 +12,7 @@ services:
       volumes:
         - .:/app
       ports:
-        - "3300:3300"
+        - "127.0.0.1:3300:3300"
       networks:
         testing_net:
           ipv4_address: 172.28.1.7
@@ -31,7 +31,7 @@ services:
       volumes:
         - .:/app
       ports:
-        - "3301:3301"
+        - "127.0.0.1:3301:3301"
       networks:
         testing_net:
           ipv4_address: 172.28.1.8
@@ -83,7 +83,7 @@ services:
         image: mongo
         restart: always
         ports:
-            - "27017:27017"
+            - "127.0.0.1:27017:27017"
         networks:
             testing_net:
                 ipv4_address: 172.28.1.12
@@ -102,7 +102,7 @@ services:
       depends_on:
         - mongo
       ports:
-        - "8888:8081"
+        - "127.0.0.1:8888:8081"
       networks:
         testing_net:
           ipv4_address: 172.28.1.14
@@ -114,7 +114,7 @@ services:
     redis:
       image: redis:alpine
       ports:
-        - "6379:6379"
+        - "127.0.0.1:6379:6379"
       expose:
         - "6379"
       volumes:

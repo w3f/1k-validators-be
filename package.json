@@ -29,7 +29,7 @@
     "docker:polkadot-current-dev:start": "yarn run create-config-polkadot-current-dev &&  docker compose -f docker-compose.yml up -d && yarn run docker:logs",
     "docker:kusama-microservice:start": "yarn run create-config-kusama-microservice && docker compose -f docker-compose.microservice.yml up -d --build && yarn run docker:logs",
     "docker:kusama-microservice-dev:start": "yarn run create-config-kusama-microservice-dev && docker compose -f docker-compose.yml up -d --build && yarn run docker:logs",
-    "docker:polkadot-microservice:start": "yarn run create-config-polkadot-microservice && docker- ompose -f docker-compose.microservice.yml up -d --build && yarn run docker:logs",
+    "docker:polkadot-microservice:start": "yarn run create-config-polkadot-microservice && docker compose -f docker-compose.microservice.yml up -d --build && yarn run docker:logs",
     "docker:polkadot-microservice-dev:start": "yarn run create-config-polkadot-microservice-dev && docker compose -f docker-compose.yml up -d --build && yarn run docker:logs",
     "docker:logs": "docker-compose logs -f",
     "docker:logs:core": "docker logs 1k-validators-be-1kv-core-1 -f",

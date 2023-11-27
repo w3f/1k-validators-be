@@ -2,13 +2,11 @@ FROM node:18-slim AS builder
 ARG MATRIX_TOKEN
 ARG PACKAGE
 ENV PACKAGE ${PACKAGE}
-COPY . /app
-WORKDIR /app
+COPY . /code
+WORKDIR /code
 RUN echo "building ${PACKAGE}... "; \
-    yarn set version 3.2.2 ; \
-    yarn install ; \
-    cd docs && npm install && npm run build; \
+    yarn install; \
     echo "yarn install done. Building...." ; \
-    yarn workspaces foreach run build ; \
+    yarn build; \
     echo "building ${PACKAGE} done."
 CMD yarn run start:dev:${PACKAGE}

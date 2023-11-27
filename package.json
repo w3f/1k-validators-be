@@ -31,7 +31,7 @@
     "docker:kusama-microservice-dev:start": "yarn run create-config-kusama-microservice-dev && docker compose -f docker-compose.yml up -d --build && yarn run docker:logs",
     "docker:polkadot-microservice:start": "yarn run create-config-polkadot-microservice && docker compose -f docker-compose.microservice.yml up -d --build && yarn run docker:logs",
     "docker:polkadot-microservice-dev:start": "yarn run create-config-polkadot-microservice-dev && docker compose -f docker-compose.yml up -d --build && yarn run docker:logs",
-    "docker:logs": "docker-compose logs -f",
+    "docker:logs": "docker compose logs -f",
     "docker:logs:core": "docker logs 1k-validators-be-1kv-core-1 -f",
     "docker:logs:gateway": "docker logs 1k-validators-be-1kv-gateway-1 -f",
     "docker:logs:telemetry": "docker logs 1k-validators-be-1kv-telemetry-1 -f",

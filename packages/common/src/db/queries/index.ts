@@ -1,4 +1,5 @@
 export * from "./Accounting";
+export * from "./Block";
 export * from "./Candidate";
 export * from "./ChainMetadata";
 export * from "./Councillor";
@@ -16,6 +17,7 @@ export * from "./Nomination";
 export * from "./Nominator";
 export * from "./NominatorStake";
 export * from "./Release";
+export * from "./Reward";
 export * from "./ValidatorScore";
 export * from "./ValidatorScoreMetadata";
 export * from "./Session";

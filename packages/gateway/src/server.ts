@@ -20,6 +20,7 @@ export default class Server {
   public app: Koa;
   private port: number;
   private enable = true;
+  private cache = 180000;
   private config: Config.ConfigSchema;
   private queues: Queue[] = [];
 
@@ -27,13 +28,16 @@ export default class Server {
     this.app = new Koa();
     this.port = config.server.port;
     this.enable = config.server.enable;
+    this.cache = config.server.cache;
     this.config = config;
 
     this.app.use(cors());
     this.app.use(bodyparser());
 
+    logger.info(`Cache set to ${this.cache}`, { label: "Gateway" });
+
     const cache = new LRU({
-      max: 180000, // global max age
+      max: this.cache || 180000, // global max age
     });
     this.app.use(
       koaCash({
@@ -47,11 +51,6 @@ export default class Server {
     );
 
     const docsPath = path.join(__dirname, "../../../docs/build");
-    // const serveDocs = serve(docsPath);
-    // // this.app.use(mount("/docs", serve(docsPath)));
-    // router.get("/docs", (ctx) => {
-    //   ctx.body = serve(docsPath);
-    // });
 
     this.app.use(mount("/docs", serve(docsPath)));
 

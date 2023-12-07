@@ -122,6 +122,7 @@ export type ConfigSchema = {
   server: {
     enable: boolean;
     port: number;
+    cache: number;
   };
   telemetry: {
     enable: boolean;

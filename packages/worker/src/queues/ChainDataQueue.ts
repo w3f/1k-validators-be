@@ -13,6 +13,8 @@ import {
   VALIDATOR_PREF_JOB,
 } from "../jobs";
 
+const label = { label: "ChainDataQueue" };
+
 export const createChainDataQueue = async (host, port) => {
   const queue = await new Queue("chaindata", {
     connection: {
@@ -24,7 +26,7 @@ export const createChainDataQueue = async (host, port) => {
 };
 
 export const addActiveValidatorJob = async (queue: Queue, repeat: number) => {
-  logger.info(`adding Active Validator Job to Queue.....`);
+  logger.info(`adding Active Validator Job to Queue.....`, label);
   await queue.add(
     "chaindata",
     { jobType: ACTIVE_VALIDATOR_JOB },
@@ -42,6 +44,7 @@ export const addActiveValidatorJob = async (queue: Queue, repeat: number) => {
   );
 };
 
+// TODO remove
 export const addCouncilJob = async (queue: Queue, repeat: number) => {
   logger.info(`adding Council Job to Queue.....`);
   await queue.add(
@@ -62,7 +65,7 @@ export const addCouncilJob = async (queue: Queue, repeat: number) => {
 };
 
 export const addDelegationJob = async (queue: Queue, repeat: number) => {
-  logger.info(`adding Delegation to Queue.....`);
+  logger.info(`adding Delegation to Queue.....`, label);
   await queue.add(
     "chaindata",
     { jobType: DELEGATION_JOB },

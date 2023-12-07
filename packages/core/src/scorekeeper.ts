@@ -36,7 +36,6 @@ import {
 } from "./cron";
 import Claimer from "./claimer";
 import Monitor from "./monitor";
-import { Subscan } from "./subscan";
 import { monitorJob } from "./jobs";
 // import { monitorJob } from "./jobs";
 
@@ -145,6 +144,7 @@ export const autoNumNominations = async (
   };
 };
 
+// Scorekeeper is the main orchestrator of initiating jobs and kickstarting the workflow of nominations
 export default class ScoreKeeper {
   public handler: ApiHandler;
   public bot: any;
@@ -168,7 +168,6 @@ export default class ScoreKeeper {
   private nominatorGroups: Array<SpawnedNominatorGroup> = [];
   private claimer: Claimer;
   private monitor: Monitor;
-  private subscan: Subscan;
 
   constructor(
     handler: ApiHandler,
@@ -222,7 +221,7 @@ export default class ScoreKeeper {
     //   }
     // );
 
-    // Handles offline event. Validators will be faulted for each session they are offline.
+    // Handles offline event. Validators will be faulted for each session they are offline
     //     If they have already reaceived an offline fault for that session, it is skipped
     this.handler.on("someOffline", async (data: { offlineVals: string[] }) => {
       const { offlineVals } = data;
@@ -621,12 +620,12 @@ export default class ScoreKeeper {
           ]);
         }
 
+        // Add repeatable jobs to the queues
+        // Queues need to have different repeat time intervals
         await otvWorker.queues.addReleaseMonitorJob(releaseMonitorQueue, 60000);
         await otvWorker.queues.addValidityJob(constraintsQueue, 1000001);
-        await otvWorker.queues.addScoreJob(constraintsQueue, 100002); // Needs to have different repeat times
-
+        await otvWorker.queues.addScoreJob(constraintsQueue, 100002);
         await otvWorker.queues.addActiveValidatorJob(chaindataQueue, 100003);
-        // await otvWorker.queues.addCouncilJob(chaindataQueue, 100004);
         await otvWorker.queues.addDelegationJob(chaindataQueue, 100005);
         await otvWorker.queues.addEraPointsJob(chaindataQueue, 100006);
         await otvWorker.queues.addEraStatsJob(chaindataQueue, 110008);
@@ -635,9 +634,10 @@ export default class ScoreKeeper {
         await otvWorker.queues.addSessionKeyJob(chaindataQueue, 100010);
         await otvWorker.queues.addValidatorPrefJob(chaindataQueue, 100101);
         await otvWorker.queues.addAllBlocks(blockQueue, this.chaindata);
-        await startLocationStatsJob(this.config, this.chaindata);
+        // TODO update this as queue job
+        // await startLocationStatsJob(this.config, this.chaindata);
       } else {
-        // No redis connection - scorekeeper runs job
+        // No redis connection - scorekeeper/core runs jobs as cron jobs
         await monitorJob();
         await startValidatityJob(this.config, this.constraints);
         await startScoreJob(this.config, this.constraints);

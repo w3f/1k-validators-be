@@ -1244,7 +1244,8 @@ export const checkLatestClientVersion = async (
   config: Config.ConfigSchema,
   candidate: any
 ) => {
-  if (!config.constraints.skipClientUpgrade) {
+  const skipClientUpgrade = config.constraints?.skipClientUpgrade || false;
+  if (skipClientUpgrade!) {
     if (candidate?.implementation == "Kagome Node") {
       await setLatestClientReleaseValidity(candidate.stash, true);
       return true;

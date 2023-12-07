@@ -13,7 +13,7 @@ export const createBlockWorker = async (host, port, api: ApiHandler) => {
         host: host,
         port: port,
       },
-      concurrency: 4,
+      concurrency: 15,
       lockDuration: 300000,
     }
   );

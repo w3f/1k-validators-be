@@ -52,6 +52,7 @@
     "start:js:worker": "NODE_OPTIONS='--max-old-space-size=10096' yarn workspace @1kv/worker run js:start"
   },
   "devDependencies": {
+    "@types/coingecko-api": "^1",
     "@types/eslint": "^8.44.7",
     "@types/koa-mount": "^4",
     "@types/node": "^20.2.5",
@@ -64,6 +65,9 @@
     "prettier": "^2.8.8"
   },
   "dependencies": {
+    "coingecko-api": "^1.0.10",
+    "coingecko-api-v3": "^0.0.29",
+    "date-fns": "^2.30.0",
     "koa-mount": "^4.0.0",
     "koa-static": "^5.0.0",
     "node-fetch": "2.6.1",

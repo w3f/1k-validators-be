@@ -10,7 +10,8 @@
   },
   "redis": {
     "host": "redis",
-    "port": 6379
+    "port": 6379,
+    "cache": 1
   },
   "server": {
     "enable": true,

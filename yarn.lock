@@ -9,12 +9,16 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "1k-validators-be@workspace:."
   dependencies:
+    "@types/coingecko-api": ^1
     "@types/eslint": ^8.44.7
     "@types/koa-mount": ^4
     "@types/node": ^20.2.5
     "@types/request": ^2.48.12
     "@typescript-eslint/eslint-plugin": ^5.59.9
     "@typescript-eslint/parser": ^5.59.9
+    coingecko-api: ^1.0.10
+    coingecko-api-v3: ^0.0.29
+    date-fns: ^2.30.0
     eslint: 8.42.0
     eslint-config-prettier: ^8.8.0
     eslint-plugin-prettier: ^4.2.1
@@ -2122,6 +2126,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/coingecko-api@npm:^1":
+  version: 1.0.13
+  resolution: "@types/coingecko-api@npm:1.0.13"
+  checksum: a23319472447877822e5e9b4213ec3f91e5a07568fe3f134a142c549aa3a023a785606fdee5c2d8076b426fd61eb597f065b845e7807425b0672049ba9f1f1da
+  languageName: node
+  linkType: hard
+
 "@types/connect@npm:*":
   version: 3.4.35
   resolution: "@types/connect@npm:3.4.35"
@@ -3446,6 +3457,22 @@ __metadata:
   dependencies:
     convert-to-spaces: ^2.0.1
   checksum: d57137d8f4825879283a828cc02a1115b56858dc54ed06c625c8f67d6685d1becd2fbaa7f0ab19ecca1f5cca03f8c97bbc1f013cab40261e4d3275032e65efe9
+  languageName: node
+  linkType: hard
+
+"coingecko-api-v3@npm:^0.0.29":
+  version: 0.0.29
+  resolution: "coingecko-api-v3@npm:0.0.29"
+  dependencies:
+    https: ^1.0.0
+  checksum: b23c02253d9ab0f8eb516d5464d61a91f72041f4b6edb776b0cc1431144affcd48516da73c6c83a692cbc8d3fcb93280c2d9e7a61a087f2f8cbbfbbe6d22f217
+  languageName: node
+  linkType: hard
+
+"coingecko-api@npm:^1.0.10":
+  version: 1.0.10
+  resolution: "coingecko-api@npm:1.0.10"
+  checksum: c900f5f7261dbfa2ecf3f6a2b018eb9de445db17bf9ef331e2751904f24c4e361144e9aa8ab1501fb4e741fa900dd61007e330a6b95a778d35b48d2ca5b61148
   languageName: node
   linkType: hard
 
@@ -5175,6 +5202,13 @@ __metadata:
     agent-base: 6
     debug: 4
   checksum: 571fccdf38184f05943e12d37d6ce38197becdd69e58d03f43637f7fa1269cf303a7d228aa27e5b27bbd3af8f09fd938e1c91dcfefff2df7ba77c20ed8dfc765
+  languageName: node
+  linkType: hard
+
+"https@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "https@npm:1.0.0"
+  checksum: ccea8a8363a018d4b241db7748cff3a85c9f5b71bf80639e9c37dc6823f590f35dda098b80b726930e9f945387c8bfd6b1461df25cab5bf65a31903d81875b5d
   languageName: node
   linkType: hard
 

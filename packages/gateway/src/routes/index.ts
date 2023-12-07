@@ -9,9 +9,11 @@ import Score from "../controllers/Score";
 import Stats from "../controllers/Stats";
 import Location from "../controllers/Location";
 import Validator from "../controllers/Validators";
+import Rewards from "../controllers/Rewards";
 
 const router: any = new Router();
 
+// API Endpoints
 const API = {
   BullBoard: "/bull",
   Accounting: "/accounting/:address",
@@ -76,6 +78,16 @@ const API = {
   OpenGovDelegates: "/opengov/delegates",
   OpenGovDelegate: "/opengov/delegates/:address",
   OpenGovTracks: "/opengov/tracks",
+  Validators: "/validators",
+  Validator: "/validator/:address",
+  RewardsValidator: "/rewards/validator/:address",
+  RewardsValidatorTotal: "/rewards/validator/:address/total",
+  RewardsAllValidatorsTotal: "/rewards/validators/total",
+  RewardsValidatorStats: "/rewards/validator/:address/stats",
+  RewardsAllValidatorsStats: "/rewards/validators/stats",
+  RewardsNominator: "/rewards/nominator/:address",
+  RewardsNominatorTotal: "/rewards/nominator/:address/total",
+  RewardsAllNominatorsTotal: "/rewards/nominators/total",
 };
 
 router.get(API.Accounting, Accounting.getAccounting);
@@ -136,6 +148,7 @@ router.get(
   API.OpenGovAddressDelegations,
   Democracy.getOpenGovAddressDelegations
 );
+
 router.get(API.OpenGovVoters, Democracy.getOpenGovVoters);
 router.get(API.OpenGovVoter, Democracy.getOpenGovVoter);
 router.get(API.OpenGovDelegates, Democracy.getOpenGovDelegates);
@@ -159,5 +172,18 @@ router.get(API.HeartbeatIndex, Location.getHeartbeatIndex);
 router.get(API.EraStats, Stats.getEraStats);
 router.get(API.LocationStats, Stats.getLocationStats);
 router.get(API.SessionLocationStats, Stats.getSessionLocationStats);
+
+router.get(API.Validators, Validator.getValidators);
+router.get(API.Validator, Validator.getValidator);
+
+router.get(API.RewardsValidator, Rewards.getRewardsValidator);
+router.get(API.RewardsNominator, Rewards.getRewardsNominator);
+
+router.get(API.RewardsValidatorTotal, Rewards.getRewardsValidatorTotal);
+router.get(API.RewardsAllValidatorsTotal, Rewards.getRewardsAllValidatorsTotal);
+router.get(API.RewardsValidatorStats, Rewards.getRewardsValidatorStats);
+router.get(API.RewardsAllValidatorsStats, Rewards.getRewardsAllValidatorStats);
+router.get(API.RewardsNominatorTotal, Rewards.getRewardsNominatorTotal);
+router.get(API.RewardsAllNominatorsTotal, Rewards.getRewardsAllNominatorsTotal);
 
 export default router;

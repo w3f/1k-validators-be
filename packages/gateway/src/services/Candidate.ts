@@ -1,5 +1,4 @@
-import { queries, Config, logger } from "@1kv/common";
-import { BaseContext } from "koa";
+import { logger, queries } from "@1kv/common";
 
 export const getCandidate = async (stash: any): Promise<any> => {
   let candidate;
@@ -167,6 +166,7 @@ export const getCandidates = async (): Promise<any> => {
         commission: candidate.commission,
         identity: candidate.identity,
         active: candidate.active,
+        bonded: candidate.bonded,
         valid: candidate.valid,
         validity: candidate.invalidity,
         score: score,
@@ -185,6 +185,8 @@ export const getCandidates = async (): Promise<any> => {
         convictionVoteCount: candidate.convictionVoteCount,
         openGovDelegations: openGovDelegations,
         matrix: candidate.matrix,
+        version: candidate.version,
+        implementation: candidate.implementation,
       };
     })
   );

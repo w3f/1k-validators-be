@@ -16,6 +16,8 @@ tags:
     description: Querying fields of candidates
   - name: Rewards
     description: Querying rewards for stakers
+  - name: Nominator
+    description: Querying fields of nominators
 
 paths:
   /candidate/{candidateStash}:
@@ -357,6 +359,26 @@ paths:
         '404':
           description: "Validator not found."
 
+  /rewards/validators/total:
+    get:
+      summary: "Get all validators total rewards"
+      tags:
+        - Rewards
+      description: "Retrieve a list  of all validators total rewards."
+      responses:
+        '200':
+          description: "Successful response with a list of rewards."
+
+  /rewards/validators/stats:
+    get:
+      summary: "Get All Validators Reward Stats"
+      tags:
+        - Rewards
+      description: "Retrieve a list of all rewards stats."
+      responses:
+        '200':
+          description: "Successful response with a list of rewards stats."
+
   /rewards/nominator/{stash}:
     get:
       tags:
@@ -402,6 +424,150 @@ paths:
         '404':
           description: "Validator not found."
 
+  /nominators:
+    get:
+      summary: "Get All Nominators"
+      tags:
+        - Nominator
+      description: "Retrieve a list of all nominators."
+      responses:
+        '200':
+          description: "Successful response with a list of nominators."
+
+  /nominator/{address}:
+    get:
+      summary: "Get Nominator by Address"
+      tags:
+        - Nominator
+      description: "Retrieve details of a specific nominator by address."
+      parameters:
+        - in: path
+          name: address
+          required: true
+          schema:
+            type: string
+          description: "The unique address of the nominator."
+      responses:
+        '200':
+          description: "Successful response with nominator details."
+        '404':
+          description: "Nominator not found."
+
+  /nominations:
+    get:
+      summary: "Get All Nominations"
+      tags:
+        - Nominator
+      description: "Retrieve a list of all nominations."
+      responses:
+        '200':
+          description: "Successful response with a list of nominations."
+
+  /nominations/{address}/{last}:
+    get:
+      summary: "Get Nominations for a Nominator"
+      tags:
+        - Nominator
+      description: "Retrieve a list of nominations for a specific nominator."
+      parameters:
+        - in: path
+          name: address
+          required: true
+          schema:
+            type: string
+          description: "The unique address of the nominator."
+        - in: path
+          name: last
+          required: true
+          schema:
+            type: string
+          description: "A parameter to specify the range or limit of nominations to retrieve."
+      responses:
+        '200':
+          description: "Successful response with a list of nominations for the nominator."
+        '404':
+          description: "Nominator not found."
+
+  /nominatorstake/{address}/last/{limit}:
+    get:
+      tags:
+        - Nominator
+      summary: Retrieve the last N stakes for a given nominator address
+      parameters:
+        - in: path
+          name: address
+          required: true
+          schema:
+            type: string
+          description: The nominator's address
+        - in: path
+          name: limit
+          required: true
+          schema:
+            type: integer
+          description: Number of recent stakes to retrieve
+      responses:
+        200:
+          description: A list of last N nominator stakes
+          # Define response schema
+
+  /nominatorstake/{address}:
+    get:
+      tags:
+        - Nominator
+      summary: Get the latest stake of a nominator
+      parameters:
+        - in: path
+          name: address
+          required: true
+          schema:
+            type: string
+          description: The nominator's address
+      responses:
+        200:
+          description: Latest stake of the nominator
+          # Define response schema
+
+  /nominatorstake/{address}/{era}:
+    get:
+      tags:
+        - Nominator
+      summary: Get the stake of a nominator for a specific era
+      parameters:
+        - in: path
+          name: address
+          required: true
+          schema:
+            type: string
+          description: The nominator's address
+        - in: path
+          name: era
+          required: true
+          schema:
+            type: integer
+          description: The specific era
+      responses:
+        200:
+          description: Nominator stake for the specified era
+          # Define response schema
+
+  /lastnomination:
+    get:
+      tags:
+        - Nominator
+      summary: The last Nomiantion
+      responses:
+        200:
+          description: Successful response with the last nomination
+
+  /proxytxs:
+    get:
+      tags:
+        - Nominator
+      summary: The pending proxy transactions
+      responses:
+        200:
+          description: Successful response with the pending proxy transactions
 
 components:
   schemas:

@@ -219,8 +219,6 @@ export const CandidateSchema = new Schema({
   nodeRefs: Number,
   // The name registered on the candidates list.
   name: { type: String, index: true },
-  // The inherited telemetry details.
-  telemetryDetails: [],
   // Stores the version string directly.
   version: String,
   // The origin of the node's connection time (timestamp in ms).

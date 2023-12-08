@@ -48,6 +48,13 @@ export const getCandidateData = async (candidate: any): Promise<any> => {
     nextKeys: candidate.nextKeys,
     rewardDestination: candidate.rewardDestination,
     controller: candidate.controller,
+    vpn: candidate.infrastructureLocation?.vpn,
+    cpu: candidate.infrastructureLocation?.cpu,
+    memory: candidate.infrastructureLocation?.memory,
+    coreCount: candidate.infrastructureLocation?.coreCount,
+    vm: candidate.infrastructureLocation?.vm,
+    region: candidate.infrastructureLocation?.region,
+    country: candidate.infrastructureLocation?.country,
   };
 };
 
@@ -105,7 +112,22 @@ export const getCandidates = async (): Promise<any> => {
 
 export const getNodes = async (): Promise<any> => {
   const allNodes: Array<any> = await queries.allNodes();
-  return allNodes;
+  return allNodes.map((node) => {
+    return {
+      name: node.name,
+      version: node.version,
+      implementation: node.implementation,
+      vpn: node.infrastructureLocation?.vpn,
+      cpu: node.infrastructureLocation?.cpu,
+      memory: node.infrastructureLocation?.memory,
+      coreCount: node.infrastructureLocation?.coreCount,
+      vm: node.infrastructureLocation?.vm,
+      location: node.infrastructureLocation?.location,
+      region: node.infrastructureLocation?.region,
+      country: node.infrastructureLocation?.country,
+      provider: node.infrastructureLocation?.provider,
+    };
+  });
 };
 
 export const getLatestNominatorStake = async (address): Promise<any> => {

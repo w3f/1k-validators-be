@@ -21,6 +21,8 @@ export const addAllBlocks = async (queue: Queue, chaindata: Chaindata) => {
 
   // get the indices of the earliest and latest blocks in the database
   const blockIndex = await queries.getBlockIndex();
+  const latest = blockIndex?.latest || latestBlock;
+  const earliest = blockIndex?.earliest || latestBlock;
 
   // If there is no block index in the database, add the latest block to the queue and set the block index to the latest block
   if (!blockIndex) {
@@ -43,20 +45,15 @@ export const addAllBlocks = async (queue: Queue, chaindata: Chaindata) => {
     }
   }
 
-  if (blockIndex?.earliest) {
-    const targetEarliest =
-      blockIndex?.earliest - threshold > 0
-        ? blockIndex.earliest - threshold
-        : 0;
+  if (earliest) {
+    const targetEarliest = earliest - threshold > 0 ? earliest - threshold : 0;
     logger.info(
-      `earliest ${
-        blockIndex?.earliest
-      } target earliest: ${targetEarliest}, adding ${
+      `earliest ${earliest} target earliest: ${targetEarliest}, adding ${
         blockIndex?.earliest - targetEarliest
       } to the queue`,
       label
     );
-    for (let i = blockIndex.earliest; i > targetEarliest; i--) {
+    for (let i = earliest; i > targetEarliest; i--) {
       await addBlockJob(queue, i);
     }
   }

@@ -13,7 +13,7 @@ import Rewards from "../controllers/Rewards";
 
 const router: any = new Router();
 
-// API Endpoints
+// Koa API Endpoints
 const API = {
   BullBoard: "/bull",
   Accounting: "/accounting/:address",

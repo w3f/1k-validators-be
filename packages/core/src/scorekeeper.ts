@@ -257,7 +257,6 @@ export default class ScoreKeeper {
         this.chaindata,
         candidates
       );
-
       // await sessionKeyJob(this.db, this.chaindata, this.candidateCache);
       // await inclusionJob(this.db, this.chaindata, this.candidateCache);
       // await validatorPrefJob(this.db, this.chaindata, this.candidateCache);

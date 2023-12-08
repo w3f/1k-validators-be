@@ -62,6 +62,7 @@ export default class Server {
       ctx.status = 200;
     });
 
+    // Add the swagger UI to the Gateway at the '/' route
     const swaggerSpec = yamljs.load(path.join(__dirname, "../src/swagger.yml")); //
     this.app.use(
       koaSwagger({
@@ -75,6 +76,7 @@ export default class Server {
     this.app.use(router.routes());
   }
 
+  // Add BullMQ queues
   async addQueues() {
     const releaseMonitorQueue =
       await otvWorker.queues.createReleaseMonitorQueue(
@@ -105,6 +107,7 @@ export default class Server {
     if (!this.enable) {
       logger.info(`Server not enabled`, { label: "Gateway" });
     } else {
+      // If Redis is in the config and this is run as microservices, add bull board as an endpoint at `/bull`
       if (this.config?.redis?.host && this.config?.redis?.port) {
         await this.addQueues();
         // BullMQBoard

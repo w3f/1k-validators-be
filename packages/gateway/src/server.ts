@@ -15,6 +15,8 @@ import serve from "koa-static";
 
 import router from "./routes";
 import mount from "koa-mount";
+import { koaSwagger } from "koa2-swagger-ui";
+import yamljs from "yamljs";
 
 export default class Server {
   public app: Koa;
@@ -59,6 +61,16 @@ export default class Server {
       ctx.body = `${network} Thousand Validators`;
       ctx.status = 200;
     });
+
+    const swaggerSpec = yamljs.load(path.join(__dirname, "../src/swagger.yml")); //
+    this.app.use(
+      koaSwagger({
+        routePrefix: "/",
+        swaggerOptions: {
+          spec: swaggerSpec,
+        },
+      })
+    );
 
     this.app.use(router.routes());
   }

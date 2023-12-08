@@ -1,0 +1,482 @@
+openapi: 3.0.0
+info:
+  title: Gateway API
+  description: This is a sample API to demonstrate Swagger documentation
+  version: "1.0.0"
+servers:
+  - url: http://localhost:3301
+    description: Local server
+  - url: https://kusama.w3f.community/
+    description: Kusama
+  - url: https://polkadot.w3f.community/
+    description: Polkadot
+
+tags:
+  - name: Candidates
+    description: Querying fields of candidates
+  - name: Rewards
+    description: Querying rewards for stakers
+
+paths:
+  /candidate/{candidateStash}:
+    get:
+      tags:
+        - Candidates
+      description: Returns info about a candidate
+      parameters:
+        - in: path
+          name: candidateStash
+          schema:
+            type: string
+          required: true
+          description: The candidate stash string
+      responses:
+        200:
+          description: Candidate.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  discoveredAt:
+                    type: integer
+                  nominatedAt:
+                    type: integer
+                  offlineSince:
+                    type: integer
+                  offlineAccumulated:
+                    type: integer
+                  rank:
+                    type: integer
+                  faults:
+                    type: integer
+                  unclaimedEras:
+                    type: array
+                    items:
+                      type: integer
+                  inclusion:
+                    type: number
+                  name:
+                    type: string
+                  stash:
+                    type: string
+                  rewardDestination:
+                    type: string
+                  controller:
+                    type: string
+                  kusamaStash:
+                    type: string
+                  commission:
+                    type: integer
+                  identity:
+                    type: object
+                  validity:
+                    type: array
+                    items:
+                    type: object
+                  total:
+                    type: integer
+                  location:
+                    type: string
+                  provider:
+                    type: string
+                  councilStake:
+                    type: string
+                  councilVotes:
+                    type: array
+                  democracyVoteCount:
+                    type: integer
+                  democracyVotes:
+                    type: array
+                  convictionVotes:
+                    type: array
+                  convictionVoteCount:
+                    type: integer
+                  openGovDelegations:
+                    type: object
+                  matrix:
+                    type: array
+                    items:
+                      type: string
+              example:
+                discoveredAt: 1700692561943
+                nominatedAt: 0
+                offlineSince: 0
+                offlineAccumulated: 0
+                rank: 0
+                faults: 0
+                unclaimedEras: []
+                inclusion: 0.2976190476190476
+                name: "Bussin Validator"
+                stash: "16Sm9qn1qde7AKG4cmH3qSBmZmmMgDeA3xZDrSEDHGQfe2za"
+                rewardDestination: "Staked"
+                controller: "16Sm9qn1qde7AKG4cmH3qSBmZmmMgDeA3xZDrSEDHGQfe2za"
+                kusamaStash: ""
+                commission: 15
+                identity:
+                  name: "Bussin Validator"
+                  address: "16Sm9qn1qde7AKG4cmH3qSBmZmmMgDeA3xZDrSEDHGQfe2za"
+                  verified: true
+                  subIdentities:
+                    - name: "Bussin Validator"
+                      address: "16Sm9qn1qde7AKG4cmH3qSBmZmmMgDeA3xZDrSEDHGQfe2za"
+                      _id: "6571e0ce7a9f51762958dc2f"
+                  display: "Bussin Validator"
+                  email: "Bussin@fr.com"
+                  judgements:
+                    - "Reasonable"
+                  matrix: "@lfg:matrix.org"
+                  twitter: "@rolltide"
+
+  /candidates:
+    get:
+      tags:
+        - Candidates
+      summary: Retrieve a list of candidates
+      responses:
+        200:
+          description: Successful response with a list of candidates
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    discoveredAt:
+                      type: integer
+                    nominatedAt:
+                      type: integer
+                    offlineSince:
+                      type: integer
+                    offlineAccumulated:
+                      type: integer
+                    rank:
+                      type: integer
+                    faults:
+                      type: integer
+                    unclaimedEras:
+                      type: array
+                      items:
+                        type: integer
+                    inclusion:
+                      type: number
+                    name:
+                      type: string
+                    stash:
+                      type: string
+                    rewardDestination:
+                      type: string
+                    controller:
+                      type: string
+                    kusamaStash:
+                      type: string
+                    commission:
+                      type: integer
+                    identity:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                        address:
+                          type: string
+                        verified:
+                          type: boolean
+                        subIdentities:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              name:
+                                type: string
+                              address:
+                                type: string
+                              _id:
+                                type: string
+                        display:
+                          type: string
+                        email:
+                          type: string
+                        judgements:
+                          type: array
+                          items:
+                            type: string
+                        riot:
+                          type: string
+                        twitter:
+                          type: string
+                        _id:
+                          type: string
+                    validity:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          valid:
+                            type: boolean
+                          type:
+                            type: string
+                          details:
+                            type: string
+                          updated:
+                            type: integer
+                          _id:
+                            type: string
+                    total:
+                      type: integer
+                    location:
+                      type: string
+                    provider:
+                      type: string
+                    councilStake:
+                      type: string
+                    councilVotes:
+                      type: array
+                      items:
+                        type: string
+                    democracyVoteCount:
+                      type: integer
+                    democracyVotes:
+                      type: array
+                      items:
+                        type: string
+                    convictionVotes:
+                      type: array
+                      items:
+                        type: string
+                    convictionVoteCount:
+                      type: integer
+                    openGovDelegations:
+                      type: object
+                      properties:
+                        track:
+                          type: integer
+                        totalBalance:
+                          type: integer
+                        delegatorCount:
+                          type: integer
+                    matrix:
+                      type: array
+                      items:
+                        type: string
+              example: # Example response with a list of candidates
+                - discoveredAt: 1700692561943
+                  nominatedAt: 0
+                  offlineSince: 0
+                  offlineAccumulated: 0
+                  rank: 0
+                  faults: 0
+                  unclaimedEras: [ ]
+                  inclusion: 0.30952380952380953
+                  name: "Bussin Validator"
+                  stash: "16Sm9qn1qde7AKG4cmH3qSBmZmmMgDeA3xZDrSEDHGQfe2za"
+                  rewardDestination: "Staked"
+                  controller: "16Sm9qn1qde7AKG4cmH3qSBmZmmMgDeA3xZDrSEDHGQfe2za"
+                  kusamaStash: ""
+                  commission: 15
+                  identity:
+                    name: "Bussin Validator"
+                    address: "16Sm9qn1qde7AKG4cmH3qSBmZmmMgDeA3xZDrSEDHGQfe2za"
+                    verified: true
+                    subIdentities:
+                      - name: "Bussin Validator"
+                        address: "16Sm9qn1qde7AKG4cmH3qSBmZmmMgDeA3xZDrSEDHGQfe2za"
+                        _id: "6571e0ce7a9f51762958dc2f"
+                    display: "Bussin Validator"
+                    email: "bussin@bussin.com"
+                    judgements:
+                      - "Reasonable"
+                    riot: "@bussin:matrix.org"
+                    twitter: "@Bussin"
+
+  /rewards/validator/{stash}:
+    get:
+      tags:
+        - Rewards
+      description: Returns rewards for a validator
+      parameters:
+        - in: path
+          name: stash
+          schema:
+            type: string
+          required: true
+          description: The validator stash string
+      responses:
+        200:
+          description: Rewards.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Reward'
+
+  /rewards/validator/{address}/total:
+    get:
+      summary: "Get Total Rewards for a Validator"
+      tags:
+        - Rewards
+      description: "Retrieves the total rewards and count for a given validator based on their address."
+      parameters:
+        - in: path
+          name: address
+          required: true
+          schema:
+            type: string
+          description: "The address of the validator."
+      responses:
+        '200':
+          description: "Total rewards for the specified validator."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RewardTotal'
+        '404':
+          description: "Validator not found."
+
+  /rewards/validator/{address}/stats:
+    get:
+      tags:
+        - Rewards
+      summary: "Get Reward Statistics for a Validator"
+      description: "Retrieves statistical information about rewards for a given validator by their address."
+      parameters:
+        - in: path
+          name: address
+          required: true
+          schema:
+            type: string
+          description: "The unique address of the validator."
+      responses:
+        '200':
+          description: "Statistical information about the rewards for the specified validator."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RewardStats'
+        '404':
+          description: "Validator not found."
+
+  /rewards/nominator/{stash}:
+    get:
+      tags:
+        - Rewards
+      description: Returns rewards for a nominator
+      parameters:
+        - in: path
+          name: stash
+          schema:
+            type: string
+          required: true
+          description: The nominator stash string
+      responses:
+        200:
+          description: Rewards.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Reward'
+
+  /rewards/nominator/{address}/total:
+    get:
+      summary: "Get Total Rewards for a Nominator"
+      tags:
+        - Rewards
+      description: "Retrieves the total rewards and count for a given nominator based on their address."
+      parameters:
+        - in: path
+          name: address
+          required: true
+          schema:
+            type: string
+          description: "The address of the nominator."
+      responses:
+        '200':
+          description: "Total rewards for the specified nominator."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RewardTotal'
+        '404':
+          description: "Validator not found."
+
+
+components:
+  schemas:
+    Reward:
+      type: object
+      properties:
+        role:
+          type: string
+        exposurePercentage:
+          type: integer
+        totalStake:
+          type: integer
+        commission:
+          type: integer
+        era:
+          type: integer
+        validator:
+          type: string
+        nominator:
+          type: string
+        rewardAmount:
+          type: string
+        rewardDestination:
+          type: string
+        erasMinStake:
+          type: number
+          format: float
+        validatorStakeEfficiency:
+          type: number
+          format: float
+        blockHash:
+          type: string
+        blockNumber:
+          type: integer
+        timestamp:
+          type: integer
+        date:
+          type: string
+          format: date
+        chf:
+          type: number
+          format: float
+        usd:
+          type: number
+          format: float
+        eur:
+          type: number
+          format: float
+    RewardTotal:
+      type: object
+      properties:
+        validator:
+          type: string
+          example: "ESNMjpEWcenAbCqGEsHVdbbRai79VQYMmV1fNW1kRZogmzx"
+        total:
+          type: number
+          format: float
+          example: 0.879469625343
+        rewardCount:
+          type: integer
+          example: 1
+    RewardStats:
+      type: object
+      properties:
+        total:
+          type: number
+          format: float
+          example: 0.235934990397
+        rewardCount:
+          type: integer
+          example: 1
+        avgEfficiency:
+          type: number
+          format: float
+          example: 84.46114961271203
+        avgStake:
+          type: integer
+          example: 7985

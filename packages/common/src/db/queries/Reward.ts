@@ -1,6 +1,5 @@
 import { PayoutTransactionModel, RewardModel } from "../models";
 import { getIdentity } from "./Candidate";
-import { logger } from "../../index";
 
 export const setPayoutTransaction = async (
   validator: string,
@@ -40,7 +39,10 @@ export const getPayoutTransaction = async (
   validator: string,
   era: number
 ): Promise<any> => {
-  return PayoutTransactionModel.findOne({ validator, era }).lean();
+  return PayoutTransactionModel.findOne(
+    { validator, era },
+    { _id: 0, __v: 0 }
+  ).lean();
 };
 
 export const setReward = async (
@@ -119,37 +121,40 @@ export const getReward = async (
   nominator: string,
   era: number
 ): Promise<any> => {
-  return RewardModel.findOne({ validator, nominator, era }).lean();
+  return RewardModel.findOne(
+    { validator, nominator, era },
+    { _id: 0, __v: 0 }
+  ).lean();
 };
 
 export const getRewards = async (
   validator: string,
   era: number
 ): Promise<any> => {
-  return RewardModel.find({ validator, era }).lean();
+  return RewardModel.find({ validator, era }, { _id: 0, __v: 0 }).lean();
 };
 
 export const getRewardsByEra = async (era: number): Promise<any> => {
-  return RewardModel.find({ era }).lean();
+  return RewardModel.find({ era }, { _id: 0, __v: 0 }).lean();
 };
 
 export const getRewardsByValidator = async (
   validator: string
 ): Promise<any> => {
-  return RewardModel.find({ validator }).lean();
+  return RewardModel.find({ validator }, { _id: 0, __v: 0 }).lean();
 };
 
 export const getRewardsByNominator = async (
   nominator: string
 ): Promise<any> => {
-  return RewardModel.find({ nominator }).lean();
+  return RewardModel.find({ nominator }, { _id: 0, __v: 0 }).lean();
 };
 
 export const getRewardsByEraAndNominator = async (
   era: number,
   nominator: string
 ): Promise<any> => {
-  return RewardModel.find({ era, nominator }).lean();
+  return RewardModel.find({ era, nominator }, { _id: 0, __v: 0 }).lean();
 };
 
 export const getValidatorStats = async (validator: string) => {
@@ -178,8 +183,6 @@ export const getAllValidatorStats = async () => {
   const rewards = await RewardModel.find({
     role: "validator",
   }).lean();
-
-  logger.info(`validator length: ${rewards.length}`);
 
   const rewardsMap = new Map();
   const rewardsList = [];

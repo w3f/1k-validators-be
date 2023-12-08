@@ -90,13 +90,16 @@ const API = {
   RewardsAllNominatorsTotal: "/rewards/nominators/total",
 };
 
+// TODO remove
 router.get(API.Accounting, Accounting.getAccounting);
 
 router.get(API.Candidate, Candidate.getCandidate);
 router.get(API.GetCandidates, Candidate.getCandidates);
 router.get(API.GetValidCandidates, Candidate.getValidCandidates);
 router.get(API.GetInvalidCandidates, Candidate.getInvalidCandidates);
+
 router.get(API.GetNodes, Candidate.getNodes);
+
 router.get(API.LatestNominatorStake, Candidate.getLatestNominatorStake);
 router.get(API.EraNominatorStake, Candidate.getEraNominatorStake);
 router.get(API.LastNominatorStake, Candidate.getLastNominatorStake);
@@ -115,6 +118,7 @@ router.get(API.TotalEraPoints, EraPoints.getTotalEraPoints);
 router.get(API.ElectionStats, Democracy.getElectionStats);
 router.get(API.Councillors, Democracy.getCouncillors);
 router.get(API.Councillor, Democracy.getCouncillor);
+//
 router.get(API.Voters, Democracy.getVoters);
 router.get(API.Referenda, Democracy.getAllReferenda);
 router.get(API.Referendum, Democracy.getReferendum);

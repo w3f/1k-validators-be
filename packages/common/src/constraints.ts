@@ -1284,7 +1284,7 @@ export const checkConnectionTime = async (
   config: Config.ConfigSchema,
   candidate: any
 ) => {
-  if (!config.constraints.skipConnectionTime) {
+  if (!config?.constraints?.skipConnectionTime) {
     const now = new Date().getTime();
     if (now - candidate.discoveredAt < Constants.WEEK) {
       await setConnectionTimeInvalidity(candidate.stash, false);

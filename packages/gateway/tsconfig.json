@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.json",
   "exclude": ["test", "node_modules"],
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "src/**/*.yml"],
   "paths": {
     "@1kv/common": ["../common/build"]
   },

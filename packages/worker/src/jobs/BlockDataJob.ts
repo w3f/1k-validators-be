@@ -134,7 +134,7 @@ const processPayoutStakers = async (
 
   const CoinGecko = new CoinGeckoClient({
     timeout: 10000,
-    autoRetry: true,
+    autoRetry: false,
   });
 
   const validatorRewards = [];
@@ -203,11 +203,6 @@ const processPayoutStakers = async (
         const chainMetadata = await queries.getChainMetadata();
         const networkName = chainMetadata.name.toLowerCase();
 
-        logger.info(
-          `networkName: ${networkName} date:  ${formattedDate}`,
-          blockdataLabel
-        );
-
         const price_call = await CoinGecko.coinIdHistory({
           id: networkName,
           date: formattedDate,
@@ -215,8 +210,6 @@ const processPayoutStakers = async (
         const chf = price_call.market_data.current_price.chf;
         const eur = price_call.market_data.current_price.eur;
         const usd = price_call.market_data.current_price.usd;
-
-        logger.info(` chf ${chf} eur ${eur} usd ${usd}`, blockdataLabel);
 
         const reward = {
           era: parseFloat(era),
@@ -234,9 +227,9 @@ const processPayoutStakers = async (
           blockNumber: blockNumber,
           timestamp: blockTimestamp,
           date: formattedDate,
-          chf: chf,
-          eur: eur,
-          usd: usd,
+          chf: chf * rewardAmount,
+          eur: eur * rewardAmount,
+          usd: usd * rewardAmount,
         };
 
         if (isValidator) {

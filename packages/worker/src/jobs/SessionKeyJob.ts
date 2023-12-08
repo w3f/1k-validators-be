@@ -20,7 +20,7 @@ export const sessionKeyJob = async (chaindata: ChainData) => {
     for (const key of queuedKeys) {
       if (key.address == validator) {
         // await queries.setQueuedKeys(candidate.stash, key.keys);
-        logger.info(JSON.stringify(key.keys), sessionkeyLabel);
+        // logger.info(JSON.stringify(key.keys), sessionkeyLabel);
       }
     }
 

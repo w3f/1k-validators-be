@@ -18,9 +18,11 @@ const writeCandidates = (path: any, network: any) => {
           matrixHandles.push(candidate.riotHandle);
         }
       } else if (Array.isArray(candidate.riotHandle)) {
-        if (!matrixHandles.includes(candidate.riotHandle)) {
-          matrixHandles.push(candidate.riotHandle);
-        }
+        candidate.riotHandle.forEach((handle) => {
+          if (!matrixHandles.includes(handle)) {
+            matrixHandles.push(handle);
+          }
+        });
       }
     });
 

@@ -1587,6 +1587,50 @@
       "kusamaStash": "HKk5gnHuuePbKq6UbMn7sV3UxsifyZXyhYQqyrL8RPRBdq8",
       "riotHandle": "@stakemagnet:matrix.org",
       "skipSelfStake": true
+    },
+    {
+      "name": "👋 79anvi 🍀",
+      "stash": "167Pbuy2HvbHshqc7Xtk4cweCXyyZoJLttAsddDuH3tN7Fco",
+      "kusamaStash": "GHuTRo2jNiXZyc87dU9jRF5iASx1J9G4rgZLPgxxFpj6jD3",
+      "riotHandle": "@79anvi:matrix.org",
+      "skipSelfStake": true
+    },
+    {
+      "name": "dotstake_io",
+      "stash": "13tvM5A12b9yQFs9TJWH1Bc9iiN7d7jZGnqJXdF85ovHruh6",
+      "kusamaStash": "EaNqkv87hVL8vvwBcTxeCkECkzRuyFLVtSmrVCDhfj4dNmf",
+      "riotHandle": "@dotsamastake.io:matrix.org"
+    },
+    {
+      "name": "Leostake",
+      "stash": "16A7Jq9UWCc86CcQvWZXXqDyMguT5eQjkBUncbmzyvMWRZ21",
+      "kusamaStash": "HNGMhUpVnZjuJ3kQcBAMF4KVywdkk2SCxQ4TAt6QBKtMCFh",
+      "riotHandle": "@leostake:matrix.org"
+    },
+    {
+      "name": "PathrockNetwork",
+      "stash": "15MZqPwJTkmPieNpT3vNXeqZ9S1B5ThmnE8jtqotEVXQoLcE",
+      "kusamaStash": "Hk7snkgFNhrDRfwveEdpwgwu6D9uUmXwcLy3dZgM2EhHVJq",
+      "riotHandle": "@pathrock:matrix.org",
+      "skipSelfStake": true
+    },
+    {
+      "name": "WDMASTER",
+      "stash": "14PkBX3BUF71wDh44BLeNby2u7X9ZBu36V28LMcBrdK35yC2",
+      "kusamaStash": "HZsquaFQ3rhBxBgEokxE4ea9gqpj2ZCyZGyXDojH8JYDuzS",
+      "riotHandle": "@wdmaster:matrix.org"
+    },
+    {
+      "name": "lada",
+      "stash": "132XjckpT4rxeYgFxyJn1QdpbeXmG7arFwfnHs7LVS2VVjzh",
+      "kusamaStash": "Cn2A8M1tbjYq5BXQWeNs9KKjrkhgbM46UX8BVcUU2qdfV9f",
+      "riotHandle": "@lada-kmv:matrix.org"
+    },
+    {
+      "name": "Statute",
+      "stash": "16VVLeYXGMXW2kHD5haYKUCXQZfb5XharQeqaHgG2cnywfsZ",
+      "kusamaStash": "EVktWq6LPJNpqVababoL2QKwfpBEh7whCqH8tuGrGWbQE1v",
+      "riotHandle": "@statute:matrix.org"
     }
   ]
 }

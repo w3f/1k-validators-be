@@ -3,7 +3,7 @@ import TelemetryClient from "./telemetry";
 import { Command } from "commander";
 import path from "path";
 
-const version = "v2.6.87";
+const version = "v3.0.0";
 
 export const telemetryLabel = { label: "Telemetry" };
 

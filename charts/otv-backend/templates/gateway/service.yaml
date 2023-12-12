@@ -1,0 +1,14 @@
+{{- if eq .Values.architecture "microservices" }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "otv-backend.gateway-release-name" . }}
+  labels:
+    app: {{ include "otv-backend.gateway-release-name" . }}
+spec:
+  ports:
+  - name: http
+    port: {{ .Values.port }}
+  selector:
+    app: {{ include "otv-backend.gateway-release-name" . }}
+{{ end }}

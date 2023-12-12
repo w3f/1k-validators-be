@@ -1,0 +1,9 @@
+{{- if eq .Values.architecture "microservices" }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "otv-backend.gateway-release-name" . }}
+
+data:
+  main.json: {{ .Values.gateway.config | toPrettyJson }}
+{{ end }}  

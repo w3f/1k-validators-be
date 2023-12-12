@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "otv-backend.core-release-name" . }}
+  labels:
+    app: {{ include "otv-backend.core-release-name" . }}
+spec:
+  ports:
+  - name: http
+    port: {{ .Values.port }}
+  selector:
+    app: {{ include "otv-backend.core-release-name" . }}

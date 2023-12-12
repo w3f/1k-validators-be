@@ -1,0 +1,57 @@
+{{- if eq .Values.architecture "microservices" }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "otv-backend.gateway-release-name" . }}
+  labels:
+    app: {{ include "otv-backend.gateway-release-name" . }}
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: {{ include "otv-backend.gateway-release-name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "otv-backend.gateway-release-name" . }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/gateway/configmap.yaml") . | sha256sum }}
+    spec:
+    {{- with .Values.gateway.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.gateway.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      containers:
+      - name: {{ include "otv-backend.gateway-release-name" . }}
+        image: {{ .Values.gateway.image.repo }}:{{ .Values.gateway.image.tag | default .Chart.AppVersion }}
+        imagePullPolicy: {{ .Values.gateway.image.pullPolicy | default "IfNotPresent" }}
+        ports:
+        - name: http
+          containerPort: {{ .Values.port }}
+        livenessProbe:
+          httpGet:
+            path: /healthcheck
+            port: {{ .Values.port }}
+          initialDelaySeconds: 10
+          timeoutSeconds: 200
+        {{ if ne .Values.environment "ci" }}
+        resources:
+          {{- toYaml .Values.gateway.resources | nindent 10 }}
+        {{ end }}
+        volumeMounts:
+        - name: config
+          mountPath: /code/packages/gateway/config/main.json
+          subPath: main.json
+          readOnly: true
+      volumes:
+      - name: config
+        configMap:
+          name: {{ include "otv-backend.gateway-release-name" . }}     
+{{ end }}          

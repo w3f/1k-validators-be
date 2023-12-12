@@ -2,9 +2,6 @@
   "global": {
     "dryRun": false,
     "networkPrefix": 2,
-    "test": false,
-    "retroactive": false,
-    "historicalNominations": false,
     "apiEndpoints": [
       "wss://kusama-rpc.polkadot.io"
     ],
@@ -16,7 +13,6 @@
   "constraints": {
     "skipConnectionTime": true,
     "skipIdentity": false,
-    "skipStakedDestination": true,
     "skipClientUpgrade": false,
     "skipUnclaimed": false,
     "forceClientVersion": "v0.9.30",
@@ -25,13 +21,9 @@
     "unclaimedEraThreshold": 4
   },
   "db": {
-    "migrate": false,
     "mongo": {
-      "uri": "mongodb://mongo:27017",
-      "dbName": "otv",
-      "collection": "otv"
+      "uri": "mongodb://mongo:27017"
     },
-    "storageFile": "validator.db"
   },
   "matrix": {
     "enabled": false,
@@ -68,6 +60,7 @@
     "nominating": false
   },
   "redis": {
+    "enable": true,
     "host": "redis",
     "port": 6379
   },

@@ -30,7 +30,7 @@ export const addAllBlocks = async (queue: Queue, chaindata: Chaindata) => {
     await queries.setBlockIndex(latestBlock, latestBlock);
   }
 
-  const threshold = 200000;
+  const threshold = 500000;
 
   // If the current chain block is higher than what is in the db, add all the blocks from the current one until the most recent indexed one to the queue
   if (blockIndex?.latest && latestBlock > blockIndex.latest) {
@@ -49,7 +49,7 @@ export const addAllBlocks = async (queue: Queue, chaindata: Chaindata) => {
     const targetEarliest = earliest - threshold > 0 ? earliest - threshold : 0;
     logger.info(
       `earliest ${earliest} target earliest: ${targetEarliest}, adding ${
-        blockIndex?.earliest - targetEarliest
+        earliest - targetEarliest
       } to the queue`,
       label
     );

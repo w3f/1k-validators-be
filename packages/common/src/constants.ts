@@ -78,7 +78,7 @@ export const LocalEndpoints = [
 export const KOTVBackendEndpoint = "https://kusama.w3f.community";
 
 // The number of blocks for a time delay proxy. Default is 10850, or ~18 hours
-export const TIME_DELAY_BLOCKS = 10820;
+export const TIME_DELAY_BLOCKS = 10850;
 
 // The number of blocks after a time delay proxy call was announced that we want to cancel the tx. Should be 36 hours
 export const CANCEL_THRESHOLD = 21700;
@@ -160,3 +160,45 @@ export const DELEGATION_CRON = "0 0-59/5 * * * *";
 export const BLOCK_CRON = "0 0-59/1 * * * *";
 
 export const LOCATION_URL = "https://ipinfo.io/";
+
+// Score Constant Defaults
+export const INCLUSION_WEIGHT = 100;
+export const SPAN_INCLUSION_WEIGHT = 100;
+export const DISCOVERED_WEIGHT = 5;
+export const NOMINATED_WEIGHT = 30;
+export const RANK_WEIGHT = 5;
+export const UNCLAIMED_WEIGHT = 10;
+export const BONDED_WEIGHT = 50;
+export const FAULTS_WEIGHT = 5;
+export const OFFLINE_WEIGHT = 2;
+export const LOCATION_WEIGHT = 30;
+export const REGION_WEIGHT = 10;
+export const COUNTRY_WEIGHT = 10;
+export const PROVIDER_WEIGHT = 50;
+export const NOMINATIONS_WEIGHT = 100;
+export const DELEGATIONS_WEIGHT = 60;
+export const OPENGOV_WEIGHT = 100;
+export const OPENGOV_DELEGATION_WEIGHT = 100;
+export const RPC_WEIGHT = 100;
+export const CLIENT_WEIGHT = 200;
+export const RANDOMNESS_MULTIPLIER = 0.15;
+
+export const USE_INCLUSION = true;
+export const USE_SPAN_INCLUSION = true;
+export const USE_DISCOVERED = true;
+export const USE_NOMINATED = true;
+export const USE_RANK = true;
+export const USE_UNCLAIMED = true;
+export const USE_BONDED = true;
+export const USE_FAULTS = true;
+export const USE_OFFLINE = true;
+export const USE_LOCATION = true;
+export const USE_REGION = true;
+export const USE_COUNTRY = true;
+export const USE_PROVIDER = true;
+export const USE_NOMINATIONS = true;
+export const USE_DELEGATIONS = true;
+export const USE_OPENGOV = true;
+export const USE_OPENGOV_DELEGATIONS = true;
+export const USE_RPC = true;
+export const USE_CLIENT = true;

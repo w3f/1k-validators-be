@@ -16,6 +16,7 @@ export * from "./LocationStats";
 export * from "./Nomination";
 export * from "./Nominator";
 export * from "./NominatorStake";
+export * from "./Price";
 export * from "./Release";
 export * from "./Reward";
 export * from "./ValidatorScore";

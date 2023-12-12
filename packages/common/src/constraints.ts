@@ -32,7 +32,6 @@ import {
   setOfflineAccumulatedInvalidity,
   setOnlineValidity,
   setProviderInvalidity,
-  setRewardDestinationInvalidity,
   setSelfStakeInvalidity,
   setUnclaimedInvalidity,
   setValid,
@@ -57,7 +56,6 @@ export class OTV implements Constraints {
   // Constraint configurations
   private skipConnectionTime: boolean;
   private skipIdentity: boolean;
-  private skipStakedDesitnation: boolean;
   private skipClientUpgrade: boolean;
   private skipUnclaimed: boolean;
 
@@ -85,27 +83,45 @@ export class OTV implements Constraints {
   // Location - lower is preferable
   // Council - higher is preferable
   // Democracy - higher is preferable
-  private INCLUSION_WEIGHT = 100;
-  private SPAN_INCLUSION_WEIGHT = 100;
-  private DISCOVERED_WEIGHT = 5;
-  private NOMINATED_WEIGHT = 30;
-  private RANK_WEIGHT = 5;
-  private UNCLAIMED_WEIGHT = 10;
-  private BONDED_WEIGHT = 50;
-  private FAULTS_WEIGHT = 5;
-  private OFFLINE_WEIGHT = 2;
-  private LOCATION_WEIGHT = 30;
-  private REGION_WEIGHT = 10;
-  private COUNTRY_WEIGHT = 10;
-  private PROVIDER_WEIGHT = 50;
-  private COUNCIL_WEIGHT = 50;
-  private DEMOCRACY_WEIGHT = 100;
-  private NOMINATIONS_WEIGHT = 100;
-  private DELEGATIONS_WEIGHT = 60;
-  private OPENGOV_WEIGHT = 100;
-  private OPENGOV_DELEGATION_WEIGHT = 100;
-  private RPC_WEIGHT = 100;
-  private CLIENT_WEIGHT = 200;
+  private INCLUSION_WEIGHT = Constants.INCLUSION_WEIGHT;
+  private SPAN_INCLUSION_WEIGHT = Constants.SPAN_INCLUSION_WEIGHT;
+  private DISCOVERED_WEIGHT = Constants.DISCOVERED_WEIGHT;
+  private NOMINATED_WEIGHT = Constants.NOMINATED_WEIGHT;
+  private RANK_WEIGHT = Constants.RANK_WEIGHT;
+  private UNCLAIMED_WEIGHT = Constants.UNCLAIMED_WEIGHT;
+  private BONDED_WEIGHT = Constants.BONDED_WEIGHT;
+  private FAULTS_WEIGHT = Constants.FAULTS_WEIGHT;
+  private OFFLINE_WEIGHT = Constants.OFFLINE_WEIGHT;
+  private LOCATION_WEIGHT = Constants.LOCATION_WEIGHT;
+  private REGION_WEIGHT = Constants.REGION_WEIGHT;
+  private COUNTRY_WEIGHT = Constants.COUNTRY_WEIGHT;
+  private PROVIDER_WEIGHT = Constants.PROVIDER_WEIGHT;
+  private NOMINATIONS_WEIGHT = Constants.NOMINATIONS_WEIGHT;
+  private DELEGATIONS_WEIGHT = Constants.DELEGATIONS_WEIGHT;
+  private OPENGOV_WEIGHT = Constants.OPENGOV_WEIGHT;
+  private OPENGOV_DELEGATION_WEIGHT = Constants.OPENGOV_DELEGATION_WEIGHT;
+  private RPC_WEIGHT = Constants.RPC_WEIGHT;
+  private CLIENT_WEIGHT = Constants.CLIENT_WEIGHT;
+
+  private USE_INCLUSION = Constants.USE_INCLUSION;
+  private USE_SPAN_INCLUSION = Constants.USE_SPAN_INCLUSION;
+  private USE_DISCOVERED = Constants.USE_DISCOVERED;
+  private USE_NOMINATED = Constants.USE_NOMINATED;
+  private USE_RANK = Constants.USE_RANK;
+  private USE_UNCLAIMED = Constants.USE_UNCLAIMED;
+  private USE_BONDED = Constants.USE_BONDED;
+  private USE_FAULTS = Constants.USE_FAULTS;
+  private USE_OFFLINE = Constants.USE_OFFLINE;
+  private USE_LOCATION = Constants.USE_LOCATION;
+  private USE_REGION = Constants.USE_REGION;
+  private USE_COUNTRY = Constants.USE_COUNTRY;
+  private USE_PROVIDER = Constants.USE_PROVIDER;
+  private USE_NOMINATIONS = Constants.USE_NOMINATIONS;
+  private USE_DELEGATIONS = Constants.USE_DELEGATIONS;
+  private USE_OPENGOV = Constants.USE_OPENGOV;
+  private USE_OPENGOV_DELEGATIONS = Constants.USE_OPENGOV_DELEGATIONS;
+  private USE_RPC = Constants.USE_RPC;
+  private USE_CLIENT = Constants.USE_CLIENT;
 
   constructor(handler: ApiHandler, config: Config.ConfigSchema) {
     this.chaindata = new ChainData(handler);
@@ -115,8 +131,6 @@ export class OTV implements Constraints {
     this.skipConnectionTime =
       this.config?.constraints?.skipConnectionTime || false;
     this.skipIdentity = this.config?.constraints?.skipIdentity || false;
-    this.skipStakedDesitnation =
-      this.config?.constraints?.skipStakedDestination || false;
     this.skipClientUpgrade =
       this.config?.constraints?.skipClientUpgrade || false;
     this.skipUnclaimed = this.config?.constraints?.skipUnclaimed || false;
@@ -126,33 +140,125 @@ export class OTV implements Constraints {
     this.unclaimedEraThreshold =
       this.config?.constraints?.unclaimedEraThreshold || 4;
 
-    // Weights
-    this.INCLUSION_WEIGHT = Number(this.config.score.inclusion);
-    this.SPAN_INCLUSION_WEIGHT = Number(this.config.score.spanInclusion);
-    this.DISCOVERED_WEIGHT = Number(this.config.score.discovered);
-    this.NOMINATED_WEIGHT = Number(this.config.score.nominated);
-    this.RANK_WEIGHT = Number(this.config.score.rank);
-    this.BONDED_WEIGHT = Number(this.config.score.bonded);
-    this.FAULTS_WEIGHT = Number(this.config.score.faults);
-    this.OFFLINE_WEIGHT = Number(this.config.score.offline);
-    this.LOCATION_WEIGHT = Number(this.config.score.location);
-    this.REGION_WEIGHT = Number(this.config.score.region);
-    this.COUNTRY_WEIGHT = Number(this.config.score.country);
-    this.PROVIDER_WEIGHT = Number(this.config.score.provider);
-    this.COUNCIL_WEIGHT = Number(this.config.score.council);
-    this.DEMOCRACY_WEIGHT = Number(this.config.score.democracy);
-    this.NOMINATIONS_WEIGHT = Number(this.config.score.nominations);
-    this.DELEGATIONS_WEIGHT = Number(this.config.score.delegations);
-    this.OPENGOV_WEIGHT = Number(this.config.score.openGov);
-    this.OPENGOV_DELEGATION_WEIGHT = Number(
-      this.config.score.openGovDelegation
-    );
+    // Set Weights if they are specified in the config
+    if (this.config?.score?.inclusion) {
+      this.INCLUSION_WEIGHT = Number(this.config?.score?.inclusion);
+    }
+    if (this.config?.score?.spanInclusion) {
+      this.SPAN_INCLUSION_WEIGHT = Number(this.config?.score?.spanInclusion);
+    }
+    if (this.config?.score?.discovered) {
+      this.DISCOVERED_WEIGHT = Number(this.config?.score?.discovered);
+    }
+    if (this.config?.score?.nominated) {
+      this.NOMINATED_WEIGHT = Number(this.config?.score?.nominated);
+    }
+    if (this.config?.score?.rank) {
+      this.RANK_WEIGHT = Number(this.config?.score?.rank);
+    }
+    if (this.config?.score?.unclaimed) {
+      this.UNCLAIMED_WEIGHT = Number(this.config?.score?.unclaimed);
+    }
+    if (this.config?.score?.bonded) {
+      this.BONDED_WEIGHT = Number(this.config?.score?.bonded);
+    }
+    if (this.config?.score?.faults) {
+      this.FAULTS_WEIGHT = Number(this.config?.score?.faults);
+    }
+    if (this.config?.score?.offline) {
+      this.OFFLINE_WEIGHT = Number(this.config?.score?.offline);
+    }
+    if (this.config?.score?.location) {
+      this.LOCATION_WEIGHT = Number(this.config?.score?.location);
+    }
+    if (this.config?.score?.region) {
+      this.REGION_WEIGHT = Number(this.config?.score?.region);
+    }
+    if (this.config?.score?.country) {
+      this.COUNTRY_WEIGHT = Number(this.config?.score?.country);
+    }
+    if (this.config?.score?.provider) {
+      this.PROVIDER_WEIGHT = Number(this.config?.score?.provider);
+    }
+    if (this.config?.score?.nominations) {
+      this.NOMINATIONS_WEIGHT = Number(this.config?.score?.nominations);
+    }
+    if (this.config?.score?.delegations) {
+      this.DELEGATIONS_WEIGHT = Number(this.config?.score?.delegations);
+    }
+    if (this.config?.score?.openGov) {
+      this.OPENGOV_WEIGHT = Number(this.config?.score?.openGov);
+    }
+    if (this.config?.score?.openGovDelegation) {
+      this.OPENGOV_DELEGATION_WEIGHT = Number(
+        this.config?.score?.openGovDelegation
+      );
+    }
+    if (this.config?.score?.rpc) {
+      this.RPC_WEIGHT = Number(this.config?.score?.rpc);
+    }
+    if (this.config?.score?.client) {
+      this.CLIENT_WEIGHT = Number(this.config?.score?.client);
+    }
 
-    this.RPC_WEIGHT =
-      Number(this.config.score.openGovDelegation) || this.RPC_WEIGHT;
-
-    this.CLIENT_WEIGHT =
-      Number(this.config.score.openGovDelegation) || this.CLIENT_WEIGHT;
+    // Set Use if they are specified in the config
+    if (this.config?.score?.useInclusion) {
+      this.USE_INCLUSION = this.config?.score?.useInclusion;
+    }
+    if (this.config?.score?.useSpanInclusion) {
+      this.USE_SPAN_INCLUSION = this.config?.score?.useSpanInclusion;
+    }
+    if (this.config?.score?.useDiscovered) {
+      this.USE_DISCOVERED = this.config?.score?.useDiscovered;
+    }
+    if (this.config?.score?.useNominated) {
+      this.USE_NOMINATED = this.config?.score?.useNominated;
+    }
+    if (this.config?.score?.useRank) {
+      this.USE_RANK = this.config?.score?.useRank;
+    }
+    if (this.config?.score?.useUnclaimed) {
+      this.USE_UNCLAIMED = this.config?.score?.useUnclaimed;
+    }
+    if (this.config?.score?.useBonded) {
+      this.USE_BONDED = this.config?.score?.useBonded;
+    }
+    if (this.config?.score?.useFaults) {
+      this.USE_FAULTS = this.config?.score?.useFaults;
+    }
+    if (this.config?.score?.useOffline) {
+      this.USE_OFFLINE = this.config?.score?.useOffline;
+    }
+    if (this.config?.score?.useLocation) {
+      this.USE_LOCATION = this.config?.score?.useLocation;
+    }
+    if (this.config?.score?.useRegion) {
+      this.USE_REGION = this.config?.score?.useRegion;
+    }
+    if (this.config?.score?.useCountry) {
+      this.USE_COUNTRY = this.config?.score?.useCountry;
+    }
+    if (this.config?.score?.useProvider) {
+      this.USE_PROVIDER = this.config?.score?.useProvider;
+    }
+    if (this.config?.score?.useNominations) {
+      this.USE_NOMINATIONS = this.config?.score?.useNominations;
+    }
+    if (this.config?.score?.useDelegations) {
+      this.USE_DELEGATIONS = this.config?.score?.useDelegations;
+    }
+    if (this.config?.score?.useOpenGov) {
+      this.USE_OPENGOV = this.config?.score?.useOpenGov;
+    }
+    if (this.config?.score?.useOpenGovDelegation) {
+      this.USE_OPENGOV_DELEGATIONS = this.config?.score?.useOpenGovDelegation;
+    }
+    if (this.config?.score?.useRpc) {
+      this.USE_RPC = this.config?.score?.useRpc;
+    }
+    if (this.config?.score?.useClient) {
+      this.USE_CLIENT = this.config?.score?.useClient;
+    }
   }
 
   // Add candidate to valid cache and remove them from invalid cache
@@ -399,9 +505,6 @@ export class OTV implements Constraints {
       delegationStats: delegationStats,
       delegationWeight: this.DELEGATIONS_WEIGHT,
       councilStakeStats: councilStakeStats,
-      councilStakeWeight: this.COUNCIL_WEIGHT,
-      democracyStats: democracyStats,
-      democracyWeight: this.DEMOCRACY_WEIGHT,
       openGovStats: openGovStats,
       openGovWeight: this.OPENGOV_WEIGHT,
       openGovDelegationStats: openGovDelegationStats,
@@ -433,8 +536,6 @@ export class OTV implements Constraints {
       regionStats,
       countryStats,
       providerStats,
-      councilStakeStats,
-      democracyStats,
       nominatorStakeStats,
       delegationStats,
       openGovStats,
@@ -524,7 +625,7 @@ export class OTV implements Constraints {
     });
     // Scale the value to between the 10th and 95th percentile
     const scaledRegion =
-      scaledDefined(candidateRegion, regionValues, 0.1, 0.95) || 0;
+      scaledDefined(candidateRegion, regionValues, 0.2, 0.8) || 0;
     const regionScore = bannedProvider
       ? 0
       : candidate.location == "No Location"
@@ -543,7 +644,7 @@ export class OTV implements Constraints {
     });
     // Scale the value to between the 10th and 95th percentile
     const scaledCountry =
-      scaledDefined(candidateCountry, countryValues, 0.1, 0.95) || 0;
+      scaledDefined(candidateCountry, countryValues, 0.2, 0.8) || 0;
     const countryScore = bannedProvider
       ? 0
       : candidate.location == "No Location"
@@ -562,7 +663,7 @@ export class OTV implements Constraints {
     });
     // Scale the value to between the 10th and 95th percentile
     const scaledProvider =
-      scaledDefined(candidateProvider, providerValues, 0.1, 0.95) || 0;
+      scaledDefined(candidateProvider, providerValues, 0.2, 0.8) || 0;
     const providerScore = bannedProvider
       ? 0
       : candidate.location == "No Location"
@@ -633,36 +734,36 @@ export class OTV implements Constraints {
       scaledOpenGovDelegations * this.OPENGOV_DELEGATION_WEIGHT;
 
     // Score the council backing weight based on what percentage of their staking bond it is
-    const denom = await this.chaindata.getDenom();
-    const formattedBonded = candidate.bonded / denom;
-    const councilStakeScore =
-      candidate.councilStake == 0
-        ? 0
-        : candidate.councilStake >= 0.75 * formattedBonded
-        ? this.COUNCIL_WEIGHT
-        : candidate.councilStake >= 0.5 * formattedBonded
-        ? 0.75 * this.COUNCIL_WEIGHT
-        : candidate.councilStake >= 0.25 * formattedBonded
-        ? 0.5 * this.COUNCIL_WEIGHT
-        : candidate.councilStake < 0.25 * formattedBonded
-        ? 0.25 * this.COUNCIL_WEIGHT
-        : 0;
+    // const denom = await this.chaindata.getDenom();
+    // const formattedBonded = candidate.bonded / denom;
+    // const councilStakeScore =
+    //   candidate.councilStake == 0
+    //     ? 0
+    //     : candidate.councilStake >= 0.75 * formattedBonded
+    //     ? this.COUNCIL_WEIGHT
+    //     : candidate.councilStake >= 0.5 * formattedBonded
+    //     ? 0.75 * this.COUNCIL_WEIGHT
+    //     : candidate.councilStake >= 0.25 * formattedBonded
+    //     ? 0.5 * this.COUNCIL_WEIGHT
+    //     : candidate.councilStake < 0.25 * formattedBonded
+    //     ? 0.25 * this.COUNCIL_WEIGHT
+    //     : 0;
 
-    const lastReferendum = (await getLastReferenda())[0]?.referendumIndex;
-    // Score democracy based on how many proposals have been voted on
-    const candidateVotes = candidate?.democracyVotes
-      ? candidate.democracyVotes
-      : [];
-    const {
-      baseDemocracyScore,
-      totalDemocracyScore,
-      totalConsistencyMultiplier,
-      lastConsistencyMultiplier,
-    } = scoreDemocracyVotes(candidateVotes, lastReferendum);
-    const democracyValues = democracyStats.values;
-    const scaledDemocracyScore =
-      scaled(totalDemocracyScore, democracyStats.values) *
-      this.DEMOCRACY_WEIGHT;
+    // const lastReferendum = (await getLastReferenda())[0]?.referendumIndex;
+    // // Score democracy based on how many proposals have been voted on
+    // const candidateVotes = candidate?.democracyVotes
+    //   ? candidate.democracyVotes
+    //   : [];
+    // const {
+    //   baseDemocracyScore,
+    //   totalDemocracyScore,
+    //   totalConsistencyMultiplier,
+    //   lastConsistencyMultiplier,
+    // } = scoreDemocracyVotes(candidateVotes, lastReferendum);
+    // const democracyValues = democracyStats.values;
+    // const scaledDemocracyScore =
+    //   scaled(totalDemocracyScore, democracyStats.values) *
+    //   this.DEMOCRACY_WEIGHT;
 
     const lastOpenGovReferendum = (await getLastOpenGovReferenda())[0]?.index;
     // Score democracy based on how many proposals have been voted on
@@ -693,14 +794,15 @@ export class OTV implements Constraints {
       regionScore +
       countryScore +
       providerScore +
-      councilStakeScore +
-      scaledDemocracyScore +
+      // councilStakeScore +
+      // scaledDemocracyScore +
       offlineScore +
       delegationScore +
       nominatorStakeScore +
       openGovDelegationScore +
       scaledOpenGovScore +
       clientScore;
+
     const randomness = 1 + Math.random() * 0.15;
 
     const total = aggregate * randomness || 0;
@@ -721,8 +823,8 @@ export class OTV implements Constraints {
       region: regionScore,
       country: countryScore,
       provider: providerScore,
-      councilStake: councilStakeScore,
-      democracy: scaledDemocracyScore,
+      // councilStake: councilStakeScore,
+      // democracy: scaledDemocracyScore,
       nominatorStake: nominatorStakeScore,
       delegations: delegationScore,
       openGov: scaledOpenGovScore,
@@ -824,15 +926,6 @@ export class OTV implements Constraints {
         if (bondedAmt < this.minSelfStake) {
           const reason = `${name} has less than the minimum required amount bonded: ${bondedAmt}`;
           logger.warn(reason, constraintsLabel);
-          bad.add({ candidate, reason });
-          continue;
-        }
-      }
-
-      if (!this.skipStakedDesitnation) {
-        const isStaked = await this.chaindata.destinationIsStaked(stash);
-        if (!isStaked) {
-          const reason = `${name} does not have reward destination set to Staked`;
           bad.add({ candidate, reason });
           continue;
         }
@@ -1325,21 +1418,6 @@ export const checkOffline = async (candidate: any) => {
     return true;
   }
 };
-
-export const checkRewardDestination = async (
-  chaindata: ChainData,
-  candidate: any
-) => {
-  const isStaked = await chaindata.destinationIsStaked(candidate.stash);
-  if (!isStaked) {
-    await setRewardDestinationInvalidity(candidate.stash, false);
-    return false;
-  } else {
-    await setRewardDestinationInvalidity(candidate.stash, true);
-    return true;
-  }
-};
-
 export const checkCommission = async (
   chaindata: ChainData,
   targetCommission: number,

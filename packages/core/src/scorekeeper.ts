@@ -26,6 +26,7 @@ import {
   startExecutionJob,
   startInclusionJob,
   startLocationStatsJob,
+  startNominatorJob,
   startRewardClaimJob,
   startScoreJob,
   startSessionKeyJob,
@@ -649,8 +650,9 @@ export default class ScoreKeeper {
         await startLocationStatsJob(this.config, this.chaindata);
         // await startCouncilJob(this.config, this.chaindata);
         await startDemocracyJob(this.config, this.chaindata);
-        // await startNominatorJob(this.config, this.chaindata);
+        await startNominatorJob(this.config, this.chaindata);
         await startDelegationJob(this.config, this.chaindata);
+
         await startBlockDataJob(this.config, this.chaindata);
       }
 

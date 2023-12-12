@@ -569,6 +569,26 @@ paths:
         200:
           description: Successful response with the pending proxy transactions
 
+  /location/validator/{address}:
+    get:
+      summary: "Validator Location Data"
+      tags:
+        - Nominator
+      description: "Retrieve details of a specific validator location by address."
+      parameters:
+        - in: path
+          name: address
+          required: true
+          schema:
+            type: string
+          description: "The unique address of the validator."
+      responses:
+        '200':
+          description: "Successful response."
+        '404':
+          description: "Data not found."
+
+
 components:
   schemas:
     Reward:

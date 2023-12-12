@@ -1,12 +1,8 @@
 {
   "db": {
-    "migrate": false,
     "mongo": {
       "uri": "mongodb://mongo:27017",
-      "dbName": "otv",
-      "collection": "otv"
-    },
-    "storageFile": "validator.db"
+    }
   },
   "telemetry": {
     "blacklistedProviders": [

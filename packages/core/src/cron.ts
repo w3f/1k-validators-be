@@ -14,7 +14,6 @@ import {
 import Claimer from "./claimer";
 import {
   activeValidatorJob,
-  councilJob,
   delegationJob,
   democracyJob,
   eraPointsJob,
@@ -46,9 +45,7 @@ export const startMonitorJob = async (config: Config.ConfigSchema) => {
 
   const monitorCron = new CronJob(monitorFrequency, async () => {
     logger.info(
-      `Monitoring the node version by polling latst GitHub releases every ${
-        config.global.test ? "three" : "fifteen"
-      } minutes.`,
+      `Monitoring the node version by polling latest Github releases.`,
       cronLabel
     );
     await monitorJob();
@@ -801,45 +798,13 @@ export const startLocationStatsJob = async (
   locationStatsCron.start();
 };
 
-// Chron job for council and election info
-export const startCouncilJob = async (
-  config: Config.ConfigSchema,
-  chaindata: ChainData
-) => {
-  const councilFrequency = config.cron.council
-    ? config.cron.council
-    : Constants.COUNCIL_CRON;
-
-  logger.info(
-    `Running council cron with frequency: ${councilFrequency}`,
-    cronLabel
-  );
-
-  let running = false;
-
-  const councilCron = new CronJob(councilFrequency, async () => {
-    if (running) {
-      return;
-    }
-    running = true;
-    logger.info(`running council job....`, cronLabel);
-
-    // Run the active validators job
-    const hasFinished = await councilJob(chaindata);
-    if (hasFinished) {
-      running = false;
-    }
-  });
-  councilCron.start();
-};
-
 // Chron job for querying democracy data
 export const startDemocracyJob = async (
   config: Config.ConfigSchema,
   chaindata: ChainData
 ) => {
-  const democracyFrequency = config.cron?.democracy
-    ? config.cron?.democracy
+  const democracyFrequency = config?.cron?.democracy
+    ? config?.cron?.democracy
     : Constants.DEMOCRACY_CRON;
 
   logger.info(

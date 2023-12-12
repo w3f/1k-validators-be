@@ -11,7 +11,7 @@ const catchAndQuit = async (fn: any) => {
   try {
     await fn;
   } catch (e) {
-    console.error(e.toString());
+    console.error(e);
     process.exit(1);
   }
 };

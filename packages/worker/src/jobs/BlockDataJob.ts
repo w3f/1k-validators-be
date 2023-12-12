@@ -132,10 +132,7 @@ const processPayoutStakers = async (
   const denom = await chaindata.getDenom();
   const apiAt = await chaindata.getApiAt(blockNumber);
 
-  const CoinGecko = new CoinGeckoClient({
-    timeout: 10000,
-    autoRetry: false,
-  });
+  const CoinGecko = new CoinGeckoClient({});
 
   const validatorRewards = [];
   const nominatorRewards = [];
@@ -203,13 +200,22 @@ const processPayoutStakers = async (
         const chainMetadata = await queries.getChainMetadata();
         const networkName = chainMetadata.name.toLowerCase();
 
-        const price_call = await CoinGecko.coinIdHistory({
-          id: networkName,
-          date: formattedDate,
-        });
-        const chf = price_call.market_data.current_price.chf;
-        const eur = price_call.market_data.current_price.eur;
-        const usd = price_call.market_data.current_price.usd;
+        let chf, eur, usd;
+        const price = await queries.getPrice(networkName, formattedDate);
+        if (!price) {
+          const price_call = await CoinGecko.coinIdHistory({
+            id: networkName,
+            date: formattedDate,
+          });
+          chf = price_call.market_data.current_price.chf;
+          eur = price_call.market_data.current_price.eur;
+          usd = price_call.market_data.current_price.usd;
+          await queries.setPrice(networkName, formattedDate, chf, usd, eur);
+        } else {
+          chf = price.chf;
+          eur = price.eur;
+          usd = price.usd;
+        }
 
         const reward = {
           era: parseFloat(era),

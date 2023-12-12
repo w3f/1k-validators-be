@@ -1,10 +1,10 @@
 ---
-id: backend-core
-title: Backend Core
-sidebar_label: Backend Core
-description: Backend Core Documentation
+id: core
+title: Core
+sidebar_label: Core
+description: Core Package Documentation
 keywords: [backend]
-slug: ../backend-core
+slug: ../core
 ---
 
 import { ProgrammeName } from '../../components/ProgrammeName';

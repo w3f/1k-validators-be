@@ -2,9 +2,6 @@
   "global": {
     "dryRun": false,
     "networkPrefix": 2,
-    "test": false,
-    "retroactive": false,
-    "historicalNominations": false,
     "apiEndpoints": [
       "wss://kusama-rpc.polkadot.io"
     ],
@@ -16,7 +13,6 @@
   "constraints": {
     "skipConnectionTime": true,
     "skipIdentity": false,
-    "skipStakedDestination": true,
     "skipClientUpgrade": false,
     "skipUnclaimed": false,
     "forceClientVersion": "v0.9.30",
@@ -45,13 +41,9 @@
     "democracy": "0 0-59/1 * * * *"
   },
   "db": {
-    "migrate": false,
     "mongo": {
-      "uri": "mongodb://mongo:27017",
-      "dbName": "otv",
-      "collection": "otv"
-    },
-    "storageFile": "validator.db"
+      "uri": "mongodb://mongo:27017"
+    }
   },
   "matrix": {
     "enabled": false,
@@ -76,12 +68,30 @@
     "region": "10",
     "country": "10",
     "provider": "100",
-    "council": "50",
-    "democracy": "100",
     "nominations": "100",
     "delegations": "60",
     "openGov": "100",
-    "openGovDelegation": "100"
+    "openGovDelegation": "100",
+    "rpc": "100",
+    "client": "100",
+    "useInclusion": true,
+    "useSpanInclusion": true,
+    "useDiscovered": true,
+    "useNominated": true,
+    "useRank": true,
+    "useBonded": true,
+    "useFaults": true,
+    "useOffline": true,
+    "useLocation": true,
+    "useRegion": true,
+    "useCountry": true,
+    "useProvider": true,
+    "useNominations": true,
+    "useDelegations": true,
+    "useOpenGov": true,
+    "useOpenGovDelegation": true,
+    "useRpc": true,
+    "useClient": true
   },
   "scorekeeper": {
     "forceRound": false,

@@ -1,4 +1,9 @@
 {
+  "db": {
+    "mongo": {
+      "uri": "mongodb://mongo:27017",
+    }
+  },
   "telemetry": {
     "blacklistedProviders": [
       "Hetzner Online GmbH",

@@ -28,9 +28,9 @@ export default class Server {
 
   constructor(config: Config.ConfigSchema) {
     this.app = new Koa();
-    this.port = config.server.port;
-    this.enable = config.server.enable;
-    this.cache = config.server.cache;
+    this.port = config?.server?.port;
+    this.enable = config?.server?.enable;
+    this.cache = config?.server?.cache;
     this.config = config;
 
     this.app.use(cors());

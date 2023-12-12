@@ -1,4 +1,4 @@
-import { queries, logger } from "@1kv/common";
+import { logger, queries } from "@1kv/common";
 import { Octokit } from "@octokit/rest";
 
 export const monitorLabel = { label: "Monitor" };

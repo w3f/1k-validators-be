@@ -8,7 +8,7 @@ import koaCash from "koa-cash";
 import { KoaAdapter } from "@bull-board/koa";
 import { createBullBoard } from "@bull-board/api";
 import { BullMQAdapter } from "@bull-board/api/bullMQAdapter";
-import { otvWorker } from "@1kv/worker";
+// import { otvWorker } from "@1kv/worker";
 import { Queue } from "bullmq";
 import path from "path";
 import serve from "koa-static";
@@ -101,23 +101,31 @@ export default class Server {
 
   // Add BullMQ queues
   async addQueues() {
-    const releaseMonitorQueue =
-      await otvWorker.queues.createReleaseMonitorQueue(
-        this.config.redis.host,
-        this.config.redis.port
-      );
-    const constraintsQueue = await otvWorker.queues.createConstraintsQueue(
-      this.config.redis.host,
-      this.config.redis.port
-    );
-    const chaindataQueue = await otvWorker.queues.createChainDataQueue(
-      this.config.redis.host,
-      this.config.redis.port
-    );
-    const blockQueue = await otvWorker.queues.createBlockQueue(
-      this.config.redis.host,
-      this.config.redis.port
-    );
+    const releaseMonitorQueue = new Queue("releaseMonitor", {
+      connection: {
+        host: this.config?.redis?.host,
+        port: this.config?.redis?.port,
+      },
+    });
+    const constraintsQueue = new Queue("constraints", {
+      connection: {
+        host: this.config?.redis?.host,
+        port: this.config?.redis?.port,
+      },
+    });
+    const chaindataQueue = new Queue("chaindata", {
+      connection: {
+        host: this.config?.redis?.host,
+        port: this.config?.redis?.port,
+      },
+    });
+    const blockQueue = new Queue("block", {
+      connection: {
+        host: this.config?.redis?.host,
+        port: this.config?.redis?.port,
+      },
+    });
+
     this.queues.push(
       releaseMonitorQueue,
       constraintsQueue,

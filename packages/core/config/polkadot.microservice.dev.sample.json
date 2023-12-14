@@ -2,9 +2,6 @@
   "global": {
     "dryRun": false,
     "networkPrefix": 2,
-    "test": false,
-    "retroactive": false,
-    "historicalNominations": false,
     "apiEndpoints": [
       "wss://rpc.polkadot.io",
       "wss://polkadot-rpc.dwellir.com"
@@ -17,7 +14,6 @@
   "constraints": {
     "skipConnectionTime": false,
     "skipIdentity": false,
-    "skipStakedDestination": true,
     "skipClientUpgrade": false,
     "forceClientVersion": "v0.9.39",
     "skipUnclaimed": true,
@@ -26,13 +22,9 @@
     "unclaimedEraThreshold": 1
   },
   "db": {
-    "migrate": false,
     "mongo": {
-      "uri": "mongodb://mongo:27017",
-      "dbName": "otv",
-      "collection": "otv"
+      "uri": "mongodb://mongo:27017"
     },
-    "storageFile": "validator.db"
   },
   "matrix": {
     "enabled": false,
@@ -91,7 +83,7 @@
     "port": 6379
   },
   "server": {
-    "enable": false,
+    "onlyHealth": true,
     "port": 3300
   },
   "telemetry": {

@@ -2,9 +2,6 @@
   "global": {
     "dryRun": false,
     "networkPrefix": 0,
-    "test": false,
-    "retroactive": false,
-    "historicalNominations": false,
     "apiEndpoints": [
       "wss://rpc.polkadot.io",
       "wss://polkadot.api.onfinality.io/public-ws",
@@ -15,7 +12,6 @@
   "constraints": {
     "skipConnectionTime": false,
     "skipIdentity": false,
-    "skipStakedDestination": true,
     "skipClientUpgrade": false,
     "forceClientVersion": "v0.9.39",
     "skipUnclaimed": true,
@@ -23,17 +19,10 @@
     "commission": 50000000,
     "unclaimedEraThreshold": 1
   },
-  "cron": {
-    "monitor": "0 */15 * * * *"
-  },
   "db": {
-    "migrate": false,
     "mongo": {
-      "uri": "mongodb://mongo:27017",
-      "dbName": "otv",
-      "collection": "otv"
+      "uri": "mongodb://mongo:27017"
     },
-    "storageFile": "validator.db"
   },
   "matrix": {
     "enabled": false,
@@ -88,7 +77,6 @@
     "nominating": false
   },
   "server": {
-    "enable": true,
     "port": 3300
   },
   "telemetry": {

@@ -9,6 +9,10 @@
       "uri": "mongodb://mongo:27017"
     },
   },
+  "server": {
+    "onlyHealth": true,
+    "port": 3303
+  },
   "score": {
     "inclusion": "200",
     "spanInclusion": "200",

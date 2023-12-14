@@ -132,6 +132,9 @@ export type ConfigSchema = {
   };
   server: {
     enable: boolean;
+    onlyHealth: boolean;
+    serveDocs: boolean;
+    serveSwagger: boolean;
     port: number;
     cache: number;
   };

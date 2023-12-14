@@ -1,6 +1,8 @@
 import { Queue } from "bullmq";
 import { logger } from "@1kv/common";
 
+const constraintsLabel = { label: "ConstraintsQueue" };
+
 export const createConstraintsQueue = async (host, port) => {
   const queue = await new Queue("constraints", {
     connection: {
@@ -12,7 +14,7 @@ export const createConstraintsQueue = async (host, port) => {
 };
 
 export const addValidityJob = async (queue: Queue, repeat: number) => {
-  // logger.info(`adding Validity Job to Queue.....`);
+  logger.info(`adding Validity Job to Queue.....`, constraintsLabel);
   // const candidates = await queries.allCandidates();
   // for (const [index, candidate] of candidates.entries()) {
   await queue.add(
@@ -55,5 +57,5 @@ export const addScoreJob = async (queue: Queue, repeat: number) => {
     }
   );
   // }
-  logger.info(`adding Score Job to Queue.....`);
+  logger.info(`adding Score Job to Queue.....`, constraintsLabel);
 };

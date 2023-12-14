@@ -14,10 +14,8 @@ import ApiHandler from "./ApiHandler";
 import {
   allCandidates,
   allNominators,
-  getDelegations,
   getLargestOpenGovDelegationAddress,
   getLastOpenGovReferenda,
-  getLastReferenda,
   getLatestNominatorStake,
   getLatestRelease,
   getLatestValidatorScoreMetadata,
@@ -463,11 +461,11 @@ export class OTV implements Constraints {
     const { providerArr, providerStats } = getProviderValues(candidates);
     const { ownNominatorAddresses, nominatorStakeStats } =
       await getNominatorStakeValues(candidates);
-    const { delegationStats } = await getDelegationValues(candidates);
-    const { councilStakeStats } = getCouncilStakeValues(candidates);
-    const { lastReferendum, democracyStats } = await getDemocracyValues(
-      candidates
-    );
+    // const { delegationStats } = await getDelegationValues(candidates);
+    // const { councilStakeStats } = getCouncilStakeValues(candidates);
+    // const { lastReferendum, democracyStats } = await getDemocracyValues(
+    //   candidates
+    // );
     const { openGovStats } = await getOpenGovValues(candidates);
     const {
       delegationValues: openGovDelegationValues,
@@ -502,9 +500,6 @@ export class OTV implements Constraints {
       providerWeight: this.PROVIDER_WEIGHT,
       nominatorStakeStats: nominatorStakeStats,
       nominatorStakeWeight: this.NOMINATIONS_WEIGHT,
-      delegationStats: delegationStats,
-      delegationWeight: this.DELEGATIONS_WEIGHT,
-      councilStakeStats: councilStakeStats,
       openGovStats: openGovStats,
       openGovWeight: this.OPENGOV_WEIGHT,
       openGovDelegationStats: openGovDelegationStats,
@@ -537,7 +532,6 @@ export class OTV implements Constraints {
       countryStats,
       providerStats,
       nominatorStakeStats,
-      delegationStats,
       openGovStats,
       openGovDelegationStats,
     } = scoreMetadata;
@@ -702,22 +696,22 @@ export class OTV implements Constraints {
       ) || 0;
     const nominatorStakeScore = scaledNominatorStake * this.NOMINATIONS_WEIGHT;
 
-    const delegations = await getDelegations(candidate.stash);
-    let totalDelegations = 0;
-    if (
-      delegations != undefined &&
-      delegations?.totalBalance &&
-      delegations?.delegators
-    ) {
-      const { totalBalance, delegators } = delegations;
-
-      for (const delegator of delegators) {
-        totalDelegations += Math.sqrt(delegator.effectiveBalance);
-      }
-    }
-    const scaledDelegations =
-      scaledDefined(totalDelegations, delegationStats.values, 0.1, 0.95) || 0;
-    const delegationScore = scaledDelegations * this.DELEGATIONS_WEIGHT;
+    // const delegations = await getDelegations(candidate.stash);
+    // let totalDelegations = 0;
+    // if (
+    //   delegations != undefined &&
+    //   delegations?.totalBalance &&
+    //   delegations?.delegators
+    // ) {
+    //   const { totalBalance, delegators } = delegations;
+    //
+    //   for (const delegator of delegators) {
+    //     totalDelegations += Math.sqrt(delegator.effectiveBalance);
+    //   }
+    // }
+    // const scaledDelegations =
+    //   scaledDefined(totalDelegations, delegationStats.values, 0.1, 0.95) || 0;
+    // const delegationScore = scaledDelegations * this.DELEGATIONS_WEIGHT;
 
     let openGovDelegationScore = 0;
     const openGovDelegation = await getLargestOpenGovDelegationAddress(
@@ -797,7 +791,7 @@ export class OTV implements Constraints {
       // councilStakeScore +
       // scaledDemocracyScore +
       offlineScore +
-      delegationScore +
+      // delegationScore +
       nominatorStakeScore +
       openGovDelegationScore +
       scaledOpenGovScore +
@@ -826,7 +820,7 @@ export class OTV implements Constraints {
       // councilStake: councilStakeScore,
       // democracy: scaledDemocracyScore,
       nominatorStake: nominatorStakeScore,
-      delegations: delegationScore,
+      // delegations: delegationScore,
       openGov: scaledOpenGovScore,
       openGovDelegations: openGovDelegationScore,
       client: clientScore,
@@ -1188,30 +1182,30 @@ export const getNominatorStakeValues = async (
   return { ownNominatorAddresses, nominatorStakeValues, nominatorStakeStats };
 };
 
-export const getDelegationValues = async (
-  validCandidates: Types.CandidateData[]
-) => {
-  const delegationValues = [];
-  for (const candidate of validCandidates) {
-    const delegations = await getDelegations(candidate.stash);
-    if (delegations != undefined && delegations?.delegators) {
-      try {
-        const { totalBalance, delegators } = delegations;
-
-        let total = 0;
-        for (const delegator of delegators) {
-          total += Math.sqrt(delegator.effectiveBalance);
-        }
-        delegationValues.push(total);
-      } catch (e) {
-        logger.info(`{delegations} Can't find delegation values`);
-        logger.info(JSON.stringify(delegations));
-      }
-    }
-  }
-  const delegationStats = getStats(delegationValues);
-  return { delegationValues, delegationStats };
-};
+// export const getDelegationValues = async (
+//   validCandidates: Types.CandidateData[]
+// ) => {
+//   const delegationValues = [];
+//   for (const candidate of validCandidates) {
+//     const delegations = await getDelegations(candidate.stash);
+//     if (delegations != undefined && delegations?.delegators) {
+//       try {
+//         const { totalBalance, delegators } = delegations;
+//
+//         let total = 0;
+//         for (const delegator of delegators) {
+//           total += Math.sqrt(delegator.effectiveBalance);
+//         }
+//         delegationValues.push(total);
+//       } catch (e) {
+//         logger.info(`{delegations} Can't find delegation values`);
+//         logger.info(JSON.stringify(delegations));
+//       }
+//     }
+//   }
+//   const delegationStats = getStats(delegationValues);
+//   return { delegationValues, delegationStats };
+// };
 
 export const getOpenGovDelegationValues = async (
   validCandidates: Types.CandidateData[]
@@ -1235,38 +1229,38 @@ export const getOpenGovDelegationValues = async (
   return { delegationValues, delegationStats };
 };
 
-export const getCouncilStakeValues = (
-  validCandidates: Types.CandidateData[]
-) => {
-  const councilStakeValues = validCandidates.map((candidate) => {
-    return candidate.councilStake ? Number(candidate.councilStake) : 0;
-  });
-  const councilStakeStats = getStats(councilStakeValues);
-  return { councilStakeValues, councilStakeStats };
-};
+// export const getCouncilStakeValues = (
+//   validCandidates: Types.CandidateData[]
+// ) => {
+//   const councilStakeValues = validCandidates.map((candidate) => {
+//     return candidate.councilStake ? Number(candidate.councilStake) : 0;
+//   });
+//   const councilStakeStats = getStats(councilStakeValues);
+//   return { councilStakeValues, councilStakeStats };
+// };
 
-export const getDemocracyValues = async (
-  validCandidates: Types.CandidateData[]
-) => {
-  const lastReferendum = (await getLastReferenda())[0]?.referendumIndex;
-
-  // Democracy
-
-  const democracyValues = validCandidates.map((candidate) => {
-    const democracyVotes = candidate.democracyVotes
-      ? candidate.democracyVotes
-      : [];
-    const {
-      baseDemocracyScore,
-      totalDemocracyScore,
-      totalConsistencyMultiplier,
-      lastConsistencyMultiplier,
-    } = scoreDemocracyVotes(democracyVotes, lastReferendum);
-    return totalDemocracyScore || 0;
-  });
-  const democracyStats = getStats(democracyValues);
-  return { lastReferendum, democracyValues, democracyStats };
-};
+// export const getDemocracyValues = async (
+//   validCandidates: Types.CandidateData[]
+// ) => {
+//   const lastReferendum = (await getLastReferenda())[0]?.referendumIndex;
+//
+//   // Democracy
+//
+//   const democracyValues = validCandidates.map((candidate) => {
+//     const democracyVotes = candidate.democracyVotes
+//       ? candidate.democracyVotes
+//       : [];
+//     const {
+//       baseDemocracyScore,
+//       totalDemocracyScore,
+//       totalConsistencyMultiplier,
+//       lastConsistencyMultiplier,
+//     } = scoreDemocracyVotes(democracyVotes, lastReferendum);
+//     return totalDemocracyScore || 0;
+//   });
+//   const democracyStats = getStats(democracyValues);
+//   return { lastReferendum, democracyValues, democracyStats };
+// };
 
 export const getOpenGovValues = async (
   validCandidates: Types.CandidateData[]

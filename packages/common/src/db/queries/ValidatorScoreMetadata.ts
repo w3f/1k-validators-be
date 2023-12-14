@@ -1,5 +1,5 @@
 import logger from "../../logger";
-import { ValidatorScoreMetadataModel, ValidatorScoreModel } from "../models";
+import { ValidatorScoreMetadataModel } from "../models";
 
 export const setValidatorScoreMetadata = async (
   scoreMetadata: any,
@@ -33,12 +33,6 @@ export const setValidatorScoreMetadata = async (
     providerWeight,
     nominatorStakeStats,
     nominatorStakeWeight,
-    delegationStats,
-    delegationWeight,
-    councilStakeStats,
-    councilStakeWeight,
-    democracyStats,
-    democracyWeight,
     openGovStats,
     openGovWeight,
     openGovDelegationStats,
@@ -82,12 +76,6 @@ export const setValidatorScoreMetadata = async (
         providerWeight,
         nominatorStakeStats,
         nominatorStakeWeight,
-        delegationStats,
-        delegationWeight,
-        councilStakeStats,
-        councilStakeWeight,
-        democracyStats,
-        democracyWeight,
         openGovStats,
         openGovWeight,
         openGovDelegationStats,
@@ -132,12 +120,6 @@ export const setValidatorScoreMetadata = async (
       providerWeight,
       nominatorStakeStats,
       nominatorStakeWeight,
-      delegationStats,
-      delegationWeight,
-      councilStakeStats,
-      councilStakeWeight,
-      democracyStats,
-      democracyWeight,
       openGovStats,
       openGovWeight,
       openGovDelegationStats,

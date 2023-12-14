@@ -83,7 +83,7 @@
     "port": 6379
   },
   "server": {
-    "enable": false,
+    "onlyHealth": true,
     "port": 3300
   },
   "telemetry": {

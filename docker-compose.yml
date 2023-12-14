@@ -1,18 +1,41 @@
-version: '3'
+version: '3.8'
 services:
+
+    autoheal:
+      restart: always
+      image: willfarrell/autoheal
+      environment:
+        - AUTOHEAL_CONTAINER_LABEL=all
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+
     1kv-core:
+      image: 1kv-core:latest
       build:
         context: .
         args:
           PACKAGE: core
         dockerfile: ./Dockerfile-dev
-      restart: unless-stopped
+      restart: on-failure
       depends_on:
         - redis
+        - mongo
       volumes:
         - .:/code
       ports:
         - "127.0.0.1:3300:3300"
+      healthcheck:
+        test: [ "CMD-SHELL", "curl -f http://localhost:3300/healthcheck" ]
+        interval: 60s
+        timeout: 60s
+        retries: 3
+        start_period: 180s
+      deploy:
+        restart_policy:
+          condition: on-failure
+          delay: 300s
+          max_attempts: 3
+          window: 120s
       networks:
         testing_net:
           ipv4_address: 172.28.1.7
@@ -22,16 +45,32 @@ services:
           max-size: "50m"
 
     1kv-gateway:
+      image: 1kv-gateway:latest
       build:
         context: .
         args:
           PACKAGE: gateway
         dockerfile: ./Dockerfile-dev
-      restart: always
+      restart: on-failure
+      depends_on:
+        - redis
+        - mongo
       volumes:
         - .:/code
       ports:
         - "127.0.0.1:3301:3301"
+      healthcheck:
+        test: ["CMD", "curl", "-f", "http://localhost:3301/healthcheck"]
+        interval: 30s
+        timeout: 10s
+        retries: 3
+        start_period: 60s
+      deploy:
+        restart_policy:
+          condition: on-failure
+          delay: 300s
+          max_attempts: 3
+          window: 120s
       networks:
         testing_net:
           ipv4_address: 172.28.1.8
@@ -41,14 +80,32 @@ services:
           max-size: "50m"
 
     1kv-telemetry:
+      image: 1kv-telemetry:latest
       build:
         context: .
         args:
           PACKAGE: telemetry
         dockerfile: ./Dockerfile-dev
-      restart: always
+      restart: on-failure
+      depends_on:
+        - redis
+        - mongo
       volumes:
         - .:/code
+      ports:
+        - "127.0.0.1:3302:3302"
+      healthcheck:
+        test: [ "CMD-SHELL", "curl -f http://localhost:3302/healthcheck" ]
+        interval: 30s
+        timeout: 10s
+        retries: 3
+        start_period: 30s
+      deploy:
+        restart_policy:
+          condition: on-failure
+          delay: 300s
+          max_attempts: 3
+          window: 120s
       networks:
         testing_net:
           ipv4_address: 172.28.1.9
@@ -58,6 +115,7 @@ services:
           max-size: "50m"
 
     1kv-worker:
+      image: 1kv-worker:latest
       build:
         context: .
         args:
@@ -66,11 +124,25 @@ services:
       volumes:
         - .:/code
       deploy:
-        mode: replicated
-        replicas: 4
+#        mode: replicated
+#        replicas: 8
+        restart_policy:
+          condition: on-failure
+          delay: 30s
+          max_attempts: 3
+          window: 120s
       depends_on:
         - redis
-      restart: always
+        - mongo
+      ports:
+        - "127.0.0.1:3303:3303"
+      restart: on-failure
+      healthcheck:
+        test: [ "CMD-SHELL", "curl -f http://localhost:3303/healthcheck" ]
+        interval: 30s
+        timeout: 60s
+        retries: 3
+        start_period: 180s
       networks:
         testing_net:
 #          ipv4_address: 172.28.1.16
@@ -112,7 +184,7 @@ services:
           max-size: "50m"
 
     redis:
-      image: redis:alpine
+      image: redis:latest
       ports:
         - "127.0.0.1:6379:6379"
       expose:
@@ -120,7 +192,8 @@ services:
       volumes:
         - ./redis:/data
       restart: always
-      command: ["redis-server", "--bind", "172.28.1.13", "--port", "6379"]
+#      command: ["redis-server", "--bind", "172.28.1.13", "--port", "6379"]
+      command: ["redis-server", "--port", "6379"]
       logging:
         driver: "json-file"
         options:

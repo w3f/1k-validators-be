@@ -17,6 +17,7 @@ import router from "./routes";
 import mount from "koa-mount";
 import { koaSwagger } from "koa2-swagger-ui";
 import yamljs from "yamljs";
+import Router from "@koa/router";
 
 export default class Server {
   public app: Koa;
@@ -27,11 +28,11 @@ export default class Server {
   private queues: Queue[] = [];
 
   constructor(config: Config.ConfigSchema) {
+    this.config = config;
     this.app = new Koa();
     this.port = config?.server?.port;
-    this.enable = config?.server?.enable;
-    this.cache = config?.server?.cache;
-    this.config = config;
+    this.enable = config?.server?.enable || true;
+    this.cache = config?.server?.cache || 180000;
 
     this.app.use(cors());
     this.app.use(bodyparser());
@@ -39,7 +40,7 @@ export default class Server {
     logger.info(`Cache set to ${this.cache}`, { label: "Gateway" });
 
     const cache = new LRU({
-      max: this.cache || 180000, // global max age
+      max: this.cache, // global max age
     });
     this.app.use(
       koaCash({
@@ -52,28 +53,50 @@ export default class Server {
       })
     );
 
-    const docsPath = path.join(__dirname, "../../../docs/build");
+    // If onlyHealth is true, only serve the health check route. Used when imported from other services for service health checks. False by default
+    const onlyHealth = config?.server?.onlyHealth || false;
+    if (onlyHealth) {
+      logger.info(`Only serving health check route`, { label: "Gateway" });
+      const healthRouter = new Router();
+      // Health check route
+      healthRouter.get("/healthcheck", (ctx) => {
+        ctx.body = `Good!`;
+        ctx.status = 200;
+      });
+      this.app.use(healthRouter.routes());
+    } else {
+      // Health check route
+      router.get("/healthcheck", (ctx) => {
+        ctx.body = `Good!`;
+        ctx.status = 200;
+      });
 
-    this.app.use(mount("/docs", serve(docsPath)));
+      // Docusarus docs
+      const serveDocs = config?.server?.serveDocs || true;
+      if (serveDocs) {
+        const docsPath = path.join(__dirname, "../../../docs/build");
+        this.app.use(mount("/docs", serve(docsPath)));
+      }
 
-    router.get("/healthcheck", (ctx) => {
-      const network = config.global.networkPrefix == 2 ? "Kusama" : "Polkadot";
-      ctx.body = `${network} Thousand Validators`;
-      ctx.status = 200;
-    });
+      // Swagger UI
+      const serveSwagger = config?.server?.serveSwagger || true;
+      if (serveSwagger) {
+        const swaggerSpec = yamljs.load(
+          path.join(__dirname, "../src/swagger.yml")
+        ); //
+        this.app.use(
+          koaSwagger({
+            routePrefix: "/",
+            swaggerOptions: {
+              spec: swaggerSpec,
+            },
+          })
+        );
+      }
 
-    // Add the swagger UI to the Gateway at the '/' route
-    const swaggerSpec = yamljs.load(path.join(__dirname, "../src/swagger.yml")); //
-    this.app.use(
-      koaSwagger({
-        routePrefix: "/",
-        swaggerOptions: {
-          spec: swaggerSpec,
-        },
-      })
-    );
-
-    this.app.use(router.routes());
+      // Serve all other routes
+      this.app.use(router.routes());
+    }
   }
 
   // Add BullMQ queues

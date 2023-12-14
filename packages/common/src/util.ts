@@ -6,6 +6,7 @@ import fetch from "node-fetch";
 import logger from "./logger";
 import { LOCATION_URL } from "./constants";
 import { ApiPromise } from "@polkadot/api";
+import { format } from "date-fns";
 
 export const sleep = (ms: number): Promise<void> =>
   new Promise((resolve) => {
@@ -293,4 +294,9 @@ export const timeRemaining = (index, total, time) => {
   const remaining = total - index;
   const timeRemaining = ((remaining * time) / 1000).toFixed(2);
   return `(~${timeRemaining}s remaining)`;
+};
+
+export const formatDateFromUnix = (unixTimestamp: number): string => {
+  const date = new Date(unixTimestamp); // Convert Unix timestamp to milliseconds
+  return format(date, "dd-MM-yyyy"); // Format the date as 'DD-MM-YYYY'
 };

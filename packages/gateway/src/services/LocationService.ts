@@ -1,4 +1,4 @@
-import { queries, logger } from "@1kv/common";
+import { queries } from "@1kv/common";
 
 export const getValidatorLocation = async (address): Promise<any> => {
   const locations = await queries.getAllLocations(address);

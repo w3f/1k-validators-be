@@ -3,7 +3,8 @@
   "exclude": ["test", "node_modules"],
   "include": ["src/**/*.ts"],
   "paths": {
-    "@1kv/common": ["../common/build"]
+    "@1kv/common": ["../common/build"],
+    "@1kv/gateway": ["../gateway/build"]
   },
   "files": [
     "src/run.ts",
@@ -69,5 +70,8 @@
     // "emitDecoratorMetadata": true,         /* Enables experimental support for emitting type metadata for decorators. */
     "resolveJsonModule": true
   },
-  "references": [{ "path": "../common" }]
+  "references": [
+    { "path": "../common" },
+    { "path": "../gateway" }
+  ]
 }

@@ -1,4 +1,4 @@
-import { logger, queries, ChainData, Types } from "@1kv/common";
+import { ChainData, logger, queries, Types } from "@1kv/common";
 
 export const activeLabel = { label: "ActiveValidatorJob" };
 
@@ -30,6 +30,7 @@ export const activeValidatorJob = async (chaindata: ChainData) => {
 
   const candidates = await queries.allCandidates();
   for (const candidate of candidates) {
+    await individualActiveValidatorJob(chaindata, candidate);
   }
 
   const end = Date.now();

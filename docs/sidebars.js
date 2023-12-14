@@ -20,11 +20,29 @@ module.exports = {
       items: [
         "general/getting-started",
         "general/requirements",
-        "general/backend",
-        "general/api-docs",
-        "general/adr",
         "general/terms-of-service",
         "general/faq",
+      ],
+    },
+    {
+      type: "category",
+      label: "Backend",
+      items: [
+        "backend/backend",
+        "backend/config",
+        "backend/api-docs",
+        "backend/adr",
+        {
+          type: "category",
+          label: "Packages",
+          items: [
+            "backend/core",
+            "backend/common",
+            "backend/gateway",
+            "backend/telemetry",
+            "backend/worker",
+          ],
+        },
       ],
     },
   ],

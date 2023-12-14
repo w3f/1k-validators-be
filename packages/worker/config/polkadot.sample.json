@@ -5,13 +5,13 @@
     ]
   },
   "db": {
-    "migrate": false,
     "mongo": {
-      "uri": "mongodb://mongo:27017",
-      "dbName": "otv",
-      "collection": "otv"
+      "uri": "mongodb://mongo:27017"
     },
-    "storageFile": "validator.db"
+  },
+  "server": {
+    "onlyHealth": true,
+    "port": 3303
   },
   "score": {
     "inclusion": "200",
@@ -26,14 +26,33 @@
     "region": "10",
     "country": "10",
     "provider": "100",
-    "council": "50",
-    "democracy": "100",
     "nominations": "100",
     "delegations": "60",
     "openGov": "100",
-    "openGovDelegation": "100"
+    "openGovDelegation": "100",
+    "rpc": "100",
+    "client": "100",
+    "useInclusion": true,
+    "useSpanInclusion": true,
+    "useDiscovered": true,
+    "useNominated": true,
+    "useRank": true,
+    "useBonded": true,
+    "useFaults": true,
+    "useOffline": true,
+    "useLocation": true,
+    "useRegion": true,
+    "useCountry": true,
+    "useProvider": true,
+    "useNominations": true,
+    "useDelegations": true,
+    "useOpenGov": true,
+    "useOpenGovDelegation": true,
+    "useRpc": true,
+    "useClient": true
   },
   "redis": {
+    "enable": true,
     "host": "redis",
     "port": 6379
   }

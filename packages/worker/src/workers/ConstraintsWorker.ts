@@ -1,5 +1,5 @@
 import { Worker } from "bullmq";
-import { logger, Constraints } from "@1kv/common";
+import { Constraints, logger } from "@1kv/common";
 import { processConstraintsJob } from "../jobs/ConstraintsJob";
 
 export const createConstraintsWorker = async (
@@ -16,7 +16,7 @@ export const createConstraintsWorker = async (
         host: host,
         port: port,
       },
-      concurrency: 5,
+      concurrency: 10,
       lockDuration: 3000000,
     }
   );

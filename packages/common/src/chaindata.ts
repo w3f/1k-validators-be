@@ -229,6 +229,7 @@ export class ChainData {
   };
 
   getCommissionInEra = async (
+    apiAt: any,
     eraIndex: number,
     validator: string
   ): Promise<NumberResult> => {
@@ -237,7 +238,7 @@ export class ChainData {
       return;
     }
 
-    const prefs = await this.api.query.staking.erasValidatorPrefs(
+    const prefs = await apiAt.query.staking.erasValidatorPrefs(
       eraIndex,
       validator
     );
@@ -326,6 +327,7 @@ export class ChainData {
       validator
     );
     const total = parseFloat(eraStakers.total.toString()) / denom;
+    const own = parseFloat(eraStakers.own.toString()) / denom;
     // @ts-ignore
     const activeExposure = eraStakers.others.toJSON().map((stake) => {
       return {
@@ -335,6 +337,37 @@ export class ChainData {
     });
     return {
       total: total,
+      own: own,
+      others: activeExposure,
+    };
+  };
+
+  getExposureAt = async (
+    apiAt: any,
+    eraIndex: number,
+    validator: string
+  ): Promise<any> => {
+    if (!this.api.isConnected) {
+      logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
+      return;
+    }
+    const denom = await this.getDenom();
+    const eraStakers = await apiAt.query.staking.erasStakers(
+      eraIndex,
+      validator
+    );
+    const total = parseFloat(eraStakers.total.toString()) / denom;
+    const own = parseFloat(eraStakers.own.toString()) / denom;
+    // @ts-ignore
+    const activeExposure = eraStakers.others.toJSON().map((stake) => {
+      return {
+        address: stake.who.toString(),
+        bonded: stake.value / denom,
+      };
+    });
+    return {
+      total: total,
+      own: own,
       others: activeExposure,
     };
   };
@@ -756,6 +789,18 @@ export class ChainData {
     }
   };
 
+  getRewardDestinationAt = async (
+    apiAt: any,
+    stash: string
+  ): Promise<string | null> => {
+    const rewardDestination: JSON = await apiAt.query.staking.payee(stash);
+    if (rewardDestination.toJSON().account) {
+      return rewardDestination.toJSON().account;
+    } else {
+      return rewardDestination.toString();
+    }
+  };
+
   getQueuedKeys = async (): Promise<any> => {
     if (!this.api.isConnected) {
       logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
@@ -940,6 +985,22 @@ export class ChainData {
     );
 
     return validators;
+  };
+
+  getErasMinStakeAt = async (apiAt: any, era: number) => {
+    const denom = await this.getDenom();
+    const erasStakers = await apiAt.query.staking.erasStakers.entries(era);
+    const minStake = erasStakers
+      .map(([key, stake]) => {
+        const [era, validator] = key.toHuman();
+        const { total, own, others } = stake.toHuman();
+        return {
+          total: parseFloat(total.replace(/,/g, "")) / denom,
+        };
+      })
+      .sort((a, b) => a.total - b.total);
+
+    return minStake[0].total;
   };
 
   getAssociatedValidatorAddresses = async () => {

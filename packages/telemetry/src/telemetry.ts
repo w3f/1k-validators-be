@@ -1,7 +1,7 @@
 import ReconnectingWebSocket from "reconnecting-websocket";
 import WS from "ws";
 
-import { queries, Config, logger } from "@1kv/common";
+import { Config, logger, queries } from "@1kv/common";
 
 enum TelemetryMessage {
   FeedVersion = 0x00,
@@ -60,10 +60,12 @@ export default class TelemetryClient {
     } else {
       // configure ipinfo
       const iitExists = await queries.getIIT();
-      if (this.config.telemetry.ipinfoToken || !iitExists) {
-        await queries.setIIT(this.config.telemetry.ipinfoToken);
+      if (this.config?.telemetry?.ipinfoToken || !iitExists) {
+        await queries.setIIT(this.config?.telemetry?.ipinfoToken);
       } else {
-        logger.warn(`ip info not enabled`, { label: "Telemetry" });
+        logger.warn(`No ip info api token set. ip info not enabled`, {
+          label: "Telemetry",
+        });
       }
       return new Promise((resolve: any, reject: any) => {
         this.socket.onopen = () => {

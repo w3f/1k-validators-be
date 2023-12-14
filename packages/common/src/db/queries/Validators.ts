@@ -1,4 +1,4 @@
-import { LatestValidatorSetModel } from "../models";
+import { LatestValidatorSetModel, ValidatorModel } from "../models";
 
 export const setLatestValidatorSet = async (
   session: number,
@@ -33,4 +33,43 @@ export const setLatestValidatorSet = async (
 
 export const getLatestValidatorSet = async (): Promise<any> => {
   return LatestValidatorSetModel.findOne({}).lean().exec();
+};
+
+export const setValidatorKeys = async (
+  address: string,
+  keys: {
+    grandpa: string;
+    babe: string;
+    imOnline: string;
+    paraValidator: string;
+    paraAssingnment: string;
+    authorityDiscovery: string;
+    beefy: string;
+  }
+): Promise<boolean> => {
+  const data = await ValidatorModel.findOne({ address }).lean();
+  if (!data) {
+    const validator = new ValidatorModel({
+      address: address,
+      keys: keys,
+    });
+    await validator.save();
+    return true;
+  }
+
+  await ValidatorModel.findOneAndUpdate(
+    { address },
+    {
+      keys: keys,
+    }
+  ).exec();
+  return true;
+};
+
+export const getValidator = async (address: string): Promise<any> => {
+  return ValidatorModel.find({ address }).lean().exec();
+};
+
+export const getValidators = async (): Promise<any> => {
+  return ValidatorModel.find({}).lean().exec();
 };

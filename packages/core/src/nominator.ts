@@ -7,14 +7,13 @@ import {
   ApiHandler,
   Constants,
   logger,
+  queries,
   Types,
   Util,
-  queries,
 } from "@1kv/common";
 
 export default class Nominator {
   public currentlyNominating: Types.Stash[] = [];
-  public maxNominations: number | "auto";
 
   private _controller: string;
   private bot: any;
@@ -42,7 +41,6 @@ export default class Nominator {
   ) {
     this.handler = handler;
     this.bot = bot;
-    this.maxNominations = cfg.maxNominations || 16;
     this._isProxy = cfg.isProxy || false;
 
     // If the proxyDelay is not set in the config, default to TIME_DELAY_BLOCKS (~18 hours, 10800 blocks)

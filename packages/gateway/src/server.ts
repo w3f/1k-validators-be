@@ -8,32 +8,39 @@ import koaCash from "koa-cash";
 import { KoaAdapter } from "@bull-board/koa";
 import { createBullBoard } from "@bull-board/api";
 import { BullMQAdapter } from "@bull-board/api/bullMQAdapter";
-import { otvWorker } from "@1kv/worker";
+// import { otvWorker } from "@1kv/worker";
 import { Queue } from "bullmq";
 import path from "path";
 import serve from "koa-static";
 
 import router from "./routes";
 import mount from "koa-mount";
+import { koaSwagger } from "koa2-swagger-ui";
+import yamljs from "yamljs";
+import Router from "@koa/router";
 
 export default class Server {
   public app: Koa;
   private port: number;
   private enable = true;
+  private cache = 180000;
   private config: Config.ConfigSchema;
   private queues: Queue[] = [];
 
   constructor(config: Config.ConfigSchema) {
-    this.app = new Koa();
-    this.port = config.server.port;
-    this.enable = config.server.enable;
     this.config = config;
+    this.app = new Koa();
+    this.port = config?.server?.port;
+    this.enable = config?.server?.enable || true;
+    this.cache = config?.server?.cache || 180000;
 
     this.app.use(cors());
     this.app.use(bodyparser());
 
+    logger.info(`Cache set to ${this.cache}`, { label: "Gateway" });
+
     const cache = new LRU({
-      max: 180000, // global max age
+      max: this.cache, // global max age
     });
     this.app.use(
       koaCash({
@@ -46,42 +53,79 @@ export default class Server {
       })
     );
 
-    const docsPath = path.join(__dirname, "../../../docs/build");
-    // const serveDocs = serve(docsPath);
-    // // this.app.use(mount("/docs", serve(docsPath)));
-    // router.get("/docs", (ctx) => {
-    //   ctx.body = serve(docsPath);
-    // });
+    // If onlyHealth is true, only serve the health check route. Used when imported from other services for service health checks. False by default
+    const onlyHealth = config?.server?.onlyHealth || false;
+    if (onlyHealth) {
+      logger.info(`Only serving health check route`, { label: "Gateway" });
+      const healthRouter = new Router();
+      // Health check route
+      healthRouter.get("/healthcheck", (ctx) => {
+        ctx.body = `Good!`;
+        ctx.status = 200;
+      });
+      this.app.use(healthRouter.routes());
+    } else {
+      // Health check route
+      router.get("/healthcheck", (ctx) => {
+        ctx.body = `Good!`;
+        ctx.status = 200;
+      });
 
-    this.app.use(mount("/docs", serve(docsPath)));
+      // Docusarus docs
+      const serveDocs = config?.server?.serveDocs || true;
+      if (serveDocs) {
+        const docsPath = path.join(__dirname, "../../../docs/build");
+        this.app.use(mount("/docs", serve(docsPath)));
+      }
 
-    router.get("/healthcheck", (ctx) => {
-      const network = config.global.networkPrefix == 2 ? "Kusama" : "Polkadot";
-      ctx.body = `${network} Thousand Validators`;
-      ctx.status = 200;
-    });
+      // Swagger UI
+      const serveSwagger = config?.server?.serveSwagger || true;
+      if (serveSwagger) {
+        const swaggerSpec = yamljs.load(
+          path.join(__dirname, "../src/swagger.yml")
+        ); //
+        this.app.use(
+          koaSwagger({
+            routePrefix: "/",
+            swaggerOptions: {
+              spec: swaggerSpec,
+            },
+          })
+        );
+      }
 
-    this.app.use(router.routes());
+      // Serve all other routes
+      this.app.use(router.routes());
+    }
   }
 
+  // Add BullMQ queues
   async addQueues() {
-    const releaseMonitorQueue =
-      await otvWorker.queues.createReleaseMonitorQueue(
-        this.config.redis.host,
-        this.config.redis.port
-      );
-    const constraintsQueue = await otvWorker.queues.createConstraintsQueue(
-      this.config.redis.host,
-      this.config.redis.port
-    );
-    const chaindataQueue = await otvWorker.queues.createChainDataQueue(
-      this.config.redis.host,
-      this.config.redis.port
-    );
-    const blockQueue = await otvWorker.queues.createBlockQueue(
-      this.config.redis.host,
-      this.config.redis.port
-    );
+    const releaseMonitorQueue = new Queue("releaseMonitor", {
+      connection: {
+        host: this.config?.redis?.host,
+        port: this.config?.redis?.port,
+      },
+    });
+    const constraintsQueue = new Queue("constraints", {
+      connection: {
+        host: this.config?.redis?.host,
+        port: this.config?.redis?.port,
+      },
+    });
+    const chaindataQueue = new Queue("chaindata", {
+      connection: {
+        host: this.config?.redis?.host,
+        port: this.config?.redis?.port,
+      },
+    });
+    const blockQueue = new Queue("block", {
+      connection: {
+        host: this.config?.redis?.host,
+        port: this.config?.redis?.port,
+      },
+    });
+
     this.queues.push(
       releaseMonitorQueue,
       constraintsQueue,
@@ -94,6 +138,7 @@ export default class Server {
     if (!this.enable) {
       logger.info(`Server not enabled`, { label: "Gateway" });
     } else {
+      // If Redis is in the config and this is run as microservices, add bull board as an endpoint at `/bull`
       if (this.config?.redis?.host && this.config?.redis?.port) {
         await this.addQueues();
         // BullMQBoard

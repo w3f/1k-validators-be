@@ -1,0 +1,9 @@
+{{- if eq .Values.architecture "microservices" }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "otv-backend.worker-release-name" . }}
+
+data:
+  main.json: {{ .Values.worker.config | toPrettyJson }}
+{{ end }}  

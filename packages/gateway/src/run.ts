@@ -3,7 +3,7 @@ import { Command } from "commander";
 import { Config, Db, logger } from "@1kv/common";
 import path from "path";
 
-const version = "v2.6.87";
+const version = "v3.0.0";
 
 const catchAndQuit = async (fn: any) => {
   try {

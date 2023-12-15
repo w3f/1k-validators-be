@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ .Release.Name }}
+  name: {{ include "otv-backend.core-release-name" . }}
   labels:
-    app: {{ .Release.Name }}
+    app: {{ include "otv-backend.core-release-name" . }}
 spec:
   replicas: 1
   revisionHistoryLimit: 3
@@ -12,27 +12,27 @@ spec:
   podManagementPolicy: Parallel
   selector:
     matchLabels:
-      app: {{ .Release.Name }}
-  serviceName: {{ .Release.Name }}
+      app: {{ include "otv-backend.core-release-name" . }}
+  serviceName: {{ include "otv-backend.core-release-name" . }}
   template:
     metadata:
       labels:
-        app: {{ .Release.Name }}
+        app: {{ include "otv-backend.core-release-name" . }}
       annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}  
-        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+        checksum/config: {{ include (print $.Template.BasePath "/core/configmap.yaml") . | sha256sum }}  
+        checksum/secret: {{ include (print $.Template.BasePath "/core/secret.yaml") . | sha256sum }}
     spec:
       containers:
-      - name: {{ .Release.Name }}
-        image: {{ .Values.image.repo }}:{{ .Values.image.tag | default .Chart.AppVersion }}
+      - name: {{ include "otv-backend.core-release-name" . }}
+        image: {{ .Values.core.image.repo }}:{{ .Values.core.image.tag | default .Chart.AppVersion }}
         imagePullPolicy: IfNotPresent
         ports:
-        - name: backend
-          containerPort: {{ .Values.backendPort }}
-        livenessProbe:
-          httpGet:
-            path: /healthcheck
-            port: {{ .Values.backendPort }}
+        - name: http
+          containerPort: {{ .Values.port }}
+        # livenessProbe:
+        #   httpGet:
+        #     path: /healthcheck
+        #     port: {{ .Values.port }}
           failureThreshold: 6
           initialDelaySeconds: 30
           periodSeconds: 30
@@ -50,7 +50,7 @@ spec:
           readOnly: true
       {{- if ne .Values.environment "ci" }}
         resources:
-{{ toYaml .Values.resources | indent 10 }}
+{{ toYaml .Values.core.resources | indent 10 }}
       {{- end }}
       {{- if eq .Values.environment "ci" }}
         env:
@@ -60,10 +60,10 @@ spec:
       volumes:
       - name: secret-config
         secret:
-          secretName: {{ .Release.Name }}
+          secretName: {{ include "otv-backend.core-release-name" . }}
       - name: main-config
         configMap:
-          name: {{ .Release.Name }}
+          name: {{ include "otv-backend.core-release-name" . }}
       {{ if eq .Values.environment "ci" }}
       - name: data
         emptyDir: {}
@@ -75,5 +75,5 @@ spec:
       accessModes: [ "ReadWriteOnce" ]
       resources:
         requests:
-          storage: {{ .Values.storageSize }}
+          storage: {{ .Values.core.storageSize }}
       {{ end }}

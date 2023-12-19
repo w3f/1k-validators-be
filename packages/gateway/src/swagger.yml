@@ -24,6 +24,10 @@ tags:
     description: Querying rewards for stakers
   - name: Nominator
     description: Querying fields of nominators
+  - name: Location
+    description: Querying location data
+  - name: Score
+    description: Querying score data
 
 paths:
   /candidate/{candidateStash}:
@@ -88,13 +92,6 @@ paths:
                     type: string
                   provider:
                     type: string
-                  councilStake:
-                    type: string
-                  councilVotes:
-                    type: array
-                  democracyVoteCount:
-                    type: integer
-                  democracyVotes:
                     type: array
                   convictionVotes:
                     type: array
@@ -236,18 +233,6 @@ paths:
                       type: string
                     provider:
                       type: string
-                    councilStake:
-                      type: string
-                    councilVotes:
-                      type: array
-                      items:
-                        type: string
-                    democracyVoteCount:
-                      type: integer
-                    democracyVotes:
-                      type: array
-                      items:
-                        type: string
                     convictionVotes:
                       type: array
                       items:
@@ -579,8 +564,89 @@ paths:
     get:
       summary: "Validator Location Data"
       tags:
-        - Nominator
+        - Location
       description: "Retrieve details of a specific validator location by address."
+      parameters:
+        - in: path
+          name: address
+          required: true
+          schema:
+            type: string
+          description: "The unique address of the validator."
+      responses:
+        '200':
+          description: "Successful response."
+        '404':
+          description: "Data not found."
+
+  /score/{address}:
+    get:
+      summary: "Score Data"
+      tags:
+        - Score
+      description: "Retrieve details of a specific validator's score'"
+      parameters:
+        - in: path
+          name: address
+          required: true
+          schema:
+            type: string
+          description: "The unique address of the validator."
+      responses:
+        '200':
+          description: "Successful response."
+        '404':
+          description: "Data not found."
+  /score/{address}/{session}:
+    get:
+      summary: "Score Data"
+      tags:
+        - Score
+      description: "Retrieve details of a specific validator's score'"
+      parameters:
+        - in: path
+          name: address
+          required: true
+          schema:
+            type: string
+          description: "The unique address of the validator."
+        - in: path
+          name: session
+          required: true
+          schema:
+            type: string
+          description: "The session of a previous score"
+      responses:
+        '200':
+          description: "Successful response."
+        '404':
+          description: "Data not found."
+
+  /delegations/{address}:
+    get:
+      summary: "Delegation Data"
+      tags:
+        - Candidates
+      description: "Retrieve details of a specific validator's delegations'"
+      parameters:
+        - in: path
+          name: address
+          required: true
+          schema:
+            type: string
+          description: "The unique address of the validator."
+      responses:
+        '200':
+          description: "Successful response."
+        '404':
+          description: "Data not found."
+
+  /opengov/votes/address/{address}:
+    get:
+      summary: "Open Gov Vote Data"
+      tags:
+        - Candidates
+      description: "Retrieve details of a specific validator's votes"
       parameters:
         - in: path
           name: address

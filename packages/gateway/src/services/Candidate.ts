@@ -47,7 +47,6 @@ export const getCandidateData = async (candidate: any): Promise<any> => {
     nextKeys: candidate.nextKeys,
     rewardDestination: candidate.rewardDestination,
     controller: candidate.controller,
-    vpn: candidate.infrastructureLocation?.vpn,
     cpu: candidate.infrastructureLocation?.cpu,
     memory: candidate.infrastructureLocation?.memory,
     coreCount: candidate.infrastructureLocation?.coreCount,

@@ -1,4 +1,4 @@
-import { logger, Constraints, queries } from "@1kv/common";
+import { Constraints, logger, queries } from "@1kv/common";
 import { SCORE_JOB, VALIDITY_JOB } from "./index";
 
 export const constraintsLabel = { label: "ConstraintsJob" };
@@ -72,23 +72,23 @@ export const scoreJob = async (constraints: Constraints.OTV) => {
 
 // Called by worker to process Job
 export const processConstraintsJob = async (job: any, otv: Constraints.OTV) => {
-  const { jobType, candidateAddress } = job.data;
+  const { jobType } = job.data;
   // logger.info(`Processing type: ${jobType}`, constraintsLabel);
   switch (jobType) {
     case VALIDITY_JOB:
-      if (candidateAddress) {
-        await candidateValidityJob(otv, candidateAddress);
-      } else {
-        await validityJob(otv);
-      }
+      // if (candidateAddress) {
+      //   await validityJob(otv);
+      // } else {
+      await validityJob(otv);
+      // }
 
       break;
     case SCORE_JOB:
-      if (candidateAddress) {
-        await individualScoreJob(otv, candidateAddress);
-      } else {
-        await scoreJob(otv);
-      }
+      // if (candidateAddress) {
+      //   await scoreJob(otv);
+      // } else {
+      await scoreJob(otv);
+      // }
       break;
   }
 };

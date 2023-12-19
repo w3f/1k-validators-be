@@ -26,7 +26,7 @@ export default class Monitor {
     try {
       latestRelease = await this.ghApi.repos.getLatestRelease({
         owner: "paritytech",
-        repo: "polkadot",
+        repo: "polkadot-sdk",
       });
     } catch {
       logger.info(

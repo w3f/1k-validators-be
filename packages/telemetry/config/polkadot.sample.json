@@ -1,4 +1,13 @@
 {
+  "db": {
+    "mongo": {
+      "uri": "mongodb://mongo:27017",
+    }
+  },
+  "server": {
+    "onlyHealth": true,
+    "port": 3302
+  },
   "telemetry": {
     "blacklistedProviders": [
       "Hetzner Online GmbH",

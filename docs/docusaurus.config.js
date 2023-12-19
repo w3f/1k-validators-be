@@ -92,11 +92,6 @@ const darkCodeTheme = require("prism-react-renderer/themes/dracula");
             position: "right",
           },
           {
-            to: "docs/api-docs",
-            label: "API Docs",
-            position: "right",
-          },
-          {
             href: "docs/terms-of-service",
             label: "Terms of Service",
             position: "right",

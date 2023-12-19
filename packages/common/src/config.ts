@@ -12,7 +12,6 @@ type CandidateConfig = {
 
 export type NominatorConfig = {
   seed: string;
-  maxNominations: number | "auto";
   isProxy?: boolean;
   proxyFor?: string;
   proxyDelay?: number;
@@ -22,7 +21,6 @@ export type ConfigSchema = {
   constraints: {
     skipConnectionTime: boolean;
     skipIdentity: boolean;
-    skipStakedDestination: boolean;
     skipClientUpgrade: boolean;
     skipUnclaimed: boolean;
     skipClaiming: boolean;
@@ -43,6 +41,7 @@ export type ConfigSchema = {
     score: string;
     eraStats: string;
     locationStats: string;
+    democracy: string;
     // chain querying crons
     eraPoints: string;
     activeValidator: string;
@@ -50,9 +49,6 @@ export type ConfigSchema = {
     sessionKey: string;
     unclaimedEras: string;
     validatorPref: string;
-    council: string;
-    subscan: string;
-    democracy: string;
     nominator: string;
     delegation: string;
     block: string;
@@ -65,9 +61,6 @@ export type ConfigSchema = {
   global: {
     dryRun: boolean;
     networkPrefix: 0 | 2 | 3;
-    test: boolean;
-    retroactive: boolean;
-    historicalNominations: boolean;
     apiEndpoints: string[];
     bootstrap: boolean;
     kusamaBootstrapEndpoint: string;
@@ -99,18 +92,36 @@ export type ConfigSchema = {
     bonded: number | 0;
     faults: number | 0;
     offline: number | 0;
+    unclaimed: number | 0;
     location: number | 0;
     region: number | 0;
     country: number | 0;
     provider: number | 0;
-    council: number | 0;
-    democracy: number | 0;
     nominations: number | 0;
     delegations: number | 0;
     openGov: number | 0;
     openGovDelegation: number | 0;
     rpc: number | 0;
     client: number | 0;
+    useInclusion: boolean;
+    useSpanInclusion: boolean;
+    useDiscovered: boolean;
+    useNominated: boolean;
+    useRank: boolean;
+    useBonded: boolean;
+    useFaults: boolean;
+    useOffline: boolean;
+    useUnclaimed: boolean;
+    useLocation: boolean;
+    useRegion: boolean;
+    useCountry: boolean;
+    useProvider: boolean;
+    useNominations: boolean;
+    useDelegations: boolean;
+    useOpenGov: boolean;
+    useOpenGovDelegation: boolean;
+    useRpc: boolean;
+    useClient: boolean;
   };
   scorekeeper: {
     candidates: CandidateConfig[];
@@ -121,7 +132,11 @@ export type ConfigSchema = {
   };
   server: {
     enable: boolean;
+    onlyHealth: boolean;
+    serveDocs: boolean;
+    serveSwagger: boolean;
     port: number;
+    cache: number;
   };
   telemetry: {
     enable: boolean;

@@ -285,6 +285,10 @@ export const getIdentityName = async (address: string) => {
 export const getIdentity = async (address: string) => {
   if (!address) return;
   const superIdentity = await IdentityModel.findOne({ address: address })
+    .select({
+      _id: 0,
+      __v: 0,
+    })
     .lean()
     .exec();
   if (superIdentity) {
@@ -293,6 +297,10 @@ export const getIdentity = async (address: string) => {
     const identity = await IdentityModel.findOne({
       "subIdentities.address": address,
     })
+      .select({
+        _id: 0,
+        __v: 0,
+      })
       .lean()
       .exec();
     return identity;

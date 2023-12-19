@@ -1,6 +1,6 @@
 {
   "name": "@1kv/core",
-  "version": "2.6.97",
+  "version": "3.0.1",
   "description": "Services for running the Thousand Validator Program.",
   "main": "index.js",
   "scripts": {
@@ -26,7 +26,8 @@
     "js:start": "NODE_OPTIONS='--max-old-space-size=10096' node build/index.js start",
     "test": "ava test/*.spec.ts --timeout=10m",
     "test:api": "ts-node test/api/chaindata.ts",
-    "test:candidates": "ts-node test/validateCandidates.ts"
+    "test:candidates": "ts-node test/validateCandidates.ts",
+    "writeMatrix": "ts-node test/candidatesMatrix.ts"
   },
   "author": "Web3 Foundation <teched@web3.foundation>",
   "license": "GPL-3.0",

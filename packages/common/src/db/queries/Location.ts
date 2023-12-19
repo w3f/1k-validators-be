@@ -7,6 +7,7 @@ import {
 import { fetchLocationInfo } from "../../util";
 import { logger } from "../../index";
 import { getLatestSession } from "./Session";
+import { getCandidate } from "./Candidate";
 
 export const getAllLocations = async (address: string): Promise<any> => {
   const locations = await LocationModel.find({
@@ -26,6 +27,13 @@ export const getAllLocations = async (address: string): Promise<any> => {
     })
     .lean()
     .exec();
+  if (locations.length == 0) {
+    const candidate = await getCandidate(address);
+    if (candidate) {
+      const location = getCandidateLocation(candidate.name);
+      return location;
+    }
+  }
   return locations;
 };
 
@@ -60,7 +68,7 @@ export const getLocation = async (name: string, addr: string): Promise<any> => {
     addr,
   })
     .lean()
-    .sort("-session")
+    .sort("-updated")
     .limit(1)
     .exec();
   if (!data || data.length == 0) {
@@ -68,7 +76,7 @@ export const getLocation = async (name: string, addr: string): Promise<any> => {
       name,
     })
       .lean()
-      .sort("-session")
+      .sort("-updated")
       .limit(1)
       .exec();
   }

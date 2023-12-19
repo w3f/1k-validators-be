@@ -14,7 +14,6 @@ import {
 import Claimer from "./claimer";
 import {
   activeValidatorJob,
-  councilJob,
   delegationJob,
   democracyJob,
   eraPointsJob,
@@ -35,8 +34,8 @@ export const cronLabel = { label: "Cron" };
 // Monitors the latest GitHub releases and ensures nodes have upgraded
 // within a timely period.
 export const startMonitorJob = async (config: Config.ConfigSchema) => {
-  const monitorFrequency = config.cron.monitor
-    ? config.cron.monitor
+  const monitorFrequency = config.cron?.monitor
+    ? config.cron?.monitor
     : Constants.MONITOR_CRON;
 
   logger.info(
@@ -46,9 +45,7 @@ export const startMonitorJob = async (config: Config.ConfigSchema) => {
 
   const monitorCron = new CronJob(monitorFrequency, async () => {
     logger.info(
-      `Monitoring the node version by polling latst GitHub releases every ${
-        config.global.test ? "three" : "fifteen"
-      } minutes.`,
+      `Monitoring the node version by polling latest Github releases.`,
       cronLabel
     );
     await monitorJob();
@@ -167,8 +164,8 @@ export const startExecutionJob = async (
   config: Config.ConfigSchema,
   bot: any
 ) => {
-  const timeDelayBlocks = config.proxy.timeDelayBlocks
-    ? Number(config.proxy.timeDelayBlocks)
+  const timeDelayBlocks = config.proxy?.timeDelayBlocks
+    ? Number(config.proxy?.timeDelayBlocks)
     : Number(Constants.TIME_DELAY_BLOCKS);
   const executionFrequency = config.cron?.execution
     ? config.cron?.execution
@@ -330,8 +327,8 @@ export const startRewardClaimJob = async (
   bot: any
 ) => {
   if (config.constraints.skipClaiming) return;
-  const rewardClaimingFrequency = config.cron.rewardClaiming
-    ? config.cron.rewardClaiming
+  const rewardClaimingFrequency = config.cron?.rewardClaiming
+    ? config.cron?.rewardClaiming
     : Constants.REWARD_CLAIMING_CRON;
 
   logger.info(
@@ -408,8 +405,8 @@ export const startCancelCron = async (
   chaindata: ChainData,
   bot: any
 ) => {
-  const cancelFrequency = config.cron.cancel
-    ? config.cron.cancel
+  const cancelFrequency = config.cron?.cancel
+    ? config.cron?.cancel
     : Constants.CANCEL_CRON;
 
   logger.info(
@@ -508,8 +505,8 @@ export const startStaleNominationCron = async (
   chaindata: ChainData,
   bot: any
 ) => {
-  const staleFrequency = config.cron.stale
-    ? config.cron.stale
+  const staleFrequency = config.cron?.stale
+    ? config.cron?.stale
     : Constants.STALE_CRON;
 
   logger.info(
@@ -570,8 +567,8 @@ export const startEraPointsJob = async (
   config: Config.ConfigSchema,
   chaindata: ChainData
 ) => {
-  const eraPointsFrequency = config.cron.eraPoints
-    ? config.cron.eraPoints
+  const eraPointsFrequency = config.cron?.eraPoints
+    ? config.cron?.eraPoints
     : Constants.ERA_POINTS_CRON;
 
   logger.info(
@@ -607,8 +604,8 @@ export const startActiveValidatorJob = async (
   config: Config.ConfigSchema,
   chaindata: ChainData
 ) => {
-  const activeValidatorFrequency = config.cron.activeValidator
-    ? config.cron.activeValidator
+  const activeValidatorFrequency = config.cron?.activeValidator
+    ? config?.cron?.activeValidator
     : Constants.ACTIVE_VALIDATOR_CRON;
 
   logger.info(
@@ -641,8 +638,8 @@ export const startInclusionJob = async (
   config: Config.ConfigSchema,
   chaindata: ChainData
 ) => {
-  const inclusionFrequency = config.cron.inclusion
-    ? config.cron.inclusion
+  const inclusionFrequency = config.cron?.inclusion
+    ? config.cron?.inclusion
     : Constants.INCLUSION_CRON;
 
   logger.info(
@@ -673,8 +670,8 @@ export const startSessionKeyJob = async (
   config: Config.ConfigSchema,
   chaindata: ChainData
 ) => {
-  const sessionKeyFrequency = config.cron.sessionKey
-    ? config.cron.sessionKey
+  const sessionKeyFrequency = config.cron?.sessionKey
+    ? config.cron?.sessionKey
     : Constants.SESSION_KEY_CRON;
 
   logger.info(
@@ -705,8 +702,8 @@ export const startUnclaimedEraJob = async (
   config: Config.ConfigSchema,
   chaindata: ChainData
 ) => {
-  const unclaimedErasFrequency = config.cron.unclaimedEras
-    ? config.cron.unclaimedEras
+  const unclaimedErasFrequency = config?.cron?.unclaimedEras
+    ? config?.cron?.unclaimedEras
     : Constants.UNCLAIMED_ERAS_CRON;
 
   logger.info(
@@ -742,8 +739,8 @@ export const startValidatorPrefJob = async (
   config: Config.ConfigSchema,
   chaindata: ChainData
 ) => {
-  const validatorPrefFrequency = config.cron.validatorPref
-    ? config.cron.validatorPref
+  const validatorPrefFrequency = config.cron?.validatorPref
+    ? config.cron?.validatorPref
     : Constants.VALIDATOR_PREF_CRON;
 
   logger.info(
@@ -774,8 +771,8 @@ export const startLocationStatsJob = async (
   config: Config.ConfigSchema,
   chaindata: ChainData
 ) => {
-  const locationStatsFrequency = config.cron.locationStats
-    ? config.cron.locationStats
+  const locationStatsFrequency = config.cron?.locationStats
+    ? config.cron?.locationStats
     : Constants.LOCATION_STATS_CRON;
 
   logger.info(
@@ -801,77 +798,13 @@ export const startLocationStatsJob = async (
   locationStatsCron.start();
 };
 
-// Chron job for council and election info
-export const startCouncilJob = async (
-  config: Config.ConfigSchema,
-  chaindata: ChainData
-) => {
-  const councilFrequency = config.cron.council
-    ? config.cron.council
-    : Constants.COUNCIL_CRON;
-
-  logger.info(
-    `Running council cron with frequency: ${councilFrequency}`,
-    cronLabel
-  );
-
-  let running = false;
-
-  const councilCron = new CronJob(councilFrequency, async () => {
-    if (running) {
-      return;
-    }
-    running = true;
-    logger.info(`running council job....`, cronLabel);
-
-    // Run the active validators job
-    const hasFinished = await councilJob(chaindata);
-    if (hasFinished) {
-      running = false;
-    }
-  });
-  councilCron.start();
-};
-
-// Chron job for querying subscan data
-// export const startSubscanJob = async (
-//   config: Config.ConfigSchema,
-//   db: Db,
-//   subscan: Subscan
-// ) => {
-//   const subscanFrequency = config.cron.subscan
-//     ? config.cron.subscan
-//     : Constants.SUBSCAN_CRON;
-//
-//   logger.info(
-//     `(cron::subscanJob::init) Running council cron with frequency: ${subscanFrequency}`
-//   );
-//
-//   let running = false;
-//
-//   const subscanCron = new CronJob(subscanFrequency, async () => {
-//     if (running) {
-//       return;
-//     }
-//     running = true;
-//     logger.info(`{cron::subscanJob::start} running subscan job....`);
-//
-//     const candidates = await db.allCandidates();
-//
-//     // Run the subscan  job
-//     await subscanJob(db, subscan, candidates);
-//     running = false;
-//   });
-//   subscanCron.start();
-// };
-
 // Chron job for querying democracy data
 export const startDemocracyJob = async (
   config: Config.ConfigSchema,
   chaindata: ChainData
 ) => {
-  const democracyFrequency = config.cron.democracy
-    ? config.cron.democracy
+  const democracyFrequency = config?.cron?.democracy
+    ? config?.cron?.democracy
     : Constants.DEMOCRACY_CRON;
 
   logger.info(
@@ -902,8 +835,8 @@ export const startNominatorJob = async (
   config: Config.ConfigSchema,
   chaindata: ChainData
 ) => {
-  const nominatorFrequency = config.cron.nominator
-    ? config.cron.nominator
+  const nominatorFrequency = config.cron?.nominator
+    ? config.cron?.nominator
     : Constants.NOMINATOR_CRON;
 
   logger.info(
@@ -934,8 +867,8 @@ export const startDelegationJob = async (
   config: Config.ConfigSchema,
   chaindata: ChainData
 ) => {
-  const delegationFrequency = config.cron.delegation
-    ? config.cron.delegation
+  const delegationFrequency = config.cron?.delegation
+    ? config.cron?.delegation
     : Constants.DELEGATION_CRON;
 
   logger.info(
@@ -966,8 +899,8 @@ export const startBlockDataJob = async (
   config: Config.ConfigSchema,
   chaindata: ChainData
 ) => {
-  const blockFrequency = config.cron.block
-    ? config.cron.block
+  const blockFrequency = config.cron?.block
+    ? config.cron?.block
     : Constants.BLOCK_CRON;
 
   logger.info(

@@ -4,7 +4,8 @@ const RewardRecordScheme = new Schema({
   // Era
   era: { type: String, index: true },
   // reward for era
-  reward: String,
+  reward: Number,
+  block: Number,
 });
 
 export const AccountingSchema = new Schema({
@@ -173,6 +174,15 @@ export const NominatorStakeModel = mongoose.model(
   NominatorStakeSchema
 );
 
+export const UpdatingDelegations = new Schema({
+  isUpdating: Boolean,
+});
+
+export const UpdatingDelegationsModel = mongoose.model(
+  "UpdatingDelegations",
+  UpdatingDelegations
+);
+
 export const DelegationSchema = new Schema({
   validator: String,
   totalBalance: Number,
@@ -218,8 +228,6 @@ export const CandidateSchema = new Schema({
   nodeRefs: Number,
   // The name registered on the candidates list.
   name: { type: String, index: true },
-  // The inherited telemetry details.
-  telemetryDetails: [],
   // Stores the version string directly.
   version: String,
   // The origin of the node's connection time (timestamp in ms).
@@ -1262,3 +1270,93 @@ export const HeartbeatIndexModel = mongoose.model(
   "HeartbeatIndex",
   HeartbeatIndex
 );
+
+export const Validator = new Schema({
+  address: { type: String, index: true },
+  keys: {
+    grandpa: { type: String },
+    babe: { type: String },
+    imOnline: { type: String },
+    paraValidator: { type: String },
+    authorityDiscovery: { type: String },
+    beefy: { type: String },
+    paraAssignment: { type: String },
+  },
+});
+
+export const ValidatorModel = mongoose.model("Validator", Validator);
+
+export const BeefyStats = new Schema({
+  totalValidators: Number,
+  totalActiveValidators: Number,
+  totalBeefyValidators: Number,
+  totalActiveBeefyValidators: Number,
+});
+
+export const BeefyStatsModel = mongoose.model("BeefyStats", BeefyStats);
+
+export const PayoutTransaction = new Schema({
+  validator: { type: String, index: true },
+  era: { type: Number, index: true },
+  submitter: String,
+  blockHash: String,
+  blockNumber: Number,
+  timestamp: Number,
+});
+
+export const PayoutTransactionModel = mongoose.model(
+  "PayoutTransaction",
+  PayoutTransaction
+);
+
+export const Reward = new Schema({
+  role: String,
+  exposurePercentage: Number,
+  exposure: Number,
+  totalStake: Number,
+  commission: Number,
+  era: { type: Number, index: true },
+  validator: { type: String, index: true },
+  nominator: { type: String, index: true },
+  rewardAmount: String,
+  rewardDestination: String,
+  erasMinStake: Number,
+  validatorStakeEfficiency: Number,
+  blockHash: String,
+  blockNumber: Number,
+  timestamp: Number,
+  date: String,
+  chf: Number,
+  usd: Number,
+  eur: Number,
+});
+
+export const RewardModel = mongoose.model("Reward", Reward);
+
+// Storing the earliest and latest block that has been indexed
+export const BlockIndex = new Schema({
+  latest: Number,
+  earliest: Number,
+});
+
+export const BlockIndexModel = mongoose.model("BlockIndex", BlockIndex);
+
+export const OfflineEvent = new Schema({
+  validator: { type: String, index: true },
+  era: { type: Number, index: true },
+  session: { type: Number, index: true },
+  blockNumber: Number,
+  blockHash: String,
+});
+
+export const OfflineEventModel = mongoose.model("OfflineEvent", OfflineEvent);
+
+export const Price = new Schema({
+  network: String,
+  date: String,
+  chf: Number,
+  usd: Number,
+  eur: Number,
+});
+
+export const PriceModel = mongoose.model("Price", Price);

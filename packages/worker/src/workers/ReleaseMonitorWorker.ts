@@ -12,7 +12,7 @@ export const createReleaseMonitorWorker = async (host, port) => {
         host: host,
         port: port,
       },
-      concurrency: 50,
+      concurrency: 4,
       lockDuration: 300000,
     }
   );

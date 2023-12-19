@@ -1,7 +1,7 @@
 ---
 id: backend
 title: Backend
-sidebar_label: Backend
+sidebar_label: Backend Overview
 description: Backend Documentation
 keywords: [backend]
 slug: ../backend
@@ -12,20 +12,20 @@ import { ProgrammeName } from '../../components/ProgrammeName';
 
 :::info <ProgrammeName/> Backend
 
-A monorepo containing TypeScript microservices for the Thousand Validators Program.
+A monorepo containing TypeScript microservices for the <ProgrammeName/>.
 
 :::
 
 # Overview
 
-The following is a monorepo of packages for the Thousand Validators Program. Each package is a microservice that can be run independently or together with other microservices.
+> A monorepo containing TypeScript microservices
 
 The monorepo is managed using Yarn workspaces, and contains the following packages:
 - [`packages/common`](packages/common): A package containing common code shared across all microservices.
 - [`packages/core`](packages/core): A package containing the core logic of the Thousand Validators Program.
 - [`packages/gateway`](packages/gateway): A package for an API gateway that exposes the backend with a REST API.
 - [`packages/telemetry`](packages/telemetry): A package for a telemetry client that monitors uptime
-- [`]packages/worker`](packages/worker): A packages for job queue workers that perform background tasks.
+- [`packages/worker`](packages/worker): A packages for job queue workers that perform background tasks.
 
 
 
@@ -81,6 +81,7 @@ Ensure the following are installed on your machine:
 - [Node.js](https://nodejs.org/en/) (v12 or higher)
 - [Yarn](https://yarnpkg.com/) (v1.22 or higher)
 - [Docker](https://www.docker.com/) (v19 or higher)
+
 
 ### Yarn Installation & Docker Scripts (All in One)
 
@@ -183,7 +184,7 @@ Either is from the same `docker-compose.current.yml` file, and runs only the `co
 
 Build and run as detached daemon:
 ```bash
-docker-compose -f docker-compose.current.yml up -d --build
+docker compose -f docker-compose.current.yml up -d --build
 ```
 
 #### Running `Kusama Microservice` or `Polkadot Microservice`:
@@ -192,7 +193,7 @@ Either is from the same `docker-compose.microservice.yml` file. This runs `core`
 
 Build and run as detached daemon:
 ```bash
-docker-compose -f docker-compose.microservice.yml up -d --build
+docker compose -f docker-compose.microservice.yml up -d --build
 ```
 
 #### Running `Kusama Current Dev`, `Polkadot Current Dev`, `Kusama Microservice Dev`, or `Polkadot Microservice Dev`
@@ -201,7 +202,7 @@ Either is from the same `docker-compose.yml` file.
 
 Build and run as detached daemon:
 ```bash
-docker-compose -f docker-compose.yml up -d --build
+docker compose -f docker-compose.yml up -d --build
 ```
 
 
@@ -216,7 +217,7 @@ yarn docker:logs
 or
 
 ```bash
-docker-compose logs -f       
+docker compose logs -f       
 ```
 
 To view the logs of an individual service:

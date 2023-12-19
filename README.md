@@ -90,42 +90,6 @@ Ensure the following are installed on your machine:
 - [Yarn](https://yarnpkg.com/) (v1.22 or higher)
 - [Docker](https://www.docker.com/) (v19 or higher)
 
-For Ubuntu for example:
-
-Install NPM & Yarn:
-```bash
-sudo apt-get install npm
-sudo npm install --global yarn
-```
-
-Setup Docker `apt` repository:
-```bash
-# Add Docker's official GPG key:
-sudo apt-get update
-sudo apt-get install ca-certificates curl gnupg
-sudo install -m 0755 -d /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-sudo chmod a+r /etc/apt/keyrings/docker.gpg
-
-# Add the repository to Apt sources:
-echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-sudo apt-get update
-```
-
-Install Docker:
-```bash
-sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-```
-
-Post Docker installation steps:
-```bash
-sudo groupadd docker
-sudo usermod -aG docker $USER
-newgrp docker
-```
 
 ### Yarn Installation & Docker Scripts (All in One)
 
@@ -228,7 +192,7 @@ Either is from the same `docker-compose.current.yml` file, and runs only the `co
 
 Build and run as detached daemon:
 ```bash
-docker-compose -f docker-compose.current.yml up -d --build
+docker compose -f docker-compose.current.yml up -d --build
 ```
 
 #### Running `Kusama Microservice` or `Polkadot Microservice`:
@@ -237,7 +201,7 @@ Either is from the same `docker-compose.microservice.yml` file. This runs `core`
 
 Build and run as detached daemon:
 ```bash
-docker-compose -f docker-compose.microservice.yml up -d --build
+docker compose -f docker-compose.microservice.yml up -d --build
 ```
 
 #### Running `Kusama Current Dev`, `Polkadot Current Dev`, `Kusama Microservice Dev`, or `Polkadot Microservice Dev`
@@ -246,7 +210,7 @@ Either is from the same `docker-compose.yml` file.
 
 Build and run as detached daemon:
 ```bash
-docker-compose -f docker-compose.yml up -d --build
+docker compose -f docker-compose.yml up -d --build
 ```
 
 
@@ -261,7 +225,7 @@ yarn docker:logs
 or
 
 ```bash
-docker-compose logs -f       
+docker compose logs -f       
 ```
 
 To view the logs of an individual service:

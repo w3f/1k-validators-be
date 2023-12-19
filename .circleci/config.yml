@@ -193,16 +193,16 @@ workflows:
           filters:
             tags:
               only: /.*/
-#      - buildTelemetryImage:
-#          context: dockerhub-bot
-#          filters:
-#            tags:
-#              only: /.*/
-#      - buildWorkerImage:
-#          context: dockerhub-bot
-#          filters:
-#            tags:
-#              only: /.*/
+      - buildTelemetryImage:
+          context: dockerhub-bot
+          filters:
+            tags:
+              only: /.*/
+      - buildWorkerImage:
+          context: dockerhub-bot
+          filters:
+            tags:
+              only: /.*/
       - integrationTests:
           filters:
             tags:
@@ -229,24 +229,24 @@ workflows:
               only: /v[0-9]+(\.[0-9]+)*/
           requires:
             - integrationTests
-#      - publishTelemetryImage:
-#          context: dockerhub-bot
-#          filters:
-#            branches:
-#              ignore: /.*/
-#            tags:
-#              only: /v[0-9]+(\.[0-9]+)*/
-#          requires:
-#            - integrationTests
-#      - publishWorkerImage:
-#          context: dockerhub-bot
-#          filters:
-#            branches:
-#              ignore: /.*/
-#            tags:
-#              only: /v[0-9]+(\.[0-9]+)*/
-#          requires:
-#            - integrationTests
+      - publishTelemetryImage:
+          context: dockerhub-bot
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*/
+          requires:
+            - integrationTests
+      - publishWorkerImage:
+          context: dockerhub-bot
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*/
+          requires:
+            - integrationTests
       - publishChart:
           context: github-bot
           filters:

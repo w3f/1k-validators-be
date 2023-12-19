@@ -1,4 +1,4 @@
-import { logger, queries, ChainData, Types } from "@1kv/common";
+import { ChainData, logger, queries, Types } from "@1kv/common";
 
 export const activeLabel = { label: "ActiveValidatorJob" };
 
@@ -7,15 +7,17 @@ export const individualActiveValidatorJob = async (
   candidate: Types.CandidateData
 ) => {
   const latestValidatorSet = await queries.getLatestValidatorSet();
-  // Set if the validator is active in the set
-  const active = latestValidatorSet.validators.includes(candidate.stash);
-  const changed = candidate.active != active;
-  if (changed) {
-    // logger.info(
-    //   `${candidate.name} changed from being ${candidate.active} to ${active}`
-    // );
+  if (latestValidatorSet) {
+    // Set if the validator is active in the set
+    const active = latestValidatorSet?.validators?.includes(candidate.stash);
+    const changed = candidate.active != active;
+    if (changed) {
+      // logger.info(
+      //   `${candidate.name} changed from being ${candidate.active} to ${active}`
+      // );
+    }
+    await queries.setActive(candidate.stash, active);
   }
-  await queries.setActive(candidate.stash, active);
 };
 
 export const activeValidatorJob = async (chaindata: ChainData) => {
@@ -30,6 +32,7 @@ export const activeValidatorJob = async (chaindata: ChainData) => {
 
   const candidates = await queries.allCandidates();
   for (const candidate of candidates) {
+    await individualActiveValidatorJob(chaindata, candidate);
   }
 
   const end = Date.now();

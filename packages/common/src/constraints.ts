@@ -600,7 +600,7 @@ export class OTV implements Constraints {
     });
     // Scale the location value to between the 10th and 95th percentile
     const scaledLocation =
-      scaledDefined(candidateLocation, locationValues, 0.1, 0.95) || 0;
+      scaledDefined(candidateLocation, locationValues, 0.15, 0.9) || 0;
     const locationScore = bannedProvider
       ? 0
       : candidate.location == "No Location"
@@ -619,7 +619,7 @@ export class OTV implements Constraints {
     });
     // Scale the value to between the 10th and 95th percentile
     const scaledRegion =
-      scaledDefined(candidateRegion, regionValues, 0.2, 0.8) || 0;
+      scaledDefined(candidateRegion, regionValues, 0.15, 0.9) || 0;
     const regionScore = bannedProvider
       ? 0
       : candidate.location == "No Location"
@@ -714,18 +714,29 @@ export class OTV implements Constraints {
     // const delegationScore = scaledDelegations * this.DELEGATIONS_WEIGHT;
 
     let openGovDelegationScore = 0;
-    const openGovDelegation = await getLargestOpenGovDelegationAddress(
-      candidate.stash
-    );
-    const scaledOpenGovDelegations =
-      scaledDefined(
-        openGovDelegation.totalBalance,
-        openGovDelegationStats.values,
-        0.1,
-        0.6
-      ) || 0;
-    openGovDelegationScore =
-      scaledOpenGovDelegations * this.OPENGOV_DELEGATION_WEIGHT;
+    const isDelegationsUpdating = await queries.getUpdatingDelegations();
+    if (!isDelegationsUpdating) {
+      const openGovDelegation = await getLargestOpenGovDelegationAddress(
+        candidate.stash
+      );
+      const scaledOpenGovDelegations =
+        scaledDefined(
+          openGovDelegation.totalBalance,
+          openGovDelegationStats.values,
+          0.1,
+          0.6
+        ) || 0;
+      openGovDelegationScore =
+        scaledOpenGovDelegations * this.OPENGOV_DELEGATION_WEIGHT;
+    } else {
+      logger.info(
+        `Delegations are updating... defaulting ${candidate.name} - ${candidate.stash} to prev delegation score`,
+        constraintsLabel
+      );
+      // If delegations are updating, set the score to what it previously was
+      const score = await queries.getLatestValidatorScore(candidate.stash);
+      openGovDelegationScore = score?.openGovDelegations || 0;
+    }
 
     // Score the council backing weight based on what percentage of their staking bond it is
     // const denom = await this.chaindata.getDenom();

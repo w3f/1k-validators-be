@@ -21,6 +21,7 @@ import {
   OpenGovVoterModel,
   ReferendumModel,
   ReferendumVoteModel,
+  UpdatingDelegationsModel,
 } from "../models";
 import {
   getIdentity,
@@ -1316,6 +1317,14 @@ export const getOpenGovVoter = async (address) => {
 
 export const getOpenGovDelegationTrack = async (track) => {
   return await OpenGovDelegationModel.find({ track: track }).lean().exec();
+};
+
+export const setUpdatingDelegations = async (isUpdating) => {
+  await UpdatingDelegationsModel.findOneAndUpdate({}, isUpdating);
+};
+
+export const getUpdatingDelegations = async () => {
+  return await UpdatingDelegationsModel.findOne({});
 };
 
 export const addOpenGovDelegation = async (

@@ -2670,10 +2670,10 @@ export class ChainData {
       logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
       return;
     }
-    const society = await this.api.query.society.members();
+    const society = await this.api.query.society.members.keys();
     //@ts-ignore
     return society.map((address) => {
-      return address.toString();
+      return address.toHuman()[0];
     });
   };
 

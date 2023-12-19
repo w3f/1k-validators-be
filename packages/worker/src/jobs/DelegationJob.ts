@@ -7,11 +7,13 @@ export const delegationJob = async (chaindata: ChainData) => {
 
   try {
     const delegations = await chaindata.getOpenGovDelegations();
+    await queries.setUpdatingDelegations(true);
     await queries.wipeOpenGovDelegations();
     logger.info(`Adding ${delegations.length} delegations`, delegationLabel);
     for (const delegation of delegations) {
       await queries.addOpenGovDelegation(delegation);
     }
+    await queries.setUpdatingDelegations(false);
   } catch (e) {
     logger.error(`Could not query delegations`, delegationLabel);
     logger.error(e, delegationLabel);

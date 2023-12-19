@@ -9,6 +9,7 @@ export const getCandidateData = async (candidate: any): Promise<any> => {
   const openGovDelegations = await queries.getLargestOpenGovDelegationAddress(
     candidate.stash
   );
+  const nominations = await queries.getLatestNominatorStake(candidate.stash);
   return {
     discoveredAt: candidate.discoveredAt,
     nominatedAt: candidate.nominatedAt,
@@ -34,8 +35,6 @@ export const getCandidateData = async (candidate: any): Promise<any> => {
     provider: candidate.infrastructureLocation?.provider
       ? candidate.infrastructureLocation?.provider
       : "No Provider",
-    democracyVoteCount: candidate.democracyVoteCount,
-    democracyVotes: candidate.democracyVotes,
     convictionVotes: candidate.convictionVotes
       ? candidate.convictionVotes.sort((a, b) => a - b)
       : [],
@@ -48,13 +47,18 @@ export const getCandidateData = async (candidate: any): Promise<any> => {
     nextKeys: candidate.nextKeys,
     rewardDestination: candidate.rewardDestination,
     controller: candidate.controller,
-    vpn: candidate.infrastructureLocation?.vpn,
     cpu: candidate.infrastructureLocation?.cpu,
     memory: candidate.infrastructureLocation?.memory,
     coreCount: candidate.infrastructureLocation?.coreCount,
     vm: candidate.infrastructureLocation?.vm,
     region: candidate.infrastructureLocation?.region,
     country: candidate.infrastructureLocation?.country,
+    nominations: {
+      totalStake: nominations?.totalStake,
+      inactiveStake: nominations?.inactiveStake,
+      activeNominators: nominations?.activeNominators?.length,
+      inactiveNominators: nominations?.inactiveNominators?.length,
+    },
   };
 };
 

@@ -604,8 +604,8 @@ export const startActiveValidatorJob = async (
   config: Config.ConfigSchema,
   chaindata: ChainData
 ) => {
-  const activeValidatorFrequency = config.cron.activeValidator
-    ? config.cron.activeValidator
+  const activeValidatorFrequency = config.cron?.activeValidator
+    ? config?.cron?.activeValidator
     : Constants.ACTIVE_VALIDATOR_CRON;
 
   logger.info(

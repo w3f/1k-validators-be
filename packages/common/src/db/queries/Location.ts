@@ -68,7 +68,7 @@ export const getLocation = async (name: string, addr: string): Promise<any> => {
     addr,
   })
     .lean()
-    .sort("-session")
+    .sort("-updated")
     .limit(1)
     .exec();
   if (!data || data.length == 0) {
@@ -76,7 +76,7 @@ export const getLocation = async (name: string, addr: string): Promise<any> => {
       name,
     })
       .lean()
-      .sort("-session")
+      .sort("-updated")
       .limit(1)
       .exec();
   }

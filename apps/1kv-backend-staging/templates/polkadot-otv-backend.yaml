@@ -17,7 +17,7 @@ spec:
   source:
     repoURL: https://w3f.github.io/helm-charts/
     chart: otv-backend
-    targetRevision: ^v3.0.0
+    targetRevision: ^v3.0.1
     plugin:
       env:
         - name: HELM_VALUES
@@ -42,9 +42,6 @@ spec:
                 "global": {
                   "dryRun": false,
                   "networkPrefix": 0,
-                  "test": false,
-                  "retroactive": false,
-                  "historicalNominations": false,
                   "apiEndpoints": [
                     "wss://rpc.polkadot.io",
                     "wss://polkadot.api.onfinality.io/public-ws",
@@ -55,7 +52,6 @@ spec:
                 "constraints": {
                   "skipConnectionTime": false,
                   "skipIdentity": false,
-                  "skipStakedDestination": true,
                   "skipClientUpgrade": false,
                   "forceClientVersion": "v0.9.39",
                   "skipUnclaimed": true,
@@ -104,8 +100,4 @@ spec:
                   ],
                   "host": "wss://telemetry-backend.w3f.community/feed"
                 },
-                "subscan": {
-                    "baseV1Url": "https://polkadot.api.subscan.io/api/scan",
-                    "baseV2Url": "https://polkadot.api.subscan.io/api/v2/scan"
-                }
               }

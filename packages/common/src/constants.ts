@@ -137,16 +137,10 @@ export const INCLUSION_CRON = "0 0-59/35 * * * *";
 export const UNCLAIMED_ERAS_CRON = "0 0 0-23/1 * * *";
 
 // Validator Pref Cron Job. This runs every 15 minutes by default
-export const VALIDATOR_PREF_CRON = "0 0-59/15 * * * *";
+export const VALIDATOR_PREF_CRON = "0 0-59/3 * * * *";
 
 // Sesion Key Cron Job. This runs every 45 minutes by default
 export const SESSION_KEY_CRON = "0 0-59/45 * * * *";
-
-// Council Cron Job. This runs every 15 minutes by default
-export const COUNCIL_CRON = "0 0-59/25 * * * *";
-
-// Subscan Cron Job. This runs every 10 minutes by default
-export const SUBSCAN_CRON = "0 0-59/10 * * * *";
 
 // Democracy Cron Job. This runs every 15 minutes by default
 export const DEMOCRACY_CRON = "0 0-59/5 * * * *";
@@ -155,7 +149,7 @@ export const DEMOCRACY_CRON = "0 0-59/5 * * * *";
 export const NOMINATOR_CRON = "0 0-59/17 * * * *";
 
 // Delegation Cron Job. This runs every 20 minutes by default
-export const DELEGATION_CRON = "0 0-59/5 * * * *";
+export const DELEGATION_CRON = "0 0-59/2 * * * *";
 
 export const BLOCK_CRON = "0 0-59/1 * * * *";
 

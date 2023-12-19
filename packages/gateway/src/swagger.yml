@@ -4,12 +4,18 @@ info:
   description: This is a sample API to demonstrate Swagger documentation
   version: "1.0.0"
 servers:
-  - url: http://localhost:3301
-    description: Local server
+
   - url: https://kusama.w3f.community/
     description: Kusama
   - url: https://polkadot.w3f.community/
     description: Polkadot
+  - url: https://kusama-staging.w3f.community/
+    description: Kusama Staging
+  - url: https://polkadot-staging.w3f.community/
+    description: Polkadot Staging
+  - url: http://localhost:3301
+    description: Local server
+
 
 tags:
   - name: Candidates

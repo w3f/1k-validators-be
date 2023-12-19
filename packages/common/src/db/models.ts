@@ -174,6 +174,15 @@ export const NominatorStakeModel = mongoose.model(
   NominatorStakeSchema
 );
 
+export const UpdatingDelegations = new Schema({
+  isUpdating: Boolean,
+});
+
+export const UpdatingDelegationsModel = mongoose.model(
+  "UpdatingDelegations",
+  UpdatingDelegations
+);
+
 export const DelegationSchema = new Schema({
   validator: String,
   totalBalance: Number,

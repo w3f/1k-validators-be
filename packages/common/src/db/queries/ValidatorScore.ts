@@ -106,17 +106,20 @@ export const getValidatorScore = async (
   address: string,
   session: number
 ): Promise<any> => {
-  return ValidatorScoreModel.findOne({
-    address: address,
-    session: session,
-  }).lean();
+  return ValidatorScoreModel.findOne(
+    {
+      address: address,
+      session: session,
+    },
+    { _id: 0, __v: 0 }
+  ).lean();
 };
 
 export const getLatestValidatorScore = async (
   address: string
 ): Promise<any> => {
   return (
-    await ValidatorScoreModel.find({ address: address })
+    await ValidatorScoreModel.find({ address: address }, { _id: 0, __v: 0 })
       .sort({ session: -1 })
       .limit(1)
       .lean()

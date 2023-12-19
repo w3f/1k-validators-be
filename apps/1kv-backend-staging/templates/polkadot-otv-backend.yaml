@@ -99,5 +99,5 @@ spec:
                     "Contabo GmbH"
                   ],
                   "host": "wss://telemetry-backend.w3f.community/feed"
-                },
+                }
               }

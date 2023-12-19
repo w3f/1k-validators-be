@@ -42,9 +42,6 @@ spec:
                 "global": {
                   "dryRun": false,
                   "networkPrefix": 2,
-                  "test": false,
-                  "retroactive": false,
-                  "historicalNominations": false,
                   "apiEndpoints": [
                     "wss://kusama-rpc.polkadot.io"
                   ],
@@ -53,7 +50,6 @@ spec:
                 "constraints": {
                   "skipConnectionTime": true,
                   "skipIdentity": false,
-                  "skipStakedDestination": true,
                   "skipClientUpgrade": false,
                   "forceClientVersion": "v0.9.39",
                   "skipUnclaimed": true,
@@ -102,8 +98,4 @@ spec:
                   ],
                   "host": "wss://telemetry-backend.w3f.community/feed"
                 },
-                "subscan": {
-                    "baseV1Url": "https://kusama.api.subscan.io/api/scan",
-                    "baseV2Url": "https://kusama.api.subscan.io/api/v2/scan"
-                }
               }

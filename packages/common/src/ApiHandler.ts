@@ -26,33 +26,94 @@ class ApiHandler extends EventEmitter {
     this._registerEventHandlers(api);
   }
 
-  static async createApi(endpoints) {
-    const api = new ApiPromise({
-      provider: new WsProvider(
+  static async createApi(endpoints, reconnectTries = 0) {
+    const reconnectLock = false;
+    let api, wsProvider;
+    const healthCheck = async (api, reconnectLock) => {
+      logger.info(`Performing health check for WS Provider for rpc.`, apiLabel);
+      reconnectLock = true;
+      await sleep(6 * 1000);
+      if (api.isConnected) {
+        logger.info(`All good. Connected back to`, apiLabel);
+        reconnectLock = false;
+        return true;
+      } else {
+        logger.info(
+          `rpc endpoint still disconnected after ${6} seconds. Disconnecting `,
+          apiLabel
+        );
+        await api.disconnect();
+
+        reconnectLock = false;
+        throw new Error(`rpc endpoint still disconnected after ${6} seconds.`);
+      }
+    };
+
+    try {
+      wsProvider = new WsProvider(
         endpoints,
         undefined,
         undefined,
         POLKADOT_API_TIMEOUT
-      ),
-      // throwOnConnect: true,
-    });
-    if (api) {
+      );
+
+      api = new ApiPromise({
+        provider: new WsProvider(
+          endpoints,
+          undefined,
+          undefined,
+          POLKADOT_API_TIMEOUT
+        ),
+        // throwOnConnect: true,
+      });
+
       api
         .on("connected", () => {
           logger.info(`Connected to chain ${endpoints[0]}`, apiLabel);
         })
         .on("disconnected", async () => {
           logger.warn(`Disconnected from chain`, apiLabel);
+          if (!reconnectLock) {
+            try {
+              await healthCheck(wsProvider, reconnectLock);
+              await Promise.resolve(api);
+            } catch (error: any) {
+              await Promise.reject(error);
+            }
+          }
         })
         .on("ready", () => {
           logger.info(`API connection ready ${endpoints[0]}`, apiLabel);
         })
-        .on("error", (error) => {
+        .on("error", async (error) => {
           logger.warn("The API has an error", apiLabel);
           logger.error(error);
+          if (!reconnectLock) {
+            try {
+              await healthCheck(wsProvider, reconnectLock);
+              await Promise.resolve(api);
+            } catch (error: any) {
+              await Promise.reject(error);
+            }
+          }
         });
-      await api.isReadyOrError.catch(logger.error);
-      return api;
+
+      if (api) {
+        await api.isReadyOrError.catch(logger.error);
+
+        return api;
+      }
+    } catch (e) {
+      logger.error(`there was an error: `, apiLabel);
+      logger.error(e, apiLabel);
+      if (reconnectTries < 10) {
+        return await this.createApi(
+          endpoints.sort(() => Math.random() - 0.5),
+          reconnectTries + 1
+        );
+      } else {
+        return api;
+      }
     }
   }
 
@@ -61,6 +122,7 @@ class ApiHandler extends EventEmitter {
       const api = await this.createApi(
         endpoints.sort(() => Math.random() - 0.5)
       );
+
       return new ApiHandler(api, endpoints);
     } catch (e) {
       logger.info(`there was an error: `, apiLabel);

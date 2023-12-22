@@ -1,11 +1,12 @@
 import * as CandidateService from "../services/Candidate";
 import { response } from "./index";
 import { logger } from "@1kv/common";
+import { gatewayLabel } from "../run";
 
 export default class CandidateController {
   public static async getCandidate(context: any): Promise<void> {
     if (await context.cashed()) {
-      logger.info(`{Gateway} getCandidate is cached`);
+      logger.info(`{Gateway} getCandidate is cached`, gatewayLabel);
       return;
     }
     const address = context.params.address;
@@ -15,7 +16,7 @@ export default class CandidateController {
 
   public static async getValidCandidates(context: any): Promise<void> {
     if (await context.cashed()) {
-      logger.info(`{Gateway} getValidCandidates is cached`);
+      logger.info(`{Gateway} getValidCandidates is cached`, gatewayLabel);
       return;
     }
     response(context, 200, await CandidateService.getValidCandidates());
@@ -23,7 +24,7 @@ export default class CandidateController {
 
   public static async getInvalidCandidates(context: any): Promise<void> {
     if (await context.cashed()) {
-      logger.info(`{Gateway} getInvalidCandidates is cached`);
+      logger.info(`{Gateway} getInvalidCandidates is cached`, gatewayLabel);
       return;
     }
     response(context, 200, await CandidateService.getInvalidCandidates());
@@ -31,7 +32,7 @@ export default class CandidateController {
 
   public static async getCandidates(context: any): Promise<void> {
     if (await context.cashed()) {
-      logger.info(`{Gateway} getCandidates is cached`);
+      logger.info(`{Gateway} getCandidates is cached`, gatewayLabel);
       return;
     }
     response(context, 200, await CandidateService.getCandidates());
@@ -39,7 +40,7 @@ export default class CandidateController {
 
   public static async getNodes(context: any): Promise<void> {
     if (await context.cashed()) {
-      logger.info(`{Gateway} getNodes is cached`);
+      logger.info(`{Gateway} getNodes is cached`, gatewayLabel);
       return;
     }
     response(context, 200, await CandidateService.getNodes());
@@ -47,7 +48,7 @@ export default class CandidateController {
 
   public static async getLatestNominatorStake(context: any): Promise<void> {
     if (await context.cashed()) {
-      logger.info(`{Gateway} getLatestNominatorStake is cached`);
+      logger.info(`{Gateway} getLatestNominatorStake is cached`, gatewayLabel);
       return;
     }
 
@@ -62,7 +63,7 @@ export default class CandidateController {
 
   public static async getEraNominatorStake(context: any): Promise<void> {
     if (await context.cashed()) {
-      logger.info(`{Gateway} getEraNominatorStake is cached`);
+      logger.info(`{Gateway} getEraNominatorStake is cached`, gatewayLabel);
       return;
     }
     const { address, era } = context.params;
@@ -76,7 +77,7 @@ export default class CandidateController {
 
   public static async getLastNominatorStake(context: any): Promise<void> {
     if (await context.cashed()) {
-      logger.info(`{Gateway} getLastNominatorStake is cached`);
+      logger.info(`{Gateway} getLastNominatorStake is cached`, gatewayLabel);
       return;
     }
     const { address, limit } = context.params;

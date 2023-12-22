@@ -1,12 +1,12 @@
-import { logger, queries } from "@1kv/common";
+import { logger } from "@1kv/common";
 import { response } from "./index";
 import * as NominationService from "../services/Nomination";
-import { getLastNomination } from "../services/Nomination";
+import { gatewayLabel } from "../run";
 
 export default class NominationController {
   public static async getNominations(context: any): Promise<void> {
     if (await context.cashed()) {
-      logger.info(`{Gateway} getNominations is cached`);
+      logger.info(`{Gateway} getNominations is cached`, gatewayLabel);
       return;
     }
     response(context, 200, await NominationService.getNominations());
@@ -14,7 +14,7 @@ export default class NominationController {
 
   public static async getNominatorNominations(context: any): Promise<void> {
     if (await context.cashed()) {
-      logger.info(`{Gateway} getNominatorNominations is cached`);
+      logger.info(`{Gateway} getNominatorNominations is cached`, gatewayLabel);
       return;
     }
     const { address, last } = context.params;
@@ -27,7 +27,7 @@ export default class NominationController {
 
   public static async getLastNomination(context): Promise<void> {
     if (await context.cashed()) {
-      logger.info(`{Gateway} getLastNomination is cached`);
+      logger.info(`{Gateway} getLastNomination is cached`, gatewayLabel);
       return;
     }
     response(context, 200, await NominationService.getLastNomination());
@@ -35,7 +35,7 @@ export default class NominationController {
 
   public static async getProxyTxs(context): Promise<void> {
     if (await context.cashed()) {
-      logger.info(`{Gateway} getProxyTxs is cached`);
+      logger.info(`{Gateway} getProxyTxs is cached`, gatewayLabel);
       return;
     }
     response(context, 200, await NominationService.getProxyTxs());

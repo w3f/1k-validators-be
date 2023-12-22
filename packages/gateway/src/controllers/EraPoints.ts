@@ -1,11 +1,12 @@
 import { response } from "./index";
 import * as EraPointsService from "../services/EraPoints";
 import { logger } from "@1kv/common";
+import { gatewayLabel } from "../run";
 
 export default class EraPointsController {
   public static async getEraPoints(context: any): Promise<any> {
     if (await context.cashed()) {
-      logger.info(`{Gateway} getEraPoints is cached`);
+      logger.info(`{Gateway} getEraPoints is cached`, gatewayLabel);
       return;
     }
     const { address, last } = context.params;
@@ -14,7 +15,7 @@ export default class EraPointsController {
 
   public static async getTotalEraPoints(context: any): Promise<any> {
     if (await context.cashed()) {
-      logger.info(`{Gateway} getTotalEraPoints is cached`);
+      logger.info(`{Gateway} getTotalEraPoints is cached`, gatewayLabel);
       return;
     }
     response(context, 200, await EraPointsService.getTotalEraPoints());

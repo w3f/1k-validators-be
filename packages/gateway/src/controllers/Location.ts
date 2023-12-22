@@ -1,14 +1,17 @@
 import { response } from "./index";
 import * as LocationService from "../services/LocationService";
 import { logger } from "@1kv/common";
-import { getValidatorLocation } from "../services/LocationService";
+import { gatewayLabel } from "../run";
 
 export default class LocationController {
   public static async getLocationCurrentValidatorSet(
     context: any
   ): Promise<void> {
     if (await context.cashed(300000)) {
-      logger.info(`{Gateway} getLocationCurrentValidatorSet is cached`);
+      logger.info(
+        `{Gateway} getLocationCurrentValidatorSet is cached`,
+        gatewayLabel
+      );
       return;
     }
     response(
@@ -21,7 +24,7 @@ export default class LocationController {
   public static async getValidatorLocation(context: any): Promise<void> {
     const { address } = context.params;
     if (await context.cashed(300000)) {
-      logger.info(`{Gateway} getValidatorLocation is cached`);
+      logger.info(`{Gateway} getValidatorLocation is cached`, gatewayLabel);
       return;
     }
     response(context, 200, await LocationService.getValidatorLocation(address));
@@ -30,7 +33,7 @@ export default class LocationController {
   public static async getHeartbeatIndex(context: any): Promise<void> {
     const { address } = context.params;
     if (await context.cashed(300)) {
-      logger.info(`{Gateway} getHeartbeatIndex is cached`);
+      logger.info(`{Gateway} getHeartbeatIndex is cached`, gatewayLabel);
       return;
     }
     response(context, 200, await LocationService.getHeartbeatIndex());

@@ -3,7 +3,9 @@
     "dryRun": false,
     "networkPrefix": 2,
     "apiEndpoints": [
-      "wss://kusama-rpc.polkadot.io"
+      "wss://kusama-rpc.polkadot.io",
+      "wss://kusama-rpc.dwellir.com",
+      "wss://kusama.public.curie.radiumblock.xyz/ws"
     ],
     "bootstrap": false,
     "kusamaBootstrapEndpoint": "https://kusama.w3f.community",

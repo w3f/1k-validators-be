@@ -12,6 +12,8 @@ import {
   Util,
 } from "@1kv/common";
 
+const label = { label: "Nominator" };
+
 export default class Nominator {
   public currentlyNominating: Types.Stash[] = [];
 
@@ -48,10 +50,12 @@ export default class Nominator {
       cfg.proxyDelay == 0 ? cfg.proxyDelay : Constants.TIME_DELAY_BLOCKS;
 
     logger.info(
-      `{nominator::proxyDelay} config proxy delay: ${cfg.proxyDelay}`
+      `{nominator::proxyDelay} config proxy delay: ${cfg.proxyDelay}`,
+      label
     );
     logger.info(
-      `{nominator::proxy} nominator proxy delay: ${this._proxyDelay}`
+      `{nominator::proxy} nominator proxy delay: ${this._proxyDelay}`,
+      label
     );
 
     const keyring = new Keyring({
@@ -65,7 +69,8 @@ export default class Nominator {
     logger.info(
       `(Nominator::constructor) Nominator signer spawned: ${this.address} | ${
         this._isProxy ? "Proxy" : "Controller"
-      }`
+      }`,
+      label
     );
   }
 
@@ -90,7 +95,7 @@ export default class Nominator {
   }
 
   public async stash(): Promise<any> {
-    const api = await this.handler.getApi();
+    const api = this.handler.getApi();
     const ledger = await api.query.staking.ledger(this.controller);
     if (!ledger.isSome) {
       logger.warn(`Account ${this.controller} is not a controller account!`);
@@ -102,7 +107,7 @@ export default class Nominator {
   }
 
   public async payee(): Promise<any> {
-    const api = await this.handler.getApi();
+    const api = this.handler.getApi();
     const ledger = await api.query.staking.ledger(this.controller);
     const { stash } = ledger.unwrap();
     const payee = await api.query.staking.payee(stash);
@@ -143,20 +148,21 @@ export default class Nominator {
     const now = new Date().getTime();
 
     if (dryRun) {
-      logger.info(`DRY RUN - STUBBING TRANSACTIONS`);
+      logger.info(`DRY RUN - STUBBING TRANSACTIONS`, label);
       for (const stash of targets) {
         await queries.setTarget(this.controller, stash, now);
         await queries.setLastNomination(this.controller, now);
       }
     } else {
-      const api = await this.handler.getApi();
+      const api = this.handler.getApi();
 
       let tx: SubmittableExtrinsic<"promise">;
 
       // Start an announcement for a delayed proxy tx
       if (this._isProxy && this._proxyDelay > 0) {
         logger.info(
-          `{Nominator::nominate::proxy} starting tx for ${this.address} with proxy delay ${this._proxyDelay} blocks`
+          `{Nominator::nominate::proxy} starting tx for ${this.address} with proxy delay ${this._proxyDelay} blocks`,
+          label
         );
 
         const innerTx = api.tx.staking.nominate(targets);
@@ -179,15 +185,17 @@ export default class Nominator {
         try {
           await tx.signAndSend(this.signer);
         } catch (e) {
-          logger.info(
-            `{Nominator::nominate} there was an error sending the tx`
+          logger.error(
+            `{Nominator::nominate} there was an error sending the tx`,
+            label
           );
           logger.error(e);
         }
       } else if (this._isProxy && this._proxyDelay == 0) {
         // Start a normal proxy tx call
         logger.info(
-          `{Nominator::nominate::proxy} starting tx for ${this.address} with proxy delay ${this._proxyDelay} blocks`
+          `{Nominator::nominate::proxy} starting tx for ${this.address} with proxy delay ${this._proxyDelay} blocks`,
+          label
         );
 
         const innerTx = api.tx.staking.nominate(targets);
@@ -201,15 +209,19 @@ export default class Nominator {
         );
 
         const nominateMsg = `{Nominator::nominate::proxy} non-delay ${this.address} sent tx: ${didSend} finalized in block #${finalizedBlockHash}`;
-        logger.info(nominateMsg);
+        logger.info(nominateMsg, label);
         if (this.bot) await this.bot.sendMessage(nominateMsg);
       } else {
         // Do a non-proxy tx
         logger.info(
-          `(Nominator::nominate) Creating extrinsic Staking::nominate from ${this.address} to targets ${targets} at ${now}`
+          `(Nominator::nominate) Creating extrinsic Staking::nominate from ${this.address} to targets ${targets} at ${now}`,
+          label
         );
         tx = api.tx.staking.nominate(targets);
-        logger.info("(Nominator::nominate} Sending extrinsic to network...");
+        logger.info(
+          "(Nominator::nominate} Sending extrinsic to network...",
+          label
+        );
         await this.sendStakingTx(tx, targets);
       }
     }

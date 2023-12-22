@@ -31,10 +31,10 @@ export const addNominator = async (
   bonded: number,
   now: number,
   proxyDelay: number,
-  rewardDestination: string,
-  avgStake: number,
-  nominateAmount: number,
-  newBondedAmount: number
+  rewardDestination: string
+  // avgStake: number,
+  // nominateAmount: number,
+  // newBondedAmount: number
 ): Promise<boolean> => {
   logger.info(`(Db::addNominator) Adding ${address} at ${now}.`);
 
@@ -48,9 +48,9 @@ export const addNominator = async (
         bonded,
         proxyDelay,
         rewardDestination,
-        avgStake,
-        nominateAmount,
-        newBondedAmount,
+        // avgStake,
+        // nominateAmount,
+        // newBondedAmount,
         current: [],
         lastNomination: 0,
         createdAt: now,
@@ -70,9 +70,9 @@ export const addNominator = async (
         bonded,
         proxyDelay,
         rewardDestination,
-        avgStake,
-        nominateAmount,
-        newBondedAmount,
+        // avgStake,
+        // nominateAmount,
+        // newBondedAmount,
       }
     );
   } catch (e) {
@@ -83,9 +83,6 @@ export const addNominator = async (
     logger.info(bonded);
     logger.info(proxyDelay);
     logger.info(rewardDestination);
-    logger.info(avgStake);
-    logger.info(nominateAmount);
-    logger.info(newBondedAmount);
   }
 };
 

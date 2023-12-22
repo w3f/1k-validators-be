@@ -1,7 +1,7 @@
 {
   "db": {
     "mongo": {
-      "uri": "mongodb://mongo:27017",
+      "uri": "mongodb://mongo:27017"
     }
   },
   "server": {

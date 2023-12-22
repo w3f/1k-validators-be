@@ -74,6 +74,13 @@ export const LocalEndpoints = [
   "ws://172.28.1.4:9947",
 ];
 
+// List of log labels that are omitted from logging
+export const defaultExcludeLabels = [
+  "Telemetry",
+  "Location",
+  "ValidatorPrefJob",
+];
+
 /// Endpoint of the Kusama Thousand Validators backend. Used for the Polkadot program.
 export const KOTVBackendEndpoint = "https://kusama.w3f.community";
 

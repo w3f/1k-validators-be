@@ -334,10 +334,11 @@ export default class ScoreKeeper {
     let group = [];
     const now = Util.getNow();
     for (const nomCfg of nominatorGroup) {
+      // Create a new Nominator instance from the nominator in the config
       const nom = this._spawn(nomCfg, this.config.global.networkPrefix);
 
       // try and get the ledger for the nominator - this means it is bonded. If not then don't add it.
-      const api = await this.handler.getApi();
+      const api = this.handler.getApi();
       const ledger = await api.query.staking.ledger(nom.controller);
       if (!ledger) {
         logger.warn(
@@ -352,8 +353,8 @@ export default class ScoreKeeper {
         const proxy = nom.isProxy ? nom.address : "";
         const proxyDelay = nom.proxyDelay;
 
-        const { nominationNum, newBondedAmount, targetValStake } =
-          await autoNumNominations(api, nom);
+        // const { nominationNum, newBondedAmount, targetValStake } =
+        //   await autoNumNominations(api, nom);
         try {
           await queries.addNominator(
             nom.controller,
@@ -362,14 +363,17 @@ export default class ScoreKeeper {
             bonded,
             now,
             proxyDelay,
-            payee,
-            targetValStake,
-            nominationNum,
-            newBondedAmount
+            payee
+            // targetValStake,
+            // nominationNum,
+            // newBondedAmount
           );
         } catch (e) {
-          logger.info(JSON.stringify(e));
-          logger.info("Scorekeeper add nominator failed");
+          logger.error(JSON.stringify(e), scorekeeperLabel);
+          logger.error(
+            `Scorekeeper add nominator: ${stash} failed`,
+            scorekeeperLabel
+          );
         }
 
         // Create a new accounting record in case one doesn't exist.
@@ -648,11 +652,9 @@ export default class ScoreKeeper {
         await startValidatorPrefJob(this.config, this.chaindata);
         await startEraStatsJob(this.config, this.chaindata);
         await startLocationStatsJob(this.config, this.chaindata);
-        // await startCouncilJob(this.config, this.chaindata);
         await startDemocracyJob(this.config, this.chaindata);
         await startNominatorJob(this.config, this.chaindata);
         await startDelegationJob(this.config, this.chaindata);
-
         await startBlockDataJob(this.config, this.chaindata);
       }
 

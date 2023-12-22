@@ -27,25 +27,25 @@ class ApiHandler extends EventEmitter {
   }
 
   static async createApi(endpoints, reconnectTries = 0) {
-    const reconnectLock = false;
+    const timeout = 12;
     let api, wsProvider;
-    const healthCheck = async (api, reconnectLock) => {
+    const healthCheck = async (api) => {
       logger.info(`Performing health check for WS Provider for rpc.`, apiLabel);
-      reconnectLock = true;
-      await sleep(6 * 1000);
+
+      await sleep(timeout * 1000);
       if (api.isConnected) {
         logger.info(`All good. Connected back to`, apiLabel);
-        reconnectLock = false;
         return true;
       } else {
         logger.info(
-          `rpc endpoint still disconnected after ${6} seconds. Disconnecting `,
+          `rpc endpoint still disconnected after ${timeout} seconds. Disconnecting `,
           apiLabel
         );
         await api.disconnect();
 
-        reconnectLock = false;
-        throw new Error(`rpc endpoint still disconnected after ${6} seconds.`);
+        throw new Error(
+          `rpc endpoint still disconnected after ${timeout} seconds.`
+        );
       }
     };
 
@@ -73,13 +73,11 @@ class ApiHandler extends EventEmitter {
         })
         .on("disconnected", async () => {
           logger.warn(`Disconnected from chain`, apiLabel);
-          if (!reconnectLock) {
-            try {
-              await healthCheck(wsProvider, reconnectLock);
-              await Promise.resolve(api);
-            } catch (error: any) {
-              await Promise.reject(error);
-            }
+          try {
+            await healthCheck(wsProvider);
+            await Promise.resolve(api);
+          } catch (error: any) {
+            await Promise.reject(error);
           }
         })
         .on("ready", () => {
@@ -88,13 +86,12 @@ class ApiHandler extends EventEmitter {
         .on("error", async (error) => {
           logger.warn("The API has an error", apiLabel);
           logger.error(error);
-          if (!reconnectLock) {
-            try {
-              await healthCheck(wsProvider, reconnectLock);
-              await Promise.resolve(api);
-            } catch (error: any) {
-              await Promise.reject(error);
-            }
+          logger.warn(`attempting to reconnect to ${endpoints[0]}`, apiLabel);
+          try {
+            await healthCheck(wsProvider);
+            await Promise.resolve(api);
+          } catch (error: any) {
+            await Promise.reject(error);
           }
         });
 

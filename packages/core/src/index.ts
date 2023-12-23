@@ -11,11 +11,11 @@ import {
 } from "@1kv/common";
 import MatrixBot from "./matrix";
 import Scorekeeper from "./scorekeeper";
-import { Server } from "@1kv/gateway";
 import { TelemetryClient } from "@1kv/telemetry";
 import { startTestSetup } from "./misc/testSetup";
 
 import { startClearAccumulatedOfflineTimeJob } from "./cron";
+import { Server } from "@1kv/gateway";
 
 const isCI = process.env.CI;
 
@@ -53,6 +53,7 @@ export const createDB = async (config) => {
   try {
     logger.info(`Creating DB Connection`, winstonLabel);
     await Db.create(config.db.mongo.uri);
+    logger.info(`Connected to ${config.db.mongo.uri}`, winstonLabel);
   } catch (e) {
     logger.error(e.toString());
     process.exit(1);
@@ -64,6 +65,7 @@ export const createServer = async (config) => {
     logger.info(`Creating Server`, winstonLabel);
     const server = new Server(config);
     await server.start();
+    logger.info(`Server started at: ${config?.server?.port}`, winstonLabel);
   } catch (e) {
     logger.error(e.toString());
     process.exit(1);
@@ -73,9 +75,10 @@ export const createServer = async (config) => {
 export const createTelemetry = async (config) => {
   try {
     // Start the telemetry client.
+    logger.info(`Starting telemetry client...`, winstonLabel);
     const telemetry = new TelemetryClient(config);
     await telemetry.start();
-    logger.info(`telemetry client started.`, winstonLabel);
+    logger.info(`Telemetry client started.`, winstonLabel);
   } catch (e) {
     logger.error(e.toString());
     process.exit(1);
@@ -103,6 +106,7 @@ export const createMatrixBot = async (config) => {
 };
 
 export const initLocalDevScript = async (config) => {
+  logger.info(`Checking if chain is a test chain...`, winstonLabel);
   try {
     const chainMetadata = await queries.getChainMetadata();
     // If the chain is a test chain, init some test chain conditions
@@ -200,6 +204,7 @@ export const addCandidates = async (config) => {
 
 export const setChainMetadata = async (config) => {
   try {
+    logger.info(`Setting chain metadata`, winstonLabel);
     await queries.setChainMetadata(config.global.networkPrefix);
   } catch (e) {
     logger.error(e.toString());
@@ -234,17 +239,11 @@ const start = async (cmd: { config: string }) => {
   // Create the Database.
   await createDB(config);
 
-  // Start the API server.
-  await createServer(config);
-
-  // Init some on chain condidtions if test chain
+  // Init some on chain conditions if test chain
   await initLocalDevScript(config);
 
   // Set the chain metadata
   await setChainMetadata(config);
-
-  // Start the telemetry client.
-  await createTelemetry(config);
 
   // Create the matrix bot if enabled.
   const maybeBot = await createMatrixBot(config);

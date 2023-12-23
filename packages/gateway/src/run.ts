@@ -27,9 +27,15 @@ const start = async (cmd: { config: string }) => {
 
 const program = new Command();
 
-program
-  .option("--config <directory>", "The path to the config directory.", "config")
-  .action((cmd: { config: string }) => catchAndQuit(start(cmd)));
+if (require.main === module) {
+  program
+    .option(
+      "--config <directory>",
+      "The path to the config directory.",
+      "config"
+    )
+    .action((cmd: { config: string }) => catchAndQuit(start(cmd)));
 
-program.version(version);
-program.parse(process.argv);
+  program.version(version);
+  program.parse(process.argv);
+}

@@ -25,17 +25,22 @@ export const removeStaleNominators = async (
 
 /** Nominator accessor functions */
 export const addNominator = async (
-  address: string,
-  stash: string,
-  proxy: string,
-  bonded: number,
-  now: number,
-  proxyDelay: number,
-  rewardDestination: string
+  nominator: any
+  // address: string,
+  // stash: string,
+  // proxy: string,
+  // bonded: number,
+  // now: number,
+  // proxyDelay: number,
+  // rewardDestination: string
+
   // avgStake: number,
   // nominateAmount: number,
   // newBondedAmount: number
 ): Promise<boolean> => {
+  const { address, stash, proxy, bonded, now, proxyDelay, rewardDestination } =
+    nominator;
+
   logger.info(`(Db::addNominator) Adding ${address} at ${now}.`);
 
   try {

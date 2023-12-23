@@ -1,13 +1,14 @@
 import { response } from "./index";
 import * as ValidatorService from "../services/Validator";
 import { logger } from "@1kv/common";
+import { gatewayLabel } from "../run";
 
 const label = { label: "Gateway" };
 
 export default class ValidatorController {
   public static async getLatestValidatorSet(context: any): Promise<void> {
     if (await context.cashed()) {
-      logger.info(`{Gateway} getNominators is cached`);
+      logger.info(`{Gateway} getNominators is cached`, gatewayLabel);
       return;
     }
     response(context, 200, await ValidatorService.getLatestValidatorSet());
@@ -15,7 +16,7 @@ export default class ValidatorController {
 
   public static async getValidators(context: any): Promise<void> {
     if (await context.cashed()) {
-      logger.info(`getValdiators is cached`, label);
+      logger.info(`getValdiators is cached`, gatewayLabel);
       return;
     }
     response(context, 200, await ValidatorService.getValidators());
@@ -23,7 +24,7 @@ export default class ValidatorController {
 
   public static async getValidator(context: any): Promise<void> {
     if (await context.cashed()) {
-      logger.info(`getValdiator is cached`, label);
+      logger.info(`getValdiator is cached`, gatewayLabel);
       return;
     }
     response(

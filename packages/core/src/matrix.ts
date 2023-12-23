@@ -1,6 +1,8 @@
 import * as sdk from "matrix-js-sdk";
 import { Config, logger, queries } from "@1kv/common";
 
+const label = { label: "Matrix" };
+
 export default class MatrixBot {
   public client: any;
   public conf: Config.ConfigSchema;
@@ -11,12 +13,17 @@ export default class MatrixBot {
     userId: string,
     config: Config.ConfigSchema
   ) {
-    this.client = sdk.createClient({
-      baseUrl,
-      accessToken,
-      userId,
-    });
-    this.conf = config;
+    try {
+      this.client = sdk.createClient({
+        baseUrl,
+        accessToken,
+        userId,
+      });
+      this.conf = config;
+    } catch (e) {
+      logger.error(e.toString());
+      logger.error("MatrixBot failed to start", label);
+    }
   }
 
   async start(): Promise<void> {

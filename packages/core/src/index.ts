@@ -209,6 +209,7 @@ export const setChainMetadata = async (config) => {
 
 export const initScorekeeper = async (config, handler, maybeBot) => {
   try {
+    logger.info(`Creating Scorekeeper`, winstonLabel);
     // Set up the nominators in the scorekeeper.
     const scorekeeper = new Scorekeeper(handler, config, maybeBot);
     for (const nominatorGroup of config.scorekeeper.nominators) {
@@ -261,6 +262,12 @@ const start = async (cmd: { config: string }) => {
 
   // Add the candidates
   await addCandidates(config);
+
+  // Start the API server.
+  await createServer(config);
+
+  // Start the telemetry client.
+  await createTelemetry(config);
 
   // Start the scorekeeper
   await scorekeeper.begin();

@@ -17,7 +17,7 @@ spec:
   source:
     repoURL: https://w3f.github.io/helm-charts/
     chart: otv-backend
-    targetRevision: ^v3.0.3
+    targetRevision: ^v3.0.4
     plugin:
       env:
         - name: HELM_VALUES
@@ -66,7 +66,7 @@ spec:
                   }
                 },
                 "matrix": {
-                  "enabled": true,
+                  "enabled": false,
                   "baseUrl": "https://matrix.web3.foundation",
                   "room": {{ .Values.kusama.be.matrix.room | quote}},
                   "userId": {{ .Values.kusama.be.matrix.userId | quote}}

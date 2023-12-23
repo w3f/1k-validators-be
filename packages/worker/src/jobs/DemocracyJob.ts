@@ -251,9 +251,14 @@ export const democracyStatsJob = async (chaindata) => {
     const { allValidators: validators, chainValidators } =
       await getValidatorAddresses(chaindata);
     const nominators = await getNominatorAddresses(chaindata);
-    const fellowshipAddresses = await getFellowshipAddresses(chaindata);
     const identityAddresses = await getIdentityAddresses();
-    const societyAddresses = await getSocietyAddresses(chaindata);
+    const chainType = await chaindata.getChainType();
+    let fellowshipAddresses = [];
+    let societyAddresses = [];
+    if (chainType === "Kusama") {
+      fellowshipAddresses = await getFellowshipAddresses(chaindata);
+      societyAddresses = await getSocietyAddresses(chaindata);
+    }
 
     const totalVotes = votes.length;
 

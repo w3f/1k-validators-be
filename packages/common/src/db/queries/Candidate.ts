@@ -331,7 +331,7 @@ export const reportBestBlock = async (
   if (!data) return false;
 
   logger.info(`Reporting best block for ${data.name}: ${details}`, {
-    label: "Online",
+    label: "Telemetry",
   });
 
   // If the node was previously deemed offline
@@ -552,7 +552,7 @@ export const reportOffline = async (
   name: string,
   now: number
 ): Promise<boolean> => {
-  logger.warn(`Reporting ${name} offline at ${now}.`, { label: "Online" });
+  logger.warn(`Reporting ${name} offline at ${now}.`, { label: "Telemetry" });
 
   const data = await CandidateModel.findOne({ name }).lean();
 

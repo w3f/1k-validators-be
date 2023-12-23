@@ -63,9 +63,8 @@ export const createDB = async (config) => {
 export const createServer = async (config) => {
   try {
     logger.info(`Creating Server`, winstonLabel);
-    logger.info(JSON.stringify(Server));
-    // const server = new Server(config);
-    // await server.start();
+    const server = new Server(config);
+    await server.start();
     logger.info(`Server started at: ${config?.server?.port}`, winstonLabel);
   } catch (e) {
     logger.error(e.toString());

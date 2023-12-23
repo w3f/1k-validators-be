@@ -34,7 +34,7 @@ class ApiHandler extends EventEmitter {
 
       await sleep(timeout * 1000);
       if (api.isConnected) {
-        logger.info(`All good. Connected back to`, apiLabel);
+        logger.info(`All good. Connected`, apiLabel);
         return true;
       } else {
         logger.info(

@@ -355,23 +355,22 @@ export default class ScoreKeeper {
 
         // const { nominationNum, newBondedAmount, targetValStake } =
         //   await autoNumNominations(api, nom);
+
+        const nominator = {
+          address: nom.controller,
+          stash: stash,
+          proxy: proxy,
+          bonded: bonded,
+          now: now,
+          proxyDelay: proxyDelay,
+          payee: payee,
+        };
         try {
-          await queries.addNominator(
-            nom.controller,
-            stash,
-            proxy,
-            bonded,
-            now,
-            proxyDelay,
-            payee
-            // targetValStake,
-            // nominationNum,
-            // newBondedAmount
-          );
+          await queries.addNominator(nominator);
         } catch (e) {
           logger.error(JSON.stringify(e), scorekeeperLabel);
           logger.error(
-            `Scorekeeper add nominator: ${stash} failed`,
+            `Scorekeeper add nominator: ${JSON.stringify(nominator)} failed`,
             scorekeeperLabel
           );
         }

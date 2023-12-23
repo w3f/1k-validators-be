@@ -21,11 +21,11 @@ kusama:
     storage: "4Gi"
     resources:
       limits:
-        cpu: "1200m"
-        memory: "2Gi"
+        cpu: "3500m"
+        memory: "9Gi"
       requests:
-        cpu: "400m"
-        memory: "1Gi"      
+        cpu: "700m"
+        memory: "3Gi"
   mongoExpress:
     whitelistSourceIps: <path:vaults/k8s-community-secrets/items/otv-kusama#shared-vpn-ip>
     domain: w3f.community
@@ -51,11 +51,11 @@ polkadot:
     storage: "4Gi"
     resources:
       limits:
-        cpu: "800m"
-        memory: "2Gi"
+        cpu: "3500m"
+        memory: "9Gi"
       requests:
-        cpu: "400m"
-        memory: "1Gi"      
+        cpu: "700m"
+        memory: "3Gi"
   mongoExpress:
     whitelistSourceIps: <path:vaults/k8s-community-secrets/items/otv-polkadot#shared-vpn-ip>
     domain: w3f.community

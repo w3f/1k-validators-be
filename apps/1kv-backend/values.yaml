@@ -7,10 +7,10 @@ kusama:
     resources:
       limits: 
         cpu: "2000m"
-        memory: "2Gi"
+        memory: "4Gi"
       requests: 
         cpu: "1000m"
-        memory: "1Gi"            
+        memory: "2Gi"            
   be:
     nominating: true
     secret:  <path:vaults/k8s-community-secrets/items/otv-kusama#backend-secret>

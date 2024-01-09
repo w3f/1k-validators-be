@@ -37,10 +37,10 @@ polkadot:
     resources:
       limits: 
         cpu: "600m"
-        memory: "1Gi"
+        memory: "2Gi"
       requests: 
         cpu: "300m"
-        memory: "400Mi"
+        memory: "1Gi"
   be:
     nominating: false
     secret:  <path:vaults/k8s-community-secrets/items/otv-polkadot#backend-secret>

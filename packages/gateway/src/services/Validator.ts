@@ -14,3 +14,13 @@ export const getValidator = async (address: string): Promise<any> => {
   const validator = await queries.getValidator(address);
   return validator;
 };
+
+export const getBeefyStats = async (): Promise<any> => {
+  const validators = await queries.getValidatorsBeefyStats();
+  return validators;
+};
+
+export const getBeefyDummy = async (): Promise<any> => {
+  const validators = await queries.getValidatorsBeefyDummy();
+  return validators;
+};

@@ -77,6 +77,11 @@ export const startValidatityJob = async (
   config: Config.ConfigSchema,
   constraints: Constraints.OTV
 ) => {
+  const enabled = config.cron?.validityEnabled || true;
+  if (!enabled) {
+    logger.warn(`Validity Job is disabled`, cronLabel);
+    return;
+  }
   const validityFrequency = config.cron?.validity
     ? config.cron?.validity
     : Constants.VALIDITY_CRON;
@@ -105,6 +110,11 @@ export const startScoreJob = async (
   config: Config.ConfigSchema,
   constraints: Constraints.OTV
 ) => {
+  const enabled = config.cron?.scoreEnabled || true;
+  if (!enabled) {
+    logger.warn(`Score Job is disabled`, cronLabel);
+    return;
+  }
   const scoreFrequency = config.cron?.score
     ? config.cron?.score
     : Constants.SCORE_CRON;
@@ -130,6 +140,11 @@ export const startEraStatsJob = async (
   config: Config.ConfigSchema,
   chaindata: ChainData
 ) => {
+  const enabled = config.cron?.eraStatsEnabled || true;
+  if (!enabled) {
+    logger.warn(`Era Stats Job is disabled`, cronLabel);
+    return;
+  }
   const eraStatsFrequency = config.cron?.eraStats
     ? config.cron?.eraStats
     : Constants.ERA_STATS_CRON;
@@ -567,6 +582,11 @@ export const startEraPointsJob = async (
   config: Config.ConfigSchema,
   chaindata: ChainData
 ) => {
+  const enabled = config.cron?.eraPointsEnabled || true;
+  if (!enabled) {
+    logger.warn(`Era Points Job is disabled`, cronLabel);
+    return;
+  }
   const eraPointsFrequency = config.cron?.eraPoints
     ? config.cron?.eraPoints
     : Constants.ERA_POINTS_CRON;
@@ -604,6 +624,11 @@ export const startActiveValidatorJob = async (
   config: Config.ConfigSchema,
   chaindata: ChainData
 ) => {
+  const enabled = config.cron?.activeValidatorEnabled || true;
+  if (!enabled) {
+    logger.warn(`Active Validator Job is disabled`, cronLabel);
+    return;
+  }
   const activeValidatorFrequency = config.cron?.activeValidator
     ? config?.cron?.activeValidator
     : Constants.ACTIVE_VALIDATOR_CRON;
@@ -638,6 +663,11 @@ export const startInclusionJob = async (
   config: Config.ConfigSchema,
   chaindata: ChainData
 ) => {
+  const enabled = config.cron?.inclusionEnabled || true;
+  if (!enabled) {
+    logger.warn(`Inclusion Job is disabled`, cronLabel);
+    return;
+  }
   const inclusionFrequency = config.cron?.inclusion
     ? config.cron?.inclusion
     : Constants.INCLUSION_CRON;
@@ -670,6 +700,11 @@ export const startSessionKeyJob = async (
   config: Config.ConfigSchema,
   chaindata: ChainData
 ) => {
+  const enabled = config.cron?.sessionKeyEnabled || true;
+  if (!enabled) {
+    logger.warn(`Session Key Job is disabled`, cronLabel);
+    return;
+  }
   const sessionKeyFrequency = config.cron?.sessionKey
     ? config.cron?.sessionKey
     : Constants.SESSION_KEY_CRON;
@@ -739,6 +774,11 @@ export const startValidatorPrefJob = async (
   config: Config.ConfigSchema,
   chaindata: ChainData
 ) => {
+  const enabled = config.cron?.validatorPrefEnabled || true;
+  if (!enabled) {
+    logger.warn(`Validator Pref Job is disabled`, cronLabel);
+    return;
+  }
   const validatorPrefFrequency = config.cron?.validatorPref
     ? config.cron?.validatorPref
     : Constants.VALIDATOR_PREF_CRON;
@@ -771,6 +811,11 @@ export const startLocationStatsJob = async (
   config: Config.ConfigSchema,
   chaindata: ChainData
 ) => {
+  const enabled = config.cron?.locationStatsEnabled || true;
+  if (!enabled) {
+    logger.warn(`Location Stats Job is disabled`, cronLabel);
+    return;
+  }
   const locationStatsFrequency = config.cron?.locationStats
     ? config.cron?.locationStats
     : Constants.LOCATION_STATS_CRON;
@@ -803,6 +848,12 @@ export const startDemocracyJob = async (
   config: Config.ConfigSchema,
   chaindata: ChainData
 ) => {
+  const enabled = config.cron?.democracyEnabled || true;
+  if (!enabled) {
+    logger.warn(`Democracy Job is disabled`, cronLabel);
+    return;
+  }
+
   const democracyFrequency = config?.cron?.democracy
     ? config?.cron?.democracy
     : Constants.DEMOCRACY_CRON;
@@ -835,6 +886,11 @@ export const startNominatorJob = async (
   config: Config.ConfigSchema,
   chaindata: ChainData
 ) => {
+  const enabled = config.cron?.nominatorEnabled || true;
+  if (!enabled) {
+    logger.warn(`Nominator Job is disabled`, cronLabel);
+    return;
+  }
   const nominatorFrequency = config.cron?.nominator
     ? config.cron?.nominator
     : Constants.NOMINATOR_CRON;
@@ -867,6 +923,11 @@ export const startDelegationJob = async (
   config: Config.ConfigSchema,
   chaindata: ChainData
 ) => {
+  const enabled = config.cron?.delegationEnabled || true;
+  if (!enabled) {
+    logger.warn(`Delegation Job is disabled`, cronLabel);
+    return;
+  }
   const delegationFrequency = config.cron?.delegation
     ? config.cron?.delegation
     : Constants.DELEGATION_CRON;
@@ -899,6 +960,11 @@ export const startBlockDataJob = async (
   config: Config.ConfigSchema,
   chaindata: ChainData
 ) => {
+  const enabled = config.cron?.blockEnabled || true;
+  if (!enabled) {
+    logger.warn(`Block Job is disabled`, cronLabel);
+    return;
+  }
   const blockFrequency = config.cron?.block
     ? config.cron?.block
     : Constants.BLOCK_CRON;

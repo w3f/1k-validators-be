@@ -33,25 +33,39 @@ export type ConfigSchema = {
     monitor: string;
     clearOffline: string;
     validity: string;
+    validityEnabled: boolean;
     execution: string;
     scorekeeper: string;
     rewardClaiming: string;
     cancel: string;
     stale: string;
     score: string;
+    scoreEnabled: boolean;
     eraStats: string;
+    eraStatsEnabled: boolean;
     locationStats: string;
+    locationStatsEnabled: boolean;
     democracy: string;
+    democracyEnabled: boolean;
     // chain querying crons
     eraPoints: string;
+    eraPointsEnabled: boolean;
     activeValidator: string;
+    activeValidatorEnabled: boolean;
     inclusion: string;
+    inclusionEnabled: boolean;
     sessionKey: string;
+    sessionKeyEnabled: boolean;
     unclaimedEras: string;
+    unclaimedErasEnabled: boolean;
     validatorPref: string;
+    validatorPrefEnabled: boolean;
     nominator: string;
+    nominatorEnabled: boolean;
     delegation: string;
+    delegationEnabled: boolean;
     block: string;
+    blockEnabled: boolean;
   };
   db: {
     mongo: {

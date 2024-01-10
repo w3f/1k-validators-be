@@ -82,6 +82,7 @@ const API = {
   Validators: "/validators",
   Validator: "/validator/:address",
   ValidatorsBeefyStats: "/validators/beefy",
+  ValidatorsBeefyDummy: "/validators/beefy/dummy",
   RewardsValidator: "/rewards/validator/:address",
   RewardsValidatorTotal: "/rewards/validator/:address/total",
   RewardsAllValidatorsTotal: "/rewards/validators/total",
@@ -183,6 +184,7 @@ router.get(API.SessionLocationStats, Stats.getSessionLocationStats);
 router.get(API.Validators, Validator.getValidators);
 router.get(API.Validator, Validator.getValidator);
 router.get(API.ValidatorsBeefyStats, Validator.getBeefyStats);
+router.get(API.ValidatorsBeefyDummy, Validator.getBeefyDummy);
 
 router.get(API.RewardsValidator, Rewards.getRewardsValidator);
 router.get(API.RewardsNominator, Rewards.getRewardsNominator);

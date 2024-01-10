@@ -19,3 +19,8 @@ export const getBeefyStats = async (): Promise<any> => {
   const validators = await queries.getValidatorsBeefyStats();
   return validators;
 };
+
+export const getBeefyDummy = async (): Promise<any> => {
+  const validators = await queries.getValidatorsBeefyDummy();
+  return validators;
+};

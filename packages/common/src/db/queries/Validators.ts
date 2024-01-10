@@ -121,7 +121,7 @@ export const getValidatorsBeefyStats = async (): Promise<any> => {
   };
 };
 
-export const getDummyBeefyValidators = async (): Promise<any> => {
+export const getValidatorsBeefyDummy = async (): Promise<any> => {
   const validators = await getValidators();
   const beefyValidators = validators.filter((validator: any) => {
     return validator?.keys?.beefy?.slice(0, 10) == "0x62656566";

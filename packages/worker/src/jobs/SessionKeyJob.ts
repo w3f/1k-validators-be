@@ -28,26 +28,6 @@ export const sessionKeyJob = async (chaindata: ChainData) => {
     const nextKeys = await chaindata.getNextKeys(validator);
 
     if (nextKeys?.toJSON()) {
-      const {
-        grandpa = "",
-        babe = "",
-        imOnline = "",
-        paraValidator = "",
-        paraAssignment = "",
-        authorityDiscovery = "",
-        beefy = "",
-      } = nextKeys?.toJSON();
-      logger.info(`grandpa: ${grandpa}`, sessionkeyLabel);
-      logger.info(`babe: ${babe}`, sessionkeyLabel);
-      logger.info(`imOnline: ${imOnline}`, sessionkeyLabel);
-      logger.info(`paraValidator: ${paraValidator}`, sessionkeyLabel);
-      logger.info(`paraAssignment: ${paraAssignment}`, sessionkeyLabel);
-      logger.info(`authorityDiscovery: ${authorityDiscovery}`, sessionkeyLabel);
-      logger.info(`beefy: ${beefy}`, sessionkeyLabel);
-      if (beefy.slice(0, 10) == "0x62656566") {
-        logger.info(`beefy dummy: ${beefy} ${validator}`, sessionkeyLabel);
-      }
-
       await queries.setValidatorKeys(validator, nextKeys?.toJSON());
 
       for (const candidate of candidates) {
@@ -57,22 +37,6 @@ export const sessionKeyJob = async (chaindata: ChainData) => {
       }
     }
   }
-
-  let count = 0;
-  const vals = await queries.getValidators();
-  for (const validator of vals) {
-    if (
-      validator.keys.beefy &&
-      validator.keys.beefy.slice(0, 10) == "0x62656566"
-    ) {
-      count++;
-    }
-  }
-
-  logger.info(
-    `number of validators with beefy: ${count} / ${vals.length}`,
-    sessionkeyLabel
-  );
 
   const end = Date.now();
 

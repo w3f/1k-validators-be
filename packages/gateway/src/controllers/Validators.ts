@@ -41,4 +41,12 @@ export default class ValidatorController {
     }
     response(context, 200, await ValidatorService.getBeefyStats());
   }
+
+  public static async getBeefyDummy(context: any): Promise<void> {
+    if (await context.cashed()) {
+      logger.info(`getBeefyDummy is cached`, gatewayLabel);
+      return;
+    }
+    response(context, 200, await ValidatorService.getBeefyDummy());
+  }
 }

@@ -817,14 +817,14 @@ export class ChainData {
     return keys;
   };
 
-  getNextKeys = async (stash: string): Promise<string> => {
+  getNextKeys = async (stash: string): Promise<any> => {
     if (!this.api.isConnected) {
       logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
       return;
     }
 
     const nextKeys = await this.api.query.session.nextKeys(stash);
-    return nextKeys.toHex();
+    return nextKeys;
   };
 
   /**

@@ -13,6 +13,8 @@ servers:
     description: Kusama Staging
   - url: https://polkadot-staging.w3f.community/
     description: Polkadot Staging
+  - url: http://localhost:3300
+    description: Local server
   - url: http://localhost:3301
     description: Local server
 

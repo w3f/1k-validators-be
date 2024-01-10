@@ -9,10 +9,21 @@ export const blockDataJob = async (chaindata: ChainData) => {
 
   logger.info(`Starting blockDataJob`, blockdataLabel);
   const latestBlock = await chaindata.getLatestBlock();
-  const threshold = 20000;
+  const threshold = 2000;
   let index = await queries.getBlockIndex();
+
+  if (!index?.latest && !index?.earliest) {
+    logger.info(
+      `Block index not found. Querying latest block: #${latestBlock}`,
+      blockdataLabel
+    );
+    await processBlock(chaindata, latestBlock);
+    await queries.setBlockIndex(latestBlock, latestBlock);
+    index = await queries.getBlockIndex();
+  }
+
   // Try to index from the latest block to the current block
-  if (index?.latest) {
+  if (index?.latest && index?.latest != latestBlock) {
     const latestTotal = latestBlock - index.latest;
     logger.info(
       `Processing ${latestTotal} blocks from latest index: ${index.latest} to current block ${latestBlock}`,
@@ -24,7 +35,8 @@ export const blockDataJob = async (chaindata: ChainData) => {
       if (i > index.latest) {
         await processBlock(chaindata, i);
         latestCount++;
-        await queries.setBlockIndex(i, i);
+        // Update the latest block index
+        await queries.setBlockIndex(index?.earliest, i);
         logger.info(
           `Block Data Job: processed: ${i} (${latestCount}/${latestTotal})`,
           blockdataLabel
@@ -37,21 +49,22 @@ export const blockDataJob = async (chaindata: ChainData) => {
     );
   }
   // index from the earliest block backwards
-  if (index?.earliest) {
-    const earliestTotal = index.earliest - (latestBlock - threshold);
+  if (index?.earliest && index?.earliest != latestBlock) {
+    const earliestTotal = index?.earliest - (index?.earliest - threshold);
     logger.info(
       `Processing ${earliestTotal} blocks from earliest index: ${
         index.earliest
-      } to threshold block ${latestBlock - threshold}`,
+      } to threshold block ${index?.earliest - threshold}`,
       blockdataLabel
     );
     let earliestCount = 0;
-    for (let i = index.earliest; i > latestBlock - threshold; i--) {
+    for (let i = index?.earliest; i > index?.earliest - threshold; i--) {
       const index = await queries.getBlockIndex();
 
-      if (i < index.earliest) {
+      if (i < index?.earliest) {
         await processBlock(chaindata, i);
-        await queries.setBlockIndex(i, i);
+        // Update the earliest block
+        await queries.setBlockIndex(i, index?.latest);
         earliestCount++;
         logger.info(
           `Block Data Job: processed: ${i} (${earliestCount}/${earliestTotal})`,

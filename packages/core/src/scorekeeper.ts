@@ -483,6 +483,136 @@ export default class ScoreKeeper {
     }
   }
 
+  // Run Jobs as Microservices
+  async startMicroserviceJobs(): Promise<any> {
+    if (!this.config?.redis?.host || !this.config?.redis?.port) {
+      logger.error(
+        `No redis config found. Microservice Jobs will not be started.`,
+        scorekeeperLabel
+      );
+      return;
+    }
+    try {
+      // Jobs get run in separate worker
+      logger.info(`Starting bullmq Queues and Workers....`, scorekeeperLabel);
+      const releaseMonitorQueue =
+        await otvWorker.queues.createReleaseMonitorQueue(
+          this.config.redis.host,
+          this.config.redis.port
+        );
+      const constraintsQueue = await otvWorker.queues.createConstraintsQueue(
+        this.config.redis.host,
+        this.config.redis.port
+      );
+      const chaindataQueue = await otvWorker.queues.createChainDataQueue(
+        this.config.redis.host,
+        this.config.redis.port
+      );
+      const blockQueue = await otvWorker.queues.createBlockQueue(
+        this.config.redis.host,
+        this.config.redis.port
+      );
+
+      const removeRepeatableJobs = true;
+      if (removeRepeatableJobs) {
+        logger.info(`remove jobs: ${removeRepeatableJobs}`, scorekeeperLabel);
+        // Remove any previous repeatable jobs
+        await otvWorker.queues.removeRepeatableJobsFromQueues([
+          releaseMonitorQueue,
+          constraintsQueue,
+          chaindataQueue,
+          blockQueue,
+        ]);
+      }
+
+      const obliterateQueues = false;
+      if (obliterateQueues) {
+        await otvWorker.queues.obliterateQueues([
+          releaseMonitorQueue,
+          constraintsQueue,
+          chaindataQueue,
+          blockQueue,
+        ]);
+      }
+
+      // Add repeatable jobs to the queues
+      // Queues need to have different repeat time intervals
+      await otvWorker.queues.addReleaseMonitorJob(releaseMonitorQueue, 60000);
+      await otvWorker.queues.addValidityJob(constraintsQueue, 1000001);
+      await otvWorker.queues.addScoreJob(constraintsQueue, 100002);
+      await otvWorker.queues.addActiveValidatorJob(chaindataQueue, 100003);
+      await otvWorker.queues.addDelegationJob(chaindataQueue, 100005);
+      await otvWorker.queues.addEraPointsJob(chaindataQueue, 100006);
+      await otvWorker.queues.addEraStatsJob(chaindataQueue, 110008);
+      await otvWorker.queues.addInclusionJob(chaindataQueue, 100008);
+      await otvWorker.queues.addNominatorJob(chaindataQueue, 100009);
+      await otvWorker.queues.addSessionKeyJob(chaindataQueue, 100010);
+      await otvWorker.queues.addValidatorPrefJob(chaindataQueue, 100101);
+      await otvWorker.queues.addAllBlocks(blockQueue, this.chaindata);
+      // TODO update this as queue job
+      // await startLocationStatsJob(this.config, this.chaindata);
+    } catch (e) {
+      logger.error(e.toString(), scorekeeperLabel);
+      logger.error("Error starting microservice jobs", scorekeeperLabel);
+    }
+  }
+
+  async startMonolithJobs(): Promise<any> {
+    try {
+      await monitorJob();
+      await startValidatityJob(this.config, this.constraints);
+      await startScoreJob(this.config, this.constraints);
+      await startEraPointsJob(this.config, this.chaindata);
+      await startActiveValidatorJob(this.config, this.chaindata);
+      await startInclusionJob(this.config, this.chaindata);
+      await startSessionKeyJob(this.config, this.chaindata);
+      await startValidatorPrefJob(this.config, this.chaindata);
+      await startEraStatsJob(this.config, this.chaindata);
+      await startLocationStatsJob(this.config, this.chaindata);
+      await startDemocracyJob(this.config, this.chaindata);
+      await startNominatorJob(this.config, this.chaindata);
+      await startDelegationJob(this.config, this.chaindata);
+      await startBlockDataJob(this.config, this.chaindata);
+    } catch (e) {
+      logger.error(e.toString(), scorekeeperLabel);
+      logger.error("Error starting monolith jobs", scorekeeperLabel);
+    }
+  }
+
+  async startScorekeeperJobs(): Promise<any> {
+    await startExecutionJob(
+      this.handler,
+      this.nominatorGroups,
+      this.config,
+      this.bot
+    );
+
+    await startUnclaimedEraJob(this.config, this.chaindata);
+    if (this.claimer) {
+      await startRewardClaimJob(
+        this.config,
+        this.handler,
+        this.claimer,
+        this.chaindata,
+        this.bot
+      );
+    }
+    await startCancelCron(
+      this.config,
+      this.handler,
+      this.nominatorGroups,
+      this.chaindata,
+      this.bot
+    );
+    await startStaleNominationCron(
+      this.config,
+      this.handler,
+      this.nominatorGroups,
+      this.chaindata,
+      this.bot
+    );
+  }
+
   // Begin the main workflow of the scorekeeper
   async begin(): Promise<void> {
     logger.info(`Starting Scorekeeper.`, scorekeeperLabel);
@@ -580,114 +710,15 @@ export default class ScoreKeeper {
 
     // Start all Cron Jobs
     try {
+      // Start Jobs in either microservice or monolith mode
       if (this.config?.redis?.host && this.config?.redis?.port) {
-        // Jobs get run in separate worker
-        logger.info(`Starting bullmq Queues and Workers....`, scorekeeperLabel);
-        const releaseMonitorQueue =
-          await otvWorker.queues.createReleaseMonitorQueue(
-            this.config.redis.host,
-            this.config.redis.port
-          );
-        const constraintsQueue = await otvWorker.queues.createConstraintsQueue(
-          this.config.redis.host,
-          this.config.redis.port
-        );
-        const chaindataQueue = await otvWorker.queues.createChainDataQueue(
-          this.config.redis.host,
-          this.config.redis.port
-        );
-        const blockQueue = await otvWorker.queues.createBlockQueue(
-          this.config.redis.host,
-          this.config.redis.port
-        );
-
-        const removeRepeatableJobs = true;
-        if (removeRepeatableJobs) {
-          logger.info(`remove jobs: ${removeRepeatableJobs}`, scorekeeperLabel);
-          // Remove any previous repeatable jobs
-          await otvWorker.queues.removeRepeatableJobsFromQueues([
-            releaseMonitorQueue,
-            constraintsQueue,
-            chaindataQueue,
-            blockQueue,
-          ]);
-        }
-
-        const obliterateQueues = false;
-        if (obliterateQueues) {
-          await otvWorker.queues.obliterateQueues([
-            releaseMonitorQueue,
-            constraintsQueue,
-            chaindataQueue,
-            blockQueue,
-          ]);
-        }
-
-        // Add repeatable jobs to the queues
-        // Queues need to have different repeat time intervals
-        await otvWorker.queues.addReleaseMonitorJob(releaseMonitorQueue, 60000);
-        await otvWorker.queues.addValidityJob(constraintsQueue, 1000001);
-        await otvWorker.queues.addScoreJob(constraintsQueue, 100002);
-        await otvWorker.queues.addActiveValidatorJob(chaindataQueue, 100003);
-        await otvWorker.queues.addDelegationJob(chaindataQueue, 100005);
-        await otvWorker.queues.addEraPointsJob(chaindataQueue, 100006);
-        await otvWorker.queues.addEraStatsJob(chaindataQueue, 110008);
-        await otvWorker.queues.addInclusionJob(chaindataQueue, 100008);
-        await otvWorker.queues.addNominatorJob(chaindataQueue, 100009);
-        await otvWorker.queues.addSessionKeyJob(chaindataQueue, 100010);
-        await otvWorker.queues.addValidatorPrefJob(chaindataQueue, 100101);
-        await otvWorker.queues.addAllBlocks(blockQueue, this.chaindata);
-        // TODO update this as queue job
-        // await startLocationStatsJob(this.config, this.chaindata);
+        await this.startMicroserviceJobs();
       } else {
-        // No redis connection - scorekeeper/core runs jobs as cron jobs
-        await monitorJob();
-        await startValidatityJob(this.config, this.constraints);
-        await startScoreJob(this.config, this.constraints);
-        await startEraPointsJob(this.config, this.chaindata);
-        await startActiveValidatorJob(this.config, this.chaindata);
-        await startInclusionJob(this.config, this.chaindata);
-        await startSessionKeyJob(this.config, this.chaindata);
-        await startValidatorPrefJob(this.config, this.chaindata);
-        await startEraStatsJob(this.config, this.chaindata);
-        await startLocationStatsJob(this.config, this.chaindata);
-        await startDemocracyJob(this.config, this.chaindata);
-        await startNominatorJob(this.config, this.chaindata);
-        await startDelegationJob(this.config, this.chaindata);
-        await startBlockDataJob(this.config, this.chaindata);
+        await this.startMonolithJobs();
       }
 
-      await startExecutionJob(
-        this.handler,
-        this.nominatorGroups,
-        this.config,
-        this.bot
-      );
-
-      await startUnclaimedEraJob(this.config, this.chaindata);
-      if (this.claimer) {
-        await startRewardClaimJob(
-          this.config,
-          this.handler,
-          this.claimer,
-          this.chaindata,
-          this.bot
-        );
-      }
-      await startCancelCron(
-        this.config,
-        this.handler,
-        this.nominatorGroups,
-        this.chaindata,
-        this.bot
-      );
-      await startStaleNominationCron(
-        this.config,
-        this.handler,
-        this.nominatorGroups,
-        this.chaindata,
-        this.bot
-      );
+      // Start all scorekeeper / core jobs
+      await this.startScorekeeperJobs();
     } catch (e) {
       logger.warn(
         `There was an error running some cron jobs...`,

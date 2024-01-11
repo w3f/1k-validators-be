@@ -235,7 +235,7 @@ const processPayoutStakers = async (
           exposurePercentage: exposurePercentage || 0,
           exposure: ownExposure[0]?.value,
           totalStake: parseInt(total),
-          commission: commissionPercentage,
+          commission: commissionPercentage || 0,
           validator: validator,
           nominator: nominator,
           rewardAmount: parseFloat(amount) / denom,

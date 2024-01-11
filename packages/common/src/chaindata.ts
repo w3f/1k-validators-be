@@ -242,14 +242,7 @@ export class ChainData {
       eraIndex,
       validator
     );
-    if (prefs.isEmpty) {
-      return [
-        null,
-        `Preferences is empty. Are you sure ${validator} was a validator in era ${eraIndex}?`,
-      ];
-    } else {
-      return [prefs.commission.toNumber(), null];
-    }
+    return prefs?.commission?.toNumber();
   };
 
   // returns the human denominated balance of a given address.

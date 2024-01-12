@@ -993,7 +993,14 @@ export class ChainData {
       })
       .sort((a, b) => a.total - b.total);
 
-    return minStake[0].total;
+    if (minStake.length == 0) {
+      logger.error(
+        `{Chaindata::getErasMinStakeAt} No min stake found for era ${era}`
+      );
+      return 0;
+    } else {
+      return minStake[0]?.total;
+    }
   };
 
   getAssociatedValidatorAddresses = async () => {

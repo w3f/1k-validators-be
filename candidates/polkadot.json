@@ -1631,6 +1631,73 @@
       "stash": "16VVLeYXGMXW2kHD5haYKUCXQZfb5XharQeqaHgG2cnywfsZ",
       "kusamaStash": "EVktWq6LPJNpqVababoL2QKwfpBEh7whCqH8tuGrGWbQE1v",
       "riotHandle": "@statute:matrix.org"
+    },
+    {
+      "name": "Fialka",
+      "stash": "14oRxBkBvuPrEba7MfwQsXEbUcHU2GJxZceRMwtCbHHgSKR4",
+      "kusamaStash": "GNkUApzhV9JYiP3AjhTdKmSmaa48dZzwVkgbKAoWzUeztiS",
+      "riotHandle": "@s.stegno:matrix.org"
+    },
+    {
+      "name": "0xn00bz",
+      "stash": "15S8fgRAVzvtfiyxgqWpH1QcUTAj7Mky8gBb3Ys22GzQQV6a",
+      "kusamaStash": "CoLVrvRx43NPh8wtDMxY4UoNz1ebSwuu5FwegXj64kJaMkp",
+      "riotHandle": "@0xn00bz:matrix.org"
+    },
+    {
+      "name": "rodion",
+      "stash": "14i6Wxp8nYxotNCq8MCgTU2j4rV4NGVW9xfrPuxk8qMUtvuC",
+      "kusamaStash": "DAnQRPv7SbVhchaVb7tkiYhFCFf8WhfQuH7LTJJSa8yxo6t",
+      "riotHandle": "@rodionpapa007:matrix.org"
+    },
+    {
+      "name": "Aqupidhappy-P",
+      "stash": "1Erc6G7Se7AZa4DNcTd4fkXsei3xYmZpPBX9DDU3x8Rn6Kn",
+      "kusamaStash": "CpB85LvDDrcsgs9BgDfpUHPAcze4v2cCGHnNaW4yfKQLuP4",
+      "riotHandle": "@qupidvalidator:matrix.org"
+    },
+    {
+      "name": "STRAWBERRY-DOT",
+      "stash": "15Dp4nuSJDJknsxJ5JzTVoS4EFxS75KK9Dsokwc86yzSxe3P",
+      "kusamaStash": "FZfG7K9Yx7qwHHV9xnaUhnxeUziSCHmcB6K5THZaGuuTdXw",
+      "riotHandle": "@sweetberry:matrix.org"
+    },
+    {
+      "name": "crypto-jack-sparrow",
+      "stash": "17NP1aTyHbS5oMCbtyoayyaFyFBmShCPBDa4fuCX83fjHio",
+      "kusamaStash": "Cbm8UMQYmgrhYt4KVah4rFyVE5MH1puA2AvBN3gYB2v2yGU",
+      "riotHandle": "@jacksparrowcrypto:matrix.org"
+    },
+    {
+      "name": "📜 Holy Consensus 📜",
+      "stash": "13gWcC6NzYKKnDS2ayZBoUVFWah9uBQgWcTj8tCuHa92Ukmq",
+      "kusamaStash": "GhmAcucWFj6gnwJ4y61woEo1fbooXtpLRcLGnDJPuAvGCRB",
+      "riotHandle": "@mogioman:matrix.org"
+    },
+    {
+      "name": "lightning-strike",
+      "stash": "15dLWAUwegTVMNivZS8iTDyxSu2yYkBAk4ePvE3MYgjj9CJw",
+      "kusamaStash": "CzPKgpYLTrhebtheB2GsM19WFtgH66fv9fjChuHGjzRyVpe",
+      "riotHandle": "@smoke26:matrix.org"
+    },
+    {
+      "name": "Perfect-node",
+      "stash": "12uUKHVCpXuqVgsm8XxLE56cyHNyvKXMNLJTUJ2j3R7xke7w",
+      "kusamaStash": "EaEcqkSUo1TVY4q3sz5uQLqdtpcgRm17qMHQko9cLKPH6RA",
+      "riotHandle": "@perfect-node:matrix.org",
+      "skipSelfStake": true
+    },
+    {
+      "name": "HYPERSPEED_DOT1",
+      "stash": "1qUKZLhxVGUPozs8j8XpxH8VbZX5ckXV7ziUf6ji83ieZYd",
+      "kusamaStash": "HRs3r9sUx16zv1ihw12ztch7a5gNFzuHnSx77HdXsHfEY1V",
+      "riotHandle": "@lokal:matrix.org"
+    },
+    {
+      "name": "abgar",
+      "stash": "12zqozWYvokd2pN7Rr9JEtpfxAcUP7UmwS7ocGmf7rXpLeFG",
+      "kusamaStash": "GjrCYnVS59dsRkydpM6QSRLvpoR8MUPnkyVS3SNWqsxWW7r",
+      "riotHandle": "@abgar:matrix.org"
     }
   ]
 }

@@ -44,7 +44,7 @@ __metadata:
     "@types/mongoose": ^5.11.97
     "@types/node": ^20.2.5
     hash.js: ^1.1.7
-    mongoose: ^7.6.5
+    mongoose: ^7.6.8
     typescript: ^4.9.5
     winston: ^3.11.0
   languageName: unknown
@@ -91,7 +91,7 @@ __metadata:
     matrix-js-sdk: ^30.3.0
     mongodb: 6.2.0
     mongodb-memory-server: ^8.16.0
-    mongoose: ^7.6.5
+    mongoose: ^7.6.8
     nodemon: ^3.0.1
     open-cli: ^7.2.0
     prettier: ^2.8.8
@@ -7034,9 +7034,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mongodb@npm:5.9.0":
-  version: 5.9.0
-  resolution: "mongodb@npm:5.9.0"
+"mongodb@npm:5.9.1":
+  version: 5.9.1
+  resolution: "mongodb@npm:5.9.1"
   dependencies:
     "@mongodb-js/saslprep": ^1.1.0
     bson: ^5.5.0
@@ -7062,7 +7062,7 @@ __metadata:
       optional: true
     snappy:
       optional: true
-  checksum: 5fb828d6503b7291c0bcc984ed35bdd0e2f166cd9d637a5ff9e8c2e497ef6260eea5a3f700f2850200cd8108057c858f96e37394ed2953aff3b85fe760bbd777
+  checksum: a827937120cd7eecafc0ad5657b40536774f0b09582a9363db0a192149ba20eae80a33fccf573f5ce69a20aca6759c40b4961d9d1d4de2a350c543030055e0f6
   languageName: node
   linkType: hard
 
@@ -7133,18 +7133,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mongoose@npm:^7.6.5":
-  version: 7.6.5
-  resolution: "mongoose@npm:7.6.5"
+"mongoose@npm:^7.6.8":
+  version: 7.6.8
+  resolution: "mongoose@npm:7.6.8"
   dependencies:
     bson: ^5.5.0
     kareem: 2.5.1
-    mongodb: 5.9.0
+    mongodb: 5.9.1
     mpath: 0.9.0
     mquery: 5.0.0
     ms: 2.1.3
     sift: 16.0.1
-  checksum: 1cd2b5f5f7035d4a12e5808e3cb8712e5b78f9a50e9554bcded17a70690c12b6b82eba7f8391af5118c67e4d0223d8da1afe001060e7e40b7caf93288500118d
+  checksum: 2c7594b5e83111d6b4e2efaa454f3b6c59a0aea7eda5fadc41b480047f6bb87b12dc56ab56bdcf01237cbb041f88be3a2c965378ec923edf3b72423305d4cef6
   languageName: node
   linkType: hard
 

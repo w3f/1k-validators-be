@@ -6,11 +6,11 @@ kusama:
     storage: "8Gi"
     resources:
       limits: 
-        cpu: "600m"
-        memory: "2Gi"
+        cpu: "1600m"
+        memory: "4Gi"
       requests: 
-        cpu: "300m"
-        memory: "1Gi"  
+        cpu: "400m"
+        memory: "2Gi"   
   be:
     nominating: false
     secret:  <path:vaults/k8s-community-secrets/items/otv-kusama#backend-secret>

@@ -40,7 +40,7 @@
     "ava": "^5.3.1",
     "concurrently": "^8.2.2",
     "eslint": "8.42.0",
-    "nodemon": "^3.0.1"
+    "nodemon": "^3.0.3"
   },
   "ava": {
     "failFast": false,

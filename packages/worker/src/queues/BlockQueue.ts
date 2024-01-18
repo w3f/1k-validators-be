@@ -38,7 +38,7 @@ export const addAllBlocks = async (queue: Queue, chaindata: Chaindata) => {
       `latest block: ${latestBlock} db block: ${blockIndex.latest}, adding ${
         latestBlock - blockIndex.latest
       } blocks to queue`,
-      label
+      label,
     );
     for (let i = blockIndex.latest + 1; i < latestBlock; i++) {
       await addBlockJob(queue, i);
@@ -51,7 +51,7 @@ export const addAllBlocks = async (queue: Queue, chaindata: Chaindata) => {
       `earliest ${earliest} target earliest: ${targetEarliest}, adding ${
         earliest - targetEarliest
       } to the queue`,
-      label
+      label,
     );
     for (let i = earliest; i > targetEarliest; i--) {
       await addBlockJob(queue, i);
@@ -70,6 +70,6 @@ export const addBlockJob = async (queue: Queue, blockNumber: number) => {
         type: "exponential",
         delay: 1000,
       },
-    }
+    },
   );
 };

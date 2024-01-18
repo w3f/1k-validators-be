@@ -4,7 +4,7 @@ import { logger } from "../../index";
 export const setValidatorScore = async (
   address: string,
   session: number,
-  score: any
+  score: any,
 ): Promise<boolean> => {
   const {
     total,
@@ -98,25 +98,25 @@ export const setValidatorScore = async (
       openGov,
       openGovDelegations,
       randomness,
-    }
+    },
   ).exec();
 };
 
 export const getValidatorScore = async (
   address: string,
-  session: number
+  session: number,
 ): Promise<any> => {
   return ValidatorScoreModel.findOne(
     {
       address: address,
       session: session,
     },
-    { _id: 0, __v: 0 }
+    { _id: 0, __v: 0 },
   ).lean();
 };
 
 export const getLatestValidatorScore = async (
-  address: string
+  address: string,
 ): Promise<any> => {
   return (
     await ValidatorScoreModel.find({ address: address }, { _id: 0, __v: 0 })

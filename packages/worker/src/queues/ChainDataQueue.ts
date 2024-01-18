@@ -40,7 +40,7 @@ export const addActiveValidatorJob = async (queue: Queue, repeat: number) => {
         type: "exponential",
         delay: 1000,
       },
-    }
+    },
   );
 };
 
@@ -60,7 +60,7 @@ export const addCouncilJob = async (queue: Queue, repeat: number) => {
         type: "exponential",
         delay: 1000,
       },
-    }
+    },
   );
 };
 
@@ -79,7 +79,7 @@ export const addDelegationJob = async (queue: Queue, repeat: number) => {
         type: "exponential",
         delay: 1000,
       },
-    }
+    },
   );
 };
 
@@ -98,7 +98,7 @@ export const addDemocracyJob = async (queue: Queue, repeat: number) => {
         type: "exponential",
         delay: 1000,
       },
-    }
+    },
   );
 };
 
@@ -117,7 +117,7 @@ export const addEraPointsJob = async (queue: Queue, repeat: number) => {
         type: "exponential",
         delay: 1000,
       },
-    }
+    },
   );
 };
 
@@ -136,7 +136,7 @@ export const addEraStatsJob = async (queue: Queue, repeat: number) => {
         type: "exponential",
         delay: 1000,
       },
-    }
+    },
   );
 };
 
@@ -155,7 +155,7 @@ export const addInclusionJob = async (queue: Queue, repeat: number) => {
         type: "exponential",
         delay: 1000,
       },
-    }
+    },
   );
 };
 
@@ -174,7 +174,7 @@ export const addNominatorJob = async (queue: Queue, repeat: number) => {
         type: "exponential",
         delay: 1000,
       },
-    }
+    },
   );
 };
 
@@ -193,7 +193,7 @@ export const addSessionKeyJob = async (queue: Queue, repeat: number) => {
         type: "exponential",
         delay: 1000,
       },
-    }
+    },
   );
 };
 
@@ -212,7 +212,7 @@ export const addValidatorPrefJobAll = async (queue: Queue, repeat: number) => {
         type: "exponential",
         delay: 1000,
       },
-    }
+    },
   );
 };
 
@@ -233,7 +233,7 @@ export const addValidatorPrefJob = async (queue: Queue, repeat: number) => {
           type: "exponential",
           delay: 1000,
         },
-      }
+      },
     );
   }
 };

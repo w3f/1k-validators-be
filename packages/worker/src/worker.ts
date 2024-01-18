@@ -40,25 +40,25 @@ class Worker {
     logger.info(`Redis host: ${this.host} port: ${this.port}`, workerLabel);
     const releaseMonitorWorker = await createReleaseMonitorWorker(
       this.host,
-      this.port
+      this.port,
     );
     logger.info(
       `Created release monitor worker: ${releaseMonitorWorker.id}`,
-      workerLabel
+      workerLabel,
     );
     const constraintsWorker = await createConstraintsWorker(
       this.host,
       this.port,
-      this.constraints
+      this.constraints,
     );
     logger.info(
       `Created constraints worker: ${constraintsWorker.id}`,
-      workerLabel
+      workerLabel,
     );
     const chaindataWorker = await createChainDataWorker(
       this.host,
       this.port,
-      this.api
+      this.api,
     );
     logger.info(`Created chaindata worker: ${chaindataWorker.id}`, workerLabel);
     const blockWorker = await createBlockWorker(this.host, this.port, this.api);

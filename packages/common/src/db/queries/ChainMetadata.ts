@@ -6,8 +6,8 @@ export const setChainMetadata = async (networkPrefix: number): Promise<any> => {
     networkPrefix == 2
       ? "Kusama"
       : networkPrefix == 0
-      ? "Polkadot"
-      : "Local Testnet";
+        ? "Polkadot"
+        : "Local Testnet";
   const decimals = networkPrefix == 2 ? 12 : networkPrefix == 0 ? 10 : 12;
 
   const data = await ChainMetadataModel.findOne({ name: /.*/ }).lean();

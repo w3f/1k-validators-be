@@ -274,7 +274,7 @@ export const democracyStatsJob = async (chaindata) => {
             b.balance.aye +
             b.balance.nay +
             b.balance.abstain -
-            (a.balance.aye + a.balance.nay + a.balance.abstain)
+            (a.balance.aye + a.balance.nay + a.balance.abstain),
         )
         .map((vote) => {
           return vote.address;
@@ -289,7 +289,7 @@ export const democracyStatsJob = async (chaindata) => {
             b.balance.aye +
             b.balance.nay +
             b.balance.abstain -
-            (a.balance.aye + a.balance.nay + a.balance.abstain)
+            (a.balance.aye + a.balance.nay + a.balance.abstain),
         )
         .map((vote) => {
           return vote.address;
@@ -300,7 +300,7 @@ export const democracyStatsJob = async (chaindata) => {
           vote?.balance?.aye +
           vote?.balance?.nay +
           vote?.balance?.abstain,
-        0
+        0,
       );
 
       const nayVotes = getNayVotes(votes);
@@ -310,7 +310,7 @@ export const democracyStatsJob = async (chaindata) => {
             b.balance.aye +
             b.balance.nay +
             b.balance.abstain -
-            (a.balance.aye + a.balance.nay + a.balance.abstain)
+            (a.balance.aye + a.balance.nay + a.balance.abstain),
         )
         .map((vote) => {
           return vote.address;
@@ -321,7 +321,7 @@ export const democracyStatsJob = async (chaindata) => {
           vote?.balance?.aye +
           vote?.balance?.nay +
           vote?.balance?.abstain,
-        0
+        0,
       );
 
       const abstainVotes = getAbstainVotes(votes);
@@ -331,7 +331,7 @@ export const democracyStatsJob = async (chaindata) => {
             b.balance.aye +
             b.balance.nay +
             b.balance.abstain -
-            (a.balance.aye + a.balance.nay + a.balance.abstain)
+            (a.balance.aye + a.balance.nay + a.balance.abstain),
         )
         .map((vote) => {
           return vote.address;
@@ -342,7 +342,7 @@ export const democracyStatsJob = async (chaindata) => {
           vote?.balance?.aye +
           vote?.balance?.nay +
           vote?.balance?.abstain,
-        0
+        0,
       );
 
       const castingVotes = getCastingVotes(votes);
@@ -352,7 +352,7 @@ export const democracyStatsJob = async (chaindata) => {
             b.balance.aye +
             b.balance.nay +
             b.balance.abstain -
-            (a.balance.aye + a.balance.nay + a.balance.abstain)
+            (a.balance.aye + a.balance.nay + a.balance.abstain),
         )
         .map((vote) => {
           return vote.address;
@@ -363,7 +363,7 @@ export const democracyStatsJob = async (chaindata) => {
           vote?.balance?.aye +
           vote?.balance?.nay +
           vote?.balance?.abstain,
-        0
+        0,
       );
 
       const delegatingVotes = getDelegatingVotes(votes);
@@ -373,7 +373,7 @@ export const democracyStatsJob = async (chaindata) => {
             b.balance.aye +
             b.balance.nay +
             b.balance.abstain -
-            (a.balance.aye + a.balance.nay + a.balance.abstain)
+            (a.balance.aye + a.balance.nay + a.balance.abstain),
         )
         .map((vote) => {
           return vote.address;
@@ -384,7 +384,7 @@ export const democracyStatsJob = async (chaindata) => {
           vote?.balance?.aye +
           vote?.balance?.nay +
           vote?.balance?.abstain,
-        0
+        0,
       );
 
       const validatorVotes = getValidatorVotes(validators, votes);
@@ -394,7 +394,7 @@ export const democracyStatsJob = async (chaindata) => {
             b.balance.aye +
             b.balance.nay +
             b.balance.abstain -
-            (a.balance.aye + a.balance.nay + a.balance.abstain)
+            (a.balance.aye + a.balance.nay + a.balance.abstain),
         )
         .map((vote) => {
           return vote.address;
@@ -405,7 +405,7 @@ export const democracyStatsJob = async (chaindata) => {
           vote?.balance?.aye +
           vote?.balance?.nay +
           vote?.balance?.abstain,
-        0
+        0,
       );
 
       const nominatorVotes = getNominatorVotes(nominators, validators, votes);
@@ -415,7 +415,7 @@ export const democracyStatsJob = async (chaindata) => {
             b.balance.aye +
             b.balance.nay +
             b.balance.abstain -
-            (a.balance.aye + a.balance.nay + a.balance.abstain)
+            (a.balance.aye + a.balance.nay + a.balance.abstain),
         )
         .map((vote) => {
           return vote.address;
@@ -426,7 +426,7 @@ export const democracyStatsJob = async (chaindata) => {
           vote?.balance?.aye +
           vote?.balance?.nay +
           vote?.balance?.abstain,
-        0
+        0,
       );
 
       const nonStakerVotes = getNonStakerVotes(nominators, validators, votes);
@@ -436,7 +436,7 @@ export const democracyStatsJob = async (chaindata) => {
             b.balance.aye +
             b.balance.nay +
             b.balance.abstain -
-            (a.balance.aye + a.balance.nay + a.balance.abstain)
+            (a.balance.aye + a.balance.nay + a.balance.abstain),
         )
         .map((vote) => {
           return vote.address;
@@ -447,7 +447,7 @@ export const democracyStatsJob = async (chaindata) => {
           vote?.balance?.aye +
           vote?.balance?.nay +
           vote?.balance?.abstain,
-        0
+        0,
       );
 
       const fellowshipVotes = getFellowshipVotes(fellowshipAddresses, votes);
@@ -457,7 +457,7 @@ export const democracyStatsJob = async (chaindata) => {
             b.balance.aye +
             b.balance.nay +
             b.balance.abstain -
-            (a.balance.aye + a.balance.nay + a.balance.abstain)
+            (a.balance.aye + a.balance.nay + a.balance.abstain),
         )
         .map((vote) => {
           return vote.address;
@@ -468,7 +468,7 @@ export const democracyStatsJob = async (chaindata) => {
           vote?.balance?.aye +
           vote?.balance?.nay +
           vote?.balance?.abstain,
-        0
+        0,
       );
 
       const societyVotes = getSocietyVotes(societyAddresses, votes);
@@ -478,7 +478,7 @@ export const democracyStatsJob = async (chaindata) => {
             b.balance.aye +
             b.balance.nay +
             b.balance.abstain -
-            (a.balance.aye + a.balance.nay + a.balance.abstain)
+            (a.balance.aye + a.balance.nay + a.balance.abstain),
         )
         .map((vote) => {
           return vote.address;
@@ -489,7 +489,7 @@ export const democracyStatsJob = async (chaindata) => {
           vote?.balance?.aye +
           vote?.balance?.nay +
           vote?.balance?.abstain,
-        0
+        0,
       );
 
       const identityVotes = getIdentityVotes(identityAddresses, votes);
@@ -499,7 +499,7 @@ export const democracyStatsJob = async (chaindata) => {
             b.balance.aye +
             b.balance.nay +
             b.balance.abstain -
-            (a.balance.aye + a.balance.nay + a.balance.abstain)
+            (a.balance.aye + a.balance.nay + a.balance.abstain),
         )
         .map((vote) => {
           return vote.address;
@@ -510,7 +510,7 @@ export const democracyStatsJob = async (chaindata) => {
           vote?.balance?.aye +
           vote?.balance?.nay +
           vote?.balance?.abstain,
-        0
+        0,
       );
 
       const referendumStats: OpenGovReferendumStat = {
@@ -601,7 +601,7 @@ export const democracyStatsJob = async (chaindata) => {
   const end = Date.now();
   logger.info(
     `Finished Democracy stats, took ${(end - start) / 1000}s`,
-    democracyLabel
+    democracyLabel,
   );
 };
 
@@ -669,20 +669,20 @@ const networkUrl = (network: Network): string => {
 
 export async function fetchReferendaV1(
   network: Network,
-  id: number
+  id: number,
 ): Promise<any> {
   return fetchQuery(networkUrl(network), referendum_posts_query, { id: id });
 }
 
 export async function fetchReferenda(
   network: Network,
-  id: number
+  id: number,
 ): Promise<any> {
   let res;
   const myHeaders = new Headers();
   myHeaders.append(
     "x-network",
-    network === Network.Polkadot ? "polkadot" : "kusama"
+    network === Network.Polkadot ? "polkadot" : "kusama",
   );
 
   res = await fetch(
@@ -691,7 +691,7 @@ export async function fetchReferenda(
       method: "GET",
       headers: myHeaders,
       redirect: "follow",
-    }
+    },
   )
     .then((response) => response.json())
     .then((result) => {
@@ -707,7 +707,7 @@ export function fetchQuery<T>(
   input: RequestInfo | URL,
   query: string,
   variables: Record<string, any> = {},
-  defaultInit?: RequestInit
+  defaultInit?: RequestInit,
 ): Promise<T> {
   const init = {
     method: "POST",
@@ -732,7 +732,7 @@ export const setReferenda = async (
   network,
   referendaList,
   latestBlockNumber,
-  latestBlockHash
+  latestBlockHash,
 ) => {
   for (const [i, referenda] of referendaList.entries()) {
     try {
@@ -749,7 +749,7 @@ export const setReferenda = async (
         referenda,
         proposedCall,
         latestBlockNumber,
-        latestBlockHash
+        latestBlockHash,
       );
       const end = Date.now();
 
@@ -757,7 +757,7 @@ export const setReferenda = async (
         `Set contextual info for referendum ${referenda.index} [${i}/${
           referendaList.length
         }] (${(end - start) / 1000}s)`,
-        democracyLabel
+        democracyLabel,
       );
     } catch (e) {
       logger.warn(`could not set referenda`, democracyLabel);
@@ -782,37 +782,37 @@ export const queryAndSetAllReferenda = async (chaindata) => {
 
     logger.info(
       `Queried open gov referenda: ${ongoingReferenda.length} ongoing referenda ${finishedReferenda.length} finished referenda`,
-      democracyLabel
+      democracyLabel,
     );
 
     await setReferenda(
       chain,
       ongoingReferenda,
       latestBlockNumber,
-      latestBlockHash
+      latestBlockHash,
     );
 
     logger.info(
       `Finished writing ${ongoingReferenda.length} ongoing referenda`,
-      democracyLabel
+      democracyLabel,
     );
 
     await setReferenda(
       chain,
       finishedReferenda,
       latestBlockNumber,
-      latestBlockHash
+      latestBlockHash,
     );
 
     logger.info(
       `Finished writing ${finishedReferenda.length} finished referenda`,
-      democracyLabel
+      democracyLabel,
     );
 
     const end = Date.now();
     logger.info(
       `Open Gov Referenda Done. Took ${(end - start) / 1000}s`,
-      democracyLabel
+      democracyLabel,
     );
   } catch (e) {
     logger.warn(`could not set referenda`, democracyLabel);
@@ -940,7 +940,7 @@ export const setVoters = async (chaindata) => {
           votingBalance: balance,
           labels: labels,
         };
-      })
+      }),
     );
     const scoreValues = voterList.map((votes) => {
       return votes.score.totalDemocracyScore;
@@ -952,7 +952,7 @@ export const setVoters = async (chaindata) => {
             votes.score.totalDemocracyScore,
             scoreValues,
             0.2,
-            0.95
+            0.95,
           ) * 100,
         ...votes,
       };
@@ -987,14 +987,14 @@ export const setVoters = async (chaindata) => {
       (a, b) =>
         b.normalizedScore - a.normalizedScore ||
         b.castedVotes - a.castedVotes ||
-        b.delegationAmount - a.delegationAmount
+        b.delegationAmount - a.delegationAmount,
     );
   } catch (e) {}
 
   const end = Date.now();
   logger.info(
     `Setting voters done, took ${(end - start) / 1000}s`,
-    democracyLabel
+    democracyLabel,
   );
 };
 
@@ -1105,7 +1105,7 @@ export const setDelegates = async (chaindata) => {
           votingBalance: balance,
           labels: labels,
         };
-      })
+      }),
     );
     const scoreValues = voterList
       .filter((v) => {
@@ -1125,7 +1125,7 @@ export const setDelegates = async (chaindata) => {
               votes.score.totalDemocracyScore,
               scoreValues,
               0.2,
-              0.95
+              0.95,
             ) * 100,
           ...votes,
         };
@@ -1189,7 +1189,7 @@ export const setDelegates = async (chaindata) => {
       (a, b) =>
         b.normalizedScore - a.normalizedScore ||
         b.castedVotes - a.castedVotes ||
-        b.delegationAmount - a.delegationAmount
+        b.delegationAmount - a.delegationAmount,
     );
   } catch (e) {
     logger.warn(`could not set delegates`, democracyLabel);
@@ -1198,7 +1198,7 @@ export const setDelegates = async (chaindata) => {
   const end = Date.now();
   logger.info(
     `Set Delegates Done. Took ${(end - start) / 1000}s`,
-    democracyLabel
+    democracyLabel,
   );
 };
 
@@ -1230,7 +1230,7 @@ export const queryAndSetConvictionVoting = async (chaindata) => {
 
     logger.info(
       `Writing ${finishedVotes.length} finished votes to db..`,
-      democracyLabel
+      democracyLabel,
     );
 
     for (const [index, vote] of finishedVotes.entries()) {
@@ -1246,7 +1246,7 @@ export const queryAndSetConvictionVoting = async (chaindata) => {
       if (index % 100 == 0) {
         logger.info(
           `Wrote ${vote.referendumIndex} to db [${index}/${finishedVotes.length}]`,
-          democracyLabel
+          democracyLabel,
         );
       }
     }
@@ -1255,13 +1255,13 @@ export const queryAndSetConvictionVoting = async (chaindata) => {
       `Done setting ${
         finishedVotes.length
       } finished Votes and Identities. Took ${(vend - start) / 1000} seconds`,
-      democracyLabel
+      democracyLabel,
     );
 
     const vstart2 = Date.now();
     logger.info(
       `Writing ${ongoingVotes.length} ongoing votes to db..`,
-      democracyLabel
+      democracyLabel,
     );
     for (const [index, vote] of ongoingVotes.entries()) {
       await queries.setConvictionVote(vote, latestBlockNumber);
@@ -1276,7 +1276,7 @@ export const queryAndSetConvictionVoting = async (chaindata) => {
       if (index % 100 == 0) {
         logger.info(
           `Wrote ${vote.referendumIndex} to db [${index}/${ongoingVotes.length}]`,
-          democracyLabel
+          democracyLabel,
         );
       }
     }
@@ -1286,7 +1286,7 @@ export const queryAndSetConvictionVoting = async (chaindata) => {
       `Done setting ongoing Votes and Identities. Took ${
         (vend2 - vstart2) / 1000
       } seconds`,
-      democracyLabel
+      democracyLabel,
     );
 
     const canstart = Date.now();
@@ -1299,7 +1299,7 @@ export const queryAndSetConvictionVoting = async (chaindata) => {
       `Setting Votes and Identities. Took ${
         (canend - canstart) / 1000
       } seconds`,
-      democracyLabel
+      democracyLabel,
     );
   } catch (e) {
     logger.warn(`could not set conviction voting`, democracyLabel);
@@ -1324,7 +1324,7 @@ export const democracyJob = async (chaindata: ChainData) => {
   const endTime = Date.now();
   logger.info(
     `Democracy Job Done. Took ${(endTime - start) / 1000} seconds`,
-    democracyLabel
+    democracyLabel,
   );
 };
 

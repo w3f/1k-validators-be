@@ -4,7 +4,7 @@ export const setEraStats = async (
   era: number,
   totalNodes: number,
   valid: number,
-  active: number
+  active: number,
 ): Promise<boolean> => {
   const data = await EraStatsModel.findOne({
     era: era,
@@ -42,7 +42,7 @@ export const setEraStats = async (
       totalNodes: totalNodes,
       valid: valid,
       active: active,
-    }
+    },
   ).exec();
 };
 

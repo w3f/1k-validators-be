@@ -6,7 +6,7 @@ export const setNominatorStake = async (
   totalStake: number,
   inactiveStake: number,
   activeNominators: Array<{ address: string; bonded: number }>,
-  inactiveNominators: Array<{ address: string; bonded: number }>
+  inactiveNominators: Array<{ address: string; bonded: number }>,
 ): Promise<any> => {
   // Try and find an existing record
   const data = await NominatorStakeModel.findOne({
@@ -43,12 +43,12 @@ export const setNominatorStake = async (
       activeNominators,
       inactiveNominators,
       updated: Date.now(),
-    }
+    },
   ).exec();
 };
 
 export const getLatestNominatorStake = async (
-  validator: string
+  validator: string,
 ): Promise<any> => {
   return (
     await NominatorStakeModel.find({ validator: validator })
@@ -60,14 +60,14 @@ export const getLatestNominatorStake = async (
 
 export const getEraNominatorStake = async (
   validator: string,
-  era: number
+  era: number,
 ): Promise<any> => {
   return (await NominatorStakeModel.find({ validator, era }).lean())[0];
 };
 
 export const getNominatorStake = async (
   validator: string,
-  limit?: number
+  limit?: number,
 ): Promise<any> => {
   await NominatorStakeModel.find({ validator })
     .lean()

@@ -15,7 +15,7 @@ export const createChainDataWorker = async (host, port, api: ApiHandler) => {
       },
       concurrency: 6,
       lockDuration: 3000000,
-    }
+    },
   );
   return worker;
 };

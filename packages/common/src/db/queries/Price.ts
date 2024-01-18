@@ -5,7 +5,7 @@ export const setPrice = async (
   date: string,
   chf: number,
   usd: number,
-  eur: number
+  eur: number,
 ): Promise<boolean> => {
   const data = await PriceModel.findOne({ network, date }).lean();
   if (!data) {
@@ -25,7 +25,7 @@ export const setPrice = async (
         chf,
         usd,
         eur,
-      }
+      },
     ).exec();
     return true;
   }

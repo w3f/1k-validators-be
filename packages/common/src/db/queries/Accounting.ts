@@ -8,10 +8,10 @@ import { AccountingModel } from "../models";
  */
 export const newAccountingRecord = async (
   stash: string,
-  controller: string
+  controller: string,
 ): Promise<boolean> => {
   logger.info(
-    `(Db::newAccountingRecord) Adding stash ${stash} and controller ${controller}`
+    `(Db::newAccountingRecord) Adding stash ${stash} and controller ${controller}`,
   );
 
   const record = await AccountingModel.findOne({ stash, controller }).lean();
@@ -33,10 +33,10 @@ export const updateAccountingRecord = async (
   controller: string,
   stash: string,
   era: string,
-  reward: string
+  reward: string,
 ): Promise<boolean> => {
   logger.info(
-    `(Db::updateAccountingRecord) Adding era ${era} and reward ${reward}`
+    `(Db::updateAccountingRecord) Adding era ${era} and reward ${reward}`,
   );
 
   const record = await AccountingModel.findOne({ stash, controller }).lean();
@@ -52,14 +52,14 @@ export const updateAccountingRecord = async (
     },
     {
       $push: { records: { era, reward } },
-    }
+    },
   ).exec();
 
   return true;
 };
 
 export const getAccounting = async (
-  controllerOrStash: string
+  controllerOrStash: string,
 ): Promise<any> => {
   const stashResult = await AccountingModel.findOne({
     stash: controllerOrStash,

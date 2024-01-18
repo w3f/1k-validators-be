@@ -4,7 +4,7 @@ export const validatorPrefLabel = { label: "ValidatorPrefJob" };
 
 export const individualValidatorPrefJob = async (
   chaindata: ChainData,
-  candidate: Types.CandidateData
+  candidate: Types.CandidateData,
 ) => {
   const start = Date.now();
 
@@ -27,7 +27,7 @@ export const individualValidatorPrefJob = async (
 
   // Set reward destination
   const rewardDestination = await chaindata.getRewardDestination(
-    candidate.stash
+    candidate.stash,
   );
   await queries.setRewardDestination(candidate.stash, rewardDestination);
 
@@ -54,14 +54,14 @@ export const validatorPrefJob = async (chaindata: ChainData) => {
 
   logger.info(
     `Set validator preferences for ${candidates.length} candidates (${executionTime}s)`,
-    validatorPrefLabel
+    validatorPrefLabel,
   );
 };
 
 export const processValidatorPrefJob = async (
   job: any,
   chaindata: ChainData,
-  candidateAddress?: string
+  candidateAddress?: string,
 ) => {
   // Process and individual Validator
   if (candidateAddress) {

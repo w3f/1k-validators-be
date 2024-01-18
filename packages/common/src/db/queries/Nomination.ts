@@ -6,10 +6,10 @@ export const setNomination = async (
   era: number,
   targets: string[],
   bonded: number,
-  blockHash: string
+  blockHash: string,
 ): Promise<boolean> => {
   logger.info(
-    `(Db::setNomination) Setting nomination for ${address} bonded with ${bonded} for era ${era} to the following validators: ${targets}`
+    `(Db::setNomination) Setting nomination for ${address} bonded with ${bonded} for era ${era} to the following validators: ${targets}`,
   );
 
   const data = await NominationModel.findOne({
@@ -44,7 +44,7 @@ export const setNomination = async (
 
 export const getNomination = async (
   address: string,
-  era: number
+  era: number,
 ): Promise<any> => {
   const data = await NominationModel.findOne({
     address: address,
@@ -55,7 +55,7 @@ export const getNomination = async (
 
 export const getLastNominations = async (
   address: string,
-  eras: number
+  eras: number,
 ): Promise<any[]> => {
   // Returns the last nominations for a given nominator controller
   const data = await NominationModel.find({ address })

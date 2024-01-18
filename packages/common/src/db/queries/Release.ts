@@ -3,7 +3,7 @@ import { ReleaseModel } from "../models";
 
 export const setRelease = async (
   name: string,
-  publishedAt: number
+  publishedAt: number,
 ): Promise<any> => {
   logger.debug(`{DB::Release} setting release for ${name}`);
   let data = await ReleaseModel.findOne({ name: name }).exec();

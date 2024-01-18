@@ -11,7 +11,7 @@ export default class MatrixBot {
     baseUrl: string,
     accessToken: string,
     userId: string,
-    config: Config.ConfigSchema
+    config: Config.ConfigSchema,
   ) {
     try {
       this.client = sdk.createClient({
@@ -32,7 +32,7 @@ export default class MatrixBot {
         this.client.joinRoom(member.roomId).then(function () {
           logger.info(
             `User: ${this.userId} auto joined room: ${member.roomId}`,
-            { label: "matrix" }
+            { label: "matrix" },
           );
         });
       }
@@ -64,17 +64,17 @@ export default class MatrixBot {
               await Promise.all(
                 allNominators.map(async (nom: any) => {
                   const targets = await queries.getCurrentTargets(
-                    nom.nominator
+                    nom.nominator,
                   );
                   const whos = targets.join(", ");
                   return `${nom.nominator} is nominating ${whos}`;
-                })
+                }),
               )
             ).join("\n");
             await this.sendMessage(msg);
           }
         }
-      }
+      },
     );
   }
 
@@ -92,7 +92,7 @@ export default class MatrixBot {
       "",
       (err: any) => {
         logger.error(err);
-      }
+      },
     );
   }
 }

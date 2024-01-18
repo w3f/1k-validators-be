@@ -30,7 +30,7 @@ export const eraStatsJob = async (chaindata: ChainData) => {
     Number(currentEra),
     allCandidates.length,
     valid.length,
-    active.length
+    active.length,
   );
 
   const end = Date.now();

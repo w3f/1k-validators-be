@@ -9,7 +9,7 @@ export const setElectionStats = async (
   totalCandidates: number,
   totalVoters: number,
   totalBonded: number,
-  session: number
+  session: number,
 ): Promise<any> => {
   // Try and find an existing record
   const data = await ElectionStatsModel.findOne({
@@ -46,7 +46,7 @@ export const setElectionStats = async (
       totalVoters,
       totalBonded,
       updated: Date.now(),
-    }
+    },
   ).exec();
 };
 

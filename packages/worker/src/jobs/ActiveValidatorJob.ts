@@ -4,7 +4,7 @@ export const activeLabel = { label: "ActiveValidatorJob" };
 
 export const individualActiveValidatorJob = async (
   chaindata: ChainData,
-  candidate: Types.CandidateData
+  candidate: Types.CandidateData,
 ) => {
   const latestValidatorSet = await queries.getLatestValidatorSet();
   if (latestValidatorSet) {
@@ -42,7 +42,7 @@ export const activeValidatorJob = async (chaindata: ChainData) => {
 
 export const processActiveValidatorJob = async (
   job: any,
-  chaindata: ChainData
+  chaindata: ChainData,
 ) => {
   logger.info(`Processing Active Validator Job....`, activeLabel);
   await activeValidatorJob(chaindata);

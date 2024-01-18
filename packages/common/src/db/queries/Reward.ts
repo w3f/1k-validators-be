@@ -7,7 +7,7 @@ export const setPayoutTransaction = async (
   submitter: string,
   blockHash: string,
   blockNumber: number,
-  timestamp: number
+  timestamp: number,
 ): Promise<boolean> => {
   const data = await PayoutTransactionModel.findOne({ validator, era }).lean();
   if (!data) {
@@ -29,7 +29,7 @@ export const setPayoutTransaction = async (
         blockHash,
         blockNumber,
         timestamp,
-      }
+      },
     ).exec();
     return true;
   }
@@ -37,11 +37,11 @@ export const setPayoutTransaction = async (
 
 export const getPayoutTransaction = async (
   validator: string,
-  era: number
+  era: number,
 ): Promise<any> => {
   return PayoutTransactionModel.findOne(
     { validator, era },
-    { _id: 0, __v: 0 }
+    { _id: 0, __v: 0 },
   ).lean();
 };
 
@@ -64,7 +64,7 @@ export const setReward = async (
   date: string,
   chf: number,
   usd: number,
-  eur: number
+  eur: number,
 ): Promise<any> => {
   const data = await RewardModel.findOne({ validator, nominator, era }).lean();
   if (!data) {
@@ -112,24 +112,24 @@ export const setReward = async (
       chf,
       usd,
       eur,
-    }
+    },
   ).exec();
 };
 
 export const getReward = async (
   validator: string,
   nominator: string,
-  era: number
+  era: number,
 ): Promise<any> => {
   return RewardModel.findOne(
     { validator, nominator, era },
-    { _id: 0, __v: 0 }
+    { _id: 0, __v: 0 },
   ).lean();
 };
 
 export const getRewards = async (
   validator: string,
-  era: number
+  era: number,
 ): Promise<any> => {
   return RewardModel.find({ validator, era }, { _id: 0, __v: 0 }).lean();
 };
@@ -139,20 +139,20 @@ export const getRewardsByEra = async (era: number): Promise<any> => {
 };
 
 export const getRewardsByValidator = async (
-  validator: string
+  validator: string,
 ): Promise<any> => {
   return RewardModel.find({ validator }, { _id: 0, __v: 0 }).lean();
 };
 
 export const getRewardsByNominator = async (
-  nominator: string
+  nominator: string,
 ): Promise<any> => {
   return RewardModel.find({ nominator }, { _id: 0, __v: 0 }).lean();
 };
 
 export const getRewardsByEraAndNominator = async (
   era: number,
-  nominator: string
+  nominator: string,
 ): Promise<any> => {
   return RewardModel.find({ era, nominator }, { _id: 0, __v: 0 }).lean();
 };
@@ -229,7 +229,7 @@ export const getAllValidatorStats = async () => {
         ...reward,
         identity: identity,
       };
-    })
+    }),
   );
 
   return identityList.sort((a, b) => b.avgEfficiency - a.avgEfficiency);
@@ -279,7 +279,7 @@ export const getRewardsAllValidatorsTotal = async () => {
         ...reward,
         identity: identity,
       };
-    })
+    }),
   );
 
   return identityList.sort((a, b) => b.total - a.total);
@@ -311,7 +311,7 @@ export const getRewardsAllNominatorsTotal = async () => {
         ...reward,
         identity: identity,
       };
-    })
+    }),
   );
 
   return identityList.sort((a, b) => b.total - a.total);

@@ -49,7 +49,7 @@ export const scorekeeperLabel = { label: "Scorekeeper" };
 // The number of nominations a nominator can get in the set.
 export const autoNumNominations = async (
   api: ApiPromise,
-  nominator: Nominator
+  nominator: Nominator,
 ): Promise<any> => {
   // Get the denomination for the chain
   const chainType = await api.rpc.system.chain();
@@ -71,7 +71,7 @@ export const autoNumNominations = async (
     stashBal -
     Math.max(
       Constants.BALANCE_BUFFER_PERCENT * stashBal,
-      Constants.BALANCE_BUFFER_AMOUNT
+      Constants.BALANCE_BUFFER_AMOUNT,
     );
 
   // Query the staking info of the validator set
@@ -122,7 +122,7 @@ export const autoNumNominations = async (
   // The total amount of validators to nominate
   const adjustedNominationAmount = Math.min(
     Math.ceil(amount * additional),
-    maxNominations
+    maxNominations,
   );
   // The total amount of funds the nominator should have bonded
   const newBondedAmount = (1 + Constants.BALANCE_BUFFER_PERCENT) * sum;
@@ -135,7 +135,7 @@ export const autoNumNominations = async (
 
   logger.info(
     `Auto Nominations - stash: ${stash} with balance ${stashBal} can elect ${adjustedNominationAmount} validators, each having ~${targetValStake} stake`,
-    scorekeeperLabel
+    scorekeeperLabel,
   );
 
   return {
@@ -173,7 +173,7 @@ export default class ScoreKeeper {
   constructor(
     handler: ApiHandler,
     config: Config.ConfigSchema,
-    bot: any = false
+    bot: any = false,
   ) {
     this.handler = handler;
     this.chaindata = new ChainData(this.handler);
@@ -256,7 +256,7 @@ export default class ScoreKeeper {
       await Constraints.checkAllValidateIntentions(
         this.config,
         this.chaindata,
-        candidates
+        candidates,
       );
       // await sessionKeyJob(this.db, this.chaindata, this.candidateCache);
       // await inclusionJob(this.db, this.chaindata, this.candidateCache);
@@ -343,7 +343,7 @@ export default class ScoreKeeper {
       if (!ledger) {
         logger.warn(
           `Adding nominator group -  ${nom.controller} is not bonded, skipping...`,
-          scorekeeperLabel
+          scorekeeperLabel,
         );
         continue;
       } else {
@@ -371,7 +371,7 @@ export default class ScoreKeeper {
           logger.error(JSON.stringify(e), scorekeeperLabel);
           logger.error(
             `Scorekeeper add nominator: ${JSON.stringify(nominator)} failed`,
-            scorekeeperLabel
+            scorekeeperLabel,
           );
         }
 
@@ -390,7 +390,7 @@ export default class ScoreKeeper {
           const stash = await n.stash();
           const proxy = (await n._isProxy) ? `/ ${n.address}` : "";
           return `- ${n.controller} / ${stash} ${proxy}`;
-        })
+        }),
       )
     ).join("\n");
     const nominatorGroupStringHtml = (
@@ -408,18 +408,18 @@ export default class ScoreKeeper {
             : "";
           return `- ${Util.addressUrl(
             n.controller,
-            this.config
+            this.config,
           )} / ${Util.addressUrl(stash, this.config)} (${bal} ${sym}) ${proxy}`;
-        })
+        }),
       )
     ).join("<br>");
     logger.info(
       `Nominator group added! Nominator addresses (Controller / Stash / Proxy):\n${nominatorGroupString}`,
-      scorekeeperLabel
+      scorekeeperLabel,
     );
 
     await this.botLog(
-      `<h4>Nominator group added! Nominator addresses (Controller / Stash / Proxy):</h4><br> ${nominatorGroupStringHtml}`
+      `<h4>Nominator group added! Nominator addresses (Controller / Stash / Proxy):</h4><br> ${nominatorGroupStringHtml}`,
     );
 
     const currentNominationsGroupStringHtml = (
@@ -434,12 +434,12 @@ export default class ScoreKeeper {
 
           return `- ${Util.addressUrl(
             n.controller,
-            this.config
+            this.config,
           )} / ${Util.addressUrl(
             stash,
-            this.config
+            this.config,
           )} <br> Current Nominations:<br> ${current}`;
-        })
+        }),
       )
     ).join("<br>");
 
@@ -454,11 +454,11 @@ export default class ScoreKeeper {
       this.handler,
       claimerCfg,
       this.config.global.networkPrefix,
-      this.bot
+      this.bot,
     );
     this.claimer = claimer;
     await this.botLog(
-      `<h4>Added Reward Claimer:</h4><br> - ${this.claimer.address}`
+      `<h4>Added Reward Claimer:</h4><br> - ${this.claimer.address}`,
     );
     return true;
   }
@@ -468,17 +468,17 @@ export default class ScoreKeeper {
 
     logger.info(
       `Setting candidate identities for ${candidates.length} candidates...`,
-      scorekeeperLabel
+      scorekeeperLabel,
     );
 
     for (const [index, candidate] of candidates.entries()) {
       const identity = await this.chaindata.getFormattedIdentity(
-        candidate.stash
+        candidate.stash,
       );
       await queries.setCandidateIdentity(candidate.stash, identity);
       logger.info(
         `Set candidate identity for ${candidate.stash} [${index} / ${candidates.length}]`,
-        scorekeeperLabel
+        scorekeeperLabel,
       );
     }
   }
@@ -488,7 +488,7 @@ export default class ScoreKeeper {
     if (!this.config?.redis?.host || !this.config?.redis?.port) {
       logger.error(
         `No redis config found. Microservice Jobs will not be started.`,
-        scorekeeperLabel
+        scorekeeperLabel,
       );
       return;
     }
@@ -498,19 +498,19 @@ export default class ScoreKeeper {
       const releaseMonitorQueue =
         await otvWorker.queues.createReleaseMonitorQueue(
           this.config.redis.host,
-          this.config.redis.port
+          this.config.redis.port,
         );
       const constraintsQueue = await otvWorker.queues.createConstraintsQueue(
         this.config.redis.host,
-        this.config.redis.port
+        this.config.redis.port,
       );
       const chaindataQueue = await otvWorker.queues.createChainDataQueue(
         this.config.redis.host,
-        this.config.redis.port
+        this.config.redis.port,
       );
       const blockQueue = await otvWorker.queues.createBlockQueue(
         this.config.redis.host,
-        this.config.redis.port
+        this.config.redis.port,
       );
 
       const removeRepeatableJobs = true;
@@ -584,7 +584,7 @@ export default class ScoreKeeper {
       this.handler,
       this.nominatorGroups,
       this.config,
-      this.bot
+      this.bot,
     );
 
     await startUnclaimedEraJob(this.config, this.chaindata);
@@ -594,7 +594,7 @@ export default class ScoreKeeper {
         this.handler,
         this.claimer,
         this.chaindata,
-        this.bot
+        this.bot,
       );
     }
     await startCancelCron(
@@ -602,14 +602,14 @@ export default class ScoreKeeper {
       this.handler,
       this.nominatorGroups,
       this.chaindata,
-      this.bot
+      this.bot,
     );
     await startStaleNominationCron(
       this.config,
       this.handler,
       this.nominatorGroups,
       this.chaindata,
-      this.bot
+      this.bot,
     );
   }
 
@@ -624,7 +624,7 @@ export default class ScoreKeeper {
     if (this.config.scorekeeper.forceRound) {
       logger.info(
         `Force Round: ${this.config.scorekeeper.forceRound} starting round....`,
-        scorekeeperLabel
+        scorekeeperLabel,
       );
       await this.startRound();
     }
@@ -636,7 +636,7 @@ export default class ScoreKeeper {
     const mainCron = new CronJob(scoreKeeperFrequency, async () => {
       logger.info(
         `Running mainCron of Scorekeeper with frequency ${scoreKeeperFrequency}`,
-        scorekeeperLabel
+        scorekeeperLabel,
       );
 
       if (this.ending) {
@@ -663,12 +663,12 @@ export default class ScoreKeeper {
       if (isNominationRound) {
         logger.info(
           `Last nomination was in era ${lastNominatedEraIndex}. Current era is ${activeEra}. This is a nomination round.`,
-          scorekeeperLabel
+          scorekeeperLabel,
         );
         if (!this.nominatorGroups) {
           logger.info(
             "No nominators spawned. Skipping round.",
-            scorekeeperLabel
+            scorekeeperLabel,
           );
           return;
         }
@@ -676,7 +676,7 @@ export default class ScoreKeeper {
         if (!this.config.scorekeeper.nominating) {
           logger.info(
             "Nominating is disabled in the settings. Skipping round.",
-            scorekeeperLabel
+            scorekeeperLabel,
           );
           return;
         }
@@ -687,7 +687,7 @@ export default class ScoreKeeper {
           for (const nominator of nomGroup) {
             // Get the current nominations of an address
             const currentTargets = await queries.getCurrentTargets(
-              nominator.controller
+              nominator.controller,
             );
             allCurrentTargets.push(currentTargets);
           }
@@ -697,7 +697,7 @@ export default class ScoreKeeper {
         if (!this.currentTargets) {
           logger.info(
             "Current Targets is empty. Starting round.",
-            scorekeeperLabel
+            scorekeeperLabel,
           );
           await this.startRound();
         } else {
@@ -722,7 +722,7 @@ export default class ScoreKeeper {
     } catch (e) {
       logger.warn(
         `There was an error running some cron jobs...`,
-        scorekeeperLabel
+        scorekeeperLabel,
       );
       logger.error(e);
     }
@@ -747,10 +747,10 @@ export default class ScoreKeeper {
 
     logger.info(
       `New round starting at ${now} for next Era ${this.currentEra + 1}`,
-      scorekeeperLabel
+      scorekeeperLabel,
     );
     this.botLog(
-      `New round is starting! Era ${this.currentEra} will begin new nominations.`
+      `New round is starting! Era ${this.currentEra} will begin new nominations.`,
     );
 
     const proxyTxs = await queries.getAllDelayedTxs();
@@ -771,7 +771,7 @@ export default class ScoreKeeper {
     for (const [index, candidate] of allCandidates.entries()) {
       logger.info(
         `checking candidate ${candidate.name} [${index}/${allCandidates.length}]`,
-        scorekeeperLabel
+        scorekeeperLabel,
       );
       await this.constraints.checkCandidate(candidate);
     }
@@ -791,7 +791,7 @@ export default class ScoreKeeper {
           total: score.total,
         };
         return scoredCandidate;
-      })
+      }),
     );
     validCandidates = validCandidates.sort((a, b) => {
       return b.total - a.total;
@@ -799,24 +799,24 @@ export default class ScoreKeeper {
 
     logger.info(
       `number of all candidates: ${allCandidates.length} valid candidates: ${validCandidates.length}`,
-      scorekeeperLabel
+      scorekeeperLabel,
     );
 
     const numValidatorsNominated = await this._doNominations(
       validCandidates,
-      this.nominatorGroups
+      this.nominatorGroups,
     );
 
     if (numValidatorsNominated > 0) {
       logger.info(
         `${numValidatorsNominated} nominated this round, setting last nominated era to ${this.currentEra}`,
-        scorekeeperLabel
+        scorekeeperLabel,
       );
       await queries.setLastNominatedEraIndex(this.currentEra);
     } else {
       logger.info(
         `${numValidatorsNominated} nominated this round, lastNominatedEra not set...`,
-        scorekeeperLabel
+        scorekeeperLabel,
       );
     }
     this.nominating = false;
@@ -831,12 +831,12 @@ export default class ScoreKeeper {
   async _doNominations(
     candidates: Types.CandidateData[],
     nominatorGroups: SpawnedNominatorGroup[] = [],
-    dryRun = false
+    dryRun = false,
   ): Promise<any> {
     if (candidates.length == 0) {
       logger.warn(
         `Candidates length was 0. Skipping nominations`,
-        scorekeeperLabel
+        scorekeeperLabel,
       );
       return;
     }
@@ -874,13 +874,13 @@ export default class ScoreKeeper {
         if (free < 0.1) {
           logger.info(
             `Nominator has low free balance: ${free}`,
-            scorekeeperLabel
+            scorekeeperLabel,
           );
           this.botLog(
             `Nominator Account ${Util.addressUrl(
               nominator.address,
-              this.config
-            )} has low free balance: ${free}`
+              this.config,
+            )} has low free balance: ${free}`,
           );
           continue;
         }
@@ -892,7 +892,7 @@ export default class ScoreKeeper {
         if (targets.length == 0) {
           logger.warn(
             `targets length was 0. Skipping nominations`,
-            scorekeeperLabel
+            scorekeeperLabel,
           );
           return;
         }
@@ -914,7 +914,7 @@ export default class ScoreKeeper {
               const name = candidate.name;
               const score = candidate.total;
               return `- ${name} (${target}) [${score}]`;
-            })
+            }),
           )
         ).join("\n");
 
@@ -930,26 +930,26 @@ export default class ScoreKeeper {
             targets.map(async (target) => {
               const name = (await queries.getCandidate(target)).name;
               return `- ${name} (${Util.addressUrl(target, this.config)})`;
-            })
+            }),
           )
         ).join("<br>");
 
         logger.info(
-          `Nominator ${stash} (${bal} ${sym}) / ${nominator.controller} nominated:\n${targetsString}`
+          `Nominator ${stash} (${bal} ${sym}) / ${nominator.controller} nominated:\n${targetsString}`,
         );
         this.botLog(
           `Nominator ${Util.addressUrl(stash, this.config)} (${bal} ${sym}) / 
           ${Util.addressUrl(
             nominator.controller,
-            this.config
-          )} nominated:<br>${targetsHtml}`
+            this.config,
+          )} nominated:<br>${targetsHtml}`,
         );
       }
     }
 
     logger.info(
       `Number of Validators nominated this round: ${counter}`,
-      scorekeeperLabel
+      scorekeeperLabel,
     );
     this.botLog(`${counter} Validators nominated this round`);
 
@@ -961,7 +961,7 @@ export default class ScoreKeeper {
         nextTargets.map(async (target) => {
           const name = (await queries.getCandidate(target)).name;
           return `- ${name} (${target})`;
-        })
+        }),
       )
     ).join("\n");
     logger.info(`Next targets: \n${nextTargetsString}`, scorekeeperLabel);
@@ -999,13 +999,13 @@ export default class ScoreKeeper {
 
     logger.info(
       `finding validators that were active from era ${startEra} to ${activeEra}`,
-      scorekeeperLabel
+      scorekeeperLabel,
     );
     const [activeValidators, err2] =
       await this.chaindata.activeValidatorsInPeriod(
         Number(startEra),
         activeEra,
-        chainType.name
+        chainType.name,
       );
     if (err2) {
       throw new Error(`Error getting active validators: ${err2}`);
@@ -1023,7 +1023,7 @@ export default class ScoreKeeper {
         if (!current.length) {
           logger.info(
             `${nominator.controller} is not nominating any targets.`,
-            scorekeeperLabel
+            scorekeeperLabel,
           );
           continue;
         }
@@ -1033,7 +1033,7 @@ export default class ScoreKeeper {
           if (!candidate) {
             logger.warn(
               `Ending round - cannot find candidate for ${val} stash: ${val.stash}`,
-              scorekeeperLabel
+              scorekeeperLabel,
             );
             continue;
           }
@@ -1048,7 +1048,7 @@ export default class ScoreKeeper {
     const allCandidates = await queries.allCandidates();
 
     const validCandidates = allCandidates.filter(
-      (candidate) => candidate.valid
+      (candidate) => candidate.valid,
     );
 
     for (const candidate of validCandidates) {
@@ -1058,12 +1058,12 @@ export default class ScoreKeeper {
 
     // Get the set of Good Validators and get the set of Bad validators
     const [good, bad] = await this.constraints.processCandidates(
-      new Set(toProcess.values())
+      new Set(toProcess.values()),
     );
 
     logger.info(
       `Done processing Candidates. ${good.size} good ${bad.size} bad`,
-      scorekeeperLabel
+      scorekeeperLabel,
     );
 
     // For all the good validators, check if they were active in the set for the time period
@@ -1077,7 +1077,7 @@ export default class ScoreKeeper {
       if (!wasActive) {
         logger.info(
           `${stash} was not active during eras ${startEra} to ${activeEra}`,
-          scorekeeperLabel
+          scorekeeperLabel,
         );
         continue;
       }
@@ -1118,7 +1118,7 @@ export default class ScoreKeeper {
 
     const candidate = await queries.getCandidate(stash);
     this.botLog(
-      `${candidate.name} did GOOD! Adding a point. New rank: ${candidate.rank}`
+      `${candidate.name} did GOOD! Adding a point. New rank: ${candidate.rank}`,
     );
 
     return true;

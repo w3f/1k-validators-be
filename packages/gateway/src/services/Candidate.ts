@@ -7,7 +7,7 @@ export const getCandidateData = async (candidate: any): Promise<any> => {
   const denom = Math.pow(10, metadata.decimals);
   const score = await queries.getLatestValidatorScore(candidate.stash);
   const openGovDelegations = await queries.getLargestOpenGovDelegationAddress(
-    candidate.stash
+    candidate.stash,
   );
   const nominations = await queries.getLatestNominatorStake(candidate.stash);
   return {
@@ -74,7 +74,7 @@ export const getCandidate = async (stash: any): Promise<any> => {
     logger.error(
       `findCandidate: ${candidate?.name} ${stash}`,
       { error },
-      label
+      label,
     );
   }
 };
@@ -84,7 +84,7 @@ export const getValidCandidates = async (): Promise<any> => {
   validCandidates = await Promise.all(
     validCandidates.map(async (candidate) => {
       return await getCandidateData(candidate);
-    })
+    }),
   );
   return validCandidates;
 };
@@ -94,7 +94,7 @@ export const getInvalidCandidates = async (): Promise<any> => {
   invalidCandidates = await Promise.all(
     invalidCandidates.map(async (candidate) => {
       return await getCandidateData(candidate);
-    })
+    }),
   );
   return invalidCandidates;
 };
@@ -106,7 +106,7 @@ export const getCandidates = async (): Promise<any> => {
   allCandidates = await Promise.all(
     allCandidates.map(async (candidate) => {
       return await getCandidateData(candidate);
-    })
+    }),
   );
   allCandidates = allCandidates.sort((a, b) => {
     return b.total - a.total;

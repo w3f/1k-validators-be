@@ -12,7 +12,7 @@ export const inclusionJob = async (chaindata: ChainData) => {
     // Set inclusion Rate
     const erasActive = await queries.getHistoryDepthEraPoints(
       candidate.stash,
-      activeEra
+      activeEra,
     );
     const filteredEras = erasActive.filter((era) => era.eraPoints > 0);
     const inclusion = Number(filteredEras.length / 84);
@@ -21,10 +21,10 @@ export const inclusionJob = async (chaindata: ChainData) => {
     // Set span inclusion Rate
     const spanErasActive = await queries.getSpanEraPoints(
       candidate.stash,
-      activeEra
+      activeEra,
     );
     const filteredSpanEras = spanErasActive.filter(
-      (era: any) => era.eraPoints > 0
+      (era: any) => era.eraPoints > 0,
     );
     const spanInclusion = Number(filteredSpanEras.length / 28);
     await queries.setSpanInclusion(candidate.stash, spanInclusion);

@@ -29,7 +29,7 @@ export const getLocationCurrentValidatorSet = async (): Promise<any> => {
               })
             : [],
         };
-      })
+      }),
     );
     return addrs;
   } else {

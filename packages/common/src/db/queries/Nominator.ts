@@ -7,7 +7,7 @@ import { getCandidate } from "./Candidate";
  * @param controllers Active controller accounts for nominators.
  */
 export const removeStaleNominators = async (
-  controllers: string[]
+  controllers: string[],
 ): Promise<boolean> => {
   const nominators = await allNominators();
   const addresses = nominators.map((n) => n.address);
@@ -25,7 +25,7 @@ export const removeStaleNominators = async (
 
 /** Nominator accessor functions */
 export const addNominator = async (
-  nominator: any
+  nominator: any,
   // address: string,
   // stash: string,
   // proxy: string,
@@ -78,7 +78,7 @@ export const addNominator = async (
         // avgStake,
         // nominateAmount,
         // newBondedAmount,
-      }
+      },
     );
   } catch (e) {
     logger.info(JSON.stringify(e));
@@ -94,7 +94,7 @@ export const addNominator = async (
 // Updates the avg stake amount of a nominator
 export const setNominatorAvgStake = async (
   address: string,
-  avgStake: number
+  avgStake: number,
 ): Promise<boolean> => {
   const data = await NominatorModel.findOne({ address }).lean();
   if (!data) return;
@@ -104,14 +104,14 @@ export const setNominatorAvgStake = async (
     },
     {
       avgStake,
-    }
+    },
   );
 };
 
 export const setTarget = async (
   address: string,
   target: string,
-  now: number
+  now: number,
 ): Promise<boolean> => {
   logger.info(`(Db::setTarget) Setting ${address} with new target ${target}.`);
 
@@ -121,13 +121,13 @@ export const setTarget = async (
     },
     {
       nominatedAt: now,
-    }
+    },
   ).exec();
 
   const candidate = await getCandidate(target);
   if (!candidate) {
     logger.info(
-      `(Db::setTarget) getCandidate returned null for ${target}. Deleted candidate?`
+      `(Db::setTarget) getCandidate returned null for ${target}. Deleted candidate?`,
     );
     return false;
   }
@@ -143,7 +143,7 @@ export const setTarget = async (
     },
     {
       $push: { current: currentCandidate },
-    }
+    },
   ).exec();
 
   return true;
@@ -158,7 +158,7 @@ export const clearCurrent = async (address: string): Promise<boolean> => {
     },
     {
       current: [],
-    }
+    },
   ).exec();
 
   return true;
@@ -166,10 +166,10 @@ export const clearCurrent = async (address: string): Promise<boolean> => {
 
 export const setLastNomination = async (
   address: string,
-  now: number
+  now: number,
 ): Promise<boolean> => {
   logger.info(
-    `(Db::setLastNomination) Setting ${address} last nomination to ${now}.`
+    `(Db::setLastNomination) Setting ${address} last nomination to ${now}.`,
   );
   await NominatorModel.findOneAndUpdate(
     {
@@ -177,7 +177,7 @@ export const setLastNomination = async (
     },
     {
       $set: { lastNomination: now },
-    }
+    },
   ).exec();
   return true;
 };

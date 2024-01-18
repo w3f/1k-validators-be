@@ -14,13 +14,13 @@ export const validityJob = async (constraints: Constraints.OTV) => {
 
   logger.info(
     `Validity Done. Took ${(end - start) / 1000} seconds`,
-    constraintsLabel
+    constraintsLabel,
   );
 };
 
 export const candidateValidityJob = async (
   constraints: Constraints.OTV,
-  candidateAddress: string
+  candidateAddress: string,
 ) => {
   const start = Date.now();
 
@@ -32,13 +32,13 @@ export const candidateValidityJob = async (
 
   logger.info(
     `validity for ${candidate.name} Done. (${executionTime}s)`,
-    constraintsLabel
+    constraintsLabel,
   );
 };
 
 export const individualScoreJob = async (
   constraints: Constraints.OTV,
-  candidateAddress: string
+  candidateAddress: string,
 ) => {
   const start = Date.now();
   const candidate = await queries.getCandidate(candidateAddress);
@@ -66,7 +66,7 @@ export const scoreJob = async (constraints: Constraints.OTV) => {
 
   logger.info(
     `Score Done. Took ${(end - start) / 1000} seconds`,
-    constraintsLabel
+    constraintsLabel,
   );
 };
 

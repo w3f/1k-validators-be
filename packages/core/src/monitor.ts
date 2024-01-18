@@ -30,7 +30,7 @@ export default class Monitor {
       });
     } catch {
       logger.info(
-        "{Monitor::getLatestTaggedRelease} Could not get latest release."
+        "{Monitor::getLatestTaggedRelease} Could not get latest release.",
       );
     }
 
@@ -54,7 +54,7 @@ export default class Monitor {
     };
 
     logger.info(
-      `(Monitor::getLatestTaggedRelease) Latest release updated: ${tag_name} | Published at: ${publishedAt}`
+      `(Monitor::getLatestTaggedRelease) Latest release updated: ${tag_name} | Published at: ${publishedAt}`,
     );
 
     return this.latestTaggedRelease;
@@ -75,10 +75,10 @@ export default class Monitor {
 
       const nodeVersion = semver.coerce(version);
       const latestVersion = semver.clean(
-        this.latestTaggedRelease.name.split(`-`)[0]
+        this.latestTaggedRelease.name.split(`-`)[0],
       );
       logger.debug(
-        `(Monitor::ensureUpgrades) ${name} | version: ${nodeVersion} latest: ${latestVersion}`
+        `(Monitor::ensureUpgrades) ${name} | version: ${nodeVersion} latest: ${latestVersion}`,
       );
 
       if (!nodeVersion) {

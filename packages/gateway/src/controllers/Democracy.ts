@@ -79,7 +79,7 @@ export default class DemocracyController {
     response(
       context,
       200,
-      await DemocracyService.getReferendumIndexVotes(index)
+      await DemocracyService.getReferendumIndexVotes(index),
     );
   }
 
@@ -87,7 +87,7 @@ export default class DemocracyController {
     if (await context.cashed()) {
       logger.info(
         `{Gateway} getReferendumAccountVotes is cached`,
-        gatewayLabel
+        gatewayLabel,
       );
       return;
     }
@@ -95,7 +95,7 @@ export default class DemocracyController {
     response(
       context,
       200,
-      await DemocracyService.getReferendumAccountVotes(address)
+      await DemocracyService.getReferendumAccountVotes(address),
     );
   }
 
@@ -120,7 +120,7 @@ export default class DemocracyController {
     if (await context.cashed()) {
       logger.info(
         `{Gateway} getAddressConvictionVotes is cached`,
-        gatewayLabel
+        gatewayLabel,
       );
       return;
     }
@@ -128,17 +128,17 @@ export default class DemocracyController {
     response(
       context,
       200,
-      await DemocracyService.getAddressConvictionVotes(address)
+      await DemocracyService.getAddressConvictionVotes(address),
     );
   }
 
   public static async getAddressTrackConvictionVotes(
-    context: any
+    context: any,
   ): Promise<void> {
     if (await context.cashed()) {
       logger.info(
         `{Gateway} getAddressTrackConvictionVotes is cached`,
-        gatewayLabel
+        gatewayLabel,
       );
       return;
     }
@@ -146,7 +146,7 @@ export default class DemocracyController {
     response(
       context,
       200,
-      await DemocracyService.getAddressTrackConvictionVotes(address, track)
+      await DemocracyService.getAddressTrackConvictionVotes(address, track),
     );
   }
 
@@ -159,17 +159,17 @@ export default class DemocracyController {
     response(
       context,
       200,
-      await DemocracyService.getTrackConvictionVotes(track)
+      await DemocracyService.getTrackConvictionVotes(track),
     );
   }
 
   public static async getReferendumConvictionVotes(
-    context: any
+    context: any,
   ): Promise<void> {
     if (await context.cashed()) {
       logger.info(
         `{Gateway} getReferendumConvictionVotes is cached`,
-        gatewayLabel
+        gatewayLabel,
       );
       return;
     }
@@ -177,17 +177,17 @@ export default class DemocracyController {
     response(
       context,
       200,
-      await DemocracyService.getReferendumConvictionVotes(index)
+      await DemocracyService.getReferendumConvictionVotes(index),
     );
   }
 
   public static async getOpenGovAddressDelegations(
-    context: any
+    context: any,
   ): Promise<void> {
     if (await context.cashed()) {
       logger.info(
         `{Gateway} getOpenGovAddressDelegations is cached`,
-        gatewayLabel
+        gatewayLabel,
       );
       return;
     }
@@ -195,7 +195,7 @@ export default class DemocracyController {
     response(
       context,
       200,
-      await DemocracyService.getOpenGovAddressDelegations(address)
+      await DemocracyService.getOpenGovAddressDelegations(address),
     );
   }
 
@@ -258,7 +258,7 @@ export default class DemocracyController {
     response(
       context,
       200,
-      await DemocracyService.getOpenGovReferendaIndex(Number(index))
+      await DemocracyService.getOpenGovReferendaIndex(Number(index)),
     );
   }
 
@@ -274,7 +274,7 @@ export default class DemocracyController {
     if (await context.cashed()) {
       logger.info(
         `{Gateway} getOpenGovReferendumStats is cached`,
-        gatewayLabel
+        gatewayLabel,
       );
       return;
     }
@@ -282,17 +282,17 @@ export default class DemocracyController {
     response(
       context,
       200,
-      await DemocracyService.getOpenGovReferendumStats(index)
+      await DemocracyService.getOpenGovReferendumStats(index),
     );
   }
 
   public static async getOpenGovReferendumStatsSegment(
-    context: any
+    context: any,
   ): Promise<void> {
     if (await context.cashed()) {
       logger.info(
         `{Gateway} getOpenGovReferendumStats is cached`,
-        gatewayLabel
+        gatewayLabel,
       );
       return;
     }
@@ -300,7 +300,7 @@ export default class DemocracyController {
     response(
       context,
       200,
-      await DemocracyService.getOpenGovReferendumStatsSegment(index, segment)
+      await DemocracyService.getOpenGovReferendumStatsSegment(index, segment),
     );
   }
 }

@@ -18,7 +18,7 @@ export const setLatestSession = async (index: number): Promise<boolean> => {
         session: index.toString(),
         updated: Date.now(),
       },
-    }
+    },
   ).exec();
   return true;
 };

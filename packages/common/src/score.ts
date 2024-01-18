@@ -63,7 +63,7 @@ export const scaledDefined = (
   value,
   arr,
   lowQuartile,
-  highQuartile
+  highQuartile,
 ): number => {
   if (arr.length == 0) return 0;
   const lowQ = quantile(arr, lowQuartile);
@@ -181,7 +181,7 @@ export const scoreDemocracyVotes = (
   cap?: number,
   recentWindow?: number,
   lastMultiplier?: number,
-  totalMultiplier?: number
+  totalMultiplier?: number,
 ) => {
   if ((votes && votes?.length == 0) || !lastReferendum) {
     return {
@@ -218,7 +218,7 @@ export const scoreDemocracyVotes = (
 
   //
   const lastConsistency = consistency(
-    lastValues(sorted, lastReferendum, RECENT_WINDOW)
+    lastValues(sorted, lastReferendum, RECENT_WINDOW),
   );
 
   // The consistency of all historical votes, capped at 1.5x
@@ -234,7 +234,7 @@ export const scoreDemocracyVotes = (
   // Calculate the total score, capping it at 400 points
   const totalDemScore = Math.min(
     demScore * totalConsistencyMultiplier * lastConsistencyMultiplier,
-    maxCap
+    maxCap,
   );
 
   return {

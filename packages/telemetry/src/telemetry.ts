@@ -80,14 +80,14 @@ export default class TelemetryClient {
 
         this.socket.onclose = () => {
           logger.info(
-            `Connection to substrate-telemetry on host ${this.host} closed`
+            `Connection to substrate-telemetry on host ${this.host} closed`,
           );
           reject();
         };
 
         this.socket.onerror = (err: any) => {
           logger.info(
-            `Could not connect to substrate-telemetry on host ${this.host}: `
+            `Could not connect to substrate-telemetry on host ${this.host}: `,
           );
           logger.info(err);
           reject();
@@ -170,7 +170,7 @@ export default class TelemetryClient {
               } minutes `,
               {
                 label: "Telemetry",
-              }
+              },
             );
           }
           const wasDisconnected = this.disconnectedNodes.has(name);
@@ -184,7 +184,7 @@ export default class TelemetryClient {
               } minutes`,
               {
                 label: "Telemetry",
-              }
+              },
             );
           }
         }
@@ -249,7 +249,7 @@ export default class TelemetryClient {
               } minutes `,
               {
                 label: "Telemetry",
-              }
+              },
             );
           }
           const wasDisconnected = this.disconnectedNodes.has(name);
@@ -263,7 +263,7 @@ export default class TelemetryClient {
               } minutes`,
               {
                 label: "Telemetry",
-              }
+              },
             );
           }
         }

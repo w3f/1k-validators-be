@@ -20,7 +20,7 @@ export const logger = winston.createLogger({
     logFilter(filters)(),
     winston.format.printf(({ level, message, timestamp, label }) => {
       return `${level}: ${label ? `[${label}]` : ""} ${message}`;
-    })
+    }),
   ),
   transports: [
     new winston.transports.Console(),
@@ -38,7 +38,7 @@ export const createLogger = (filters: string[]) => {
       logFilter(filters)(),
       winston.format.printf(({ level, message, timestamp, label }) => {
         return `${level}: ${label ? `[${label}]` : ""} ${message}`;
-      })
+      }),
     ),
     transports: [
       new winston.transports.Console(),

@@ -5,7 +5,7 @@ import { processConstraintsJob } from "../jobs/ConstraintsJob";
 export const createConstraintsWorker = async (
   host,
   port,
-  constraints: Constraints.OTV
+  constraints: Constraints.OTV,
 ) => {
   logger.info(`Creating constraints worker...`);
   const worker = await new Worker(
@@ -18,7 +18,7 @@ export const createConstraintsWorker = async (
       },
       concurrency: 10,
       lockDuration: 3000000,
-    }
+    },
   );
   return worker;
 };

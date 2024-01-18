@@ -50,7 +50,7 @@ export default class Server {
         set(key, value) {
           return cache.set(key, value);
         },
-      })
+      }),
     );
 
     // If onlyHealth is true, only serve the health check route. Used when imported from other services for service health checks. False by default
@@ -82,7 +82,7 @@ export default class Server {
       const serveSwagger = config?.server?.serveSwagger || true;
       if (serveSwagger) {
         const swaggerSpec = yamljs.load(
-          path.join(__dirname, "../src/swagger.yml")
+          path.join(__dirname, "../src/swagger.yml"),
         ); //
         this.app.use(
           koaSwagger({
@@ -90,7 +90,7 @@ export default class Server {
             swaggerOptions: {
               spec: swaggerSpec,
             },
-          })
+          }),
         );
       }
 
@@ -130,7 +130,7 @@ export default class Server {
       releaseMonitorQueue,
       constraintsQueue,
       chaindataQueue,
-      blockQueue
+      blockQueue,
     );
   }
 

@@ -10,7 +10,7 @@ export const setEraReward = async (
   blockNumber: number,
   slashKTon: number,
   claimTimestampDelta: number,
-  claimBlockDelta: number
+  claimBlockDelta: number,
 ): Promise<any> => {
   const data = await EraRewardModel.findOne({
     era: era,
@@ -54,14 +54,14 @@ export const setEraReward = async (
       claimTimestampDelta,
       claimBlockDelta,
       updated: Date.now(),
-    }
+    },
   ).exec();
 };
 
 // Retrieves the last era paid event record (by era)
 export const getLastEraRewards = async (
   stash: string,
-  limit: number
+  limit: number,
 ): Promise<any> => {
   return EraRewardModel.find({ stash: stash }).sort("-era").lean().limit(limit);
 };
@@ -69,7 +69,7 @@ export const getLastEraRewards = async (
 // returns a era paid event for a given era
 export const getEraReward = async (
   stash: string,
-  era: number
+  era: number,
 ): Promise<any> => {
   const data = await EraRewardModel.findOne({
     stash: stash,

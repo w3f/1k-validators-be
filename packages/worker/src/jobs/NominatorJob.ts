@@ -15,12 +15,12 @@ export const nominatorJob = async (chaindata: ChainData) => {
     // A validators active nominators
     const { total, others } = await chaindata.getExposure(
       activeEra,
-      candidate.stash
+      candidate.stash,
     );
     const allNominators = await Promise.all(
       nominators.filter((nom) => {
         return nom?.targets?.includes(candidate.stash);
-      })
+      }),
     );
     const inactiveNominators = allNominators.filter((nominator) => {
       let active = false;
@@ -43,7 +43,7 @@ export const nominatorJob = async (chaindata: ChainData) => {
       total,
       totalInactiveStake,
       others,
-      inactiveNominators
+      inactiveNominators,
     );
   }
 

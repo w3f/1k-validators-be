@@ -33,7 +33,7 @@ import {
 export const setReferendum = async (
   referendum: Referendum,
   updatedBlockNumber: number,
-  updatedBlockHash: string
+  updatedBlockHash: string,
 ): Promise<any> => {
   // Try and find an existing record
   const data = await ReferendumModel.findOne({
@@ -88,7 +88,7 @@ export const setReferendum = async (
       updatedBlockNumber: updatedBlockNumber,
       updatedBlockHash: updatedBlockHash,
       updatedTimestamp: Date.now(),
-    }
+    },
   ).exec();
 };
 
@@ -118,7 +118,7 @@ export const getLastReferenda = async (): Promise<any> => {
 export const setReferendumVote = async (
   referendumVote: ReferendumVote,
   updatedBlockNumber: number,
-  updatedBlockHash: string
+  updatedBlockHash: string,
 ): Promise<any> => {
   // Try and find an existing record
   const data = await ReferendumVoteModel.findOne({
@@ -157,7 +157,7 @@ export const setReferendumVote = async (
             democracyVotes: referendumVote.referendumIndex,
           },
           $inc: { democracyVoteCount: 1 },
-        }
+        },
       );
     }
   }
@@ -173,7 +173,7 @@ export const setReferendumVote = async (
       updatedBlockNumber: updatedBlockNumber,
       updatedBlockHash: updatedBlockHash,
       updatedTimestamp: Date.now(),
-    }
+    },
   ).exec();
 };
 
@@ -186,13 +186,13 @@ export const getVoteReferendumIndex = async (index: number): Promise<any> => {
 // LEGACY DEMOCRACY
 // returns all votes for a referendum by account
 export const getAccountVoteReferendum = async (
-  accountId: string
+  accountId: string,
 ): Promise<any> => {
   return ReferendumVoteModel.find({ accountId: accountId }).lean().exec();
 };
 
 export const updateCandidateConvictionVotes = async (
-  address: string
+  address: string,
 ): Promise<any> => {
   const candidate = await CandidateModel.findOne({
     stash: address,
@@ -205,7 +205,7 @@ export const updateCandidateConvictionVotes = async (
       {
         convictionVotes: [],
         convictionVoteCount: 0,
-      }
+      },
     );
 
     const identityVotes = await getIdentityConvictionVoting(address);
@@ -217,7 +217,7 @@ export const updateCandidateConvictionVotes = async (
         .select({ convictionVotes: 1 });
       if (
         !candidateConvictionVotes?.convictionVotes?.includes(
-          vote.referendumIndex
+          vote.referendumIndex,
         )
       ) {
         await CandidateModel.findOneAndUpdate(
@@ -229,7 +229,7 @@ export const updateCandidateConvictionVotes = async (
               convictionVotes: vote.referendumIndex,
             },
             $inc: { convictionVoteCount: 1 },
-          }
+          },
         );
       }
     }
@@ -239,7 +239,7 @@ export const updateCandidateConvictionVotes = async (
 // Sets an OpenGov Conviction Vote
 export const setConvictionVote = async (
   convictionVote: ConvictionVote,
-  updatedBlockNumber: number
+  updatedBlockNumber: number,
 ): Promise<any> => {
   // Try and find an existing conviction vote for an address for the given referendum
   const data = await ConvictionVoteModel.findOne({
@@ -303,7 +303,7 @@ export const setConvictionVote = async (
         voteType: convictionVote.voteType,
         delegatedTo: convictionVote.delegatedTo,
         updatedBlockNumber,
-      }
+      },
     );
   }
 };
@@ -325,7 +325,7 @@ export const getTrackConvictionVoting = async (track: number) => {
 // Gets all conviction votes for a given address for a given track
 export const getAddressTrackConvictionVoting = async (
   address: string,
-  track: number
+  track: number,
 ) => {
   const convictionVotes = await ConvictionVoteModel.find({
     address: address,
@@ -336,7 +336,7 @@ export const getAddressTrackConvictionVoting = async (
 
 export const getAddressReferendumConvictionVoting = async (
   address: string,
-  index: number
+  index: number,
 ) => {
   const convictionVote = await ConvictionVoteModel.findOne({
     address: address,
@@ -358,7 +358,7 @@ export const getAddressReferendumConvictionVoting = async (
 
 // Gets all conviction votes for a given referendum
 export const getReferendumConvictionVoting = async (
-  referendumIndex: number
+  referendumIndex: number,
 ) => {
   // logger.info(
   const convictionVotes = await ConvictionVoteModel.find({
@@ -375,7 +375,7 @@ export const getReferendumConvictionVoting = async (
           ? delegateIdentity?.name
           : vote.delegatedTo,
       };
-    })
+    }),
   );
   return votes;
 };
@@ -418,7 +418,7 @@ export const setOpenGovReferendum = async (
   openGovReferendum: OpenGovReferendum,
   proposedCall: any,
   updatedBlockNumber: number,
-  updatedBlockHash: string
+  updatedBlockHash: string,
 ): Promise<any> => {
   // Try and find an existing record
   const data = await OpenGovReferendumModel.findOne({
@@ -491,12 +491,12 @@ export const setOpenGovReferendum = async (
       updatedBlockHash: updatedBlockHash,
       currentStatus: openGovReferendum.currentStatus,
       updatedTimestamp: Date.now(),
-    }
+    },
   ).exec();
 };
 
 export const getOpenGovReferendumStats = async (
-  index: number
+  index: number,
 ): Promise<any> => {
   const data = await OpenGovReferendumStatsModel.findOne({
     index: index,
@@ -583,7 +583,7 @@ export const getAllOpenGovReferendumStats = async (): Promise<any> => {
 
 export const getSegmentOpenGovReferendumStats = async (
   index: number,
-  segment: string
+  segment: string,
 ): Promise<any> => {
   const isAbstain = segment == "abstain";
   const isAye = segment == "aye";
@@ -797,7 +797,7 @@ export const getSegmentOpenGovReferendumStats = async (
 };
 
 export const setOpenGovReferendumStats = async (
-  referendum: OpenGovReferendumStat
+  referendum: OpenGovReferendumStat,
 ): Promise<any> => {
   // Try and find an existing record
   const data = await OpenGovReferendumStatsModel.findOne({
@@ -848,7 +848,7 @@ export const setOpenGovReferendumStats = async (
       societyVoters: referendum.societyVoters,
       identityVoters: referendum.identityVoters,
       allVoters: referendum.allVoters,
-    }
+    },
   ).exec();
 };
 
@@ -881,7 +881,7 @@ export const getAllOpenGovReferenda = async (): Promise<any> => {
         ...ref,
         voters: voters?.length,
       };
-    })
+    }),
   );
   return refs.sort((a, b) => b.index - a.index);
 };
@@ -912,7 +912,7 @@ export const wipeOpenGovDelegations = async () => {
         delegatorCount: 0,
         delegators: [],
         updated: Date.now(),
-      }
+      },
     );
   }
   return true;
@@ -957,7 +957,7 @@ export const getLargestOpenGovDelegationAddress = async (address) => {
     };
   } else {
     const maxDelegation = await delegations.reduce((prev, current) =>
-      prev.totalBalance > current.totalBalance ? prev : current
+      prev.totalBalance > current.totalBalance ? prev : current,
     );
     return {
       track: maxDelegation.track,
@@ -1059,7 +1059,7 @@ export const setOpenGovVoter = async (voter: OpenGovVoter) => {
         delegationAmount: voter.delegationAmount,
         votingBalance: voter.votingBalance,
         labels: voter.labels,
-      }
+      },
     ).exec();
   }
 };
@@ -1126,7 +1126,7 @@ export const setOpenGovDelegate = async (delegate: OpenGovDelegate) => {
         shortDescription: delegate.shortDescription,
         longDescription: delegate.longDescription,
         isOrganization: delegate.isOrganization,
-      }
+      },
     ).exec();
   }
 };
@@ -1155,7 +1155,7 @@ export const getOpenGovDelegate = async (address: string) => {
         status: r.currentStatus,
         delegatingToIdentity: delegateIdentity?.name,
       };
-    })
+    }),
   );
 
   const delegations = await OpenGovDelegationModel.find({
@@ -1175,7 +1175,7 @@ export const getOpenGovDelegate = async (address: string) => {
             conviction: delegator.conviction,
             identity: identity ? identity?.name : delegator.address,
           };
-        })
+        }),
       );
       return {
         delegate: delegation.delegate,
@@ -1184,10 +1184,10 @@ export const getOpenGovDelegate = async (address: string) => {
         totalBalance: delegation.totalBalance,
         delegatorCount: delegation.delegatorCount,
         delegators: delegators.sort(
-          (a, b) => b.effectiveBalance - a.effectiveBalance
+          (a, b) => b.effectiveBalance - a.effectiveBalance,
         ),
       };
-    })
+    }),
   );
 
   return {
@@ -1226,7 +1226,7 @@ export const getOpenGovDelegates = async () => {
       b.score.totalDemocracyScore - a.score.totalDemocracyScore ||
       b.score.normalizedScore - a.score.normalizedScore ||
       b.castedCount - a.castedCount ||
-      b.delegationAmount - a.delegationAmount
+      b.delegationAmount - a.delegationAmount,
   );
 };
 
@@ -1237,7 +1237,7 @@ export const getOpenGovVoters = async () => {
       b.score.totalDemocracyScore - a.score.totalDemocracyScore ||
       b.score.normalizedScore - a.score.normalizedScore ||
       b.castedCount - a.castedCount ||
-      b.delegationAmount - a.delegationAmount
+      b.delegationAmount - a.delegationAmount,
   );
 };
 
@@ -1266,7 +1266,7 @@ export const getOpenGovVoter = async (address) => {
         status: r.currentStatus,
         delegatingToIdentity: delegateIdentity?.name,
       };
-    })
+    }),
   );
 
   // const voteIndices = contextVotes.map((vote) => {
@@ -1328,13 +1328,13 @@ export const getUpdatingDelegations = async () => {
 };
 
 export const addOpenGovDelegation = async (
-  delegation: ConvictionDelegation
+  delegation: ConvictionDelegation,
 ) => {
   const delegator = {
     address: delegation.address,
     balance: delegation.balance,
-    effectiveBalance: delegation.effectiveBalance,
     conviction: delegation.conviction,
+    effectiveBalance: delegation.effectiveBalance,
   };
 
   // Try to find the delegate
@@ -1345,7 +1345,7 @@ export const addOpenGovDelegation = async (
 
   // There isn't any delegate data, add a record
   if (!data) {
-    const delegate = await new OpenGovDelegationModel({
+    const delegate = new OpenGovDelegationModel({
       delegate: delegation.target,
       track: delegation.track,
       totalBalance: delegation.effectiveBalance,
@@ -1356,8 +1356,17 @@ export const addOpenGovDelegation = async (
     return await delegate.save();
   }
 
+  const existingDelegators = data?.delegators?.map((d) => {
+    return {
+      address: d.address,
+      balance: d.balance,
+      conviction: d.conviction,
+      effectiveBalance: d.effectiveBalance,
+    };
+  });
+
   // If the delegate exists and doesn't have the current delegator, add it and update
-  if (data && !data.delegators?.includes(delegator)) {
+  if (data && !existingDelegators.includes(delegator)) {
     await OpenGovDelegationModel.findOneAndUpdate(
       {
         delegate: delegation.target,
@@ -1370,7 +1379,7 @@ export const addOpenGovDelegation = async (
         },
         $inc: { delegatorCount: 1 },
         updated: Date.now(),
-      }
+      },
     );
   }
 };
@@ -1405,7 +1414,7 @@ export const setOpenGovTrack = async (track: OpenGovTrack) => {
         decisionPeriod: track.decisionPeriod,
         confirmPeriod: track.confirmPeriod,
         minEnactmentPeriod: track.minEnactmentPeriod,
-      }
+      },
     ).exec();
   }
 };

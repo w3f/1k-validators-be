@@ -15,7 +15,7 @@ export const addCandidate = async (
   kusamaStash: string,
   skipSelfStake: boolean,
   matrix: any,
-  bot?: any
+  bot?: any,
 ): Promise<boolean> => {
   const network = (await getChainMetadata()).name;
   const keyring = new Keyring();
@@ -30,7 +30,7 @@ export const addCandidate = async (
   if (!data) {
     logger.info(
       `Did not find candidate data for ${name} - inserting new document.`,
-      { label: "Candidate" }
+      { label: "Candidate" },
     );
 
     const candidate = new CandidateModel({
@@ -59,7 +59,7 @@ export const addCandidate = async (
       kusamaStash,
       skipSelfStake,
       matrix,
-    }
+    },
   );
 };
 
@@ -81,7 +81,7 @@ export const deleteOldCandidateFields = async (): Promise<boolean> => {
         avgClaimBlockDelta: 1,
       },
     },
-    { multi: true, safe: true }
+    // { multi: true, safe: true }
   );
 
   return true;
@@ -100,7 +100,7 @@ export const deleteOldFieldFrom = async (name: string): Promise<boolean> => {
         avgClaimTimestampDelta: 1,
         avgClaimBlockDelta: 1,
       },
-    }
+    },
   ).exec();
 
   return true;
@@ -126,7 +126,7 @@ export const bootstrapCandidate = async (
   location: string,
   provider: string,
   democracyVoteCount: number,
-  democracyVotes: number[]
+  democracyVotes: number[],
 ): Promise<any> => {
   await CandidateModel.findOneAndUpdate(
     { stash },
@@ -142,7 +142,7 @@ export const bootstrapCandidate = async (
       provider,
       democracyVoteCount,
       democracyVotes,
-    }
+    },
   ).exec();
 
   return true;
@@ -151,13 +151,13 @@ export const bootstrapCandidate = async (
 // Sets an invalidityReason for a candidate.
 export const setInvalidityReason = async (
   stash: string,
-  reason: string
+  reason: string,
 ): Promise<boolean> => {
   await CandidateModel.findOneAndUpdate(
     { stash },
     {
       invalidityReasons: reason,
-    }
+    },
   ).exec();
 
   return true;
@@ -166,29 +166,29 @@ export const setInvalidityReason = async (
 export const setLastValid = async (stash: string): Promise<boolean> => {
   await CandidateModel.findOneAndUpdate(
     { stash },
-    { lastValid: Date.now() }
+    { lastValid: Date.now() },
   ).exec();
   return true;
 };
 
 export const setCommission = async (
   stash: string,
-  commission: number
+  commission: number,
 ): Promise<boolean> => {
   await CandidateModel.findOneAndUpdate(
     { stash },
-    { commission: commission }
+    { commission: commission },
   ).exec();
   return true;
 };
 
 export const setController = async (
   stash: string,
-  controller: string
+  controller: string,
 ): Promise<boolean> => {
   await CandidateModel.findOneAndUpdate(
     { stash },
-    { controller: controller }
+    { controller: controller },
   ).exec();
   return true;
 };
@@ -235,7 +235,7 @@ export const setIdentity = async (identity: Identity): Promise<boolean> => {
         riot: identity.riot,
         twitter: identity.twitter,
         web: identity.web,
-      }
+      },
     );
     return true;
   }
@@ -244,7 +244,7 @@ export const setIdentity = async (identity: Identity): Promise<boolean> => {
 // both create an `Identity` record, and add the identity to the candidate
 export const setCandidateIdentity = async (
   stash: string,
-  identity: Identity
+  identity: Identity,
 ): Promise<boolean> => {
   if (identity) {
     let data;
@@ -323,7 +323,7 @@ export const getIdentityAddresses = async (address: string) => {
 export const reportBestBlock = async (
   telemetryId: number,
   details: NodeDetails,
-  now: number
+  now: number,
 ): Promise<boolean> => {
   const block = details[0];
   const data = await CandidateModel.findOne({ telemetryId }).lean();
@@ -359,7 +359,7 @@ export const reportBestBlock = async (
             details: ``,
           },
         ],
-      }
+      },
     ).exec();
   }
   return true;
@@ -370,7 +370,7 @@ export const reportOnline = async (
   telemetryId: number,
   details: NodeDetails,
   now: number,
-  startupTime: number
+  startupTime: number,
 ): Promise<boolean> => {
   const [
     name,
@@ -423,7 +423,7 @@ export const reportOnline = async (
     const iit = await getIIT();
     const { city, region, country, provider, v } = await fetchLocationInfo(
       addr,
-      iit && iit.iit ? iit.iit : null
+      iit && iit.iit ? iit.iit : null,
     );
 
     await setLocation(name, addr, city, region, country, provider, sys, v);
@@ -488,7 +488,7 @@ export const reportOnline = async (
           },
         ],
         implementation: nodeImplementation,
-      }
+      },
     ).exec();
   }
 
@@ -517,7 +517,7 @@ export const reportOnline = async (
         },
       ],
       $inc: { nodeRefs: 1 },
-    }
+    },
   ).exec();
 
   if (data.offlineSince && data.offlineSince !== 0) {
@@ -535,7 +535,7 @@ export const reportOnline = async (
       {
         offlineSince: 0,
         offlineAccumulated: accumulated,
-      }
+      },
     ).exec();
     return true;
   }
@@ -550,7 +550,7 @@ export const reportOnline = async (
  */
 export const reportOffline = async (
   name: string,
-  now: number
+  now: number,
 ): Promise<boolean> => {
   logger.warn(`Reporting ${name} offline at ${now}.`, { label: "Telemetry" });
 
@@ -584,7 +584,7 @@ export const reportOffline = async (
             details: ``,
           },
         ],
-      }
+      },
     );
   }
 
@@ -607,7 +607,7 @@ export const reportOffline = async (
           details: `${data.name} offline. Offline since ${data.offlineSince}.`,
         },
       ],
-    }
+    },
   );
 };
 
@@ -618,7 +618,7 @@ export const reportUpdated = async (name: string): Promise<boolean> => {
     },
     {
       updated: true,
-    }
+    },
   ).exec();
   return true;
 };
@@ -630,7 +630,7 @@ export const reportNotUpdated = async (name: string): Promise<boolean> => {
     },
     {
       updated: false,
-    }
+    },
   ).exec();
   return true;
 };
@@ -638,7 +638,7 @@ export const reportNotUpdated = async (name: string): Promise<boolean> => {
 export const pushRankEvent = async (
   stash: string,
   startEra: number,
-  activeEra: number
+  activeEra: number,
 ): Promise<boolean> => {
   const record = await RankEventModel.findOne({
     address: stash,
@@ -661,10 +661,10 @@ export const pushRankEvent = async (
 
 export const pushFaultEvent = async (
   stash: string,
-  reason: string
+  reason: string,
 ): Promise<boolean> => {
   logger.info(
-    `(Db::pushFault) Adding new fault for ${stash} for reason ${reason}`
+    `(Db::pushFault) Adding new fault for ${stash} for reason ${reason}`,
   );
 
   const record = await CandidateModel.findOne({ stash }).lean();
@@ -692,7 +692,7 @@ export const pushFaultEvent = async (
           prevRank: record.rank,
         },
       },
-    }
+    },
   );
   return false;
 };
@@ -707,7 +707,7 @@ export const addPoint = async (stash: string): Promise<boolean> => {
     },
     {
       rank: data.rank + 1,
-    }
+    },
   ).exec();
 
   return true;
@@ -724,7 +724,7 @@ export const dockPoints = async (stash: string): Promise<boolean> => {
     {
       rank: data.rank - Math.floor(data.rank / 6),
       faults: data.faults + 1,
-    }
+    },
   ).exec();
 
   return true;
@@ -732,7 +732,7 @@ export const dockPoints = async (stash: string): Promise<boolean> => {
 
 // Dock rank when an unclaimed reward is claimed by the bot
 export const dockPointsUnclaimedReward = async (
-  stash: string
+  stash: string,
 ): Promise<boolean> => {
   logger.info(`Docking points for ${stash}.`);
 
@@ -743,7 +743,7 @@ export const dockPointsUnclaimedReward = async (
     },
     {
       rank: data.rank - 3,
-    }
+    },
   ).exec();
 
   return true;
@@ -769,7 +769,7 @@ export const clearAccumulated = async (): Promise<boolean> => {
         },
         {
           offlineAccumulated: 0,
-        }
+        },
       );
     }
   }
@@ -794,7 +794,7 @@ export const clearCandidates = async (): Promise<boolean> => {
         // TMP - forgive offline
         offlineSince: 0,
         offlineAccumulated: 0,
-      }
+      },
     ).exec();
   }
 
@@ -837,10 +837,10 @@ export const getNodeByName = async (name: string): Promise<any> => {
 
 export const setInclusion = async (
   address: string,
-  inclusion: number
+  inclusion: number,
 ): Promise<boolean> => {
   logger.debug(
-    `(Db::setInclusion) Setting ${address} inclusion to ${inclusion}.`
+    `(Db::setInclusion) Setting ${address} inclusion to ${inclusion}.`,
   );
 
   await CandidateModel.findOneAndUpdate(
@@ -849,17 +849,17 @@ export const setInclusion = async (
     },
     {
       $set: { inclusion: inclusion },
-    }
+    },
   ).exec();
   return true;
 };
 
 export const setSpanInclusion = async (
   address: string,
-  spanInclusion: number
+  spanInclusion: number,
 ): Promise<boolean> => {
   logger.debug(
-    `(Db::setInclusion) Setting ${address} span inclusion to ${spanInclusion}.`
+    `(Db::setInclusion) Setting ${address} span inclusion to ${spanInclusion}.`,
   );
 
   await CandidateModel.findOneAndUpdate(
@@ -868,14 +868,14 @@ export const setSpanInclusion = async (
     },
     {
       $set: { spanInclusion: spanInclusion },
-    }
+    },
   ).exec();
   return true;
 };
 
 export const setBonded = async (
   address: string,
-  bonded: number
+  bonded: number,
 ): Promise<boolean> => {
   logger.debug(`(Db::setBonded) Setting ${address} bonded to ${bonded}.`);
 
@@ -885,17 +885,17 @@ export const setBonded = async (
     },
     {
       $set: { bonded: bonded },
-    }
+    },
   ).exec();
   return true;
 };
 
 export const setRewardDestination = async (
   address: string,
-  rewardDestination: string
+  rewardDestination: string,
 ): Promise<boolean> => {
   logger.debug(
-    `(Db::setRewardDestination) Setting ${address} reward destination to ${rewardDestination}.`
+    `(Db::setRewardDestination) Setting ${address} reward destination to ${rewardDestination}.`,
   );
 
   await CandidateModel.findOneAndUpdate(
@@ -904,17 +904,17 @@ export const setRewardDestination = async (
     },
     {
       $set: { rewardDestination: rewardDestination },
-    }
+    },
   ).exec();
   return true;
 };
 
 export const setQueuedKeys = async (
   address: string,
-  queuedKeys: string
+  queuedKeys: string,
 ): Promise<boolean> => {
   logger.debug(
-    `(Db::setQueuedKeys) Setting ${address} queued keys to ${queuedKeys}.`
+    `(Db::setQueuedKeys) Setting ${address} queued keys to ${queuedKeys}.`,
   );
 
   await CandidateModel.findOneAndUpdate(
@@ -923,17 +923,17 @@ export const setQueuedKeys = async (
     },
     {
       $set: { queuedKeys: queuedKeys },
-    }
+    },
   ).exec();
   return true;
 };
 
 export const setNextKeys = async (
   address: string,
-  nextKeys: string
+  nextKeys: string,
 ): Promise<boolean> => {
   logger.debug(
-    `(Db::setNextKeys) Setting ${address} next keys to ${nextKeys}.`
+    `(Db::setNextKeys) Setting ${address} next keys to ${nextKeys}.`,
   );
 
   await CandidateModel.findOneAndUpdate(
@@ -942,14 +942,14 @@ export const setNextKeys = async (
     },
     {
       $set: { nextKeys: nextKeys },
-    }
+    },
   ).exec();
   return true;
 };
 
 export const setActive = async (
   address: string,
-  active: boolean
+  active: boolean,
 ): Promise<boolean> => {
   await CandidateModel.findOneAndUpdate(
     {
@@ -957,7 +957,7 @@ export const setActive = async (
     },
     {
       $set: { active: active },
-    }
+    },
   ).exec();
   return true;
 };
@@ -966,7 +966,7 @@ export const setActive = async (
 export const setCouncilBacking = async (
   address: string,
   councilStake: number,
-  councilVotes: any[]
+  councilVotes: any[],
 ): Promise<boolean> => {
   await CandidateModel.findOneAndUpdate(
     {
@@ -974,7 +974,7 @@ export const setCouncilBacking = async (
     },
     {
       $set: { councilStake: councilStake, councilVotes: councilVotes },
-    }
+    },
   ).exec();
   return true;
 };
@@ -982,7 +982,7 @@ export const setCouncilBacking = async (
 // Set Online Validity Status
 export const setOnlineValidity = async (
   address: string,
-  validity: boolean
+  validity: boolean,
 ): Promise<any> => {
   const data = await CandidateModel.findOne({
     stash: address,
@@ -1014,14 +1014,14 @@ export const setOnlineValidity = async (
             : `${data.name} offline. Offline since ${data.offlineSince}.`,
         },
       ],
-    }
+    },
   ).exec();
 };
 
 // Set Validate Intention Status
 export const setValidateIntentionValidity = async (
   address: string,
-  validity: boolean
+  validity: boolean,
 ): Promise<any> => {
   const data = await CandidateModel.findOne({
     stash: address,
@@ -1051,7 +1051,7 @@ export const setValidateIntentionValidity = async (
               : `${data.name} does not have a validate intention.`,
           },
         ],
-      }
+      },
     ).exec();
     return;
   }
@@ -1072,14 +1072,14 @@ export const setValidateIntentionValidity = async (
             : `${data.name} does not have a validate intention.`,
         },
       ],
-    }
+    },
   ).exec();
 };
 
 // Set Client Version Validity Status
 export const setLatestClientReleaseValidity = async (
   address: string,
-  validity: boolean
+  validity: boolean,
 ): Promise<any> => {
   const data = await CandidateModel.findOne({
     stash: address,
@@ -1111,14 +1111,14 @@ export const setLatestClientReleaseValidity = async (
             : `${data.name} is not on the latest client version`,
         },
       ],
-    }
+    },
   ).exec();
 };
 
 // Set Connection Time Validity Status
 export const setConnectionTimeInvalidity = async (
   address: string,
-  validity: boolean
+  validity: boolean,
 ): Promise<any> => {
   const data = await CandidateModel.findOne({
     stash: address,
@@ -1150,7 +1150,7 @@ export const setConnectionTimeInvalidity = async (
             : `${data.name} has not been connected for minimum length`,
         },
       ],
-    }
+    },
   ).exec();
 };
 
@@ -1158,7 +1158,7 @@ export const setConnectionTimeInvalidity = async (
 export const setIdentityInvalidity = async (
   address: string,
   validity: boolean,
-  details?: string
+  details?: string,
 ): Promise<any> => {
   const data = await CandidateModel.findOne({
     stash: address,
@@ -1188,18 +1188,18 @@ export const setIdentityInvalidity = async (
           details: validity
             ? ""
             : details
-            ? details
-            : `${data.name} has not properly set their identity`,
+              ? details
+              : `${data.name} has not properly set their identity`,
         },
       ],
-    }
+    },
   ).exec();
 };
 
 // Set Identity Validity Status
 export const setOfflineAccumulatedInvalidity = async (
   address: string,
-  validity: boolean
+  validity: boolean,
 ): Promise<any> => {
   const data = await CandidateModel.findOne({
     stash: address,
@@ -1233,14 +1233,14 @@ export const setOfflineAccumulatedInvalidity = async (
               } minutes this week.`,
         },
       ],
-    }
+    },
   ).exec();
 };
 
 // Set Identity Validity Status
 export const setRewardDestinationInvalidity = async (
   address: string,
-  validity: boolean
+  validity: boolean,
 ): Promise<any> => {
   const data = await CandidateModel.findOne({
     stash: address,
@@ -1272,7 +1272,7 @@ export const setRewardDestinationInvalidity = async (
             : `${data.name} does not have reward destination as Staked`,
         },
       ],
-    }
+    },
   ).exec();
 };
 
@@ -1280,7 +1280,7 @@ export const setRewardDestinationInvalidity = async (
 export const setCommissionInvalidity = async (
   address: string,
   validity: boolean,
-  details?: string
+  details?: string,
 ): Promise<any> => {
   const data = await CandidateModel.findOne({
     stash: address,
@@ -1310,11 +1310,11 @@ export const setCommissionInvalidity = async (
           details: validity
             ? ""
             : details
-            ? details
-            : `${data.name} has not properly set their commission`,
+              ? details
+              : `${data.name} has not properly set their commission`,
         },
       ],
-    }
+    },
   ).exec();
 };
 
@@ -1322,7 +1322,7 @@ export const setCommissionInvalidity = async (
 export const setSelfStakeInvalidity = async (
   address: string,
   validity: boolean,
-  details?: string
+  details?: string,
 ): Promise<any> => {
   const data = await CandidateModel.findOne({
     stash: address,
@@ -1352,11 +1352,11 @@ export const setSelfStakeInvalidity = async (
           details: validity
             ? ""
             : details
-            ? details
-            : `${data.name} has not properly bonded enough self stake`,
+              ? details
+              : `${data.name} has not properly bonded enough self stake`,
         },
       ],
-    }
+    },
   ).exec();
 };
 
@@ -1364,7 +1364,7 @@ export const setSelfStakeInvalidity = async (
 export const setUnclaimedInvalidity = async (
   address: string,
   validity: boolean,
-  details?: string
+  details?: string,
 ): Promise<any> => {
   const data = await CandidateModel.findOne({
     stash: address,
@@ -1394,11 +1394,11 @@ export const setUnclaimedInvalidity = async (
           details: validity
             ? ""
             : details
-            ? details
-            : `${data.name} has not properly claimed era rewards`,
+              ? details
+              : `${data.name} has not properly claimed era rewards`,
         },
       ],
-    }
+    },
   ).exec();
 };
 
@@ -1406,7 +1406,7 @@ export const setUnclaimedInvalidity = async (
 export const setBlockedInvalidity = async (
   address: string,
   validity: boolean,
-  details?: string
+  details?: string,
 ): Promise<any> => {
   const data = await CandidateModel.findOne({
     stash: address,
@@ -1437,11 +1437,11 @@ export const setBlockedInvalidity = async (
             details: validity
               ? ""
               : details
-              ? details
-              : `${data.name} blocks external nominations`,
+                ? details
+                : `${data.name} blocks external nominations`,
           },
         ],
-      }
+      },
     ).exec();
   } catch (e) {
     logger.info(`error setting online`);
@@ -1452,7 +1452,7 @@ export const setBlockedInvalidity = async (
 export const setProviderInvalidity = async (
   address: string,
   validity: boolean,
-  details?: string
+  details?: string,
 ): Promise<any> => {
   const data = await CandidateModel.findOne({
     stash: address,
@@ -1483,11 +1483,11 @@ export const setProviderInvalidity = async (
             details: validity
               ? ""
               : details
-              ? details
-              : `${data.name} has banned infrastructure provider: ${data?.infrastructureLocation?.provider}`,
+                ? details
+                : `${data.name} has banned infrastructure provider: ${data?.infrastructureLocation?.provider}`,
           },
         ],
-      }
+      },
     ).exec();
   } catch (e) {
     logger.info(`error setting provider validity`);
@@ -1498,7 +1498,7 @@ export const setProviderInvalidity = async (
 export const setKusamaRankInvalidity = async (
   address: string,
   validity: boolean,
-  details?: string
+  details?: string,
 ): Promise<any> => {
   const data = await CandidateModel.findOne({
     stash: address,
@@ -1529,18 +1529,18 @@ export const setKusamaRankInvalidity = async (
           details: validity
             ? ""
             : details
-            ? details
-            : `${data.name} has not properly claimed era rewards`,
+              ? details
+              : `${data.name} has not properly claimed era rewards`,
         },
       ],
-    }
+    },
   ).exec();
 };
 
 // Sets valid boolean for node
 export const setValid = async (
   address: string,
-  validity: boolean
+  validity: boolean,
 ): Promise<any> => {
   const data = await CandidateModel.findOne({
     stash: address,
@@ -1557,6 +1557,6 @@ export const setValid = async (
     },
     {
       valid: validity,
-    }
+    },
   ).exec();
 };

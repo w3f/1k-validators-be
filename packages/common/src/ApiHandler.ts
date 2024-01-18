@@ -33,18 +33,18 @@ class ApiHandler extends EventEmitter {
       logger.info(`Performing health check for WS Provider for rpc.`, apiLabel);
 
       await sleep(timeout * 1000);
-      if (api.isConnected) {
+      if (api && api?.isConnected) {
         logger.info(`All good. Connected`, apiLabel);
         return true;
       } else {
         logger.info(
           `rpc endpoint still disconnected after ${timeout} seconds. Disconnecting `,
-          apiLabel
+          apiLabel,
         );
         await api.disconnect();
 
         throw new Error(
-          `rpc endpoint still disconnected after ${timeout} seconds.`
+          `rpc endpoint still disconnected after ${timeout} seconds.`,
         );
       }
     };
@@ -54,7 +54,7 @@ class ApiHandler extends EventEmitter {
         endpoints,
         undefined,
         undefined,
-        POLKADOT_API_TIMEOUT
+        POLKADOT_API_TIMEOUT,
       );
 
       api = new ApiPromise({
@@ -62,7 +62,7 @@ class ApiHandler extends EventEmitter {
           endpoints,
           undefined,
           undefined,
-          POLKADOT_API_TIMEOUT
+          POLKADOT_API_TIMEOUT,
         ),
         // throwOnConnect: true,
       });
@@ -85,7 +85,7 @@ class ApiHandler extends EventEmitter {
         })
         .on("error", async (error) => {
           logger.warn("The API has an error", apiLabel);
-          logger.error(error);
+          logger.error(error, apiLabel);
           logger.warn(`attempting to reconnect to ${endpoints[0]}`, apiLabel);
           try {
             await healthCheck(wsProvider);
@@ -106,7 +106,7 @@ class ApiHandler extends EventEmitter {
       if (reconnectTries < 10) {
         return await this.createApi(
           endpoints.sort(() => Math.random() - 0.5),
-          reconnectTries + 1
+          reconnectTries + 1,
         );
       } else {
         return api;
@@ -117,7 +117,7 @@ class ApiHandler extends EventEmitter {
   static async create(endpoints: string[]): Promise<ApiHandler> {
     try {
       const api = await this.createApi(
-        endpoints.sort(() => Math.random() - 0.5)
+        endpoints.sort(() => Math.random() - 0.5),
       );
 
       return new ApiHandler(api, endpoints);

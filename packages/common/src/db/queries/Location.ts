@@ -110,7 +110,7 @@ export const setLocation = async (
   provider: string,
   sys: any,
   v?: boolean,
-  port?: number
+  port?: number,
 ): Promise<any> => {
   // Try and find an existing record
   let data;
@@ -169,7 +169,7 @@ export const setLocation = async (
         session: session || 0,
         updated: Date.now(),
         source: "Telemetry",
-      }
+      },
     ).exec();
   }
 };
@@ -180,7 +180,7 @@ export const setHeartbeatLocation = async (
   address: string, // Validator Stash Address
   addr: string,
   port: number,
-  session: number
+  session: number,
 ): Promise<any> => {
   // Try and find an existing record
   const data = await LocationModel.findOne({
@@ -192,7 +192,7 @@ export const setHeartbeatLocation = async (
     const iit = await getIIT();
     const { city, region, country, provider, v } = await fetchLocationInfo(
       addr,
-      iit && iit.iit ? iit.iit : null
+      iit && iit.iit ? iit.iit : null,
     );
     const candidate = await CandidateModel.findOne({ stash: address })
       .select({ name: 1, stash: 1 })
@@ -221,7 +221,7 @@ export const setHeartbeatLocation = async (
     const iit = await getIIT();
     const { city, region, country, provider } = await fetchLocationInfo(
       addr,
-      iit && iit.iit ? iit.iit : null
+      iit && iit.iit ? iit.iit : null,
     );
     const candidate = await CandidateModel.findOne({ stash: address })
       .select({ name: 1, stash: 1 })
@@ -243,7 +243,7 @@ export const setHeartbeatLocation = async (
         session: session || 0,
         updated: Date.now(),
         source: "Heartbeat",
-      }
+      },
     ).exec();
   } else if (data.port != port) {
     const location = new LocationModel({
@@ -285,7 +285,7 @@ export const getHeartbeatIndex = async () => {
 
 export const setHeartbeatIndex = async (
   earliest: number,
-  latest: number
+  latest: number,
 ): Promise<any> => {
   const exists = await HeartbeatIndexModel.findOne({}).exec();
   if (!exists) {
@@ -298,7 +298,7 @@ export const setHeartbeatIndex = async (
   if (earliest < exists.earliest) {
     await HeartbeatIndexModel.findOneAndUpdate(
       {},
-      { earliest: earliest }
+      { earliest: earliest },
     ).exec();
   }
   if (latest > exists.latest) {

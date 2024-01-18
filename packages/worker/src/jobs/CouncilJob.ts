@@ -43,7 +43,7 @@ export const councilJob = async (chaindata: ChainData) => {
     totalCandidates,
     totalVoters,
     totalBonded,
-    session
+    session,
   );
 
   // Update information about all councillors
@@ -63,7 +63,7 @@ export const councilJob = async (chaindata: ChainData) => {
       await queries.setCouncillor(
         address.toString(),
         "Runner Up",
-        totalBacking
+        totalBacking,
       );
     }
   }
@@ -75,7 +75,7 @@ export const councilJob = async (chaindata: ChainData) => {
       await queries.setCouncillor(
         address.toString(),
         "Candidate",
-        totalBacking
+        totalBacking,
       );
     }
   }

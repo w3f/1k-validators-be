@@ -3,7 +3,7 @@ import { ValidatorScoreMetadataModel } from "../models";
 
 export const setValidatorScoreMetadata = async (
   scoreMetadata: any,
-  updated: number
+  updated: number,
 ): Promise<boolean> => {
   const {
     session,
@@ -125,7 +125,7 @@ export const setValidatorScoreMetadata = async (
       openGovDelegationStats,
       openGovDelegationWeight,
       updated,
-    }
+    },
   ).exec();
 };
 

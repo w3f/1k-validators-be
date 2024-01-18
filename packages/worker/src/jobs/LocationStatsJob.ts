@@ -201,7 +201,7 @@ export const locationStatsJob = async (chaindata: ChainData) => {
     regionVariance,
     countryVariance,
     providerVariance,
-    decentralization
+    decentralization,
   );
 
   const end = Date.now();
@@ -211,7 +211,7 @@ export const locationStatsJob = async (chaindata: ChainData) => {
 
 export const processLocationStatsJob = async (
   job: any,
-  chaindata: ChainData
+  chaindata: ChainData,
 ) => {
   logger.info(`Processing Era Stats Job....`, locationstatsLabel);
   await locationStatsJob(chaindata);

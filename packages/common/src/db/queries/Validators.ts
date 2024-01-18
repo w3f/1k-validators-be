@@ -4,7 +4,7 @@ import { allCandidates } from "./Candidate";
 export const setLatestValidatorSet = async (
   session: number,
   era: number,
-  validators: string[]
+  validators: string[],
 ): Promise<boolean> => {
   const data = await LatestValidatorSetModel.findOne({}).lean();
   if (!data) {
@@ -27,7 +27,7 @@ export const setLatestValidatorSet = async (
         validators: validators,
         updated: Date.now(),
       },
-    }
+    },
   ).exec();
   return true;
 };
@@ -46,7 +46,7 @@ export const setValidatorKeys = async (
     paraAssingnment: string;
     authorityDiscovery: string;
     beefy: string;
-  }
+  },
 ): Promise<boolean> => {
   const data = await ValidatorModel.findOne({ address }).lean();
   if (!data) {
@@ -62,7 +62,7 @@ export const setValidatorKeys = async (
     { address },
     {
       keys: keys,
-    }
+    },
   ).exec();
   return true;
 };

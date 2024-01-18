@@ -5,19 +5,19 @@ import { gatewayLabel } from "../run";
 
 export default class LocationController {
   public static async getLocationCurrentValidatorSet(
-    context: any
+    context: any,
   ): Promise<void> {
     if (await context.cashed(300000)) {
       logger.info(
         `{Gateway} getLocationCurrentValidatorSet is cached`,
-        gatewayLabel
+        gatewayLabel,
       );
       return;
     }
     response(
       context,
       200,
-      await LocationService.getLocationCurrentValidatorSet()
+      await LocationService.getLocationCurrentValidatorSet(),
     );
   }
 

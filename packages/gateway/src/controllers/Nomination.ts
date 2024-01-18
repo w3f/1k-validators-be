@@ -21,7 +21,7 @@ export default class NominationController {
     response(
       context,
       200,
-      await NominationService.getNominatorNominations(address, last)
+      await NominationService.getNominatorNominations(address, last),
     );
   }
 

@@ -4,7 +4,7 @@ export const addDelayedTx = async (
   number: number,
   controller: string,
   targets: string[],
-  callHash: string
+  callHash: string,
 ): Promise<boolean> => {
   const delayedTx = new DelayedTxModel({
     number,
@@ -22,7 +22,7 @@ export const getAllDelayedTxs = async (): Promise<any[]> => {
 
 export const deleteDelayedTx = async (
   number: number,
-  controller: string
+  controller: string,
 ): Promise<boolean> => {
   await DelayedTxModel.deleteOne({ number, controller }).exec();
   return true;

@@ -2,11 +2,15 @@ import Keyring from "@polkadot/keyring";
 import * as bs58 from "bs58";
 import * as hash from "hash.js";
 import { ConfigSchema } from "./config";
-import fetch from "node-fetch";
 import logger from "./logger";
 import { LOCATION_URL } from "./constants";
 import { ApiPromise } from "@polkadot/api";
 import { format } from "date-fns";
+
+import { RequestInfo, RequestInit } from "node-fetch";
+
+const fetch = (url: RequestInfo, init?: RequestInit) =>
+  import("node-fetch").then(({ default: fetch }) => fetch(url, init));
 
 export const sleep = (ms: number): Promise<void> =>
   new Promise((resolve) => {
@@ -64,7 +68,7 @@ export const toDecimals = (raw: number, networkDecimals): number => {
 
 export const formatAddress = (
   address: string,
-  config: ConfigSchema
+  config: ConfigSchema,
 ): string => {
   const keyring = new Keyring();
   const ss58Prefix = config.global.networkPrefix == 2 ? 2 : 0;
@@ -83,7 +87,7 @@ export const subscanUrl = (config: ConfigSchema) => {
 
 export const addressUrl = (address: string, config: ConfigSchema) => {
   return `<a href="https://${subscanUrl(
-    config
+    config,
   )}/account/${address}">${address}</a>`;
 };
 
@@ -99,7 +103,7 @@ export const fetchLocationInfo = async (addr: any, iit: any) => {
     if (!iit) {
       logger.warn(
         `Tried to query location data, but ipinfo api token not set`,
-        { label: "Location" }
+        { label: "Location" },
       );
     }
     if (!addr) {
@@ -166,7 +170,7 @@ export const getGroup = (
   scheduledAvailabilityCores: any,
   validatorGroups: any,
   valIndices: string[],
-  paraValIndices: number[]
+  paraValIndices: number[],
 ) => {
   // console.log(`searching for para: ${paraId}`);
   const core = scheduledAvailabilityCores.find((core: any) => {
@@ -185,7 +189,7 @@ export const getGroup = (
 export const getParaValIndex = (
   index: number,
   valIndices: string[],
-  paraValIndices: number[]
+  paraValIndices: number[],
 ) => {
   return valIndices[paraValIndices[index]];
 };

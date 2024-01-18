@@ -57,7 +57,7 @@ export default class CandidateController {
     response(
       context,
       200,
-      await CandidateService.getLatestNominatorStake(address)
+      await CandidateService.getLatestNominatorStake(address),
     );
   }
 
@@ -71,7 +71,7 @@ export default class CandidateController {
     response(
       context,
       200,
-      await CandidateService.getEraNominatorStake(address, era)
+      await CandidateService.getEraNominatorStake(address, era),
     );
   }
 
@@ -85,7 +85,7 @@ export default class CandidateController {
     response(
       context,
       200,
-      await CandidateService.getNominatorStake(address, limit)
+      await CandidateService.getNominatorStake(address, limit),
     );
   }
 }

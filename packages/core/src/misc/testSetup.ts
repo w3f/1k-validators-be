@@ -17,7 +17,7 @@ export const setProxy = async (
   proxyAddress: string,
   proxyType: string,
   proxyDelay: number,
-  key
+  key,
 ) => {
   const keyring = new Keyring({ type: "sr25519" });
   const tx = api.tx.proxy.addProxy(proxyAddress, proxyType, proxyDelay);
@@ -30,12 +30,12 @@ export const bond = async (
   controllerAddress,
   bondAmount,
   rewardDestination,
-  key
+  key,
 ) => {
   const tx = api.tx.staking.bond(
     controllerAddress,
     bondAmount,
-    rewardDestination
+    rewardDestination,
   );
   const hash = await tx.signAndSend(key, { nonce: -1 });
   await Util.sleep(1000);
@@ -94,7 +94,7 @@ export const verifyIdentity = async (api, addressToVerify, identityHash) => {
     0,
     addressToVerify,
     "Reasonable",
-    identityHash
+    identityHash,
   );
   await tx.signAndSend(keyring.addFromUri("//Alice"), { nonce: -1 });
   await Util.sleep(2000);
@@ -121,7 +121,7 @@ export const startTestSetup = async () => {
   const handler = await ApiHandler.create(["ws://172.28.1.1:9944"]);
   const api = await handler.getApi();
   console.log(
-    `{TestSetup::startTestSetup} handler ws://172.28.1.1:9944 is connected: ${handler.isConnected()}`
+    `{TestSetup::startTestSetup} handler ws://172.28.1.1:9944 is connected: ${handler.isConnected()}`,
   );
 
   const keyring = new Keyring({ type: "sr25519" });
@@ -265,7 +265,7 @@ export const startTestSetup = async () => {
 
   // Send funds to reward claimer:
   console.log(
-    `{TestSetup::RewardClaimer} Sending funds to reward claimer address: ${claimer.address}`
+    `{TestSetup::RewardClaimer} Sending funds to reward claimer address: ${claimer.address}`,
   );
   const amount = 12345678912345;
   await fundFromSudo(api, claimer.address, amount);
@@ -278,20 +278,20 @@ export const startTestSetup = async () => {
   for (const nominator of nominators) {
     // Send funds to the Nominator Stash
     console.log(
-      `{TestSetup::${nominator.name}} Sending funds to nominator stash account: ${nominator.address}`
+      `{TestSetup::${nominator.name}} Sending funds to nominator stash account: ${nominator.address}`,
     );
     await fundFromSudo(api, nominator.address, amount);
 
     // Send funds to the Nominator Controller then bond
     console.log(
-      `{TestSetup::${nominator.name}} Sending funds to nominator controller account: ${nominator.controllerAddress}`
+      `{TestSetup::${nominator.name}} Sending funds to nominator controller account: ${nominator.controllerAddress}`,
     );
     await fundFromSudo(api, nominator.controllerAddress, amount);
     await Util.sleep(1000);
 
     // Bond the Nominator stash to the Nominator controller
     console.log(
-      `{TestSetup::${nominator.name}} Bonding nominator account: ${nominator.address}`
+      `{TestSetup::${nominator.name}} Bonding nominator account: ${nominator.address}`,
     );
     const key = keyring.addFromUri(nominator.seed);
     const bondAmount = "10000000000000000";
@@ -301,7 +301,7 @@ export const startTestSetup = async () => {
     // Transfer to Proxy Address, and set Proxy account as a proxy to the Controller
     if (nominator.proxyAddress) {
       console.log(
-        `{TestSetup::${nominator.name}} Sending funds to nominator proxy account: ${nominator.address}`
+        `{TestSetup::${nominator.name}} Sending funds to nominator proxy account: ${nominator.address}`,
       );
 
       await fundFromSudo(api, nominator.proxyAddress, amount);
@@ -311,7 +311,7 @@ export const startTestSetup = async () => {
         nominator.proxyAddress,
         "Staking",
         30,
-        keyring.addFromUri(nominator.controllerSeed)
+        keyring.addFromUri(nominator.controllerSeed),
       );
     }
   }
@@ -343,7 +343,7 @@ export const startTestSetup = async () => {
     node.keyring = keyring.addFromUri(node.derivation);
 
     console.log(
-      `{TestSetup::${node.name}} setting identity for ${node.name} ${node.address}`
+      `{TestSetup::${node.name}} setting identity for ${node.name} ${node.address}`,
     );
     await setIdentity(api, node.name, node.address, node.keyring);
     await Util.sleep(1000);
@@ -366,7 +366,7 @@ export const startTestSetup = async () => {
       node.controllerAddress,
       "100000000000000",
       "Staked",
-      node.keyring
+      node.keyring,
     );
     await Util.sleep(1000);
     await setSessionKeys(api, node.endpoint, controllerKeyring);
@@ -389,7 +389,7 @@ const logTx = (events, status) => {
         "\t",
         phase.toString(),
         `: ${section}.${method}`,
-        data.toString()
+        data.toString(),
       );
     });
   } else if (status.isFinalized) {

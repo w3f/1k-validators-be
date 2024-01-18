@@ -1,7 +1,7 @@
 import { EraModel } from "../models";
 
 export const setLastNominatedEraIndex = async (
-  index: number
+  index: number,
 ): Promise<boolean> => {
   const data = await EraModel.findOne({ lastNominatedEraIndex: /.*/ }).lean();
   if (!data) {
@@ -21,7 +21,7 @@ export const setLastNominatedEraIndex = async (
         when: Date.now(),
         nextNomination: Date.now() + 86400000,
       },
-    }
+    },
   ).exec();
   return true;
 };

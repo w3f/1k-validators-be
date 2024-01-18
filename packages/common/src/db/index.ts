@@ -13,7 +13,7 @@ export type NodeDetails = [
   string,
   string,
   any?,
-  any?
+  any?,
 ];
 
 export * from "./queries";

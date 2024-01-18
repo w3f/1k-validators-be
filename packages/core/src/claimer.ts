@@ -12,7 +12,7 @@ export default class Claimer {
     handler: ApiHandler,
     cfg: Types.ClaimerConfig,
     networkPrefix = 2,
-    bot?: any
+    bot?: any,
   ) {
     this.handler = handler;
     this.bot = bot;
@@ -26,7 +26,7 @@ export default class Claimer {
     this.signer = keyring.createFromUri(cfg.seed);
 
     logger.info(
-      `(Claimer::constructor) claimer signer spawned: ${this.address}`
+      `(Claimer::constructor) claimer signer spawned: ${this.address}`,
     );
   }
 
@@ -38,7 +38,7 @@ export default class Claimer {
       const candidate = await queries.getCandidate(era.stash);
       if (this.bot) {
         await this.bot.sendMessage(
-          `Claimer claimed era ${era.era} for validator ${candidate.name} - ${era.stash}`
+          `Claimer claimed era ${era.era} for validator ${candidate.name} - ${era.stash}`,
         );
       }
       await Util.sleep(12000);
@@ -52,7 +52,7 @@ export default class Claimer {
 
   sendClaimTx = async (
     tx: SubmittableExtrinsic<"promise">,
-    unclaimedEras: Types.EraReward
+    unclaimedEras: Types.EraReward,
   ): Promise<boolean> => {
     try {
       const unsub = await tx.signAndSend(this.signer, async (result: any) => {
@@ -65,12 +65,12 @@ export default class Claimer {
         if (status.isFinalized) {
           const finalizedBlockHash = status.asFinalized;
           logger.info(
-            `(Claimer::sendClaimTx) Included in block ${finalizedBlockHash}`
+            `(Claimer::sendClaimTx) Included in block ${finalizedBlockHash}`,
           );
           const faultReason = `Era ${unclaimedEras.era} had to be claimed`;
           const faultExists = await queries.pushFaultEvent(
             unclaimedEras.stash,
-            faultReason
+            faultReason,
           );
           if (!faultExists) {
             await this.dockPoints(unclaimedEras.stash, unclaimedEras.era);
@@ -101,11 +101,11 @@ export default class Claimer {
 
     const candidate = await queries.getCandidate(stash);
     logger.info(
-      `${candidate.name} docked points for not claiming era: ${era}. New rank: ${candidate.rank}`
+      `${candidate.name} docked points for not claiming era: ${era}. New rank: ${candidate.rank}`,
     );
     if (this.bot) {
       await this.bot.sendMessage(
-        `${candidate.name} docked points for not claiming era: ${era}. New rank: ${candidate.rank}`
+        `${candidate.name} docked points for not claiming era: ${era}. New rank: ${candidate.rank}`,
       );
     }
 

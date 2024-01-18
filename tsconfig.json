@@ -24,8 +24,8 @@
     { "path": "./packages/common" },
     { "path": "./packages/gateway" },
     { "path":  "./packages/telemetry"},
+    { "path": "./packages/worker" },
     { "path": "./packages/core" },
-    { "path": "./packages/worker" }
   ],
   "files": [],
   "include": ["src/**/*.ts"],

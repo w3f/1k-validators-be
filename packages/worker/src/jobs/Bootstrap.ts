@@ -18,8 +18,8 @@ export const bootstrapJob = async (config: ConfigSchema) => {
     config.global.networkPrefix == 2
       ? config.global.kusamaBootstrapEndpoint
       : config.global.networkPrefix == 0
-      ? config.global.polkadotBootstrapEndpoint
-      : "";
+        ? config.global.polkadotBootstrapEndpoint
+        : "";
 
   try {
     const url = `${bootstrapEndpoint}/candidates`;
@@ -58,7 +58,7 @@ export const bootstrapJob = async (config: ConfigSchema) => {
           location,
           provider,
           democracyVoteCount,
-          democracyVotes
+          democracyVotes,
         );
       }
     }
@@ -73,7 +73,7 @@ export const bootstrapJob = async (config: ConfigSchema) => {
     `BootstrapJob started at ${new Date(start).toString()} Done. Took ${
       (end - start) / 1000
     } seconds`,
-    bootstrapLabel
+    bootstrapLabel,
   );
 };
 

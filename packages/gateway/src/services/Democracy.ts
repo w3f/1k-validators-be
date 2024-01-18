@@ -47,7 +47,7 @@ export const getVoters = async (): Promise<any> => {
           democracyVoteCount: candidate.democracyVoteCount,
           democracyVotes: candidate.democracyVotes,
         };
-    })
+    }),
   );
   allCandidates = allCandidates.sort((a, b) => {
     return b.total - a.total;
@@ -96,7 +96,7 @@ export const getAllDelegations = async (): Promise<any> => {
 };
 
 export const getAddressConvictionVotes = async (
-  address: string
+  address: string,
 ): Promise<any> => {
   const convictionVotes = await queries.getIdentityConvictionVoting(address);
   return convictionVotes;
@@ -104,11 +104,11 @@ export const getAddressConvictionVotes = async (
 
 export const getAddressTrackConvictionVotes = async (
   address: string,
-  track: number
+  track: number,
 ): Promise<any> => {
   const convictionVotes = await queries.getAddressTrackConvictionVoting(
     address,
-    track
+    track,
   );
   return convictionVotes;
 };
@@ -119,7 +119,7 @@ export const getTrackConvictionVotes = async (track: number): Promise<any> => {
 };
 
 export const getReferendumConvictionVotes = async (
-  index: number
+  index: number,
 ): Promise<any> => {
   const convictionVotes = await queries.getReferendumConvictionVoting(index);
   const votes = await Promise.all(
@@ -129,13 +129,13 @@ export const getReferendumConvictionVotes = async (
         ...vote,
         identity: identity ? identity?.name : vote.address,
       };
-    })
+    }),
   );
   return votes;
 };
 
 export const getOpenGovAddressDelegations = async (
-  address: string
+  address: string,
 ): Promise<any> => {
   const delegations = await queries.getOpenGovDelegationAddress(address);
   return delegations;
@@ -182,7 +182,7 @@ export const getOpenGovReferendaStats = async (): Promise<any> => {
 };
 
 export const getOpenGovReferendumStats = async (
-  index: number
+  index: number,
 ): Promise<any> => {
   const refStats = await queries.getOpenGovReferendumStats(index);
   return refStats;
@@ -190,7 +190,7 @@ export const getOpenGovReferendumStats = async (
 
 export const getOpenGovReferendumStatsSegment = async (
   index: number,
-  segment: string
+  segment: string,
 ): Promise<any> => {
   if (
     segment != "aye" &&
@@ -210,7 +210,7 @@ export const getOpenGovReferendumStatsSegment = async (
 
   const refStats = await queries.getSegmentOpenGovReferendumStats(
     index,
-    segment
+    segment,
   );
 
   const votes = await Promise.all(
@@ -218,7 +218,7 @@ export const getOpenGovReferendumStatsSegment = async (
       const identity = await queries.getIdentity(vote);
       const v = await queries.getAddressReferendumConvictionVoting(
         vote,
-        refStats.index
+        refStats.index,
       );
       return {
         address: v.address,
@@ -229,7 +229,7 @@ export const getOpenGovReferendumStatsSegment = async (
         delegatedTo: v.delegatedTo,
         identity: identity && identity?.display ? identity?.display : vote,
       };
-    })
+    }),
   );
   return {
     index: refStats.index,

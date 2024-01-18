@@ -13,12 +13,12 @@ export default class RewardsController {
     response(
       context,
       200,
-      await RewardsService.getRewardsValidatorTotal(context.params.address)
+      await RewardsService.getRewardsValidatorTotal(context.params.address),
     );
   }
 
   public static async getRewardsAllValidatorsTotal(
-    context: any
+    context: any,
   ): Promise<void> {
     if (await context.cashed()) {
       logger.info(`getRewardsAllValidatorsTotal is cached`, label);
@@ -35,7 +35,7 @@ export default class RewardsController {
     response(
       context,
       200,
-      await RewardsService.getRewardsValidatorStats(context.params.address)
+      await RewardsService.getRewardsValidatorStats(context.params.address),
     );
   }
 
@@ -55,12 +55,12 @@ export default class RewardsController {
     response(
       context,
       200,
-      await RewardsService.getRewardsNominatorTotal(context.params.address)
+      await RewardsService.getRewardsNominatorTotal(context.params.address),
     );
   }
 
   public static async getRewardsAllNominatorsTotal(
-    context: any
+    context: any,
   ): Promise<void> {
     if (await context.cashed()) {
       logger.info(`getRewardsAllNominatorsTotal is cached`, label);
@@ -77,7 +77,7 @@ export default class RewardsController {
     response(
       context,
       200,
-      await RewardsService.getRewardsValidator(context.params.address)
+      await RewardsService.getRewardsValidator(context.params.address),
     );
   }
 
@@ -89,7 +89,7 @@ export default class RewardsController {
     response(
       context,
       200,
-      await RewardsService.getRewardsNominator(context.params.address)
+      await RewardsService.getRewardsNominator(context.params.address),
     );
   }
 }

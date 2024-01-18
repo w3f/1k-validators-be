@@ -4,7 +4,7 @@ import { EraPointsModel, TotalEraPointsModel } from "../models";
 export const setEraPoints = async (
   era: number,
   points: number,
-  address: string
+  address: string,
 ): Promise<any> => {
   const data = await EraPointsModel.findOne({
     address: address,
@@ -32,13 +32,13 @@ export const setEraPoints = async (
     },
     {
       eraPoints: points,
-    }
+    },
   ).exec();
 };
 
 export const getEraPoints = async (
   era: number,
-  address: string
+  address: string,
 ): Promise<any> => {
   return EraPointsModel.findOne({
     address: address,
@@ -50,7 +50,7 @@ export const getEraPoints = async (
 export const setTotalEraPoints = async (
   era: number,
   total: number,
-  validators: { address: string; eraPoints: number }[]
+  validators: { address: string; eraPoints: number }[],
 ): Promise<any> => {
   for (const validator of validators) {
     // Try setting the era points
@@ -131,7 +131,7 @@ export const setTotalEraPoints = async (
       average: avg,
       max: max,
       min: min,
-    }
+    },
   ).exec();
 };
 
@@ -151,7 +151,7 @@ export const getLastTotalEraPoints = async (): Promise<any> => {
 
 export const getSpanEraPoints = async (
   address: string,
-  currentEra: number
+  currentEra: number,
 ): Promise<any> => {
   return await EraPointsModel.find({
     address: address,
@@ -164,7 +164,7 @@ export const getSpanEraPoints = async (
 // Gets the era points for a validator for the past 84 eras from a current era
 export const getHistoryDepthEraPoints = async (
   address: string,
-  currentEra: number
+  currentEra: number,
 ): Promise<any> => {
   return await EraPointsModel.find({
     address: address,
@@ -175,7 +175,7 @@ export const getHistoryDepthEraPoints = async (
 };
 
 export const getHistoryDepthTotalEraPoints = async (
-  currentEra: number
+  currentEra: number,
 ): Promise<any> => {
   return await TotalEraPointsModel.find({
     era: { $gte: currentEra - 83 },

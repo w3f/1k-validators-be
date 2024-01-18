@@ -7,11 +7,11 @@ export const getNominations = async (): Promise<any> => {
 
 export const getNominatorNominations = async (
   address: string,
-  last = 30
+  last = 30,
 ): Promise<any> => {
   const nominations = await queries.getLastNominations(
     address,
-    last ? Number(last) : 30
+    last ? Number(last) : 30,
   );
 };
 

@@ -4,7 +4,7 @@ import { CouncillorModel } from "../models";
 export const setCouncillor = async (
   address: string,
   membershipStatus: string,
-  backing: number
+  backing: number,
 ): Promise<any> => {
   // Try and find an existing record
   const data = await CouncillorModel.findOne({
@@ -35,7 +35,7 @@ export const setCouncillor = async (
       status: membershipStatus,
       backing,
       updated: Date.now(),
-    }
+    },
   );
 };
 

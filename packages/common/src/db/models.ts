@@ -110,7 +110,7 @@ export const LatestSessionSchema = new Schema({
 
 export const LatestSessionModel = mongoose.model(
   "LatestSession",
-  LatestSessionSchema
+  LatestSessionSchema,
 );
 
 export const LatestValidatorSetSchema = new Schema({
@@ -121,7 +121,7 @@ export const LatestValidatorSetSchema = new Schema({
 
 export const LatestValidatorSetModel = mongoose.model(
   "LatestValidatorSet",
-  LatestValidatorSetSchema
+  LatestValidatorSetSchema,
 );
 
 export const LocationSchema = new Schema({
@@ -166,12 +166,12 @@ export const NominatorStakeSchema = new Schema({
   updated: Number,
 });
 
-// NominatorStakeSchema.index({ validator: 1, era: -1 });
+NominatorStakeSchema.index({ validator: 1, era: -1 });
 // NominatorStakeSchema.index({ era: -1 });
 
 export const NominatorStakeModel = mongoose.model(
   "NominatorStake",
-  NominatorStakeSchema
+  NominatorStakeSchema,
 );
 
 export const UpdatingDelegations = new Schema({
@@ -180,7 +180,7 @@ export const UpdatingDelegations = new Schema({
 
 export const UpdatingDelegationsModel = mongoose.model(
   "UpdatingDelegations",
-  UpdatingDelegations
+  UpdatingDelegations,
 );
 
 export const DelegationSchema = new Schema({
@@ -200,7 +200,7 @@ export const DelegationModel = mongoose.model("Delegation", DelegationSchema);
 
 export const OpenGovDelegationSchema = new Schema({
   delegate: { type: String, index: true },
-  track: Number,
+  track: { type: Number, index: true },
   totalBalance: Number,
   delegatorCount: Number,
   delegators: [
@@ -216,8 +216,10 @@ export const OpenGovDelegationSchema = new Schema({
 
 export const OpenGovDelegationModel = mongoose.model(
   "OpenGovDelegation",
-  OpenGovDelegationSchema
+  OpenGovDelegationSchema,
 );
+
+OpenGovDelegationSchema.index({ delegate: 1, track: 1 });
 
 export const CandidateSchema = new Schema({
   // The inherited telemetry ID.
@@ -368,7 +370,7 @@ export const ChainMetadataSchema = new Schema({
 
 export const ChainMetadataModel = mongoose.model(
   "ChainMetadata",
-  ChainMetadataSchema
+  ChainMetadataSchema,
 );
 
 // A historical event when the bot will claim a reward on behalf of a nominator
@@ -385,7 +387,7 @@ export const BotClaimEventSchema = new Schema({
 
 export const BotClaimEventModel = mongoose.model(
   "BotClaimEvent",
-  BotClaimEventSchema
+  BotClaimEventSchema,
 );
 
 export const NominationModel = mongoose.model("Nomination", NominationSchema);
@@ -424,7 +426,7 @@ export const TotalEraPointsSchema = new Schema({
 
 export const TotalEraPointsModel = mongoose.model(
   "TotalEraPoints",
-  TotalEraPointsSchema
+  TotalEraPointsSchema,
 );
 
 export const EraStatsSchema = new Schema({
@@ -490,7 +492,7 @@ export const ValidatorScoreSchema = new Schema({
 
 export const ValidatorScoreModel = mongoose.model(
   "ValidatorScore",
-  ValidatorScoreSchema
+  ValidatorScoreSchema,
 );
 
 // ValidatorScoreModel.syncIndexes().then((r) => logger.info(`indexes synced`));
@@ -746,7 +748,7 @@ export const ValidatorScoreMetadataSchema = new Schema({
 
 export const ValidatorScoreMetadataModel = mongoose.model(
   "ValidatorScoreMetadata",
-  ValidatorScoreMetadataSchema
+  ValidatorScoreMetadataSchema,
 );
 
 export const ReleaseSchema = new Schema({
@@ -798,7 +800,7 @@ export const LocationStatsSchema = new Schema({
 
 export const LocationStatsModel = mongoose.model(
   "LocationStatsModel",
-  LocationStatsSchema
+  LocationStatsSchema,
 );
 
 // A council member
@@ -842,7 +844,7 @@ export const ElectionStatsSchema = new Schema({
 
 export const ElectionStatsModel = mongoose.model(
   "ElectionStats",
-  ElectionStatsSchema
+  ElectionStatsSchema,
 );
 
 // Era payout events that happen at the end of every era
@@ -954,7 +956,7 @@ export const ReferendumVoteSchema = new Schema({
 
 export const ReferendumVoteModel = mongoose.model(
   "ReferendumVote",
-  ReferendumVoteSchema
+  ReferendumVoteSchema,
 );
 
 export const ConvictionVote = new Schema({
@@ -988,7 +990,7 @@ export const ConvictionVote = new Schema({
 
 export const ConvictionVoteModel = mongoose.model(
   "ConvictionVote",
-  ConvictionVote
+  ConvictionVote,
 );
 
 export const OpenGovReferendum = new Schema({
@@ -1023,7 +1025,7 @@ export const OpenGovReferendum = new Schema({
 
 export const OpenGovReferendumModel = mongoose.model(
   "OpenGovReferendum",
-  OpenGovReferendum
+  OpenGovReferendum,
 );
 
 export const OpenGovReferendumStats = new Schema({
@@ -1167,7 +1169,7 @@ export const OpenGovReferendumStats = new Schema({
 
 export const OpenGovReferendumStatsModel = mongoose.model(
   "OpenGovReferendumStats",
-  OpenGovReferendumStats
+  OpenGovReferendumStats,
 );
 
 export const OpenGovVoter = new Schema({
@@ -1223,7 +1225,7 @@ export const OpenGovDelegate = new Schema({
 
 export const OpenGovDelegateModel = mongoose.model(
   "OpenGovDelegate",
-  OpenGovDelegate
+  OpenGovDelegate,
 );
 
 export const OpenGovTrack = new Schema({
@@ -1268,7 +1270,7 @@ export const HeartbeatIndex = new Schema({
 
 export const HeartbeatIndexModel = mongoose.model(
   "HeartbeatIndex",
-  HeartbeatIndex
+  HeartbeatIndex,
 );
 
 export const Validator = new Schema({
@@ -1306,7 +1308,7 @@ export const PayoutTransaction = new Schema({
 
 export const PayoutTransactionModel = mongoose.model(
   "PayoutTransaction",
-  PayoutTransaction
+  PayoutTransaction,
 );
 
 export const Reward = new Schema({

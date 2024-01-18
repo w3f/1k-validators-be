@@ -32,7 +32,7 @@ export const addValidityJob = async (queue: Queue, repeat: number) => {
         type: "exponential",
         delay: 1000,
       },
-    }
+    },
   );
   // }
 };
@@ -54,7 +54,7 @@ export const addScoreJob = async (queue: Queue, repeat: number) => {
         type: "exponential",
         delay: 1000,
       },
-    }
+    },
   );
   // }
   logger.info(`adding Score Job to Queue.....`, constraintsLabel);

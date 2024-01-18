@@ -42,7 +42,7 @@ import { percentage, timeRemaining } from "./util";
 
 export interface Constraints {
   processCandidates(
-    candidates: Set<Types.CandidateData>
+    candidates: Set<Types.CandidateData>,
   ): Promise<[Set<any>, Set<any>]>;
 }
 
@@ -189,7 +189,7 @@ export class OTV implements Constraints {
     }
     if (this.config?.score?.openGovDelegation) {
       this.OPENGOV_DELEGATION_WEIGHT = Number(
-        this.config?.score?.openGovDelegation
+        this.config?.score?.openGovDelegation,
       );
     }
     if (this.config?.score?.rpc) {
@@ -298,13 +298,13 @@ export class OTV implements Constraints {
       const remaining = timeRemaining(
         index + 1,
         candidates.length,
-        end - start
+        end - start,
       );
       logger.info(
         `checked ${candidate.name}: ${isValid} [${index + 1}/${
           candidates.length
         }] ${percentage(index + 1, candidates.length)} ${time} ${remaining}`,
-        constraintsLabel
+        constraintsLabel,
       );
     }
   }
@@ -321,12 +321,12 @@ export class OTV implements Constraints {
     const validateValid = await checkValidateIntention(
       this.config,
       this.chaindata,
-      candidate
+      candidate,
     );
     if (!validateValid) {
       logger.warn(
         `${candidate.name} validate intention not valid`,
-        constraintsLabel
+        constraintsLabel,
       );
     }
 
@@ -337,12 +337,12 @@ export class OTV implements Constraints {
 
     const monitoringWeekValid = await checkConnectionTime(
       this.config,
-      candidate
+      candidate,
     );
     if (!monitoringWeekValid) {
       logger.warn(
         `${candidate.name} monitoring week not valid`,
-        constraintsLabel
+        constraintsLabel,
       );
     }
 
@@ -376,7 +376,7 @@ export class OTV implements Constraints {
         : (await checkUnclaimed(
             this.chaindata,
             this.unclaimedEraThreshold,
-            candidate
+            candidate,
           )) || false;
 
     const blockedValid =
@@ -433,7 +433,7 @@ export class OTV implements Constraints {
     const candidates = await validCandidates();
     logger.info(
       `scoring ${candidates.length} valid candidates..`,
-      constraintsLabel
+      constraintsLabel,
     );
     await this.scoreCandidates(candidates);
   }
@@ -547,7 +547,7 @@ export class OTV implements Constraints {
         candidate.spanInclusion,
         spanInclusionStats.values,
         0.2,
-        0.75
+        0.75,
       ) || 0;
     const spanInclusionScore =
       (1 - scaledSpanInclusion) * this.SPAN_INCLUSION_WEIGHT;
@@ -574,7 +574,7 @@ export class OTV implements Constraints {
         candidate.bonded ? candidate.bonded : 0,
         bondedStats.values,
         0.05,
-        0.85
+        0.85,
       ) || 0;
     const bondedScore = scaleBonded * this.BONDED_WEIGHT;
 
@@ -604,8 +604,8 @@ export class OTV implements Constraints {
     const locationScore = bannedProvider
       ? 0
       : candidate.location == "No Location"
-      ? 0.25 * this.LOCATION_WEIGHT
-      : (1 - scaledLocation) * this.LOCATION_WEIGHT || 0;
+        ? 0.25 * this.LOCATION_WEIGHT
+        : (1 - scaledLocation) * this.LOCATION_WEIGHT || 0;
 
     const candidateRegion = regionStats.values.filter((region) => {
       if (
@@ -623,8 +623,8 @@ export class OTV implements Constraints {
     const regionScore = bannedProvider
       ? 0
       : candidate.location == "No Location"
-      ? 0.25 * this.REGION_WEIGHT
-      : (1 - scaledRegion) * this.REGION_WEIGHT || 0;
+        ? 0.25 * this.REGION_WEIGHT
+        : (1 - scaledRegion) * this.REGION_WEIGHT || 0;
 
     const candidateCountry = countryStats.values.filter((country) => {
       if (
@@ -642,8 +642,8 @@ export class OTV implements Constraints {
     const countryScore = bannedProvider
       ? 0
       : candidate.location == "No Location"
-      ? 0.25 * this.COUNTRY_WEIGHT
-      : (1 - scaledCountry) * this.COUNTRY_WEIGHT || 0;
+        ? 0.25 * this.COUNTRY_WEIGHT
+        : (1 - scaledCountry) * this.COUNTRY_WEIGHT || 0;
 
     const candidateProvider = providerStats.values.filter((provider) => {
       if (
@@ -661,8 +661,8 @@ export class OTV implements Constraints {
     const providerScore = bannedProvider
       ? 0
       : candidate.location == "No Location"
-      ? 0.25 * this.PROVIDER_WEIGHT
-      : (1 - scaledProvider) * this.PROVIDER_WEIGHT || 0;
+        ? 0.25 * this.PROVIDER_WEIGHT
+        : (1 - scaledProvider) * this.PROVIDER_WEIGHT || 0;
 
     const nomStake = await getLatestNominatorStake(candidate.stash);
     let totalNominatorStake = 0;
@@ -692,7 +692,7 @@ export class OTV implements Constraints {
         totalNominatorStake,
         nominatorStakeStats.values,
         0.1,
-        0.95
+        0.95,
       ) || 0;
     const nominatorStakeScore = scaledNominatorStake * this.NOMINATIONS_WEIGHT;
 
@@ -717,21 +717,21 @@ export class OTV implements Constraints {
     const isDelegationsUpdating = await queries.getUpdatingDelegations();
     if (!isDelegationsUpdating) {
       const openGovDelegation = await getLargestOpenGovDelegationAddress(
-        candidate.stash
+        candidate.stash,
       );
       const scaledOpenGovDelegations =
         scaledDefined(
           openGovDelegation.totalBalance,
           openGovDelegationStats.values,
           0.1,
-          0.6
+          0.6,
         ) || 0;
       openGovDelegationScore =
         scaledOpenGovDelegations * this.OPENGOV_DELEGATION_WEIGHT;
     } else {
       logger.info(
         `Delegations are updating... defaulting ${candidate.name} - ${candidate.stash} to prev delegation score`,
-        constraintsLabel
+        constraintsLabel,
       );
       // If delegations are updating, set the score to what it previously was
       const score = await queries.getLatestValidatorScore(candidate.stash);
@@ -777,7 +777,7 @@ export class OTV implements Constraints {
       : [];
     const { totalDemocracyScore: totalOpenGovScore } = scoreDemocracyVotes(
       candidateConvictionVotes,
-      lastOpenGovReferendum
+      lastOpenGovReferendum,
     );
     const openGovValues = openGovStats.values;
     const scaledOpenGovScore =
@@ -861,7 +861,7 @@ export class OTV implements Constraints {
       const remaining = timeRemaining(
         index + 1,
         candidates.length,
-        end - start
+        end - start,
       );
 
       logger.info(
@@ -870,7 +870,7 @@ export class OTV implements Constraints {
         }] ${percentage(index + 1, candidates.length)} ${time} ${remaining}`,
         {
           label: "Constraints",
-        }
+        },
       );
     }
   }
@@ -881,11 +881,11 @@ export class OTV implements Constraints {
   ///     - We go through all the candidates and if they meet all constraints, they get called to the 'good' set
   ///     - If they do not meet all the constraints, they get added to the bad set
   async processCandidates(
-    candidates: Set<Types.CandidateData>
+    candidates: Set<Types.CandidateData>,
   ): Promise<
     [
       Set<Types.CandidateData>,
-      Set<{ candidate: Types.CandidateData; reason: string }>
+      Set<{ candidate: Types.CandidateData; reason: string }>,
     ]
   > {
     logger.info(`Processing ${candidates.size} candidates`, constraintsLabel);
@@ -898,7 +898,7 @@ export class OTV implements Constraints {
       if (!candidate) {
         logger.warn(
           `candidate is null. Skipping processing..`,
-          constraintsLabel
+          constraintsLabel,
         );
         continue;
       }
@@ -978,7 +978,7 @@ export const getInclusionValues = (validCandidates: Types.CandidateData[]) => {
 };
 
 export const getSpanInclusionValues = (
-  validCandidates: Types.CandidateData[]
+  validCandidates: Types.CandidateData[],
 ) => {
   const spanInclusionValues = validCandidates.map((candidate) => {
     return candidate.spanInclusion ? candidate.spanInclusion : 0;
@@ -988,7 +988,7 @@ export const getSpanInclusionValues = (
 };
 
 export const getDiscoveredAtValues = (
-  validCandidates: Types.CandidateData[]
+  validCandidates: Types.CandidateData[],
 ) => {
   const discoveredAtValues = validCandidates.map((candidate) => {
     return candidate.discoveredAt ? candidate.discoveredAt : 0;
@@ -998,7 +998,7 @@ export const getDiscoveredAtValues = (
 };
 
 export const getNominatedAtValues = (
-  validCandidates: Types.CandidateData[]
+  validCandidates: Types.CandidateData[],
 ) => {
   const nominatedAtValues = validCandidates.map((candidate) => {
     return candidate.nominatedAt ? candidate.nominatedAt : 0;
@@ -1151,7 +1151,7 @@ export const getProviderValues = (validCandidates: Types.CandidateData[]) => {
 };
 
 export const getNominatorStakeValues = async (
-  validCandidates: Types.CandidateData[]
+  validCandidates: Types.CandidateData[],
 ) => {
   const ownNominators = await allNominators();
   const ownNominatorAddresses = ownNominators.map((nom) => {
@@ -1183,7 +1183,7 @@ export const getNominatorStakeValues = async (
       } catch (e) {
         logger.warn(
           `Can't find nominator stake values for ${candidate.name}`,
-          constraintsLabel
+          constraintsLabel,
         );
       }
     }
@@ -1219,14 +1219,14 @@ export const getNominatorStakeValues = async (
 // };
 
 export const getOpenGovDelegationValues = async (
-  validCandidates: Types.CandidateData[]
+  validCandidates: Types.CandidateData[],
 ) => {
   const delegationValues = [];
   for (const candidate of validCandidates) {
     const delegations = await getOpenGovDelegationAddress(candidate.stash);
     if (delegations.length == 0) continue;
     const maxTrack = await delegations.reduce((prev, current) =>
-      prev.totalBalance > current.totalBalance ? prev : current
+      prev.totalBalance > current.totalBalance ? prev : current,
     );
     const totalVal = delegations.map((del) => {
       return {
@@ -1274,7 +1274,7 @@ export const getOpenGovDelegationValues = async (
 // };
 
 export const getOpenGovValues = async (
-  validCandidates: Types.CandidateData[]
+  validCandidates: Types.CandidateData[],
 ) => {
   const lastReferendum = (await getLastOpenGovReferenda())[0]?.index;
 
@@ -1309,7 +1309,7 @@ export const checkOnline = async (candidate: any) => {
 export const checkValidateIntention = async (
   config: Config.ConfigSchema,
   chaindata: ChainData,
-  candidate: any
+  candidate: any,
 ) => {
   const validators = await chaindata.getValidators();
   if (!validators.includes(Util.formatAddress(candidate?.stash, config))) {
@@ -1325,7 +1325,7 @@ export const checkValidateIntention = async (
 export const checkAllValidateIntentions = async (
   config: Config.ConfigSchema,
   chaindata: ChainData,
-  candidates: any
+  candidates: any,
 ) => {
   const validators = await chaindata.getValidators();
   for (const candidate of candidates) {
@@ -1340,7 +1340,7 @@ export const checkAllValidateIntentions = async (
 // checks that the validator is on the latest client version
 export const checkLatestClientVersion = async (
   config: Config.ConfigSchema,
-  candidate: any
+  candidate: any,
 ) => {
   const skipClientUpgrade = config.constraints?.skipClientUpgrade || false;
   if (skipClientUpgrade!) {
@@ -1380,7 +1380,7 @@ export const checkLatestClientVersion = async (
 
 export const checkConnectionTime = async (
   config: Config.ConfigSchema,
-  candidate: any
+  candidate: any,
 ) => {
   if (!config?.constraints?.skipConnectionTime) {
     const now = new Date().getTime();
@@ -1426,7 +1426,7 @@ export const checkOffline = async (candidate: any) => {
 export const checkCommission = async (
   chaindata: ChainData,
   targetCommission: number,
-  candidate: any
+  candidate: any,
 ) => {
   const [commission, err] = await chaindata.getCommission(candidate.stash);
   if (err) {
@@ -1450,7 +1450,7 @@ export const checkCommission = async (
 export const checkSelfStake = async (
   chaindata: ChainData,
   targetSelfStake: number,
-  candidate: any
+  candidate: any,
 ) => {
   if (!candidate.skipSelfStake) {
     const [bondedAmt, err2] = await chaindata.getBondedAmount(candidate.stash);
@@ -1464,7 +1464,7 @@ export const checkSelfStake = async (
       invalidityString = `${
         candidate.name
       } has less than the minimum amount bonded: ${parseInt(
-        bondedAmt.toString()
+        bondedAmt.toString(),
       )} is bonded.`;
       await setSelfStakeInvalidity(candidate.stash, false, invalidityString);
       return false;
@@ -1477,7 +1477,7 @@ export const checkSelfStake = async (
 export const checkUnclaimed = async (
   chaindata: ChainData,
   unclaimedEraThreshold: number,
-  candidate: any
+  candidate: any,
 ) => {
   const [currentEra, err3] = await chaindata.getActiveEraIndex();
   const threshold = currentEra - unclaimedEraThreshold - 1; // Validators cannot have unclaimed rewards before this era
@@ -1513,7 +1513,7 @@ export const checkBlocked = async (chaindata: ChainData, candidate: any) => {
 // Checks if the candidate has a banned infrastructure provider
 export const checkProvider = async (
   config: Config.ConfigSchema,
-  candidate: any
+  candidate: any,
 ) => {
   const location = await queries.getCandidateLocation(candidate.name);
   if (location && location.provider) {
@@ -1523,7 +1523,7 @@ export const checkProvider = async (
         `${candidate.name} has banned provider: ${location.provider}`,
         {
           label: "Constraints",
-        }
+        },
       );
       await setProviderInvalidity(candidate.stash, false);
       return false;

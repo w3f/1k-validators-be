@@ -6,7 +6,7 @@ export const getBlockIndex = async () => {
 
 export const setBlockIndex = async (
   earliest: number,
-  latest: number
+  latest: number,
 ): Promise<any> => {
   const exists = await BlockIndexModel.findOne({}).exec();
   if (!exists) {

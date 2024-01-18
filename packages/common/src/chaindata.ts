@@ -139,7 +139,7 @@ export class ChainData {
     validatorGroups: any,
     validators: any,
     paraValIndices: any,
-    blockNum: number
+    blockNum: number,
   ) => {
     // The scheduled availability cores and which validator groups are assigned to which parachains
     const scheduledAvailabilityCores = (
@@ -151,7 +151,7 @@ export class ChainData {
         const validatorGroup = validatorGroups[availabilityCore.groupIdx].map(
           (idx: number) => {
             return getParaValIndex(idx, validators, paraValIndices);
-          }
+          },
         );
         return {
           blockNumber: blockNum,
@@ -231,7 +231,7 @@ export class ChainData {
   getCommissionInEra = async (
     apiAt: any,
     eraIndex: number,
-    validator: string
+    validator: string,
   ): Promise<NumberResult> => {
     if (!this.api.isConnected) {
       logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
@@ -240,7 +240,7 @@ export class ChainData {
 
     const prefs = await apiAt.query.staking.erasValidatorPrefs(
       eraIndex,
-      validator
+      validator,
     );
     return prefs?.commission?.toNumber();
   };
@@ -272,7 +272,7 @@ export class ChainData {
     }
 
     const ledger: JSON = await this.api.query.staking.ledger(
-      controller.toString()
+      controller.toString(),
     );
     if (ledger.isNone) {
       return [null, `Ledger is empty.`];
@@ -304,7 +304,7 @@ export class ChainData {
           bonded: bondedAmount,
           targets: targets,
         };
-      })
+      }),
     );
     return nominators;
   };
@@ -317,7 +317,7 @@ export class ChainData {
     const denom = await this.getDenom();
     const eraStakers = await this.api.query.staking.erasStakers(
       eraIndex,
-      validator
+      validator,
     );
     const total = parseFloat(eraStakers.total.toString()) / denom;
     const own = parseFloat(eraStakers.own.toString()) / denom;
@@ -338,7 +338,7 @@ export class ChainData {
   getExposureAt = async (
     apiAt: any,
     eraIndex: number,
-    validator: string
+    validator: string,
   ): Promise<any> => {
     if (!this.api.isConnected) {
       logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
@@ -347,7 +347,7 @@ export class ChainData {
     const denom = await this.getDenom();
     const eraStakers = await apiAt.query.staking.erasStakers(
       eraIndex,
-      validator
+      validator,
     );
     const total = parseFloat(eraStakers.total.toString()) / denom;
     const own = parseFloat(eraStakers.own.toString()) / denom;
@@ -367,7 +367,7 @@ export class ChainData {
 
   getOwnExposure = async (
     eraIndex: number,
-    validator: string
+    validator: string,
   ): Promise<NumberResult> => {
     if (!this.api.isConnected) {
       logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
@@ -376,7 +376,7 @@ export class ChainData {
 
     const exposure = await this.api.query.staking.erasStakers(
       eraIndex,
-      validator
+      validator,
     );
     if (exposure.isEmpty) {
       return [
@@ -391,7 +391,7 @@ export class ChainData {
   hasUnappliedSlashes = async (
     startEraIndex: number,
     endEraIndex: number,
-    validator: string
+    validator: string,
   ): Promise<BooleanResult> => {
     if (!this.api.isConnected) {
       logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
@@ -413,9 +413,8 @@ export class ChainData {
     const slashes = [];
     let curIndex = startEraIndex;
     while (curIndex <= endEraIndex) {
-      const unappliedSlashes = await this.api.query.staking.unappliedSlashes(
-        curIndex
-      );
+      const unappliedSlashes =
+        await this.api.query.staking.unappliedSlashes(curIndex);
 
       const unappliedSlashesJson: JSON = unappliedSlashes.toJSON();
       for (const unappliedSlash of unappliedSlashesJson) {
@@ -441,14 +440,14 @@ export class ChainData {
    */
   findEraBlockHash = async (
     era: number,
-    chainType: string
+    chainType: string,
   ): Promise<StringResult> => {
     const eraBlockLength =
       chainType == "Kusama"
         ? KUSAMA_APPROX_ERA_LENGTH_IN_BLOCKS
         : chainType == "Polkadot"
-        ? POLKADOT_APPROX_ERA_LENGTH_IN_BLOCKS
-        : TESTNET_APPROX_ERA_LENGTH_IN_BLOCKS;
+          ? POLKADOT_APPROX_ERA_LENGTH_IN_BLOCKS
+          : TESTNET_APPROX_ERA_LENGTH_IN_BLOCKS;
 
     if (!this.api.isConnected) {
       logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
@@ -477,7 +476,7 @@ export class ChainData {
       latestBlock.block.header.number.toNumber() - approxBlocksAgo;
     while (true && testBlockNumber > 0) {
       const blockHash = await this.api.rpc.chain.getBlockHash(
-        parseInt(String(testBlockNumber))
+        parseInt(String(testBlockNumber)),
       );
       const testEra = await this.api.query.staking.activeEra.at(blockHash);
       if (testEra.isNone) {
@@ -503,7 +502,7 @@ export class ChainData {
   activeValidatorsInPeriod = async (
     startEra: number,
     endEra: number,
-    chainType: string
+    chainType: string,
   ): Promise<[string[] | null, string | null]> => {
     if (!this.api.isConnected) {
       logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
@@ -560,7 +559,7 @@ export class ChainData {
       const superOf = await this.api.query.identity.superOf(account);
       if (superOf.isSome) {
         identity = await this.api.query.identity.identityOf(
-          superOf.unwrap()[0]
+          superOf.unwrap()[0],
         );
       }
     }
@@ -593,7 +592,7 @@ export class ChainData {
       const superOf = await this.api.query.identity.superOf(account);
       if (superOf.isSome) {
         const id = await this.api.query.identity.identityOf(
-          superOf.unwrap()[0]
+          superOf.unwrap()[0],
         );
         if (id.isNone) {
           return null;
@@ -624,9 +623,8 @@ export class ChainData {
     if (hasId.hasIdentity && hasId.parentId) {
       const parentAddress = hasId.parentId;
       // the address is a subidentity, query the superIdentity
-      const superIdentity = await this.api.derive.accounts.identity(
-        parentAddress
-      );
+      const superIdentity =
+        await this.api.derive.accounts.identity(parentAddress);
       superAccount = {
         name: superIdentity.display,
         address: parentAddress,
@@ -649,9 +647,8 @@ export class ChainData {
 
       // Iterate through all the sub accounts
       for (const subaccountAddress of subs[1]) {
-        const identityQuery = await this.api.derive.accounts.identity(
-          subaccountAddress
-        );
+        const identityQuery =
+          await this.api.derive.accounts.identity(subaccountAddress);
         const subAccount: { name: string; address: string } = {
           name: identityQuery.display,
           address: subaccountAddress.toString(),
@@ -717,9 +714,8 @@ export class ChainData {
       if (subidentities[1].length > 0) {
         // This account has sub-identities
         for (const subaccountAddress of subidentities[1]) {
-          const identityQuery = await this.api.derive.accounts.identity(
-            subaccountAddress
-          );
+          const identityQuery =
+            await this.api.derive.accounts.identity(subaccountAddress);
           const subAccount: { name: string; address: string } = {
             name: identityQuery.display,
             address: subaccountAddress.toString(),
@@ -748,7 +744,7 @@ export class ChainData {
   };
 
   getStashFromController = async (
-    controller: string
+    controller: string,
   ): Promise<string | null> => {
     if (!this.api.isConnected) {
       logger.warn(`{Chaindata::API::Warn} API is not connected, returning...`);
@@ -784,7 +780,7 @@ export class ChainData {
 
   getRewardDestinationAt = async (
     apiAt: any,
-    stash: string
+    stash: string,
   ): Promise<string | null> => {
     const rewardDestination: JSON = await apiAt.query.staking.payee(stash);
     if (rewardDestination.toJSON().account) {
@@ -842,7 +838,7 @@ export class ChainData {
 
     if (error) {
       logger.info(
-        `{queryNomination} There was an error fetching the block hash for era ${era}`
+        `{queryNomination} There was an error fetching the block hash for era ${era}`,
       );
       return;
     }
@@ -852,7 +848,7 @@ export class ChainData {
     ).toJSON();
     if (!nomination) {
       logger.info(
-        `{writeHistoricNominations} There was no nominations for stash ${nominatorStash} in era ${era}.`
+        `{writeHistoricNominations} There was no nominations for stash ${nominatorStash} in era ${era}.`,
       );
       return;
     }
@@ -899,7 +895,7 @@ export class ChainData {
     const controller = await this.getControllerFromStash(validatorStash);
     if (!controller) {
       logger.info(
-        `{Chaindata::getUnclaimedEras} ${validatorStash} does not have a controller`
+        `{Chaindata::getUnclaimedEras} ${validatorStash} does not have a controller`,
       );
       return;
     }
@@ -909,7 +905,7 @@ export class ChainData {
     ).toJSON();
     if (!ledger) {
       logger.info(
-        `{Chaindata::getUnclaimedRewards} ${validatorStash} and controller ${controller} doesn't have a ledger`
+        `{Chaindata::getUnclaimedRewards} ${validatorStash} and controller ${controller} doesn't have a ledger`,
       );
       return;
     }
@@ -932,7 +928,7 @@ export class ChainData {
     logger.info(
       `{Chaindata::getUnclaimedRewards} ${validatorStash} done. Tooks ${
         (end - start) / 1000
-      } seconds`
+      } seconds`,
     );
 
     return unclaimedEras;
@@ -974,7 +970,7 @@ export class ChainData {
 
     const keys = await this.api.query.staking.validators.keys();
     const validators = keys.map(({ args: [validatorId] }) =>
-      validatorId.toString()
+      validatorId.toString(),
     );
 
     return validators;
@@ -995,7 +991,7 @@ export class ChainData {
 
     if (minStake.length == 0) {
       logger.error(
-        `{Chaindata::getErasMinStakeAt} No min stake found for era ${era}`
+        `{Chaindata::getErasMinStakeAt} No min stake found for era ${era}`,
       );
       return 0;
     } else {
@@ -1012,7 +1008,7 @@ export class ChainData {
 
     const keys = await this.api.query.staking.validators.keys();
     const validators = keys.map(({ args: [validatorId] }) =>
-      validatorId.toString()
+      validatorId.toString(),
     );
     for (const validator of validators) {
       if (!addresses.includes(validator.toString())) {
@@ -1305,7 +1301,7 @@ export class ChainData {
       const index = parseInt(key.toHuman()[0]);
       logger.info(
         `Got referendum info for index ${index} [${i}/${referenda.length}]`,
-        { label: "Democracy" }
+        { label: "Democracy" },
       );
 
       const trackJSON = info.toJSON();
@@ -1385,9 +1381,8 @@ export class ChainData {
 
         const apiAt = await this.getApiAt(confirmationBlockNumber - 1);
         // Get the info at the last block before it closed.
-        const referendumInfo = await apiAt.query.referenda.referendumInfoFor(
-          index
-        );
+        const referendumInfo =
+          await apiAt.query.referenda.referendumInfoFor(index);
         const referendumJSON = referendumInfo.toJSON();
 
         const {
@@ -1584,7 +1579,7 @@ export class ChainData {
         await this.getOpenGovReferenda();
       logger.info(
         `Got ${ongoingReferenda.length} ongoing referenda, ${finishedReferenda.length} finished referenda`,
-        { label: "Democracy" }
+        { label: "Democracy" },
       );
       for (const ref of ongoingReferenda) {
         referendaMap.set(ref.index, ref);
@@ -1749,8 +1744,8 @@ export class ChainData {
                   abstain >= aye && abstain >= nay
                     ? "Abstain"
                     : aye > +nay
-                    ? "Aye"
-                    : "Nay",
+                      ? "Aye"
+                      : "Nay",
                 // The vote direction type, either "Standard", "Split", or "SplitAbstain"
                 voteDirectionType: "SplitAbstain",
                 // Whether the person is voting themselves or delegating
@@ -2074,11 +2069,11 @@ export class ChainData {
           `Querying delegations for referenda #${referendum.index} [${finishedRefIndex}/${finishedReferenda.length}]`,
           {
             label: "Democracy",
-          }
+          },
         );
 
         const apiAt = await this.getApiAt(
-          referendum.confirmationBlockNumber - 1
+          referendum.confirmationBlockNumber - 1,
         );
 
         // The list of accounts in the network that have votes.
@@ -2222,8 +2217,8 @@ export class ChainData {
                         abstain >= aye && abstain >= nay
                           ? "Abstain"
                           : aye > +nay
-                          ? "Aye"
-                          : "Nay",
+                            ? "Aye"
+                            : "Nay",
                       // The vote direction type, either "Standard", "Split", or "SplitAbstain"
                       voteDirectionType: "SplitAbstain",
                       // Whether the person is voting themselves or delegating
@@ -2243,7 +2238,7 @@ export class ChainData {
           `Finished adding ${finishedVotes.length} finished votes for referendum #${referendum.index}`,
           {
             label: "Democracy",
-          }
+          },
         );
 
         // Make a list of the delegations there were at this previous block height
@@ -2640,7 +2635,7 @@ export class ChainData {
               conviction: conviction,
             };
           }
-        })
+        }),
       )
     ).filter((del) => {
       return del;

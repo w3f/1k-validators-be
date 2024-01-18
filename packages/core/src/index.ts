@@ -39,8 +39,8 @@ export const createAPIHandler = async (config) => {
       config.global.networkPrefix == 2
         ? config.global.apiEndpoints
         : config.global.networkPrefix == 0
-        ? config.global.apiEndpoints
-        : Constants.LocalEndpoints;
+          ? config.global.apiEndpoints
+          : Constants.LocalEndpoints;
     const handler = await ApiHandler.create(endpoints);
     return handler;
   } catch (e) {
@@ -94,7 +94,7 @@ export const createMatrixBot = async (config) => {
       maybeBot = new MatrixBot(baseUrl, accessToken, userId, config);
       await maybeBot.start();
       await maybeBot.sendMessage(
-        `<a href="https://github.com/w3f/1k-validators-be">Backend services</a> (re)-started! Version: ${version}`
+        `<a href="https://github.com/w3f/1k-validators-be">Backend services</a> (re)-started! Version: ${version}`,
       );
     }
     logger.info(`matrix client started.`, winstonLabel);
@@ -113,13 +113,13 @@ export const initLocalDevScript = async (config) => {
     if (config.global.networkPrefix === 3 && !chainMetadata) {
       logger.info(
         `chain index is ${config.global.networkPrefix}, starting init script...`,
-        winstonLabel
+        winstonLabel,
       );
       await startTestSetup();
       await Util.sleep(1500);
       logger.info(
         `init script done ----------------------------------------------------`,
-        winstonLabel
+        winstonLabel,
       );
       await Util.sleep(15000);
     }
@@ -150,7 +150,7 @@ export const clean = async (scorekeeper) => {
     // Wipe the candidates
     logger.info(
       "Wiping old candidates data and initializing latest candidates from config.",
-      winstonLabel
+      winstonLabel,
     );
     await queries.clearCandidates();
     await queries.deleteOldValidatorScores();
@@ -191,7 +191,7 @@ export const addCandidates = async (config) => {
             stash,
             kusamaStash,
             skipSelfStake,
-            riotHandle
+            riotHandle,
           );
         }
       }

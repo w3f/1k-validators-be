@@ -8,7 +8,7 @@ export const setDelegation = async (
     balance: number;
     effectiveBalance: number;
     conviction: string;
-  }>
+  }>,
 ): Promise<any> => {
   // Try and find an existing record
   const data = await DelegationModel.findOne({
@@ -38,7 +38,7 @@ export const setDelegation = async (
       totalBalance,
       delegators,
       updated: Date.now(),
-    }
+    },
   ).exec();
 };
 

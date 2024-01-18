@@ -5,7 +5,7 @@ export const erapointsLabel = { label: "EraPointsJob" };
 // Gets and sets the total era points for a given era
 export const individualEraPointsJob = async (
   chaindata: ChainData,
-  eraIndex: number
+  eraIndex: number,
 ) => {
   const erapoints = await queries.getTotalEraPoints(eraIndex);
 
@@ -13,9 +13,8 @@ export const individualEraPointsJob = async (
   if (!!erapoints && erapoints.totalEraPoints >= 70000 && erapoints.median) {
     return;
   } else {
-    const { era, total, validators } = await chaindata.getTotalEraPoints(
-      eraIndex
-    );
+    const { era, total, validators } =
+      await chaindata.getTotalEraPoints(eraIndex);
     await queries.setTotalEraPoints(era, total, validators);
   }
 };

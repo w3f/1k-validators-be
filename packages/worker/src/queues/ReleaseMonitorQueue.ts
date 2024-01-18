@@ -24,6 +24,6 @@ export const addReleaseMonitorJob = async (queue: Queue, repeat: number) => {
         type: "exponential",
         delay: 1000,
       },
-    }
+    },
   );
 };

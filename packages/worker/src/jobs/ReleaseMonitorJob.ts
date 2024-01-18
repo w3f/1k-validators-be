@@ -36,7 +36,7 @@ export const getLatestTaggedRelease = async () => {
 
   logger.info(
     `Latest release updated: ${latestTaggedRelease.name} | Published at: ${publishedAt}`,
-    monitorLabel
+    monitorLabel,
   );
 
   const end = Date.now();

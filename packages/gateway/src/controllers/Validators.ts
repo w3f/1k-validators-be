@@ -30,7 +30,7 @@ export default class ValidatorController {
     response(
       context,
       200,
-      await ValidatorService.getValidator(context.params.address)
+      await ValidatorService.getValidator(context.params.address),
     );
   }
 

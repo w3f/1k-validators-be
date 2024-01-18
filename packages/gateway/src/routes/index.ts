@@ -139,22 +139,22 @@ router.get(API.OpenGovReferendaIndex, Democracy.getOpenGovReferendaIndex);
 router.get(API.OpenGovReferendumStats, Democracy.getOpenGovReferendumStats);
 router.get(
   API.OpenGovReferendumStatsSegment,
-  Democracy.getOpenGovReferendumStatsSegment
+  Democracy.getOpenGovReferendumStatsSegment,
 );
 
 router.get(API.AddressConvictionVotes, Democracy.getAddressConvictionVotes);
 router.get(
   API.AddressTrackConvictionVotes,
-  Democracy.getAddressTrackConvictionVotes
+  Democracy.getAddressTrackConvictionVotes,
 );
 router.get(API.TrackConvictionVotes, Democracy.getTrackConvictionVotes);
 router.get(
   API.ReferendumConvictionVotes,
-  Democracy.getReferendumConvictionVotes
+  Democracy.getReferendumConvictionVotes,
 );
 router.get(
   API.OpenGovAddressDelegations,
-  Democracy.getOpenGovAddressDelegations
+  Democracy.getOpenGovAddressDelegations,
 );
 
 router.get(API.OpenGovVoters, Democracy.getOpenGovVoters);
@@ -172,7 +172,7 @@ router.get(API.CurrentValidatorSet, Validator.getLatestValidatorSet);
 
 router.get(
   API.LocationsCurrentValidatorSet,
-  Location.getLocationCurrentValidatorSet
+  Location.getLocationCurrentValidatorSet,
 );
 router.get(API.LocationValidator, Location.getValidatorLocation);
 router.get(API.HeartbeatIndex, Location.getHeartbeatIndex);

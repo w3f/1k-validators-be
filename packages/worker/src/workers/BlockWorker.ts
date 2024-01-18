@@ -15,7 +15,7 @@ export const createBlockWorker = async (host, port, api: ApiHandler) => {
       },
       concurrency: 4,
       lockDuration: 300000,
-    }
+    },
   );
   worker.on("completed", (job, result) => {
     // job has completed

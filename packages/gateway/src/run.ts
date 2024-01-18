@@ -32,7 +32,7 @@ if (require.main === module) {
     .option(
       "--config <directory>",
       "The path to the config directory.",
-      "config"
+      "config",
     )
     .action((cmd: { config: string }) => catchAndQuit(start(cmd)));
 

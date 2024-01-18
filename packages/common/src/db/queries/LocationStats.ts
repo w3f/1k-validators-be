@@ -12,7 +12,7 @@ export const setLocationStats = async (
   regionVariance: number,
   countryVariance: number,
   providerVariance: number,
-  decentralization: number
+  decentralization: number,
 ): Promise<any> => {
   // Try and find an existing record
   const data = await LocationStatsModel.findOne({
@@ -57,13 +57,13 @@ export const setLocationStats = async (
       regionVariance,
       providerVariance,
       decentralization,
-    }
+    },
   ).exec();
 };
 
 // Retrieves location stats for a given session
 export const getSessionLocationStats = async (
-  session: number
+  session: number,
 ): Promise<any> => {
   const data = await LocationStatsModel.findOne({
     session,

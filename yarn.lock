@@ -71,7 +71,7 @@ __metadata:
     "@types/ws": ^8.5.10
     "@typescript-eslint/eslint-plugin": ^5.59.9
     "@typescript-eslint/parser": ^5.59.9
-    ava: ^6.0.1
+    ava: ^6.1.0
     axios: ^1.6.5
     bree: ^9.2.2
     bs58: ^5.0.0
@@ -115,7 +115,7 @@ __metadata:
     "@bull-board/koa": ^5.13.0
     "@typescript-eslint/eslint-plugin": ^5.59.9
     "@typescript-eslint/parser": ^5.59.9
-    ava: ^6.0.1
+    ava: ^6.1.0
     concurrently: ^8.2.2
     eslint: 8.42.0
     eslint-plugin-security: ^1.7.1
@@ -133,7 +133,7 @@ __metadata:
     "@ava/typescript": ^4.1.0
     "@typescript-eslint/eslint-plugin": ^5.59.9
     "@typescript-eslint/parser": ^5.59.9
-    ava: ^6.0.1
+    ava: ^6.1.0
     concurrently: ^8.2.2
     eslint: 8.42.0
     eslint-plugin-security: ^1.7.1
@@ -151,7 +151,7 @@ __metadata:
     "@polkadot/api": ^10.11.2
     "@typescript-eslint/eslint-plugin": ^5.59.9
     "@typescript-eslint/parser": ^5.59.9
-    ava: ^6.0.1
+    ava: ^6.1.0
     bullmq: ^4.17.0
     concurrently: ^8.2.2
     eslint: 8.42.0
@@ -2158,9 +2158,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ava@npm:^6.0.1":
-  version: 6.0.1
-  resolution: "ava@npm:6.0.1"
+"ava@npm:^6.1.0":
+  version: 6.1.0
+  resolution: "ava@npm:6.1.0"
   dependencies:
     "@vercel/nft": ^0.24.4
     acorn: ^8.11.2
@@ -2209,7 +2209,7 @@ __metadata:
       optional: true
   bin:
     ava: entrypoints/cli.mjs
-  checksum: 6bb0931a4a15ce95980bf7df3250a66ddab0bb117b677f062e2091c8ed54cc61f00711880bc3ca417cf3e2f829cd2fd32302b20e6332e870a1b360e251930d91
+  checksum: 60f98360d647f033d1ff24bbd091db98f2dac5b86bb0cf8418d9880068eb6391fb10b32256a6d790d8d1ba75b003ba98e52293101a17a2a79bd9081e2a4ecb3b
   languageName: node
   linkType: hard
 

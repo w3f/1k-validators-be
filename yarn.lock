@@ -88,7 +88,7 @@ __metadata:
     koa-bodyparser: ^4.4.1
     koa-cash: ^4.1.1
     koa2-cors: ^2.0.6
-    matrix-js-sdk: ^31.0.0
+    matrix-js-sdk: ^31.1.0
     mongodb: 6.3.0
     mongodb-memory-server: ^9.1.6
     mongoose: ^8.1.0
@@ -5658,9 +5658,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"matrix-js-sdk@npm:^31.0.0":
-  version: 31.0.0
-  resolution: "matrix-js-sdk@npm:31.0.0"
+"matrix-js-sdk@npm:^31.1.0":
+  version: 31.1.0
+  resolution: "matrix-js-sdk@npm:31.1.0"
   dependencies:
     "@babel/runtime": ^7.12.5
     "@matrix-org/matrix-sdk-crypto-wasm": ^3.5.0
@@ -5676,7 +5676,7 @@ __metadata:
     sdp-transform: ^2.14.1
     unhomoglyph: ^1.0.6
     uuid: 9
-  checksum: 6aa73f195356ca07a8dd18072d6236ef9c3a43d7529a9bcf8bd0af28f251957f8f910ed0d08eb4a108aa9afe7c955b0f6fc283dacee2912dc1fcc6608560243f
+  checksum: e0befd576de5aa66856178c5835ae6d871565c9a13b24fc371dc321cdd7d5e25d0194591502464c277f9f871fec55f6b1ca6e4ed19651adde79b60753dff1017
   languageName: node
   linkType: hard
 

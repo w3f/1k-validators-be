@@ -128,3 +128,11 @@ export const getValidatorsBeefyDummy = async (): Promise<any> => {
   });
   return beefyValidators;
 };
+
+export const hasBeefyDummy = async (address: string): Promise<boolean> => {
+  const validator = await getValidator(address);
+  if (validator.length == 0) {
+    return false;
+  }
+  return validator[0]?.keys?.beefy?.slice(0, 10) == "0x62656566";
+};

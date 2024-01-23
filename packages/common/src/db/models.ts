@@ -96,6 +96,7 @@ export const InvalidityReason = new Schema({
       "BLOCKED",
       "KUSAMA_RANK",
       "PROVIDER",
+      "BEEFY",
     ],
     default: "NEW",
   },
@@ -125,7 +126,7 @@ export const LatestValidatorSetModel = mongoose.model(
 );
 
 export const LocationSchema = new Schema({
-  name: String, // The Telemetry name of the node
+  name: { type: String, index: true }, // The Telemetry name of the node
   address: { type: String, index: true }, // The Validator Address
   addr: { type: String, index: true },
   port: Number,
@@ -395,9 +396,9 @@ export const NominationModel = mongoose.model("Nomination", NominationSchema);
 // The individual era points a validator has earned for a given era
 export const EraPointsSchema = new Schema({
   // The Era the era points are in
-  era: Number,
+  era: { type: Number, index: true },
   // The Validator stash address
-  address: String,
+  address: { type: String, index: true },
   // The amount of era points the validator received for the given era
   eraPoints: Number,
 });

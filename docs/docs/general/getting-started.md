@@ -24,7 +24,7 @@ By applying with the correctly configured setup per these instruction, applicant
 
 ## Requirements
 
-:::warn Subject to Change
+:::warning Subject to Change
 
 Note that the following requirements are subject to change at any time.
 

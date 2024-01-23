@@ -396,15 +396,15 @@ export const NominationModel = mongoose.model("Nomination", NominationSchema);
 // The individual era points a validator has earned for a given era
 export const EraPointsSchema = new Schema({
   // The Era the era points are in
-  era: { type: Number, index: true },
+  era: Number,
   // The Validator stash address
-  address: { type: String, index: true },
+  address: String,
   // The amount of era points the validator received for the given era
   eraPoints: Number,
 });
 
-// EraPointsSchema.index({ address: 1 });
-// EraPointsSchema.index({ era: -1 });
+EraPointsSchema.index({ address: 1 });
+EraPointsSchema.index({ era: -1 });
 
 export const EraPointsModel = mongoose.model("EraPoints", EraPointsSchema);
 

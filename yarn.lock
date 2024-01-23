@@ -19,7 +19,7 @@ __metadata:
     "@typescript-eslint/parser": ^5.59.9
     coingecko-api: ^1.0.10
     coingecko-api-v3: ^0.0.29
-    date-fns: ^3.2.0
+    date-fns: ^3.3.1
     eslint: 8.42.0
     eslint-config-prettier: ^8.8.0
     eslint-plugin-prettier: 5.0.0
@@ -3089,10 +3089,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"date-fns@npm:^3.2.0":
-  version: 3.2.0
-  resolution: "date-fns@npm:3.2.0"
-  checksum: ff5dab139f40170c4ba5472bab9bc887dd3940f7661bd8322f074faadbd422513c7195296541b5237fc450a0333a4b1c5659f887c7c14b1bfa2902998ac7582e
+"date-fns@npm:^3.3.1":
+  version: 3.3.1
+  resolution: "date-fns@npm:3.3.1"
+  checksum: 6245e93a47de28ac96dffd4d62877f86e6b64854860ae1e00a4f83174d80bc8e59bd1259cf265223fb2ddce5c8e586dc9cc210f0d052faba2f7660e265877283
   languageName: node
   linkType: hard
 

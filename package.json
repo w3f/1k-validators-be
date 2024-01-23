@@ -68,7 +68,7 @@
   "dependencies": {
     "coingecko-api": "^1.0.10",
     "coingecko-api-v3": "^0.0.29",
-    "date-fns": "^3.2.0",
+    "date-fns": "^3.3.1",
     "koa-mount": "^4.0.0",
     "koa-static": "^5.0.0",
     "koa-swagger-decorator": "^2.2.1",

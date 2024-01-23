@@ -64,6 +64,7 @@ const API = {
   AllDelegations: "/delegations",
   CurrentValidatorSet: "/validators/current",
   AddressConvictionVotes: "/opengov/votes/address/:address",
+  AddressFinishedConvictionVotes: "/opengov/votes/address/:address/finished",
   AddressTrackConvictionVotes: "/opengov/votes/address/:address/track/:track",
   TrackConvictionVotes: "/opengov/votes/track/:track",
   ReferendumConvictionVotes: "/opengov/votes/referendum/:index",
@@ -143,6 +144,10 @@ router.get(
 );
 
 router.get(API.AddressConvictionVotes, Democracy.getAddressConvictionVotes);
+router.get(
+  API.AddressFinishedConvictionVotes,
+  Democracy.getAddressFinishedConvictionVotes,
+);
 router.get(
   API.AddressTrackConvictionVotes,
   Democracy.getAddressTrackConvictionVotes,

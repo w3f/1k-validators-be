@@ -12,6 +12,7 @@ export const apiLabel = { label: "ApiHandler" };
  * to a different provider if one proves troublesome.
  */
 class ApiHandler extends EventEmitter {
+  private _wsProvider: WsProvider;
   private _api: ApiPromise;
   private _endpoints: string[];
   private _reconnectLock: boolean;
@@ -19,175 +20,108 @@ class ApiHandler extends EventEmitter {
   static isConnected: any;
   static _reconnect: any;
 
-  constructor(api: ApiPromise, endpoints?: string[]) {
+  timeout = 5 * 1000;
+
+  private healthCheckInProgress: boolean;
+
+  constructor(endpoints?: string[]) {
     super();
-    this._api = api;
-    // this._endpoints = endpoints.sort(() => Math.random() - 0.5);
-    this._registerEventHandlers(api);
+    this._endpoints = endpoints.sort(() => Math.random() - 0.5);
   }
 
-  static async createApi(endpoints, reconnectTries = 0) {
-    const timeout = 30;
-    let api, wsProvider;
-
-    const healthCheck = async (api, retries = 0) => {
-      if (retries < 15) {
-        try {
-          logger.info(
-            `Performing health check for WS Provider for rpc.`,
-            apiLabel,
-          );
-
-          await sleep(timeout * 1000);
-          if (api && api?.isConnected) {
-            logger.info(`All good. Connected`, apiLabel);
-            return api;
-          } else {
-            if (api) {
-              logger.info(
-                `api exists but is not connected. Disconnecting....`,
-                apiLabel,
-              );
-              await api?.disconnect();
-              logger.info(
-                `api disconnected, sleep 6s and create api again`,
-                apiLabel,
-              );
-              await sleep(6000);
-              // return await this.createApi(endpoints, reconnectTries + 1);
-              throw new Error(
-                `ERROR: rpc endpoint still disconnected after ${timeout} seconds.`,
-              );
-            } else {
-              logger.info(
-                `api doesn't exist and rpc endpoint still disconnected after ${timeout} seconds. creating api again... `,
-                apiLabel,
-              );
-
-              // return await this.createApi(endpoints, reconnectTries + 1);
-              //
-              throw new Error(
-                `ERROR: rpc endpoint still disconnected after ${timeout} seconds.`,
-              );
-            }
-          }
-        } catch (e) {
-          logger.error(`there was an error with the health check: `, apiLabel);
-          logger.error(JSON.stringify(e), apiLabel);
-          await healthCheck(api, retries + 1);
-        }
-      } else {
-        logger.error(`reconnectTries exceeded`, apiLabel);
-        return api;
-      }
-    };
-
-    const registerApi = async (api) => {
-      if (!api) {
-        logger.warn(`api is null`, apiLabel);
-        return;
-      }
-      try {
-        logger.info(`registering api...`, apiLabel);
-        api
-          .on("connected", () => {
-            logger.info(`Connected to chain ${endpoints[0]}`, apiLabel);
-          })
-          .on("disconnected", async () => {
-            logger.warn(`Disconnected from chain`, apiLabel);
-            try {
-              await healthCheck(wsProvider);
-              await Promise.resolve(api);
-            } catch (error: any) {
-              logger.warn(`there was an error: `, apiLabel);
-              logger.error(error, apiLabel);
-              await Promise.reject(error);
-            }
-          })
-          .on("ready", () => {
-            logger.info(`API connection ready ${endpoints[0]}`, apiLabel);
-          })
-          .on("error", async (error) => {
-            logger.warn("The API has an error", apiLabel);
-            logger.error(JSON.stringify(error), apiLabel);
-            logger.warn(`attempting to reconnect to ${endpoints[0]}`, apiLabel);
-            try {
-              await healthCheck(wsProvider);
-              await Promise.resolve(api);
-            } catch (error: any) {
-              logger.error(`there was an error: `, apiLabel);
-              logger.error(error, apiLabel);
-              await Promise.reject(error);
-            }
-          });
-      } catch (e) {
-        logger.warn(`there was an error registering api`, apiLabel);
-        logger.error(JSON.stringify(e), apiLabel);
-      }
-
-      return api;
-    };
-
-    try {
-      api = new ApiPromise({
-        provider: new WsProvider(
-          endpoints,
-          35000,
-          undefined,
-          POLKADOT_API_TIMEOUT,
-        ),
-        // throwOnConnect: true,
-      });
-
-      await sleep(6000);
-      api = registerApi(api);
-      if (api) {
-        try {
-          await api.isReadyOrError;
-        } catch (error) {
-          await api?.disconnect();
-          logger.error(`isReadyorError: `, apiLabel);
-          logger.error(JSON.stringify(error), apiLabel);
-          return registerApi(
-            await this.createApi(endpoints, reconnectTries + 1),
-          );
-        }
-
-        return api;
-      }
-    } catch (e) {
-      logger.error(`there was an error: `, apiLabel);
-      logger.error(e, apiLabel);
-      if (reconnectTries < 15) {
-        logger.warn(
-          `reconnecting to endpoints: retries ${reconnectTries}`,
-          apiLabel,
-        );
-        return await this.createApi(
-          endpoints.sort(() => Math.random() - 0.5),
-          reconnectTries + 1,
-        );
-      } else {
-        logger.warn(`reconnectTries exceeded`, apiLabel);
-        return api;
-      }
+  async healthCheck() {
+    logger.info(`Performing health check for WS Provider for rpc.`, apiLabel);
+    this.healthCheckInProgress = true;
+    await sleep(this.timeout);
+    if (this._wsProvider.isConnected) {
+      logger.info(
+        `All good. Connected back to ${this._endpoints[0]}`,
+        apiLabel,
+      );
+      this.healthCheckInProgress = false;
+      return true;
+    } else {
+      logger.info(`api still disconnected, disconnecting.`, apiLabel);
+      await this._wsProvider.disconnect();
+      throw new Error(
+        `ERROR: rpc endpoint still disconnected after ${this.timeout} seconds.`,
+      );
     }
   }
 
-  static async create(endpoints: string[]): Promise<ApiHandler> {
-    try {
-      const api = await this.createApi(
-        endpoints.sort(() => Math.random() - 0.5),
+  async getProvider(endpoints) {
+    return await new Promise<WsProvider | undefined>((resolve, reject) => {
+      const wsProvider = new WsProvider(
+        endpoints,
+        5000,
+        undefined,
+        POLKADOT_API_TIMEOUT,
       );
 
-      return new ApiHandler(api, endpoints);
-    } catch (e) {
-      logger.warn(`"create" has an error: `, apiLabel);
-      logger.error(e, apiLabel);
-      logger.warn(`creating with different endpoints...`, apiLabel);
-      // return await this.create(endpoints);
-      throw new Error("ERROR: create api failed");
+      wsProvider.on("disconnected", async () => {
+        logger.warn(
+          `WS provider for rpc ${endpoints[0]} disconnected!`,
+          apiLabel,
+        );
+        if (!this.healthCheckInProgress) {
+          try {
+            await this.healthCheck();
+            resolve(wsProvider);
+          } catch (error: any) {
+            reject(error);
+          }
+        }
+      });
+      wsProvider.on("connected", () => {
+        logger.info(
+          `WS provider for rpc ${this._endpoints[0]} connected`,
+          apiLabel,
+        );
+        resolve(wsProvider);
+      });
+      wsProvider.on("error", async () => {
+        logger.error(`Error thrown for rpc ${this._endpoints[0]}`, apiLabel);
+        if (!this.healthCheckInProgress) {
+          try {
+            await this.healthCheck();
+            resolve(wsProvider);
+          } catch (error: any) {
+            reject(error);
+          }
+        }
+      });
+    });
+  }
+
+  async getAPI(retries) {
+    logger.info(`getAPI`, apiLabel);
+    if (this._wsProvider && this._api && this._api?.isConnected) {
+      return this._api;
     }
+    const endpoints = this._endpoints.sort(() => Math.random() - 0.5);
+
+    try {
+      logger.info(`getAPI: creating provider`, apiLabel);
+      const provider = await this.getProvider(endpoints);
+      this._wsProvider = provider;
+      logger.info(`getAPI: provider created`, apiLabel);
+      const api = await ApiPromise.create({ provider: provider });
+      await api.isReadyOrError;
+      logger.info(`Api is ready`, apiLabel);
+      return api;
+    } catch (e) {
+      if (retries < 15) {
+        return await this.getAPI(retries + 1);
+      } else {
+        return this._api;
+      }
+    }
+  }
+
+  async setAPI() {
+    const api = await this.getAPI(0);
+    this._api = api;
+    this._registerEventHandlers(this._api);
   }
 
   isConnected(): boolean {

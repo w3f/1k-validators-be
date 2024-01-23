@@ -132,6 +132,24 @@ export default class DemocracyController {
     );
   }
 
+  public static async getAddressFinishedConvictionVotes(
+    context: any,
+  ): Promise<void> {
+    if (await context.cashed()) {
+      logger.info(
+        `{Gateway} getAddressFinishedConvictionVotes is cached`,
+        gatewayLabel,
+      );
+      return;
+    }
+    const { address } = context.params;
+    response(
+      context,
+      200,
+      await DemocracyService.getAddressFinishedConvictionVotes(address),
+    );
+  }
+
   public static async getAddressTrackConvictionVotes(
     context: any,
   ): Promise<void> {

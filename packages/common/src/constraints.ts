@@ -371,7 +371,7 @@ export class OTV implements Constraints {
     }
 
     const unclaimedValid =
-      this.config.constraints.skipUnclaimed == true
+      this.config?.constraints?.skipUnclaimed == true
         ? true
         : (await checkUnclaimed(
             this.chaindata,

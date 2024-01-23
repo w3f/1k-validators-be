@@ -316,6 +316,29 @@ export const getAddressConvictionVoting = async (address: string) => {
   return convictionVotes;
 };
 
+// For a given address, get all conviction votes for only finished referenda
+export const geAddressFinishedConvictionVoting = async (address: string) => {
+  const votes = [];
+  const convictionVotes = await ConvictionVoteModel.find({
+    address: address,
+  })
+    .select("referendumIndex")
+    .lean();
+
+  const finishedConvictionVotes = await Promise.all(
+    convictionVotes.filter(async (vote) => {
+      const referendum = await getOpenGovReferendum(vote.referendumIndex);
+      if (referendum?.currentStatus == "Finished") {
+        return true;
+      }
+    }),
+  );
+  for (const vote of finishedConvictionVotes) {
+    votes.push(vote.referendumIndex);
+  }
+  return votes.sort((a, b) => b - a);
+};
+
 // Gets all conviction votes for a given track
 export const getTrackConvictionVoting = async (track: number) => {
   const convictionVotes = await ConvictionVoteModel.find({ track: track });
@@ -408,6 +431,35 @@ export const getIdentityConvictionVoting = async (address: string) => {
     return {
       identity,
       votes: votes.sort((a, b) => a.referendumIndex - b.referendumIndex),
+    };
+  }
+};
+
+// For a given address, get all addresses apart of the identity, and return all votes for finished referenda
+export const getFinishedidentityConvictionVoting = async (address: string) => {
+  const votes = [];
+  const identities = await getIdentityAddresses(address);
+  console.log(JSON.stringify(identities));
+  if (identities.length == 0) {
+    const identity = await getIdentity(address);
+    const votes = await geAddressFinishedConvictionVoting(address);
+    return {
+      identity: identity,
+      votes: votes.sort((a, b) => a - b),
+    };
+  } else {
+    for (const identity of identities) {
+      const addressVotes = await geAddressFinishedConvictionVoting(
+        identity.address,
+      );
+      for (const addressVote of addressVotes) {
+        votes.push(addressVote);
+      }
+    }
+    const identity = await getIdentity(address);
+    return {
+      identity,
+      votes: votes.sort((a, b) => a - b),
     };
   }
 };

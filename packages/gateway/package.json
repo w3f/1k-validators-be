@@ -1,6 +1,6 @@
 {
   "name": "@1kv/gateway",
-  "version": "3.0.9",
+  "version": "3.0.10",
   "description": "Services for running the Thousand Validator Program.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -42,7 +42,7 @@
     "ava": "^6.0.1",
     "concurrently": "^8.2.2",
     "eslint": "8.42.0",
-    "eslint-plugin-security": "^1.7.1",
+    "eslint-plugin-security": "^2.1.0",
     "nodemon": "^3.0.3"
   },
   "ava": {

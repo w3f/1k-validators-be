@@ -1,7 +1,7 @@
 import ReconnectingWebSocket from "reconnecting-websocket";
 import WS from "ws";
 
-import { Config, logger, queries } from "@1kv/common";
+import { Config, logger, queries, Util } from "@1kv/common";
 
 enum TelemetryMessage {
   FeedVersion = 0x00,
@@ -51,55 +51,84 @@ export default class TelemetryClient {
     this.socket = new ReconnectingWebSocket(this.host, [], options);
   }
 
-  async start(): Promise<any> {
-    if (!this.enable) {
-      logger.warn("Telemetry Client not enabled.", {
-        label: "Telemetry",
-      });
-      return;
-    } else {
-      // configure ipinfo
-      const iitExists = await queries.getIIT();
-      if (this.config?.telemetry?.ipinfoToken || !iitExists) {
-        await queries.setIIT(this.config?.telemetry?.ipinfoToken);
-      } else {
-        logger.warn(`No ip info api token set. ip info not enabled`, {
-          label: "Telemetry",
-        });
-      }
-      return new Promise((resolve: any, reject: any) => {
-        this.socket.onopen = () => {
-          logger.info(`Connected to substrate-telemetry on host ${this.host}`, {
+  async start(retries = 0): Promise<any> {
+    if (retries < 15) {
+      try {
+        if (!this.enable) {
+          logger.warn("Telemetry Client not enabled.", {
             label: "Telemetry",
           });
-          for (const chain of this.config.telemetry.chains) {
-            this._subscribe(chain);
+          return;
+        } else {
+          // configure ipinfo
+          const iitExists = await queries.getIIT();
+          if (this.config?.telemetry?.ipinfoToken || !iitExists) {
+            await queries.setIIT(this.config?.telemetry?.ipinfoToken);
+          } else {
+            logger.warn(`No ip info api token set. ip info not enabled`, {
+              label: "Telemetry",
+            });
           }
-          resolve();
-        };
+          return new Promise((resolve: any, reject: any) => {
+            this.socket.onopen = () => {
+              logger.info(
+                `Connected to substrate-telemetry on host ${this.host}`,
+                {
+                  label: "Telemetry",
+                },
+              );
+              for (const chain of this.config.telemetry.chains) {
+                this._subscribe(chain);
+              }
+              resolve();
+            };
 
-        this.socket.onclose = () => {
-          logger.info(
-            `Connection to substrate-telemetry on host ${this.host} closed`,
-          );
-          reject();
-        };
+            this.socket.onclose = async () => {
+              logger.info(
+                `Connection to substrate-telemetry on host ${this.host} closed waiting....`,
+                { label: "Telemetry" },
+              );
+              await Util.sleep(30000);
+              for (const chain of this.config.telemetry.chains) {
+                logger.info(`connecting to ${chain}`, { label: "Telemetry" });
+                await this._subscribe(chain);
+              }
+              resolve();
+            };
 
-        this.socket.onerror = (err: any) => {
-          logger.info(
-            `Could not connect to substrate-telemetry on host ${this.host}: `,
-          );
-          logger.info(err);
-          reject();
-        };
+            this.socket.onerror = async (err: any) => {
+              logger.info(
+                `Could not connect to substrate-telemetry on host ${this.host}: `,
+                { label: "Telemetry" },
+              );
+              logger.warn(err, { label: "Telemetry" });
+              await Util.sleep(30000);
+              for (const chain of this.config.telemetry.chains) {
+                logger.info(`connecting to ${chain}`, { label: "Telemetry" });
+                await this._subscribe(chain);
+              }
+              resolve();
+            };
 
-        this.socket.onmessage = (msg: any) => {
-          const messages = this._deserialize(msg);
-          for (const message of messages) {
-            this._handle(message);
-          }
-        };
-      });
+            this.socket.onmessage = (msg: any) => {
+              const messages = this._deserialize(msg);
+              for (const message of messages) {
+                this._handle(message);
+              }
+            };
+          });
+        }
+      } catch (e) {
+        logger.error(e.toString(), { label: "Telemetry" });
+        logger.warn(
+          `Could not connect to substrate-telemetry on host ${this.host}`,
+          {
+            label: "Telemetry",
+          },
+        );
+        await Util.sleep(30000);
+        return this.start(retries + 1);
+      }
     }
   }
 

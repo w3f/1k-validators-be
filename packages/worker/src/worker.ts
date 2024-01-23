@@ -1,5 +1,4 @@
-import { Queue, Worker as BullWorker } from "bullmq";
-import { ApiHandler, logger, Db, Config, Constraints } from "@1kv/common";
+import { ApiHandler, Config, Constraints, logger } from "@1kv/common";
 import { createReleaseMonitorWorker } from "./workers/ReleaseMonitorWorker";
 import { createConstraintsWorker } from "./workers/ConstraintsWorker";
 import { createChainDataWorker } from "./workers";
@@ -26,7 +25,8 @@ class Worker {
   async initializeAPI(): Promise<any> {
     const endpoints = this.apiEndpoints.sort(() => Math.random() - 0.5);
     logger.info(`ApiHandler connecting to ${endpoints[0]}`, workerLabel);
-    this.api = await ApiHandler.create(endpoints);
+    this.api = new ApiHandler(endpoints);
+    await this.api.setAPI();
   }
 
   async initializeConstraints(): Promise<any> {

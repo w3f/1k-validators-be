@@ -1,5 +1,5 @@
-const lightCodeTheme = require("prism-react-renderer/themes/github");
-const darkCodeTheme = require("prism-react-renderer/themes/dracula");
+// const lightCodeTheme = require("prism-react-renderer/themes/github");
+// const darkCodeTheme = require("prism-react-renderer/themes/dracula");
 
 // With JSDoc @type annotations, IDEs can provide config autocompletion
 /** @type {import('@docusaurus/types').DocusaurusConfig} */
@@ -13,8 +13,23 @@ const darkCodeTheme = require("prism-react-renderer/themes/dracula");
     onBrokenLinks: "warn",
     onBrokenMarkdownLinks: "warn",
     favicon: "img/favicon.ico",
-    organizationName: "facebook", // Usually your GitHub org/user name.
+    organizationName: "w3f", // Usually your GitHub org/user name.
     projectName: "docusaurus", // Usually your repo name.
+    markdown: {
+      mermaid: true,
+    },
+    scripts: [
+      "https://buttons.github.io/buttons.js",
+      "https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.js",
+      "https://unpkg.com/aos@next/dist/aos.js",
+    ],
+    stylesheets: [
+      "https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css",
+      "https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap",
+      "https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css",
+      "https://unpkg.com/aos@next/dist/aos.css",
+      "https://fonts.googleapis.com/icon?family=Material+Icons",
+    ],
 
     presets: [
       [
@@ -22,10 +37,10 @@ const darkCodeTheme = require("prism-react-renderer/themes/dracula");
         /** @type {import('@docusaurus/preset-classic').Options} */
         ({
           docs: {
+            editUrl: ({ docPath }) =>
+              `https://github.com/w3f/1k-validators-be/edit/master/docs/${docPath}`,
             sidebarPath: require.resolve("./sidebars.js"),
-            // Please change this to your repo.
-            editUrl:
-              "https://github.com/facebook/docusaurus/edit/main/website/",
+            routeBasePath: "/",
           },
           blog: {
             showReadingTime: true,
@@ -43,6 +58,7 @@ const darkCodeTheme = require("prism-react-renderer/themes/dracula");
         }),
       ],
     ],
+    themes: ["@docusaurus/theme-mermaid"],
 
     themeConfig: {
       customFields: {
@@ -71,28 +87,29 @@ const darkCodeTheme = require("prism-react-renderer/themes/dracula");
          */
         playgroundPosition: "bottom",
       },
+
       navbar: {
         logo: {
           src: "img/Polkadot_Logo_Horizontal_Pink-Black.svg",
         },
         items: [
           {
-            to: "docs/getting-started",
+            to: "/getting-started",
             label: "Getting Started",
             position: "right",
           },
           {
-            to: "docs/requirements",
+            to: "/requirements",
             label: "Requirements",
             position: "right",
           },
           {
-            to: "docs/backend",
+            to: "/backend",
             label: "Backend",
             position: "right",
           },
           {
-            href: "docs/terms-of-service",
+            href: "/terms-of-service",
             label: "Terms of Service",
             position: "right",
           },

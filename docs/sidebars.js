@@ -20,6 +20,7 @@ module.exports = {
       items: [
         "general/getting-started",
         "general/requirements",
+        "general/scoring",
         "general/terms-of-service",
         "general/faq",
       ],

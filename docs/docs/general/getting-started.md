@@ -17,18 +17,27 @@ The following is a guide to getting started with the <ProgrammeName/>.
 :::
 
 # Getting Started
+
 As a validator, getting nominations can be hard. The Thousand Validators Programme helps validators bootstrap themselves and cultivate a community around their reputation.
 
 By applying with the correctly configured setup per these instruction, applicants will be eligible to receive nominations from the Web3 Foundation and Parity Technologies.
 
-We require:
+## Requirements
+
+:::warn Subject to Change
+
+Note that the following requirements are subject to change at any time.
+
+:::
 
 - Validators have a verified on-chain identity.
-- Validators have a minimum stash in their accounts (50 KSM).
+- Validators have a minimum stash in their accounts of 10 KSM for Kusama and 5000 DOT for Polkadot
 - Validator nodes connect to a private telemetry.
-- Validators charge no more than 10% commission.
-- Validators have a separate stash and controller account.
+- Validators charge no more than 5% commission for Polkadot and no more than 15% commission for Kusama.
 - All nodes must upgrade to the latest version within 12 hours of a release if it is labeled “critical” or “high” priority and 24 hours if it is labeled “medium” or “low” priority
+- Validator must operate nodes themselves, they may not be run by a third party or staking provider
+
+
 Validators meeting the above requirements will obtain a rotation of nominations per period of successful operation. The cadence of nominations is relative to their rank in the programme, where upon performing their duty successfully per period, validators will move up a rank. If a validator fails for any reason (slashing, getting kicked out the validator set, not upgrading on time), that validator’s rank will be halved. If a validator gets slashed, or receives five halvings they will be suspended from nominations and will need to re-apply. These rankings will be made public, to help a validator establish their reputation.
 
 # Applying to the Programme

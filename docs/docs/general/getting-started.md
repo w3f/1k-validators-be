@@ -46,11 +46,11 @@ Validators can apply to the Polkadot Programme [here](https://docs.google.com/fo
 
 The following are required to apply to the programme:
 
-◌ Validator Node Name
-◌ Stash Account Address
-◌ Emergency Phone Number
-◌ Email
-◌ Riot Handle
+- Validator Node Name
+- Stash Account Address
+- Emergency Phone Number
+- Email
+- Matrix Handle
 The rest of this guide will walk through how to setup a proper configuration for the programme.
 
 # On Chain Identity
@@ -77,17 +77,17 @@ More information on setting up a validator node can be found here.
 
 The validator node name can be set with the following flag:
 
---name NODE_NAME
+`--name NODE_NAME`
 This name will be what is displayed on the leaderboard and must not change throughout participation in the programme.
 
 WARNING: If a validator changes their node name on telemetry, they will no longer receive nominations and will be marked offline.
 In order to participate in the programme, the validator node must connect to a private telemetry endpoint for monitoring. The following flag must be added to the validator node:
 
---telemetry-url 'wss://telemetry-backend.w3f.community/submit 1'
+`--telemetry-url 'wss://telemetry-backend.w3f.community/submit 1'`
 Setting up Accounts
 
-In order to apply and participate in the program, each participant must have a separate stash and controller account, with the bonded stash account containing at least 50 KSM in it at all times.
+In order to apply and participate in the program, each participant must have a separate stash and controller account, with the bonded stash account containing at least the self bond requirement in it at all times.
 
-The validator must additionally set of a commission of no more than 10%.
+The validator must additionally set of a commission of no more than the above thresholds.
 
-Both of these will be checked on a routine basis, and changes to these against the outlined rules will result in negative consequences.
+Both of these will be checked on a routine basis, and changes to these against the outlined rules may result in negative consequences.

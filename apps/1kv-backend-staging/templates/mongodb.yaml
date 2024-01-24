@@ -92,7 +92,7 @@ spec:
       env:
         - name: HELM_VALUES
           value: |
-            architecture: {{ .Values.polkadot.db.architecture }}
+            architecture: standalone
             useStatefulSet: true
 
             auth:

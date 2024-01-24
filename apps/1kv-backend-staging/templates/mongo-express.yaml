@@ -17,7 +17,7 @@ spec:
   source:
     repoURL: https://w3f.github.io/helm-charts/
     chart: mongo-express
-    targetRevision: v0.3.1
+    targetRevision: ^v1.0.0
     plugin:
       env:
         - name: HELM_VALUES
@@ -60,7 +60,7 @@ spec:
   source:
     repoURL: https://w3f.github.io/helm-charts/
     chart: mongo-express
-    targetRevision: v0.3.1
+    targetRevision: ^v1.0.0
     plugin:
       env:
         - name: HELM_VALUES

@@ -4,7 +4,6 @@
     "networkPrefix": 2,
     "apiEndpoints": [
       "wss://rpc.polkadot.io",
-      "wss://polkadot.api.onfinality.io/public-ws",
       "wss://polkadot-rpc.dwellir.com"
     ],
     "bootstrap": true,

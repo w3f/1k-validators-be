@@ -225,14 +225,14 @@ const processPayoutStakers = async (
             id: networkName,
             date: formattedDate,
           });
-          chf = price_call.market_data.current_price.chf;
-          eur = price_call.market_data.current_price.eur;
-          usd = price_call.market_data.current_price.usd;
+          chf = price_call?.market_data?.current_price?.chf || 0;
+          eur = price_call?.market_data?.current_price?.eur || 0;
+          usd = price_call?.market_data?.current_price?.usd || 0;
           await queries.setPrice(networkName, formattedDate, chf, usd, eur);
         } else {
-          chf = price.chf;
-          eur = price.eur;
-          usd = price.usd;
+          chf = price.chf || 0;
+          eur = price.eur || 0;
+          usd = price.usd || 0;
         }
 
         const reward = {
@@ -251,9 +251,9 @@ const processPayoutStakers = async (
           blockNumber: blockNumber,
           timestamp: blockTimestamp,
           date: formattedDate,
-          chf: chf * rewardAmount,
-          eur: eur * rewardAmount,
-          usd: usd * rewardAmount,
+          chf: chf * rewardAmount || 0,
+          eur: eur * rewardAmount || 0,
+          usd: usd * rewardAmount || 0,
         };
 
         if (isValidator) {

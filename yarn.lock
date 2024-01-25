@@ -12,7 +12,7 @@ __metadata:
     "@types/coingecko-api": ^1.0.13
     "@types/eslint": ^8.44.7
     "@types/koa-mount": ^4.0.5
-    "@types/node": ^20.11.5
+    "@types/node": ^20.11.6
     "@types/request": ^2.48.12
     "@types/yamljs": ^0.2.34
     "@typescript-eslint/eslint-plugin": ^5.59.9
@@ -42,7 +42,7 @@ __metadata:
   dependencies:
     "@polkadot/keyring": ^12.6.2
     "@types/mongoose": ^5.11.97
-    "@types/node": ^20.11.5
+    "@types/node": ^20.11.6
     hash.js: ^1.1.7
     mongoose: ^8.1.0
     typescript: ^5.3.3
@@ -66,7 +66,7 @@ __metadata:
     "@types/cron": ^2.4.0
     "@types/koa": ^2.14.0
     "@types/koa-bodyparser": ^4.3.12
-    "@types/node": ^20.11.5
+    "@types/node": ^20.11.6
     "@types/semver": ^7.5.6
     "@types/ws": ^8.5.10
     "@typescript-eslint/eslint-plugin": ^5.59.9
@@ -1566,12 +1566,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^20.11.5":
-  version: 20.11.5
-  resolution: "@types/node@npm:20.11.5"
+"@types/node@npm:^20.11.6":
+  version: 20.11.6
+  resolution: "@types/node@npm:20.11.6"
   dependencies:
     undici-types: ~5.26.4
-  checksum: a542727de1334ae20a3ca034b0ecf4b464a57ca01efc4f9cf43bd9ab93896125ab3c2de060ecd8f6ae23b86c6bf3463f681b643e69c032c6a662d376c98a6092
+  checksum: 54b3739f42d9c2266fd724d8ecbf50bc64eb0563343b65a6ea874a51a7fc8bb4793bf3a1b2222e40e3b7bd62cf5af5609899bf1a3de8b69748dcac65e63e8bdc
   languageName: node
   linkType: hard
 

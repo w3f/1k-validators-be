@@ -32,7 +32,7 @@
   "dependencies": {
     "@polkadot/keyring": "^12.6.2",
     "@types/mongoose": "^5.11.97",
-    "@types/node": "^20.11.5",
+    "@types/node": "^20.11.6",
     "hash.js": "^1.1.7",
     "mongoose": "^8.1.0",
     "typescript": "^5.3.3",

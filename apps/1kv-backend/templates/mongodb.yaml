@@ -128,7 +128,7 @@ spec:
               enabled: false
 
             arbiter:
-              enabled: fale
+              enabled: false
 
             metrics:
               enabled: true

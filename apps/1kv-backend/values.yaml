@@ -22,7 +22,7 @@ kusama:
     domain: w3f.community
 polkadot: 
   db:
-    uri: "mongodb://<path:vaults/k8s-community-secrets/items/otv-polkadot#mongo-username>:<path:vaults/k8s-community-secrets/items/otv-polkadot#mongo-password>@polkadot-mongodb-headless.polkadot.svc.cluster.local/otv?tls=false&replicaSet=rs0" 
+    uri: "mongodb://<path:vaults/k8s-community-secrets/items/otv-polkadot#mongo-username>:<path:vaults/k8s-community-secrets/items/otv-polkadot#mongo-password>@polkadot-mongodb.polkadot/otv?tls=false" 
   be:
     nominating: true
     secret:  <path:vaults/k8s-community-secrets/items/otv-polkadot#backend-secret>

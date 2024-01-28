@@ -89,7 +89,7 @@ spec:
   source:
     repoURL: https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
     chart: mongodb
-    targetRevision: ^10.31.5
+    targetRevision: ^14.6.1
     plugin:
       env:
         - name: HELM_VALUES

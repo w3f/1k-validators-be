@@ -25,7 +25,8 @@ spec:
             environment: {{ .Values.environment }}
             dataPath: "/data"
             backendPort: 3300
-            domain: {{ .Values.kusama.be.domain | quote }}
+            ingress:
+              domain: {{ .Values.kusama.be.domain | quote }}
 
             resources:
               {{- toYaml .Values.kusama.be.resources | nindent 14 }}

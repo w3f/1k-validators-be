@@ -1,16 +1,7 @@
 environment: production
 kusama:
   db:
-    architecture: standalone
     uri: "mongodb://<path:vaults/k8s-community-secrets/items/otv-kusama#mongo-username>:<path:vaults/k8s-community-secrets/items/otv-kusama#mongo-password>@kusama-mongodb-staging.kusama-1kv-staging/otv"
-    storage: "8Gi"
-    resources:
-      limits: 
-        cpu: "1600m"
-        memory: "4Gi"
-      requests: 
-        cpu: "400m"
-        memory: "2Gi"   
   be:
     nominating: false
     secret:  <path:vaults/k8s-community-secrets/items/otv-kusama#backend-secret>
@@ -31,16 +22,7 @@ kusama:
     domain: w3f.community
 polkadot: 
   db:
-    architecture: standalone
     uri: "mongodb://<path:vaults/k8s-community-secrets/items/otv-polkadot#mongo-username>:<path:vaults/k8s-community-secrets/items/otv-polkadot#mongo-password>@polkadot-mongodb-staging.polkadot-1kv-staging/otv"
-    storage: "8Gi"
-    resources:
-      limits: 
-        cpu: "600m"
-        memory: "2Gi"
-      requests: 
-        cpu: "300m"
-        memory: "1Gi"
   be:
     nominating: false
     secret:  <path:vaults/k8s-community-secrets/items/otv-polkadot#backend-secret>

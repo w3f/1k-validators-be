@@ -19,13 +19,11 @@ function HomeNav() {
 
   const NavItem = ({ href, aosDelay, children }) => (
     <div className="col-xs-12 col-md-6 col-lg-6 homeNavItem rounded-lg">
-      {" "}
-      {/* Adjusted column classes */}
       <a
         href={href}
         className="h-100"
-        data-aos="fade-up"
-        data-aos-delay={aosDelay}
+        // data-aos="fade-up"
+        // data-aos-delay={aosDelay}
       >
         <div className="mx-auto">{children}</div>
       </a>
@@ -42,13 +40,15 @@ function HomeNav() {
 
   return (
     <NavContainer>
-      <NavItem href={useDocUrl("explore-index")} aosDelay="0">
+      <NavItem href={useDocUrl("getting-started")}>
         <NavItemContent>
           <NavItemTitle>Getting Started</NavItemTitle>
-          <p className="mx-auto small text-secondary px-4"></p>
+          <p className="mx-auto small text-secondary px-4">
+            Learn more about the <ProgrammeName />
+          </p>
         </NavItemContent>
       </NavItem>
-      <NavItem href={useDocUrl("learn-index")} aosDelay="200">
+      <NavItem href={useDocUrl("requirements")}>
         <NavItemContent>
           <NavItemTitle>Requirements</NavItemTitle>
           <p className="mx-auto small text-secondary px-4">
@@ -57,11 +57,23 @@ function HomeNav() {
           </p>
         </NavItemContent>
       </NavItem>
-      <NavItem href={useDocUrl("build-guide")} aosDelay="400">
+      <NavItem href={useDocUrl("backend")}>
         <NavItemContent>
           <NavItemTitle>Backend</NavItemTitle>
           <p className="mx-auto small text-secondary px-4">
             Information on the backend of the <ProgrammeName />.
+          </p>
+        </NavItemContent>
+      </NavItem>
+      <NavItem
+        href={
+          "https://docs.google.com/forms/d/e/1FAIpQLSdS-alI-J2wgIRCQVjQC7ZbFiTnf36hYBdmO-1ARMjKbC7H9w/viewform?ref=polkadot-network"
+        }
+      >
+        <NavItemContent>
+          <NavItemTitle>Apply</NavItemTitle>
+          <p className="mx-auto small text-secondary px-4">
+            Apply to join the <ProgrammeName />.
           </p>
         </NavItemContent>
       </NavItem>
@@ -97,6 +109,6 @@ export default function Index() {
 function useDocUrl(url) {
   const { siteConfig } = useDocusaurusContext();
   const { baseUrl } = siteConfig;
-  const docsPart = "docs/";
+  const docsPart = "";
   return `${baseUrl}${docsPart}${url}`;
 }

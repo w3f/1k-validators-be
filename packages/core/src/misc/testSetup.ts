@@ -1,6 +1,5 @@
 import { ApiHandler, Util } from "@1kv/common";
 import { Keyring } from "@polkadot/keyring";
-import { blake2AsHex, keccakAsHex } from "@polkadot/util-crypto";
 
 export const fundFromSudo = async (api, address: string, amount: number) => {
   const keyring = new Keyring({ type: "sr25519" });
@@ -101,7 +100,7 @@ export const verifyIdentity = async (api, addressToVerify, identityHash) => {
 };
 
 export const setSessionKeys = async (api, endpoint, controllerKey) => {
-  const handler = await ApiHandler.create([endpoint]);
+  const handler = await new ApiHandler([endpoint]);
   const nodeApi = await handler.getApi();
   const sessionKeys = await nodeApi.rpc.author.rotateKeys();
   const tx = nodeApi.tx.session.setKeys(sessionKeys.toHex(), "0x");
@@ -118,7 +117,7 @@ export const setValidateIntention = async (api, commission, controllerKey) => {
 
 export const startTestSetup = async () => {
   Util.sleep(25000);
-  const handler = await ApiHandler.create(["ws://172.28.1.1:9944"]);
+  const handler = await new ApiHandler(["ws://172.28.1.1:9944"]);
   const api = await handler.getApi();
   console.log(
     `{TestSetup::startTestSetup} handler ws://172.28.1.1:9944 is connected: ${handler.isConnected()}`,

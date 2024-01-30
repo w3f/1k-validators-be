@@ -96,6 +96,7 @@ export const InvalidityReason = new Schema({
       "BLOCKED",
       "KUSAMA_RANK",
       "PROVIDER",
+      "BEEFY",
     ],
     default: "NEW",
   },
@@ -125,7 +126,7 @@ export const LatestValidatorSetModel = mongoose.model(
 );
 
 export const LocationSchema = new Schema({
-  name: String, // The Telemetry name of the node
+  name: { type: String, index: true }, // The Telemetry name of the node
   address: { type: String, index: true }, // The Validator Address
   addr: { type: String, index: true },
   port: Number,
@@ -402,8 +403,8 @@ export const EraPointsSchema = new Schema({
   eraPoints: Number,
 });
 
-// EraPointsSchema.index({ address: 1 });
-// EraPointsSchema.index({ era: -1 });
+EraPointsSchema.index({ address: 1 });
+EraPointsSchema.index({ era: -1 });
 
 export const EraPointsModel = mongoose.model("EraPoints", EraPointsSchema);
 

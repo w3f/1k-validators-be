@@ -20,6 +20,7 @@ import {
   getLatestRelease,
   getLatestValidatorScoreMetadata,
   getOpenGovDelegationAddress,
+  setBeefyKeysInvalidity,
   setBlockedInvalidity,
   setCommissionInvalidity,
   setConnectionTimeInvalidity,
@@ -371,7 +372,7 @@ export class OTV implements Constraints {
     }
 
     const unclaimedValid =
-      this.config.constraints.skipUnclaimed == true
+      this.config?.constraints?.skipUnclaimed == true
         ? true
         : (await checkUnclaimed(
             this.chaindata,
@@ -403,6 +404,11 @@ export class OTV implements Constraints {
       logger.warn(`${candidate.name} provider not valid`, constraintsLabel);
     }
 
+    const beefyValid = await checkBeefyKeys(candidate);
+    if (!beefyValid) {
+      logger.warn(`${candidate.name} beefy keys not valid`, constraintsLabel);
+    }
+
     valid =
       onlineValid &&
       validateValid &&
@@ -415,7 +421,8 @@ export class OTV implements Constraints {
       unclaimedValid &&
       blockedValid &&
       kusamaValid &&
-      providerValid;
+      providerValid &&
+      beefyValid;
 
     await setValid(candidate.stash, valid);
 
@@ -804,8 +811,8 @@ export class OTV implements Constraints {
       offlineScore +
       // delegationScore +
       nominatorStakeScore +
-      openGovDelegationScore +
-      scaledOpenGovScore +
+      // openGovDelegationScore +
+      // scaledOpenGovScore +
       clientScore;
 
     const randomness = 1 + Math.random() * 0.15;
@@ -1560,5 +1567,21 @@ export const checkKusamaRank = async (candidate: any) => {
     return true;
   } catch (e) {
     logger.warn(`Error trying to get kusama data...`);
+  }
+};
+
+export const checkBeefyKeys = async (candidate: any) => {
+  try {
+    const isDummy = await queries.hasBeefyDummy(candidate.stash);
+    if (isDummy) {
+      const invalidityString = `${candidate.name} has not set beefy keys`;
+      await setBeefyKeysInvalidity(candidate.stash, false, invalidityString);
+      return false;
+    } else {
+      await setBeefyKeysInvalidity(candidate.stash, true);
+      return true;
+    }
+  } catch (e) {
+    logger.warn(`Error trying to get beefy keys...`, constraintsLabel);
   }
 };

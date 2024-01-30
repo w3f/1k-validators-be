@@ -874,9 +874,14 @@ export const startDemocracyJob = async (
     logger.info(`running democracy job....`, cronLabel);
 
     // Run the democracy  job
-    const hasFinished = await democracyJob(chaindata);
-    if (hasFinished) {
-      running = false;
+    try {
+      const hasFinished = await democracyJob(chaindata);
+      if (hasFinished) {
+        running = false;
+      }
+    } catch (e) {
+      logger.error(`There was an error running democracy job.`, cronLabel);
+      logger.error(JSON.stringify(e), cronLabel);
     }
   });
   democracyCron.start();

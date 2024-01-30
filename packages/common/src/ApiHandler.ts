@@ -12,6 +12,7 @@ export const apiLabel = { label: "ApiHandler" };
  * to a different provider if one proves troublesome.
  */
 class ApiHandler extends EventEmitter {
+  private _wsProvider: WsProvider;
   private _api: ApiPromise;
   private _endpoints: string[];
   private _reconnectLock: boolean;
@@ -19,112 +20,108 @@ class ApiHandler extends EventEmitter {
   static isConnected: any;
   static _reconnect: any;
 
-  constructor(api: ApiPromise, endpoints?: string[]) {
+  timeout = 5 * 1000;
+
+  private healthCheckInProgress: boolean;
+
+  constructor(endpoints?: string[]) {
     super();
-    this._api = api;
-    // this._endpoints = endpoints.sort(() => Math.random() - 0.5);
-    this._registerEventHandlers(api);
+    this._endpoints = endpoints.sort(() => Math.random() - 0.5);
   }
 
-  static async createApi(endpoints, reconnectTries = 0) {
-    const timeout = 12;
-    let api, wsProvider;
-    const healthCheck = async (api) => {
-      logger.info(`Performing health check for WS Provider for rpc.`, apiLabel);
+  async healthCheck() {
+    logger.info(`Performing health check for WS Provider for rpc.`, apiLabel);
+    this.healthCheckInProgress = true;
+    await sleep(this.timeout);
+    if (this._wsProvider.isConnected) {
+      logger.info(
+        `All good. Connected back to ${this._endpoints[0]}`,
+        apiLabel,
+      );
+      this.healthCheckInProgress = false;
+      return true;
+    } else {
+      logger.info(`api still disconnected, disconnecting.`, apiLabel);
+      await this._wsProvider.disconnect();
+      throw new Error(
+        `ERROR: rpc endpoint still disconnected after ${this.timeout} seconds.`,
+      );
+    }
+  }
 
-      await sleep(timeout * 1000);
-      if (api && api?.isConnected) {
-        logger.info(`All good. Connected`, apiLabel);
-        return true;
-      } else {
-        logger.info(
-          `rpc endpoint still disconnected after ${timeout} seconds. Disconnecting `,
-          apiLabel,
-        );
-        await api.disconnect();
-
-        throw new Error(
-          `rpc endpoint still disconnected after ${timeout} seconds.`,
-        );
-      }
-    };
-
-    try {
-      wsProvider = new WsProvider(
+  async getProvider(endpoints) {
+    return await new Promise<WsProvider | undefined>((resolve, reject) => {
+      const wsProvider = new WsProvider(
         endpoints,
-        undefined,
+        5000,
         undefined,
         POLKADOT_API_TIMEOUT,
       );
 
-      api = new ApiPromise({
-        provider: new WsProvider(
-          endpoints,
-          undefined,
-          undefined,
-          POLKADOT_API_TIMEOUT,
-        ),
-        // throwOnConnect: true,
-      });
-
-      api
-        .on("connected", () => {
-          logger.info(`Connected to chain ${endpoints[0]}`, apiLabel);
-        })
-        .on("disconnected", async () => {
-          logger.warn(`Disconnected from chain`, apiLabel);
-          try {
-            await healthCheck(wsProvider);
-            await Promise.resolve(api);
-          } catch (error: any) {
-            await Promise.reject(error);
-          }
-        })
-        .on("ready", () => {
-          logger.info(`API connection ready ${endpoints[0]}`, apiLabel);
-        })
-        .on("error", async (error) => {
-          logger.warn("The API has an error", apiLabel);
-          logger.error(error, apiLabel);
-          logger.warn(`attempting to reconnect to ${endpoints[0]}`, apiLabel);
-          try {
-            await healthCheck(wsProvider);
-            await Promise.resolve(api);
-          } catch (error: any) {
-            await Promise.reject(error);
-          }
-        });
-
-      if (api) {
-        await api.isReadyOrError.catch(logger.error);
-
-        return api;
-      }
-    } catch (e) {
-      logger.error(`there was an error: `, apiLabel);
-      logger.error(e, apiLabel);
-      if (reconnectTries < 10) {
-        return await this.createApi(
-          endpoints.sort(() => Math.random() - 0.5),
-          reconnectTries + 1,
+      wsProvider.on("disconnected", async () => {
+        logger.warn(
+          `WS provider for rpc ${endpoints[0]} disconnected!`,
+          apiLabel,
         );
+        if (!this.healthCheckInProgress) {
+          try {
+            await this.healthCheck();
+            resolve(wsProvider);
+          } catch (error: any) {
+            reject(error);
+          }
+        }
+      });
+      wsProvider.on("connected", () => {
+        logger.info(
+          `WS provider for rpc ${this._endpoints[0]} connected`,
+          apiLabel,
+        );
+        resolve(wsProvider);
+      });
+      wsProvider.on("error", async () => {
+        logger.error(`Error thrown for rpc ${this._endpoints[0]}`, apiLabel);
+        if (!this.healthCheckInProgress) {
+          try {
+            await this.healthCheck();
+            resolve(wsProvider);
+          } catch (error: any) {
+            reject(error);
+          }
+        }
+      });
+    });
+  }
+
+  async getAPI(retries) {
+    logger.info(`getAPI`, apiLabel);
+    if (this._wsProvider && this._api && this._api?.isConnected) {
+      return this._api;
+    }
+    const endpoints = this._endpoints.sort(() => Math.random() - 0.5);
+
+    try {
+      logger.info(`getAPI: creating provider`, apiLabel);
+      const provider = await this.getProvider(endpoints);
+      this._wsProvider = provider;
+      logger.info(`getAPI: provider created`, apiLabel);
+      const api = await ApiPromise.create({ provider: provider });
+      await api.isReadyOrError;
+      logger.info(`Api is ready`, apiLabel);
+      return api;
+    } catch (e) {
+      if (retries < 15) {
+        return await this.getAPI(retries + 1);
       } else {
-        return api;
+        return this._api;
       }
     }
   }
 
-  static async create(endpoints: string[]): Promise<ApiHandler> {
-    try {
-      const api = await this.createApi(
-        endpoints.sort(() => Math.random() - 0.5),
-      );
-
-      return new ApiHandler(api, endpoints);
-    } catch (e) {
-      logger.info(`there was an error: `, apiLabel);
-      logger.error(e, apiLabel);
-    }
+  async setAPI() {
+    const api = await this.getAPI(0);
+    this._api = api;
+    this._registerEventHandlers(this._api);
   }
 
   isConnected(): boolean {
@@ -136,41 +133,54 @@ class ApiHandler extends EventEmitter {
   }
 
   _registerEventHandlers(api: ApiPromise): void {
-    api.query.system.events((events) => {
-      // Loop through the Vec<EventRecord>
-      events.forEach((record) => {
-        // Extract the phase, event and the event types
-        const { event } = record;
+    if (api) {
+      try {
+        logger.info(`registering event handlers...`, apiLabel);
+        api?.query?.system?.events((events) => {
+          // Loop through the Vec<EventRecord>
+          events.forEach((record) => {
+            // Extract the phase, event and the event types
+            const { event } = record;
 
-        if (event.section == "session" && event.method == "NewSession") {
-          const [session_index] = event.data;
+            if (event.section == "session" && event.method == "NewSession") {
+              const [session_index] = event.data;
 
-          this.emit("newSession", {
-            sessionIndex: session_index.toString(),
+              this.emit("newSession", {
+                sessionIndex: session_index.toString(),
+              });
+            }
+
+            if (
+              event.section == "staking" &&
+              (event.method == "Reward" || event.method == "Rewarded")
+            ) {
+              const [stash, amount] = event.data;
+
+              this.emit("reward", {
+                stash: stash.toString(),
+                amount: amount.toString(),
+              });
+            }
+
+            if (
+              event.section === "imOnline" &&
+              event.method === "SomeOffline"
+            ) {
+              const offlineVals = event.data.toJSON()[0].map((val) => val[0]);
+
+              this.emit("someOffline", {
+                offlineVals: offlineVals,
+              });
+            }
           });
-        }
-
-        if (
-          event.section == "staking" &&
-          (event.method == "Reward" || event.method == "Rewarded")
-        ) {
-          const [stash, amount] = event.data;
-
-          this.emit("reward", {
-            stash: stash.toString(),
-            amount: amount.toString(),
-          });
-        }
-
-        if (event.section === "imOnline" && event.method === "SomeOffline") {
-          const offlineVals = event.data.toJSON()[0].map((val) => val[0]);
-
-          this.emit("someOffline", {
-            offlineVals: offlineVals,
-          });
-        }
-      });
-    });
+        });
+      } catch (e) {
+        logger.error(`there was an error registering event handlers`, apiLabel);
+        logger.error(JSON.stringify(e), apiLabel);
+      }
+    } else {
+      logger.warn(`cannot register event handlers, api is null`, apiLabel);
+    }
   }
 }
 

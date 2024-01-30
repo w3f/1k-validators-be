@@ -32,8 +32,9 @@ const catchAndQuit = async (fn: any) => {
   }
 };
 
-export const createAPIHandler = async (config) => {
+export const createAPIHandler = async (config, retries = 0) => {
   try {
+    logger.info(`Creating API Handler`, winstonLabel);
     // Create the API handler.
     const endpoints =
       config.global.networkPrefix == 2
@@ -41,11 +42,18 @@ export const createAPIHandler = async (config) => {
         : config.global.networkPrefix == 0
           ? config.global.apiEndpoints
           : Constants.LocalEndpoints;
-    const handler = await ApiHandler.create(endpoints);
+    const handler = new ApiHandler(endpoints);
+    await handler.setAPI();
     return handler;
   } catch (e) {
-    logger.error(e.toString());
-    process.exit(1);
+    logger.error(e.toString(), winstonLabel);
+    if (retries < 20) {
+      logger.info(`Retrying... attempt: ${retries}`, winstonLabel);
+      return await createAPIHandler(config, retries + 1);
+    } else {
+      logger.error(`Retries exceeded`, winstonLabel);
+      process.exit(1);
+    }
   }
 };
 
@@ -250,6 +258,12 @@ const start = async (cmd: { config: string }) => {
 
   // Start the clear accumulated offline time job.
   await startClearAccumulatedOfflineTimeJob(config);
+
+  const api = handler.getApi();
+  while (!api) {
+    logger.info(`Waiting for API to connect...`, winstonLabel);
+    await Util.sleep(1000);
+  }
 
   // Create the scorekeeper.
   const scorekeeper = await initScorekeeper(config, handler, maybeBot);

@@ -1537,6 +1537,48 @@ export const setKusamaRankInvalidity = async (
   ).exec();
 };
 
+export const setBeefyKeysInvalidity = async (
+  address: string,
+  validity: boolean,
+  details?: string,
+): Promise<any> => {
+  const data = await CandidateModel.findOne({
+    stash: address,
+  }).lean();
+
+  if (!data || !data?.invalidity) {
+    logger.warn(`{Self Stake} NO CANDIDATE DATA FOUND FOR ${address}`);
+    return;
+  }
+
+  const invalidityReasons = data?.invalidity?.filter((invalidityReason) => {
+    return invalidityReason.type !== "BEEFY";
+  });
+
+  if (!invalidityReasons || invalidityReasons.length == 0) return;
+
+  await CandidateModel.findOneAndUpdate(
+    {
+      stash: address,
+    },
+    {
+      invalidity: [
+        ...invalidityReasons,
+        {
+          valid: validity,
+          type: "BEEFY",
+          updated: Date.now(),
+          details: validity
+            ? ""
+            : details
+              ? details
+              : `${data.name} does not have beefy keys`,
+        },
+      ],
+    },
+  ).exec();
+};
+
 // Sets valid boolean for node
 export const setValid = async (
   address: string,

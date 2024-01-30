@@ -384,7 +384,6 @@ export const parseExtrinsics = async (
             const { method, section } = arg;
             // If there was a payoutStakers tx
             if (method.toString() == "payoutStakers") {
-              logger.info(`Batch Payout Stakers extrinsics:`, blockdataLabel);
               await processPayoutStakers(
                 chaindata,
                 arg.args,

@@ -20,6 +20,7 @@ module.exports = {
       items: [
         "general/getting-started",
         "general/requirements",
+        "general/scoring",
         "general/terms-of-service",
         "general/faq",
       ],
@@ -31,7 +32,7 @@ module.exports = {
         "backend/backend",
         "backend/config",
         "backend/api-docs",
-        "backend/adr",
+        // "backend/adr",
         {
           type: "category",
           label: "Packages",

@@ -102,6 +102,14 @@ export const getAddressConvictionVotes = async (
   return convictionVotes;
 };
 
+export const getAddressFinishedConvictionVotes = async (
+  address: string,
+): Promise<any> => {
+  const convictionVotes =
+    await queries.getFinishedidentityConvictionVoting(address);
+  return convictionVotes;
+};
+
 export const getAddressTrackConvictionVotes = async (
   address: string,
   track: number,

@@ -16,13 +16,18 @@ The following are the requirements that must be met for nodes participating in t
 
 :::
 
+:::warning Subject to Change
+
+Note that the following requirements are subject to change at any time.
+
+:::
+
 ## Kusama Programme
 
 - Validators must never have been slashed
 - Validators have a minimum stash in their accounts (10 KSM)
 - Validator nodes connect to a dedicated telemetry
 - Validators charge no more than 15% commission
-- Validators must have a separate Stash and Controller account
 - A one-week monitoring period to ensure validator nodes have stable operations.
 - Validator stash addresses must get a verified on chain identity.
 - All nodes must upgrade to the latest version within 12 hours of its release if it is labeled "critical" or "high" priority and 24 hours if it is labeled "medium" or "low" priority.
@@ -37,7 +42,6 @@ The following are the requirements that must be met for nodes participating in t
 - Validators have a minimum stash in their accounts (5000 DOTs)
 - Validator nodes connect to a dedicated telemetry server
 - Validators charge no more than 5% commission
-- Validators reward destination must be set to 'Staked'
 - A one-week monitoring period to ensure validator  have stable operations.
 - All nodes must upgrade to the latest version within 12 hours of its release if it is labeled "critical" or "high" priority and 24 hours if it is labeled "medium" or "low" priority.
 - Validator must operate nodes themselves, they may not be run by a third party or staking provider

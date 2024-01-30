@@ -66,6 +66,7 @@
     "prettier": "^3.2.4"
   },
   "dependencies": {
+    "axios": "^1.6.7",
     "coingecko-api": "^1.0.10",
     "coingecko-api-v3": "^0.0.29",
     "date-fns": "^3.3.1",

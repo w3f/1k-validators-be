@@ -17,6 +17,7 @@ __metadata:
     "@types/yamljs": ^0.2.34
     "@typescript-eslint/eslint-plugin": ^5.59.9
     "@typescript-eslint/parser": ^5.59.9
+    axios: ^1.6.7
     coingecko-api: ^1.0.10
     coingecko-api-v3: ^0.0.29
     date-fns: ^3.3.1
@@ -2208,6 +2209,17 @@ __metadata:
     form-data: ^4.0.0
     proxy-from-env: ^1.1.0
   checksum: e28d67b2d9134cb4608c44d8068b0678cfdccc652742e619006f27264a30c7aba13b2cd19c6f1f52ae195b5232734925928fb192d5c85feea7edd2f273df206d
+  languageName: node
+  linkType: hard
+
+"axios@npm:^1.6.7":
+  version: 1.6.7
+  resolution: "axios@npm:1.6.7"
+  dependencies:
+    follow-redirects: ^1.15.4
+    form-data: ^4.0.0
+    proxy-from-env: ^1.1.0
+  checksum: 87d4d429927d09942771f3b3a6c13580c183e31d7be0ee12f09be6d5655304996bb033d85e54be81606f4e89684df43be7bf52d14becb73a12727bf33298a082
   languageName: node
   linkType: hard
 

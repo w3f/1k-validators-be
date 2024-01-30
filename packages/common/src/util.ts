@@ -6,11 +6,7 @@ import logger from "./logger";
 import { LOCATION_URL } from "./constants";
 import { ApiPromise } from "@polkadot/api";
 import { format } from "date-fns";
-
-import { RequestInfo, RequestInit } from "node-fetch";
-
-const fetch = (url: RequestInfo, init?: RequestInit) =>
-  import("node-fetch").then(({ default: fetch }) => fetch(url, init));
+import axios from "axios";
 
 export const sleep = (ms: number): Promise<void> =>
   new Promise((resolve) => {
@@ -113,8 +109,9 @@ export const fetchLocationInfo = async (addr: any, iit: any) => {
   }
   let json;
   try {
-    const resp = await fetch(`${LOCATION_URL}${addr}?${iit}`);
-    json = await resp.json();
+    const url = `${LOCATION_URL}${addr}?${iit}`;
+    const response = await axios.get(url);
+    json = response.data;
   } catch (e) {
     logger.info(`There was an error fetching location data....`);
     logger.info(e);

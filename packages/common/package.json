@@ -1,6 +1,6 @@
 {
   "name": "@1kv/common",
-  "version": "3.0.10",
+  "version": "3.0.12",
   "description": "Services for running the Thousand Validator Program.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -34,7 +34,7 @@
     "@types/mongoose": "^5.11.97",
     "@types/node": "^20.11.5",
     "hash.js": "^1.1.7",
-    "mongoose": "^8.1.0",
+    "mongoose": "^8.1.1",
     "typescript": "^5.3.3",
     "winston": "^3.11.0"
   }

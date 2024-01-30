@@ -1,6 +1,6 @@
 {
   "name": "@1kv/gateway",
-  "version": "3.0.10",
+  "version": "3.0.12",
   "description": "Services for running the Thousand Validator Program.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -30,8 +30,8 @@
   "dependencies": {
     "@1kv/common": "workspace:^",
     "@1kv/worker": "workspace:^",
-    "@bull-board/api": "^5.13.0",
-    "@bull-board/koa": "^5.13.0",
+    "@bull-board/api": "^5.14.0",
+    "@bull-board/koa": "^5.14.0",
     "koa-swagger-decorator": "^1.8.7",
     "typescript": "^5.3.3"
   },
@@ -39,7 +39,7 @@
     "@ava/typescript": "^4.1.0",
     "@typescript-eslint/eslint-plugin": "^5.59.9",
     "@typescript-eslint/parser": "^5.59.9",
-    "ava": "^6.0.1",
+    "ava": "^6.1.1",
     "concurrently": "^8.2.2",
     "eslint": "8.42.0",
     "eslint-plugin-security": "^2.1.0",

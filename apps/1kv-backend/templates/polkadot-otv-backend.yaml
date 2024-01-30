@@ -25,7 +25,8 @@ spec:
             environment: {{ .Values.environment }}
             dataPath: "/data"
             backendPort: 3300
-            domain: {{ .Values.polkadot.be.domain | quote }}
+            ingress:
+              domain: {{ .Values.polkadot.be.domain | quote }}
 
             resources:
               {{- toYaml .Values.polkadot.be.resources | nindent 14 }}

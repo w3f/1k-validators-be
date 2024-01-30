@@ -22,8 +22,7 @@ spec:
       env:
         - name: HELM_VALUES
           value: |
-            clusterDomain: cluster.local
-            architecture: {{ .Values.kusama.db.architecture }}
+            architecture: standalone
             useStatefulSet: true
 
             auth:
@@ -32,184 +31,41 @@ spec:
               username: <path:vaults/k8s-community-secrets/items/otv-kusama#mongo-username>
               password: <path:vaults/k8s-community-secrets/items/otv-kusama#mongo-password>
               database: <path:vaults/k8s-community-secrets/items/otv-kusama#mongo-db>
-              {{ if eq .Values.kusama.db.architecture "replicaset" }}
-              replicaSetKey: <path:vaults/k8s-community-secrets/items/otv-kusama#mongo-rs-key>
-              {{ end }}
 
             directoryPerDB: true
 
             tls:
               enabled: false
 
-            {{ if eq .Values.kusama.db.architecture "replicaset" }}
-            replicaSetName: rs0
-            replicaSetHostnames: true
-            {{ end }}
-
             systemLogVerbosity: 0
             disableSystemLog: false
 
-            annotations: {}
-            labels: {}
-            replicaCount: 2
-            updateStrategy:
-              type: RollingUpdate
-            podManagementPolicy: OrderedReady
-            affinity: {}
-            nodeSelector: {}
-            podLabels: {}
-
-            podSecurityContext:
-              enabled: true
-              fsGroup: 1001
-              ## sysctl settings
-              ## Example:
-              ## sysctls:
-              ## - name: net.core.somaxconn
-              ##   value: "10000"
-              ##
-              sysctls: []
-
-            containerSecurityContext:
-              enabled: true
-              runAsUser: 1001
-              runAsNonRoot: true
-
             resources:
-              {{- toYaml .Values.kusama.db.resources | nindent 14 }}
-
-            livenessProbe:
-              enabled: true
-              initialDelaySeconds: 30
-              periodSeconds: 10
-              timeoutSeconds: 5
-              failureThreshold: 6
-              successThreshold: 1
-            readinessProbe:
-              enabled: true
-              initialDelaySeconds: 5
-              periodSeconds: 10
-              timeoutSeconds: 5
-              failureThreshold: 6
-              successThreshold: 1
-
-            extraVolumeMounts: []
-            extraVolumes: []
-
-            pdb:
-              create: false
-              minAvailable: 1
-              maxUnavailable: 1
+              limits:
+                cpu: 1600m
+                memory: 4Gi
+              requests:
+                cpu: 400m
+                memory: 2Gi
 
             persistence:
               enabled: true
-              # storageClass: ""
-              accessModes:
-                - ReadWriteOnce
-              size: {{ .Values.kusama.db.storage }}
-              annotations: {}
-              mountPath: /bitnami/mongodb
-              subPath: ""
-              
-            service:
-              type: ClusterIP
-              ports:
-                mongodb: 27017
 
             externalAccess:
               enabled: false
 
             arbiter:
-              enabled: true
-              configuration: ""
-              # existingConfigmap:
-              annotations: {}
-              labels: {}
-              affinity: {}
-              nodeSelector: {}
-              tolerations: []
-              podLabels: {}
-              podAnnotations: {}
-
-              podSecurityContext:
-                enabled: true
-                fsGroup: 1001
-                ## sysctl settings
-                ## Example:
-                ## sysctls:
-                ## - name: net.core.somaxconn
-                ##   value: "10000"
-                ##
-                sysctls: []
-
-              containerSecurityContext:
-                enabled: true
-                runAsUser: 1001
-
-              resources:
-                limits: 
-                  cpu: 100m
-                  memory: 128Mi
-                requests: 
-                  cpu: 100m
-                  memory: 128Mi
-
-              livenessProbe:
-                enabled: true
-                initialDelaySeconds: 30
-                periodSeconds: 10
-                timeoutSeconds: 5
-                failureThreshold: 6
-                successThreshold: 1
-              readinessProbe:
-                enabled: true
-                initialDelaySeconds: 5
-                periodSeconds: 10
-                timeoutSeconds: 5
-                failureThreshold: 6
-                successThreshold: 1
-
-              pdb:
-                create: false
-                minAvailable: 1
-
-            serviceAccount:
-              create: true
-
-            rbac:
-              create: false
-
+              enabled: false
+          
             metrics:
               enabled: true
               resources:
-                limits: 
+                limits:
                   cpu: 100m
                   memory: 128Mi
-                requests: 
+                requests:
                   cpu: 100m
                   memory: 128Mi
-              service:
-                annotations:
-                  prometheus.io/scrape: "true"
-                  prometheus.io/port: "9216"
-                  prometheus.io/path: "/metrics"
-                type: ClusterIP
-                port: 9216
-              livenessProbe:
-                enabled: true
-                initialDelaySeconds: 15
-                periodSeconds: 5
-                timeoutSeconds: 5
-                failureThreshold: 3
-                successThreshold: 1
-              readinessProbe:
-                enabled: false
-                initialDelaySeconds: 15
-                periodSeconds: 5
-                timeoutSeconds: 1
-                failureThreshold: 30
-                successThreshold: 1
-
 ---
 
 apiVersion: argoproj.io/v1alpha1
@@ -231,13 +87,12 @@ spec:
   source:
     repoURL: https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
     chart: mongodb
-    targetRevision: ^10.31.5
+    targetRevision: ^14.6.1
     plugin:
       env:
         - name: HELM_VALUES
           value: |
-            clusterDomain: cluster.local
-            architecture: {{ .Values.polkadot.db.architecture }}
+            architecture: standalone
             useStatefulSet: true
 
             auth:
@@ -246,179 +101,38 @@ spec:
               username: <path:vaults/k8s-community-secrets/items/otv-polkadot#mongo-username>
               password: <path:vaults/k8s-community-secrets/items/otv-polkadot#mongo-password>
               database: <path:vaults/k8s-community-secrets/items/otv-polkadot#mongo-db>
-              {{ if eq .Values.polkadot.db.architecture "replicaset" }}
-              replicaSetKey: <path:vaults/k8s-community-secrets/items/otv-polkadot#mongo-rs-key>
-              {{ end }}
 
             directoryPerDB: false
 
             tls:
               enabled: false
-            {{ if eq .Values.polkadot.db.architecture "replicaset" }}
-            replicaSetName: rs0
-            replicaSetHostnames: true
-            {{ end }}
 
             systemLogVerbosity: 0
             disableSystemLog: false
 
-            annotations: {}
-            labels: {}
-            replicaCount: 2
-            updateStrategy:
-              type: RollingUpdate
-            podManagementPolicy: OrderedReady
-            affinity: {}
-            nodeSelector: {}
-            podLabels: {}
-
-            podSecurityContext:
-              enabled: true
-              fsGroup: 1001
-              ## sysctl settings
-              ## Example:
-              ## sysctls:
-              ## - name: net.core.somaxconn
-              ##   value: "10000"
-              ##
-              sysctls: []
-
-            containerSecurityContext:
-              enabled: true
-              runAsUser: 1001
-              runAsNonRoot: true
-
             resources:
-              {{- toYaml .Values.polkadot.db.resources | nindent 14 }}
-
-            livenessProbe:
-              enabled: true
-              initialDelaySeconds: 30
-              periodSeconds: 10
-              timeoutSeconds: 5
-              failureThreshold: 6
-              successThreshold: 1
-            readinessProbe:
-              enabled: true
-              initialDelaySeconds: 5
-              periodSeconds: 10
-              timeoutSeconds: 5
-              failureThreshold: 6
-              successThreshold: 1
-
-            extraVolumeMounts: []
-            extraVolumes: []
-
-            pdb:
-              create: false
-              minAvailable: 1
-              maxUnavailable: 1
+              limits: 
+                cpu: "600m"
+                memory: "2Gi"
+              requests: 
+                cpu: "300m"
+                memory: "1Gi"
 
             persistence:
               enabled: true
-              # storageClass: ""
-              accessModes:
-                - ReadWriteOnce
-              size: {{ .Values.polkadot.db.storage }}
-              annotations: {}
-              mountPath: /bitnami/mongodb
-              subPath: ""
-              
-            service:
-              type: ClusterIP
-              ports:
-                mongodb: 27017
 
             externalAccess:
               enabled: false
 
             arbiter:
-              enabled: true
-              configuration: ""
-              # existingConfigmap:
-              annotations: {}
-              labels: {}
-              affinity: {}
-              nodeSelector: {}
-              tolerations: []
-              podLabels: {}
-              podAnnotations: {}
-
-              podSecurityContext:
-                enabled: true
-                fsGroup: 1001
-                ## sysctl settings
-                ## Example:
-                ## sysctls:
-                ## - name: net.core.somaxconn
-                ##   value: "10000"
-                ##
-                sysctls: []
-
-              containerSecurityContext:
-                enabled: true
-                runAsUser: 1001
-
-              resources:
-                limits: 
-                  cpu: 100m
-                  memory: 128Mi
-                requests: 
-                  cpu: 100m
-                  memory: 128Mi
-
-              livenessProbe:
-                enabled: true
-                initialDelaySeconds: 30
-                periodSeconds: 10
-                timeoutSeconds: 5
-                failureThreshold: 6
-                successThreshold: 1
-              readinessProbe:
-                enabled: true
-                initialDelaySeconds: 5
-                periodSeconds: 10
-                timeoutSeconds: 5
-                failureThreshold: 6
-                successThreshold: 1
-
-              pdb:
-                create: false
-                minAvailable: 1
-
-            serviceAccount:
-              create: true
-
-            rbac:
-              create: false
+              enabled: false
 
             metrics:
               enabled: true
               resources:
-                limits: 
+                limits:
                   cpu: 100m
                   memory: 128Mi
-                requests: 
+                requests:
                   cpu: 100m
                   memory: 128Mi
-              service:
-                annotations:
-                  prometheus.io/scrape: "true"
-                  prometheus.io/port: "9216"
-                  prometheus.io/path: "/metrics"
-                type: ClusterIP
-                port: 9216
-              livenessProbe:
-                enabled: true
-                initialDelaySeconds: 15
-                periodSeconds: 5
-                timeoutSeconds: 5
-                failureThreshold: 3
-                successThreshold: 1
-              readinessProbe:
-                enabled: true
-                initialDelaySeconds: 5
-                periodSeconds: 5
-                timeoutSeconds: 1
-                failureThreshold: 3
-                successThreshold: 1

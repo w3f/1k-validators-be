@@ -4,7 +4,17 @@ image:
   repo: web3f/otv-backend
   #tag: latest
 
-domain: otv.w3f.community
+ingress:
+  domain: otv.w3f.community
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/server-snippet: |
+      location /metrics {
+        deny all;
+      }
+    cert-manager.io/cluster-issuer: letsencrypt
+  certificate:
+    enabled: true
 
 dataPath: "/data"
 backendPort: 3300
@@ -17,9 +27,6 @@ resources:
   requests:
     cpu: 300m
     memory: 400Mi
-
-certificate:
-  enabled: true
 
 secret: |
   {

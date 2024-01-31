@@ -15,6 +15,6 @@
   "democracy": "30",
   "nominations": "100",
   "delegations": "60",
-  "openGov": "100",
-  "openGovDelegation": "100"
+  "openGov": "0",
+  "openGovDelegation": "0"
 }

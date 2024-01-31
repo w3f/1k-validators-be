@@ -11,7 +11,7 @@
   "region": "10",
   "country": "10",
   "provider": "80",
-  "nominations": "100",
-  "openGov": "100",
-  "openGovDelegation": "100"
+  "nominations": "0",
+  "openGov": "0",
+  "openGovDelegation": "0"
 }

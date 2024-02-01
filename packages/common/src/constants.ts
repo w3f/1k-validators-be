@@ -76,9 +76,10 @@ export const LocalEndpoints = [
 
 // List of log labels that are omitted from logging
 export const defaultExcludeLabels = [
-  "Telemetry",
-  "Location",
+  // "Telemetry",
+  // "Location",
   "ValidatorPrefJob",
+  "Block",
 ];
 
 /// Endpoint of the Kusama Thousand Validators backend. Used for the Polkadot program.

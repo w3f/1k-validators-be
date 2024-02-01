@@ -183,3 +183,15 @@ export const getHistoryDepthTotalEraPoints = async (
     .lean()
     .exec();
 };
+
+export const getValidatorLastEraPoints = async (
+  address: string,
+): Promise<any> => {
+  return await EraPointsModel.findOne({
+    address: address,
+  })
+    .lean()
+    .sort("-era")
+    .limit(1)
+    .exec();
+};

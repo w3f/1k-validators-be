@@ -1,6 +1,5 @@
-import { ChainData, logger } from "@1kv/common";
+import { ChainData } from "@1kv/common";
 import { processActiveValidatorJob } from "./ActiveValidatorJob";
-import { processCouncilJob } from "./CouncilJob";
 import { processDelegationJob } from "./DelegationJob";
 import { processDemocracyJob } from "./DemocracyJob";
 import { processEraPointsJob } from "./EraPointsJob";
@@ -11,7 +10,6 @@ import { processSessionKeyJob } from "./SessionKeyJob";
 import { processValidatorPrefJob } from "./ValidatorPrefJob";
 import {
   ACTIVE_VALIDATOR_JOB,
-  COUNCIL_JOB,
   DELEGATION_JOB,
   DEMOCRACY_JOB,
   ERA_POINTS_JOB,
@@ -30,9 +28,6 @@ export const processChainDataJob = async (job: any, chaindata: ChainData) => {
   switch (jobType) {
     case ACTIVE_VALIDATOR_JOB:
       await processActiveValidatorJob(job, chaindata);
-      break;
-    case COUNCIL_JOB:
-      await processCouncilJob(job, chaindata);
       break;
     case DELEGATION_JOB:
       await processDelegationJob(job, chaindata);

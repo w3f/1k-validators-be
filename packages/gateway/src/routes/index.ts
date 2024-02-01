@@ -41,7 +41,6 @@ const API = {
   Release: "/release",
   LocationsCurrentValidatorSet: "/location/currentvalidatorset",
   LocationValidator: "/location/validator/:address",
-  HeartbeatIndex: "/location/heartbeatindex",
   LocationStats: "/locationstats",
   SessionLocationStats: "/locationstats/:session",
   Councillors: "/councillor",
@@ -180,7 +179,6 @@ router.get(
   Location.getLocationCurrentValidatorSet,
 );
 router.get(API.LocationValidator, Location.getValidatorLocation);
-router.get(API.HeartbeatIndex, Location.getHeartbeatIndex);
 
 router.get(API.EraStats, Stats.getEraStats);
 router.get(API.LocationStats, Stats.getLocationStats);

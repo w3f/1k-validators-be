@@ -193,6 +193,11 @@ export const setController = async (
   return true;
 };
 
+export const deleteAllIdentities = async (): Promise<boolean> => {
+  await IdentityModel.deleteMany({}).exec();
+  return true;
+};
+
 // Creates an Identity Record
 export const setIdentity = async (identity: Identity): Promise<boolean> => {
   if (!identity || !identity?.name) return false;
@@ -962,18 +967,16 @@ export const setActive = async (
   return true;
 };
 
-// updates a candidates council backing amounts and who they vote for
-export const setCouncilBacking = async (
+export const setNominatedAtEra = async (
   address: string,
-  councilStake: number,
-  councilVotes: any[],
-): Promise<boolean> => {
+  era: number,
+): Promise<any> => {
   await CandidateModel.findOneAndUpdate(
     {
       stash: address,
     },
     {
-      $set: { councilStake: councilStake, councilVotes: councilVotes },
+      nominatedAt: era,
     },
   ).exec();
   return true;

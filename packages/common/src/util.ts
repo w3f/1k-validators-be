@@ -103,7 +103,9 @@ export const fetchLocationInfo = async (addr: any, iit: any) => {
       );
     }
     if (!addr) {
-      logger.warn("No address to query location info for");
+      logger.warn("No address to query location info for", {
+        label: "Location",
+      });
     }
     return blank;
   }
@@ -118,6 +120,9 @@ export const fetchLocationInfo = async (addr: any, iit: any) => {
     return blank;
   }
   if (json.bogon) {
+    logger.info(`Bogon IP address detected. Skipping...`, {
+      label: "Location",
+    });
     return blank;
   }
 

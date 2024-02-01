@@ -426,12 +426,6 @@ export default class Nominator {
             await queries.clearCurrent(this.controller);
           }
 
-          // update both the list of nominator for the nominator account as well as the time period of the nomination
-          for (const stash of targets) {
-            await queries.setTarget(this.controller, stash, now);
-            await queries.setLastNomination(this.controller, now);
-          }
-
           // Update the nomination record in the db
           const era = (await api.query.staking.activeEra()).toJSON()["index"];
           const decimals = (await queries.getChainMetadata()).decimals;
@@ -448,6 +442,13 @@ export default class Nominator {
             bonded,
             finalizedBlockHash,
           );
+
+          // update both the list of nominator for the nominator account as well as the time period of the nomination
+          for (const stash of targets) {
+            await queries.setTarget(this.controller, stash, era);
+            await queries.setLastNomination(this.controller, now);
+          }
+
           unsub();
           break;
         default:

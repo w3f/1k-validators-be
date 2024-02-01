@@ -10,6 +10,7 @@ export const getCandidateData = async (candidate: any): Promise<any> => {
     candidate.stash,
   );
   const nominations = await queries.getLatestNominatorStake(candidate.stash);
+  const identity = await queries.getIdentity(candidate.stash);
   return {
     discoveredAt: candidate.discoveredAt,
     nominatedAt: candidate.nominatedAt,

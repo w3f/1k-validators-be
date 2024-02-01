@@ -1,4 +1,4 @@
-import { logger, queries, ChainData } from "@1kv/common";
+import { ChainData, logger, queries } from "@1kv/common";
 
 export const inclusionLabel = { label: "InclusionJob" };
 
@@ -28,6 +28,12 @@ export const inclusionJob = async (chaindata: ChainData) => {
     );
     const spanInclusion = Number(filteredSpanEras.length / 28);
     await queries.setSpanInclusion(candidate.stash, spanInclusion);
+
+    const lastActiveEraPoints = await queries.getValidatorLastEraPoints(
+      candidate.stash,
+    );
+    const lastActiveEra = lastActiveEraPoints?.era || 0;
+    await queries.setNominatedAtEra(candidate.stash, lastActiveEra);
   }
 
   const end = Date.now();

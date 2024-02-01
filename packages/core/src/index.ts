@@ -139,6 +139,12 @@ export const initLocalDevScript = async (config) => {
 
 export const clean = async (scorekeeper) => {
   try {
+    // Clean locations with None
+    await queries.cleanBlankLocations();
+
+    // Delete all on-chain identities so they get fetched new on startup.
+    await queries.deleteAllIdentities();
+
     // Delete the old candidate fields.
     await queries.deleteOldCandidateFields();
 

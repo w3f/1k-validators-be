@@ -7,7 +7,6 @@ export * from "./SessionKeyJob";
 export * from "./InclusionJob";
 export * from "./ActiveValidatorJob";
 export * from "./LocationStatsJob";
-export * from "./CouncilJob";
 export * from "./DemocracyJob";
 export * from "./NominatorJob";
 export * from "./DelegationJob";
@@ -15,7 +14,6 @@ export * from "./BlockDataJob";
 export * from "./UnclaimedErasJob";
 
 export const ACTIVE_VALIDATOR_JOB = "activeValidatorJob";
-export const COUNCIL_JOB = "councilJob";
 export const DELEGATION_JOB = "delegationJob";
 export const DEMOCRACY_JOB = "democracyJob";
 export const ERA_POINTS_JOB = "eraPointsJob";

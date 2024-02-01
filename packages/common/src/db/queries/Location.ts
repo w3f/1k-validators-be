@@ -1,10 +1,4 @@
-import {
-  CandidateModel,
-  HeartbeatIndexModel,
-  IITModel,
-  LocationModel,
-} from "../models";
-import { fetchLocationInfo } from "../../util";
+import { CandidateModel, IITModel, LocationModel } from "../models";
 import { logger } from "../../index";
 import { getLatestSession } from "./Session";
 import { getCandidate } from "./Candidate";
@@ -174,93 +168,13 @@ export const setLocation = async (
   }
 };
 
-// Sets a location from heartbeats
-export const setHeartbeatLocation = async (
-  name: string,
-  address: string, // Validator Stash Address
-  addr: string,
-  port: number,
-  session: number,
-): Promise<any> => {
-  // Try and find an existing record
-  const data = await LocationModel.findOne({
-    addr,
-  }).lean();
-
-  // Location doesn't exist, fetch it
-  if (!data) {
-    const iit = await getIIT();
-    const { city, region, country, provider, v } = await fetchLocationInfo(
-      addr,
-      iit && iit.iit ? iit.iit : null,
-    );
-    const candidate = await CandidateModel.findOne({ stash: address })
-      .select({ name: 1, stash: 1 })
-      .lean();
-
-    const candidateName = candidate?.name ? candidate?.name : name;
-
-    const location = new LocationModel({
-      name: candidateName,
-      address,
-      addr,
-      city,
-      region,
-      country,
-      provider,
-      port,
-      vpn: v,
-      session: session || 0,
-      updated: Date.now(),
-      source: "Heartbeat",
-    });
-    return location.save();
-  } else if (data.addr != addr) {
-    // the record exists, but has a different address or port - update it
-
-    const iit = await getIIT();
-    const { city, region, country, provider } = await fetchLocationInfo(
-      addr,
-      iit && iit.iit ? iit.iit : null,
-    );
-    const candidate = await CandidateModel.findOne({ stash: address })
-      .select({ name: 1, stash: 1 })
-      .lean();
-
-    const candidateName = candidate?.name ? candidate?.name : name;
-
-    await LocationModel.findOneAndUpdate(
-      { addr },
-      {
-        name: candidateName,
-        address,
-        addr,
-        city,
-        region,
-        country,
-        provider,
-        port,
-        session: session || 0,
-        updated: Date.now(),
-        source: "Heartbeat",
-      },
-    ).exec();
-  } else if (data.port != port) {
-    const location = new LocationModel({
-      name: data.name,
-      address,
-      addr,
-      city: data.city,
-      region: data.region,
-      country: data.country,
-      provider: data.provider,
-      port,
-      session,
-      updated: Date.now(),
-      source: "Heartbeat",
-    });
-  }
+export const cleanBlankLocations = async (): Promise<any> => {
+  return await LocationModel.deleteMany({
+    $or: [{ city: "None" }, { addr: "" }],
+  }).exec();
 };
+
+// Sets a location from heartbeats
 
 export const getIIT = async (): Promise<any> => {
   return IITModel.findOne({}).lean().exec();
@@ -276,32 +190,5 @@ export const setIIT = async (accessToken: string): Promise<any> => {
     await IITModel.findOneAndUpdate({
       iit: accessToken,
     }).exec();
-  }
-};
-
-export const getHeartbeatIndex = async () => {
-  return await HeartbeatIndexModel.findOne({}).exec();
-};
-
-export const setHeartbeatIndex = async (
-  earliest: number,
-  latest: number,
-): Promise<any> => {
-  const exists = await HeartbeatIndexModel.findOne({}).exec();
-  if (!exists) {
-    const data = await new HeartbeatIndexModel({
-      earliest: earliest,
-      latest: latest,
-    });
-    return data.save();
-  }
-  if (earliest < exists.earliest) {
-    await HeartbeatIndexModel.findOneAndUpdate(
-      {},
-      { earliest: earliest },
-    ).exec();
-  }
-  if (latest > exists.latest) {
-    await HeartbeatIndexModel.findOneAndUpdate({}, { latest: latest }).exec();
   }
 };

@@ -111,7 +111,7 @@ export const setNominatorAvgStake = async (
 export const setTarget = async (
   address: string,
   target: string,
-  now: number,
+  era: number,
 ): Promise<boolean> => {
   logger.info(`(Db::setTarget) Setting ${address} with new target ${target}.`);
 
@@ -120,7 +120,7 @@ export const setTarget = async (
       stash: target,
     },
     {
-      nominatedAt: now,
+      nominatedAt: era,
     },
   ).exec();
 

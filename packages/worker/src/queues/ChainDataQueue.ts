@@ -2,7 +2,6 @@ import { Queue } from "bullmq";
 import { logger, queries } from "@1kv/common";
 import {
   ACTIVE_VALIDATOR_JOB,
-  COUNCIL_JOB,
   DELEGATION_JOB,
   DEMOCRACY_JOB,
   ERA_POINTS_JOB,
@@ -30,26 +29,6 @@ export const addActiveValidatorJob = async (queue: Queue, repeat: number) => {
   await queue.add(
     "chaindata",
     { jobType: ACTIVE_VALIDATOR_JOB },
-    {
-      repeat: {
-        every: repeat,
-        // limit: 1000,
-      },
-      attempts: 10,
-      backoff: {
-        type: "exponential",
-        delay: 1000,
-      },
-    },
-  );
-};
-
-// TODO remove
-export const addCouncilJob = async (queue: Queue, repeat: number) => {
-  logger.info(`adding Council Job to Queue.....`);
-  await queue.add(
-    "chaindata",
-    { jobType: COUNCIL_JOB },
     {
       repeat: {
         every: repeat,

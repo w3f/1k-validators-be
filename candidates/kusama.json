@@ -4072,6 +4072,12 @@
       "name": "Madbustazz",
       "stash": "GeqoXYixFsP9wLtfjDCrjmtHa47h4LEbxH1B46cBAm5uKq6",
       "riotHandle": "@madbustaz:matrix.org"
+    },
+    {
+      "name": "xxx",
+      "stash": "xxx",
+      "riotHandle": "@xxx:matrix.org",
+      "kyc": true
     }
   ]
 }

@@ -65,7 +65,7 @@
     "mongoose": "^8.1.1",
     "prettier": "^3.2.4",
     "reconnecting-websocket": "^4.4.0",
-    "semver": "^7.5.4",
+    "semver": "^7.6.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3",
     "winston": "^3.11.0",

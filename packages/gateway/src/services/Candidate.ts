@@ -32,9 +32,6 @@ export const getCandidateData = async (candidate: any): Promise<any> => {
     provider: candidate.infrastructureLocation?.provider
       ? candidate.infrastructureLocation?.provider
       : "No Provider",
-    convictionVotes: candidate.convictionVotes
-      ? candidate.convictionVotes.sort((a, b) => a - b)
-      : [],
     matrix: candidate.matrix,
     version: candidate.version,
     implementation: candidate.implementation,

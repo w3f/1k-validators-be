@@ -3,11 +3,13 @@ import path from "path";
 import { ClaimerConfig } from "./types";
 
 type CandidateConfig = {
+  id: number;
   name: string;
   stash: string;
   riotHandle: string;
   kusamaStash?: string;
   skipSelfStake?: boolean;
+  kyc: boolean;
 };
 
 export type NominatorConfig = {

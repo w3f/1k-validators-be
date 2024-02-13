@@ -1,7 +1,4 @@
 import { CronJob } from "cron";
-import { ApiPromise } from "@polkadot/api";
-
-import { otvWorker } from "@1kv/worker";
 import {
   ApiHandler,
   ChainData,
@@ -15,135 +12,22 @@ import {
 } from "@1kv/common";
 
 import Nominator from "./nominator";
-import {
-  startActiveValidatorJob,
-  startBlockDataJob,
-  startCancelCron,
-  startDelegationJob,
-  startDemocracyJob,
-  startEraPointsJob,
-  startEraStatsJob,
-  startExecutionJob,
-  startInclusionJob,
-  startLocationStatsJob,
-  startNominatorJob,
-  startRewardClaimJob,
-  startScoreJob,
-  startSessionKeyJob,
-  startStaleNominationCron,
-  startUnclaimedEraJob,
-  startValidatityJob,
-  startValidatorPrefJob,
-} from "./cron";
 import Claimer from "./claimer";
 import Monitor from "./monitor";
-import { monitorJob } from "./jobs";
+import { startMicroserviceJobs } from "./scorekeeper/jobs/MicroserviceJobs";
+import { startMonolithJobs } from "./scorekeeper/jobs/MonolithJobs";
+import { startScorekeeperJobs } from "./scorekeeper/jobs/ScorekeeperJobs";
+import { dockPoints } from "./scorekeeper/Rank";
+import { endRound, startRound } from "./scorekeeper/Round";
 // import { monitorJob } from "./jobs";
 
-type NominatorGroup = Config.NominatorConfig[];
+export type NominatorGroup = Config.NominatorConfig[];
 
-type SpawnedNominatorGroup = Nominator[];
+export type SpawnedNominatorGroup = Nominator[];
 
 export const scorekeeperLabel = { label: "Scorekeeper" };
 
 // The number of nominations a nominator can get in the set.
-export const autoNumNominations = async (
-  api: ApiPromise,
-  nominator: Nominator,
-): Promise<any> => {
-  // Get the denomination for the chain
-  const chainType = await api.rpc.system.chain();
-  const denom =
-    chainType.toString() == "Polkadot" ? 10000000000 : 1000000000000;
-
-  // Get the full nominator stash balance (free + reserved)
-  const stash = await nominator.stash();
-  if (!stash) return 0;
-  const stashQuery = await api.query.system.account(stash);
-
-  const stashBal =
-    // @ts-ignore
-    (parseFloat(stashQuery.data.free) + parseFloat(stashQuery.data.reserved)) /
-    denom;
-
-  // get the balance minus a buffer to remain free
-  const bufferedBalance =
-    stashBal -
-    Math.max(
-      Constants.BALANCE_BUFFER_PERCENT * stashBal,
-      Constants.BALANCE_BUFFER_AMOUNT,
-    );
-
-  // Query the staking info of the validator set
-  const query = await api.derive.staking.electedInfo();
-  const { info } = query;
-
-  const totalStakeAmounts = [];
-
-  // add formatted totals to list
-  for (const validator of info) {
-    const { exposure } = validator;
-    const { total, own, others } = exposure;
-    // @ts-ignore
-    const formattedTotal = parseFloat(total.toBigInt()) / denom;
-    if (formattedTotal > 0) {
-      totalStakeAmounts.push(formattedTotal);
-    }
-  }
-
-  const sorted = totalStakeAmounts.sort((a, b) => a - b);
-
-  let sum = 0;
-  let amount = 1;
-
-  // Loop until we find the amount of validators that the account can get in.
-  if (chainType.toString() != "Local Testnet") {
-    while (sum < bufferedBalance) {
-      // An offset so the slice isn't the immediate lowest validators in the set
-      const offset = 5;
-      const lowestNum = sorted.slice(offset, offset + amount);
-      sum = lowestNum.reduce((a, b) => a + b, 0);
-
-      if (sum < bufferedBalance) {
-        amount++;
-      } else {
-        amount--;
-        const lowestNum = sorted.slice(offset, offset + amount);
-        sum = lowestNum.reduce((a, b) => a + b, 0);
-        break;
-      }
-    }
-  }
-
-  // How many additional validator to nominate above the amount to get in the set
-  const additional = 1;
-
-  const maxNominations = chainType.toString() == "Polkadot" ? 16 : 24;
-  // The total amount of validators to nominate
-  const adjustedNominationAmount = Math.min(
-    Math.ceil(amount * additional),
-    maxNominations,
-  );
-  // The total amount of funds the nominator should have bonded
-  const newBondedAmount = (1 + Constants.BALANCE_BUFFER_PERCENT) * sum;
-  // The target amount for each validator
-  const targetValStake = newBondedAmount / adjustedNominationAmount;
-
-  nominator.nominationNum = adjustedNominationAmount;
-  nominator.targetBond = newBondedAmount;
-  nominator.avgStake = targetValStake;
-
-  logger.info(
-    `Auto Nominations - stash: ${stash} with balance ${stashBal} can elect ${adjustedNominationAmount} validators, each having ~${targetValStake} stake`,
-    scorekeeperLabel,
-  );
-
-  return {
-    nominationNum: adjustedNominationAmount,
-    newBondedAmount: newBondedAmount,
-    targetValStake: targetValStake,
-  };
-};
 
 // Scorekeeper is the main orchestrator of initiating jobs and kickstarting the workflow of nominations
 export default class ScoreKeeper {
@@ -242,10 +126,10 @@ export default class ScoreKeeper {
         if (alreadyFaulted) continue;
 
         logger.info(`Some offline: ${reason}`, scorekeeperLabel);
-        await this.botLog(reason);
+        await this.bot?.sendMessage(reason);
 
         await queries.pushFaultEvent(candidate.stash, reason);
-        await this.dockPoints(candidate.stash);
+        await dockPoints(candidate.stash, this.bot);
       }
     });
 
@@ -316,12 +200,6 @@ export default class ScoreKeeper {
 
     // eslint-disable-next-line security/detect-object-injection
     return this.nominatorGroups[index];
-  }
-
-  async botLog(msg: string): Promise<void> {
-    if (this.bot) {
-      await this.bot.sendMessage(msg);
-    }
   }
 
   /// Spawns a new nominator.
@@ -418,7 +296,7 @@ export default class ScoreKeeper {
       scorekeeperLabel,
     );
 
-    await this.botLog(
+    await this.bot?.sendMessage(
       `<h4>Nominator group added! Nominator addresses (Controller / Stash / Proxy):</h4><br> ${nominatorGroupStringHtml}`,
     );
 
@@ -443,7 +321,7 @@ export default class ScoreKeeper {
       )
     ).join("<br>");
 
-    await this.botLog(currentNominationsGroupStringHtml);
+    await this.bot?.sendMessage(currentNominationsGroupStringHtml);
 
     return true;
   }
@@ -457,168 +335,15 @@ export default class ScoreKeeper {
       this.bot,
     );
     this.claimer = claimer;
-    await this.botLog(
+    await this.bot?.sendMessage(
       `<h4>Added Reward Claimer:</h4><br> - ${this.claimer.address}`,
     );
     return true;
   }
 
-  async setCandidateIdentities(): Promise<void> {
-    const candidates = await queries.allCandidates();
-
-    logger.info(
-      `Setting candidate identities for ${candidates.length} candidates...`,
-      scorekeeperLabel,
-    );
-
-    for (const [index, candidate] of candidates.entries()) {
-      const identity = await this.chaindata.getFormattedIdentity(
-        candidate.stash,
-      );
-      await queries.setCandidateIdentity(candidate.stash, identity);
-      logger.info(
-        `Set candidate identity for ${candidate.stash} [${index} / ${candidates.length}]`,
-        scorekeeperLabel,
-      );
-    }
-  }
-
-  // Run Jobs as Microservices
-  async startMicroserviceJobs(): Promise<any> {
-    if (!this.config?.redis?.host || !this.config?.redis?.port) {
-      logger.error(
-        `No redis config found. Microservice Jobs will not be started.`,
-        scorekeeperLabel,
-      );
-      return;
-    }
-    try {
-      // Jobs get run in separate worker
-      logger.info(`Starting bullmq Queues and Workers....`, scorekeeperLabel);
-      const releaseMonitorQueue =
-        await otvWorker.queues.createReleaseMonitorQueue(
-          this.config.redis.host,
-          this.config.redis.port,
-        );
-      const constraintsQueue = await otvWorker.queues.createConstraintsQueue(
-        this.config.redis.host,
-        this.config.redis.port,
-      );
-      const chaindataQueue = await otvWorker.queues.createChainDataQueue(
-        this.config.redis.host,
-        this.config.redis.port,
-      );
-      const blockQueue = await otvWorker.queues.createBlockQueue(
-        this.config.redis.host,
-        this.config.redis.port,
-      );
-
-      const removeRepeatableJobs = true;
-      if (removeRepeatableJobs) {
-        logger.info(`remove jobs: ${removeRepeatableJobs}`, scorekeeperLabel);
-        // Remove any previous repeatable jobs
-        await otvWorker.queues.removeRepeatableJobsFromQueues([
-          releaseMonitorQueue,
-          constraintsQueue,
-          chaindataQueue,
-          blockQueue,
-        ]);
-      }
-
-      const obliterateQueues = false;
-      if (obliterateQueues) {
-        await otvWorker.queues.obliterateQueues([
-          releaseMonitorQueue,
-          constraintsQueue,
-          chaindataQueue,
-          blockQueue,
-        ]);
-      }
-
-      // Add repeatable jobs to the queues
-      // Queues need to have different repeat time intervals
-      await otvWorker.queues.addReleaseMonitorJob(releaseMonitorQueue, 60000);
-      await otvWorker.queues.addValidityJob(constraintsQueue, 1000001);
-      await otvWorker.queues.addScoreJob(constraintsQueue, 100002);
-      await otvWorker.queues.addActiveValidatorJob(chaindataQueue, 100003);
-      await otvWorker.queues.addDelegationJob(chaindataQueue, 100005);
-      await otvWorker.queues.addEraPointsJob(chaindataQueue, 100006);
-      await otvWorker.queues.addEraStatsJob(chaindataQueue, 110008);
-      await otvWorker.queues.addInclusionJob(chaindataQueue, 100008);
-      await otvWorker.queues.addNominatorJob(chaindataQueue, 100009);
-      await otvWorker.queues.addSessionKeyJob(chaindataQueue, 100010);
-      await otvWorker.queues.addValidatorPrefJob(chaindataQueue, 100101);
-      await otvWorker.queues.addAllBlocks(blockQueue, this.chaindata);
-      // TODO update this as queue job
-      // await startLocationStatsJob(this.config, this.chaindata);
-    } catch (e) {
-      logger.error(e.toString(), scorekeeperLabel);
-      logger.error("Error starting microservice jobs", scorekeeperLabel);
-    }
-  }
-
-  async startMonolithJobs(): Promise<any> {
-    try {
-      await monitorJob();
-      await startValidatityJob(this.config, this.constraints);
-      await startScoreJob(this.config, this.constraints);
-      await startEraPointsJob(this.config, this.chaindata);
-      await startActiveValidatorJob(this.config, this.chaindata);
-      await startInclusionJob(this.config, this.chaindata);
-      await startSessionKeyJob(this.config, this.chaindata);
-      await startValidatorPrefJob(this.config, this.chaindata);
-      await startEraStatsJob(this.config, this.chaindata);
-      await startLocationStatsJob(this.config, this.chaindata);
-      await startDemocracyJob(this.config, this.chaindata);
-      await startNominatorJob(this.config, this.chaindata);
-      await startDelegationJob(this.config, this.chaindata);
-      await startBlockDataJob(this.config, this.chaindata);
-    } catch (e) {
-      logger.error(e.toString(), scorekeeperLabel);
-      logger.error("Error starting monolith jobs", scorekeeperLabel);
-    }
-  }
-
-  async startScorekeeperJobs(): Promise<any> {
-    await startExecutionJob(
-      this.handler,
-      this.nominatorGroups,
-      this.config,
-      this.bot,
-    );
-
-    await startUnclaimedEraJob(this.config, this.chaindata);
-    if (this.claimer) {
-      await startRewardClaimJob(
-        this.config,
-        this.handler,
-        this.claimer,
-        this.chaindata,
-        this.bot,
-      );
-    }
-    await startCancelCron(
-      this.config,
-      this.handler,
-      this.nominatorGroups,
-      this.chaindata,
-      this.bot,
-    );
-    await startStaleNominationCron(
-      this.config,
-      this.handler,
-      this.nominatorGroups,
-      this.chaindata,
-      this.bot,
-    );
-  }
-
   // Begin the main workflow of the scorekeeper
   async begin(): Promise<void> {
     logger.info(`Starting Scorekeeper.`, scorekeeperLabel);
-
-    // Ensure Candidate Identity is set
-    // await this.setCandidateIdentities();
 
     // If `forceRound` is on - start immediately.
     if (this.config.scorekeeper.forceRound) {
@@ -626,7 +351,17 @@ export default class ScoreKeeper {
         `Force Round: ${this.config.scorekeeper.forceRound} starting round....`,
         scorekeeperLabel,
       );
-      await this.startRound();
+      await startRound(
+        this.nominating,
+        this.currentEra,
+        this.bot,
+        this.constraints,
+        this.nominatorGroups,
+        this.chaindata,
+        this.handler,
+        this.config,
+        this.currentTargets,
+      );
     }
 
     // Main cron job for starting rounds and ending rounds of the scorekeeper
@@ -699,11 +434,38 @@ export default class ScoreKeeper {
             "Current Targets is empty. Starting round.",
             scorekeeperLabel,
           );
-          await this.startRound();
+          await startRound(
+            this.nominating,
+            this.currentEra,
+            this.bot,
+            this.constraints,
+            this.nominatorGroups,
+            this.chaindata,
+            this.handler,
+            this.config,
+            this.currentTargets,
+          );
         } else {
           logger.info(`Ending round.`, scorekeeperLabel);
-          await this.endRound();
-          await this.startRound();
+          await endRound(
+            this.ending,
+            this.nominatorGroups,
+            this.chaindata,
+            this.constraints,
+            this.bot,
+            this.config,
+          );
+          await startRound(
+            this.nominating,
+            this.currentEra,
+            this.bot,
+            this.constraints,
+            this.nominatorGroups,
+            this.chaindata,
+            this.handler,
+            this.config,
+            this.currentTargets,
+          );
         }
       }
     });
@@ -712,13 +474,20 @@ export default class ScoreKeeper {
     try {
       // Start Jobs in either microservice or monolith mode
       if (this.config?.redis?.host && this.config?.redis?.port) {
-        await this.startMicroserviceJobs();
+        await startMicroserviceJobs(this.config, this.chaindata);
       } else {
-        await this.startMonolithJobs();
+        await startMonolithJobs(this.config, this.chaindata, this.constraints);
       }
 
       // Start all scorekeeper / core jobs
-      await this.startScorekeeperJobs();
+      await startScorekeeperJobs(
+        this.handler,
+        this.nominatorGroups,
+        this.config,
+        this.bot,
+        this.claimer,
+        this.chaindata,
+      );
     } catch (e) {
       logger.warn(
         `There was an error running some cron jobs...`,
@@ -728,399 +497,5 @@ export default class ScoreKeeper {
     }
     logger.info(`going to start mainCron: `, scorekeeperLabel);
     await mainCron.start();
-  }
-
-  /// Handles the beginning of a new round.
-  // - Gets the current era
-  // - Gets all valid candidates
-  // - Nominates valid candidates
-  // - Sets this current era to the era a nomination round took place in.
-  async startRound(): Promise<string[]> {
-    // If this is already in the process of nominating, skip
-    if (this.nominating) return;
-    this.nominating = true;
-
-    const now = new Date().getTime();
-
-    // The nominations sent now won't be active until the next era.
-    this.currentEra = await this._getCurrentEra();
-
-    logger.info(
-      `New round starting at ${now} for next Era ${this.currentEra + 1}`,
-      scorekeeperLabel,
-    );
-    this.botLog(
-      `New round is starting! Era ${this.currentEra} will begin new nominations.`,
-    );
-
-    const proxyTxs = await queries.getAllDelayedTxs();
-
-    // If the round was started and there are any pending proxy txs skip the round
-    const NUM_NOMINATORS = 20;
-    if (proxyTxs.length >= NUM_NOMINATORS) {
-      const infoMsg = `round was started with ${proxyTxs.length} pending proxy txs. Skipping Round.`;
-      logger.info(infoMsg, scorekeeperLabel);
-      this.botLog(infoMsg);
-      return;
-    }
-
-    // Get all Candidates and set validity
-    const allCandidates = await queries.allCandidates();
-
-    // Set Validity
-    for (const [index, candidate] of allCandidates.entries()) {
-      logger.info(
-        `checking candidate ${candidate.name} [${index}/${allCandidates.length}]`,
-        scorekeeperLabel,
-      );
-      await this.constraints.checkCandidate(candidate);
-    }
-
-    // Score all candidates
-    await this.constraints.scoreAllCandidates();
-
-    await Util.sleep(6000);
-
-    let validCandidates = allCandidates.filter((candidate) => candidate.valid);
-    validCandidates = await Promise.all(
-      validCandidates.map(async (candidate) => {
-        const score = await queries.getLatestValidatorScore(candidate.stash);
-        const scoredCandidate = {
-          name: candidate.name,
-          stash: candidate.stash,
-          total: score.total,
-        };
-        return scoredCandidate;
-      }),
-    );
-    validCandidates = validCandidates.sort((a, b) => {
-      return b.total - a.total;
-    });
-
-    logger.info(
-      `number of all candidates: ${allCandidates.length} valid candidates: ${validCandidates.length}`,
-      scorekeeperLabel,
-    );
-
-    const numValidatorsNominated = await this._doNominations(
-      validCandidates,
-      this.nominatorGroups,
-    );
-
-    if (numValidatorsNominated > 0) {
-      logger.info(
-        `${numValidatorsNominated} nominated this round, setting last nominated era to ${this.currentEra}`,
-        scorekeeperLabel,
-      );
-      await queries.setLastNominatedEraIndex(this.currentEra);
-    } else {
-      logger.info(
-        `${numValidatorsNominated} nominated this round, lastNominatedEra not set...`,
-        scorekeeperLabel,
-      );
-    }
-    this.nominating = false;
-
-    return this.currentTargets;
-  }
-
-  // Start nominations for all nominator groups:
-  // - For each nominator group - if they have current targets, wipe them
-  // - Determine the number of nominations to make for each nominator account
-  //     - This will either be a static number, or "auto"
-  async _doNominations(
-    candidates: Types.CandidateData[],
-    nominatorGroups: SpawnedNominatorGroup[] = [],
-    dryRun = false,
-  ): Promise<any> {
-    if (candidates.length == 0) {
-      logger.warn(
-        `Candidates length was 0. Skipping nominations`,
-        scorekeeperLabel,
-      );
-      return;
-    }
-
-    const allTargets = candidates.map((c) => c.stash);
-    let counter = 0;
-    for (const nomGroup of nominatorGroups) {
-      // ensure the group is sorted by least avg stake
-      const sortedNominators = nomGroup.sort((a, b) => a.avgStake - b.avgStake);
-      for (const nominator of sortedNominators) {
-        // The number of nominations to do per nominator account
-        // This is either hard coded, or set to "auto", meaning it will find a dynamic amount of validators
-        //    to nominate based on the lowest staked validator in the validator set
-        const api = this.handler.getApi();
-        const denom = await this.chaindata.getDenom();
-        const autoNom = await autoNumNominations(api, nominator);
-        const { nominationNum } = autoNom;
-        const stash = await nominator.stash();
-        // Planck Denominated Bonded Amount
-        const [currentBondedAmount, bondErr] =
-          await this.chaindata.getBondedAmount(stash);
-        // Planck Denominated New Bonded Amount
-        // const newBondedAmount = formattedNewBondedAmount * denom;
-
-        // logger.info(
-        //   `{Scorekeepr::_doNominations} ${nominator.address} number of nominations: ${nominationNum} newBondedAmount: ${newBondedAmount} targetValStake: ${targetValStake}`
-        // );
-
-        // Check the free balance of the account. If it doesn't have a free balance, skip.
-        const balance = await this.chaindata.getBalance(nominator.address);
-        const metadata = await queries.getChainMetadata();
-        const network = metadata.name.toLowerCase();
-        const free = Util.toDecimals(Number(balance.free), metadata.decimals);
-        // TODO Parameterize this as a constant
-        if (free < 0.1) {
-          logger.info(
-            `Nominator has low free balance: ${free}`,
-            scorekeeperLabel,
-          );
-          this.botLog(
-            `Nominator Account ${Util.addressUrl(
-              nominator.address,
-              this.config,
-            )} has low free balance: ${free}`,
-          );
-          continue;
-        }
-
-        // Get the target slice based on the amount of nominations to do and increment the counter.
-        const targets = allTargets.slice(counter, counter + nominationNum);
-        counter = counter + nominationNum;
-
-        if (targets.length == 0) {
-          logger.warn(
-            `targets length was 0. Skipping nominations`,
-            scorekeeperLabel,
-          );
-          return;
-        }
-
-        // await nominator.adjustBond(
-        //   newBondedAmount,
-        //   Number(currentBondedAmount)
-        // );
-        await Util.sleep(10000);
-        await nominator.nominate(targets, dryRun || this.config.global.dryRun);
-
-        // Wait some time between each transaction to avoid nonce issues.
-        await Util.sleep(16000);
-
-        const targetsString = (
-          await Promise.all(
-            targets.map(async (target) => {
-              const candidate = await queries.getCandidate(target);
-              const name = candidate.name;
-              const score = candidate.total;
-              return `- ${name} (${target}) [${score}]`;
-            }),
-          )
-        ).join("\n");
-
-        if (!stash) continue;
-        const name = (await queries.getChainMetadata()).name;
-        const decimals = name == "Kusama" ? 12 : 10;
-        const [rawBal, err] = await this.chaindata.getBondedAmount(stash);
-        const bal = Util.toDecimals(rawBal, decimals);
-        const sym = name == "Kusama" ? "KSM" : "DOT";
-
-        const targetsHtml = (
-          await Promise.all(
-            targets.map(async (target) => {
-              const name = (await queries.getCandidate(target)).name;
-              return `- ${name} (${Util.addressUrl(target, this.config)})`;
-            }),
-          )
-        ).join("<br>");
-
-        logger.info(
-          `Nominator ${stash} (${bal} ${sym}) / ${nominator.controller} nominated:\n${targetsString}`,
-        );
-        this.botLog(
-          `Nominator ${Util.addressUrl(stash, this.config)} (${bal} ${sym}) / 
-          ${Util.addressUrl(
-            nominator.controller,
-            this.config,
-          )} nominated:<br>${targetsHtml}`,
-        );
-      }
-    }
-
-    logger.info(
-      `Number of Validators nominated this round: ${counter}`,
-      scorekeeperLabel,
-    );
-    this.botLog(`${counter} Validators nominated this round`);
-
-    this.currentTargets = allTargets.slice(0, counter);
-    const nextTargets = allTargets.slice(counter, allTargets.length);
-
-    const nextTargetsString = (
-      await Promise.all(
-        nextTargets.map(async (target) => {
-          const name = (await queries.getCandidate(target)).name;
-          return `- ${name} (${target})`;
-        }),
-      )
-    ).join("\n");
-    logger.info(`Next targets: \n${nextTargetsString}`, scorekeeperLabel);
-
-    return counter;
-  }
-
-  async _getCurrentEra(): Promise<number> {
-    const [eraIndex, eraErr] = await this.chaindata.getActiveEraIndex();
-    if (eraErr) {
-      throw eraErr;
-    }
-    return eraIndex;
-  }
-
-  /**
-   * Handles the ending of a Nomination round.
-   */
-  async endRound(): Promise<void> {
-    this.ending = true;
-    logger.info("Ending round", scorekeeperLabel);
-
-    // The targets that have already been processed for this round.
-    const toProcess: Map<Types.Stash, Types.CandidateData> = new Map();
-
-    const { lastNominatedEraIndex: startEra } =
-      await queries.getLastNominatedEraIndex();
-
-    const [activeEra, err] = await this.chaindata.getActiveEraIndex();
-    if (err) {
-      throw new Error(`Error getting active era: ${err}`);
-    }
-
-    const chainType = await queries.getChainMetadata();
-
-    logger.info(
-      `finding validators that were active from era ${startEra} to ${activeEra}`,
-      scorekeeperLabel,
-    );
-    const [activeValidators, err2] =
-      await this.chaindata.activeValidatorsInPeriod(
-        Number(startEra),
-        activeEra,
-        chainType.name,
-      );
-    if (err2) {
-      throw new Error(`Error getting active validators: ${err2}`);
-    }
-
-    // Get all the candidates we want to process this round
-    // This includes both the candidates we have nominated as well as all valid candidates
-
-    // Gets adds candidates we nominated to the list
-    for (const nomGroup of this.nominatorGroups) {
-      for (const nominator of nomGroup) {
-        const current = await queries.getCurrentTargets(nominator.controller);
-
-        // If not nominating any... then return.
-        if (!current.length) {
-          logger.info(
-            `${nominator.controller} is not nominating any targets.`,
-            scorekeeperLabel,
-          );
-          continue;
-        }
-
-        for (const val of current) {
-          const candidate = await queries.getCandidate(val.stash);
-          if (!candidate) {
-            logger.warn(
-              `Ending round - cannot find candidate for ${val} stash: ${val.stash}`,
-              scorekeeperLabel,
-            );
-            continue;
-          }
-          // if we already have, don't add it again
-          if (toProcess.has(candidate.stash)) continue;
-          toProcess.set(candidate.stash, candidate);
-        }
-      }
-    }
-
-    // Adds all other valid candidates to the list
-    const allCandidates = await queries.allCandidates();
-
-    const validCandidates = allCandidates.filter(
-      (candidate) => candidate.valid,
-    );
-
-    for (const candidate of validCandidates) {
-      if (toProcess.has(candidate.stash)) continue;
-      toProcess.set(candidate.stash, candidate);
-    }
-
-    // Get the set of Good Validators and get the set of Bad validators
-    const [good, bad] = await this.constraints.processCandidates(
-      new Set(toProcess.values()),
-    );
-
-    logger.info(
-      `Done processing Candidates. ${good.size} good ${bad.size} bad`,
-      scorekeeperLabel,
-    );
-
-    // For all the good validators, check if they were active in the set for the time period
-    //     - If they were active, increase their rank
-    for (const goodOne of good.values()) {
-      const { stash } = goodOne;
-      const wasActive =
-        activeValidators.indexOf(Util.formatAddress(stash, this.config)) !== -1;
-
-      // if it wasn't active we will not increase the point
-      if (!wasActive) {
-        logger.info(
-          `${stash} was not active during eras ${startEra} to ${activeEra}`,
-          scorekeeperLabel,
-        );
-        continue;
-      }
-
-      // They were active - increase their rank and add a rank event
-      const didRank = await queries.pushRankEvent(stash, startEra, activeEra);
-      if (didRank) await this.addPoint(stash);
-    }
-
-    // For all bad validators, dock their points and create a "Fault Event"
-    for (const badOne of bad.values()) {
-      const { candidate, reason } = badOne;
-      const { stash } = candidate;
-      const didFault = await queries.pushFaultEvent(stash, reason);
-      if (didFault) await this.dockPoints(stash);
-    }
-
-    this.ending = false;
-  }
-
-  /// Handles the docking of points from bad behaving validators.
-  async dockPoints(stash: Types.Stash): Promise<boolean> {
-    logger.info(`Stash ${stash} did BAD, docking points`, scorekeeperLabel);
-
-    await queries.dockPoints(stash);
-
-    const candidate = await queries.getCandidate(stash);
-    this.botLog(`${candidate.name} docked points. New rank: ${candidate.rank}`);
-
-    return true;
-  }
-
-  /// Handles the adding of points to successful validators.
-  async addPoint(stash: Types.Stash): Promise<boolean> {
-    logger.info(`Stash ${stash} did GOOD, adding points`, scorekeeperLabel);
-
-    await queries.addPoint(stash);
-
-    const candidate = await queries.getCandidate(stash);
-    this.botLog(
-      `${candidate.name} did GOOD! Adding a point. New rank: ${candidate.rank}`,
-    );
-
-    return true;
   }
 }

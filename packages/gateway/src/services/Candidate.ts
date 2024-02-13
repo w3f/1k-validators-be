@@ -6,9 +6,6 @@ export const getCandidateData = async (candidate: any): Promise<any> => {
   const metadata = await queries.getChainMetadata();
   const denom = Math.pow(10, metadata.decimals);
   const score = await queries.getLatestValidatorScore(candidate.stash);
-  const openGovDelegations = await queries.getLargestOpenGovDelegationAddress(
-    candidate.stash,
-  );
   const nominations = await queries.getLatestNominatorStake(candidate.stash);
   return {
     discoveredAt: candidate.discoveredAt,
@@ -38,15 +35,12 @@ export const getCandidateData = async (candidate: any): Promise<any> => {
     convictionVotes: candidate.convictionVotes
       ? candidate.convictionVotes.sort((a, b) => a - b)
       : [],
-    convictionVoteCount: candidate.convictionVoteCount,
-    openGovDelegations: openGovDelegations,
     matrix: candidate.matrix,
     version: candidate.version,
     implementation: candidate.implementation,
     queuedKeys: candidate.queuedKeys,
     nextKeys: candidate.nextKeys,
     rewardDestination: candidate.rewardDestination,
-    controller: candidate.controller,
     cpu: candidate.infrastructureLocation?.cpu,
     memory: candidate.infrastructureLocation?.memory,
     coreCount: candidate.infrastructureLocation?.coreCount,

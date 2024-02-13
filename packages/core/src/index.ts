@@ -169,11 +169,23 @@ export const clean = async (scorekeeper) => {
     await queries.clearCandidates();
     await queries.deleteOldValidatorScores();
 
+    await findDuplicates();
+
     logger.info(`Cleaning finished`, winstonLabel);
   } catch (e) {
     logger.error(e.toString());
     process.exit(1);
   }
+};
+
+export const findDuplicates = async () => {
+  const nameDuplicates = await queries.getDuplicatesByName();
+  logger.warn("Found Duplicates with multiple names", winstonLabel);
+  logger.warn(JSON.stringify(nameDuplicates), winstonLabel);
+
+  const stashDuplicates = await queries.getDuplicatesByStash();
+  logger.warn("Found Duplicates with multiple stashes", winstonLabel);
+  logger.warn(JSON.stringify(stashDuplicates), winstonLabel);
 };
 
 export const addRewardClaimer = async (config, scorekeeper) => {

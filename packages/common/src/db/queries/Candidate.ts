@@ -1605,3 +1605,45 @@ export const setValid = async (
     },
   ).exec();
 };
+
+export const getUniqueNameSet = async (): Promise<any> => {
+  const nameSet = new Set();
+  const allNodes = await allCandidates();
+  for (const node of allNodes) {
+    nameSet.add(node.name);
+  }
+  return Array.from(nameSet);
+};
+
+export const getDuplicatesByName = async (): Promise<any> => {
+  const duplicates = [];
+  const names = await getUniqueNameSet();
+  for (const name of names) {
+    const candidates = await CandidateModel.find({ name: name }).exec();
+    if (candidates.length > 1) {
+      duplicates.push({ name: name, num: candidates.length });
+    }
+  }
+  return duplicates;
+};
+
+export const getDuplicatesByStash = async (): Promise<any> => {
+  const duplicates = [];
+  const stashes = await getUniqueStashSet();
+  for (const stash of stashes) {
+    const candidates = await CandidateModel.find({ stash: stash }).exec();
+    if (candidates.length > 1) {
+      duplicates.push({ stash: stash, num: candidates.length });
+    }
+  }
+  return duplicates;
+};
+
+export const getUniqueStashSet = async (): Promise<any> => {
+  const stashSet = new Set();
+  const allNodes = await allCandidates();
+  for (const node of allNodes) {
+    stashSet.add(node.stash);
+  }
+  return Array.from(stashSet);
+};

@@ -2,7 +2,7 @@
   "inclusion": "220",
   "spanInclusion": "220",
   "discovered": "5",
-  "nominated": "30",
+  "nominated": "80",
   "rank": "5",
   "bonded": "50",
   "faults": "5",
@@ -11,8 +11,5 @@
   "region": "10",
   "country": "10",
   "provider": "100",
-  "nominations": "100",
-  "delegations": "0",
-  "openGov": "0",
-  "openGovDelegation": "0"
+  "nominations": "100"
 }

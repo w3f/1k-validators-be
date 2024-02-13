@@ -484,9 +484,6 @@ export const ValidatorScoreSchema = new Schema({
   // democracy score
   democracy: Number,
   nominatorStake: Number,
-  delegations: Number,
-  openGov: Number,
-  openGovDelegations: Number,
   // The randomness factor used to buffer the total
   randomness: Number,
 });

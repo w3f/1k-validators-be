@@ -14,7 +14,6 @@ import ApiHandler from "./ApiHandler";
 import {
   allCandidates,
   allNominators,
-  getLargestOpenGovDelegationAddress,
   getLastOpenGovReferenda,
   getLatestNominatorStake,
   getLatestRelease,
@@ -96,9 +95,6 @@ export class OTV implements Constraints {
   private COUNTRY_WEIGHT = Constants.COUNTRY_WEIGHT;
   private PROVIDER_WEIGHT = Constants.PROVIDER_WEIGHT;
   private NOMINATIONS_WEIGHT = Constants.NOMINATIONS_WEIGHT;
-  private DELEGATIONS_WEIGHT = Constants.DELEGATIONS_WEIGHT;
-  private OPENGOV_WEIGHT = Constants.OPENGOV_WEIGHT;
-  private OPENGOV_DELEGATION_WEIGHT = Constants.OPENGOV_DELEGATION_WEIGHT;
   private RPC_WEIGHT = Constants.RPC_WEIGHT;
   private CLIENT_WEIGHT = Constants.CLIENT_WEIGHT;
 
@@ -116,9 +112,6 @@ export class OTV implements Constraints {
   private USE_COUNTRY = Constants.USE_COUNTRY;
   private USE_PROVIDER = Constants.USE_PROVIDER;
   private USE_NOMINATIONS = Constants.USE_NOMINATIONS;
-  private USE_DELEGATIONS = Constants.USE_DELEGATIONS;
-  private USE_OPENGOV = Constants.USE_OPENGOV;
-  private USE_OPENGOV_DELEGATIONS = Constants.USE_OPENGOV_DELEGATIONS;
   private USE_RPC = Constants.USE_RPC;
   private USE_CLIENT = Constants.USE_CLIENT;
 
@@ -182,17 +175,6 @@ export class OTV implements Constraints {
     if (this.config?.score?.nominations) {
       this.NOMINATIONS_WEIGHT = Number(this.config?.score?.nominations);
     }
-    if (this.config?.score?.delegations) {
-      this.DELEGATIONS_WEIGHT = Number(this.config?.score?.delegations);
-    }
-    if (this.config?.score?.openGov) {
-      this.OPENGOV_WEIGHT = Number(this.config?.score?.openGov);
-    }
-    if (this.config?.score?.openGovDelegation) {
-      this.OPENGOV_DELEGATION_WEIGHT = Number(
-        this.config?.score?.openGovDelegation,
-      );
-    }
     if (this.config?.score?.rpc) {
       this.RPC_WEIGHT = Number(this.config?.score?.rpc);
     }
@@ -242,15 +224,6 @@ export class OTV implements Constraints {
     }
     if (this.config?.score?.useNominations) {
       this.USE_NOMINATIONS = this.config?.score?.useNominations;
-    }
-    if (this.config?.score?.useDelegations) {
-      this.USE_DELEGATIONS = this.config?.score?.useDelegations;
-    }
-    if (this.config?.score?.useOpenGov) {
-      this.USE_OPENGOV = this.config?.score?.useOpenGov;
-    }
-    if (this.config?.score?.useOpenGovDelegation) {
-      this.USE_OPENGOV_DELEGATIONS = this.config?.score?.useOpenGovDelegation;
     }
     if (this.config?.score?.useRpc) {
       this.USE_RPC = this.config?.score?.useRpc;
@@ -468,16 +441,6 @@ export class OTV implements Constraints {
     const { providerArr, providerStats } = getProviderValues(candidates);
     const { ownNominatorAddresses, nominatorStakeStats } =
       await getNominatorStakeValues(candidates);
-    // const { delegationStats } = await getDelegationValues(candidates);
-    // const { councilStakeStats } = getCouncilStakeValues(candidates);
-    // const { lastReferendum, democracyStats } = await getDemocracyValues(
-    //   candidates
-    // );
-    const { openGovStats } = await getOpenGovValues(candidates);
-    const {
-      delegationValues: openGovDelegationValues,
-      delegationStats: openGovDelegationStats,
-    } = await getOpenGovDelegationValues(candidates);
 
     const scoreMetadata = {
       session: session,
@@ -507,10 +470,6 @@ export class OTV implements Constraints {
       providerWeight: this.PROVIDER_WEIGHT,
       nominatorStakeStats: nominatorStakeStats,
       nominatorStakeWeight: this.NOMINATIONS_WEIGHT,
-      openGovStats: openGovStats,
-      openGovWeight: this.OPENGOV_WEIGHT,
-      openGovDelegationStats: openGovDelegationStats,
-      openGovDelegationWeight: this.OPENGOV_DELEGATION_WEIGHT,
       rpcWeight: this.RPC_WEIGHT,
       clientWeight: this.CLIENT_WEIGHT,
     };
@@ -539,8 +498,6 @@ export class OTV implements Constraints {
       countryStats,
       providerStats,
       nominatorStakeStats,
-      openGovStats,
-      openGovDelegationStats,
     } = scoreMetadata;
 
     // Scale inclusion between the 20th and 75th percentiles
@@ -703,44 +660,6 @@ export class OTV implements Constraints {
       ) || 0;
     const nominatorStakeScore = scaledNominatorStake * this.NOMINATIONS_WEIGHT;
 
-    let openGovDelegationScore = 0;
-    const isDelegationsUpdating = await queries.getUpdatingDelegations();
-    if (!isDelegationsUpdating) {
-      const openGovDelegation = await getLargestOpenGovDelegationAddress(
-        candidate.stash,
-      );
-      const scaledOpenGovDelegations =
-        scaledDefined(
-          openGovDelegation.totalBalance,
-          openGovDelegationStats.values,
-          0.1,
-          0.6,
-        ) || 0;
-      openGovDelegationScore =
-        scaledOpenGovDelegations * this.OPENGOV_DELEGATION_WEIGHT;
-    } else {
-      logger.info(
-        `Delegations are updating... defaulting ${candidate.name} - ${candidate.stash} to prev delegation score`,
-        constraintsLabel,
-      );
-      // If delegations are updating, set the score to what it previously was
-      const score = await queries.getLatestValidatorScore(candidate.stash);
-      openGovDelegationScore = score?.openGovDelegations || 0;
-    }
-
-    const lastOpenGovReferendum = (await getLastOpenGovReferenda())[0]?.index;
-    // Score democracy based on how many proposals have been voted on
-    const candidateConvictionVotes = candidate?.convictionVotes
-      ? candidate.convictionVotes
-      : [];
-    const { totalDemocracyScore: totalOpenGovScore } = scoreDemocracyVotes(
-      candidateConvictionVotes,
-      lastOpenGovReferendum,
-    );
-    const openGovValues = openGovStats.values;
-    const scaledOpenGovScore =
-      scaled(totalOpenGovScore, openGovValues) * this.OPENGOV_WEIGHT;
-
     const isAlternativeClient = candidate?.implementation != "Parity Polkadot";
     const clientScore = isAlternativeClient ? this.CLIENT_WEIGHT : 0;
 
@@ -757,13 +676,8 @@ export class OTV implements Constraints {
       regionScore +
       countryScore +
       providerScore +
-      // councilStakeScore +
-      // scaledDemocracyScore +
       offlineScore +
-      // delegationScore +
       nominatorStakeScore +
-      // openGovDelegationScore +
-      // scaledOpenGovScore +
       clientScore;
 
     const randomness = 1 + Math.random() * 0.15;
@@ -786,12 +700,7 @@ export class OTV implements Constraints {
       region: regionScore,
       country: countryScore,
       provider: providerScore,
-      // councilStake: councilStakeScore,
-      // democracy: scaledDemocracyScore,
       nominatorStake: nominatorStakeScore,
-      // delegations: delegationScore,
-      openGov: scaledOpenGovScore,
-      openGovDelegations: openGovDelegationScore,
       client: clientScore,
       randomness: randomness,
       updated: Date.now(),

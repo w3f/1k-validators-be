@@ -22,12 +22,7 @@ export const setValidatorScore = async (
     region,
     country,
     provider,
-    // councilStake,
-    // democracy,
     nominatorStake,
-    // delegations,
-    openGov,
-    openGovDelegations,
     randomness,
     updated,
   } = score;
@@ -57,12 +52,7 @@ export const setValidatorScore = async (
       region,
       country,
       provider,
-      // councilStake,
-      // democracy,
       nominatorStake,
-      // delegations,
-      openGov,
-      openGovDelegations,
       randomness,
     });
     await score.save();
@@ -91,12 +81,7 @@ export const setValidatorScore = async (
       region,
       country,
       provider,
-      // councilStake,
-      // democracy,
       nominatorStake,
-      // delegations,
-      openGov,
-      openGovDelegations,
       randomness,
     },
   ).exec();

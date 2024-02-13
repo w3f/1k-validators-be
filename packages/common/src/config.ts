@@ -3,7 +3,7 @@ import path from "path";
 import { ClaimerConfig } from "./types";
 
 type CandidateConfig = {
-  id: number;
+  slotId: number;
   name: string;
   stash: string;
   riotHandle: string;

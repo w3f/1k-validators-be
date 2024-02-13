@@ -1,6 +1,6 @@
 import axios from "axios";
 import semver from "semver";
-import { getStats, scaled, scaledDefined, scoreDemocracyVotes } from "./score";
+import { getStats, scaled, scaledDefined } from "./score";
 import {
   ChainData,
   Config,
@@ -14,11 +14,9 @@ import ApiHandler from "./ApiHandler";
 import {
   allCandidates,
   allNominators,
-  getLastOpenGovReferenda,
   getLatestNominatorStake,
   getLatestRelease,
   getLatestValidatorScoreMetadata,
-  getOpenGovDelegationAddress,
   setBeefyKeysInvalidity,
   setBlockedInvalidity,
   setCommissionInvalidity,
@@ -1058,49 +1056,6 @@ export const getNominatorStakeValues = async (
   if (nominatorStakeValues.length == 0) nominatorStakeValues.push(0);
   const nominatorStakeStats = getStats(nominatorStakeValues);
   return { ownNominatorAddresses, nominatorStakeValues, nominatorStakeStats };
-};
-
-export const getOpenGovDelegationValues = async (
-  validCandidates: Types.CandidateData[],
-) => {
-  const delegationValues = [];
-  for (const candidate of validCandidates) {
-    const delegations = await getOpenGovDelegationAddress(candidate.stash);
-    if (delegations.length == 0) continue;
-    const maxTrack = await delegations.reduce((prev, current) =>
-      prev.totalBalance > current.totalBalance ? prev : current,
-    );
-    const totalVal = delegations.map((del) => {
-      return {
-        track: del.track,
-        totalBalance: del.totalBalance,
-      };
-    });
-    delegationValues.push(maxTrack.totalBalance);
-  }
-  const delegationStats = getStats(delegationValues);
-  return { delegationValues, delegationStats };
-};
-
-export const getOpenGovValues = async (
-  validCandidates: Types.CandidateData[],
-) => {
-  const lastReferendum = (await getLastOpenGovReferenda())[0]?.index;
-
-  const openGovValues = validCandidates.map((candidate) => {
-    const openGovVotes = candidate.convictionVotes
-      ? candidate.convictionVotes
-      : [];
-    const {
-      baseDemocracyScore,
-      totalDemocracyScore,
-      totalConsistencyMultiplier,
-      lastConsistencyMultiplier,
-    } = scoreDemocracyVotes(openGovVotes, lastReferendum);
-    return totalDemocracyScore || 0;
-  });
-  const openGovStats = getStats(openGovValues);
-  return { lastReferendum, openGovValues, openGovStats };
 };
 
 // Checks the online validity of a node

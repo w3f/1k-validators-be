@@ -39,11 +39,6 @@ export default class ScoreKeeper {
   public currentEra = 0;
   public currentTargets: string[];
 
-  // caches all the possible reward destinations for all candidates
-  private rewardDestinationCache: string[];
-  // caches all candidates
-  private candidateCache: any[];
-
   private isUpdatingEras = false;
   // Set when the process is ending
   private ending = false;
@@ -98,10 +93,6 @@ export default class ScoreKeeper {
         this.chaindata,
         candidates,
       );
-      // await sessionKeyJob(this.db, this.chaindata, this.candidateCache);
-      // await inclusionJob(this.db, this.chaindata, this.candidateCache);
-      // await validatorPrefJob(this.db, this.chaindata, this.candidateCache);
-      // await unclaimedErasJob(this.db, this.chaindata, this.candidateCache);
     });
 
     this.config = config;

@@ -11,10 +11,6 @@
   "region": "10",
   "country": "10",
   "provider": "100",
-  "council": "10",
-  "democracy": "30",
   "nominations": "100",
-  "delegations": "0",
-  "openGov": "0",
-  "openGovDelegation": "0"
+  "delegations": "0"
 }

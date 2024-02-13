@@ -50,17 +50,9 @@ const API = {
   EraPaid: "/erapaid",
   EraRewards: "/erareward/:stash/:limit",
   EraReward: "/erareward/:stash/:era",
-  Referenda: "/referenda",
-  Referendum: "/referendum/:index",
-  LastReferendum: "/lastreferendum",
-  LastReferendums: "/lastreferendums",
-  ReferendumIndexVotes: "/referendumvotes/index/:index",
-  ReferendumAccountVotes: "/referendumvotes/account/:address",
   LastNominatorStake: "/nominatorstake/:address/last/:limit",
   LatestNominatorStake: "/nominatorstake/:address",
   EraNominatorStake: "/nominatorstake/:address/:era",
-  Delegations: "/delegations/:address",
-  AllDelegations: "/delegations",
   CurrentValidatorSet: "/validators/current",
   AddressConvictionVotes: "/opengov/votes/address/:address",
   AddressFinishedConvictionVotes: "/opengov/votes/address/:address/finished",
@@ -124,14 +116,6 @@ router.get(API.Councillors, Democracy.getCouncillors);
 router.get(API.Councillor, Democracy.getCouncillor);
 //
 router.get(API.Voters, Democracy.getVoters);
-router.get(API.Referenda, Democracy.getAllReferenda);
-router.get(API.Referendum, Democracy.getReferendum);
-router.get(API.LastReferendum, Democracy.getLastReferendum);
-router.get(API.LastReferendums, Democracy.getLastReferendums);
-router.get(API.ReferendumIndexVotes, Democracy.getReferendumIndexVotes);
-router.get(API.ReferendumAccountVotes, Democracy.getReferendumAccountVotes);
-router.get(API.Delegations, Democracy.getDelegations);
-router.get(API.AllDelegations, Democracy.getAllDelegations);
 
 router.get(API.OpenGovReferenda, Democracy.getOpenGovReferenda);
 router.get(API.OpenGovReferendaStats, Democracy.getOpenGovReferendaStats);

@@ -37,68 +37,6 @@ export default class DemocracyController {
     response(context, 200, await DemocracyService.getVoters());
   }
 
-  public static async getAllReferenda(context: any): Promise<void> {
-    if (await context.cashed()) {
-      logger.info(`{Gateway} getAllReferenda is cached`, gatewayLabel);
-      return;
-    }
-    response(context, 200, await DemocracyService.getAllReferenda());
-  }
-
-  public static async getReferendum(context: any): Promise<void> {
-    if (await context.cashed()) {
-      logger.info(`{Gateway} getReferendum is cached`, gatewayLabel);
-      return;
-    }
-    const { index } = context.params;
-    response(context, 200, await DemocracyService.getReferendum(index));
-  }
-
-  public static async getLastReferendum(context: any): Promise<void> {
-    if (await context.cashed()) {
-      logger.info(`{Gateway} getLastReferendum is cached`, gatewayLabel);
-      return;
-    }
-    response(context, 200, await DemocracyService.getLastReferendum());
-  }
-
-  public static async getLastReferendums(context: any): Promise<void> {
-    if (await context.cashed()) {
-      logger.info(`{Gateway} getLastReferendums is cached`, gatewayLabel);
-      return;
-    }
-    response(context, 200, await DemocracyService.getLastReferendums());
-  }
-
-  public static async getReferendumIndexVotes(context: any): Promise<void> {
-    if (await context.cashed()) {
-      logger.info(`{Gateway} getReferendumIndexVotes is cached`, gatewayLabel);
-      return;
-    }
-    const { index } = context.params;
-    response(
-      context,
-      200,
-      await DemocracyService.getReferendumIndexVotes(index),
-    );
-  }
-
-  public static async getReferendumAccountVotes(context: any): Promise<void> {
-    if (await context.cashed()) {
-      logger.info(
-        `{Gateway} getReferendumAccountVotes is cached`,
-        gatewayLabel,
-      );
-      return;
-    }
-    const { address } = context.params;
-    response(
-      context,
-      200,
-      await DemocracyService.getReferendumAccountVotes(address),
-    );
-  }
-
   public static async getDelegations(context: any): Promise<void> {
     if (await context.cashed()) {
       logger.info(`{Gateway} getDelegations is cached`, gatewayLabel);

@@ -840,6 +840,10 @@ export const getNodeByName = async (name: string): Promise<any> => {
   return CandidateModel.findOne({ name }).lean().exec();
 };
 
+export const getCandidateBySlotId = async (id: number) => {
+  return CandidateModel.findOne({ slotId: id }).lean().exec();
+};
+
 export const setInclusion = async (
   address: string,
   inclusion: number,

@@ -39,11 +39,7 @@ spec:
             config: |
               {
                 "global": {
-                  "dryRun": false,
                   "networkPrefix": 2,
-                  "test": false,
-                  "retroactive": false,
-                  "historicalNominations": false,
                   "apiEndpoints": [
                     "wss://kusama-rpc.polkadot.io",
                     "wss://kusama-rpc.dwellir.com",

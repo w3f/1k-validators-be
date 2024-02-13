@@ -41,7 +41,6 @@ spec:
             config: |
               {
                 "global": {
-                  "dryRun": false,
                   "networkPrefix": 0,
                   "apiEndpoints": [
                     "wss://rpc.polkadot.io",

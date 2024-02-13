@@ -41,7 +41,6 @@ spec:
             config: |
               {
                 "global": {
-                  "dryRun": false,
                   "networkPrefix": 2,
                   "apiEndpoints": [
                     "wss://kusama-rpc.polkadot.io"

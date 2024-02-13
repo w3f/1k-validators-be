@@ -39,11 +39,7 @@ spec:
             config: |
               {
                 "global": {
-                  "dryRun": false,
                   "networkPrefix": 0,
-                  "test": false,
-                  "retroactive": false,
-                  "historicalNominations": false,
                   "apiEndpoints": [
                     "wss://rpc.polkadot.io",
                     "wss://polkadot-rpc.dwellir.com"

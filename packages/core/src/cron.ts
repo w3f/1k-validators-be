@@ -29,6 +29,8 @@ import {
   validatorPrefJob,
   validityJob,
 } from "./jobs";
+import { scorekeeperLabel } from "./scorekeeper";
+import { endRound, startRound } from "./scorekeeper/Round";
 
 export const cronLabel = { label: "Cron" };
 
@@ -996,4 +998,121 @@ export const startBlockDataJob = async (
     }
   });
   blockCron.start();
+};
+
+export const startMainScorekeeperJob = async (
+  config,
+  ending,
+  chaindata,
+  nominatorGroups,
+  nominating,
+  currentEra,
+  bot,
+  constraints,
+  handler,
+  currentTargets,
+) => {
+  // Main cron job for starting rounds and ending rounds of the scorekeeper
+  const scoreKeeperFrequency = config.cron?.scorekeeper
+    ? config.cron?.scorekeeper
+    : Constants.SCOREKEEPER_CRON;
+
+  const mainCron = new CronJob(scoreKeeperFrequency, async () => {
+    logger.info(
+      `Running mainCron of Scorekeeper with frequency ${scoreKeeperFrequency}`,
+      scorekeeperLabel,
+    );
+
+    if (ending) {
+      logger.info(`ROUND IS CURRENTLY ENDING.`, scorekeeperLabel);
+      return;
+    }
+
+    const [activeEra, err] = await chaindata.getActiveEraIndex();
+    if (err) {
+      logger.warn(`CRITICAL: ${err}`, scorekeeperLabel);
+      return;
+    }
+
+    const { lastNominatedEraIndex } = await queries.getLastNominatedEraIndex();
+
+    // For Kusama, Nominations will happen every 4 eras
+    // For Polkadot, Nominations will happen every era
+    const eraBuffer = config.global.networkPrefix == 0 ? 1 : 4;
+
+    const isNominationRound =
+      Number(lastNominatedEraIndex) <= activeEra - eraBuffer;
+
+    if (isNominationRound) {
+      logger.info(
+        `Last nomination was in era ${lastNominatedEraIndex}. Current era is ${activeEra}. This is a nomination round.`,
+        scorekeeperLabel,
+      );
+      if (!nominatorGroups) {
+        logger.info("No nominators spawned. Skipping round.", scorekeeperLabel);
+        return;
+      }
+
+      if (!config.scorekeeper.nominating) {
+        logger.info(
+          "Nominating is disabled in the settings. Skipping round.",
+          scorekeeperLabel,
+        );
+        return;
+      }
+
+      // Get all the current targets to check if this should just be a starting round or if the round needs ending
+      const allCurrentTargets = [];
+      for (const nomGroup of nominatorGroups) {
+        for (const nominator of nomGroup) {
+          // Get the current nominations of an address
+          const currentTargets = await queries.getCurrentTargets(
+            nominator.controller,
+          );
+          allCurrentTargets.push(currentTargets);
+        }
+      }
+      currentTargets = allCurrentTargets;
+
+      if (!currentTargets) {
+        logger.info(
+          "Current Targets is empty. Starting round.",
+          scorekeeperLabel,
+        );
+        await startRound(
+          nominating,
+          currentEra,
+          bot,
+          constraints,
+          nominatorGroups,
+          chaindata,
+          handler,
+          config,
+          currentTargets,
+        );
+      } else {
+        logger.info(`Ending round.`, scorekeeperLabel);
+        await endRound(
+          ending,
+          nominatorGroups,
+          chaindata,
+          constraints,
+          bot,
+          config,
+        );
+        await startRound(
+          nominating,
+          currentEra,
+          bot,
+          constraints,
+          nominatorGroups,
+          chaindata,
+          handler,
+          config,
+          currentTargets,
+        );
+      }
+    }
+  });
+  mainCron.start();
 };

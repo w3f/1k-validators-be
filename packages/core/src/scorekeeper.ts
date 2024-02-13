@@ -1,4 +1,3 @@
-import { CronJob } from "cron";
 import {
   ApiHandler,
   ChainData,
@@ -18,7 +17,8 @@ import { startMicroserviceJobs } from "./scorekeeper/jobs/MicroserviceJobs";
 import { startMonolithJobs } from "./scorekeeper/jobs/MonolithJobs";
 import { startScorekeeperJobs } from "./scorekeeper/jobs/ScorekeeperJobs";
 import { dockPoints } from "./scorekeeper/Rank";
-import { endRound, startRound } from "./scorekeeper/Round";
+import { startRound } from "./scorekeeper/Round";
+import { startMainScorekeeperJob } from "./cron";
 // import { monitorJob } from "./jobs";
 
 export type NominatorGroup = Config.NominatorConfig[];
@@ -61,50 +61,6 @@ export default class ScoreKeeper {
   ) {
     this.handler = handler;
     this.chaindata = new ChainData(this.handler);
-
-    // For every staking reward event, create an accounting record of the amount rewarded
-    // this.handler.on(
-    //   "reward",
-    //   async (data: { stash: string; amount: string }) => {
-    //     const { stash, amount } = data;
-    //
-    //     // check if the address was a candidate, and if so, update their unclaimed eras
-    //     if (
-    //       this.rewardDestinationCache &&
-    //       this.rewardDestinationCache.includes(stash)
-    //     ) {
-    //       logger.info(
-    //         `{scorekeeper::reward} ${stash} claimed reward of ${amount}. Updating eras....`
-    //       );
-    //
-    //       // const unclaimedEras = await this.chaindata.getUnclaimedEras(
-    //       //   stash,
-    //       //   db
-    //       // );
-    //       //
-    //       // await db.setUnclaimedEras(stash, unclaimedEras);
-    //       // await this.constraints.checkCandidateStash(stash);
-    //       // await this.constraints.scoreAllCandidates();
-    //     }
-    //
-    //     // check if it was a nominator address that earned the reward
-    //     for (const nomGroup of this.nominatorGroups) {
-    //       for (const nom of nomGroup) {
-    //         const nomStash = await nom.stash();
-    //         if (!nomStash) continue;
-    //         if (nomStash == stash) {
-    //           const activeEra = await this.chaindata.getActiveEraIndex();
-    //           await queries.updateAccountingRecord(
-    //             nom.controller,
-    //             nomStash,
-    //             activeEra.toString(),
-    //             amount
-    //           );
-    //         }
-    //       }
-    //     }
-    //   }
-    // );
 
     // Handles offline event. Validators will be faulted for each session they are offline
     //     If they have already reaceived an offline fault for that session, it is skipped
@@ -152,32 +108,6 @@ export default class ScoreKeeper {
     this.bot = bot;
     this.constraints = new Constraints.OTV(this.handler, this.config);
     this.monitor = new Monitor(Constants.SIXTEEN_HOURS);
-
-    // this.populateCandidates();
-    // this.populateRewardDestinationCache();
-  }
-
-  // Populates the candidate  cache
-  async populateCandidates(): Promise<void> {
-    this.candidateCache = await queries.allCandidates();
-  }
-
-  async populateRewardDestinationCache(): Promise<void> {
-    const allCandidates = await queries.allCandidates();
-    const rewardAddresses = [];
-    for (const candidate of allCandidates) {
-      if (
-        !!candidate.rewardDestination &&
-        candidate.rewardDestination.length == 48
-      ) {
-        rewardAddresses.push(candidate.rewardDestination);
-        continue;
-      }
-      rewardAddresses.push(candidate.stash);
-      rewardAddresses.push(candidate.controller);
-    }
-
-    this.rewardDestinationCache = rewardAddresses;
   }
 
   getAllNominatorGroups(): SpawnedNominatorGroup[] {
@@ -364,112 +294,6 @@ export default class ScoreKeeper {
       );
     }
 
-    // Main cron job for starting rounds and ending rounds of the scorekeeper
-    const scoreKeeperFrequency = this.config.cron?.scorekeeper
-      ? this.config.cron?.scorekeeper
-      : Constants.SCOREKEEPER_CRON;
-    const mainCron = new CronJob(scoreKeeperFrequency, async () => {
-      logger.info(
-        `Running mainCron of Scorekeeper with frequency ${scoreKeeperFrequency}`,
-        scorekeeperLabel,
-      );
-
-      if (this.ending) {
-        logger.info(`ROUND IS CURRENTLY ENDING.`, scorekeeperLabel);
-        return;
-      }
-
-      const [activeEra, err] = await this.chaindata.getActiveEraIndex();
-      if (err) {
-        logger.warn(`CRITICAL: ${err}`, scorekeeperLabel);
-        return;
-      }
-
-      const { lastNominatedEraIndex } =
-        await queries.getLastNominatedEraIndex();
-
-      // For Kusama, Nominations will happen every 4 eras
-      // For Polkadot, Nominations will happen every era
-      const eraBuffer = this.config.global.networkPrefix == 0 ? 1 : 4;
-
-      const isNominationRound =
-        Number(lastNominatedEraIndex) <= activeEra - eraBuffer;
-
-      if (isNominationRound) {
-        logger.info(
-          `Last nomination was in era ${lastNominatedEraIndex}. Current era is ${activeEra}. This is a nomination round.`,
-          scorekeeperLabel,
-        );
-        if (!this.nominatorGroups) {
-          logger.info(
-            "No nominators spawned. Skipping round.",
-            scorekeeperLabel,
-          );
-          return;
-        }
-
-        if (!this.config.scorekeeper.nominating) {
-          logger.info(
-            "Nominating is disabled in the settings. Skipping round.",
-            scorekeeperLabel,
-          );
-          return;
-        }
-
-        // Get all the current targets to check if this should just be a starting round or if the round needs ending
-        const allCurrentTargets = [];
-        for (const nomGroup of this.nominatorGroups) {
-          for (const nominator of nomGroup) {
-            // Get the current nominations of an address
-            const currentTargets = await queries.getCurrentTargets(
-              nominator.controller,
-            );
-            allCurrentTargets.push(currentTargets);
-          }
-        }
-        this.currentTargets = allCurrentTargets;
-
-        if (!this.currentTargets) {
-          logger.info(
-            "Current Targets is empty. Starting round.",
-            scorekeeperLabel,
-          );
-          await startRound(
-            this.nominating,
-            this.currentEra,
-            this.bot,
-            this.constraints,
-            this.nominatorGroups,
-            this.chaindata,
-            this.handler,
-            this.config,
-            this.currentTargets,
-          );
-        } else {
-          logger.info(`Ending round.`, scorekeeperLabel);
-          await endRound(
-            this.ending,
-            this.nominatorGroups,
-            this.chaindata,
-            this.constraints,
-            this.bot,
-            this.config,
-          );
-          await startRound(
-            this.nominating,
-            this.currentEra,
-            this.bot,
-            this.constraints,
-            this.nominatorGroups,
-            this.chaindata,
-            this.handler,
-            this.config,
-            this.currentTargets,
-          );
-        }
-      }
-    });
-
     // Start all Cron Jobs
     try {
       // Start Jobs in either microservice or monolith mode
@@ -496,6 +320,17 @@ export default class ScoreKeeper {
       logger.error(e);
     }
     logger.info(`going to start mainCron: `, scorekeeperLabel);
-    await mainCron.start();
+    await startMainScorekeeperJob(
+      this.config,
+      this.ending,
+      this.chaindata,
+      this.nominatorGroups,
+      this.nominating,
+      this.currentEra,
+      this.bot,
+      this.constraints,
+      this.handler,
+      this.currentTargets,
+    );
   }
 }

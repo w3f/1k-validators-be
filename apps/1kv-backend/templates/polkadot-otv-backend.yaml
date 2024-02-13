@@ -84,7 +84,7 @@ spec:
                   {{ . }}{{ end }},
                 "scorekeeper": {
                   "candidates": null,
-                  "forceRound": false,
+                  "forceRound": true,
                   "nominating": {{ .Values.polkadot.be.nominating }}
                 },
                 "server": {

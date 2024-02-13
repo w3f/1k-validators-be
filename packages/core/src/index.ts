@@ -180,12 +180,16 @@ export const clean = async (scorekeeper) => {
 
 export const findDuplicates = async () => {
   const nameDuplicates = await queries.getDuplicatesByName();
-  logger.warn("Found Duplicates with multiple names", winstonLabel);
-  logger.warn(JSON.stringify(nameDuplicates), winstonLabel);
+  if (nameDuplicates.length > 0) {
+    logger.warn("Found Duplicates with multiple names", winstonLabel);
+    logger.warn(JSON.stringify(nameDuplicates), winstonLabel);
+  }
 
   const stashDuplicates = await queries.getDuplicatesByStash();
-  logger.warn("Found Duplicates with multiple stashes", winstonLabel);
-  logger.warn(JSON.stringify(stashDuplicates), winstonLabel);
+  if (stashDuplicates.length > 0) {
+    logger.warn("Found Duplicates with multiple stashes", winstonLabel);
+    logger.warn(JSON.stringify(stashDuplicates), winstonLabel);
+  }
 };
 
 export const addRewardClaimer = async (config, scorekeeper) => {

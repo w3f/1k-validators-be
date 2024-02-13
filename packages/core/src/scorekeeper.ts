@@ -49,11 +49,7 @@ export default class ScoreKeeper {
   private claimer: Claimer;
   private monitor: Monitor;
 
-  constructor(
-    handler: ApiHandler,
-    config: Config.ConfigSchema,
-    bot: any = false,
-  ) {
+  constructor(handler: ApiHandler, config: Config.ConfigSchema, bot: any) {
     this.handler = handler;
     this.chaindata = new ChainData(this.handler);
 
@@ -96,7 +92,7 @@ export default class ScoreKeeper {
     });
 
     this.config = config;
-    this.bot = bot;
+    this.bot = bot || null;
     this.constraints = new Constraints.OTV(this.handler, this.config);
     this.monitor = new Monitor(Constants.SIXTEEN_HOURS);
   }

@@ -78,7 +78,7 @@ export const LocalEndpoints = [
 export const defaultExcludeLabels = [
   // "Telemetry",
   // "Location",
-  "ValidatorPrefJob",
+  // "ValidatorPrefJob",
   "Block",
 ];
 

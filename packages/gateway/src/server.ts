@@ -40,15 +40,16 @@ export default class Server {
     logger.info(`Cache set to ${this.cache}`, { label: "Gateway" });
 
     const cache = new LRU({
-      max: this.cache, // global max age
+      maxAge: 18 * 1000, // Cache items will expire after 3 minutes
+      max: 500, // Maximum number of items allowed in the cache
     });
     this.app.use(
       koaCash({
         get: (key) => {
           return cache.get(key);
         },
-        set(key, value) {
-          return cache.set(key, value);
+        set(key, value, maxAge) {
+          return cache.set(key, value, maxAge);
         },
       }),
     );

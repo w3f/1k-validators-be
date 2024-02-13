@@ -7,9 +7,7 @@ export * from "./SessionKeyJob";
 export * from "./InclusionJob";
 export * from "./ActiveValidatorJob";
 export * from "./LocationStatsJob";
-export * from "./DemocracyJob";
 export * from "./NominatorJob";
-export * from "./DelegationJob";
 export * from "./BlockDataJob";
 export * from "./UnclaimedErasJob";
 

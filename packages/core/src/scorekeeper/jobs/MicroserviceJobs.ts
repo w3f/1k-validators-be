@@ -89,7 +89,6 @@ export const startMicroserviceJobs = async (
     await otvWorker.queues.addValidityJob(constraintsQueue, 1000001);
     await otvWorker.queues.addScoreJob(constraintsQueue, 100002);
     await otvWorker.queues.addActiveValidatorJob(chaindataQueue, 100003);
-    await otvWorker.queues.addDelegationJob(chaindataQueue, 100005);
     await otvWorker.queues.addEraPointsJob(chaindataQueue, 100006);
     await otvWorker.queues.addEraStatsJob(chaindataQueue, 110008);
     await otvWorker.queues.addInclusionJob(chaindataQueue, 100008);

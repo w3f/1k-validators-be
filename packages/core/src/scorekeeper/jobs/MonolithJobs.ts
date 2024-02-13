@@ -8,8 +8,6 @@ import { monitorJob } from "../../jobs";
 import {
   startActiveValidatorJob,
   startBlockDataJob,
-  startDelegationJob,
-  startDemocracyJob,
   startEraPointsJob,
   startEraStatsJob,
   startInclusionJob,
@@ -39,9 +37,7 @@ export const startMonolithJobs = async (
     await startValidatorPrefJob(config, chaindata);
     await startEraStatsJob(config, chaindata);
     await startLocationStatsJob(config, chaindata);
-    await startDemocracyJob(config, chaindata);
     await startNominatorJob(config, chaindata);
-    await startDelegationJob(config, chaindata);
     await startBlockDataJob(config, chaindata);
   } catch (e) {
     logger.error(e.toString(), scorekeeperLabel);

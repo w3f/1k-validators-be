@@ -77,3 +77,5 @@ export const getLatestLocationStats = async (): Promise<any> => {
     await LocationStatsModel.find({}).lean().sort("-session").limit(1)
   )[0];
 };
+
+export const getValidLocationStats = async (): Promise<any> => {};

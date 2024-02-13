@@ -15,8 +15,6 @@ import Claimer from "./claimer";
 import {
   activeValidatorJob,
   blockJob,
-  delegationJob,
-  democracyJob,
   eraPointsJob,
   eraStatsJob,
   inclusionJob,
@@ -846,49 +844,6 @@ export const startLocationStatsJob = async (
   locationStatsCron.start();
 };
 
-// Chron job for querying democracy data
-export const startDemocracyJob = async (
-  config: Config.ConfigSchema,
-  chaindata: ChainData,
-) => {
-  const enabled = config.cron?.democracyEnabled || true;
-  if (!enabled) {
-    logger.warn(`Democracy Job is disabled`, cronLabel);
-    return;
-  }
-
-  const democracyFrequency = config?.cron?.democracy
-    ? config?.cron?.democracy
-    : Constants.DEMOCRACY_CRON;
-
-  logger.info(
-    `Running democracy cron with frequency: ${democracyFrequency}`,
-    cronLabel,
-  );
-
-  let running = false;
-
-  const democracyCron = new CronJob(democracyFrequency, async () => {
-    if (running) {
-      return;
-    }
-    running = true;
-    logger.info(`running democracy job....`, cronLabel);
-
-    // Run the democracy  job
-    try {
-      const hasFinished = await democracyJob(chaindata);
-      if (hasFinished) {
-        running = false;
-      }
-    } catch (e) {
-      logger.error(`There was an error running democracy job.`, cronLabel);
-      logger.error(JSON.stringify(e), cronLabel);
-    }
-  });
-  democracyCron.start();
-};
-
 // Chron job for querying nominator data
 export const startNominatorJob = async (
   config: Config.ConfigSchema,
@@ -924,43 +879,6 @@ export const startNominatorJob = async (
     }
   });
   nominatorCron.start();
-};
-
-// Chron job for querying delegator data
-export const startDelegationJob = async (
-  config: Config.ConfigSchema,
-  chaindata: ChainData,
-) => {
-  const enabled = config.cron?.delegationEnabled || true;
-  if (!enabled) {
-    logger.warn(`Delegation Job is disabled`, cronLabel);
-    return;
-  }
-  const delegationFrequency = config.cron?.delegation
-    ? config.cron?.delegation
-    : Constants.DELEGATION_CRON;
-
-  logger.info(
-    `Running delegation cron with frequency: ${delegationFrequency}`,
-    cronLabel,
-  );
-
-  let running = false;
-
-  const delegationCron = new CronJob(delegationFrequency, async () => {
-    if (running) {
-      return;
-    }
-    running = true;
-    logger.info(`running delegation job....`, cronLabel);
-
-    // Run the job
-    const hasFinished = await delegationJob(chaindata);
-    if (hasFinished) {
-      running = false;
-    }
-  });
-  delegationCron.start();
 };
 
 // Chron job for querying delegator data

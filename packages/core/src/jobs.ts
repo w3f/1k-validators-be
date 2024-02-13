@@ -60,19 +60,8 @@ export const locationStatsJob = async (chaindata: ChainData) => {
   return true;
 };
 
-// Job for democracy related data
-export const democracyJob = async (chaindata: ChainData) => {
-  await otvWorker.jobs.democracyJob(chaindata);
-  return true;
-};
-
 export const nominatorJob = async (chaindata: ChainData) => {
   await otvWorker.jobs.nominatorJob(chaindata);
-  return true;
-};
-
-export const delegationJob = async (chaindata: ChainData) => {
-  await otvWorker.jobs.delegationJob(chaindata);
   return true;
 };
 

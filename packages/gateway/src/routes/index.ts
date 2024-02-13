@@ -42,6 +42,7 @@ const API = {
   LocationsCurrentValidatorSet: "/location/currentvalidatorset",
   LocationValidator: "/location/validator/:address",
   LocationStats: "/locationstats",
+  ValidLocationStats: "/locationstats/valid",
   SessionLocationStats: "/locationstats/:session",
   Councillors: "/councillor",
   Councillor: "/councillor/:address",
@@ -166,6 +167,7 @@ router.get(API.LocationValidator, Location.getValidatorLocation);
 
 router.get(API.EraStats, Stats.getEraStats);
 router.get(API.LocationStats, Stats.getLocationStats);
+router.get(API.ValidLocationStats, Stats.getValidLocationStats);
 router.get(API.SessionLocationStats, Stats.getSessionLocationStats);
 
 router.get(API.Validators, Validator.getValidators);

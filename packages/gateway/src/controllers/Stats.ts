@@ -12,6 +12,14 @@ export default class StatsController {
     response(context, 200, await StatsService.getLocationStats());
   }
 
+  public static async getValidLocationStats(context: any): Promise<void> {
+    if (await context.cashed()) {
+      logger.info(`{Gateway} getLocationStats is cached`, gatewayLabel);
+      return;
+    }
+    response(context, 200, await StatsService.getValidLocationStats());
+  }
+
   public static async getSessionLocationStats(context: any): Promise<void> {
     if (await context.cashed()) {
       logger.info(`{Gateway} getSessionLocationStats is cached`, gatewayLabel);

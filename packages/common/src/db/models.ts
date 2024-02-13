@@ -223,6 +223,10 @@ export const OpenGovDelegationModel = mongoose.model(
 OpenGovDelegationSchema.index({ delegate: 1, track: 1 });
 
 export const CandidateSchema = new Schema({
+  // The unique identifier of the candidate's node for a given slot.
+  slotId: Number,
+  // Whether the candidate has been verified to have passed KYC
+  kyc: Boolean,
   // The inherited telemetry ID.
   telemetryId: Number,
   // The network identifier derived from the networking key.
@@ -293,16 +297,7 @@ export const CandidateSchema = new Schema({
   // The node location according to telemetry
   location: String,
   // The amount of stake going towards backing council members
-  councilStake: { type: String, default: 0 },
-  // Who the candidate is backing as a council member (an array of council addresses)
-  councilVotes: [String],
   totalRewards: Number,
-  // The number of referenda voted on
-  democracyVoteCount: { type: Number, default: 0 },
-  // The referenda indexes voted on
-  democracyVotes: [Number],
-  convictionVotes: [Number],
-  convictionVoteCount: { type: Number, default: 0 },
   infrastructureLocation: LocationSchema,
   matrix: [String],
   implementation: String,

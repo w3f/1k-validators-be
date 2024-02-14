@@ -4114,6 +4114,17 @@
       "stash": "Ci1wNS8S61ebNUbZeXgSoJG48unjC42RiYd2WmFJCaey83B",
       "riotHandle": "@dinoval:matrix.org",
       "kyc": true
+    }, 
+      "name": "Link swap-1",
+      "stash": "DgJcKVBc2RLwS3NYiSKRZjNCi1H8vMm7R6Kdaot5VXohK3n",
+      "riotHandle": "@dmitryevens:matrix.org",
+      "kyc": true
+    },   
+    {
+      "name": "Link swap",
+      "stash": "F9tiZuYF4Z6X1nC8ca5gv5xEzBRMzbRkC2wcfNRPmzcTBiu",
+      "riotHandle": "@dmitryevens:matrix.org",
+      "kyc": true
     }
   ]
 }

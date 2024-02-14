@@ -91,8 +91,6 @@ export const getInvalidCandidates = async (): Promise<any> => {
 };
 
 export const getCandidates = async (): Promise<any> => {
-  const metadata = await queries.getChainMetadata();
-  const denom = Math.pow(10, metadata?.decimals);
   let allCandidates = await queries.allCandidates();
   allCandidates = await Promise.all(
     allCandidates.map(async (candidate) => {
@@ -101,6 +99,19 @@ export const getCandidates = async (): Promise<any> => {
   );
   allCandidates = allCandidates.sort((a, b) => {
     return b.total - a.total;
+  });
+  return allCandidates;
+};
+
+export const getRankCandidates = async (): Promise<any> => {
+  let allCandidates = await queries.allCandidates();
+  allCandidates = await Promise.all(
+    allCandidates.map(async (candidate) => {
+      return await getCandidateData(candidate);
+    }),
+  );
+  allCandidates = allCandidates.sort((a, b) => {
+    return b.rank - a.rank;
   });
   return allCandidates;
 };

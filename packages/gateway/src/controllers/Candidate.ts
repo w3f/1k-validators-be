@@ -38,6 +38,14 @@ export default class CandidateController {
     response(context, 200, await CandidateService.getCandidates());
   }
 
+  public static async getRankCandidates(context: any): Promise<void> {
+    if (await context.cashed()) {
+      logger.info(`{Gateway} getCandidates is cached`, gatewayLabel);
+      return;
+    }
+    response(context, 200, await CandidateService.getRankCandidates());
+  }
+
   public static async getNodes(context: any): Promise<void> {
     if (await context.cashed()) {
       logger.info(`{Gateway} getNodes is cached`, gatewayLabel);

@@ -20,6 +20,7 @@ const API = {
   Accounting: "/accounting/:address",
   Candidate: "/candidate/:address",
   GetCandidates: "/candidates",
+  GetRankCandidates: "/candidates/rank",
   GetValidCandidates: "/candidates/valid",
   GetInvalidCandidates: "/candidates/invalid",
   GetNodes: "/nodes",
@@ -92,6 +93,7 @@ router.get(API.Accounting, Accounting.getAccounting);
 
 router.get(API.Candidate, Candidate.getCandidate);
 router.get(API.GetCandidates, Candidate.getCandidates);
+router.get(API.GetRankCandidates, Candidate.getRankCandidates);
 router.get(API.GetValidCandidates, Candidate.getValidCandidates);
 router.get(API.GetInvalidCandidates, Candidate.getInvalidCandidates);
 

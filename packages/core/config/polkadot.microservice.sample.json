@@ -1,7 +1,7 @@
 {
   "global": {
     "dryRun": false,
-    "networkPrefix": 2,
+    "networkPrefix": 0,
     "apiEndpoints": [
       "wss://rpc.polkadot.io",
       "wss://polkadot-rpc.dwellir.com"

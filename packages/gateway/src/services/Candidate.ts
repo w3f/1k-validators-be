@@ -7,7 +7,10 @@ export const getCandidateData = async (candidate: any): Promise<any> => {
   const denom = Math.pow(10, metadata.decimals);
   const score = await queries.getLatestValidatorScore(candidate.stash);
   const nominations = await queries.getLatestNominatorStake(candidate.stash);
+  const location = await queries.getCandidateLocation(candidate.stash);
   return {
+    slotId: candidate.slotId,
+    kyc: candidate.kyc,
     discoveredAt: candidate.discoveredAt,
     nominatedAt: candidate.nominatedAt,
     offlineSince: candidate.offlineSince,
@@ -28,22 +31,20 @@ export const getCandidateData = async (candidate: any): Promise<any> => {
     validity: candidate.invalidity,
     score: score,
     total: score && score.total ? score.total : 0,
-    location: candidate.location,
-    provider: candidate.infrastructureLocation?.provider
-      ? candidate.infrastructureLocation?.provider
-      : "No Provider",
+    location: location?.city,
+    provider: location?.provider ? location?.provider : "No Provider",
     matrix: candidate.matrix,
     version: candidate.version,
     implementation: candidate.implementation,
     queuedKeys: candidate.queuedKeys,
     nextKeys: candidate.nextKeys,
     rewardDestination: candidate.rewardDestination,
-    cpu: candidate.infrastructureLocation?.cpu,
-    memory: candidate.infrastructureLocation?.memory,
-    coreCount: candidate.infrastructureLocation?.coreCount,
-    vm: candidate.infrastructureLocation?.vm,
-    region: candidate.infrastructureLocation?.region,
-    country: candidate.infrastructureLocation?.country,
+    cpu: location?.cpu,
+    memory: location?.memory,
+    coreCount: location?.coreCount,
+    vm: location?.vm,
+    region: location?.region,
+    country: location?.country,
     nominations: {
       totalStake: nominations?.totalStake,
       inactiveStake: nominations?.inactiveStake,

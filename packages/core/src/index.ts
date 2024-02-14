@@ -213,15 +213,18 @@ export const addCandidates = async (config) => {
           continue;
         } else {
           const { name, stash, riotHandle } = candidate;
-          // Polkadot only options.
           const kusamaStash = candidate.kusamaStash || "";
           const skipSelfStake = candidate.skipSelfStake || false;
+          const id = candidate.slotId || "";
+          const kyc = candidate.kyc || false;
           await queries.addCandidate(
+            id,
             name,
             stash,
             kusamaStash,
             skipSelfStake,
             riotHandle,
+            kyc,
           );
         }
       }

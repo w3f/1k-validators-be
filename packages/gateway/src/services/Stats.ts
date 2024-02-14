@@ -1,4 +1,4 @@
-import { queries, Score } from "@1kv/common";
+import { Constants, queries, Score } from "@1kv/common";
 
 export const getLocationStats = async () => {
   const locationStats = await queries.getLatestLocationStats();
@@ -36,18 +36,19 @@ export const getValidLocationStats = async () => {
   const totalNodes = [];
 
   for (const candidate of candidates) {
+    const location = await queries.getCandidateLocation(candidate.name);
     if (
-      candidate.location != "None" &&
-      candidate.region != "None" &&
-      candidate.country != "None" &&
-      candidate.provider != "None"
+      location?.city != "None" &&
+      location?.region != "None" &&
+      location?.country != "None" &&
+      location?.provider != "None"
     ) {
       totalNodes.push({
         address: candidate.stash,
-        location: candidate?.infrastructureLocation?.city,
-        region: candidate?.infrastructureLocation?.region,
-        country: candidate?.infrastructureLocation?.country,
-        provider: candidate?.infrastructureLocation?.provider,
+        location: location?.city,
+        region: location?.region,
+        country: location?.country,
+        provider: location?.provider,
       });
     }
   }
@@ -76,6 +77,17 @@ export const getValidLocationStats = async () => {
     return location.numberOfNodes;
   });
 
+  const scoredLocation = locationArr.map((location) => {
+    const score = Score.scaledDefined(
+      location.numberOfNodes,
+      locationValues,
+      0,
+      1,
+    );
+    const weightedScore = (1 - score) * Constants.LOCATION_WEIGHT || 0;
+    return { ...location, score: weightedScore };
+  });
+
   // ---------------- REGION -----------------------------------
   const regionMap = new Map();
   const regionArr = [];
@@ -100,6 +112,12 @@ export const getValidLocationStats = async () => {
   }
   const regionValues = regionArr.map((region) => {
     return region.numberOfNodes;
+  });
+
+  const scoredRegion = regionArr.map((region) => {
+    const score = Score.scaledDefined(region.numberOfNodes, regionValues, 0, 1);
+    const weightedScore = (1 - score) * Constants.REGION_WEIGHT || 0;
+    return { ...region, score: weightedScore };
   });
 
   // ---------------- COUNTRY -----------------------------------
@@ -128,6 +146,17 @@ export const getValidLocationStats = async () => {
     return country.numberOfNodes;
   });
 
+  const scoredCountry = countryArr.map((country) => {
+    const score = Score.scaledDefined(
+      country.numberOfNodes,
+      countryValues,
+      0,
+      1,
+    );
+    const weightedScore = (1 - score) * Constants.COUNTRY_WEIGHT || 0;
+    return { ...country, score: weightedScore };
+  });
+
   // ---------------- PROVIDER -----------------------------------
   const providerMap = new Map();
   const providerArr = [];
@@ -153,18 +182,28 @@ export const getValidLocationStats = async () => {
   const providerValues = providerArr.map((provider) => {
     return provider.numberOfNodes;
   });
-  const providerVariance = Score.variance(providerValues);
 
-  const sortedLocations = locationArr?.sort((a, b) => {
+  const scoredProvider = providerArr.map((provider) => {
+    const score = Score.scaledDefined(
+      provider.numberOfNodes,
+      providerValues,
+      0,
+      1,
+    );
+    const weightedScore = (1 - score) * Constants.PROVIDER_WEIGHT || 0;
+    return { ...provider, score: weightedScore };
+  });
+
+  const sortedLocations = scoredLocation?.sort((a, b) => {
     return b.numberOfNodes - a.numberOfNodes;
   });
-  const sortedRegions = regionArr.sort((a, b) => {
+  const sortedRegions = scoredRegion.sort((a, b) => {
     return b.numberOfNodes - a.numberOfNodes;
   });
-  const sortedCountries = countryArr.sort((a, b) => {
+  const sortedCountries = scoredCountry.sort((a, b) => {
     return b.numberOfNodes - a.numberOfNodes;
   });
-  const sortedProviders = providerArr.sort((a, b) => {
+  const sortedProviders = scoredProvider.sort((a, b) => {
     return b.numberOfNodes - a.numberOfNodes;
   });
   return {

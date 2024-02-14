@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import path from "path";
 import { ClaimerConfig } from "./types";
+import { isValidUrl } from "./util";
 
 type CandidateConfig = {
   slotId: number;
@@ -193,10 +194,18 @@ export const loadConfigDir = async (configDir: string) => {
   // }
 
   const candidatesUrl = mainConf.global.candidatesUrl;
-  const response = await fetch(candidatesUrl);
-  const candidatesJSON = await response.json();
 
-  mainConf.scorekeeper.candidates = candidatesJSON.candidates;
+  // If the candidates url specified in the config is a valid url, fetch the candidates from the url, otherwise read the candidates from the file
+  if (isValidUrl(candidatesUrl)) {
+    const response = await fetch(candidatesUrl);
+    const candidatesJSON = await response.json();
+
+    mainConf.scorekeeper.candidates = candidatesJSON.candidates;
+  } else {
+    const conf = fs.readFileSync(candidatesUrl, { encoding: "utf-8" });
+    const candidates = JSON.parse(conf);
+    mainConf.scorekeeper.candidates = candidates.candidates;
+  }
 
   return mainConf;
 };

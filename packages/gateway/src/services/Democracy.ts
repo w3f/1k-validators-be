@@ -41,7 +41,7 @@ export const getVoters = async (): Promise<any> => {
           validity: candidate.invalidity,
           score: score,
           total: score && score.total ? score.total : 0,
-          location: candidate.location,
+          location: candidate?.location,
           councilStake: candidate.councilStake,
           councilVotes: candidate.councilVotes,
           democracyVoteCount: candidate.democracyVoteCount,

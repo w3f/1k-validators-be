@@ -10,6 +10,7 @@ import * as Types from "./types";
 import * as Util from "./util";
 import * as Constraints from "./constraints";
 import * as Score from "./score";
+import * as Scripts from "./scripts";
 
 export {
   ApiHandler,
@@ -23,4 +24,5 @@ export {
   Util,
   Constraints,
   Score,
+  Scripts,
 };

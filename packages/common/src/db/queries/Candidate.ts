@@ -10,23 +10,29 @@ import { Identity } from "../../types";
 
 // Adds a new candidate from the configuration file data.
 export const addCandidate = async (
+  slotId: number,
   name: string,
   stash: string,
   kusamaStash: string,
   skipSelfStake: boolean,
   matrix: any,
+  kyc: boolean,
   bot?: any,
 ): Promise<boolean> => {
   const network = (await getChainMetadata()).name;
   const keyring = new Keyring();
   const ss58Prefix = network == "Kusama" ? 2 : 0;
   stash = keyring.encodeAddress(stash, ss58Prefix);
-  // logger.info(
-  //   `(Db::addCandidate) name: ${name} stash: ${stash} matrix: ${matrix}`
-  // );
+
+  let data;
 
   // Check to see if the candidate has already been added as a node.
-  const data = await CandidateModel.findOne({ name }).lean();
+  data = await CandidateModel.findOne({ slotId }).lean();
+
+  if (!data) {
+    data = await CandidateModel.findOne({ name }).lean();
+  }
+
   if (!data) {
     logger.info(
       `Did not find candidate data for ${name} - inserting new document.`,
@@ -34,15 +40,19 @@ export const addCandidate = async (
     );
 
     const candidate = new CandidateModel({
+      slotId,
       name,
       stash,
       kusamaStash,
       skipSelfStake,
       matrix,
+      kyc,
     });
 
     if (!!bot) {
-      await bot.sendMessage(`Adding new candidate: ${name} (${stash})`);
+      await bot.sendMessage(
+        `Adding new candidate: ${name} (${stash}) id: ${slotId}`,
+      );
     }
     await candidate.save();
     return true;
@@ -55,10 +65,12 @@ export const addCandidate = async (
       name,
     },
     {
+      slotId,
       stash,
       kusamaStash,
       skipSelfStake,
       matrix,
+      kyc,
     },
   );
 };
@@ -79,10 +91,12 @@ export const deleteOldCandidateFields = async (): Promise<boolean> => {
         invalidityReasons: 1,
         avgClaimTimestampDelta: 1,
         avgClaimBlockDelta: 1,
+        location: "",
+        infrastructureLocation: "",
       },
     },
     // { multi: true, safe: true }
-  );
+  ).exec();
 
   return true;
 };
@@ -99,6 +113,8 @@ export const deleteOldFieldFrom = async (name: string): Promise<boolean> => {
         rankEvents: 1,
         avgClaimTimestampDelta: 1,
         avgClaimBlockDelta: 1,
+        location: "",
+        infrastructureLocation: "",
       },
     },
   ).exec();
@@ -108,42 +124,6 @@ export const deleteOldFieldFrom = async (name: string): Promise<boolean> => {
 
 export const clearNodeRefsFrom = async (name: string): Promise<boolean> => {
   await CandidateModel.findOneAndUpdate({ name }, { nodeRefs: 0 }).exec();
-
-  return true;
-};
-
-// Set a candidates data to the data returned from a 'canonical' 1kv instance
-export const bootstrapCandidate = async (
-  name: string,
-  stash: string,
-  discoveredAt: number,
-  nominatedAt: number,
-  offlineSince: number,
-  offlineAccumulated: number,
-  rank: number,
-  faults: number,
-  inclusion: number,
-  location: string,
-  provider: string,
-  democracyVoteCount: number,
-  democracyVotes: number[],
-): Promise<any> => {
-  await CandidateModel.findOneAndUpdate(
-    { stash },
-    {
-      discoveredAt,
-      nominatedAt,
-      offlineSince,
-      offlineAccumulated,
-      rank,
-      faults,
-      inclusion,
-      location,
-      provider,
-      democracyVoteCount,
-      democracyVotes,
-    },
-  ).exec();
 
   return true;
 };
@@ -444,10 +424,6 @@ export const reportOnline = async (
     // A new node that is not already registered as a candidate.
     const candidate = new CandidateModel({
       telemetryId,
-      location:
-        locationData && locationData?.city && !locationData?.vpn
-          ? locationData?.city
-          : "No Location",
       networkId: null,
       nodeRefs: 1,
       name,
@@ -455,7 +431,6 @@ export const reportOnline = async (
       discoveredAt: startupTime,
       onlineSince: startupTime,
       offlineSince: 0,
-      infrastructureLocation: locationData,
       implementation: nodeImplementation,
     });
 
@@ -475,11 +450,6 @@ export const reportOnline = async (
       { name },
       {
         telemetryId,
-        location:
-          locationData && locationData?.city
-            ? locationData?.city
-            : "No Location",
-        infrastructureLocation: locationData,
         discoveredAt: now,
         onlineSince: now,
         offlineSince: 0,
@@ -506,9 +476,6 @@ export const reportOnline = async (
     { name },
     {
       telemetryId,
-      location:
-        locationData && locationData?.city ? locationData?.city : "No Location",
-      infrastructureLocation: locationData,
       onlineSince: now,
       version,
       implementation: nodeImplementation,
@@ -1507,7 +1474,7 @@ export const setProviderInvalidity = async (
               ? ""
               : details
                 ? details
-                : `${data.name} has banned infrastructure provider: ${data?.infrastructureLocation?.provider}`,
+                : `${data.name} has banned infrastructure provider`,
           },
         ],
       },

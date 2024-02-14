@@ -433,10 +433,10 @@ export class OTV implements Constraints {
     const { nominatedAtStats } = getNominatedAtValues(candidates);
     const { offlineStats } = getOfflineValues(candidates);
     const { rankStats } = getRankValues(candidates);
-    const { locationArr, locationStats } = getLocationValues(candidates);
-    const { regionArr, regionStats } = getRegionValues(candidates);
-    const { countryArr, countryStats } = getCountryValues(candidates);
-    const { providerArr, providerStats } = getProviderValues(candidates);
+    const { locationArr, locationStats } = await getLocationValues(candidates);
+    const { regionArr, regionStats } = await getRegionValues(candidates);
+    const { countryArr, countryStats } = await getCountryValues(candidates);
+    const { providerArr, providerStats } = await getProviderValues(candidates);
     const { ownNominatorAddresses, nominatorStakeStats } =
       await getNominatorStakeValues(candidates);
 
@@ -547,7 +547,11 @@ export class OTV implements Constraints {
     const scaledFaults = scaled(candidate.faults, faultsStats.values) || 0;
     const faultsScore = (1 - scaledFaults) * this.FAULTS_WEIGHT;
 
-    const provider = candidate?.infrastructureLocation?.provider;
+    const latestCandidateLocation = await queries.getCandidateLocation(
+      candidate.stash,
+    );
+
+    const provider = latestCandidateLocation?.provider || "No Provider";
     const bannedProviders = this.config.telemetry?.blacklistedProviders;
     let bannedProvider = false;
     if (provider && bannedProviders?.includes(provider)) {
@@ -555,7 +559,8 @@ export class OTV implements Constraints {
     }
     // Get the total number of nodes for the location a candidate has their node in
     const candidateLocation = locationStats.values.filter((location) => {
-      if (candidate.location == location.name) return location.numberOfNodes;
+      if (latestCandidateLocation?.city == location.name)
+        return location.numberOfNodes;
     })[0]?.numberOfNodes;
     const locationValues = locationStats.values.map((location) => {
       return location.numberOfNodes;
@@ -565,14 +570,14 @@ export class OTV implements Constraints {
       scaledDefined(candidateLocation, locationValues, 0, 1) || 0;
     const locationScore = bannedProvider
       ? 0
-      : candidate.location == "No Location"
+      : latestCandidateLocation?.city == "No Location"
         ? 0.25 * this.LOCATION_WEIGHT
         : (1 - scaledLocation) * this.LOCATION_WEIGHT || 0;
 
     const candidateRegion = regionStats.values.filter((region) => {
       if (
-        candidate.infrastructureLocation &&
-        candidate.infrastructureLocation.region == region.name
+        latestCandidateLocation &&
+        latestCandidateLocation?.region == region.name
       )
         return region.numberOfNodes;
     })[0]?.numberOfNodes;
@@ -584,14 +589,14 @@ export class OTV implements Constraints {
       scaledDefined(candidateRegion, regionValues, 0, 1) || 0;
     const regionScore = bannedProvider
       ? 0
-      : candidate.location == "No Location"
+      : latestCandidateLocation?.region == "No Location"
         ? 0.25 * this.REGION_WEIGHT
         : (1 - scaledRegion) * this.REGION_WEIGHT || 0;
 
     const candidateCountry = countryStats.values.filter((country) => {
       if (
-        candidate.infrastructureLocation &&
-        candidate.infrastructureLocation.country == country.name
+        latestCandidateLocation &&
+        latestCandidateLocation?.country == country.name
       )
         return country.numberOfNodes;
     })[0]?.numberOfNodes;
@@ -603,14 +608,14 @@ export class OTV implements Constraints {
       scaledDefined(candidateCountry, countryValues, 0, 1) || 0;
     const countryScore = bannedProvider
       ? 0
-      : candidate.location == "No Location"
+      : latestCandidateLocation?.country == "No Location"
         ? 0.25 * this.COUNTRY_WEIGHT
         : (1 - scaledCountry) * this.COUNTRY_WEIGHT || 0;
 
     const candidateProvider = providerStats.values.filter((provider) => {
       if (
-        candidate.infrastructureLocation &&
-        candidate.infrastructureLocation.provider == provider.name
+        latestCandidateLocation &&
+        latestCandidateLocation?.provider == provider.name
       )
         return provider.numberOfNodes;
     })[0]?.numberOfNodes;
@@ -622,7 +627,7 @@ export class OTV implements Constraints {
       scaledDefined(candidateProvider, providerValues, 0, 1) || 0;
     const providerScore = bannedProvider
       ? 0
-      : candidate.location == "No Location"
+      : latestCandidateLocation?.provider == "No Location"
         ? 0.25 * this.PROVIDER_WEIGHT
         : (1 - scaledProvider) * this.PROVIDER_WEIGHT || 0;
 
@@ -898,11 +903,16 @@ export const getUnclaimedValues = (validCandidates: Types.CandidateData[]) => {
   return { unclaimedValues, unclaimedStats };
 };
 
-export const getLocationValues = (validCandidates: Types.CandidateData[]) => {
+export const getLocationValues = async (
+  validCandidates: Types.CandidateData[],
+) => {
   const locationMap = new Map();
   const locationArr = [];
   for (const candidate of validCandidates) {
-    const location = candidate.location || "No Location";
+    const candidateLocation = await queries.getCandidateLocation(
+      candidate.stash,
+    );
+    const location = candidateLocation?.city || "No Location";
 
     const locationCount = locationMap.get(location);
     if (!locationCount) {
@@ -925,14 +935,18 @@ export const getLocationValues = (validCandidates: Types.CandidateData[]) => {
   return { locationArr, locationValues, locationStats };
 };
 
-export const getRegionValues = (validCandidates: Types.CandidateData[]) => {
+export const getRegionValues = async (
+  validCandidates: Types.CandidateData[],
+) => {
   const regionMap = new Map();
   const regionArr = [];
   for (const candidate of validCandidates) {
+    const candidateLocation = await queries.getCandidateLocation(
+      candidate.stash,
+    );
     const region =
-      candidate.infrastructureLocation &&
-      candidate.infrastructureLocation.region
-        ? candidate.infrastructureLocation.region
+      candidateLocation && candidateLocation?.region
+        ? candidateLocation?.region
         : "No Location";
 
     const regionCount = regionMap.get(region);
@@ -955,14 +969,18 @@ export const getRegionValues = (validCandidates: Types.CandidateData[]) => {
   return { regionArr, regionValues, regionStats };
 };
 
-export const getCountryValues = (validCandidates: Types.CandidateData[]) => {
+export const getCountryValues = async (
+  validCandidates: Types.CandidateData[],
+) => {
   const countryMap = new Map();
   const countryArr = [];
   for (const candidate of validCandidates) {
+    const candidateLocation = await queries.getCandidateLocation(
+      candidate.stash,
+    );
     const country =
-      candidate.infrastructureLocation &&
-      candidate.infrastructureLocation.country
-        ? candidate.infrastructureLocation.country
+      candidateLocation && candidateLocation?.country
+        ? candidateLocation?.country
         : "No Location";
 
     const countryCount = countryMap.get(country);
@@ -985,14 +1003,18 @@ export const getCountryValues = (validCandidates: Types.CandidateData[]) => {
   return { countryArr, countryValues, countryStats };
 };
 
-export const getProviderValues = (validCandidates: Types.CandidateData[]) => {
+export const getProviderValues = async (
+  validCandidates: Types.CandidateData[],
+) => {
   const providerMap = new Map();
   const providerArr = [];
   for (const candidate of validCandidates) {
+    const candidateLocation = await queries.getCandidateLocation(
+      candidate.stash,
+    );
     const provider =
-      candidate.infrastructureLocation &&
-      candidate.infrastructureLocation.provider
-        ? candidate.infrastructureLocation.provider
+      candidateLocation && candidateLocation?.provider
+        ? candidateLocation?.provider
         : "No Location";
 
     const providerCount = providerMap.get(provider);

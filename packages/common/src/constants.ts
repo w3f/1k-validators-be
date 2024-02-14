@@ -150,37 +150,28 @@ export const VALIDATOR_PREF_CRON = "0 0-59/3 * * * *";
 // Sesion Key Cron Job. This runs every 45 minutes by default
 export const SESSION_KEY_CRON = "0 0-59/45 * * * *";
 
-// Democracy Cron Job. This runs every 15 minutes by default
-export const DEMOCRACY_CRON = "0 0-59/5 * * * *";
-
 // Nominator Cron Job. This runs every 15 minutes by default
 export const NOMINATOR_CRON = "0 0-59/17 * * * *";
-
-// Delegation Cron Job. This runs every 20 minutes by default
-export const DELEGATION_CRON = "0 0-59/2 * * * *";
 
 export const BLOCK_CRON = "0 0-59/1 * * * *";
 
 export const LOCATION_URL = "https://ipinfo.io/";
 
 // Score Constant Defaults
-export const INCLUSION_WEIGHT = 100;
-export const SPAN_INCLUSION_WEIGHT = 100;
+export const INCLUSION_WEIGHT = 220;
+export const SPAN_INCLUSION_WEIGHT = 220;
 export const DISCOVERED_WEIGHT = 5;
-export const NOMINATED_WEIGHT = 30;
+export const NOMINATED_WEIGHT = 80;
 export const RANK_WEIGHT = 5;
 export const UNCLAIMED_WEIGHT = 10;
 export const BONDED_WEIGHT = 50;
 export const FAULTS_WEIGHT = 5;
 export const OFFLINE_WEIGHT = 2;
-export const LOCATION_WEIGHT = 30;
+export const LOCATION_WEIGHT = 40;
 export const REGION_WEIGHT = 10;
 export const COUNTRY_WEIGHT = 10;
-export const PROVIDER_WEIGHT = 50;
+export const PROVIDER_WEIGHT = 100;
 export const NOMINATIONS_WEIGHT = 100;
-export const DELEGATIONS_WEIGHT = 60;
-export const OPENGOV_WEIGHT = 100;
-export const OPENGOV_DELEGATION_WEIGHT = 100;
 export const RPC_WEIGHT = 100;
 export const CLIENT_WEIGHT = 200;
 export const RANDOMNESS_MULTIPLIER = 0.15;
@@ -199,8 +190,5 @@ export const USE_REGION = true;
 export const USE_COUNTRY = true;
 export const USE_PROVIDER = true;
 export const USE_NOMINATIONS = true;
-export const USE_DELEGATIONS = true;
-export const USE_OPENGOV = true;
-export const USE_OPENGOV_DELEGATIONS = true;
 export const USE_RPC = true;
 export const USE_CLIENT = true;

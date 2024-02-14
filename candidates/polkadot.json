@@ -2259,7 +2259,7 @@
       "stash": "13unkT9DyFUnzKZdLCkHBvGLuhvcHQSrRhTWhrL9gqG98CTH",
       "kusamaStash": "J3f7ULfjVbbBYvZtMvaEDiUC8odXjt2A2hGShshBFCKHazY",
       "riotHandle": "@kureus:matrix.org",
-      "kyc": false
+      "kyc": true
     },
     {
       "slotId": 276,
@@ -2267,7 +2267,7 @@
       "stash": "13dTrEE587xf5Kwgiegg4bWfWEw4KRZcDpmFRw9jLBofvyMK",
       "kusamaStash": "JFHtREewUeVy96gGDwMTxrGvQxBDz6jGL8E5LxnAnNbcNbh",
       "riotHandle": "@plant-a-tree:matrix.org",
-      "kyc": false
+      "kyc": true
     },
     {
       "slotId": 277,
@@ -2275,7 +2275,7 @@
       "stash": "16cSiUTqGavZULqZStC6wvCxiFrtQmUafsDknoTmhAbMT6Jz",
       "kusamaStash": "FGHknsDq3UwZDgtvpGE6bK2Z1csVgrY5xCEA1H1kapZ8bxn",
       "riotHandle": "@tux_in_tuxedo:matrix.org",
-      "kyc": false
+      "kyc": true
     }
   ]
 }

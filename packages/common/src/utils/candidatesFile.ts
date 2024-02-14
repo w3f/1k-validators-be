@@ -50,15 +50,6 @@ export const writeSlotIds = (path: any, network: any) => {
         slotId: slotId,
         ...candidate,
         ...(candidate.kyc ? { kyc: candidate.kyc } : { kyc: false }),
-        // slotId: slotId,
-        // name: candidate.name,
-        // stash: candidate.stash,
-        // riotHandle: candidate.riotHandle,
-        // skipSelfStake: candidate?.skipSelfStake
-        //   ? candidate.skipSelfStake
-        //   : false,
-        // kusamaStash: candidate.kusamaStash ? candidate.kusamaStash : "",
-        // kyc: candidate.kyc || false,
       };
       slotId++;
       return newCandidate;

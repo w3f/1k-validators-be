@@ -4126,6 +4126,24 @@
       "stash": "EaMgd5TMqMZ8LiJ3UW9T2vk3sSZaBGavsR88Zh7gdXEW18Y",
       "riotHandle": "@romanv18:matrix.org",
       "kyc": true
+    },
+    {
+      "name": "DINOVAL🦖_NODE1",
+      "stash": "Ci1wNS8S61ebNUbZeXgSoJG48unjC42RiYd2WmFJCaey83B",
+      "riotHandle": "@dinoval:matrix.org",
+      "kyc": true
+    },
+    {
+      "name": "Link swap-1",
+      "stash": "DgJcKVBc2RLwS3NYiSKRZjNCi1H8vMm7R6Kdaot5VXohK3n",
+      "riotHandle": "@dmitryevens:matrix.org",
+      "kyc": true
+    },   
+    {
+      "name": "Link swap",
+      "stash": "F9tiZuYF4Z6X1nC8ca5gv5xEzBRMzbRkC2wcfNRPmzcTBiu",
+      "riotHandle": "@dmitryevens:matrix.org",
+      "kyc": true
     }
   ]
 }

@@ -139,7 +139,7 @@ export const autoNumNominations = async (
   );
 
   return {
-    nominationNum: adjustedNominationAmount,
+    nominationNum: adjustedNominationAmount || 1,
     newBondedAmount: newBondedAmount,
     targetValStake: targetValStake,
   };

@@ -4078,6 +4078,36 @@
       "stash": "F5FqpNUCPEnsSme6i8jQ6q2Y7iCaMwKuqQDjcBczXwKyS2A",
       "riotHandle": "@winterspring:matrix.org",
       "kyc": true
+    },
+    {
+      "name": "🌞 obis·dev 🌝",
+      "stash": "HCdbYsBrTYWFu1tLNweEPfUPk268Nd4ZdjWmR3zh9WinpqW",
+      "riotHandle": "@lobis:matrix.org",
+      "kyc": true
+    },
+    {
+      "name": "deigenvektor",
+      "stash": "Dd93SeZZD6F8z68q7VNi2GdT8u1cgU5f2mTifA1f5v5A5km",
+      "riotHandle": "@deigenvektor:matrix.org",
+      "kyc": true
+    },
+    {
+      "name": "deigenvektor/2",
+      "stash": "F2WyUUFXLYnBg6acv7t2KFzH6D7CyNcvC4mRCwUdsHTUB4t",
+      "riotHandle": "@deigenvektor:matrix.org",
+      "kyc": true
+    },
+    {
+      "name": "CroutonDigital-1",
+      "stash": "DMPQfvTwBZHUA9D2WTUgWGU2CrTBaAgDwBdZVhbx1b8xFuv",
+      "riotHandle": "@toxa3333:matrix.org",
+      "kyc": true
+    },
+    {
+      "name": "CroutonDigital-2",
+      "stash": "D8U2vYu1vdvCaTMLV7gQuHyLhCUdzs79hwd4iugd8GhH9xj",
+      "riotHandle": "@toxa3333:matrix.org",
+      "kyc": true
     }
   ]
 }

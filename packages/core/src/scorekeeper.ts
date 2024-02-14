@@ -27,8 +27,6 @@ export type SpawnedNominatorGroup = Nominator[];
 
 export const scorekeeperLabel = { label: "Scorekeeper" };
 
-// The number of nominations a nominator can get in the set.
-
 // Scorekeeper is the main orchestrator of initiating jobs and kickstarting the workflow of nominations
 export default class ScoreKeeper {
   public handler: ApiHandler;

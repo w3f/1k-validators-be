@@ -898,7 +898,12 @@ export class ChainData {
   getTotalEraPoints = async (era: number) => {
     await this.checkApiConnection();
 
-    const erasRewardPoints = await this.api.query.staking.erasRewardPoints(era);
+    const chainMetadata = await getChainMetadata();
+    const chainType = chainMetadata.name;
+    const [blockHash, err] = await this.findEraBlockHash(era, chainType);
+    const apiAt = await this.api.at(blockHash);
+
+    const erasRewardPoints = await apiAt.query.staking.erasRewardPoints(era);
     const total = erasRewardPoints.total;
     const validators = erasRewardPoints.individual;
     const vals = [];

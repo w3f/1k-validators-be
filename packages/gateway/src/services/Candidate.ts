@@ -12,7 +12,7 @@ export const getCandidateData = async (candidate: any): Promise<any> => {
     nominatedAt: candidate.nominatedAt,
     offlineSince: candidate.offlineSince,
     offlineAccumulated: candidate.offlineAccumulated,
-    rank: candidate.rank,
+    rank: candidate.rank || 0,
     faults: candidate.faults,
     invalidityReasons: candidate.invalidityReasons,
     unclaimedEras: candidate.unclaimedEras,

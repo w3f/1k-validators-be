@@ -1,5 +1,6 @@
 // Create new Era Points records
 import { EraPointsModel, TotalEraPointsModel } from "../models";
+import { getIdentityAddresses } from "./Candidate";
 
 export const setEraPoints = async (
   era: number,
@@ -194,4 +195,39 @@ export const getValidatorLastEraPoints = async (
     .sort("-era")
     .limit(1)
     .exec();
+};
+
+// Gets the number of eras a validator has era points for
+export const getValidatorEraPointsCount = async (
+  address: string,
+): Promise<number> => {
+  const eras = await EraPointsModel.find({
+    address: address,
+  })
+    .lean()
+    .exec();
+  return eras.length;
+};
+
+// Gets a list of the total count of era points for every identity that is a part of a validators super/sub identity
+export const getIdentityValidatorEraPointsCount = async (
+  address: string,
+): Promise<{ address: string; eras: number }[]> => {
+  const eraPointsList: { address: string; eras: number }[] = [];
+  const identityAddresses: string[] = await getIdentityAddresses(address);
+  for (const identityAddress of identityAddresses) {
+    const eras = await getValidatorEraPointsCount(identityAddress);
+    eraPointsList.push({ address: identityAddress, eras: eras });
+  }
+  return eraPointsList.sort((a, b) => b.eras - a.eras);
+};
+
+// For an identity, gets the identity with the most era points
+export const getIdentityValidatorEraPointsCountMax = async (
+  address: string,
+): Promise<number> => {
+  const identityEras: { address: string; eras: number }[] =
+    await getIdentityValidatorEraPointsCount(address);
+  const maxEras: number = Math.max(...identityEras.map((entry) => entry.eras));
+  return maxEras || 0;
 };

@@ -702,6 +702,22 @@ export const pushFaultEvent = async (
   return false;
 };
 
+export const setRank = async (
+  stash: string,
+  newRank: number,
+): Promise<boolean> => {
+  await CandidateModel.findOneAndUpdate(
+    {
+      stash,
+    },
+    {
+      rank: newRank,
+    },
+  ).exec();
+
+  return true;
+};
+
 export const addPoint = async (stash: string): Promise<boolean> => {
   logger.info(`Adding a point to ${stash}.`);
 

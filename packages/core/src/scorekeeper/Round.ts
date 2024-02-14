@@ -6,7 +6,7 @@
 
 import { scorekeeperLabel } from "../scorekeeper";
 import { logger, queries, Types, Util } from "@1kv/common";
-import { addPoint, dockPoints } from "./Rank";
+import { dockPoints } from "./Rank";
 import { doNominations } from "./Nominating";
 
 /**
@@ -120,7 +120,6 @@ export const endRound = async (
 
     // They were active - increase their rank and add a rank event
     const didRank = await queries.pushRankEvent(stash, startEra, activeEra);
-    if (didRank) await addPoint(stash, bot);
   }
 
   // For all bad validators, dock their points and create a "Fault Event"

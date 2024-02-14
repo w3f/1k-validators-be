@@ -1,4 +1,4 @@
-import { logger, queries, ChainData } from "@1kv/common";
+import { ChainData, logger, queries } from "@1kv/common";
 
 export const erapointsLabel = { label: "EraPointsJob" };
 
@@ -10,7 +10,7 @@ export const individualEraPointsJob = async (
   const erapoints = await queries.getTotalEraPoints(eraIndex);
 
   // If Era Points for the era exist, and are what the total should be, skip
-  if (!!erapoints && erapoints.totalEraPoints >= 70000 && erapoints.median) {
+  if (!!erapoints && erapoints.totalEraPoints >= 700 && erapoints.median) {
     return;
   } else {
     const { era, total, validators } =
@@ -24,12 +24,29 @@ export const eraPointsJob = async (chaindata: ChainData) => {
 
   // Set Era Points
   //    - get the current active era
-  //    - iterate through the previous 84 eras
+  //    - iterate through the previous eras until the first era
   //    - if a record for era points for that era already exists, skip it
   //    - if a record doesn't exist, create it
   const [activeEra, err] = await chaindata.getActiveEraIndex();
-  for (let i = activeEra - 1; i > activeEra - 84 && i >= 0; i--) {
+  for (let i = activeEra - 1; i >= 0; i--) {
     await individualEraPointsJob(chaindata, i);
+    logger.info(
+      `Processed Era Points for Era: ${i} (${activeEra - i}/${activeEra})`,
+      erapointsLabel,
+    );
+  }
+
+  // Update ranks for candidates to be the max number of eras active of any identity within a validators sub/super identity
+  const candidates = await queries.allCandidates();
+  for (const [index, candidate] of candidates.entries()) {
+    const rank =
+      (await queries.getIdentityValidatorEraPointsCountMax(candidate.stash)) ||
+      0;
+    await queries.setRank(candidate.stash, rank);
+    logger.info(
+      `Updated Rank for ${candidate.stash} to ${rank} (${index + 1}/${candidates.length})`,
+      erapointsLabel,
+    );
   }
 
   const end = Date.now();

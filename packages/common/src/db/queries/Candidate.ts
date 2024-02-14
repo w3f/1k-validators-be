@@ -61,10 +61,9 @@ export const addCandidate = async (
   // If already has the node data by name, just store the candidate specific
   // stuff.
   return CandidateModel.findOneAndUpdate(
+    { $or: [{ slotId: slotId }, { name: name }] },
     {
       name,
-    },
-    {
       slotId,
       stash,
       kusamaStash,

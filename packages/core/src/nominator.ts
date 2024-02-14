@@ -450,13 +450,6 @@ export default class Nominator {
             ],
             decimals,
           );
-          await queries.setNomination(
-            this.address,
-            era,
-            targets,
-            bonded,
-            finalizedBlockHash,
-          );
 
           // update both the list of nominator for the nominator account as well as the time period of the nomination
           for (const stash of targets) {

@@ -199,10 +199,13 @@ export const startExecutionJob = async (
 
     const chaindata = new ChainData(handler);
 
+    const era = await chaindata.getCurrentEra();
+
     const allDelayed = await queries.getAllDelayedTxs();
 
     for (const data of allDelayed) {
       const { number: dataNum, controller, targets, callHash } = data;
+
       let validCommission = true;
 
       // find the nominator
@@ -212,6 +215,7 @@ export const startExecutionJob = async (
         });
       });
       const nominator = nomGroup.find((nom) => nom.controller == controller);
+      const [bonded, err] = await chaindata.getBondedAmount(nominator.address);
 
       for (const target of targets) {
         const [commission, err] = await chaindata.getCommission(target);
@@ -275,6 +279,15 @@ export const startExecutionJob = async (
         );
 
         if (didSend) {
+          // Create a Nomination Object
+          await queries.setNomination(
+            controller,
+            era,
+            targets,
+            bonded,
+            finalizedBlockHash,
+          );
+
           // Log Execution
           const validatorsMessage = (
             await Promise.all(

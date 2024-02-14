@@ -474,7 +474,6 @@ export class ChainData {
       }
       const testIndex = testEra.unwrap().index.toNumber();
       if (era == testIndex) {
-        logger.info(`Found era by blockhash`);
         return [blockHash.toString(), null];
       }
 

@@ -2,7 +2,8 @@ import fs from "fs";
 import { decodeAddress, encodeAddress } from "@polkadot/keyring";
 import { hexToU8a, isHex } from "@polkadot/util";
 import { User } from "matrix-js-sdk";
-import { logger } from "@1kv/common";
+import { writeSlotIds } from "../utils/candidatesFile";
+import { logger } from "../index";
 
 // Check if a given address is a valid polkadot address
 const isValidAddressPolkadotAddress = (address: string) => {
@@ -84,24 +85,6 @@ const checkValidAddresses = (candidates: any) => {
   }
 };
 
-const checkSlotId = (candidates: any) => {
-  for (const candidate of candidates) {
-    if (!candidate.slotId) {
-      console.log("No slot id: " + candidate.stash);
-      process.exit(1);
-    }
-  }
-};
-
-const checkKYC = (candidates: any) => {
-  for (const candidate of candidates) {
-    if (!candidate.kyc) {
-      console.log("No KYC: " + candidate.stash);
-      process.exit(1);
-    }
-  }
-};
-
 const checkConfigFile = (path: any) => {
   try {
     const conf = fs.readFileSync(path, { encoding: "utf-8" });
@@ -111,24 +94,27 @@ const checkConfigFile = (path: any) => {
     checkValidAddresses(candidates);
     checkDuplicateAddresses(candidates);
     checkMatrixHandle(candidates);
-    checkSlotId(candidates);
-    checkKYC(candidates);
   } catch (e) {
     console.log("Invalid JSON!");
     process.exit(1);
   }
 };
 
-// Check Polkadot and Kusama Config Files
-(async () => {
-  const kusamaConfig = "../../candidates/kusama.json";
-  const polkadotConfig = "../../candidates/polkadot.json";
+if (require.main === module) {
+  // Check Polkadot and Kusama Config Files
+  (async () => {
+    const kusamaConfig = "../../candidates/kusama.json";
+    const polkadotConfig = "../../candidates/polkadot.json";
 
-  checkConfigFile(kusamaConfig);
-  checkConfigFile(polkadotConfig);
+    checkConfigFile(kusamaConfig);
+    checkConfigFile(polkadotConfig);
 
-  logger.info("✅ Config files are valid!");
-  process.exit(0);
-})();
+    logger.info("✅ Config files are valid!");
+    writeSlotIds(kusamaConfig, "kusama");
+    writeSlotIds(polkadotConfig, "polkadot");
+    logger.info("✅ New Candidates Config written to file!");
 
+    process.exit(0);
+  })();
+}
 export {};

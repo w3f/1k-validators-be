@@ -95,15 +95,21 @@ export default class Nominator {
   }
 
   public async stash(): Promise<any> {
-    const api = this.handler.getApi();
-    const ledger = await api.query.staking.ledger(this.controller);
-    if (!ledger.isSome) {
-      logger.warn(`Account ${this.controller} is not a controller account!`);
-      return "0x";
-    }
-    const { stash } = ledger.unwrap();
+    try {
+      const api = this.handler.getApi();
+      const ledger = await api.query.staking.ledger(this.controller);
+      if (!ledger.isSome) {
+        logger.warn(`Account ${this.controller} is not bonded!`);
+        return "0x";
+      }
+      const { stash } = ledger.unwrap();
 
-    return stash;
+      return stash;
+    } catch (e) {
+      logger.error(`Error getting stash for ${this.controller}: ${e}`, label);
+      logger.error(e, label);
+      return this.controller;
+    }
   }
 
   public async payee(): Promise<any> {
@@ -155,6 +161,17 @@ export default class Nominator {
       }
     } else {
       const api = this.handler.getApi();
+
+      try {
+        const controller = await api.query.staking.bonded(this.controller);
+        if (controller.isNone) {
+          logger.warn(`Account ${this.controller} is not bonded!`);
+          return false;
+        }
+      } catch (e) {
+        logger.error(`Error checking if ${this.controller} is bonded: ${e}`);
+        return false;
+      }
 
       let tx: SubmittableExtrinsic<"promise">;
 

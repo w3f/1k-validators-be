@@ -16,7 +16,7 @@ export const locationStatsJob = async (chaindata: ChainData) => {
 
   // Add all candidate entries to the list of nodes
   for (const candidate of candidates) {
-    const location = await queries.getCandidateLocation(candidate.stash);
+    const location = await queries.getCandidateLocation(candidate.name);
     if (
       location?.city != "None" &&
       location?.region != "None" &&

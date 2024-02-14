@@ -548,7 +548,7 @@ export class OTV implements Constraints {
     const faultsScore = (1 - scaledFaults) * this.FAULTS_WEIGHT;
 
     const latestCandidateLocation = await queries.getCandidateLocation(
-      candidate.stash,
+      candidate.name,
     );
 
     const provider = latestCandidateLocation?.provider || "No Provider";
@@ -910,7 +910,7 @@ export const getLocationValues = async (
   const locationArr = [];
   for (const candidate of validCandidates) {
     const candidateLocation = await queries.getCandidateLocation(
-      candidate.stash,
+      candidate.name,
     );
     const location = candidateLocation?.city || "No Location";
 
@@ -942,7 +942,7 @@ export const getRegionValues = async (
   const regionArr = [];
   for (const candidate of validCandidates) {
     const candidateLocation = await queries.getCandidateLocation(
-      candidate.stash,
+      candidate.name,
     );
     const region =
       candidateLocation && candidateLocation?.region
@@ -976,7 +976,7 @@ export const getCountryValues = async (
   const countryArr = [];
   for (const candidate of validCandidates) {
     const candidateLocation = await queries.getCandidateLocation(
-      candidate.stash,
+      candidate.name,
     );
     const country =
       candidateLocation && candidateLocation?.country
@@ -1010,7 +1010,7 @@ export const getProviderValues = async (
   const providerArr = [];
   for (const candidate of validCandidates) {
     const candidateLocation = await queries.getCandidateLocation(
-      candidate.stash,
+      candidate.name,
     );
     const provider =
       candidateLocation && candidateLocation?.provider

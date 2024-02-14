@@ -7,7 +7,7 @@ export const getCandidateData = async (candidate: any): Promise<any> => {
   const denom = Math.pow(10, metadata.decimals);
   const score = await queries.getLatestValidatorScore(candidate.stash);
   const nominations = await queries.getLatestNominatorStake(candidate.stash);
-  const location = await queries.getCandidateLocation(candidate.stash);
+  const location = await queries.getCandidateLocation(candidate.name);
   return {
     slotId: candidate.slotId,
     kyc: candidate.kyc,

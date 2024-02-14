@@ -224,6 +224,28 @@ export default class Nominator {
         targets,
       );
 
+      try {
+        const era = (await api.query.staking.activeEra()).toJSON()["index"];
+        const bonded = Util.toDecimals(
+          (await api.query.staking.ledger(this.controller)).toJSON()["active"],
+          (await queries.getChainMetadata()).decimals,
+        );
+
+        await queries.setNomination(
+          this.controller,
+          era,
+          targets,
+          bonded,
+          finalizedBlockHash,
+        );
+      } catch (e) {
+        logger.error(
+          `{Nominator::nominate} there was an error setting the nomination for non-proxy tx in the db`,
+          label,
+        );
+        logger.error(e);
+      }
+
       const nominateMsg = `{Nominator::nominate::proxy} non-delay ${this.address} sent tx: ${didSend} finalized in block #${finalizedBlockHash}`;
       logger.info(nominateMsg, label);
       if (this.bot) await this.bot?.sendMessage(nominateMsg);

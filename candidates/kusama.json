@@ -4110,6 +4110,24 @@
       "kyc": true
     },
     {
+      "name": "FLOWERSTAKE/01",
+      "stash": "DweC7xmNqhUZWqvY7gvHaipb1cLyUYxEqfaiQBNduwHfjCS",
+      "riotHandle": "@flowerstake:matrix.org",
+      "kyc": true
+    },
+    {
+      "name": "ENZORO-1",
+      "stash": "Fw3GHC7YXT1MixGXbQWVbfT6ivmjDkeZDzY68ayjyg2B1Q8",
+      "riotHandle": "@romanv18:matrix.org",
+      "kyc": true
+    },
+    {
+      "name": "ENZORO-2",
+      "stash": "EaMgd5TMqMZ8LiJ3UW9T2vk3sSZaBGavsR88Zh7gdXEW18Y",
+      "riotHandle": "@romanv18:matrix.org",
+      "kyc": true
+    },
+    {
       "name": "DINOVAL🦖_NODE1",
       "stash": "Ci1wNS8S61ebNUbZeXgSoJG48unjC42RiYd2WmFJCaey83B",
       "riotHandle": "@dinoval:matrix.org",

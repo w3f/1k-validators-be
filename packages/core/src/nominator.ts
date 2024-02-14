@@ -114,12 +114,21 @@ export default class Nominator {
 
   public async payee(): Promise<any> {
     const api = this.handler.getApi();
-    const ledger = await api.query.staking.ledger(this.controller);
-    const { stash } = ledger.unwrap();
-    const payee = await api.query.staking.payee(stash);
-    if (payee) {
-      // @ts-ignore
-      return payee.toJSON().account ? payee.toJSON().account : payee.toString();
+    try {
+      const ledger = await api.query.staking.ledger(this.controller);
+      const { stash } = ledger.unwrap();
+      const payee = await api.query.staking.payee(stash);
+      if (payee) {
+        // @ts-ignore
+        return payee.toJSON()?.account
+          ? // @ts-ignore
+            payee.toJSON()?.account
+          : payee.toString();
+      }
+    } catch (e) {
+      logger.error(`Error getting payee for ${this.controller}: ${e}`, label);
+      logger.error(e, label);
+      return this.controller;
     }
   }
 

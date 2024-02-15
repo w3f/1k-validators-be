@@ -4144,6 +4144,18 @@
       "stash": "F9tiZuYF4Z6X1nC8ca5gv5xEzBRMzbRkC2wcfNRPmzcTBiu",
       "riotHandle": "@dmitryevens:matrix.org",
       "kyc": true
+    },
+    {
+      "name": "Coin collectors",
+      "stash": "HjTtz2xV4T3z3HFJhrkgjy4Lafe1tufqZ4X9YzPiLzaUPtJ",
+      "riotHandle": "@coincollectorss:matrix.org",
+      "kyc": true
+    },
+    {
+      "name": "Coin collectors-1",
+      "stash": "G2QjP1aSdQ4DRwmMTtkEHMjhqtWjM8rpzMrfmdMPtnpJGRv",
+      "riotHandle": "@coincollectorss:matrix.org",
+      "kyc": true
     }
   ]
 }

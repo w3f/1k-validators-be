@@ -1,6 +1,7 @@
 import { CandidateModel, NominatorModel } from "../models";
 import logger from "../../logger";
 import { getCandidate } from "./Candidate";
+import { Types } from "../../index";
 
 /**
  * Removes any stale nominator data from the database.
@@ -25,25 +26,21 @@ export const removeStaleNominators = async (
 
 /** Nominator accessor functions */
 export const addNominator = async (
-  nominator: any,
-  // address: string,
-  // stash: string,
-  // proxy: string,
-  // bonded: number,
-  // now: number,
-  // proxyDelay: number,
-  // rewardDestination: string
-
-  // avgStake: number,
-  // nominateAmount: number,
-  // newBondedAmount: number
+  nominator: Types.Nominator,
 ): Promise<boolean> => {
-  const { address, stash, proxy, bonded, now, proxyDelay, rewardDestination } =
-    nominator;
-
-  logger.info(`(Db::addNominator) Adding ${address} at ${now}.`);
-
   try {
+    const {
+      address,
+      stash,
+      proxy,
+      bonded,
+      now,
+      proxyDelay,
+      rewardDestination,
+    } = nominator;
+
+    logger.info(`(Db::addNominator) Adding ${address} at ${now}.`);
+
     const data = await NominatorModel.findOne({ address }).lean();
     if (!data) {
       const nominator = new NominatorModel({
@@ -53,9 +50,6 @@ export const addNominator = async (
         bonded,
         proxyDelay,
         rewardDestination,
-        // avgStake,
-        // nominateAmount,
-        // newBondedAmount,
         current: [],
         lastNomination: 0,
         createdAt: now,
@@ -75,19 +69,10 @@ export const addNominator = async (
         bonded,
         proxyDelay,
         rewardDestination,
-        // avgStake,
-        // nominateAmount,
-        // newBondedAmount,
       },
     );
   } catch (e) {
     logger.info(JSON.stringify(e));
-    logger.info(address);
-    logger.info(stash);
-    logger.info(proxy);
-    logger.info(bonded);
-    logger.info(proxyDelay);
-    logger.info(rewardDestination);
   }
 };
 

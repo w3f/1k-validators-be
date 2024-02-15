@@ -146,17 +146,14 @@ export default class ScoreKeeper {
         const proxy = nom.isProxy ? nom.address : "";
         const proxyDelay = nom.proxyDelay;
 
-        // const { nominationNum, newBondedAmount, targetValStake } =
-        //   await autoNumNominations(api, nom);
-
-        const nominator = {
+        const nominator: Types.Nominator = {
           address: nom.controller,
           stash: stash,
           proxy: proxy,
           bonded: bonded,
           now: now,
           proxyDelay: proxyDelay,
-          payee: payee,
+          rewardDestination: payee,
         };
         try {
           await queries.addNominator(nominator);

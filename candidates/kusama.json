@@ -2729,14 +2729,6 @@
       "kyc": false
     },
     {
-      "slotId": 389,
-      "name": "KobreDabre",
-      "stash": "FSRywMqAT92LJ8ihaQ7w1N8dXvLau53nEQx3EmNdGns2QAY",
-      "riotHandle": "@kobredabre:matrix.org",
-      "kyc": false
-    },
-    {
-      "slotId": 390,
       "name": "Kusamica Zgabica",
       "stash": "Fktq9ciMBhSnx4MJbaQqgy651HXpdJLLKDJH4Ahy2yEbrv2",
       "riotHandle": "@bulrog:matrix.org",
@@ -3293,14 +3285,6 @@
       "kyc": false
     },
     {
-      "slotId": 469,
-      "name": "Abrarad",
-      "stash": "EmDCmQ3wc2yW6gpAsBFXV22EgPpeAd8KoksFyCn5RkqqcfV",
-      "riotHandle": "@abraradi:matrix.org",
-      "kyc": false
-    },
-    {
-      "slotId": 470,
       "name": "BestValidator-kusama2",
       "stash": "F5RTgwqTgKHPTcVk1eiAwXYtx3BWo9r6iAmhsjH9RRn62jb",
       "riotHandle": "@mosonyi:matrix.org",
@@ -3608,14 +3592,6 @@
       "kyc": false
     },
     {
-      "slotId": 514,
-      "name": "Kobredabre/2",
-      "stash": "EDeGMwoAZ3SQwcGSb5oLPxSqNCYLCMHrfw4gJ9CM8Gr9XiA",
-      "riotHandle": "@kobredabre:matrix.org",
-      "kyc": false
-    },
-    {
-      "slotId": 515,
       "name": "DomiNodes-Bravo",
       "stash": "DN2oxCHnJviLK1NoYdzSNo9n9gmH3eBTfLGXSUcoFcq5khX",
       "riotHandle": "@dominodes:matrix.org",
@@ -3790,14 +3766,6 @@
       "kyc": false
     },
     {
-      "slotId": 540,
-      "name": "Abrarad/2",
-      "stash": "GHvBTjiMP9DN5ktScvE4j5MiXhzeiRXGCaF8dMVX2LH6mGv",
-      "riotHandle": "@abraradi:matrix.org",
-      "kyc": false
-    },
-    {
-      "slotId": 541,
       "name": "yevhen Validator2",
       "stash": "FoAcuru54tGpm6TE3eHVF3gkKtTmTKjLUxBRXMvi1myi6uH",
       "riotHandle": "@yevhenbasarab:matrix.org",

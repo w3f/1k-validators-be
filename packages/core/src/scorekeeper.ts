@@ -16,9 +16,9 @@ import Monitor from "./monitor";
 import { startMicroserviceJobs } from "./scorekeeper/jobs/MicroserviceJobs";
 import { startMonolithJobs } from "./scorekeeper/jobs/MonolithJobs";
 import { startScorekeeperJobs } from "./scorekeeper/jobs/ScorekeeperJobs";
-import { dockPoints } from "./scorekeeper/Rank";
 import { startRound } from "./scorekeeper/Round";
 import { startMainScorekeeperJob } from "./cron";
+import { registerHandler } from "./scorekeeper/RegisterHandler";
 // import { monitorJob } from "./jobs";
 
 export type NominatorGroup = Config.NominatorConfig[];
@@ -50,49 +50,12 @@ export default class ScoreKeeper {
   constructor(handler: ApiHandler, config: Config.ConfigSchema, bot: any) {
     this.handler = handler;
     this.chaindata = new ChainData(this.handler);
-
-    // Handles offline event. Validators will be faulted for each session they are offline
-    //     If they have already reaceived an offline fault for that session, it is skipped
-    this.handler.on("someOffline", async (data: { offlineVals: string[] }) => {
-      const { offlineVals } = data;
-      const session = await this.chaindata.getSession();
-      for (const val of offlineVals) {
-        const candidate = await queries.getCandidate(val);
-        if (!candidate) return;
-        const reason = `${candidate.name} had an offline event in session ${
-          session - 1
-        }`;
-        let alreadyFaulted = false;
-        for (const fault of candidate.faultEvents) {
-          if (fault.reason === reason) {
-            alreadyFaulted = true;
-          }
-        }
-        if (alreadyFaulted) continue;
-
-        logger.info(`Some offline: ${reason}`, scorekeeperLabel);
-        await this.bot?.sendMessage(reason);
-
-        await queries.pushFaultEvent(candidate.stash, reason);
-        await dockPoints(candidate.stash, this.bot);
-      }
-    });
-
-    this.handler.on("newSession", async (data: { sessionIndex: string }) => {
-      const { sessionIndex } = data;
-      logger.info(`New Session Event: ${sessionIndex}`, scorekeeperLabel);
-      const candidates = await queries.allCandidates();
-      await Constraints.checkAllValidateIntentions(
-        this.config,
-        this.chaindata,
-        candidates,
-      );
-    });
-
     this.config = config;
     this.bot = bot || null;
     this.constraints = new Constraints.OTV(this.handler, this.config);
     this.monitor = new Monitor(Constants.SIXTEEN_HOURS);
+
+    registerHandler(this.handler, this.config, this.chaindata, this.bot);
   }
 
   getAllNominatorGroups(): SpawnedNominatorGroup[] {
@@ -100,12 +63,12 @@ export default class ScoreKeeper {
   }
 
   getAllNominatorBondedAddresses(): string[] {
-    const controllers = [];
+    const bondedAddresses = [];
     for (const group of this.nominatorGroups) {
-      controllers.push(...group.map((n) => n.bondedAddress));
+      bondedAddresses.push(...group.map((n) => n.bondedAddress));
     }
 
-    return controllers;
+    return bondedAddresses;
   }
 
   getNominatorGroupAtIndex(index: number): SpawnedNominatorGroup {

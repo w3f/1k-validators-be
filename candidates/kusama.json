@@ -4124,6 +4124,30 @@
       "stash": "F9tiZuYF4Z6X1nC8ca5gv5xEzBRMzbRkC2wcfNRPmzcTBiu",
       "riotHandle": "@dmitryevens:matrix.org",
       "kyc": true
+    },
+    {
+      "name": "Alscalable",
+      "stash": "HNUv11N4oKJrRQuj4pZsDMoBRUpRR8twv23wSjhdrwqRMLJ",
+      "riotHandle": "@alicebablle:matrix.org",
+      "kyc": true
+    },   
+    {
+      "name": "Alscalable-02",
+      "stash": "ErJr4EedgdiHqTN8EjwAoMfXoCfESdfTnnUTzrHDJuNf5no",
+      "riotHandle": "@alicebablle:matrix.org",
+      "kyc": true
+    },   
+    {
+      "name": "Block Breaker",
+      "stash": "EkjQQVVvvEDUqvcFU7VNn2tVGTL26HJtQMCCKinxsa9Fhkf",
+      "riotHandle": "@blockbreaker:matrix.org",
+      "kyc": true
+    },   
+    {
+      "name": "Block Breaker-1",
+      "stash": "EMgS54i8ABLNwcGNXxrXHxyrhbWtmKXodGHHvw1o3ifUk4F",
+      "riotHandle": "@blockbreaker:matrix.org",
+      "kyc": true
     }
   ]
 }

@@ -34,6 +34,18 @@ jobs:
           command: |
             yarn set version 3.2.2 && yarn install && yarn build && yarn workspace @1kv/core lint
 
+  testCore:
+    docker:
+      - image: node:18
+    resource_class: large
+    steps:
+      - checkout
+      - run:
+          environment:
+            YARN_ENABLE_IMMUTABLE_INSTALLS: false
+          command: |
+            yarn set version 3.2.2 && yarn install && yarn build && yarn workspace @1kv/core test
+
   helmLint:
     docker:
       - image: web3f/ci-commons:v3.2.3
@@ -175,10 +187,10 @@ workflows:
           filters:
             tags:
               only: /.*/
-#      - unitTests:
-#          filters:
-#            tags:
-#              only: /.*/
+      - testCore:
+          filters:
+            tags:
+              only: /.*/
       - helmLint:
           filters:
             tags:

@@ -57,7 +57,8 @@ export const POLKADOT_API_TIMEOUT = 1000000;
 /// List of Kusama endpoints we can switch between.
 export const KusamaEndpoints = [
   "wss://kusama-rpc.polkadot.io",
-  "wss://kusama.api.onfinality.io/public-ws",
+  "wss://kusama-rpc.dwellir.com",
+  "wss://kusama.public.curie.radiumblock.xyz/ws",
 ];
 
 /// List of Polkadot endpoints we can switch between.

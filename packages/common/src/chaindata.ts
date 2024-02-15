@@ -35,8 +35,8 @@ export class ChainData {
   }
 
   checkApiConnection = async () => {
-    if (!this.api.isConnected) {
-      while (!this.api.isConnected) {
+    if (!this.api?.isConnected) {
+      while (!this.api?.isConnected) {
         logger.warn(`{Chaindata::API::Warn} API is not connected, waiting...`);
         await sleep(1000);
       }

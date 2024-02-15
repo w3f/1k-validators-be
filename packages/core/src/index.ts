@@ -158,8 +158,8 @@ export const clean = async (scorekeeper) => {
     }
 
     // Remove stale nominators.
-    const curControllers = scorekeeper.getAllNominatorControllers();
-    await queries.removeStaleNominators(curControllers);
+    const bondedAddresses = scorekeeper.getAllNominatorBondedAddresses();
+    await queries.removeStaleNominators(bondedAddresses);
 
     // Wipe the candidates
     logger.info(

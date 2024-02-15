@@ -12,7 +12,7 @@ test.serial.before(async (t: TestExecutionContext) => {
   const sk = new Scorekeeper(
     MockApi as any,
     new MockDb() as any,
-    MockConfig as any
+    MockConfig as any,
   );
   t.is(MockApi, sk.handler as any);
   t.is(MockConfig, sk.config);
@@ -31,13 +31,13 @@ test.serial(
     const seed = "0x" + "00".repeat(32);
     t.assert(
       await sk.addNominatorGroup([{ seed } as any]),
-      "Unable to add nominator group with one seed."
+      "Unable to add nominator group with one seed.",
     );
 
     const nominatorGroups = sk.getAllNominatorGroups();
     t.is(nominatorGroups.length, 1);
     t.is(nominatorGroups[0].length, 1);
-  }
+  },
 );
 
 test.serial(
@@ -46,7 +46,7 @@ test.serial(
     const { sk } = t.context;
 
     const seeds = [...Array(8).keys()].map(
-      (i) => "0x" + "00".repeat(31) + "0" + i.toString()
+      (i) => "0x" + "00".repeat(31) + "0" + i.toString(),
     );
 
     const groupOne = seeds
@@ -59,7 +59,7 @@ test.serial(
     t.assert(
       (await sk.addNominatorGroup(groupOne as any)) &&
         (await sk.addNominatorGroup(groupTwo as any)),
-      "Cannot add multiple nominator groups."
+      "Cannot add multiple nominator groups.",
     );
 
     const nomGroupOne = sk.getNominatorGroupAtIndex(0);
@@ -69,9 +69,9 @@ test.serial(
     const nomGroupThree = sk.getNominatorGroupAtIndex(2);
     t.is(nomGroupThree.length, 4);
 
-    const allControllers = sk.getAllNominatorControllers();
+    const allControllers = sk.getAllNominatorBondedAddresses();
     t.is(allControllers.length, 9);
-  }
+  },
 );
 
 test.serial(
@@ -101,33 +101,33 @@ test.serial(
     const totalTargets = await sk._doNominations(
       candidates,
       nominatorGroups,
-      true
+      true,
     );
 
     t.deepEqual(
       totalTargets,
-      candidates.map((c) => c.name)
+      candidates.map((c) => c.name),
     );
 
     const nomGroupZero = sk.getNominatorGroupAtIndex(0);
     const zeroZeroTargets = await sk.db.getCurrentTargets(
-      nomGroupZero[0].controller
+      nomGroupZero[0].controller,
     );
     t.is(zeroZeroTargets.length, 16);
     t.deepEqual(totalTargets.slice(0, 16), zeroZeroTargets);
 
     const nomGroupOne = sk.getNominatorGroupAtIndex(1);
     const oneZeroTargets = await sk.db.getCurrentTargets(
-      nomGroupOne[0].controller
+      nomGroupOne[0].controller,
     );
     const oneOneTargets = await sk.db.getCurrentTargets(
-      nomGroupOne[1].controller
+      nomGroupOne[1].controller,
     );
     const oneTwoTargets = await sk.db.getCurrentTargets(
-      nomGroupOne[2].controller
+      nomGroupOne[2].controller,
     );
     const oneThreeTargets = await sk.db.getCurrentTargets(
-      nomGroupOne[3].controller
+      nomGroupOne[3].controller,
     );
     t.is(oneZeroTargets.length, 16);
     t.is(oneOneTargets.length, 16);
@@ -137,5 +137,5 @@ test.serial(
     t.deepEqual(oneOneTargets, totalTargets.slice(16, 32));
     t.deepEqual(oneTwoTargets, totalTargets.slice(32, 48));
     t.deepEqual(oneThreeTargets, totalTargets.slice(48, 64));
-  }
+  },
 );

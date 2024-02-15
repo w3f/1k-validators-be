@@ -211,10 +211,10 @@ export const startExecutionJob = async (
       // find the nominator
       const nomGroup = nominatorGroups.find((nomGroup) => {
         return !!nomGroup.find((nom) => {
-          return nom.controller == controller;
+          return nom.bondedAddress == controller;
         });
       });
-      const nominator = nomGroup.find((nom) => nom.controller == controller);
+      const nominator = nomGroup.find((nom) => nom.bondedAddress == controller);
       const [bonded, err] = await chaindata.getBondedAmount(nominator.address);
 
       for (const target of targets) {

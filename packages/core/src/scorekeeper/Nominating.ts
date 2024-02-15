@@ -117,12 +117,12 @@ export const doNominations = async (
       ).join("<br>");
 
       logger.info(
-        `Nominator ${stash} (${bal} ${sym}) / ${nominator.controller} nominated:\n${targetsString}`,
+        `Nominator ${stash} (${bal} ${sym}) / ${nominator.bondedAddress} nominated:\n${targetsString}`,
       );
       bot?.sendMessage(
         `Nominator ${Util.addressUrl(stash, config)} (${bal} ${sym}) / 
           ${Util.addressUrl(
-            nominator.controller,
+            nominator.bondedAddress,
             config,
           )} nominated:<br>${targetsHtml}`,
       );

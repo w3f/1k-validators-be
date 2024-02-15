@@ -99,10 +99,10 @@ export default class ScoreKeeper {
     return this.nominatorGroups;
   }
 
-  getAllNominatorControllers(): string[] {
+  getAllNominatorBondedAddresses(): string[] {
     const controllers = [];
     for (const group of this.nominatorGroups) {
-      controllers.push(...group.map((n) => n.controller));
+      controllers.push(...group.map((n) => n.bondedAddress));
     }
 
     return controllers;
@@ -132,10 +132,10 @@ export default class ScoreKeeper {
 
       // try and get the ledger for the nominator - this means it is bonded. If not then don't add it.
       const api = this.handler.getApi();
-      const ledger = await api.query.staking.ledger(nom.controller);
+      const ledger = await api.query.staking.ledger(nom.bondedAddress);
       if (!ledger) {
         logger.warn(
-          `Adding nominator group -  ${nom.controller} is not bonded, skipping...`,
+          `Adding nominator group -  ${nom.bondedAddress} is not bonded, skipping...`,
           scorekeeperLabel,
         );
         continue;
@@ -147,7 +147,7 @@ export default class ScoreKeeper {
         const proxyDelay = nom.proxyDelay;
 
         const nominator: Types.Nominator = {
-          address: nom.controller,
+          address: nom.bondedAddress,
           stash: stash,
           proxy: proxy,
           bonded: bonded,
@@ -166,7 +166,7 @@ export default class ScoreKeeper {
         }
 
         // Create a new accounting record in case one doesn't exist.
-        await queries.newAccountingRecord(stash, nom.controller);
+        await queries.newAccountingRecord(stash, nom.bondedAddress);
         group.push(nom);
       }
     }

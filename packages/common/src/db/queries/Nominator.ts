@@ -1,4 +1,4 @@
-import { CandidateModel, NominatorModel } from "../models";
+import { CandidateModel, Nominator, NominatorModel } from "../models";
 import logger from "../../logger";
 import { getCandidate } from "./Candidate";
 import { Types } from "../../index";
@@ -166,11 +166,13 @@ export const setLastNomination = async (
   return true;
 };
 
-export const getCurrentTargets = async (address: string): Promise<any[]> => {
+export const getCurrentTargets = async (address: string): Promise<string[]> => {
   try {
-    const nominator = await NominatorModel.findOne({ address }).lean();
+    const nominator = await NominatorModel.findOne({
+      address,
+    }).lean<Nominator>();
     if (nominator) {
-      return nominator?.current;
+      return nominator?.current || [];
     } else {
       return [];
     }
@@ -179,10 +181,10 @@ export const getCurrentTargets = async (address: string): Promise<any[]> => {
   }
 };
 
-export const allNominators = async (): Promise<any[]> => {
-  return NominatorModel.find({ address: /.*/ }).lean().exec();
+export const allNominators = async (): Promise<Nominator[]> => {
+  return NominatorModel.find({ address: /.*/ }).lean();
 };
 
-export const getNominator = async (stash: string): Promise<any> => {
-  return NominatorModel.findOne({ stash: stash }).lean().exec();
+export const getNominator = async (stash: string): Promise<Nominator> => {
+  return NominatorModel.findOne({ stash: stash }).lean();
 };

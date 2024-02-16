@@ -363,7 +363,7 @@ export default class ScoreKeeper {
           bonded: bonded,
           now: now,
           proxyDelay: proxyDelay,
-          payee: payee,
+          rewardDestination: payee,
         };
         try {
           await queries.addNominator(nominator);

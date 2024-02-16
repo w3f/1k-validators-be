@@ -55,6 +55,7 @@
   "devDependencies": {
     "@types/coingecko-api": "^1.0.13",
     "@types/eslint": "^8.44.7",
+    "@types/jest": "^29.5.12",
     "@types/koa-mount": "^4.0.5",
     "@types/node": "^20.11.5",
     "@types/request": "^2.48.12",
@@ -64,7 +65,8 @@
     "eslint": "8.42.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-prettier": "5.0.0",
-    "prettier": "^3.2.4"
+    "prettier": "^3.2.4",
+    "ts-jest": "^29.1.2"
   },
   "dependencies": {
     "axios": "^1.6.7",
@@ -74,6 +76,7 @@
     "koa-mount": "^4.0.0",
     "koa-static": "^5.0.0",
     "koa-swagger-decorator": "^1.8.7",
+    "lru-cache": "latest",
     "node-fetch": "3.3.2",
     "request": "^2.88.2",
     "swagger-jsdoc": "^6.2.8",

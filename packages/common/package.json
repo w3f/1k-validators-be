@@ -1,6 +1,6 @@
 {
   "name": "@1kv/common",
-  "version": "3.0.17",
+  "version": "3.0.19",
   "description": "Services for running the Thousand Validator Program.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -31,7 +31,6 @@
     ]
   },
   "dependencies": {
-    "@polkadot/keyring": "^12.6.2",
     "@types/mongoose": "^5.11.97",
     "@types/node": "^20.11.5",
     "hash.js": "^1.1.7",

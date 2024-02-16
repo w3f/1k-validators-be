@@ -107,23 +107,13 @@ export const autoNumNominations = async (
     Math.ceil(amount * additional),
     maxNominations,
   );
-  // The total amount of funds the nominator should have bonded
-  const newBondedAmount = (1 + Constants.BALANCE_BUFFER_PERCENT) * sum;
-  // The target amount for each validator
-  const targetValStake = newBondedAmount / adjustedNominationAmount;
-
-  nominator.nominationNum = adjustedNominationAmount;
-  nominator.targetBond = newBondedAmount;
-  nominator.avgStake = targetValStake;
 
   logger.info(
-    `Auto Nominations - stash: ${stash} with balance ${stashBal} can elect ${adjustedNominationAmount} validators, each having ~${targetValStake} stake`,
+    `Auto Nominations - stash: ${stash} with balance ${stashBal} can elect ${adjustedNominationAmount} validators`,
     scorekeeperLabel,
   );
 
   return {
     nominationNum: adjustedNominationAmount || 1,
-    newBondedAmount: newBondedAmount,
-    targetValStake: targetValStake,
   };
 };

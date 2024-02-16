@@ -27,8 +27,7 @@ export const doNominations = async (
   let counter = 0;
   for (const nomGroup of nominatorGroups) {
     // ensure the group is sorted by least avg stake
-    const sortedNominators = nomGroup.sort((a, b) => a.avgStake - b.avgStake);
-    for (const nominator of sortedNominators) {
+    for (const nominator of nomGroup) {
       // The number of nominations to do per nominator account
       // This is either hard coded, or set to "auto", meaning it will find a dynamic amount of validators
       //    to nominate based on the lowest staked validator in the validator set

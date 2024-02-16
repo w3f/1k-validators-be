@@ -4,27 +4,41 @@ import Nominator from "../src/nominator";
 import { ApiHandler, Types } from "@1kv/common";
 
 jest.mock("../src/nominator", () => {
-  const { NominatorMock } = require("./mock/nominator.mock");
-  return { Nominator: NominatorMock };
-});
-jest.mock("@1kv/common", () => {
-  const originalModule = jest.requireActual("@1kv/common");
-  const ApiHandlerMock = require("./mock/apihandler.mock").default; // Adjust this line if ApiHandlerMock is not a default export
-
+  const NominatorMock = jest.requireActual("./mock/nominator.mock").default; // Use jest.requireActual for relative imports
   return {
-    ...originalModule,
+    __esModule: true, // This flag helps Jest understand it's mocking an ES6 module
+    default: NominatorMock, // Mock the default export
+  };
+});
+jest.mock("matrix-js-sdk", () => {
+  // Return a mock implementation or object
+  return {
+    // Mock methods or objects you use from the SDK
+  };
+});
+
+jest.mock("@1kv/common", () => {
+  const actualCommon = jest.requireActual("@1kv/common");
+
+  const ApiHandlerMock = require("./mock/apihandler.mock").default;
+  return {
+    ...actualCommon,
     ApiHandler: ApiHandlerMock,
   };
 });
-describe("Your Test Suite", () => {
-  let handler: ApiHandler;
-  let nominator: Nominator;
 
+describe("Nominator Class Unit Tests", () => {
+  let nominator: Nominator;
+  let handler;
+  let nominatorConfig: Types.NominatorConfig;
+
+  // The corresponding address for the seed:
+  const signerAddress = "DvDsrjvaJpXNW7XLvtFtEB3D9nnBKMqzvrijFffwpe7CCc6";
   beforeAll(async () => {
     handler = new ApiHandler(["Constants.KusamaEndpoints"]);
     await handler.setAPI();
 
-    const nominatorConfig: Types.NominatorConfig = {
+    nominatorConfig = {
       isProxy: false,
       seed: "0x" + "00".repeat(32),
       proxyDelay: 10800,
@@ -34,13 +48,39 @@ describe("Your Test Suite", () => {
     nominator = new Nominator(handler, nominatorConfig, 2, null);
   });
 
-  it("should use the mocked Nominator class", async () => {
-    console.log(ApiHandler);
+  it("should match fields with config", async () => {
+    // nominator.address
+    expect(nominator.address).toEqual(signerAddress);
 
-    // Now, 'nominator' is an instance of NominatorMock instead of the real Nominator class
+    // nominator.bondedAddress
+    expect(nominator.bondedAddress).toEqual(signerAddress);
 
-    // You can call any method on 'nominator' and it will use the mocked implementation
+    // nominator.isProxy
+    expect(nominator.isProxy).toEqual(false);
+
+    // nominator.proxyDelay
+    expect(nominator.proxyDelay).toEqual(10800);
+
+    // nominator.stash
+    expect(await nominator.stash()).toEqual(signerAddress);
+
+    // nominator.payee
+    expect(await nominator.payee()).toEqual(signerAddress);
+  });
+
+  it("should return true when calling nominate", async () => {
+    // Act: Call the nominate function
     const result = await nominator.nominate(["target1", "target2"]);
-    expect(result).toBe(true); // Assuming your mock `nominate` method returns `true`
+
+    // Assert: Check that the result is true
+    expect(result).toBe(true);
+  });
+
+  it("should update currentlyNominating when calling nominate", async () => {
+    // Act: Call the nominate function
+    await nominator.nominate(["target1", "target2"]);
+
+    // Assert: Check that currentlyNominating was updated correctly
+    expect(nominator.currentlyNominating).toEqual(["target1", "target2"]);
   });
 });

@@ -1,11 +1,6 @@
-import { ApiHandler } from "@1kv/common";
-
-export interface NominatorConfig {
-  isProxy?: boolean;
-  proxyDelay?: number;
-  proxyFor?: string;
-  seed?: string;
-}
+import { ApiHandler, Types } from "@1kv/common";
+import Keyring from "@polkadot/keyring";
+import { KeyringPair } from "@polkadot/keyring/types";
 
 type Stash = string; // Simplified for example purposes
 
@@ -13,37 +8,54 @@ const Constants = {
   TIME_DELAY_BLOCKS: 10800, // Example value
 };
 
-// Mock class
-export class NominatorMock {
-  private handler: ApiHandler;
-  private bot: any;
-  private _isProxy: boolean;
-  private _proxyDelay: number;
-  private _avgStake: number;
-  private _targetBond: number;
-  private _nominationNum: number;
-  private _bondedAddress: string;
+const label = { label: "MockNominator" };
 
-  public currentlyNominating: Stash[] = [];
+// Mock class
+class NominatorMock {
+  public currentlyNominating: Types.Stash[] = [];
+
+  private _bondedAddress: string;
+  private bot: any;
+  private handler: ApiHandler;
+  private signer: KeyringPair;
+
+  // Use proxy of controller instead of controller directly.
+  private _isProxy: boolean;
+
+  // The amount of blocks for a time delay proxy
+  private _proxyDelay: number;
+
+  // The ideal average amount of stake the account can nominate per validator
+  private _avgStake = 0;
+  // The target amount of how much funds should be bonded so they can all be optimally used
+  private _targetBond = 0;
+  // The target number of validators to nominate
+  private _nominationNum = 0;
 
   constructor(
     handler: ApiHandler,
-    cfg: NominatorConfig,
+    cfg: Types.NominatorConfig,
     networkPrefix = 2,
     bot: any,
   ) {
     this.handler = handler;
     this.bot = bot;
     this._isProxy = cfg.isProxy || false;
+
+    // If the proxyDelay is not set in the config, default to TIME_DELAY_BLOCKS (~18 hours, 10800 blocks)
     this._proxyDelay =
-      cfg.proxyDelay !== undefined
-        ? cfg.proxyDelay
-        : Constants.TIME_DELAY_BLOCKS;
-    this._avgStake = 0;
-    this._targetBond = 0;
-    this._nominationNum = 0;
+      cfg.proxyDelay == 0 ? cfg.proxyDelay : Constants.TIME_DELAY_BLOCKS;
+
+    const keyring = new Keyring({ type: "ed25519", ss58Format: 2 });
+    const pair = keyring.addFromUri(
+      cfg.seed,
+      { name: "first pair" },
+      "ed25519",
+    );
+
+    this.signer = pair;
     this._bondedAddress =
-      this._isProxy && cfg.proxyFor ? cfg.proxyFor : "mockedBondedAddress";
+      (this._isProxy ? cfg?.proxyFor : this.signer?.address) || "mockedAddress";
   }
 
   // Getters and setters
@@ -63,37 +75,13 @@ export class NominatorMock {
     return this._proxyDelay;
   }
 
-  get nominationNum(): number {
-    return this._nominationNum;
-  }
-
-  set nominationNum(value: number) {
-    this._nominationNum = value;
-  }
-
-  get targetBond(): number {
-    return this._targetBond;
-  }
-
-  set targetBond(value: number) {
-    this._targetBond = value;
-  }
-
-  get avgStake(): number {
-    return this._avgStake;
-  }
-
-  set avgStake(value: number) {
-    this._avgStake = value;
-  }
-
   // Public methods
   async stash(): Promise<string> {
-    return "mockedStash";
+    return this.bondedAddress;
   }
 
   async payee(): Promise<string> {
-    return "mockedPayee";
+    return this.bondedAddress;
   }
 
   async nominate(targets: Stash[]): Promise<boolean> {
@@ -106,6 +94,9 @@ export class NominatorMock {
     callHash: string;
     height: number;
   }): Promise<boolean> {
+    return true;
+  }
+  async sendStakingTx(tx: any, targets: string[]): Promise<boolean> {
     return true;
   }
 }

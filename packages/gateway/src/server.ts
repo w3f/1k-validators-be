@@ -3,7 +3,6 @@ import bodyparser from "koa-bodyparser";
 import cors from "koa2-cors";
 
 import { Config, logger } from "@1kv/common";
-import LRU from "lru-cache";
 import koaCash from "koa-cash";
 import { KoaAdapter } from "@bull-board/koa";
 import { createBullBoard } from "@bull-board/api";
@@ -18,6 +17,7 @@ import mount from "koa-mount";
 import { koaSwagger } from "koa2-swagger-ui";
 import yamljs from "yamljs";
 import Router from "@koa/router";
+import { LRUCache } from "lru-cache";
 
 export default class Server {
   public app: Koa;
@@ -39,8 +39,8 @@ export default class Server {
 
     logger.info(`Cache set to ${this.cache}`, { label: "Gateway" });
 
-    const cache = new LRU({
-      maxAge: 18 * 1000, // Cache items will expire after 3 minutes
+    const cache = new LRUCache({
+      ttl: 18 * 1000, // Cache items will expire after 3 minutes
       max: 500, // Maximum number of items allowed in the cache
     });
     this.app.use(

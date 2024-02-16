@@ -84,19 +84,56 @@ const checkValidAddresses = (candidates: any) => {
   }
 };
 
-const checkSlotId = (candidates: any) => {
+const checkSlotId = (candidates) => {
+  const slots = new Set();
+
   for (const candidate of candidates) {
-    if (!candidate.slotId) {
-      console.log("No slot id: " + candidate.stash);
+    // Check if slotId is present
+    if (candidate.slotId === undefined || candidate.slotId === null) {
+      console.error(`Candidate ${candidate.stash} is missing a slotId.`);
       process.exit(1);
     }
+
+    // Check if slotId is a number
+    if (typeof candidate.slotId !== "number") {
+      console.error(`slotId for candidate ${candidate.stash} is not a number.`);
+      process.exit(1);
+    }
+
+    // Check if slotId is an integer
+    if (!Number.isInteger(candidate.slotId)) {
+      console.error(
+        `slotId for candidate ${candidate.stash} is not an integer.`,
+      );
+      process.exit(1);
+    }
+
+    // Check for uniqueness of slotId
+    if (slots.has(candidate.slotId)) {
+      console.error(
+        `Duplicate slotId found: ${candidate.slotId} for candidate ${candidate.stash}.`,
+      );
+      process.exit(1);
+    }
+    slots.add(candidate.slotId);
   }
 };
 
 const checkKYC = (candidates: any) => {
   for (const candidate of candidates) {
-    if (!candidate.kyc) {
-      console.log("No KYC: " + candidate.stash);
+    // Check if the kyc property exists
+    if (candidate.kyc === undefined) {
+      console.error(
+        `KYC information missing for candidate with stash ${candidate.stash}.`,
+      );
+      process.exit(1);
+    }
+
+    // Check if the kyc property is a boolean
+    if (typeof candidate.kyc !== "boolean") {
+      console.error(
+        `KYC information for candidate with stash ${candidate.stash} is not a boolean value.`,
+      );
       process.exit(1);
     }
   }

@@ -1,6 +1,6 @@
 {
 //  "extends": "../../tsconfig.json",
-  "exclude": [ "test/**/*.ts","node_modules"],
+  "exclude": [ "test","node_modules"],
   "include": ["src/**/*.ts"],
   "paths": {
     "@1kv/common": ["../common/build"],

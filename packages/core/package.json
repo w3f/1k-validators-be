@@ -24,7 +24,9 @@
     "start:watch": "nodemon --watch build --exec  node  --max-old-space-size=8024 build/index.js",
     "start:dev": "concurrently \"tsc -w\"  \"yarn start:watch\"",
     "js:start": "NODE_OPTIONS='--max-old-space-size=10096' node build/index.js start",
-    "test": "jest",
+    "test": "yarn test:unit && yarn test:int",
+    "test:unit": "jest --config=jest.unit.config.js --verbose",
+    "test:int": "jest --config=jest.int.config.js --verbose",
     "test:watch": "jest --watch",
     "test:candidates": "ts-node test/validateCandidates.ts",
     "writeMatrix": "ts-node test/candidatesMatrix.ts"

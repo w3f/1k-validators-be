@@ -183,7 +183,16 @@ export const setLastNomination = async (
 };
 
 export const getCurrentTargets = async (address: string): Promise<any[]> => {
-  return (await NominatorModel.findOne({ address }).lean()).current;
+  try {
+    const nominator = await NominatorModel.findOne({ address }).lean();
+    if (nominator) {
+      return nominator?.current;
+    } else {
+      return [];
+    }
+  } catch (e) {
+    logger.error(e.toString());
+  }
 };
 
 export const allNominators = async (): Promise<any[]> => {

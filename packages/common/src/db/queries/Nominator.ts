@@ -163,7 +163,9 @@ export const setLastNomination = async (
   return true;
 };
 
-export const getCurrentTargets = async (address: string): Promise<string[]> => {
+export const getCurrentTargets = async (
+  address: string,
+): Promise<{ name?: string; stash?: string; identity?: any }[]> => {
   try {
     const nominator = await NominatorModel.findOne({
       address,

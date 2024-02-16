@@ -331,7 +331,7 @@ export interface Nominator {
   proxyDelay?: number;
   rewardDestination?: string;
   newBondedAmount?: number;
-  current?: string[];
+  current?: [{ name?: string; stash?: string; identity?: any }];
   lastNomination?: number;
   createdAt?: number;
   now?: number;

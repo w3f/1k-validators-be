@@ -8,17 +8,6 @@ export type NominatorConfig = {
   proxyDelay?: number;
 };
 
-// Interface for when adding a nominator entry to the DB
-export interface Nominator {
-  address: string;
-  stash: string;
-  proxy: string;
-  bonded: number;
-  now: number;
-  proxyDelay: number;
-  rewardDestination: string;
-}
-
 export type ClaimerConfig = {
   seed: string;
 };

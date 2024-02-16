@@ -331,9 +331,10 @@ export interface Nominator {
   proxyDelay?: number;
   rewardDestination?: string;
   newBondedAmount?: number;
-  current: string[];
+  current?: string[];
   lastNomination?: number;
   createdAt?: number;
+  now?: number;
 }
 
 export const NominatorSchema = new Schema({

@@ -1,7 +1,6 @@
 import { CandidateModel, Nominator, NominatorModel } from "../models";
 import logger from "../../logger";
 import { getCandidate } from "./Candidate";
-import { Types } from "../../index";
 
 /**
  * Removes any stale nominator data from the database.
@@ -25,9 +24,7 @@ export const removeStaleNominators = async (
 };
 
 /** Nominator accessor functions */
-export const addNominator = async (
-  nominator: Types.Nominator,
-): Promise<boolean> => {
+export const addNominator = async (nominator: Nominator): Promise<boolean> => {
   try {
     const {
       address,

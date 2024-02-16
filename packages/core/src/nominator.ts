@@ -93,7 +93,7 @@ export default class Nominator {
       const ledger = await api.query.staking.ledger(this.bondedAddress);
       if (!ledger.isSome) {
         logger.warn(`Account ${this.bondedAddress} is not bonded!`);
-        return "0x";
+        return this.bondedAddress;
       }
       const { stash } = ledger.unwrap();
 

@@ -5,6 +5,7 @@ import {
   Constants,
   Constraints,
   logger,
+  Models,
   queries,
   Types,
   Util,
@@ -109,7 +110,7 @@ export default class ScoreKeeper {
         const proxy = nom.isProxy ? nom.address : "";
         const proxyDelay = nom.proxyDelay;
 
-        const nominator: Types.Nominator = {
+        const nominator: Models.Nominator = {
           address: nom.bondedAddress,
           stash: stash,
           proxy: proxy,

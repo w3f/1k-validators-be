@@ -2729,6 +2729,7 @@
       "kyc": false
     },
     {
+      "slotId": 390,
       "name": "Kusamica Zgabica",
       "stash": "Fktq9ciMBhSnx4MJbaQqgy651HXpdJLLKDJH4Ahy2yEbrv2",
       "riotHandle": "@bulrog:matrix.org",
@@ -3285,6 +3286,7 @@
       "kyc": false
     },
     {
+      "slotId": 470,
       "name": "BestValidator-kusama2",
       "stash": "F5RTgwqTgKHPTcVk1eiAwXYtx3BWo9r6iAmhsjH9RRn62jb",
       "riotHandle": "@mosonyi:matrix.org",
@@ -3592,6 +3594,7 @@
       "kyc": false
     },
     {
+      "slotId": 515,
       "name": "DomiNodes-Bravo",
       "stash": "DN2oxCHnJviLK1NoYdzSNo9n9gmH3eBTfLGXSUcoFcq5khX",
       "riotHandle": "@dominodes:matrix.org",
@@ -3766,6 +3769,7 @@
       "kyc": false
     },
     {
+      "slotId": 541,
       "name": "yevhen Validator2",
       "stash": "FoAcuru54tGpm6TE3eHVF3gkKtTmTKjLUxBRXMvi1myi6uH",
       "riotHandle": "@yevhenbasarab:matrix.org",

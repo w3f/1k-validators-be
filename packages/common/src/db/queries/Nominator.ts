@@ -1,4 +1,4 @@
-import { CandidateModel, NominatorModel } from "../models";
+import { CandidateModel, Nominator, NominatorModel } from "../models";
 import logger from "../../logger";
 import { getCandidate } from "./Candidate";
 import { Types } from "../../index";
@@ -25,9 +25,13 @@ export const removeStaleNominators = async (
 };
 
 /** Nominator accessor functions */
+<<<<<<< HEAD
 export const addNominator = async (
   nominator: Types.Nominator,
 ): Promise<boolean> => {
+=======
+export const addNominator = async (nominator: Nominator): Promise<boolean> => {
+>>>>>>> a4ca3da06a08df61d875f709ff87f75d56b293e6
   try {
     const {
       address,
@@ -40,7 +44,10 @@ export const addNominator = async (
     } = nominator;
 
     logger.info(`(Db::addNominator) Adding ${address} at ${now}.`);
+<<<<<<< HEAD
 
+=======
+>>>>>>> a4ca3da06a08df61d875f709ff87f75d56b293e6
     const data = await NominatorModel.findOne({ address }).lean();
     if (!data) {
       const nominator = new NominatorModel({
@@ -167,14 +174,27 @@ export const setLastNomination = async (
   return true;
 };
 
-export const getCurrentTargets = async (address: string): Promise<any[]> => {
-  return (await NominatorModel.findOne({ address }).lean()).current;
+export const getCurrentTargets = async (
+  address: string,
+): Promise<{ name?: string; stash?: string; identity?: any }[]> => {
+  try {
+    const nominator = await NominatorModel.findOne({
+      address,
+    }).lean<Nominator>();
+    if (nominator) {
+      return nominator?.current || [];
+    } else {
+      return [];
+    }
+  } catch (e) {
+    logger.error(e.toString());
+  }
 };
 
-export const allNominators = async (): Promise<any[]> => {
-  return NominatorModel.find({ address: /.*/ }).lean().exec();
+export const allNominators = async (): Promise<Nominator[]> => {
+  return NominatorModel.find({ address: /.*/ }).lean();
 };
 
-export const getNominator = async (stash: string): Promise<any> => {
-  return NominatorModel.findOne({ stash: stash }).lean().exec();
+export const getNominator = async (stash: string): Promise<Nominator> => {
+  return NominatorModel.findOne({ stash: stash }).lean();
 };

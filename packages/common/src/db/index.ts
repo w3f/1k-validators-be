@@ -18,6 +18,8 @@ export type NodeDetails = [
 
 export * from "./queries";
 
+export * from "./models";
+
 export const dbLabel = { label: "DB" };
 
 export class Db {

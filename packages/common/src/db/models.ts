@@ -321,6 +321,22 @@ export const EraSchema = new Schema({
 
 export const EraModel = mongoose.model("Era", EraSchema);
 
+export interface Nominator {
+  address: string;
+  stash?: string;
+  proxy?: string;
+  bonded?: number;
+  avgStake?: number;
+  nominateAmount?: number;
+  proxyDelay?: number;
+  rewardDestination?: string;
+  newBondedAmount?: number;
+  current?: [{ name?: string; stash?: string; identity?: any }];
+  lastNomination?: number;
+  createdAt?: number;
+  now?: number;
+}
+
 export const NominatorSchema = new Schema({
   // The controller address
   address: String,

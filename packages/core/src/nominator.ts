@@ -100,7 +100,7 @@ export default class Nominator {
       const ledger = await api.query.staking.ledger(this.controller);
       if (!ledger.isSome) {
         logger.warn(`Account ${this.controller} is not bonded!`);
-        return "0x";
+        return this.controller;
       }
       const { stash } = ledger.unwrap();
 

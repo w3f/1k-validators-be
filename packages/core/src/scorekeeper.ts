@@ -356,7 +356,7 @@ export default class ScoreKeeper {
         // const { nominationNum, newBondedAmount, targetValStake } =
         //   await autoNumNominations(api, nom);
 
-        const nominator = {
+        const nominator: Types.Nominator = {
           address: nom.controller,
           stash: stash,
           proxy: proxy,

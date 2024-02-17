@@ -14,12 +14,10 @@ import {
 import Nominator from "./nominator";
 import Claimer from "./claimer";
 import Monitor from "./monitor";
-import { startMicroserviceJobs } from "./scorekeeper/jobs/MicroserviceJobs";
-import { startMonolithJobs } from "./scorekeeper/jobs/MonolithJobs";
-import { startScorekeeperJobs } from "./scorekeeper/jobs/ScorekeeperJobs";
 import { startRound } from "./scorekeeper/Round";
-import { startMainScorekeeperJob } from "./cron";
 import { registerHandler } from "./scorekeeper/RegisterHandler";
+import { jobsMetadata } from "./scorekeeper/jobs/Jobs";
+import { JobsFactory } from "./scorekeeper/jobs/JobsFactory";
 // import { monitorJob } from "./jobs";
 
 export type NominatorGroup = Config.NominatorConfig[];
@@ -251,42 +249,26 @@ export default class ScoreKeeper {
     }
 
     // Start all Cron Jobs
-    try {
-      // Start Jobs in either microservice or monolith mode
-      if (this.config?.redis?.host && this.config?.redis?.port) {
-        await startMicroserviceJobs(this.config, this.chaindata);
-      } else {
-        await startMonolithJobs(this.config, this.chaindata, this.constraints);
-      }
-
-      // Start all scorekeeper / core jobs
-      await startScorekeeperJobs(
-        this.handler,
-        this.nominatorGroups,
-        this.config,
-        this.bot,
-        this.claimer,
-        this.chaindata,
-      );
-    } catch (e) {
-      logger.warn(
-        `There was an error running some cron jobs...`,
-        scorekeeperLabel,
-      );
-      logger.error(e);
+    const metadata: jobsMetadata = {
+      config: this.config,
+      ending: this.ending,
+      chainData: this.chaindata,
+      nominatorGroups: this.nominatorGroups,
+      nominating: this.nominating,
+      currentEra: this.currentEra,
+      bot: this.bot,
+      constraints: this.constraints,
+      handler: this.handler,
+      currentTargets: this.currentTargets,
+      claimer: this.claimer
     }
-    logger.info(`going to start mainCron: `, scorekeeperLabel);
-    await startMainScorekeeperJob(
-      this.config,
-      this.ending,
-      this.chaindata,
-      this.nominatorGroups,
-      this.nominating,
-      this.currentEra,
-      this.bot,
-      this.constraints,
-      this.handler,
-      this.currentTargets,
-    );
+
+    const jobs = await JobsFactory.makeJobs(metadata)
+    jobs.startJobs()
   }
 }
+
+
+
+
+

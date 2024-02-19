@@ -1,29 +1,10 @@
-/// 15% in per billion type.
-export const FIFTEEN_PERCENT = 150000000;
-
-/// 5% in per billion type.
-export const FIVE_PERCENT = 50000000;
-
-/// 10 KSM with decimals.
-export const TEN_KSM: number = 10 * 10 ** 12;
-
-/// 50 KSM with decimals.
-export const FIFTY_KSM: number = 50 * 10 ** 12;
-
-/// 10_000 DOT with decimals.
-export const TEN_THOUSAND_DOT: number = 10 * 1000 * 10 ** 10;
-
-/// 5_000 DOT with decimals.
-export const FIVE_THOUSAND_DOT: number = 5 * 1000 * 10 ** 10;
-
 /// One week in milliseconds.
 export const WEEK = 7 * 24 * 60 * 60 * 1000;
 
 /// The time a node has to make an upgrade to the latest release.
 export const SIXTEEN_HOURS = 16 * 60 * 60 * 1000;
 
-/// Percentage of one week that a validator could be offline.
-export const UP_TIME = 0.02;
+export const GATEWAY_CACHE_TTL = 18 * 1000;
 
 /// Number of Eras in 4 days that a validator should have claimed all previous rewards except
 export const KUSAMA_FOUR_DAYS_ERAS = 16;
@@ -79,8 +60,9 @@ export const LocalEndpoints = [
 export const defaultExcludeLabels = [
   // "Telemetry",
   // "Location",
-  // "ValidatorPrefJob",
+  "ValidatorPrefJob",
   "Block",
+  "Gateway",
 ];
 
 /// Endpoint of the Kusama Thousand Validators backend. Used for the Polkadot program.
@@ -91,10 +73,6 @@ export const TIME_DELAY_BLOCKS = 10850;
 
 // The number of blocks after a time delay proxy call was announced that we want to cancel the tx. Should be 36 hours
 export const CANCEL_THRESHOLD = 21700;
-
-export const KUSAMA_NOMINATOR_THRESHOLD = 2;
-
-export const POLKADOT_NOMINATOR_THRESHOLD = 10;
 
 // Monitor Cron job for checking if clients have upgraded. This runs ever 15 minutes by default
 export const MONITOR_CRON = "0 */15 * * * *";

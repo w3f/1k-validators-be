@@ -2,7 +2,7 @@ import Koa from "koa";
 import bodyparser from "koa-bodyparser";
 import cors from "koa2-cors";
 
-import { Config, logger } from "@1kv/common";
+import { Config, Constants, logger } from "@1kv/common";
 import koaCash from "koa-cash";
 import { KoaAdapter } from "@bull-board/koa";
 import { createBullBoard } from "@bull-board/api";
@@ -32,7 +32,7 @@ export default class Server {
     this.app = new Koa();
     this.port = config?.server?.port;
     this.enable = config?.server?.enable || true;
-    this.cache = config?.server?.cache || 180000;
+    this.cache = config?.server?.cache;
 
     this.app.use(cors());
     this.app.use(bodyparser());
@@ -40,7 +40,7 @@ export default class Server {
     logger.info(`Cache set to ${this.cache}`, { label: "Gateway" });
 
     const cache = new LRUCache({
-      ttl: 18 * 1000, // Cache items will expire after 3 minutes
+      ttl: this.cache || Constants.GATEWAY_CACHE_TTL, // Cache items will expire after 3 minutes
       max: 500, // Maximum number of items allowed in the cache
     });
     this.app.use(

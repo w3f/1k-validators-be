@@ -3,7 +3,7 @@
   "include": ["src/**/*.ts"],
   "files": [
     "src/ApiHandler.ts",
-    "src/chaindata.ts",
+    "src/chaindata/chaindata.ts",
     "src/constants.ts",
     "src/db/index.ts",
     "src/index.ts",

@@ -1,6 +1,5 @@
 import { Queue } from "bullmq";
-import { logger, queries } from "@1kv/common";
-import Chaindata from "@1kv/common/build/chaindata";
+import { ChainData, logger, queries } from "@1kv/common";
 
 const label = { label: "BlockQueue" };
 
@@ -15,7 +14,7 @@ export const createBlockQueue = async (host, port) => {
 };
 
 // Add new blocks to the queue
-export const addAllBlocks = async (queue: Queue, chaindata: Chaindata) => {
+export const addAllBlocks = async (queue: Queue, chaindata: ChainData) => {
   // Get the latest block from the chain
   const latestBlock = await chaindata.getLatestBlock();
 

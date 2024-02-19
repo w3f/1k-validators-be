@@ -5,6 +5,7 @@ import { blake2AsHex } from "@polkadot/util-crypto";
 import { KeyringPair } from "@polkadot/keyring/types";
 import {
   ApiHandler,
+  ChainData,
   Constants,
   logger,
   queries,
@@ -20,6 +21,7 @@ export default class Nominator {
   private _bondedAddress: string;
   private bot: any;
   private handler: ApiHandler;
+  private chaindata: ChainData;
   private signer: KeyringPair;
 
   // Use proxy of controller instead of controller directly.
@@ -35,6 +37,7 @@ export default class Nominator {
     bot: any,
   ) {
     this.handler = handler;
+    this.chaindata = new ChainData(handler);
     this.bot = bot;
     this._isProxy = cfg.isProxy || false;
 

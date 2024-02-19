@@ -3,7 +3,7 @@ import { Db } from "./db";
 import * as queries from "./db/queries";
 import * as Config from "./config";
 import logger from "./logger";
-import { ChainData } from "./chaindata";
+import { ChainData } from "./chaindata/chaindata";
 import ApiHandler from "./ApiHandler";
 import * as Constants from "./constants";
 import * as Types from "./types";

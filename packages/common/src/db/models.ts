@@ -224,7 +224,7 @@ OpenGovDelegationSchema.index({ delegate: 1, track: 1 });
 
 export const CandidateSchema = new Schema({
   // The unique identifier of the candidate's node for a given slot.
-  slotId: { type: Number, index: true, unique: true },
+  slotId: { type: Number, index: true },
   // Whether the candidate has been verified to have passed KYC
   kyc: Boolean,
   // The inherited telemetry ID.

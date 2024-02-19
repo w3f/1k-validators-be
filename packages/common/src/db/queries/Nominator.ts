@@ -69,6 +69,8 @@ export const addNominator = async (nominator: Nominator): Promise<boolean> => {
     );
   } catch (e) {
     logger.info(JSON.stringify(e));
+    logger.error(`Could not add nominator: ${e}`);
+    logger.error(`Could not add nominator: ${JSON.stringify(nominator)}`);
   }
 };
 

@@ -109,7 +109,7 @@ export default class ScoreKeeper {
           address: nom.bondedAddress,
           stash: stash,
           proxy: proxy,
-          bonded: bonded,
+          bonded: Number(bonded),
           now: now,
           proxyDelay: proxyDelay,
           rewardDestination: payee,
@@ -138,7 +138,7 @@ export default class ScoreKeeper {
         group.map(async (n) => {
           const stash = await n.stash();
           const proxy = (await n._isProxy) ? `/ ${n.address}` : "";
-          return `- ${n.controller} / ${stash} ${proxy}`;
+          return `- ${n.bondedAddress} / ${stash} ${proxy}`;
         }),
       )
     ).join("\n");
@@ -163,7 +163,7 @@ export default class ScoreKeeper {
       )
     ).join("<br>");
     logger.info(
-      `Nominator group added! Nominator addresses (Controller / Stash / Proxy):\n${nominatorGroupString}`,
+      `Nominator group added! Nominator addresses (Bonded Address / Stash / Proxy):\n${nominatorGroupString}`,
       scorekeeperLabel,
     );
 

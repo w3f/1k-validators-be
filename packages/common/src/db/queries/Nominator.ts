@@ -1,4 +1,4 @@
-import { CandidateModel, NominatorModel } from "../models";
+import { CandidateModel, Nominator, NominatorModel } from "../models";
 import logger from "../../logger";
 import { getCandidate } from "./Candidate";
 
@@ -24,26 +24,19 @@ export const removeStaleNominators = async (
 };
 
 /** Nominator accessor functions */
-export const addNominator = async (
-  nominator: any,
-  // address: string,
-  // stash: string,
-  // proxy: string,
-  // bonded: number,
-  // now: number,
-  // proxyDelay: number,
-  // rewardDestination: string
-
-  // avgStake: number,
-  // nominateAmount: number,
-  // newBondedAmount: number
-): Promise<boolean> => {
-  const { address, stash, proxy, bonded, now, proxyDelay, rewardDestination } =
-    nominator;
-
-  logger.info(`(Db::addNominator) Adding ${address} at ${now}.`);
-
+export const addNominator = async (nominator: Nominator): Promise<boolean> => {
   try {
+    const {
+      address,
+      stash,
+      proxy,
+      bonded,
+      now,
+      proxyDelay,
+      rewardDestination,
+    } = nominator;
+
+    logger.info(`(Db::addNominator) Adding ${address} at ${now}.`);
     const data = await NominatorModel.findOne({ address }).lean();
     if (!data) {
       const nominator = new NominatorModel({
@@ -53,9 +46,6 @@ export const addNominator = async (
         bonded,
         proxyDelay,
         rewardDestination,
-        // avgStake,
-        // nominateAmount,
-        // newBondedAmount,
         current: [],
         lastNomination: 0,
         createdAt: now,
@@ -75,19 +65,10 @@ export const addNominator = async (
         bonded,
         proxyDelay,
         rewardDestination,
-        // avgStake,
-        // nominateAmount,
-        // newBondedAmount,
       },
     );
   } catch (e) {
     logger.info(JSON.stringify(e));
-    logger.info(address);
-    logger.info(stash);
-    logger.info(proxy);
-    logger.info(bonded);
-    logger.info(proxyDelay);
-    logger.info(rewardDestination);
   }
 };
 
@@ -182,14 +163,27 @@ export const setLastNomination = async (
   return true;
 };
 
-export const getCurrentTargets = async (address: string): Promise<any[]> => {
-  return (await NominatorModel.findOne({ address }).lean()).current;
+export const getCurrentTargets = async (
+  address: string,
+): Promise<{ name?: string; stash?: string; identity?: any }[]> => {
+  try {
+    const nominator = await NominatorModel.findOne({
+      address,
+    }).lean<Nominator>();
+    if (nominator) {
+      return nominator?.current || [];
+    } else {
+      return [];
+    }
+  } catch (e) {
+    logger.error(e.toString());
+  }
 };
 
-export const allNominators = async (): Promise<any[]> => {
-  return NominatorModel.find({ address: /.*/ }).lean().exec();
+export const allNominators = async (): Promise<Nominator[]> => {
+  return NominatorModel.find({ address: /.*/ }).lean();
 };
 
-export const getNominator = async (stash: string): Promise<any> => {
-  return NominatorModel.findOne({ stash: stash }).lean().exec();
+export const getNominator = async (stash: string): Promise<Nominator> => {
+  return NominatorModel.findOne({ stash: stash }).lean();
 };

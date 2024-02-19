@@ -1,4 +1,4 @@
-import { logger, queries, ChainData, Score } from "@1kv/common";
+import { ChainData, logger, queries, Score } from "@1kv/common";
 
 export const locationstatsLabel = { label: "LocationStatsJob" };
 
@@ -16,18 +16,19 @@ export const locationStatsJob = async (chaindata: ChainData) => {
 
   // Add all candidate entries to the list of nodes
   for (const candidate of candidates) {
+    const location = await queries.getCandidateLocation(candidate.name);
     if (
-      candidate.location != "None" &&
-      candidate.region != "None" &&
-      candidate.country != "None" &&
-      candidate.provider != "None"
+      location?.city != "None" &&
+      location?.region != "None" &&
+      location?.country != "None" &&
+      location?.provider != "None"
     ) {
       totalNodes.push({
         address: candidate.stash,
-        location: candidate?.infrastructureLocation?.city,
-        region: candidate?.infrastructureLocation?.region,
-        country: candidate?.infrastructureLocation?.country,
-        provider: candidate?.infrastructureLocation?.provider,
+        location: location?.city,
+        region: location?.region,
+        country: location?.country,
+        provider: location?.provider,
       });
     }
   }

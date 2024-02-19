@@ -1,16 +1,17 @@
 import "@polkadot/api-augment";
 import { Db } from "./db";
 import * as queries from "./db/queries";
-import * as Models from "./db/models";
 import * as Config from "./config";
 import logger from "./logger";
-import { ChainData } from "./chaindata";
+import { ChainData } from "./chaindata/chaindata";
 import ApiHandler from "./ApiHandler";
 import * as Constants from "./constants";
 import * as Types from "./types";
 import * as Util from "./util";
-import * as Constraints from "./constraints";
-import * as Score from "./score";
+import * as Constraints from "./constraints/constraints";
+import * as Score from "./constraints/score";
+import * as Scripts from "./scripts";
+import * as Models from "./db/models";
 
 export {
   ApiHandler,
@@ -24,5 +25,6 @@ export {
   Util,
   Constraints,
   Score,
+  Scripts,
   Models,
 };

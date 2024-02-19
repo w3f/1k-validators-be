@@ -53,6 +53,17 @@ export const getNomination = async (
   return data;
 };
 
+export const getLastNominatorNomination = async (
+  address: string,
+): Promise<any> => {
+  // Returns the last nominations for a given nominator controller
+  const data = await NominationModel.find({ address })
+    .lean()
+    .sort("-timestamp")
+    .limit(1);
+  return data[0];
+};
+
 export const getLastNominations = async (
   address: string,
   eras: number,

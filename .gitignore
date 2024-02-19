@@ -30,3 +30,6 @@ redis/
 docs/.DS_Store
 /packages/core/kusama-matrix.txt
 /packages/core/polkadot-matrix.txt
+/packages/common/kusama-slots.json
+/packages/common/polkadot-slots.json
+/packages/core/coverage/

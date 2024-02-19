@@ -37,7 +37,7 @@ export const addNominator = async (nominator: Nominator): Promise<boolean> => {
     } = nominator;
 
     logger.info(`(Db::addNominator) Adding ${address} at ${now}.`);
-    const data = await NominatorModel.findOne({ address }).lean();
+    const data = await NominatorModel.findOne({ address }).lean<Nominator>();
     if (!data) {
       const nominator = new NominatorModel({
         address,

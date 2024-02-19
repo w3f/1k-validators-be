@@ -2,8 +2,6 @@ import { Queue } from "bullmq";
 import { logger, queries } from "@1kv/common";
 import {
   ACTIVE_VALIDATOR_JOB,
-  DELEGATION_JOB,
-  DEMOCRACY_JOB,
   ERA_POINTS_JOB,
   ERA_STATS_JOB,
   INCLUSION_JOB,
@@ -29,44 +27,6 @@ export const addActiveValidatorJob = async (queue: Queue, repeat: number) => {
   await queue.add(
     "chaindata",
     { jobType: ACTIVE_VALIDATOR_JOB },
-    {
-      repeat: {
-        every: repeat,
-        // limit: 1000,
-      },
-      attempts: 10,
-      backoff: {
-        type: "exponential",
-        delay: 1000,
-      },
-    },
-  );
-};
-
-export const addDelegationJob = async (queue: Queue, repeat: number) => {
-  logger.info(`adding Delegation to Queue.....`, label);
-  await queue.add(
-    "chaindata",
-    { jobType: DELEGATION_JOB },
-    {
-      repeat: {
-        every: repeat,
-        // limit: 1000,
-      },
-      attempts: 10,
-      backoff: {
-        type: "exponential",
-        delay: 1000,
-      },
-    },
-  );
-};
-
-export const addDemocracyJob = async (queue: Queue, repeat: number) => {
-  logger.info(`adding Democracy to Queue.....`);
-  await queue.add(
-    "chaindata",
-    { jobType: DEMOCRACY_JOB },
     {
       repeat: {
         every: repeat,

@@ -5,6 +5,7 @@ import { blake2AsHex } from "@polkadot/util-crypto";
 import { KeyringPair } from "@polkadot/keyring/types";
 import {
   ApiHandler,
+  ChainData,
   Constants,
   logger,
   queries,
@@ -17,9 +18,10 @@ const label = { label: "Nominator" };
 export default class Nominator {
   public currentlyNominating: Types.Stash[] = [];
 
-  private _controller: string;
+  private _bondedAddress: string;
   private bot: any;
   private handler: ApiHandler;
+  private chaindata: ChainData;
   private signer: KeyringPair;
 
   // Use proxy of controller instead of controller directly.
@@ -28,13 +30,6 @@ export default class Nominator {
   // The amount of blocks for a time delay proxy
   private _proxyDelay: number;
 
-  // The ideal average amount of stake the account can nominate per validator
-  private _avgStake = 0;
-  // The target amount of how much funds should be bonded so they can all be optimally used
-  private _targetBond = 0;
-  // The target number of validators to nominate
-  private _nominationNum = 0;
-
   constructor(
     handler: ApiHandler,
     cfg: Types.NominatorConfig,
@@ -42,6 +37,7 @@ export default class Nominator {
     bot: any,
   ) {
     this.handler = handler;
+    this.chaindata = new ChainData(handler);
     this.bot = bot;
     this._isProxy = cfg.isProxy || false;
 
@@ -65,7 +61,7 @@ export default class Nominator {
     keyring.setSS58Format(networkPrefix);
 
     this.signer = keyring.createFromUri(cfg.seed);
-    this._controller = this._isProxy ? cfg.proxyFor : this.signer.address;
+    this._bondedAddress = this._isProxy ? cfg.proxyFor : this.signer.address;
     logger.info(
       `(Nominator::constructor) Nominator signer spawned: ${this.address} | ${
         this._isProxy ? "Proxy" : "Controller"
@@ -79,11 +75,11 @@ export default class Nominator {
       return this.signer.address;
     }
 
-    return this.controller;
+    return this.bondedAddress;
   }
 
-  public get controller(): string {
-    return this._controller;
+  public get bondedAddress(): string {
+    return this._bondedAddress;
   }
 
   public get isProxy(): boolean {
@@ -97,25 +93,28 @@ export default class Nominator {
   public async stash(): Promise<any> {
     try {
       const api = this.handler.getApi();
-      const ledger = await api.query.staking.ledger(this.controller);
+      const ledger = await api.query.staking.ledger(this.bondedAddress);
       if (!ledger.isSome) {
-        logger.warn(`Account ${this.controller} is not bonded!`);
-        return this.controller;
+        logger.warn(`Account ${this.bondedAddress} is not bonded!`);
+        return this.bondedAddress;
       }
       const { stash } = ledger.unwrap();
 
       return stash;
     } catch (e) {
-      logger.error(`Error getting stash for ${this.controller}: ${e}`, label);
+      logger.error(
+        `Error getting stash for ${this.bondedAddress}: ${e}`,
+        label,
+      );
       logger.error(e, label);
-      return this.controller;
+      return this.bondedAddress;
     }
   }
 
   public async payee(): Promise<any> {
     const api = this.handler.getApi();
     try {
-      const ledger = await api.query.staking.ledger(this.controller);
+      const ledger = await api.query.staking.ledger(this.bondedAddress);
       const { stash } = ledger.unwrap();
       const payee = await api.query.staking.payee(stash);
       if (payee) {
@@ -126,205 +125,128 @@ export default class Nominator {
           : payee.toString();
       }
     } catch (e) {
-      logger.error(`Error getting payee for ${this.controller}: ${e}`, label);
+      logger.error(
+        `Error getting payee for ${this.bondedAddress}: ${e}`,
+        label,
+      );
       logger.error(e, label);
-      return this.controller;
+      return this.bondedAddress;
     }
   }
 
-  public get nominationNum(): number {
-    return this._nominationNum;
-  }
-
-  public set nominationNum(nominationNum) {
-    this._nominationNum = nominationNum;
-  }
-
-  public get targetBond(): number {
-    return this._targetBond;
-  }
-
-  public set targetBond(targetBond) {
-    this._targetBond = targetBond;
-  }
-
-  public get avgStake(): number {
-    return this._avgStake;
-  }
-
-  public set avgStake(avgStake) {
-    this._avgStake = avgStake;
-  }
-
-  public async nominate(
-    targets: Types.Stash[],
-    dryRun = false,
-  ): Promise<boolean> {
+  public async nominate(targets: Types.Stash[]): Promise<boolean> {
     const now = new Date().getTime();
 
-    if (dryRun) {
-      logger.info(`DRY RUN - STUBBING TRANSACTIONS`, label);
-      for (const stash of targets) {
-        await queries.setTarget(this.controller, stash, now);
-        await queries.setLastNomination(this.controller, now);
-      }
-    } else {
-      const api = this.handler.getApi();
+    const api = this.handler.getApi();
 
-      try {
-        const controller = await api.query.staking.bonded(this.controller);
-        if (controller.isNone) {
-          logger.warn(`Account ${this.controller} is not bonded!`);
-          return false;
-        }
-      } catch (e) {
-        logger.error(`Error checking if ${this.controller} is bonded: ${e}`);
+    try {
+      const controller = await api.query.staking.bonded(this.bondedAddress);
+      if (controller.isNone) {
+        logger.warn(`Account ${this.bondedAddress} is not bonded!`);
         return false;
       }
-
-      let tx: SubmittableExtrinsic<"promise">;
-
-      // Start an announcement for a delayed proxy tx
-      if (this._isProxy && this._proxyDelay > 0) {
-        logger.info(
-          `{Nominator::nominate::proxy} starting tx for ${this.address} with proxy delay ${this._proxyDelay} blocks`,
-          label,
-        );
-
-        const innerTx = api.tx.staking.nominate(targets);
-
-        const currentBlock = await api.rpc.chain.getBlock();
-        const { number } = currentBlock.block.header;
-        const callHash = innerTx.method.hash.toString();
-
-        tx = api.tx.proxy.announce(
-          this.controller,
-          blake2AsHex(innerTx.method.toU8a()),
-        );
-        await queries.addDelayedTx(
-          number.toNumber(),
-          this.controller,
-          targets,
-          callHash,
-        );
-
-        try {
-          await tx.signAndSend(this.signer);
-        } catch (e) {
-          logger.error(
-            `{Nominator::nominate} there was an error sending the tx`,
-            label,
-          );
-          logger.error(e);
-        }
-      } else if (this._isProxy && this._proxyDelay == 0) {
-        // Start a normal proxy tx call
-        logger.info(
-          `{Nominator::nominate::proxy} starting tx for ${this.address} with proxy delay ${this._proxyDelay} blocks`,
-          label,
-        );
-
-        const innerTx = api.tx.staking.nominate(targets);
-        const callHash = innerTx.method.hash.toString();
-
-        const outerTx = api.tx.proxy.proxy(this.controller, "Staking", innerTx);
-
-        const [didSend, finalizedBlockHash] = await this.sendStakingTx(
-          outerTx,
-          targets,
-        );
-
-        const nominateMsg = `{Nominator::nominate::proxy} non-delay ${this.address} sent tx: ${didSend} finalized in block #${finalizedBlockHash}`;
-        logger.info(nominateMsg, label);
-        if (this.bot) await this.bot.sendMessage(nominateMsg);
-      } else {
-        // Do a non-proxy tx
-        logger.info(
-          `(Nominator::nominate) Creating extrinsic Staking::nominate from ${this.address} to targets ${targets} at ${now}`,
-          label,
-        );
-        tx = api.tx.staking.nominate(targets);
-        logger.info(
-          "(Nominator::nominate} Sending extrinsic to network...",
-          label,
-        );
-        await this.sendStakingTx(tx, targets);
-      }
+    } catch (e) {
+      logger.error(`Error checking if ${this.bondedAddress} is bonded: ${e}`);
+      return false;
     }
-
-    return true;
-  }
-
-  // Adjust bond amounts - inputs are planck denominated
-  public async adjustBond(
-    newBondedAmount: number,
-    currentBondedAmount,
-  ): Promise<boolean> {
-    const now = new Date().getTime();
-
-    const api = await this.handler.getApi();
-    const chainType = await api.rpc.system.chain();
-    const denom =
-      chainType.toString() == "Polkadot" ? 10000000000 : 1000000000000;
 
     let tx: SubmittableExtrinsic<"promise">;
 
     // Start an announcement for a delayed proxy tx
     if (this._isProxy && this._proxyDelay > 0) {
-      // TODO:
+      logger.info(
+        `{Nominator::nominate::proxy} starting tx for ${this.address} with proxy delay ${this._proxyDelay} blocks`,
+        label,
+      );
+
+      const innerTx = api.tx.staking.nominate(targets);
+
+      const currentBlock = await api.rpc.chain.getBlock();
+      const { number } = currentBlock.block.header;
+      const callHash = innerTx.method.hash.toString();
+
+      tx = api.tx.proxy.announce(
+        this.bondedAddress,
+        blake2AsHex(innerTx.method.toU8a()),
+      );
+      await queries.addDelayedTx(
+        number.toNumber(),
+        this.bondedAddress,
+        targets,
+        callHash,
+      );
+
+      try {
+        await tx.signAndSend(this.signer);
+      } catch (e) {
+        logger.error(
+          `{Nominator::nominate} there was an error sending the tx`,
+          label,
+        );
+        logger.error(e);
+      }
     } else if (this._isProxy && this._proxyDelay == 0) {
       // Start a normal proxy tx call
       logger.info(
-        `{Nominator::bond::proxy} starting bond tx for ${
-          this.controller
-        } with proxy delay ${this._proxyDelay} blocks. Current bond is ${
-          currentBondedAmount / denom
-        }, setting to ${newBondedAmount / denom}`,
+        `{Nominator::nominate::proxy} starting tx for ${this.address} with proxy delay ${this._proxyDelay} blocks`,
+        label,
       );
-      let innerTx;
 
-      if (currentBondedAmount > newBondedAmount) {
-        const unbondDiff = BigInt(currentBondedAmount - newBondedAmount);
-        logger.info(
-          `{Nominator::BondDiff} ${this.controller} with bond: ${
-            currentBondedAmount / denom
-          }  will unbond ${Number(unbondDiff) / denom}`,
+      const innerTx = api.tx.staking.nominate(targets);
+      const callHash = innerTx.method.hash.toString();
+
+      const outerTx = api.tx.proxy.proxy(
+        this.bondedAddress,
+        "Staking",
+        innerTx,
+      );
+
+      const [didSend, finalizedBlockHash] = await this.sendStakingTx(
+        outerTx,
+        targets,
+      );
+
+      try {
+        const era = (await api.query.staking.activeEra()).toJSON()["index"];
+        const bonded = Util.toDecimals(
+          (await api.query.staking.ledger(this.bondedAddress)).toJSON()[
+            "active"
+          ],
+          (await queries.getChainMetadata()).decimals,
         );
-        innerTx = api.tx.staking.unbond(unbondDiff);
-      } else if (currentBondedAmount < newBondedAmount) {
-        const bondExtraDiff = BigInt(newBondedAmount - currentBondedAmount);
-        logger.info(
-          `{Nominator::BondDiff} ${this.controller} with bond: ${
-            currentBondedAmount / denom
-          }  will bond ${Number(bondExtraDiff) / denom} extra`,
+
+        await queries.setNomination(
+          this.bondedAddress,
+          era,
+          targets,
+          bonded,
+          finalizedBlockHash,
         );
-        innerTx = api.tx.staking.bondExtra(bondExtraDiff);
-      } else {
-        logger.warn(
-          `{Nominator::bond} could not compare bonds - currentBondedAmount ${currentBondedAmount} newBondedAmount: ${
-            newBondedAmount / denom
-          }`,
+      } catch (e) {
+        logger.error(
+          `{Nominator::nominate} there was an error setting the nomination for non-proxy tx in the db`,
+          label,
         );
-        return false;
+        logger.error(e);
       }
 
-      if (innerTx) {
-        const outerTx = api.tx.proxy.proxy(this.controller, "Staking", innerTx);
-
-        const [didSend, finalizedBlockHash] = await this.sendBondTx(
-          outerTx,
-          newBondedAmount,
-        );
-
-        const bondMsg = `{Nominator::bond::proxy} non-delay ${
-          this.controller
-        } sent tx to set bond to ${
-          newBondedAmount / denom
-        } : ${didSend} finalized in block #${finalizedBlockHash}`;
-        logger.info(bondMsg);
-        if (this.bot) await this.bot.sendMessage(bondMsg);
-      }
+      const nominateMsg = `{Nominator::nominate::proxy} non-delay ${this.address} sent tx: ${didSend} finalized in block #${finalizedBlockHash}`;
+      logger.info(nominateMsg, label);
+      if (this.bot) await this.bot?.sendMessage(nominateMsg);
+    } else {
+      // Do a non-proxy tx
+      logger.info(
+        `(Nominator::nominate) Creating extrinsic Staking::nominate from ${this.address} to targets ${targets} at ${now}`,
+        label,
+      );
+      tx = api.tx.staking.nominate(targets);
+      logger.info(
+        "(Nominator::nominate} Sending extrinsic to network...",
+        label,
+      );
+      await this.sendStakingTx(tx, targets);
     }
+
     return true;
   }
 
@@ -374,7 +296,7 @@ export default class Nominator {
     let finalizedBlockHash;
 
     logger.info(
-      `{Nominator::nominate} sending staking tx for ${this.controller}`,
+      `{Nominator::nominate} sending staking tx for ${this.bondedAddress}`,
     );
 
     const unsub = await tx.signAndSend(this.signer, async (result: any) => {
@@ -384,17 +306,17 @@ export default class Nominator {
       switch (true) {
         case status.isBroadcast:
           logger.info(
-            `{Nominator::nominate} tx for ${this.controller} has been broadcasted`,
+            `{Nominator::nominate} tx for ${this.bondedAddress} has been broadcasted`,
           );
           break;
         case status.isInBlock:
           logger.info(
-            `{Nominator::nominate} tx for ${this.controller} in block`,
+            `{Nominator::nominate} tx for ${this.bondedAddress} in block`,
           );
           break;
         case status.isUsurped:
           logger.info(
-            `{Nominator::nominate} tx for ${this.controller} has been usurped: ${status.asUsurped}`,
+            `{Nominator::nominate} tx for ${this.bondedAddress} has been usurped: ${status.asUsurped}`,
           );
           didSend = false;
           unsub();
@@ -423,7 +345,7 @@ export default class Nominator {
                     " ",
                   )}`;
                   logger.info(errorMsg);
-                  if (this.bot) await this.bot.sendMessage(errorMsg);
+                  if (this.bot) await this.bot?.sendMessage(errorMsg);
                   didSend = false;
                   unsub();
                 } else {
@@ -443,128 +365,36 @@ export default class Nominator {
 
           // Get the current nominations of an address
           const currentTargets = await queries.getCurrentTargets(
-            this.controller,
+            this.bondedAddress,
           );
 
           // if the current targets is populated, clear it
           if (!!currentTargets.length) {
             logger.info("(Nominator::nominate) Wiping old targets");
-            await queries.clearCurrent(this.controller);
+            await queries.clearCurrent(this.bondedAddress);
           }
 
           // Update the nomination record in the db
           const era = (await api.query.staking.activeEra()).toJSON()["index"];
           const decimals = (await queries.getChainMetadata()).decimals;
           const bonded = Util.toDecimals(
-            (await api.query.staking.ledger(this.controller)).toJSON()[
+            (await api.query.staking.ledger(this.bondedAddress)).toJSON()[
               "active"
             ],
             decimals,
           );
-          await queries.setNomination(
-            this.address,
-            era,
-            targets,
-            bonded,
-            finalizedBlockHash,
-          );
 
           // update both the list of nominator for the nominator account as well as the time period of the nomination
           for (const stash of targets) {
-            await queries.setTarget(this.controller, stash, era);
-            await queries.setLastNomination(this.controller, now);
+            await queries.setTarget(this.bondedAddress, stash, era);
+            await queries.setLastNomination(this.bondedAddress, now);
           }
 
           unsub();
           break;
         default:
           logger.info(
-            `{Nominator::nominate} tx from ${this.controller} has another status: ${status}`,
-          );
-          break;
-      }
-    });
-    return [didSend, finalizedBlockHash];
-  };
-
-  sendBondTx = async (
-    tx: SubmittableExtrinsic<"promise">,
-    newBondAmount: number,
-  ): Promise<Types.BooleanResult> => {
-    const now = new Date().getTime();
-    const api = await this.handler.getApi();
-
-    let didSend = true;
-    let finalizedBlockHash;
-
-    logger.info(
-      `{Nominator::bond} sending bonding tx for ${this.controller} for ${newBondAmount}`,
-    );
-
-    const unsub = await tx.signAndSend(this.signer, async (result: any) => {
-      const { status, events } = result;
-
-      // Handle tx lifecycle
-      switch (true) {
-        case status.isBroadcast:
-          logger.info(
-            `{Nominator::nominate} tx for ${this.controller} has been broadcasted`,
-          );
-          break;
-        case status.isInBlock:
-          logger.info(
-            `{Nominator::nominate} tx for ${this.controller} in block`,
-          );
-          break;
-        case status.isUsurped:
-          logger.info(
-            `{Nominator::nominate} tx for ${this.controller} has been usurped: ${status.asUsurped}`,
-          );
-          didSend = false;
-          unsub();
-          break;
-        case status.isFinalized:
-          finalizedBlockHash = status.asFinalized;
-          didSend = true;
-          logger.info(
-            `{Nominator::bond} tx is finalized in block ${finalizedBlockHash}`,
-          );
-
-          // Check the events to see if there was any errors - if there are return
-          events
-            .filter(({ event }) => api.events.system.ExtrinsicFailed.is(event))
-            .forEach(
-              async ({
-                event: {
-                  data: [error, info],
-                },
-              }) => {
-                if (error.isModule) {
-                  const decoded = api.registry.findMetaError(error.asModule);
-                  const { docs, method, section } = decoded;
-
-                  const errorMsg = `{Nominator::bond} tx error:  [${section}.${method}] ${docs.join(
-                    " ",
-                  )}`;
-                  logger.info(errorMsg);
-                  if (this.bot) await this.bot.sendMessage(errorMsg);
-                  didSend = false;
-                  unsub();
-                } else {
-                  // Other, CannotLookup, BadOrigin, no extra info
-                  logger.info(
-                    `{Nominator::bond} has an error: ${error.toString()}`,
-                  );
-                  didSend = false;
-                  unsub();
-                }
-              },
-            );
-          unsub();
-          break;
-        default:
-          logger.info(
-            `{Nominator::bond} tx from ${this.controller} has another status: ${status}`,
+            `{Nominator::nominate} tx from ${this.bondedAddress} has another status: ${status}`,
           );
           break;
       }

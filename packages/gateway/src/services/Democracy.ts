@@ -41,7 +41,7 @@ export const getVoters = async (): Promise<any> => {
           validity: candidate.invalidity,
           score: score,
           total: score && score.total ? score.total : 0,
-          location: candidate.location,
+          location: candidate?.location,
           councilStake: candidate.councilStake,
           councilVotes: candidate.councilVotes,
           democracyVoteCount: candidate.democracyVoteCount,
@@ -53,36 +53,6 @@ export const getVoters = async (): Promise<any> => {
     return b.total - a.total;
   });
   return allCandidates;
-};
-
-export const getAllReferenda = async (): Promise<any> => {
-  const referenda = await queries.getAllReferenda();
-  return referenda;
-};
-
-export const getReferendum = async (index): Promise<any> => {
-  const referendum = await queries.getReferendum(Number(index));
-  return referendum;
-};
-
-export const getLastReferendum = async (): Promise<any> => {
-  const referendum = (await queries.getLastReferenda())[0];
-  return referendum;
-};
-
-export const getLastReferendums = async (): Promise<any> => {
-  const referendum = await queries.getLastReferenda();
-  return referendum;
-};
-
-export const getReferendumIndexVotes = async (index): Promise<any> => {
-  const referendum = await queries.getVoteReferendumIndex(Number(index));
-  return referendum;
-};
-
-export const getReferendumAccountVotes = async (address): Promise<any> => {
-  const referendum = await queries.getAccountVoteReferendum(address);
-  return referendum;
 };
 
 export const getDelegations = async (address): Promise<any> => {

@@ -10,11 +10,10 @@ import {
   Util,
 } from "@1kv/common";
 import MatrixBot from "./matrix";
-import Scorekeeper from "./scorekeeper";
+import Scorekeeper from "./scorekeeper/scorekeeper";
 import { TelemetryClient } from "@1kv/telemetry";
-import { startTestSetup } from "./misc/testSetup";
 
-import { startClearAccumulatedOfflineTimeJob } from "./cron";
+import { startClearAccumulatedOfflineTimeJob } from "./scorekeeper/jobs/cron/StartCronJobs";
 import { Server } from "@1kv/gateway";
 
 const isCI = process.env.CI;
@@ -113,30 +112,6 @@ export const createMatrixBot = async (config) => {
   }
 };
 
-export const initLocalDevScript = async (config) => {
-  logger.info(`Checking if chain is a test chain...`, winstonLabel);
-  try {
-    const chainMetadata = await queries.getChainMetadata();
-    // If the chain is a test chain, init some test chain conditions
-    if (config.global.networkPrefix === 3 && !chainMetadata) {
-      logger.info(
-        `chain index is ${config.global.networkPrefix}, starting init script...`,
-        winstonLabel,
-      );
-      await startTestSetup();
-      await Util.sleep(1500);
-      logger.info(
-        `init script done ----------------------------------------------------`,
-        winstonLabel,
-      );
-      await Util.sleep(15000);
-    }
-  } catch (e) {
-    logger.error(e.toString());
-    process.exit(1);
-  }
-};
-
 export const clean = async (scorekeeper) => {
   try {
     // Clean locations with None
@@ -158,8 +133,8 @@ export const clean = async (scorekeeper) => {
     }
 
     // Remove stale nominators.
-    const curControllers = scorekeeper.getAllNominatorControllers();
-    await queries.removeStaleNominators(curControllers);
+    const bondedAddresses = scorekeeper.getAllNominatorBondedAddresses();
+    await queries.removeStaleNominators(bondedAddresses);
 
     // Wipe the candidates
     logger.info(
@@ -169,6 +144,8 @@ export const clean = async (scorekeeper) => {
     await queries.clearCandidates();
     await queries.deleteOldValidatorScores();
 
+    await findDuplicates();
+
     logger.info(`Cleaning finished`, winstonLabel);
   } catch (e) {
     logger.error(e.toString());
@@ -176,16 +153,17 @@ export const clean = async (scorekeeper) => {
   }
 };
 
-export const addRewardClaimer = async (config, scorekeeper) => {
-  try {
-    if (config.scorekeeper.claimer) {
-      logger.info(`Claimer in config. Adding to scorekeeper`, winstonLabel);
-      // Setup claimer in the scorekeeper
-      await scorekeeper.addClaimer(config.scorekeeper.claimer);
-    }
-  } catch (e) {
-    logger.error(e.toString());
-    process.exit(1);
+export const findDuplicates = async () => {
+  const nameDuplicates = await queries.getDuplicatesByName();
+  if (nameDuplicates.length > 0) {
+    logger.warn("Found Duplicates with multiple names", winstonLabel);
+    logger.warn(JSON.stringify(nameDuplicates), winstonLabel);
+  }
+
+  const stashDuplicates = await queries.getDuplicatesByStash();
+  if (stashDuplicates.length > 0) {
+    logger.warn("Found Duplicates with multiple stashes", winstonLabel);
+    logger.warn(JSON.stringify(stashDuplicates), winstonLabel);
   }
 };
 
@@ -197,15 +175,18 @@ export const addCandidates = async (config) => {
           continue;
         } else {
           const { name, stash, riotHandle } = candidate;
-          // Polkadot only options.
           const kusamaStash = candidate.kusamaStash || "";
           const skipSelfStake = candidate.skipSelfStake || false;
+          const id = candidate.slotId || "";
+          const kyc = candidate.kyc || false;
           await queries.addCandidate(
+            id,
             name,
             stash,
             kusamaStash,
             skipSelfStake,
             riotHandle,
+            kyc,
           );
         }
       }
@@ -253,9 +234,6 @@ const start = async (cmd: { config: string }) => {
   // Create the Database.
   await createDB(config);
 
-  // Init some on chain conditions if test chain
-  await initLocalDevScript(config);
-
   // Set the chain metadata
   await setChainMetadata(config);
 
@@ -276,8 +254,6 @@ const start = async (cmd: { config: string }) => {
 
   // Clean the DB.
   await clean(scorekeeper);
-
-  // await addRewardClaimer(config, scorekeeper);
 
   // Add the candidates
   await addCandidates(config);

@@ -1,13 +1,15 @@
 import * as fs from "fs";
 import path from "path";
-import { ClaimerConfig } from "./types";
+import { isValidUrl } from "./util";
 
 type CandidateConfig = {
+  slotId: number;
   name: string;
   stash: string;
   riotHandle: string;
   kusamaStash?: string;
   skipSelfStake?: boolean;
+  kyc: boolean;
 };
 
 export type NominatorConfig = {
@@ -142,7 +144,6 @@ export type ConfigSchema = {
     forceRound: boolean;
     nominating: boolean;
     nominators: NominatorConfig[][];
-    claimer: ClaimerConfig;
   };
   server: {
     enable: boolean;
@@ -176,25 +177,22 @@ export const loadConfigDir = async (configDir: string) => {
   const mainPath = path.join(configDir, "main.json");
   const mainConf = loadConfig(mainPath);
 
-  // if (
-  //   mainConf.matrix &&
-  //   mainConf.matrix.accessToken &&
-  //   secretConf?.matrix?.accessToken
-  // ) {
   mainConf.matrix.accessToken = secretConf?.matrix?.accessToken;
-  // }
-  // if (secretConf?.scorekeeper?.nominators) {
   mainConf.scorekeeper.nominators = secretConf?.scorekeeper?.nominators;
-  // }
-  // if (mainConf.scorekeeper && mainConf.scorekeeper.claimer) {
-  mainConf.scorekeeper.claimer = secretConf?.scorekeeper?.claimer;
-  // }
 
   const candidatesUrl = mainConf.global.candidatesUrl;
-  const response = await fetch(candidatesUrl);
-  const candidatesJSON = await response.json();
 
-  mainConf.scorekeeper.candidates = candidatesJSON.candidates;
+  // If the candidates url specified in the config is a valid url, fetch the candidates from the url, otherwise read the candidates from the file
+  if (isValidUrl(candidatesUrl)) {
+    const response = await fetch(candidatesUrl);
+    const candidatesJSON = await response.json();
+
+    mainConf.scorekeeper.candidates = candidatesJSON.candidates;
+  } else {
+    const conf = fs.readFileSync(candidatesUrl, { encoding: "utf-8" });
+    const candidates = JSON.parse(conf);
+    mainConf.scorekeeper.candidates = candidates.candidates;
+  }
 
   return mainConf;
 };

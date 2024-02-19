@@ -1,6 +1,6 @@
 {
   "name": "@1kv/common",
-  "version": "3.0.18",
+  "version": "3.0.19",
   "description": "Services for running the Thousand Validator Program.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -8,9 +8,10 @@
     "build": "tsc --build tsconfig.json",
     "docker": "docker-compose rm -f; docker-compose build --no-cache; docker-compose up -d",
     "lint": "tsc --noEmit && eslint 'src/**/*.{js,ts,tsx}' --quiet",
-    "lint:fix": "tsc --noEmit && eslint 'src/**/*.{js,ts,tsx}' --quiet --fix",
+    "lint:fix": "tsc --noEmit && eslint 'src/**/*.{js,ts,tsx, json}' --quiet --fix",
     "clean": "../../node_modules/.bin/rimraf ./build tsconfig.tsbuildinfo combined.log",
-    "clean:build": "yarn clean && yarn build"
+    "clean:build": "yarn clean && yarn build",
+    "writeCandidatesFile": "ts-node src/scripts/writeCandidatesFile.ts && yarn lint:fix"
   },
   "author": "Web3 Foundation <teched@web3.foundation>",
   "license": "GPL-3.0",
@@ -30,11 +31,11 @@
     ]
   },
   "dependencies": {
-    "@polkadot/keyring": "^12.6.2",
     "@types/mongoose": "^5.11.97",
     "@types/node": "^20.11.5",
     "hash.js": "^1.1.7",
     "mongoose": "^8.1.1",
+    "ts-node": "^10.9.2",
     "typescript": "^5.3.3",
     "winston": "^3.11.0"
   }

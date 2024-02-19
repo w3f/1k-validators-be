@@ -6,16 +6,16 @@ export const getCandidateData = async (candidate: any): Promise<any> => {
   const metadata = await queries.getChainMetadata();
   const denom = Math.pow(10, metadata.decimals);
   const score = await queries.getLatestValidatorScore(candidate.stash);
-  const openGovDelegations = await queries.getLargestOpenGovDelegationAddress(
-    candidate.stash,
-  );
   const nominations = await queries.getLatestNominatorStake(candidate.stash);
+  const location = await queries.getCandidateLocation(candidate.name);
   return {
+    slotId: candidate.slotId,
+    kyc: candidate.kyc,
     discoveredAt: candidate.discoveredAt,
     nominatedAt: candidate.nominatedAt,
     offlineSince: candidate.offlineSince,
     offlineAccumulated: candidate.offlineAccumulated,
-    rank: candidate.rank,
+    rank: candidate.rank || 0,
     faults: candidate.faults,
     invalidityReasons: candidate.invalidityReasons,
     unclaimedEras: candidate.unclaimedEras,
@@ -31,28 +31,20 @@ export const getCandidateData = async (candidate: any): Promise<any> => {
     validity: candidate.invalidity,
     score: score,
     total: score && score.total ? score.total : 0,
-    location: candidate.location,
-    provider: candidate.infrastructureLocation?.provider
-      ? candidate.infrastructureLocation?.provider
-      : "No Provider",
-    convictionVotes: candidate.convictionVotes
-      ? candidate.convictionVotes.sort((a, b) => a - b)
-      : [],
-    convictionVoteCount: candidate.convictionVoteCount,
-    openGovDelegations: openGovDelegations,
+    location: location?.city,
+    provider: location?.provider ? location?.provider : "No Provider",
     matrix: candidate.matrix,
     version: candidate.version,
     implementation: candidate.implementation,
     queuedKeys: candidate.queuedKeys,
     nextKeys: candidate.nextKeys,
     rewardDestination: candidate.rewardDestination,
-    controller: candidate.controller,
-    cpu: candidate.infrastructureLocation?.cpu,
-    memory: candidate.infrastructureLocation?.memory,
-    coreCount: candidate.infrastructureLocation?.coreCount,
-    vm: candidate.infrastructureLocation?.vm,
-    region: candidate.infrastructureLocation?.region,
-    country: candidate.infrastructureLocation?.country,
+    cpu: location?.cpu,
+    memory: location?.memory,
+    coreCount: location?.coreCount,
+    vm: location?.vm,
+    region: location?.region,
+    country: location?.country,
     nominations: {
       totalStake: nominations?.totalStake,
       inactiveStake: nominations?.inactiveStake,
@@ -100,8 +92,6 @@ export const getInvalidCandidates = async (): Promise<any> => {
 };
 
 export const getCandidates = async (): Promise<any> => {
-  const metadata = await queries.getChainMetadata();
-  const denom = Math.pow(10, metadata?.decimals);
   let allCandidates = await queries.allCandidates();
   allCandidates = await Promise.all(
     allCandidates.map(async (candidate) => {
@@ -110,6 +100,19 @@ export const getCandidates = async (): Promise<any> => {
   );
   allCandidates = allCandidates.sort((a, b) => {
     return b.total - a.total;
+  });
+  return allCandidates;
+};
+
+export const getRankCandidates = async (): Promise<any> => {
+  let allCandidates = await queries.allCandidates();
+  allCandidates = await Promise.all(
+    allCandidates.map(async (candidate) => {
+      return await getCandidateData(candidate);
+    }),
+  );
+  allCandidates = allCandidates.sort((a, b) => {
+    return b.rank - a.rank;
   });
   return allCandidates;
 };

@@ -1,5 +1,5 @@
 import { CronJob } from "cron";
-import Nominator from "./nominator";
+import Nominator from "../../../nominator";
 import {
   ApiHandler,
   ChainData,
@@ -8,15 +8,11 @@ import {
   Constraints,
   logger,
   queries,
-  Types,
   Util,
 } from "@1kv/common";
-import Claimer from "./claimer";
 import {
   activeValidatorJob,
   blockJob,
-  delegationJob,
-  democracyJob,
   eraPointsJob,
   eraStatsJob,
   inclusionJob,
@@ -28,7 +24,11 @@ import {
   unclaimedEraJob,
   validatorPrefJob,
   validityJob,
-} from "./jobs";
+} from "./WorkerJobs";
+import { scorekeeperLabel } from "../../scorekeeper";
+import { endRound, startRound } from "../../Round";
+
+// Functions for starting the cron jobs
 
 export const cronLabel = { label: "Cron" };
 
@@ -199,19 +199,23 @@ export const startExecutionJob = async (
 
     const chaindata = new ChainData(handler);
 
+    const era = await chaindata.getCurrentEra();
+
     const allDelayed = await queries.getAllDelayedTxs();
 
     for (const data of allDelayed) {
       const { number: dataNum, controller, targets, callHash } = data;
+
       let validCommission = true;
 
       // find the nominator
       const nomGroup = nominatorGroups.find((nomGroup) => {
         return !!nomGroup.find((nom) => {
-          return nom.controller == controller;
+          return nom.bondedAddress == controller;
         });
       });
-      const nominator = nomGroup.find((nom) => nom.controller == controller);
+      const nominator = nomGroup.find((nom) => nom.bondedAddress == controller);
+      const [bonded, err] = await chaindata.getBondedAmount(nominator.address);
 
       for (const target of targets) {
         const [commission, err] = await chaindata.getCommission(target);
@@ -275,6 +279,15 @@ export const startExecutionJob = async (
         );
 
         if (didSend) {
+          // Create a Nomination Object
+          await queries.setNomination(
+            controller,
+            era,
+            targets,
+            bonded,
+            finalizedBlockHash,
+          );
+
           // Log Execution
           const validatorsMessage = (
             await Promise.all(
@@ -334,87 +347,7 @@ export const startExecutionJob = async (
   executionCron.start();
 };
 
-// Chron job for claiming rewards
-export const startRewardClaimJob = async (
-  config: Config.ConfigSchema,
-  handler: ApiHandler,
-  claimer: Claimer,
-  chaindata: ChainData,
-  bot: any,
-) => {
-  if (config.constraints.skipClaiming) return;
-  const rewardClaimingFrequency = config.cron?.rewardClaiming
-    ? config.cron?.rewardClaiming
-    : Constants.REWARD_CLAIMING_CRON;
-
-  logger.info(
-    `Running reward claiming cron with frequency: ${rewardClaimingFrequency}`,
-    cronLabel,
-  );
-
-  // Check the free balance of the account. If it doesn't have a free balance, skip.
-  const balance = await chaindata.getBalance(claimer.address);
-  const metadata = await queries.getChainMetadata();
-  const free = Util.toDecimals(Number(balance.free), metadata.decimals);
-  // TODO Parameterize this as a constant
-  if (free < 0.5) {
-    logger.warn(
-      `{Cron::RewardClaiming} Claimer has low free balance: ${free}`,
-      cronLabel,
-    );
-    await bot.sendMessage(
-      `Reward Claiming Account ${Util.addressUrl(
-        claimer.address,
-        config,
-      )} has low free balance: ${free}`,
-    );
-    return;
-  }
-
-  const rewardClaimingCron = new CronJob(rewardClaimingFrequency, async () => {
-    const erasToClaim = [];
-    const [currentEra] = await chaindata.getActiveEraIndex();
-    const rewardClaimThreshold =
-      config.global.networkPrefix == 2
-        ? Constants.KUSAMA_REWARD_THRESHOLD
-        : Constants.POLKADOT_REWARD_THRESHOLD;
-    const claimThreshold = Number(currentEra - rewardClaimThreshold);
-
-    logger.info(
-      ` running reward claiming cron with threshold of ${rewardClaimThreshold} eras. Going to try to claim rewards before era ${claimThreshold} (current era: ${currentEra})....`,
-      cronLabel,
-    );
-
-    const allCandidates = await queries.allCandidates();
-    for (const candidate of allCandidates) {
-      if (candidate.unclaimedEras) {
-        for (const era of candidate.unclaimedEras) {
-          logger.info(
-            `checking era ${era} for ${candidate.name} if it's before era ${claimThreshold}...`,
-            cronLabel,
-          );
-          if (era < claimThreshold) {
-            logger.info(
-              `added era ${era} for validator ${candidate.stash} to be claimed.`,
-              cronLabel,
-            );
-            const eraReward: Types.EraReward = {
-              era: era,
-              stash: candidate.stash,
-            };
-            erasToClaim.push(eraReward);
-          }
-        }
-      }
-    }
-    if (erasToClaim.length > 0) {
-      await claimer.claim(erasToClaim);
-    }
-  });
-  rewardClaimingCron.start();
-};
-
-export const startCancelCron = async (
+export const startCancelJob = async (
   config: Config.ConfigSchema,
   handler: ApiHandler,
   nominatorGroups: Array<Nominator[]>,
@@ -514,7 +447,7 @@ export const startCancelCron = async (
   cancelCron.start();
 };
 
-export const startStaleNominationCron = async (
+export const startStaleNominationJob = async (
   config: Config.ConfigSchema,
   handler: ApiHandler,
   nominatorGroups: Array<Nominator[]>,
@@ -844,49 +777,6 @@ export const startLocationStatsJob = async (
   locationStatsCron.start();
 };
 
-// Chron job for querying democracy data
-export const startDemocracyJob = async (
-  config: Config.ConfigSchema,
-  chaindata: ChainData,
-) => {
-  const enabled = config.cron?.democracyEnabled || true;
-  if (!enabled) {
-    logger.warn(`Democracy Job is disabled`, cronLabel);
-    return;
-  }
-
-  const democracyFrequency = config?.cron?.democracy
-    ? config?.cron?.democracy
-    : Constants.DEMOCRACY_CRON;
-
-  logger.info(
-    `Running democracy cron with frequency: ${democracyFrequency}`,
-    cronLabel,
-  );
-
-  let running = false;
-
-  const democracyCron = new CronJob(democracyFrequency, async () => {
-    if (running) {
-      return;
-    }
-    running = true;
-    logger.info(`running democracy job....`, cronLabel);
-
-    // Run the democracy  job
-    try {
-      const hasFinished = await democracyJob(chaindata);
-      if (hasFinished) {
-        running = false;
-      }
-    } catch (e) {
-      logger.error(`There was an error running democracy job.`, cronLabel);
-      logger.error(JSON.stringify(e), cronLabel);
-    }
-  });
-  democracyCron.start();
-};
-
 // Chron job for querying nominator data
 export const startNominatorJob = async (
   config: Config.ConfigSchema,
@@ -925,43 +815,6 @@ export const startNominatorJob = async (
 };
 
 // Chron job for querying delegator data
-export const startDelegationJob = async (
-  config: Config.ConfigSchema,
-  chaindata: ChainData,
-) => {
-  const enabled = config.cron?.delegationEnabled || true;
-  if (!enabled) {
-    logger.warn(`Delegation Job is disabled`, cronLabel);
-    return;
-  }
-  const delegationFrequency = config.cron?.delegation
-    ? config.cron?.delegation
-    : Constants.DELEGATION_CRON;
-
-  logger.info(
-    `Running delegation cron with frequency: ${delegationFrequency}`,
-    cronLabel,
-  );
-
-  let running = false;
-
-  const delegationCron = new CronJob(delegationFrequency, async () => {
-    if (running) {
-      return;
-    }
-    running = true;
-    logger.info(`running delegation job....`, cronLabel);
-
-    // Run the job
-    const hasFinished = await delegationJob(chaindata);
-    if (hasFinished) {
-      running = false;
-    }
-  });
-  delegationCron.start();
-};
-
-// Chron job for querying delegator data
 export const startBlockDataJob = async (
   config: Config.ConfigSchema,
   chaindata: ChainData,
@@ -996,4 +849,121 @@ export const startBlockDataJob = async (
     }
   });
   blockCron.start();
+};
+
+export const startMainScorekeeperJob = async (
+  config,
+  ending,
+  chaindata,
+  nominatorGroups,
+  nominating,
+  currentEra,
+  bot,
+  constraints,
+  handler,
+  currentTargets,
+) => {
+  // Main cron job for starting rounds and ending rounds of the scorekeeper
+  const scoreKeeperFrequency = config.cron?.scorekeeper
+    ? config.cron?.scorekeeper
+    : Constants.SCOREKEEPER_CRON;
+
+  const mainCron = new CronJob(scoreKeeperFrequency, async () => {
+    logger.info(
+      `Running mainCron of Scorekeeper with frequency ${scoreKeeperFrequency}`,
+      scorekeeperLabel,
+    );
+
+    if (ending) {
+      logger.info(`ROUND IS CURRENTLY ENDING.`, scorekeeperLabel);
+      return;
+    }
+
+    const [activeEra, err] = await chaindata.getActiveEraIndex();
+    if (err) {
+      logger.warn(`CRITICAL: ${err}`, scorekeeperLabel);
+      return;
+    }
+
+    const { lastNominatedEraIndex } = await queries.getLastNominatedEraIndex();
+
+    // For Kusama, Nominations will happen every 4 eras
+    // For Polkadot, Nominations will happen every era
+    const eraBuffer = config.global.networkPrefix == 0 ? 1 : 4;
+
+    const isNominationRound =
+      Number(lastNominatedEraIndex) <= activeEra - eraBuffer;
+
+    if (isNominationRound) {
+      logger.info(
+        `Last nomination was in era ${lastNominatedEraIndex}. Current era is ${activeEra}. This is a nomination round.`,
+        scorekeeperLabel,
+      );
+      if (!nominatorGroups) {
+        logger.info("No nominators spawned. Skipping round.", scorekeeperLabel);
+        return;
+      }
+
+      if (!config.scorekeeper.nominating) {
+        logger.info(
+          "Nominating is disabled in the settings. Skipping round.",
+          scorekeeperLabel,
+        );
+        return;
+      }
+
+      // Get all the current targets to check if this should just be a starting round or if the round needs ending
+      const allCurrentTargets = [];
+      for (const nomGroup of nominatorGroups) {
+        for (const nominator of nomGroup) {
+          // Get the current nominations of an address
+          const currentTargets = await queries.getCurrentTargets(
+            nominator.controller,
+          );
+          allCurrentTargets.push(currentTargets);
+        }
+      }
+      currentTargets = allCurrentTargets;
+
+      if (!currentTargets) {
+        logger.info(
+          "Current Targets is empty. Starting round.",
+          scorekeeperLabel,
+        );
+        await startRound(
+          nominating,
+          currentEra,
+          bot,
+          constraints,
+          nominatorGroups,
+          chaindata,
+          handler,
+          config,
+          currentTargets,
+        );
+      } else {
+        logger.info(`Ending round.`, scorekeeperLabel);
+        await endRound(
+          ending,
+          nominatorGroups,
+          chaindata,
+          constraints,
+          bot,
+          config,
+        );
+        await startRound(
+          nominating,
+          currentEra,
+          bot,
+          constraints,
+          nominatorGroups,
+          chaindata,
+          handler,
+          config,
+          currentTargets,
+        );
+      }
+    }
+  });
+  mainCron.start();
 };

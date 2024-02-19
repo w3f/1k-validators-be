@@ -10,23 +10,29 @@ import { Identity } from "../../types";
 
 // Adds a new candidate from the configuration file data.
 export const addCandidate = async (
+  slotId: number,
   name: string,
   stash: string,
   kusamaStash: string,
   skipSelfStake: boolean,
   matrix: any,
+  kyc: boolean,
   bot?: any,
 ): Promise<boolean> => {
   const network = (await getChainMetadata()).name;
   const keyring = new Keyring();
   const ss58Prefix = network == "Kusama" ? 2 : 0;
   stash = keyring.encodeAddress(stash, ss58Prefix);
-  // logger.info(
-  //   `(Db::addCandidate) name: ${name} stash: ${stash} matrix: ${matrix}`
-  // );
+
+  let data;
 
   // Check to see if the candidate has already been added as a node.
-  const data = await CandidateModel.findOne({ name }).lean();
+  data = await CandidateModel.findOne({ slotId }).lean();
+
+  if (!data) {
+    data = await CandidateModel.findOne({ name }).lean();
+  }
+
   if (!data) {
     logger.info(
       `Did not find candidate data for ${name} - inserting new document.`,
@@ -34,15 +40,19 @@ export const addCandidate = async (
     );
 
     const candidate = new CandidateModel({
+      slotId,
       name,
       stash,
       kusamaStash,
       skipSelfStake,
       matrix,
+      kyc,
     });
 
     if (!!bot) {
-      await bot.sendMessage(`Adding new candidate: ${name} (${stash})`);
+      await bot.sendMessage(
+        `Adding new candidate: ${name} (${stash}) id: ${slotId}`,
+      );
     }
     await candidate.save();
     return true;
@@ -51,14 +61,15 @@ export const addCandidate = async (
   // If already has the node data by name, just store the candidate specific
   // stuff.
   return CandidateModel.findOneAndUpdate(
+    { $or: [{ slotId: slotId }, { name: name }] },
     {
       name,
-    },
-    {
+      slotId,
       stash,
       kusamaStash,
       skipSelfStake,
       matrix,
+      kyc,
     },
   );
 };
@@ -79,10 +90,12 @@ export const deleteOldCandidateFields = async (): Promise<boolean> => {
         invalidityReasons: 1,
         avgClaimTimestampDelta: 1,
         avgClaimBlockDelta: 1,
+        location: "",
+        infrastructureLocation: "",
       },
     },
     // { multi: true, safe: true }
-  );
+  ).exec();
 
   return true;
 };
@@ -99,6 +112,8 @@ export const deleteOldFieldFrom = async (name: string): Promise<boolean> => {
         rankEvents: 1,
         avgClaimTimestampDelta: 1,
         avgClaimBlockDelta: 1,
+        location: "",
+        infrastructureLocation: "",
       },
     },
   ).exec();
@@ -108,42 +123,6 @@ export const deleteOldFieldFrom = async (name: string): Promise<boolean> => {
 
 export const clearNodeRefsFrom = async (name: string): Promise<boolean> => {
   await CandidateModel.findOneAndUpdate({ name }, { nodeRefs: 0 }).exec();
-
-  return true;
-};
-
-// Set a candidates data to the data returned from a 'canonical' 1kv instance
-export const bootstrapCandidate = async (
-  name: string,
-  stash: string,
-  discoveredAt: number,
-  nominatedAt: number,
-  offlineSince: number,
-  offlineAccumulated: number,
-  rank: number,
-  faults: number,
-  inclusion: number,
-  location: string,
-  provider: string,
-  democracyVoteCount: number,
-  democracyVotes: number[],
-): Promise<any> => {
-  await CandidateModel.findOneAndUpdate(
-    { stash },
-    {
-      discoveredAt,
-      nominatedAt,
-      offlineSince,
-      offlineAccumulated,
-      rank,
-      faults,
-      inclusion,
-      location,
-      provider,
-      democracyVoteCount,
-      democracyVotes,
-    },
-  ).exec();
 
   return true;
 };
@@ -423,7 +402,7 @@ export const reportOnline = async (
     (locationData?.addr && locationData?.addr != addr) ||
     !locationData.address ||
     !locationData.session ||
-    Date.now() - locationData?.updated > 720000000; // The location data is older than 2 hours
+    Date.now() - locationData?.updated > 720000000; // The location data is older than 200 hours
   if (shouldFetch) {
     const iit = await getIIT();
     const { city, region, country, provider, v } = await fetchLocationInfo(
@@ -444,10 +423,6 @@ export const reportOnline = async (
     // A new node that is not already registered as a candidate.
     const candidate = new CandidateModel({
       telemetryId,
-      location:
-        locationData && locationData?.city && !locationData?.vpn
-          ? locationData?.city
-          : "No Location",
       networkId: null,
       nodeRefs: 1,
       name,
@@ -455,7 +430,6 @@ export const reportOnline = async (
       discoveredAt: startupTime,
       onlineSince: startupTime,
       offlineSince: 0,
-      infrastructureLocation: locationData,
       implementation: nodeImplementation,
     });
 
@@ -475,11 +449,6 @@ export const reportOnline = async (
       { name },
       {
         telemetryId,
-        location:
-          locationData && locationData?.city
-            ? locationData?.city
-            : "No Location",
-        infrastructureLocation: locationData,
         discoveredAt: now,
         onlineSince: now,
         offlineSince: 0,
@@ -506,9 +475,6 @@ export const reportOnline = async (
     { name },
     {
       telemetryId,
-      location:
-        locationData && locationData?.city ? locationData?.city : "No Location",
-      infrastructureLocation: locationData,
       onlineSince: now,
       version,
       implementation: nodeImplementation,
@@ -702,6 +668,22 @@ export const pushFaultEvent = async (
   return false;
 };
 
+export const setRank = async (
+  stash: string,
+  newRank: number,
+): Promise<boolean> => {
+  await CandidateModel.findOneAndUpdate(
+    {
+      stash,
+    },
+    {
+      rank: newRank,
+    },
+  ).exec();
+
+  return true;
+};
+
 export const addPoint = async (stash: string): Promise<boolean> => {
   logger.info(`Adding a point to ${stash}.`);
 
@@ -838,6 +820,10 @@ export const getCandidate = async (stashOrName: string): Promise<any> => {
 
 export const getNodeByName = async (name: string): Promise<any> => {
   return CandidateModel.findOne({ name }).lean().exec();
+};
+
+export const getCandidateBySlotId = async (id: number) => {
+  return CandidateModel.findOne({ slotId: id }).lean().exec();
 };
 
 export const setInclusion = async (
@@ -1487,7 +1473,7 @@ export const setProviderInvalidity = async (
               ? ""
               : details
                 ? details
-                : `${data.name} has banned infrastructure provider: ${data?.infrastructureLocation?.provider}`,
+                : `${data.name} has banned infrastructure provider`,
           },
         ],
       },
@@ -1604,4 +1590,46 @@ export const setValid = async (
       valid: validity,
     },
   ).exec();
+};
+
+export const getUniqueNameSet = async (): Promise<any> => {
+  const nameSet = new Set();
+  const allNodes = await allCandidates();
+  for (const node of allNodes) {
+    nameSet.add(node.name);
+  }
+  return Array.from(nameSet);
+};
+
+export const getDuplicatesByName = async (): Promise<any> => {
+  const duplicates = [];
+  const names = await getUniqueNameSet();
+  for (const name of names) {
+    const candidates = await CandidateModel.find({ name: name }).exec();
+    if (candidates.length > 1) {
+      duplicates.push({ name: name, num: candidates.length });
+    }
+  }
+  return duplicates;
+};
+
+export const getDuplicatesByStash = async (): Promise<any> => {
+  const duplicates = [];
+  const stashes = await getUniqueStashSet();
+  for (const stash of stashes) {
+    const candidates = await CandidateModel.find({ stash: stash }).exec();
+    if (candidates.length > 1) {
+      duplicates.push({ stash: stash, num: candidates.length });
+    }
+  }
+  return duplicates;
+};
+
+export const getUniqueStashSet = async (): Promise<any> => {
+  const stashSet = new Set();
+  const allNodes = await allCandidates();
+  for (const node of allNodes) {
+    stashSet.add(node.stash);
+  }
+  return Array.from(stashSet);
 };

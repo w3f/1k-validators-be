@@ -8,10 +8,6 @@ export type NominatorConfig = {
   proxyDelay?: number;
 };
 
-export type ClaimerConfig = {
-  seed: string;
-};
-
 export type EraReward = {
   stash: string;
   era: number;
@@ -458,4 +454,14 @@ export interface AvailabilityBitfield {
   candidateChunkCount: number;
   availableCandidates: number[];
   signature?: string;
+}
+
+export interface Nominator {
+  address: string;
+  stash: string;
+  proxy: string;
+  bonded: number;
+  now: number;
+  proxyDelay: number;
+  rewardDestination: string;
 }

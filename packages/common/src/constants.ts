@@ -1,29 +1,10 @@
-/// 15% in per billion type.
-export const FIFTEEN_PERCENT = 150000000;
-
-/// 5% in per billion type.
-export const FIVE_PERCENT = 50000000;
-
-/// 10 KSM with decimals.
-export const TEN_KSM: number = 10 * 10 ** 12;
-
-/// 50 KSM with decimals.
-export const FIFTY_KSM: number = 50 * 10 ** 12;
-
-/// 10_000 DOT with decimals.
-export const TEN_THOUSAND_DOT: number = 10 * 1000 * 10 ** 10;
-
-/// 5_000 DOT with decimals.
-export const FIVE_THOUSAND_DOT: number = 5 * 1000 * 10 ** 10;
-
 /// One week in milliseconds.
 export const WEEK = 7 * 24 * 60 * 60 * 1000;
 
 /// The time a node has to make an upgrade to the latest release.
 export const SIXTEEN_HOURS = 16 * 60 * 60 * 1000;
 
-/// Percentage of one week that a validator could be offline.
-export const UP_TIME = 0.02;
+export const GATEWAY_CACHE_TTL = 18 * 1000;
 
 /// Number of Eras in 4 days that a validator should have claimed all previous rewards except
 export const KUSAMA_FOUR_DAYS_ERAS = 16;
@@ -57,7 +38,8 @@ export const POLKADOT_API_TIMEOUT = 1000000;
 /// List of Kusama endpoints we can switch between.
 export const KusamaEndpoints = [
   "wss://kusama-rpc.polkadot.io",
-  "wss://kusama.api.onfinality.io/public-ws",
+  "wss://kusama-rpc.dwellir.com",
+  "wss://kusama.public.curie.radiumblock.xyz/ws",
 ];
 
 /// List of Polkadot endpoints we can switch between.
@@ -80,6 +62,7 @@ export const defaultExcludeLabels = [
   // "Location",
   "ValidatorPrefJob",
   "Block",
+  "Gateway",
 ];
 
 /// Endpoint of the Kusama Thousand Validators backend. Used for the Polkadot program.
@@ -90,10 +73,6 @@ export const TIME_DELAY_BLOCKS = 10850;
 
 // The number of blocks after a time delay proxy call was announced that we want to cancel the tx. Should be 36 hours
 export const CANCEL_THRESHOLD = 21700;
-
-export const KUSAMA_NOMINATOR_THRESHOLD = 2;
-
-export const POLKADOT_NOMINATOR_THRESHOLD = 10;
 
 // Monitor Cron job for checking if clients have upgraded. This runs ever 15 minutes by default
 export const MONITOR_CRON = "0 */15 * * * *";
@@ -131,15 +110,14 @@ export const LOCATION_STATS_CRON = "0 0-59/5 * * * *";
 
 // Chain Querying Cron Jobs:
 
-// Era Points Cron Job. This runs every 45 minutes by default
-export const ERA_POINTS_CRON = "0 0-59/45 * * * *";
+// Era Points Cron Job. This runs every 15 minutes by default
+export const ERA_POINTS_CRON = "0 0-59/15 * * * *";
 
 // Active Validator Cron Job. This runs ever 12 minutes by default
 export const ACTIVE_VALIDATOR_CRON = "0 0-59/12 * * * *";
 
-// Inclusion Cron Job. This runs every hour by default
-// export const INCLUSION_CRON = "0 0 0-23/1 * * *";
-export const INCLUSION_CRON = "0 0-59/35 * * * *";
+// Inclusion Cron Job
+export const INCLUSION_CRON = "0 0-59/15 * * * *";
 
 // Unclaimed Era Cron Job. This runs every hour by default
 export const UNCLAIMED_ERAS_CRON = "0 0 0-23/1 * * *";
@@ -147,40 +125,31 @@ export const UNCLAIMED_ERAS_CRON = "0 0 0-23/1 * * *";
 // Validator Pref Cron Job. This runs every 15 minutes by default
 export const VALIDATOR_PREF_CRON = "0 0-59/3 * * * *";
 
-// Sesion Key Cron Job. This runs every 45 minutes by default
-export const SESSION_KEY_CRON = "0 0-59/45 * * * *";
-
-// Democracy Cron Job. This runs every 15 minutes by default
-export const DEMOCRACY_CRON = "0 0-59/5 * * * *";
+// Sesion Key Cron Job. This runs every 15 minutes by default
+export const SESSION_KEY_CRON = "0 0-59/15 * * * *";
 
 // Nominator Cron Job. This runs every 15 minutes by default
 export const NOMINATOR_CRON = "0 0-59/17 * * * *";
-
-// Delegation Cron Job. This runs every 20 minutes by default
-export const DELEGATION_CRON = "0 0-59/2 * * * *";
 
 export const BLOCK_CRON = "0 0-59/1 * * * *";
 
 export const LOCATION_URL = "https://ipinfo.io/";
 
 // Score Constant Defaults
-export const INCLUSION_WEIGHT = 100;
-export const SPAN_INCLUSION_WEIGHT = 100;
+export const INCLUSION_WEIGHT = 220;
+export const SPAN_INCLUSION_WEIGHT = 220;
 export const DISCOVERED_WEIGHT = 5;
-export const NOMINATED_WEIGHT = 30;
+export const NOMINATED_WEIGHT = 80;
 export const RANK_WEIGHT = 5;
 export const UNCLAIMED_WEIGHT = 10;
 export const BONDED_WEIGHT = 50;
 export const FAULTS_WEIGHT = 5;
 export const OFFLINE_WEIGHT = 2;
-export const LOCATION_WEIGHT = 30;
+export const LOCATION_WEIGHT = 40;
 export const REGION_WEIGHT = 10;
 export const COUNTRY_WEIGHT = 10;
-export const PROVIDER_WEIGHT = 50;
+export const PROVIDER_WEIGHT = 100;
 export const NOMINATIONS_WEIGHT = 100;
-export const DELEGATIONS_WEIGHT = 60;
-export const OPENGOV_WEIGHT = 100;
-export const OPENGOV_DELEGATION_WEIGHT = 100;
 export const RPC_WEIGHT = 100;
 export const CLIENT_WEIGHT = 200;
 export const RANDOMNESS_MULTIPLIER = 0.15;
@@ -199,8 +168,5 @@ export const USE_REGION = true;
 export const USE_COUNTRY = true;
 export const USE_PROVIDER = true;
 export const USE_NOMINATIONS = true;
-export const USE_DELEGATIONS = true;
-export const USE_OPENGOV = true;
-export const USE_OPENGOV_DELEGATIONS = true;
 export const USE_RPC = true;
 export const USE_CLIENT = true;

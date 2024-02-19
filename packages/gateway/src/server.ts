@@ -2,8 +2,7 @@ import Koa from "koa";
 import bodyparser from "koa-bodyparser";
 import cors from "koa2-cors";
 
-import { Config, logger } from "@1kv/common";
-import LRU from "lru-cache";
+import { Config, Constants, logger } from "@1kv/common";
 import koaCash from "koa-cash";
 import { KoaAdapter } from "@bull-board/koa";
 import { createBullBoard } from "@bull-board/api";
@@ -18,6 +17,7 @@ import mount from "koa-mount";
 import { koaSwagger } from "koa2-swagger-ui";
 import yamljs from "yamljs";
 import Router from "@koa/router";
+import { LRUCache } from "lru-cache";
 
 export default class Server {
   public app: Koa;
@@ -32,23 +32,24 @@ export default class Server {
     this.app = new Koa();
     this.port = config?.server?.port;
     this.enable = config?.server?.enable || true;
-    this.cache = config?.server?.cache || 180000;
+    this.cache = config?.server?.cache;
 
     this.app.use(cors());
     this.app.use(bodyparser());
 
     logger.info(`Cache set to ${this.cache}`, { label: "Gateway" });
 
-    const cache = new LRU({
-      max: this.cache, // global max age
+    const cache = new LRUCache({
+      ttl: this.cache || Constants.GATEWAY_CACHE_TTL, // Cache items will expire after 3 minutes
+      max: 500, // Maximum number of items allowed in the cache
     });
     this.app.use(
       koaCash({
         get: (key) => {
           return cache.get(key);
         },
-        set(key, value) {
-          return cache.set(key, value);
+        set(key, value, maxAge) {
+          return cache.set(key, value, maxAge);
         },
       }),
     );

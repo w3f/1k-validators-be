@@ -1,6 +1,8 @@
 import { ChainData, Constraints } from "@1kv/common";
 import { otvWorker } from "@1kv/worker";
 
+// Wrappers around the jobs importted from the `Worker` package
+
 // Runs Monitor Job
 export const monitorJob = async () => {
   await otvWorker.jobs.getLatestTaggedRelease();
@@ -60,19 +62,8 @@ export const locationStatsJob = async (chaindata: ChainData) => {
   return true;
 };
 
-// Job for democracy related data
-export const democracyJob = async (chaindata: ChainData) => {
-  await otvWorker.jobs.democracyJob(chaindata);
-  return true;
-};
-
 export const nominatorJob = async (chaindata: ChainData) => {
   await otvWorker.jobs.nominatorJob(chaindata);
-  return true;
-};
-
-export const delegationJob = async (chaindata: ChainData) => {
-  await otvWorker.jobs.delegationJob(chaindata);
   return true;
 };
 

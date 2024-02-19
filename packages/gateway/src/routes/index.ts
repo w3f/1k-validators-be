@@ -20,6 +20,7 @@ const API = {
   Accounting: "/accounting/:address",
   Candidate: "/candidate/:address",
   GetCandidates: "/candidates",
+  GetRankCandidates: "/candidates/rank",
   GetValidCandidates: "/candidates/valid",
   GetInvalidCandidates: "/candidates/invalid",
   GetNodes: "/nodes",
@@ -42,6 +43,7 @@ const API = {
   LocationsCurrentValidatorSet: "/location/currentvalidatorset",
   LocationValidator: "/location/validator/:address",
   LocationStats: "/locationstats",
+  ValidLocationStats: "/locationstats/valid",
   SessionLocationStats: "/locationstats/:session",
   Councillors: "/councillor",
   Councillor: "/councillor/:address",
@@ -50,17 +52,9 @@ const API = {
   EraPaid: "/erapaid",
   EraRewards: "/erareward/:stash/:limit",
   EraReward: "/erareward/:stash/:era",
-  Referenda: "/referenda",
-  Referendum: "/referendum/:index",
-  LastReferendum: "/lastreferendum",
-  LastReferendums: "/lastreferendums",
-  ReferendumIndexVotes: "/referendumvotes/index/:index",
-  ReferendumAccountVotes: "/referendumvotes/account/:address",
   LastNominatorStake: "/nominatorstake/:address/last/:limit",
   LatestNominatorStake: "/nominatorstake/:address",
   EraNominatorStake: "/nominatorstake/:address/:era",
-  Delegations: "/delegations/:address",
-  AllDelegations: "/delegations",
   CurrentValidatorSet: "/validators/current",
   AddressConvictionVotes: "/opengov/votes/address/:address",
   AddressFinishedConvictionVotes: "/opengov/votes/address/:address/finished",
@@ -99,6 +93,7 @@ router.get(API.Accounting, Accounting.getAccounting);
 
 router.get(API.Candidate, Candidate.getCandidate);
 router.get(API.GetCandidates, Candidate.getCandidates);
+router.get(API.GetRankCandidates, Candidate.getRankCandidates);
 router.get(API.GetValidCandidates, Candidate.getValidCandidates);
 router.get(API.GetInvalidCandidates, Candidate.getInvalidCandidates);
 
@@ -124,14 +119,6 @@ router.get(API.Councillors, Democracy.getCouncillors);
 router.get(API.Councillor, Democracy.getCouncillor);
 //
 router.get(API.Voters, Democracy.getVoters);
-router.get(API.Referenda, Democracy.getAllReferenda);
-router.get(API.Referendum, Democracy.getReferendum);
-router.get(API.LastReferendum, Democracy.getLastReferendum);
-router.get(API.LastReferendums, Democracy.getLastReferendums);
-router.get(API.ReferendumIndexVotes, Democracy.getReferendumIndexVotes);
-router.get(API.ReferendumAccountVotes, Democracy.getReferendumAccountVotes);
-router.get(API.Delegations, Democracy.getDelegations);
-router.get(API.AllDelegations, Democracy.getAllDelegations);
 
 router.get(API.OpenGovReferenda, Democracy.getOpenGovReferenda);
 router.get(API.OpenGovReferendaStats, Democracy.getOpenGovReferendaStats);
@@ -182,6 +169,7 @@ router.get(API.LocationValidator, Location.getValidatorLocation);
 
 router.get(API.EraStats, Stats.getEraStats);
 router.get(API.LocationStats, Stats.getLocationStats);
+router.get(API.ValidLocationStats, Stats.getValidLocationStats);
 router.get(API.SessionLocationStats, Stats.getSessionLocationStats);
 
 router.get(API.Validators, Validator.getValidators);

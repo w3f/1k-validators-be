@@ -1,6 +1,5 @@
 import * as fs from "fs";
 import path from "path";
-import { ClaimerConfig } from "./types";
 import { isValidUrl } from "./util";
 
 type CandidateConfig = {
@@ -145,7 +144,6 @@ export type ConfigSchema = {
     forceRound: boolean;
     nominating: boolean;
     nominators: NominatorConfig[][];
-    claimer: ClaimerConfig;
   };
   server: {
     enable: boolean;
@@ -179,19 +177,8 @@ export const loadConfigDir = async (configDir: string) => {
   const mainPath = path.join(configDir, "main.json");
   const mainConf = loadConfig(mainPath);
 
-  // if (
-  //   mainConf.matrix &&
-  //   mainConf.matrix.accessToken &&
-  //   secretConf?.matrix?.accessToken
-  // ) {
   mainConf.matrix.accessToken = secretConf?.matrix?.accessToken;
-  // }
-  // if (secretConf?.scorekeeper?.nominators) {
   mainConf.scorekeeper.nominators = secretConf?.scorekeeper?.nominators;
-  // }
-  // if (mainConf.scorekeeper && mainConf.scorekeeper.claimer) {
-  mainConf.scorekeeper.claimer = secretConf?.scorekeeper?.claimer;
-  // }
 
   const candidatesUrl = mainConf.global.candidatesUrl;
 

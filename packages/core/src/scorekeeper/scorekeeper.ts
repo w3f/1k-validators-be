@@ -7,12 +7,10 @@ import {
   logger,
   Models,
   queries,
-  Types,
   Util,
 } from "@1kv/common";
 
 import Nominator from "../nominator";
-import Claimer from "../claimer";
 import Monitor from "../monitor";
 import { startRound } from "./Round";
 import { registerHandler } from "./RegisterHandler";
@@ -43,7 +41,6 @@ export default class ScoreKeeper {
   private nominating = false;
 
   private nominatorGroups: Array<SpawnedNominatorGroup> = [];
-  private claimer: Claimer;
   private monitor: Monitor;
 
   constructor(handler: ApiHandler, config: Config.ConfigSchema, bot: any) {
@@ -200,21 +197,6 @@ export default class ScoreKeeper {
     return true;
   }
 
-  // Adds a claimer from the config
-  async addClaimer(claimerCfg: Types.ClaimerConfig): Promise<boolean> {
-    const claimer = new Claimer(
-      this.handler,
-      claimerCfg,
-      this.config.global.networkPrefix,
-      this.bot,
-    );
-    this.claimer = claimer;
-    await this.bot?.sendMessage(
-      `<h4>Added Reward Claimer:</h4><br> - ${this.claimer.address}`,
-    );
-    return true;
-  }
-
   // Begin the main workflow of the scorekeeper
   async begin(): Promise<void> {
     logger.info(`Starting Scorekeeper.`, scorekeeperLabel);
@@ -260,7 +242,6 @@ export default class ScoreKeeper {
       constraints: this.constraints,
       handler: this.handler,
       currentTargets: this.currentTargets,
-      claimer: this.claimer,
     };
 
     const jobs = await JobsFactory.makeJobs(metadata);

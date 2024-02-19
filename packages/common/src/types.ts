@@ -8,10 +8,6 @@ export type NominatorConfig = {
   proxyDelay?: number;
 };
 
-export type ClaimerConfig = {
-  seed: string;
-};
-
 export type EraReward = {
   stash: string;
   era: number;

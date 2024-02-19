@@ -8,10 +8,8 @@ import {
   Constraints,
   logger,
   queries,
-  Types,
   Util,
 } from "@1kv/common";
-import Claimer from "../../../claimer";
 import {
   activeValidatorJob,
   blockJob,
@@ -345,86 +343,6 @@ export const startExecutionJob = async (
     }
   });
   executionCron.start();
-};
-
-// Chron job for claiming rewards
-export const startRewardClaimJob = async (
-  config: Config.ConfigSchema,
-  handler: ApiHandler,
-  claimer: Claimer,
-  chaindata: ChainData,
-  bot: any,
-) => {
-  if (config.constraints.skipClaiming) return;
-  const rewardClaimingFrequency = config.cron?.rewardClaiming
-    ? config.cron?.rewardClaiming
-    : Constants.REWARD_CLAIMING_CRON;
-
-  logger.info(
-    `Running reward claiming cron with frequency: ${rewardClaimingFrequency}`,
-    cronLabel,
-  );
-
-  // Check the free balance of the account. If it doesn't have a free balance, skip.
-  const balance = await chaindata.getBalance(claimer.address);
-  const metadata = await queries.getChainMetadata();
-  const free = Util.toDecimals(Number(balance.free), metadata.decimals);
-  // TODO Parameterize this as a constant
-  if (free < 0.5) {
-    logger.warn(
-      `{Cron::RewardClaiming} Claimer has low free balance: ${free}`,
-      cronLabel,
-    );
-    await bot.sendMessage(
-      `Reward Claiming Account ${Util.addressUrl(
-        claimer.address,
-        config,
-      )} has low free balance: ${free}`,
-    );
-    return;
-  }
-
-  const rewardClaimingCron = new CronJob(rewardClaimingFrequency, async () => {
-    const erasToClaim = [];
-    const [currentEra] = await chaindata.getActiveEraIndex();
-    const rewardClaimThreshold =
-      config.global.networkPrefix == 2
-        ? Constants.KUSAMA_REWARD_THRESHOLD
-        : Constants.POLKADOT_REWARD_THRESHOLD;
-    const claimThreshold = Number(currentEra - rewardClaimThreshold);
-
-    logger.info(
-      ` running reward claiming cron with threshold of ${rewardClaimThreshold} eras. Going to try to claim rewards before era ${claimThreshold} (current era: ${currentEra})....`,
-      cronLabel,
-    );
-
-    const allCandidates = await queries.allCandidates();
-    for (const candidate of allCandidates) {
-      if (candidate.unclaimedEras) {
-        for (const era of candidate.unclaimedEras) {
-          logger.info(
-            `checking era ${era} for ${candidate.name} if it's before era ${claimThreshold}...`,
-            cronLabel,
-          );
-          if (era < claimThreshold) {
-            logger.info(
-              `added era ${era} for validator ${candidate.stash} to be claimed.`,
-              cronLabel,
-            );
-            const eraReward: Types.EraReward = {
-              era: era,
-              stash: candidate.stash,
-            };
-            erasToClaim.push(eraReward);
-          }
-        }
-      }
-    }
-    if (erasToClaim.length > 0) {
-      await claimer.claim(erasToClaim);
-    }
-  });
-  rewardClaimingCron.start();
 };
 
 export const startCancelCron = async (

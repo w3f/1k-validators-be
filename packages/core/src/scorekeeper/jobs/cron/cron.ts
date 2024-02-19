@@ -1,5 +1,5 @@
 import { CronJob } from "cron";
-import Nominator from "../../nominator";
+import Nominator from "../../../nominator";
 import {
   ApiHandler,
   ChainData,
@@ -11,7 +11,7 @@ import {
   Types,
   Util,
 } from "@1kv/common";
-import Claimer from "../../claimer";
+import Claimer from "../../../claimer";
 import {
   activeValidatorJob,
   blockJob,
@@ -27,8 +27,8 @@ import {
   validatorPrefJob,
   validityJob,
 } from "./jobs";
-import { scorekeeperLabel } from "../../scorekeeper";
-import { endRound, startRound } from "../Round";
+import { scorekeeperLabel } from "../../../scorekeeper";
+import { endRound, startRound } from "../../Round";
 
 export const cronLabel = { label: "Cron" };
 

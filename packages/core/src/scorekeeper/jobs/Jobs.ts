@@ -14,7 +14,7 @@ import {
   startRewardClaimJob,
   startStaleNominationCron,
   startUnclaimedEraJob,
-} from "../cron/cron";
+} from "./cron/cron";
 import Claimer from "../../claimer";
 
 export type jobsMetadata = {

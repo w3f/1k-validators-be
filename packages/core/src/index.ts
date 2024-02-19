@@ -14,7 +14,7 @@ import Scorekeeper from "./scorekeeper";
 import { TelemetryClient } from "@1kv/telemetry";
 import { startTestSetup } from "./misc/testSetup";
 
-import { startClearAccumulatedOfflineTimeJob } from "./scorekeeper/cron/cron";
+import { startClearAccumulatedOfflineTimeJob } from "./scorekeeper/jobs/cron/cron";
 import { Server } from "@1kv/gateway";
 
 const isCI = process.env.CI;

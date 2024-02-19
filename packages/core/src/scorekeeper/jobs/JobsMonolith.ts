@@ -14,8 +14,8 @@ import {
   startSessionKeyJob,
   startValidatityJob,
   startValidatorPrefJob,
-} from "../cron/cron";
-import { monitorJob } from "../cron/jobs";
+} from "./cron/cron";
+import { monitorJob } from "./cron/jobs";
 
 export class JobsMonolith extends Jobs {
   _startSpecificJobs = async (): Promise<void> => {

@@ -19,8 +19,8 @@ The nominating backend will routinely change its nominations at every era. The b
 
 ### How to Apply
 
-- [Kusama Application Form](https://docs.google.com/forms/d/e/1FAIpQLSewhltQOcmkIlE7Wftn0NTVuyEs6Wk8Qpx6ssCAo2BO4oQH0w/viewform)
-- [Polkadot Thousand Validators Programme](https://docs.google.com/forms/d/e/1FAIpQLSdS-alI-J2wgIRCQVjQC7ZbFiTnf36hYBdmO-1ARMjKbC7H9w/viewform?ref=polkadot-network)
+- [Kusama Application Form](https://forms.gle/dZkWrGWCNG3ENVCfA)
+- [Polkadot Thousand Validators Programme](https://forms.gle/LTCze7fJvqQinPqx6)
 
 ## This Repo
 

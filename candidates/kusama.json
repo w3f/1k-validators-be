@@ -5773,6 +5773,34 @@
       "stash": "G9fk8vjk2eiy65mQjog8MgPuLAHjjnagv4ixVzY7zRiEu3Z",
       "riotHandle": "@plussik:matrix.org",
       "kyc": true
+    },
+    {
+      "slotId": 828,
+      "name": "Alscalable",
+      "stash": "HNUv11N4oKJrRQuj4pZsDMoBRUpRR8twv23wSjhdrwqRMLJ",
+      "riotHandle": "@alicebablle:matrix.org",
+      "kyc": true
+    },   
+    {
+      "slotId": 829,
+      "name": "Alscalable-02",
+      "stash": "ErJr4EedgdiHqTN8EjwAoMfXoCfESdfTnnUTzrHDJuNf5no",
+      "riotHandle": "@alicebablle:matrix.org",
+      "kyc": true
+    },   
+    {
+      "slotId": 830,
+      "name": "Block Breaker",
+      "stash": "EkjQQVVvvEDUqvcFU7VNn2tVGTL26HJtQMCCKinxsa9Fhkf",
+      "riotHandle": "@blockbreaker:matrix.org",
+      "kyc": true
+    },   
+    {
+      "slotId": 831,
+      "name": "Block Breaker-1",
+      "stash": "EMgS54i8ABLNwcGNXxrXHxyrhbWtmKXodGHHvw1o3ifUk4F",
+      "riotHandle": "@blockbreaker:matrix.org",
+      "kyc": true
     }
   ]
 }

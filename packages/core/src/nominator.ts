@@ -100,7 +100,7 @@ export default class Nominator {
       }
       const { stash } = ledger.unwrap();
 
-      return stash;
+      return stash.toString();
     } catch (e) {
       logger.error(
         `Error getting stash for ${this.bondedAddress}: ${e}`,

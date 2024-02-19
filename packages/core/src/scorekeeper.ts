@@ -260,15 +260,10 @@ export default class ScoreKeeper {
       constraints: this.constraints,
       handler: this.handler,
       currentTargets: this.currentTargets,
-      claimer: this.claimer
-    }
+      claimer: this.claimer,
+    };
 
-    const jobs = await JobsFactory.makeJobs(metadata)
-    jobs.startJobs()
+    const jobs = await JobsFactory.makeJobs(metadata);
+    jobs.startJobs();
   }
 }
-
-
-
-
-

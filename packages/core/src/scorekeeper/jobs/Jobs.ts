@@ -1,71 +1,91 @@
 import {
   ApiHandler,
-    ChainData,
-    Config,
-    Constraints,
-    logger,
-  } from "@1kv/common";
+  ChainData,
+  Config,
+  Constraints,
+  logger,
+} from "@1kv/common";
 
 import { SpawnedNominatorGroup, scorekeeperLabel } from "../../scorekeeper";
-import { startCancelCron, startExecutionJob, startMainScorekeeperJob, startRewardClaimJob, startStaleNominationCron, startUnclaimedEraJob } from "../../cron";
+import {
+  startCancelCron,
+  startExecutionJob,
+  startMainScorekeeperJob,
+  startRewardClaimJob,
+  startStaleNominationCron,
+  startUnclaimedEraJob,
+} from "../../cron";
 import Claimer from "../../claimer";
 
 export type jobsMetadata = {
-  config: Config.ConfigSchema,
-  ending: boolean,
-  chainData: ChainData,
-  nominatorGroups: Array<SpawnedNominatorGroup>,
-  nominating: boolean,
-  currentEra: Number,
-  bot: any,
-  constraints: Constraints.OTV,
-  handler: ApiHandler,
-  currentTargets: string[],
-  claimer: Claimer
-}
+  config: Config.ConfigSchema;
+  ending: boolean;
+  chainData: ChainData;
+  nominatorGroups: Array<SpawnedNominatorGroup>;
+  nominating: boolean;
+  currentEra: number;
+  bot: any;
+  constraints: Constraints.OTV;
+  handler: ApiHandler;
+  currentTargets: string[];
+  claimer: Claimer;
+};
 
 export abstract class Jobs {
+  constructor(protected readonly metadata: jobsMetadata) {}
 
-    constructor(protected readonly metadata: jobsMetadata){}
+  abstract _startSpecificJobs(): Promise<void>;
 
-    abstract _startSpecificJobs(): Promise<void>
+  public startJobs = async (): Promise<void> => {
+    const {
+      handler,
+      nominatorGroups,
+      config,
+      bot,
+      claimer,
+      chainData,
+      ending,
+      nominating,
+      currentEra,
+      constraints,
+      currentTargets,
+    } = this.metadata;
 
-    public startJobs = async (): Promise<void> => {
-      const {handler,nominatorGroups,config,bot,claimer,chainData,ending,nominating,currentEra,constraints,currentTargets} = this.metadata
+    try {
+      await this._startSpecificJobs();
 
-      try {
-        await this._startSpecificJobs();
-
-        // Start all scorekeeper / core jobs
-        await startScorekeeperJobs( //TODO: find better name for this function
-          handler,
-          nominatorGroups,
-          config,
-          bot,
-          claimer,
-          chainData,
-        );
-      } catch (e) {
-        logger.warn(
-          `There was an error running some cron jobs...`,
-          scorekeeperLabel,
-        );
-        logger.error(e);
-      }
-      logger.info(`going to start mainCron: `, scorekeeperLabel);
-      await startMainScorekeeperJob( //TODO: find better name for this function
-        config,
-        ending,
-        chainData,
-        nominatorGroups,
-        nominating,
-        currentEra,
-        bot,
-        constraints,
+      // Start all scorekeeper / core jobs
+      await startScorekeeperJobs(
+        //TODO: find better name for this function
         handler,
-        currentTargets,
+        nominatorGroups,
+        config,
+        bot,
+        claimer,
+        chainData,
       );
+    } catch (e) {
+      logger.warn(
+        `There was an error running some cron jobs...`,
+        scorekeeperLabel,
+      );
+      logger.error(e);
     }
+    logger.info(`going to start mainCron: `, scorekeeperLabel);
+    await startMainScorekeeperJob(
+      //TODO: find better name for this function
+      config,
+      ending,
+      chainData,
+      nominatorGroups,
+      nominating,
+      currentEra,
+      bot,
+      constraints,
+      handler,
+      currentTargets,
+    );
+  };
 }
 
 /**

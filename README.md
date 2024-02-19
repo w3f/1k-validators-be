@@ -33,7 +33,7 @@ The monorepo is managed using Yarn workspaces, and contains the following packag
 - [`packages/core`](packages/core): A package containing the core logic of the Thousand Validators Program.
 - [`packages/gateway`](packages/gateway): A package for an API gateway that exposes the backend with a REST API.
 - [`packages/telemetry`](packages/telemetry): A package for a telemetry client that monitors uptime
-- [`]packages/worker`](packages/worker): A packages for job queue workers that perform background tasks.
+- [`packages/worker`](packages/worker): A packages for job queue workers that perform background tasks.
 
 
 

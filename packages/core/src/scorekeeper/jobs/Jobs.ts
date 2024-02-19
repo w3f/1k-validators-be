@@ -6,7 +6,7 @@ import {
   logger,
 } from "@1kv/common";
 
-import { SpawnedNominatorGroup, scorekeeperLabel } from "../../scorekeeper";
+import { scorekeeperLabel, SpawnedNominatorGroup } from "../../scorekeeper";
 import {
   startCancelCron,
   startExecutionJob,
@@ -14,7 +14,7 @@ import {
   startRewardClaimJob,
   startStaleNominationCron,
   startUnclaimedEraJob,
-} from "../../cron";
+} from "../cron/cron";
 import Claimer from "../../claimer";
 
 export type jobsMetadata = {

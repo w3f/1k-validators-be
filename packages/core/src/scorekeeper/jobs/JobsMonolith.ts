@@ -3,19 +3,19 @@ import { logger } from "@1kv/common";
 import { scorekeeperLabel } from "../../scorekeeper";
 import { Jobs } from "./Jobs";
 import {
-  startValidatityJob,
-  startScoreJob,
-  startEraPointsJob,
   startActiveValidatorJob,
-  startInclusionJob,
-  startSessionKeyJob,
-  startValidatorPrefJob,
+  startBlockDataJob,
+  startEraPointsJob,
   startEraStatsJob,
+  startInclusionJob,
   startLocationStatsJob,
   startNominatorJob,
-  startBlockDataJob,
-} from "../../cron";
-import { monitorJob } from "../../jobs";
+  startScoreJob,
+  startSessionKeyJob,
+  startValidatityJob,
+  startValidatorPrefJob,
+} from "../cron/cron";
+import { monitorJob } from "../cron/jobs";
 
 export class JobsMonolith extends Jobs {
   _startSpecificJobs = async (): Promise<void> => {

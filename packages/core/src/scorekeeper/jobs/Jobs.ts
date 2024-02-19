@@ -1,16 +1,92 @@
-/**
- * Functions for staring Scorekeeper jobs
- *
- * @function ScorekeeperJobs
- */
+import {
+  ApiHandler,
+  ChainData,
+  Config,
+  Constraints,
+  logger,
+} from "@1kv/common";
 
+import { SpawnedNominatorGroup, scorekeeperLabel } from "../../scorekeeper";
 import {
   startCancelCron,
   startExecutionJob,
+  startMainScorekeeperJob,
   startRewardClaimJob,
   startStaleNominationCron,
   startUnclaimedEraJob,
 } from "../../cron";
+import Claimer from "../../claimer";
+
+export type jobsMetadata = {
+  config: Config.ConfigSchema;
+  ending: boolean;
+  chainData: ChainData;
+  nominatorGroups: Array<SpawnedNominatorGroup>;
+  nominating: boolean;
+  currentEra: number;
+  bot: any;
+  constraints: Constraints.OTV;
+  handler: ApiHandler;
+  currentTargets: string[];
+  claimer: Claimer;
+};
+
+export abstract class Jobs {
+  constructor(protected readonly metadata: jobsMetadata) {}
+
+  abstract _startSpecificJobs(): Promise<void>;
+
+  public startJobs = async (): Promise<void> => {
+    const {
+      handler,
+      nominatorGroups,
+      config,
+      bot,
+      claimer,
+      chainData,
+      ending,
+      nominating,
+      currentEra,
+      constraints,
+      currentTargets,
+    } = this.metadata;
+
+    try {
+      await this._startSpecificJobs();
+
+      // Start all scorekeeper / core jobs
+      await startScorekeeperJobs(
+        //TODO: find better name for this function
+        handler,
+        nominatorGroups,
+        config,
+        bot,
+        claimer,
+        chainData,
+      );
+    } catch (e) {
+      logger.warn(
+        `There was an error running some cron jobs...`,
+        scorekeeperLabel,
+      );
+      logger.error(e);
+    }
+    logger.info(`going to start mainCron: `, scorekeeperLabel);
+    await startMainScorekeeperJob(
+      //TODO: find better name for this function
+      config,
+      ending,
+      chainData,
+      nominatorGroups,
+      nominating,
+      currentEra,
+      bot,
+      constraints,
+      handler,
+      currentTargets,
+    );
+  };
+}
 
 /**
  * Orchestrates the initiation of various jobs related to scorekeeping in a blockchain context. This function
@@ -46,7 +122,7 @@ import {
  *
  * await startScorekeeperJobs(handler, nominatorGroups, config, bot, claimer, chaindata);
  */
-export const startScorekeeperJobs = async (
+const startScorekeeperJobs = async (
   handler,
   nominatorGroups,
   config,

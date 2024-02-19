@@ -8,7 +8,7 @@ import ApiHandler from "./ApiHandler";
 import * as Constants from "./constants";
 import * as Types from "./types";
 import * as Util from "./util";
-import * as Constraints from "./constraints";
+import * as Constraints from "./constraints/constraints";
 import * as Score from "./score";
 import * as Scripts from "./scripts";
 import * as Models from "./db/models";

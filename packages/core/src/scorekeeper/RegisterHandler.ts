@@ -3,14 +3,7 @@
  *
  * @function RegisterHandler
  */
-import {
-  ApiHandler,
-  ChainData,
-  Config,
-  Constraints,
-  logger,
-  queries,
-} from "@1kv/common";
+import { ApiHandler, ChainData, Config, logger, queries } from "@1kv/common";
 import { dockPoints } from "./Rank";
 import { scorekeeperLabel } from "../scorekeeper";
 
@@ -50,7 +43,5 @@ export const registerHandler = (
   handler.on("newSession", async (data: { sessionIndex: string }) => {
     const { sessionIndex } = data;
     logger.info(`New Session Event: ${sessionIndex}`, scorekeeperLabel);
-    const candidates = await queries.allCandidates();
-    await Constraints.checkAllValidateIntentions(config, chaindata, candidates);
   });
 };

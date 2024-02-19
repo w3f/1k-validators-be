@@ -9,6 +9,7 @@ import {
   Constants,
   Constraints,
   logger,
+  Models,
   queries,
   Types,
   Util,
@@ -356,14 +357,14 @@ export default class ScoreKeeper {
         // const { nominationNum, newBondedAmount, targetValStake } =
         //   await autoNumNominations(api, nom);
 
-        const nominator = {
+        const nominator: Models.Nominator = {
           address: nom.controller,
           stash: stash,
           proxy: proxy,
           bonded: bonded,
           now: now,
           proxyDelay: proxyDelay,
-          payee: payee,
+          rewardDestination: payee,
         };
         try {
           await queries.addNominator(nominator);

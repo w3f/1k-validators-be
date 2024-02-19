@@ -1,6 +1,7 @@
 import "@polkadot/api-augment";
 import { Db } from "./db";
 import * as queries from "./db/queries";
+import * as Models from "./db/models";
 import * as Config from "./config";
 import logger from "./logger";
 import { ChainData } from "./chaindata";
@@ -23,4 +24,5 @@ export {
   Util,
   Constraints,
   Score,
+  Models,
 };

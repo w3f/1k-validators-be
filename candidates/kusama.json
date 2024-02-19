@@ -5801,6 +5801,20 @@
       "stash": "EMgS54i8ABLNwcGNXxrXHxyrhbWtmKXodGHHvw1o3ifUk4F",
       "riotHandle": "@blockbreaker:matrix.org",
       "kyc": true
+    },
+    {
+      "slotId": 832,
+      "name": "Coin collectors",
+      "stash": "HjTtz2xV4T3z3HFJhrkgjy4Lafe1tufqZ4X9YzPiLzaUPtJ",
+      "riotHandle": "@coincollectorss:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 833,
+      "name": "Coin collectors-1",
+      "stash": "G2QjP1aSdQ4DRwmMTtkEHMjhqtWjM8rpzMrfmdMPtnpJGRv",
+      "riotHandle": "@coincollectorss:matrix.org",
+      "kyc": true
     }
   ]
 }

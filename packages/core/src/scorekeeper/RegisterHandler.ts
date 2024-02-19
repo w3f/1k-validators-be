@@ -5,7 +5,7 @@
  */
 import { ApiHandler, ChainData, Config, logger, queries } from "@1kv/common";
 import { dockPoints } from "./Rank";
-import { scorekeeperLabel } from "../scorekeeper";
+import { scorekeeperLabel } from "./scorekeeper";
 
 export const registerHandler = (
   handler: ApiHandler,

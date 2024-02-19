@@ -4,7 +4,7 @@
  * @function Round
  */
 
-import { scorekeeperLabel } from "../scorekeeper";
+import { scorekeeperLabel } from "./scorekeeper";
 import { logger, queries, Types, Util } from "@1kv/common";
 import { dockPoints } from "./Rank";
 import { doNominations } from "./Nominating";

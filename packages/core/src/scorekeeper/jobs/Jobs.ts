@@ -6,7 +6,7 @@ import {
   logger,
 } from "@1kv/common";
 
-import { scorekeeperLabel, SpawnedNominatorGroup } from "../../scorekeeper";
+import { scorekeeperLabel, SpawnedNominatorGroup } from "../scorekeeper";
 import {
   startCancelCron,
   startExecutionJob,

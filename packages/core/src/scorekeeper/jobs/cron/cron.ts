@@ -27,7 +27,7 @@ import {
   validatorPrefJob,
   validityJob,
 } from "./jobs";
-import { scorekeeperLabel } from "../../../scorekeeper";
+import { scorekeeperLabel } from "../../scorekeeper";
 import { endRound, startRound } from "../../Round";
 
 export const cronLabel = { label: "Cron" };

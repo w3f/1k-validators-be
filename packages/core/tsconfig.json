@@ -13,7 +13,7 @@
     "src/matrix.ts",
     "src/monitor.ts",
     "src/nominator.ts",
-    "src/scorekeeper.ts",
+    "src/scorekeeper/scorekeeper.ts"
   ],
   "compilerOptions": {
     /* Basic Options */

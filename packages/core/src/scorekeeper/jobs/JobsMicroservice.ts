@@ -1,7 +1,7 @@
 import { logger } from "@1kv/common";
 
 import { otvWorker } from "@1kv/worker";
-import { scorekeeperLabel } from "../../scorekeeper";
+import { scorekeeperLabel } from "../scorekeeper";
 import { Jobs } from "./Jobs";
 
 export class JobsMicroservice extends Jobs {

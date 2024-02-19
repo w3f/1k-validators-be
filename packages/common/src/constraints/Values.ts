@@ -1,5 +1,5 @@
 import { logger, queries, Types } from "../index";
-import { getStats } from "../score";
+import { getStats } from "./score";
 import { allNominators, getLatestNominatorStake } from "../db";
 import { constraintsLabel } from "./constraints";
 

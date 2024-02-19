@@ -6,7 +6,7 @@
 import { ApiPromise } from "@polkadot/api";
 import Nominator from "../nominator";
 import { Constants, logger } from "@1kv/common";
-import { scorekeeperLabel } from "../scorekeeper";
+import { scorekeeperLabel } from "./scorekeeper";
 
 /**
  * Automatically determines the number of validators a nominator can nominate based on their available balance

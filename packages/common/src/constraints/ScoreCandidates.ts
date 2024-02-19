@@ -1,4 +1,4 @@
-import { scaled, scaledDefined } from "../score";
+import { scaled, scaledDefined } from "./score";
 import { logger, queries } from "../index";
 import {
   allNominators,

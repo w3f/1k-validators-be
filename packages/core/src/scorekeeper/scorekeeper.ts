@@ -11,13 +11,13 @@ import {
   Util,
 } from "@1kv/common";
 
-import Nominator from "./nominator";
-import Claimer from "./claimer";
-import Monitor from "./monitor";
-import { startRound } from "./scorekeeper/Round";
-import { registerHandler } from "./scorekeeper/RegisterHandler";
-import { jobsMetadata } from "./scorekeeper/jobs/Jobs";
-import { JobsFactory } from "./scorekeeper/jobs/JobsFactory";
+import Nominator from "../nominator";
+import Claimer from "../claimer";
+import Monitor from "../monitor";
+import { startRound } from "./Round";
+import { registerHandler } from "./RegisterHandler";
+import { jobsMetadata } from "./jobs/Jobs";
+import { JobsFactory } from "./jobs/JobsFactory";
 // import { monitorJob } from "./jobs";
 
 export type NominatorGroup = Config.NominatorConfig[];

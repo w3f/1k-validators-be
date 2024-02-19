@@ -4,7 +4,7 @@
 //     - This will either be a static number, or "auto"
 import { logger, queries, Types, Util } from "@1kv/common";
 import { autoNumNominations } from "./NumNominations";
-import { scorekeeperLabel, SpawnedNominatorGroup } from "../scorekeeper";
+import { scorekeeperLabel, SpawnedNominatorGroup } from "./scorekeeper";
 
 export const doNominations = async (
   candidates: Types.CandidateData[],

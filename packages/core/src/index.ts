@@ -10,7 +10,7 @@ import {
   Util,
 } from "@1kv/common";
 import MatrixBot from "./matrix";
-import Scorekeeper from "./scorekeeper";
+import Scorekeeper from "./scorekeeper/scorekeeper";
 import { TelemetryClient } from "@1kv/telemetry";
 import { startTestSetup } from "./misc/testSetup";
 

@@ -1,6 +1,6 @@
 import { logger } from "@1kv/common";
 
-import { scorekeeperLabel } from "../../scorekeeper";
+import { scorekeeperLabel } from "../scorekeeper";
 import { Jobs } from "./Jobs";
 import {
   startActiveValidatorJob,

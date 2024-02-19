@@ -5,7 +5,7 @@
  */
 
 import { logger, queries, Types } from "@1kv/common";
-import { scorekeeperLabel } from "../scorekeeper";
+import { scorekeeperLabel } from "./scorekeeper";
 
 export const dockPoints = async (stash: Types.Stash, bot): Promise<boolean> => {
   logger.info(`Stash ${stash} did BAD, docking points`, scorekeeperLabel);

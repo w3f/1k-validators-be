@@ -55,12 +55,12 @@ export const endRound = async (
   // Gets adds candidates we nominated to the list
   for (const nomGroup of nominatorGroups) {
     for (const nominator of nomGroup) {
-      const current = await queries.getCurrentTargets(nominator.controller);
+      const current = await queries.getCurrentTargets(nominator.bondedAddress);
 
       // If not nominating any... then return.
       if (!current.length) {
         logger.info(
-          `${nominator.controller} is not nominating any targets.`,
+          `${nominator.bondedAddress} is not nominating any targets.`,
           scorekeeperLabel,
         );
         continue;

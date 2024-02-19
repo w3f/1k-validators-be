@@ -90,7 +90,7 @@ export default class Nominator {
     return this._proxyDelay;
   }
 
-  public async stash(): Promise<any> {
+  public async stash(): Promise<string> {
     try {
       const api = this.handler.getApi();
       const ledger = await api.query.staking.ledger(this.bondedAddress);
@@ -100,7 +100,7 @@ export default class Nominator {
       }
       const { stash } = ledger.unwrap();
 
-      return stash;
+      return stash.toString();
     } catch (e) {
       logger.error(
         `Error getting stash for ${this.bondedAddress}: ${e}`,
@@ -111,7 +111,7 @@ export default class Nominator {
     }
   }
 
-  public async payee(): Promise<any> {
+  public async payee(): Promise<string> {
     const api = this.handler.getApi();
     try {
       const ledger = await api.query.staking.ledger(this.bondedAddress);

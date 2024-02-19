@@ -5520,7 +5520,7 @@
       "name": "Block shield",
       "stash": "DJYUrEpahAbXjQbrz9fYTZRHxVEGRyBC5iu6UFXfwqdczxP",
       "riotHandle": "@blockshield:matrix.org",
-      "kyc": false
+      "kyc": true
     },
     {
       "slotId": 791,
@@ -5765,6 +5765,13 @@
       "name": "Link swap",
       "stash": "F9tiZuYF4Z6X1nC8ca5gv5xEzBRMzbRkC2wcfNRPmzcTBiu",
       "riotHandle": "@dmitryevens:matrix.org",
+      "kyc": true
+    }
+    {
+      "slotId": 828,
+      "name": "Block shield-2",
+      "stash": "G28CD89C2iv7FiYDge4GMLQXGo1vNj4EAssVoWPLjCFJn47",
+      "riotHandle": "@blockshield:matrix.org",
       "kyc": true
     }
   ]

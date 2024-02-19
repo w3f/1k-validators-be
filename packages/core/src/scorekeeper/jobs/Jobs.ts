@@ -8,12 +8,12 @@ import {
 
 import { scorekeeperLabel, SpawnedNominatorGroup } from "../scorekeeper";
 import {
-  startCancelCron,
+  startCancelJob,
   startExecutionJob,
   startMainScorekeeperJob,
-  startStaleNominationCron,
+  startStaleNominationJob,
   startUnclaimedEraJob,
-} from "./cron/cron";
+} from "./cron/StartCronJobs";
 
 export type jobsMetadata = {
   config: Config.ConfigSchema;
@@ -124,8 +124,8 @@ const startScorekeeperJobs = async (
   await startExecutionJob(handler, nominatorGroups, config, bot);
 
   await startUnclaimedEraJob(config, chaindata);
-  await startCancelCron(config, handler, nominatorGroups, chaindata, bot);
-  await startStaleNominationCron(
+  await startCancelJob(config, handler, nominatorGroups, chaindata, bot);
+  await startStaleNominationJob(
     config,
     handler,
     nominatorGroups,

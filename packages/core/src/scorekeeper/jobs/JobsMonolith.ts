@@ -9,19 +9,19 @@ import {
   startEraStatsJob,
   startInclusionJob,
   startLocationStatsJob,
+  startMonitorJob,
   startNominatorJob,
   startScoreJob,
   startSessionKeyJob,
   startValidatityJob,
   startValidatorPrefJob,
-} from "./cron/cron";
-import { monitorJob } from "./cron/jobs";
+} from "./cron/StartCronJobs";
 
 export class JobsMonolith extends Jobs {
   _startSpecificJobs = async (): Promise<void> => {
     const { config, constraints, chainData } = this.metadata;
     try {
-      await monitorJob();
+      await startMonitorJob(config);
       await startValidatityJob(config, constraints);
       await startScoreJob(config, constraints);
       await startEraPointsJob(config, chainData);

@@ -13,7 +13,7 @@ import MatrixBot from "./matrix";
 import Scorekeeper from "./scorekeeper/scorekeeper";
 import { TelemetryClient } from "@1kv/telemetry";
 
-import { startClearAccumulatedOfflineTimeJob } from "./scorekeeper/jobs/cron/cron";
+import { startClearAccumulatedOfflineTimeJob } from "./scorekeeper/jobs/cron/StartCronJobs";
 import { Server } from "@1kv/gateway";
 
 const isCI = process.env.CI;

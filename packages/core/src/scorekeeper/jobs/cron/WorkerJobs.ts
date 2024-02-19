@@ -1,6 +1,8 @@
 import { ChainData, Constraints } from "@1kv/common";
 import { otvWorker } from "@1kv/worker";
 
+// Wrappers around the jobs importted from the `Worker` package
+
 // Runs Monitor Job
 export const monitorJob = async () => {
   await otvWorker.jobs.getLatestTaggedRelease();

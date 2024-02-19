@@ -24,9 +24,11 @@ import {
   unclaimedEraJob,
   validatorPrefJob,
   validityJob,
-} from "./jobs";
+} from "./WorkerJobs";
 import { scorekeeperLabel } from "../../scorekeeper";
 import { endRound, startRound } from "../../Round";
+
+// Functions for starting the cron jobs
 
 export const cronLabel = { label: "Cron" };
 
@@ -345,7 +347,7 @@ export const startExecutionJob = async (
   executionCron.start();
 };
 
-export const startCancelCron = async (
+export const startCancelJob = async (
   config: Config.ConfigSchema,
   handler: ApiHandler,
   nominatorGroups: Array<Nominator[]>,
@@ -445,7 +447,7 @@ export const startCancelCron = async (
   cancelCron.start();
 };
 
-export const startStaleNominationCron = async (
+export const startStaleNominationJob = async (
   config: Config.ConfigSchema,
   handler: ApiHandler,
   nominatorGroups: Array<Nominator[]>,

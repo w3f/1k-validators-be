@@ -5759,6 +5759,20 @@
       "stash": "F9tiZuYF4Z6X1nC8ca5gv5xEzBRMzbRkC2wcfNRPmzcTBiu",
       "riotHandle": "@dmitryevens:matrix.org",
       "kyc": true
+    },
+    {
+      "slotId": 826,
+      "name": "Dot Plus",
+      "stash": "HsZAnvbJvdXuQg4GSToQPYrtVWKbpCutSRuHzZDmPFgYf2N",
+      "riotHandle": "@plussik:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 827,
+      "name": "Dot Plus/1",
+      "stash": "G9fk8vjk2eiy65mQjog8MgPuLAHjjnagv4ixVzY7zRiEu3Z",
+      "riotHandle": "@plussik:matrix.org",
+      "kyc": true
     }
   ]
 }

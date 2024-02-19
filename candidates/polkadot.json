@@ -2258,7 +2258,10 @@
       "name": "futureproof",
       "stash": "13unkT9DyFUnzKZdLCkHBvGLuhvcHQSrRhTWhrL9gqG98CTH",
       "kusamaStash": "J3f7ULfjVbbBYvZtMvaEDiUC8odXjt2A2hGShshBFCKHazY",
-      "riotHandle": "@kureus:matrix.org",
+      "riotHandle": [
+        "@firegrass:matrix.org",
+        "@kureus:matrix.org"
+      ],
       "kyc": true
     },
     {

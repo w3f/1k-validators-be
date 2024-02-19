@@ -132,15 +132,14 @@ export const LOCATION_STATS_CRON = "0 0-59/5 * * * *";
 
 // Chain Querying Cron Jobs:
 
-// Era Points Cron Job. This runs every 45 minutes by default
-export const ERA_POINTS_CRON = "0 0-59/45 * * * *";
+// Era Points Cron Job. This runs every 15 minutes by default
+export const ERA_POINTS_CRON = "0 0-59/15 * * * *";
 
 // Active Validator Cron Job. This runs ever 12 minutes by default
 export const ACTIVE_VALIDATOR_CRON = "0 0-59/12 * * * *";
 
-// Inclusion Cron Job. This runs every hour by default
-// export const INCLUSION_CRON = "0 0 0-23/1 * * *";
-export const INCLUSION_CRON = "0 0-59/35 * * * *";
+// Inclusion Cron Job
+export const INCLUSION_CRON = "0 0-59/15 * * * *";
 
 // Unclaimed Era Cron Job. This runs every hour by default
 export const UNCLAIMED_ERAS_CRON = "0 0 0-23/1 * * *";
@@ -148,8 +147,8 @@ export const UNCLAIMED_ERAS_CRON = "0 0 0-23/1 * * *";
 // Validator Pref Cron Job. This runs every 15 minutes by default
 export const VALIDATOR_PREF_CRON = "0 0-59/3 * * * *";
 
-// Sesion Key Cron Job. This runs every 45 minutes by default
-export const SESSION_KEY_CRON = "0 0-59/45 * * * *";
+// Sesion Key Cron Job. This runs every 15 minutes by default
+export const SESSION_KEY_CRON = "0 0-59/15 * * * *";
 
 // Nominator Cron Job. This runs every 15 minutes by default
 export const NOMINATOR_CRON = "0 0-59/17 * * * *";

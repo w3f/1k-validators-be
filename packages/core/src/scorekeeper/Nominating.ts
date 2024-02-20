@@ -2,12 +2,12 @@
 // - For each nominator group - if they have current targets, wipe them
 // - Determine the number of nominations to make for each nominator account
 //     - This will either be a static number, or "auto"
-import { logger, queries, Types, Util } from "@1kv/common";
+import { logger, queries, Util } from "@1kv/common";
 import { autoNumNominations } from "./NumNominations";
 import { scorekeeperLabel, SpawnedNominatorGroup } from "./scorekeeper";
 
 export const doNominations = async (
-  candidates: Types.CandidateData[],
+  candidates: { name: string; stash: string; total: number }[],
   nominatorGroups: SpawnedNominatorGroup[] = [],
   chaindata,
   handler,
@@ -39,12 +39,6 @@ export const doNominations = async (
       // Planck Denominated Bonded Amount
       const [currentBondedAmount, bondErr] =
         await chaindata.getBondedAmount(stash);
-      // Planck Denominated New Bonded Amount
-      // const newBondedAmount = formattedNewBondedAmount * denom;
-
-      // logger.info(
-      //   `{Scorekeepr::_doNominations} ${nominator.address} number of nominations: ${nominationNum} newBondedAmount: ${newBondedAmount} targetValStake: ${targetValStake}`
-      // );
 
       // Check the free balance of the account. If it doesn't have a free balance, skip.
       const balance = await chaindata.getBalance(nominator.address);
@@ -78,10 +72,6 @@ export const doNominations = async (
         return;
       }
 
-      // await nominator.adjustBond(
-      //   newBondedAmount,
-      //   Number(currentBondedAmount)
-      // );
       await Util.sleep(10000);
       await nominator.nominate(targets);
 
@@ -93,8 +83,7 @@ export const doNominations = async (
           targets.map(async (target) => {
             const candidate = await queries.getCandidate(target);
             const name = candidate.name;
-            const score = candidate.total;
-            return `- ${name} (${target}) [${score}]`;
+            return `- ${name} (${target})`;
           }),
         )
       ).join("\n");

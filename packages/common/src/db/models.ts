@@ -54,6 +54,26 @@ export const DelayedTxSchema = new Schema({
 
 export const DelayedTxModel = mongoose.model("DelayedTx", DelayedTxSchema);
 
+export interface SubIdentity {
+  name: string;
+  address: string;
+}
+
+export interface Identity {
+  name: string;
+  address: string;
+  verified?: boolean;
+  subIdentities?: SubIdentity[];
+  display?: string;
+  email?: string;
+  image?: string;
+  judgements?: string[];
+  legal?: string;
+  pgp?: string;
+  riot?: string;
+  twitter?: string;
+  web?: string;
+}
 export const Identity = new Schema({
   name: { type: String, index: true },
   address: { type: String, index: true },
@@ -76,6 +96,31 @@ export const Identity = new Schema({
 });
 
 export const IdentityModel = mongoose.model("Identity", Identity);
+
+export enum InvalidityReasonType {
+  ONLINE = "ONLINE",
+  VALIDATE_INTENTION = "VALIDATE_INTENTION",
+  CLIENT_UPGRADE = "CLIENT_UPGRADE",
+  CONNECTION_TIME = "CONNECTION_TIME",
+  IDENTITY = "IDENTITY",
+  MULTIPLE_IDENTITIES = "MULTIPLE_IDENTITIES",
+  ACCUMULATED_OFFLINE_TIME = "ACCUMULATED_OFFLINE_TIME",
+  REWARD_DESTINATION = "REWARD_DESTINATION",
+  COMMISION = "COMMISION",
+  SELF_STAKE = "SELF_STAKE",
+  UNCLAIMED_REWARDS = "UNCLAIMED_REWARDS",
+  BLOCKED = "BLOCKED",
+  KUSAMA_RANK = "KUSAMA_RANK",
+  PROVIDER = "PROVIDER",
+  BEEFY = "BEEFY",
+}
+
+export interface InvalidityReason {
+  valid?: boolean;
+  type: InvalidityReasonType;
+  details: any;
+  updated?: number;
+}
 
 export const InvalidityReason = new Schema({
   valid: Boolean,
@@ -222,6 +267,71 @@ export const OpenGovDelegationModel = mongoose.model(
 
 OpenGovDelegationSchema.index({ delegate: 1, track: 1 });
 
+export interface TelemetryNode {
+  telemetryId: number;
+  name: string;
+  nodeRefs: number;
+  version: string;
+  discoveredAt: number;
+  offlineSince: number;
+  offlineAccumulated: number;
+  onlineSince: number;
+}
+
+export const TelemetryNodeSchema = new Schema({
+  telemetryId: { type: Number, index: true },
+  name: { type: String, index: true },
+  nodeRefs: Number,
+  version: String,
+  discoveredAt: { type: Number, default: 0 },
+  offlineSince: { type: Number, default: 0 },
+  offlineAccumulated: { type: Number, default: 0 },
+  onlineSince: { type: Number, default: 0 },
+});
+
+export const TelemetryNodeModel = mongoose.model(
+  "TelemetryNode",
+  TelemetryNodeSchema,
+);
+
+export interface Candidate {
+  slotId: number;
+  kyc: boolean;
+  telemetryId: number;
+  nodeRefs: number;
+  name: string;
+  version: string;
+  discoveredAt: number;
+  nominatedAt: number;
+  offlineSince: number;
+  offlineAccumulated: number;
+  onlineSince: number;
+  updated: boolean;
+  rank: number;
+  faults: number;
+  stash: string;
+  controller: string;
+  invalidityReasons: string;
+  faultEvents: { when: string; reason: string; prevRank: number }[];
+  unclaimedEras: number[];
+  kusamaStash: string;
+  inclusion: number;
+  spanInclusion: number;
+  valid: boolean;
+  lastValid: number;
+  commission: number;
+  identity: Identity;
+  active: boolean;
+  rewardDestination: string;
+  queuedKeys: string;
+  nextKeys: string;
+  bonded: number;
+  skipSelfStake: boolean;
+  invalidity: InvalidityReason[];
+  matrix: string[];
+  implementation: string;
+}
+
 export const CandidateSchema = new Schema({
   // The unique identifier of the candidate's node for a given slot.
   slotId: { type: Number, index: true },
@@ -229,8 +339,6 @@ export const CandidateSchema = new Schema({
   kyc: Boolean,
   // The inherited telemetry ID.
   telemetryId: Number,
-  // The network identifier derived from the networking key.
-  networkId: String,
   // The number of nodes that are online for this candidate (this handles upgrade situations).
   nodeRefs: Number,
   // The name registered on the candidates list.
@@ -262,8 +370,6 @@ export const CandidateSchema = new Schema({
   invalidityReasons: { type: String, default: "" },
   // If a validator has faults, this will contain the details.
   faultEvents: { type: [FaultEventSchema], default: [] },
-  // If a validator had its rank increased, this will contian details.
-  rankEvents: { type: [RankEventSchema], default: [] },
   // Unclaimed Era Rewards
   unclaimedEras: { type: [Number], default: [] },
   // Polkadot specific: Kusama Stash
@@ -294,11 +400,6 @@ export const CandidateSchema = new Schema({
   skipSelfStake: Boolean,
   // array of invalidity reasons
   invalidity: [InvalidityReason],
-  // The node location according to telemetry
-  location: String,
-  // The amount of stake going towards backing council members
-  totalRewards: Number,
-  infrastructureLocation: LocationSchema,
   matrix: [String],
   implementation: String,
 });

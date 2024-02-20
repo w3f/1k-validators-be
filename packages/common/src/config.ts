@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import path from "path";
-import { isValidUrl } from "./util";
+import { isValidUrl } from "./utils/util";
 
 type CandidateConfig = {
   slotId: number;

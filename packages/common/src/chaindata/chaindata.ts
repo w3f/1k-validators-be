@@ -2,7 +2,7 @@ import { ApiPromise } from "@polkadot/api";
 import ApiHandler from "../ApiHandler";
 import logger from "../logger";
 import { NumberResult, StringResult } from "../types";
-import { sleep } from "../util";
+import { sleep } from "../utils/util";
 import {
   getApiAt,
   getBlock,

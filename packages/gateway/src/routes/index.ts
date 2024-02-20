@@ -4,7 +4,6 @@ import Candidate from "../controllers/Candidate";
 import Nominator from "../controllers/Nominator";
 import Nomination from "../controllers/Nomination";
 import EraPoints from "../controllers/EraPoints";
-import Democracy from "../controllers/Democracy";
 import Score from "../controllers/Score";
 import Stats from "../controllers/Stats";
 import Location from "../controllers/Location";
@@ -45,10 +44,6 @@ const API = {
   LocationStats: "/locationstats",
   ValidLocationStats: "/locationstats/valid",
   SessionLocationStats: "/locationstats/:session",
-  Councillors: "/councillor",
-  Councillor: "/councillor/:address",
-  Voters: "/voters",
-  ElectionStats: "/electionstats",
   EraPaid: "/erapaid",
   EraRewards: "/erareward/:stash/:limit",
   EraReward: "/erareward/:stash/:era",
@@ -56,23 +51,6 @@ const API = {
   LatestNominatorStake: "/nominatorstake/:address",
   EraNominatorStake: "/nominatorstake/:address/:era",
   CurrentValidatorSet: "/validators/current",
-  AddressConvictionVotes: "/opengov/votes/address/:address",
-  AddressFinishedConvictionVotes: "/opengov/votes/address/:address/finished",
-  AddressTrackConvictionVotes: "/opengov/votes/address/:address/track/:track",
-  TrackConvictionVotes: "/opengov/votes/track/:track",
-  ReferendumConvictionVotes: "/opengov/votes/referendum/:index",
-  OpenGovReferenda: "/opengov/referenda",
-  OpenGovReferendaIndex: "/opengov/referenda/:index",
-  OpenGovReferendaStats: "/opengov/referenda/stats/",
-  OpenGovReferendumStats: "/opengov/referenda/stats/:index",
-  OpenGovReferendumStatsSegment: "/opengov/referenda/stats/:index/:segment",
-  OpenGovLastReferendum: "/opengov/referenda/last",
-  OpenGovAddressDelegations: "/opengov/delegations/:address",
-  OpenGovVoters: "/opengov/voters",
-  OpenGovVoter: "/opengov/voter/:address",
-  OpenGovDelegates: "/opengov/delegates",
-  OpenGovDelegate: "/opengov/delegates/:address",
-  OpenGovTracks: "/opengov/tracks",
   Validators: "/validators",
   Validator: "/validator/:address",
   ValidatorsBeefyStats: "/validators/beefy",
@@ -113,46 +91,6 @@ router.get(API.ProxyTxs, Nomination.getProxyTxs);
 
 router.get(API.EraPoints, EraPoints.getEraPoints);
 router.get(API.TotalEraPoints, EraPoints.getTotalEraPoints);
-
-router.get(API.ElectionStats, Democracy.getElectionStats);
-router.get(API.Councillors, Democracy.getCouncillors);
-router.get(API.Councillor, Democracy.getCouncillor);
-//
-router.get(API.Voters, Democracy.getVoters);
-
-router.get(API.OpenGovReferenda, Democracy.getOpenGovReferenda);
-router.get(API.OpenGovReferendaStats, Democracy.getOpenGovReferendaStats);
-router.get(API.OpenGovReferendaIndex, Democracy.getOpenGovReferendaIndex);
-router.get(API.OpenGovReferendumStats, Democracy.getOpenGovReferendumStats);
-router.get(
-  API.OpenGovReferendumStatsSegment,
-  Democracy.getOpenGovReferendumStatsSegment,
-);
-
-router.get(API.AddressConvictionVotes, Democracy.getAddressConvictionVotes);
-router.get(
-  API.AddressFinishedConvictionVotes,
-  Democracy.getAddressFinishedConvictionVotes,
-);
-router.get(
-  API.AddressTrackConvictionVotes,
-  Democracy.getAddressTrackConvictionVotes,
-);
-router.get(API.TrackConvictionVotes, Democracy.getTrackConvictionVotes);
-router.get(
-  API.ReferendumConvictionVotes,
-  Democracy.getReferendumConvictionVotes,
-);
-router.get(
-  API.OpenGovAddressDelegations,
-  Democracy.getOpenGovAddressDelegations,
-);
-
-router.get(API.OpenGovVoters, Democracy.getOpenGovVoters);
-router.get(API.OpenGovVoter, Democracy.getOpenGovVoter);
-router.get(API.OpenGovDelegates, Democracy.getOpenGovDelegates);
-router.get(API.OpenGovDelegate, Democracy.getOpenGovDelegate);
-router.get(API.OpenGovTracks, Democracy.getOpenGovTracks);
 
 router.get(API.Score, Score.getScore);
 router.get(API.SessionScore, Score.getSessionScore);

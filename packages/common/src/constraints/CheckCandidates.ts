@@ -1,7 +1,6 @@
 import { logger } from "../index";
-import { allCandidates, setLastValid, setValid } from "../db";
+import { allCandidates, Candidate, setLastValid, setValid } from "../db";
 import { constraintsLabel, OTV } from "./constraints";
-import { CandidateData } from "../types";
 import {
   checkBeefyKeys,
   checkBlocked,
@@ -17,11 +16,11 @@ import {
   checkUnclaimed,
   checkValidateIntention,
 } from "./ValidityChecks";
-import { percentage, timeRemaining } from "../util";
+import { percentage, timeRemaining } from "../utils/util";
 
 export const checkCandidate = async (
   constraints: OTV,
-  candidate: CandidateData,
+  candidate: Candidate,
 ) => {
   let valid = false;
 

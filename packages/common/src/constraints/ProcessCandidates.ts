@@ -1,5 +1,6 @@
-import { Constants, logger, Types } from "../index";
+import { Constants, logger } from "../index";
 import { constraintsLabel, OTV } from "./constraints";
+import { Candidate } from "../db";
 
 /// At the end of a nomination round this is the logic that separates the
 /// candidates that did good from the ones that did badly.
@@ -8,18 +9,12 @@ import { constraintsLabel, OTV } from "./constraints";
 ///     - If they do not meet all the constraints, they get added to the bad set
 export const processCandidates = async (
   constraints: OTV,
-  candidates: Set<Types.CandidateData>,
-): Promise<
-  [
-    Set<Types.CandidateData>,
-    Set<{ candidate: Types.CandidateData; reason: string }>,
-  ]
-> => {
+  candidates: Set<Candidate>,
+): Promise<[Set<Candidate>, Set<{ candidate: Candidate; reason: string }>]> => {
   logger.info(`Processing ${candidates.size} candidates`, constraintsLabel);
 
-  const good: Set<Types.CandidateData> = new Set();
-  const bad: Set<{ candidate: Types.CandidateData; reason: string }> =
-    new Set();
+  const good: Set<Candidate> = new Set();
+  const bad: Set<{ candidate: Candidate; reason: string }> = new Set();
 
   for (const candidate of candidates) {
     if (!candidate) {

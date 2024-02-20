@@ -2,18 +2,18 @@ import { scaled, scaledDefined } from "./score";
 import { logger, queries } from "../index";
 import {
   allNominators,
+  Candidate,
   getLatestNominatorStake,
   getLatestValidatorScoreMetadata,
   setValidatorScore,
   validCandidates,
 } from "../db";
 import { constraintsLabel, OTV } from "./constraints";
-import { CandidateData } from "../types";
-import { percentage, timeRemaining } from "../util";
+import { percentage, timeRemaining } from "../utils/util";
 
 export const scoreCandidate = async (
   constraints: OTV,
-  candidate: CandidateData,
+  candidate: Candidate,
   scoreMetadata: any,
 ) => {
   const {
@@ -259,7 +259,7 @@ export const scoreCandidate = async (
 
 export const scoreCandidates = async (
   constraints: OTV,
-  candidates: CandidateData[],
+  candidates: Candidate[],
 ) => {
   await constraints.setScoreMetadata();
   const scoreMetadata = await getLatestValidatorScoreMetadata();

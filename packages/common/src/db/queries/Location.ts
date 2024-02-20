@@ -2,6 +2,7 @@ import { CandidateModel, IITModel, LocationModel } from "../models";
 import { logger } from "../../index";
 import { getLatestSession } from "./Session";
 import { getCandidate } from "./Candidate";
+import { HardwareSpec } from "../../types";
 
 export const getAllLocations = async (address: string): Promise<any> => {
   const locations = await LocationModel.find({
@@ -102,7 +103,7 @@ export const setLocation = async (
   region: string,
   country: string,
   provider: string,
-  sys: any,
+  hardwareSpec: HardwareSpec,
   v?: boolean,
   port?: number,
 ): Promise<any> => {
@@ -138,10 +139,10 @@ export const setLocation = async (
       country,
       provider,
       port,
-      cpu: sys?.cpu,
-      memory: sys?.memory,
-      coreCount: sys?.core_count,
-      vm: sys?.is_virtual_machine,
+      cpu: hardwareSpec?.cpu,
+      memory: hardwareSpec?.memory,
+      coreCount: hardwareSpec?.core_count,
+      vm: hardwareSpec?.is_virtual_machine,
       vpn: v,
       session: session || 0,
       updated: Date.now(),

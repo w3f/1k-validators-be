@@ -1,7 +1,7 @@
 import ReconnectingWebSocket from "reconnecting-websocket";
 import WS from "ws";
 
-import { Config, logger, queries, Util } from "@1kv/common";
+import { Config, logger, queries, Types, Util } from "@1kv/common";
 
 enum TelemetryMessage {
   FeedVersion = 0x00,
@@ -184,8 +184,11 @@ export default class TelemetryClient {
             label: "Telemetry",
           });
 
+          const telemetryNodeDetails: Types.TelemetryNodeDetails =
+            Util.nodeDetailsFromTelemetryMessage(payload);
+
           // Report the node as online
-          await queries.reportOnline(id, details, now, startupTime);
+          await queries.reportOnline(telemetryNodeDetails);
 
           // If the node was offline
           const wasOffline = this.offlineNodes.has(name);
@@ -319,7 +322,7 @@ export default class TelemetryClient {
         logger.warn(`${name} has been disconnected for more than 5 minutes`, {
           label: "Telemetry",
         });
-        await queries.reportOffline(name, now);
+        await queries.reportOffline(name);
         this.offlineNodes.set(name, disconnectedAt);
       }
     }

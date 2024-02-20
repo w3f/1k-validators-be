@@ -1,4 +1,4 @@
-import { ChainData, Config, Constants, Types } from "../index";
+import { ChainData, Config, Constants } from "../index";
 import ApiHandler from "../ApiHandler";
 import { setScoreMetadata } from "./ScoreMetadata";
 import { checkAllCandidates, checkCandidate } from "./CheckCandidates";
@@ -8,11 +8,10 @@ import {
   scoreCandidates,
 } from "./ScoreCandidates";
 import { processCandidates } from "./ProcessCandidates";
+import { Candidate } from "../db";
 
 export interface Constraints {
-  processCandidates(
-    candidates: Set<Types.CandidateData>,
-  ): Promise<[Set<any>, Set<any>]>;
+  processCandidates(candidates: Set<Candidate>): Promise<[Set<any>, Set<any>]>;
 }
 
 export const constraintsLabel = { label: "Constraints" };
@@ -105,7 +104,7 @@ export class OTV implements Constraints {
   }
 
   // Check the candidate and set any invalidity fields
-  async checkCandidate(candidate: Types.CandidateData): Promise<boolean> {
+  async checkCandidate(candidate: Candidate): Promise<boolean> {
     return await checkCandidate(this, candidate);
   }
 
@@ -113,11 +112,11 @@ export class OTV implements Constraints {
     return await scoreAllCandidates(this);
   }
 
-  async scoreCandidate(candidate: Types.CandidateData, scoreMetadata: any) {
+  async scoreCandidate(candidate: Candidate, scoreMetadata: any) {
     return await scoreCandidate(this, candidate, scoreMetadata);
   }
 
-  async scoreCandidates(candidates: Types.CandidateData[]) {
+  async scoreCandidates(candidates: Candidate[]) {
     return await scoreCandidates(this, candidates);
   }
 
@@ -127,13 +126,8 @@ export class OTV implements Constraints {
   ///     - We go through all the candidates and if they meet all constraints, they get called to the 'good' set
   ///     - If they do not meet all the constraints, they get added to the bad set
   async processCandidates(
-    candidates: Set<Types.CandidateData>,
-  ): Promise<
-    [
-      Set<Types.CandidateData>,
-      Set<{ candidate: Types.CandidateData; reason: string }>,
-    ]
-  > {
+    candidates: Set<Candidate>,
+  ): Promise<[Set<Candidate>, Set<{ candidate: Candidate; reason: string }>]> {
     return await processCandidates(this, candidates);
   }
 }

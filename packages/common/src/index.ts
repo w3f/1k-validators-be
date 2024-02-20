@@ -7,7 +7,7 @@ import { ChainData } from "./chaindata/chaindata";
 import ApiHandler from "./ApiHandler";
 import * as Constants from "./constants";
 import * as Types from "./types";
-import * as Util from "./util";
+import * as Util from "./utils/";
 import * as Constraints from "./constraints/constraints";
 import * as Score from "./constraints/score";
 import * as Scripts from "./scripts";

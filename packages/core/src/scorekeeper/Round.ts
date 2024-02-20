@@ -5,7 +5,7 @@
  */
 
 import { scorekeeperLabel } from "./scorekeeper";
-import { logger, queries, Types, Util } from "@1kv/common";
+import { logger, Models, queries, Types, Util } from "@1kv/common";
 import { dockPoints } from "./Rank";
 import { doNominations } from "./Nominating";
 
@@ -24,7 +24,7 @@ export const endRound = async (
   logger.info("Ending round", scorekeeperLabel);
 
   // The targets that have already been processed for this round.
-  const toProcess: Map<Types.Stash, Types.CandidateData> = new Map();
+  const toProcess: Map<Types.Stash, Models.Candidate> = new Map();
 
   const { lastNominatedEraIndex: startEra } =
     await queries.getLastNominatedEraIndex();
@@ -194,8 +194,8 @@ export const startRound = async (
 
   await Util.sleep(6000);
 
-  let validCandidates = allCandidates.filter((candidate) => candidate.valid);
-  validCandidates = await Promise.all(
+  const validCandidates = allCandidates.filter((candidate) => candidate.valid);
+  const scoredValidCandidates = await Promise.all(
     validCandidates.map(async (candidate) => {
       const score = await queries.getLatestValidatorScore(candidate.stash);
       const scoredCandidate = {
@@ -206,17 +206,17 @@ export const startRound = async (
       return scoredCandidate;
     }),
   );
-  validCandidates = validCandidates.sort((a, b) => {
+  const sortedCandidates = scoredValidCandidates.sort((a, b) => {
     return b.total - a.total;
   });
 
   logger.info(
-    `number of all candidates: ${allCandidates.length} valid candidates: ${validCandidates.length}`,
+    `number of all candidates: ${allCandidates.length} valid candidates: ${sortedCandidates.length}`,
     scorekeeperLabel,
   );
 
   const numValidatorsNominated = await doNominations(
-    validCandidates,
+    sortedCandidates,
     nominatorGroups,
     chaindata,
     handler,

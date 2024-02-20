@@ -2,7 +2,7 @@ import { ApiPromise, WsProvider } from "@polkadot/api";
 import EventEmitter from "eventemitter3";
 
 import logger from "./logger";
-import { sleep } from "./util";
+import { sleep } from "./utils/util";
 import { POLKADOT_API_TIMEOUT } from "./constants";
 
 export const apiLabel = { label: "ApiHandler" };

@@ -4,8 +4,6 @@ export * from "./Candidate";
 export * from "./ChainMetadata";
 export * from "./Councillor";
 export * from "./DelayedTx";
-export * from "./Delegation";
-export * from "./Democracy";
 export * from "./ElectionStats";
 export * from "./Era";
 export * from "./EraPoints";

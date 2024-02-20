@@ -1,9 +1,9 @@
-import { logger, queries, Types } from "../index";
+import { logger, queries } from "../index";
 import { getStats } from "./score";
-import { allNominators, getLatestNominatorStake } from "../db";
+import { allNominators, Candidate, getLatestNominatorStake } from "../db";
 import { constraintsLabel } from "./constraints";
 
-export const getBondedValues = (validCandidates: Types.CandidateData[]) => {
+export const getBondedValues = (validCandidates: Candidate[]) => {
   const bondedValues = validCandidates.map((candidate) => {
     return candidate.bonded ? candidate.bonded : 0;
   });
@@ -11,7 +11,7 @@ export const getBondedValues = (validCandidates: Types.CandidateData[]) => {
   return { bondedValues, bondedStats };
 };
 
-export const getFaultsValues = (validCandidates: Types.CandidateData[]) => {
+export const getFaultsValues = (validCandidates: Candidate[]) => {
   const faultsValues = validCandidates.map((candidate) => {
     return candidate.faults ? candidate.faults : 0;
   });
@@ -19,7 +19,7 @@ export const getFaultsValues = (validCandidates: Types.CandidateData[]) => {
   return { faultsValues, faultsStats };
 };
 
-export const getInclusionValues = (validCandidates: Types.CandidateData[]) => {
+export const getInclusionValues = (validCandidates: Candidate[]) => {
   const inclusionValues = validCandidates.map((candidate) => {
     return candidate.inclusion ? candidate.inclusion : 0;
   });
@@ -27,9 +27,7 @@ export const getInclusionValues = (validCandidates: Types.CandidateData[]) => {
   return { inclusionValues, inclusionStats };
 };
 
-export const getSpanInclusionValues = (
-  validCandidates: Types.CandidateData[],
-) => {
+export const getSpanInclusionValues = (validCandidates: Candidate[]) => {
   const spanInclusionValues = validCandidates.map((candidate) => {
     return candidate.spanInclusion ? candidate.spanInclusion : 0;
   });
@@ -37,9 +35,7 @@ export const getSpanInclusionValues = (
   return { spanInclusionValues, spanInclusionStats };
 };
 
-export const getDiscoveredAtValues = (
-  validCandidates: Types.CandidateData[],
-) => {
+export const getDiscoveredAtValues = (validCandidates: Candidate[]) => {
   const discoveredAtValues = validCandidates.map((candidate) => {
     return candidate.discoveredAt ? candidate.discoveredAt : 0;
   });
@@ -47,9 +43,7 @@ export const getDiscoveredAtValues = (
   return { discoveredAtValues, discoveredAtStats };
 };
 
-export const getNominatedAtValues = (
-  validCandidates: Types.CandidateData[],
-) => {
+export const getNominatedAtValues = (validCandidates: Candidate[]) => {
   const nominatedAtValues = validCandidates.map((candidate) => {
     return candidate.nominatedAt ? candidate.nominatedAt : 0;
   });
@@ -57,7 +51,7 @@ export const getNominatedAtValues = (
   return { nominatedAtValues, nominatedAtStats };
 };
 
-export const getOfflineValues = (validCandidates: Types.CandidateData[]) => {
+export const getOfflineValues = (validCandidates: Candidate[]) => {
   const offlineValues = validCandidates.map((candidate) => {
     return candidate.offlineAccumulated ? candidate.offlineAccumulated : 0;
   });
@@ -65,7 +59,7 @@ export const getOfflineValues = (validCandidates: Types.CandidateData[]) => {
   return { offlineValues, offlineStats };
 };
 
-export const getRankValues = (validCandidates: Types.CandidateData[]) => {
+export const getRankValues = (validCandidates: Candidate[]) => {
   const rankValues = validCandidates.map((candidate) => {
     return candidate.rank ? candidate.rank : 0;
   });
@@ -73,7 +67,7 @@ export const getRankValues = (validCandidates: Types.CandidateData[]) => {
   return { rankValues, rankStats };
 };
 
-export const getUnclaimedValues = (validCandidates: Types.CandidateData[]) => {
+export const getUnclaimedValues = (validCandidates: Candidate[]) => {
   const unclaimedValues = validCandidates.map((candidate) => {
     return candidate.unclaimedEras && candidate.unclaimedEras.length
       ? candidate.unclaimedEras.length
@@ -83,9 +77,7 @@ export const getUnclaimedValues = (validCandidates: Types.CandidateData[]) => {
   return { unclaimedValues, unclaimedStats };
 };
 
-export const getLocationValues = async (
-  validCandidates: Types.CandidateData[],
-) => {
+export const getLocationValues = async (validCandidates: Candidate[]) => {
   const locationMap = new Map();
   const locationArr = [];
   for (const candidate of validCandidates) {
@@ -115,9 +107,7 @@ export const getLocationValues = async (
   return { locationArr, locationValues, locationStats };
 };
 
-export const getRegionValues = async (
-  validCandidates: Types.CandidateData[],
-) => {
+export const getRegionValues = async (validCandidates: Candidate[]) => {
   const regionMap = new Map();
   const regionArr = [];
   for (const candidate of validCandidates) {
@@ -149,9 +139,7 @@ export const getRegionValues = async (
   return { regionArr, regionValues, regionStats };
 };
 
-export const getCountryValues = async (
-  validCandidates: Types.CandidateData[],
-) => {
+export const getCountryValues = async (validCandidates: Candidate[]) => {
   const countryMap = new Map();
   const countryArr = [];
   for (const candidate of validCandidates) {
@@ -183,9 +171,7 @@ export const getCountryValues = async (
   return { countryArr, countryValues, countryStats };
 };
 
-export const getProviderValues = async (
-  validCandidates: Types.CandidateData[],
-) => {
+export const getProviderValues = async (validCandidates: Candidate[]) => {
   const providerMap = new Map();
   const providerArr = [];
   for (const candidate of validCandidates) {
@@ -217,9 +203,7 @@ export const getProviderValues = async (
   return { providerArr, providerValues, providerStats };
 };
 
-export const getNominatorStakeValues = async (
-  validCandidates: Types.CandidateData[],
-) => {
+export const getNominatorStakeValues = async (validCandidates: Candidate[]) => {
   const ownNominators = await allNominators();
   const ownNominatorAddresses = ownNominators.map((nom) => {
     return nom.address;

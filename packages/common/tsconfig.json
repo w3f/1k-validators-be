@@ -15,7 +15,7 @@
 //    "src/server.ts",
 //    "src/telemetry.ts",
     "src/types.ts",
-    "src/util.ts"
+    "src/utils/util.ts"
   ],
   "compilerOptions": {
     /* Basic Options */

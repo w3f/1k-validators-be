@@ -1,9 +1,9 @@
 import Keyring from "@polkadot/keyring";
 import * as bs58 from "bs58";
 import * as hash from "hash.js";
-import { ConfigSchema } from "./config";
-import logger from "./logger";
-import { LOCATION_URL } from "./constants";
+import { ConfigSchema } from "../config";
+import logger from "../logger";
+import { LOCATION_URL } from "../constants";
 import { ApiPromise } from "@polkadot/api";
 import { format } from "date-fns";
 import axios from "axios";

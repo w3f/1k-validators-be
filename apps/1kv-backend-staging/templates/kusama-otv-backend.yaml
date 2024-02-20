@@ -96,7 +96,6 @@ spec:
                     "Contabo Inc.",
                     "Contabo GmbH"
                   ],
-                  "host": "wss://telemetry-backend.w3f.community/feed",
-                  "ipinfoToken": "token=<path:vaults/k8s-community-secrets/items/otv-kusama#ipinfo-token>"
+                  "host": "wss://telemetry-backend.w3f.community/feed"
                 }
               }

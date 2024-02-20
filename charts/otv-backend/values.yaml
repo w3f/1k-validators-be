@@ -83,6 +83,7 @@ config: |
       "chains": [
           "Kusama"
       ],
-      "host": "wss://telemetry-backend.w3f.community/feed"
+      "host": "wss://telemetry-backend.w3f.community/feed",
+      "ipinfoToken": "token=xxx"
     }
   }

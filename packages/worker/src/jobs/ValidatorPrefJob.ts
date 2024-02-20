@@ -1,10 +1,10 @@
-import { ChainData, logger, queries, Types } from "@1kv/common";
+import { ChainData, logger, Models, queries } from "@1kv/common";
 
 export const validatorPrefLabel = { label: "ValidatorPrefJob" };
 
 export const individualValidatorPrefJob = async (
   chaindata: ChainData,
-  candidate: Types.CandidateData,
+  candidate: Models.Candidate,
 ) => {
   const start = Date.now();
 

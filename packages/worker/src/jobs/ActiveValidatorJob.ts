@@ -1,10 +1,10 @@
-import { ChainData, logger, queries, Types } from "@1kv/common";
+import { ChainData, logger, Models, queries } from "@1kv/common";
 
 export const activeLabel = { label: "ActiveValidatorJob" };
 
 export const individualActiveValidatorJob = async (
   chaindata: ChainData,
-  candidate: Types.CandidateData,
+  candidate: Models.Candidate,
 ) => {
   const latestValidatorSet = await queries.getLatestValidatorSet();
   if (latestValidatorSet) {

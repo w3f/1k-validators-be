@@ -30,7 +30,7 @@
   "dependencies": {
     "@1kv/common": "workspace:^",
     "@polkadot/api": "^10.11.2",
-    "bullmq": "^5.1.5",
+    "bullmq": "^5.3.0",
     "typescript": "^5.3.3"
   },
   "devDependencies": {

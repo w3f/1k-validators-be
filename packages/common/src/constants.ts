@@ -45,9 +45,12 @@ export const CHAINDATA_SLEEP = 10000;
 
 /// List of Kusama endpoints we can switch between.
 export const KusamaEndpoints = [
-  "wss://kusama-rpc.polkadot.io",
+  "wss://kusama-rpc-tn.dwellir.com",
   "wss://kusama-rpc.dwellir.com",
   "wss://kusama.public.curie.radiumblock.xyz/ws",
+  "wss://rpc.ibp.network/kusama",
+  "wss://rpc.dotters.network/kusama",
+  "wss://ksm-rpc.stakeworld.io",
 ];
 
 /// List of Polkadot endpoints we can switch between.

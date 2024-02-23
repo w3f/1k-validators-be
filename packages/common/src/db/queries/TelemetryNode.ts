@@ -196,7 +196,8 @@ export const reportTelemetryNodeOffline = async (
           { $inc: { nodeRefs: -1 } },
         );
       } else {
-        await TelemetryNodeModel.updateOne({ name }, [
+        await TelemetryNodeModel.updateOne(
+          { name },
           {
             $set: {
               offlineSince: Date.now(),
@@ -204,7 +205,7 @@ export const reportTelemetryNodeOffline = async (
             },
             $inc: { nodeRefs: -1 },
           },
-        ]);
+        );
       }
       return true;
     }

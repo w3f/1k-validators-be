@@ -1,6 +1,5 @@
 import TelemetryClient from "../telemetry";
 import { logger } from "@1kv/common";
-import ReconnectingWebSocket from "reconnecting-websocket";
 import { deserialize, handleTelemetryMessage } from "./TelemetryMessage";
 import WebSocket from "ws";
 
@@ -53,14 +52,10 @@ export const subscribeWs = async (socket: WebSocket, chain: string) => {
     logger.info(`Connected to substrate-telemetry for chain: ${chain}`, {
       label: "Telemetry",
     });
-    socket.send(`ping:${chain}`);
+    // socket.send(`ping:${chain}`);
     socket.send(`subscribe:${chain}`);
   } catch (e) {
     logger.error(`Telemetry error subscribing socket`, { label: "Telemetry" });
     logger.error(e.toString(), { label: "Telemetry" });
   }
-};
-
-export const isOpen = (socket: ReconnectingWebSocket): boolean => {
-  return socket.readyState === socket.OPEN;
 };

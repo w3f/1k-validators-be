@@ -509,7 +509,7 @@ export const updateCandidateOnlineTelemetryDetails = async (
       { new: true }, // Options: return the modified document rather than the original
     ).exec();
     logger.info(
-      `Telemetry node ${telemetryNodeDetails.name} with id: ${telemetryNodeDetails.telemetryId} is  online`,
+      `Candidate node ${telemetryNodeDetails.name} with id: ${telemetryNodeDetails.telemetryId} is  online`,
       {
         label: "Telemetry",
       },

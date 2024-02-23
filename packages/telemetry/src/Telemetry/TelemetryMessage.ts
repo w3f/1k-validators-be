@@ -145,39 +145,39 @@ export const handleImportedBlock = async (
   const [id, blockDetails] = payload;
   const now = Date.now();
 
-  const mem = telemetryClient.memNodes[id];
-  if (!mem) {
-    logger.warn(`id: ${id} is not cached`, { label: "Telemetry" });
-    return;
-  }
-  const name = mem[0];
-
-  const wasOffline = telemetryClient.offlineNodes.has(name);
-  if (wasOffline) {
-    const offlineAt = telemetryClient.offlineNodes.get(name);
-    const offlineTime = now - offlineAt;
-    telemetryClient.offlineNodes.delete(name);
-    logger.warn(
-      `node ${name} id: ${id} that was offline has a new block. Offline time: ${
-        offlineTime / 1000 / 60
-      } minutes `,
-      {
-        label: "Telemetry",
-      },
-    );
-  }
-  const wasDisconnected = telemetryClient.disconnectedNodes.has(name);
-  if (wasDisconnected) {
-    const disconnectedAt = telemetryClient.disconnectedNodes.get(name);
-    const disconnectedTime = now - disconnectedAt;
-    telemetryClient.disconnectedNodes.delete(name);
-    logger.warn(
-      `node ${name} id: ${id} that was disconnected has a new block. Disconnection time: ${
-        disconnectedTime / 1000 / 60
-      } minutes`,
-      {
-        label: "Telemetry",
-      },
-    );
-  }
+  // const mem = telemetryClient.memNodes[id];
+  // if (!mem) {
+  //   logger.warn(`id: ${id} is not cached`, { label: "Telemetry" });
+  //   return;
+  // }
+  // const name = mem[0];
+  //
+  // const wasOffline = telemetryClient.offlineNodes.has(name);
+  // if (wasOffline) {
+  //   const offlineAt = telemetryClient.offlineNodes.get(name);
+  //   const offlineTime = now - offlineAt;
+  //   telemetryClient.offlineNodes.delete(name);
+  //   logger.warn(
+  //     `node ${name} id: ${id} that was offline has a new block. Offline time: ${
+  //       offlineTime / 1000 / 60
+  //     } minutes `,
+  //     {
+  //       label: "Telemetry",
+  //     },
+  //   );
+  // }
+  // const wasDisconnected = telemetryClient.disconnectedNodes.has(name);
+  // if (wasDisconnected) {
+  //   const disconnectedAt = telemetryClient.disconnectedNodes.get(name);
+  //   const disconnectedTime = now - disconnectedAt;
+  //   telemetryClient.disconnectedNodes.delete(name);
+  //   logger.warn(
+  //     `node ${name} id: ${id} that was disconnected has a new block. Disconnection time: ${
+  //       disconnectedTime / 1000 / 60
+  //     } minutes`,
+  //     {
+  //       label: "Telemetry",
+  //     },
+  //   );
+  // }
 };

@@ -6,6 +6,8 @@ export const locationStatsJob = async (chaindata: ChainData) => {
   try {
     const start = Date.now();
 
+    await queries.cleanBlankLocations();
+
     let totalNodes = [];
 
     const candidates = await queries.allCandidates();

@@ -5513,7 +5513,7 @@
       "name": "Block shield",
       "stash": "DJYUrEpahAbXjQbrz9fYTZRHxVEGRyBC5iu6UFXfwqdczxP",
       "riotHandle": "@blockshield:matrix.org",
-      "kyc": false
+      "kyc": true
     },
     {
       "slotId": 791,
@@ -5814,6 +5814,13 @@
       "name": "Coin collectors-1",
       "stash": "G2QjP1aSdQ4DRwmMTtkEHMjhqtWjM8rpzMrfmdMPtnpJGRv",
       "riotHandle": "@coincollectorss:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 834,
+      "name": "Block shield-2",
+      "stash": "G28CD89C2iv7FiYDge4GMLQXGo1vNj4EAssVoWPLjCFJn47",
+      "riotHandle": "@blockshield:matrix.org",
       "kyc": true
     }
   ]

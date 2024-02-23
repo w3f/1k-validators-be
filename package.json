@@ -69,6 +69,7 @@
     "ts-jest": "^29.1.2"
   },
   "dependencies": {
+    "@types/ws": "^8.5.10",
     "axios": "^1.6.7",
     "coingecko-api": "^1.0.10",
     "coingecko-api-v3": "^0.0.29",
@@ -82,6 +83,7 @@
     "swagger-jsdoc": "^6.2.8",
     "swagger2": "^4.0.3",
     "swagger2-koa": "^4.0.0",
+    "ws": "^8.16.0",
     "yamljs": "^0.3.0"
   }
 }

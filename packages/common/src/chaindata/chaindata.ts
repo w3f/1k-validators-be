@@ -5,6 +5,7 @@ import { NumberResult, StringResult } from "../types";
 import { sleep } from "../utils/util";
 import {
   getApiAt,
+  getApiAtBlockHash,
   getBlock,
   getBlockHash,
   getChainType,
@@ -12,7 +13,7 @@ import {
   getLatestBlock,
   getLatestBlockHash,
 } from "./queries/ChainMeta";
-import { getSession, getSessionAt } from "./queries/Session";
+import { getSession, getSessionAt, getSessionAtEra } from "./queries/Session";
 import {
   findEraBlockHash,
   getActiveEraIndex,
@@ -41,6 +42,7 @@ import {
   getAssociatedValidatorAddresses,
   getValidators,
   getValidatorsAt,
+  getValidatorsAtEra,
 } from "./queries/Validators";
 import {
   getFormattedIdentity,
@@ -49,27 +51,31 @@ import {
 } from "./queries/Identity";
 import { getProxyAnnouncements } from "./queries/Proxy";
 import { getNominatorAddresses, getNominators } from "./queries/Nomination";
+import { CHAINDATA_RETRIES, CHAINDATA_SLEEP } from "../constants";
 
 type JSON = any;
 
 export const chaindataLabel = { label: "Chaindata" };
 
 export class ChainData {
+  public handler: ApiHandler;
   public api: ApiPromise;
 
   constructor(handler: ApiHandler) {
     this.api = handler.getApi();
-
-    logger.info(
-      `{Chaindata::API::Info} API connected: ${this.api?.isConnected}`,
-    );
   }
 
-  checkApiConnection = async () => {
+  checkApiConnection = async (retries = 0) => {
     if (!this.api?.isConnected) {
-      while (!this.api?.isConnected) {
-        logger.warn(`{Chaindata::API::Warn} API is not connected, waiting...`);
-        await sleep(1000);
+      while (!this.api?.isConnected && retries < CHAINDATA_RETRIES) {
+        logger.warn(
+          `Retries: ${retries} - API is not connected, waiting...`,
+          chaindataLabel,
+        );
+        await this.handler.healthCheck();
+        await sleep(CHAINDATA_SLEEP);
+
+        retries++;
       }
     }
   };
@@ -85,6 +91,10 @@ export class ChainData {
 
   getApiAt = async (blockNumber: number): Promise<any> => {
     return await getApiAt(this, blockNumber);
+  };
+
+  getApiAtBlockHash = async (blockHash: string): Promise<any> => {
+    return await getApiAtBlockHash(this, blockHash);
   };
 
   getBlockHash = async (blockNumber: number): Promise<string> => {
@@ -112,6 +122,10 @@ export class ChainData {
   };
   getSessionAt = async (apiAt: ApiPromise) => {
     return getSessionAt(this, apiAt);
+  };
+
+  getSessionAtEra = async (era: number) => {
+    return getSessionAtEra(this, era);
   };
 
   getEraAt = async (apiAt: ApiPromise) => {
@@ -224,6 +238,10 @@ export class ChainData {
 
   getValidatorsAt = async (apiAt: ApiPromise): Promise<any> => {
     return await getValidatorsAt(this, apiAt);
+  };
+
+  getValidatorsAtEra = async (era: number) => {
+    return await getValidatorsAtEra(this, era);
   };
 
   /**

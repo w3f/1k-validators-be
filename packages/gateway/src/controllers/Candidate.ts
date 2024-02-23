@@ -46,14 +46,6 @@ export default class CandidateController {
     response(context, 200, await CandidateService.getRankCandidates());
   }
 
-  public static async getNodes(context: any): Promise<void> {
-    if (await context.cashed()) {
-      logger.info(`{Gateway} getNodes is cached`, gatewayLabel);
-      return;
-    }
-    response(context, 200, await CandidateService.getNodes());
-  }
-
   public static async getLatestNominatorStake(context: any): Promise<void> {
     if (await context.cashed()) {
       logger.info(`{Gateway} getLatestNominatorStake is cached`, gatewayLabel);

@@ -6,17 +6,18 @@ export const individualActiveValidatorJob = async (
   chaindata: ChainData,
   candidate: Models.Candidate,
 ) => {
-  const latestValidatorSet = await queries.getLatestValidatorSet();
-  if (latestValidatorSet) {
-    // Set if the validator is active in the set
-    const active = latestValidatorSet?.validators?.includes(candidate.stash);
-    const changed = candidate.active != active;
-    if (changed) {
-      // logger.info(
-      //   `${candidate.name} changed from being ${candidate.active} to ${active}`
-      // );
+  try {
+    const latestValidatorSet = await queries.getLatestValidatorSet();
+    if (latestValidatorSet) {
+      // Set if the validator is active in the set
+      const active = latestValidatorSet?.validators?.includes(candidate.stash);
+      const changed = candidate.active != active;
+      if (changed) {
+      }
+      await queries.setActive(candidate.stash, active);
     }
-    await queries.setActive(candidate.stash, active);
+  } catch (e) {
+    logger.error(`Error setting active: ${e}`, activeLabel);
   }
 };
 

@@ -116,26 +116,6 @@ export const getRankCandidates = async (): Promise<any> => {
   return allCandidates;
 };
 
-export const getNodes = async (): Promise<any> => {
-  const allNodes: Array<any> = await queries.allNodes();
-  return allNodes.map((node) => {
-    return {
-      name: node.name,
-      version: node.version,
-      implementation: node.implementation,
-      vpn: node.infrastructureLocation?.vpn,
-      cpu: node.infrastructureLocation?.cpu,
-      memory: node.infrastructureLocation?.memory,
-      coreCount: node.infrastructureLocation?.coreCount,
-      vm: node.infrastructureLocation?.vm,
-      location: node.infrastructureLocation?.location,
-      region: node.infrastructureLocation?.region,
-      country: node.infrastructureLocation?.country,
-      provider: node.infrastructureLocation?.provider,
-    };
-  });
-};
-
 export const getLatestNominatorStake = async (address): Promise<any> => {
   const stake = await queries.getLatestNominatorStake(address);
   return stake;

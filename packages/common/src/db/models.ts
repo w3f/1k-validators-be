@@ -159,16 +159,43 @@ export const LatestSessionModel = mongoose.model(
   LatestSessionSchema,
 );
 
-export const LatestValidatorSetSchema = new Schema({
+export interface ValidatorSet {
+  session: number;
+  era: number;
+  validators: string[];
+}
+
+export const ValidatorSetSchema = new Schema({
   session: Number,
   era: Number,
   validators: [String],
 });
 
-export const LatestValidatorSetModel = mongoose.model(
-  "LatestValidatorSet",
-  LatestValidatorSetSchema,
+// Explicitly specify the collection name to ensure it uses the original collection
+export const ValidatorSetModel = mongoose.model(
+  "ValidatorSet", // New model name
+  ValidatorSetSchema,
+  "latestvalidatorsets", // Original collection name, typically the plural form of your original model name, lowercased
 );
+
+export interface Location {
+  name: string;
+  address: string;
+  addr: string;
+  port: number;
+  city: string;
+  region: string;
+  country: string;
+  provider: string;
+  updated: number;
+  session: number;
+  source: string;
+  vpn: boolean;
+  cpu: string;
+  memory: string;
+  coreCount: string;
+  vm: boolean;
+}
 
 export const LocationSchema = new Schema({
   name: { type: String, index: true }, // The Telemetry name of the node
@@ -1356,6 +1383,22 @@ export const IIT = new Schema({
 });
 
 export const IITModel = mongoose.model("IIT", IIT);
+
+export interface IITRequestCounter {
+  requestCount: number;
+  lastRequest: number;
+  firstRequest: number;
+}
+export const IITRequestCounter = new Schema({
+  requestCount: Number,
+  lastRequest: Number,
+  firstRequest: Number,
+});
+
+export const IITRequestCounterModel = mongoose.model(
+  "IITRequestCounter",
+  IITRequestCounter,
+);
 
 export const EraInfo = new Schema({
   index: Number,

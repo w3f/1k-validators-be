@@ -676,7 +676,8 @@ export const startUnclaimedEraJob = async (
     : Constants.UNCLAIMED_ERAS_CRON;
 
   logger.info(
-    `(cron::UnclaimedEraJob::init) Running unclaimed era job with frequency: ${unclaimedErasFrequency}`,
+    `Running unclaimed era job with frequency: ${unclaimedErasFrequency}`,
+    cronLabel,
   );
 
   let running = false;
@@ -686,9 +687,7 @@ export const startUnclaimedEraJob = async (
       return;
     }
     running = true;
-    logger.info(
-      `{cron::UnclaimedEraJob::start} running unclaimed eras job....`,
-    );
+    logger.info(`running unclaimed eras job....`, cronLabel);
 
     const candidates = await queries.allCandidates();
 

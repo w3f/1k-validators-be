@@ -45,6 +45,21 @@ export const getApiAt = async (
   }
 };
 
+export const getApiAtBlockHash = async (
+  chaindata: ChainData,
+  blockHash: string,
+): Promise<any> => {
+  try {
+    await chaindata.checkApiConnection();
+    return await chaindata.api.at(blockHash);
+  } catch (e) {
+    logger.error(
+      `Error getting api at block hash ${blockHash}: ${e}`,
+      chaindataLabel,
+    );
+  }
+};
+
 export const getBlockHash = async (
   chaindata: ChainData,
   blockNumber: number,

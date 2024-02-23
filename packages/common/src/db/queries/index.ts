@@ -21,3 +21,4 @@ export * from "./ValidatorScore";
 export * from "./ValidatorScoreMetadata";
 export * from "./Session";
 export * from "./Validators";
+export * from "./TelemetryNode";

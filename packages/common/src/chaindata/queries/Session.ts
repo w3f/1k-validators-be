@@ -33,3 +33,10 @@ export const getSessionAt = async (
     logger.error(`Error getting session: ${e}`, chaindataLabel);
   }
 };
+
+export const getSessionAtEra = async (chaindata: ChainData, era: number) => {
+  const chainType = await chaindata.getChainType();
+  const [blockHash, err] = await chaindata.findEraBlockHash(era, chainType);
+  const apiAt = await chaindata.getApiAtBlockHash(blockHash);
+  return getSessionAt(chaindata, apiAt);
+};

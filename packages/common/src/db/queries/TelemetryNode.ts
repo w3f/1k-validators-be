@@ -92,7 +92,9 @@ export const updateExistingTelemetryNode = async (
           version: telemetryNodeDetails.version,
           onlineSince: Date.now(),
           implementation: telemetryNodeDetails.nodeImplementation,
+          // any other fields you want to set
         },
+
         $inc: { nodeRefs: 1 },
       },
     );
@@ -139,6 +141,10 @@ export const getTelemetryNode = async (
   return TelemetryNodeModel.findOne({ name }).lean<TelemetryNode>();
 };
 
+export const allTelemetryNodes = async (): Promise<TelemetryNode[]> => {
+  return TelemetryNodeModel.find({}).lean<TelemetryNode[]>();
+};
+
 // If there's a candidate online with the same name as the telemetry node, we transfer telemetry to a candidate and delete the telemetry node
 export const convertTelemetryNodeToCandidate = async (
   name: string,
@@ -158,6 +164,7 @@ export const convertTelemetryNodeToCandidate = async (
           onlineSince: telemetryNode.onlineSince,
           discoveredAt: telemetryNode.discoveredAt,
           offlineAccumulated: telemetryNode.offlineAccumulated,
+          nodeRefs: telemetryNode.nodeRefs,
         },
       ).exec();
 
@@ -188,22 +195,41 @@ export const reportTelemetryNodeOffline = async (
           },
         );
       } else {
-        await TelemetryNodeModel.updateOne(
-          { name },
+        await TelemetryNodeModel.updateOne({ name }, [
           {
             $set: {
               offlineSince: Date.now(),
               onlineSince: 0,
             },
-            $inc: { nodeRefs: -1 },
           },
-        );
+          { $inc: { nodeRefs: -1 } },
+        ]);
       }
       return true;
     }
   } catch (e) {
     logger.error(e.toString());
     logger.error(`Error reporting telemetry node offline ${name}`, dbLabel);
+    return false;
+  }
+};
+
+export const clearTelemetryNodeNodeRefsFrom = async (
+  name: string,
+): Promise<boolean> => {
+  try {
+    await TelemetryNodeModel.updateOne(
+      { name },
+      {
+        $set: {
+          nodeRefs: 0,
+        },
+      },
+    );
+    return true;
+  } catch (e) {
+    logger.error(e.toString());
+    logger.error(`Error clearing telemetry node nodeRefs ${name}`, dbLabel);
     return false;
   }
 };

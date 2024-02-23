@@ -1,323 +1,162 @@
-import ReconnectingWebSocket from "reconnecting-websocket";
-import WS from "ws";
+import WebSocket from "ws";
 
-import { Config, logger, queries, Types, Util } from "@1kv/common";
-
-enum TelemetryMessage {
-  FeedVersion = 0x00,
-  BestBlock = 0x01,
-  BestFinalized = 0x02,
-  AddedNode = 0x03,
-  RemovedNode = 0x04,
-  LocatedNode = 0x05,
-  ImportedBlock = 0x06,
-  FinalizedBlock = 0x07,
-  NodeStats = 0x08,
-  NodeHardware = 0x09,
-  TimeSync = 0x10,
-}
-
-const DEFAULT_HOST = "ws://localhost:8000/feed";
-
-const MemNodes = {};
+import { Config, Constants, logger, queries, Util } from "@1kv/common";
+import { registerTelemetryWs } from "./Telemetry/TelemetryWS";
+import { initIIT } from "@1kv/common/build/utils";
 
 export default class TelemetryClient {
+  private _chains: string[];
   private config: Config.ConfigSchema;
-  private host: string;
-  private socket: ReconnectingWebSocket;
+  private _host: string;
+  private _socket: WebSocket;
   // map of name -> boolean
   private beingReported: Map<string, boolean> = new Map();
 
   // Nodes that may be disconnected but aren't necessarily offline
-  private disconnectedNodes: Map<string, number> = new Map();
+  private _disconnectedNodes: Map<string, number> = new Map();
 
   // map of name -> the time of being offline
-  private offlineNodes: Map<string, number> = new Map();
+  private _offlineNodes: Map<string, number> = new Map();
 
   private enable = true;
 
+  private _memNodes = {};
+
   constructor(config: Config.ConfigSchema) {
     this.config = config;
-    this.host = this.config.telemetry.host || DEFAULT_HOST;
+    this._host =
+      this.config.telemetry.host || Constants.DEFAULT_TELEMETRY_ENDPONT;
 
     this.enable = config.telemetry.enable;
 
-    const options = {
-      WebSocket: WS,
-      connectionTimeout: 10000,
-      maxRetries: 15,
-    };
-
-    this.socket = new ReconnectingWebSocket(this.host, [], options);
-  }
-
-  async start(retries = 0): Promise<any> {
-    if (retries < 15) {
-      try {
-        if (!this.enable) {
-          logger.warn("Telemetry Client not enabled.", {
-            label: "Telemetry",
-          });
-          return;
-        } else {
-          // configure ipinfo
-          const iitExists = await queries.getIIT();
-          if (this.config?.telemetry?.ipinfoToken || !iitExists) {
-            await queries.setIIT(this.config?.telemetry?.ipinfoToken);
-          } else {
-            logger.warn(`No ip info api token set. ip info not enabled`, {
-              label: "Telemetry",
-            });
-          }
-          return new Promise((resolve: any, reject: any) => {
-            this.socket.onopen = () => {
-              logger.info(
-                `Connected to substrate-telemetry on host ${this.host}`,
-                {
-                  label: "Telemetry",
-                },
-              );
-              for (const chain of this.config.telemetry.chains) {
-                this._subscribe(chain);
-              }
-              resolve();
-            };
-
-            this.socket.onclose = async () => {
-              logger.info(
-                `Connection to substrate-telemetry on host ${this.host} closed waiting....`,
-                { label: "Telemetry" },
-              );
-              await Util.sleep(30000);
-              for (const chain of this.config.telemetry.chains) {
-                logger.info(`connecting to ${chain}`, { label: "Telemetry" });
-                await this._subscribe(chain);
-              }
-              resolve();
-            };
-
-            this.socket.onerror = async (err: any) => {
-              logger.info(
-                `Could not connect to substrate-telemetry on host ${this.host}: `,
-                { label: "Telemetry" },
-              );
-              logger.warn(err, { label: "Telemetry" });
-              await Util.sleep(30000);
-              for (const chain of this.config.telemetry.chains) {
-                logger.info(`connecting to ${chain}`, { label: "Telemetry" });
-                await this._subscribe(chain);
-              }
-              resolve();
-            };
-
-            this.socket.onmessage = (msg: any) => {
-              const messages = this._deserialize(msg);
-              for (const message of messages) {
-                this._handle(message);
-              }
-            };
-          });
-        }
-      } catch (e) {
-        logger.error(e.toString(), { label: "Telemetry" });
-        logger.warn(
-          `Could not connect to substrate-telemetry on host ${this.host}`,
-          {
-            label: "Telemetry",
-          },
-        );
-        await Util.sleep(30000);
-        return this.start(retries + 1);
-      }
-    }
-  }
-
-  private _deserialize(msg: any) {
-    const data = JSON.parse(msg.data);
-    const messages = new Array(data.length / 2);
-
-    for (const index of messages.keys()) {
-      const [action, payload] = data.slice(index * 2);
-      // eslint-disable-next-line security/detect-object-injection
-      messages[index] = { action, payload };
+    if (!this.enable) {
+      logger.warn("Telemetry Client not enabled.", {
+        label: "Telemetry",
+      });
     }
 
-    return messages;
+    this._chains = this.config?.telemetry?.chains;
+    this._memNodes = {};
   }
 
-  private async _handle(message: any) {
-    const { action, payload } = message;
+  public initializeWebSocket() {
+    try {
+      this._socket = new WebSocket(this._host);
+      this._socket.on("error", (err) => {
+        // Handle asynchronous errors here
+        logger.error(`WebSocket error: ${err}`, {
+          label: "Telemetry",
+        });
+      });
 
-    // Check if there were any disconnected nodes that reach the threshold of being 'offline'
-    if (this.disconnectedNodes.size > 0) {
-      await this.checkOffline();
-    }
+      this._socket.on("open", (event) => {
+        logger.info("WebSocket connection established", {
+          label: "Telemetry",
+        });
+        // Handle the open event, e.g., by setting up subscriptions
+      });
 
-    switch (action) {
-      case TelemetryMessage.FeedVersion:
-        {
-          logger.info(`feed version: ${JSON.stringify(payload)}`, {
-            label: "Telemetry",
-          });
-        }
-        break;
-      case TelemetryMessage.AddedNode:
-        {
-          const [
-            id,
-            details,
-            nodeStats,
-            nodeIO,
-            nodeHardware,
-            blockDetails,
-            location,
-            startupTime,
-          ] = payload;
-
-          const now = Date.now();
-
-          // Cache the node details, key'd by telemetry id
-          MemNodes[parseInt(id)] = details;
-          const name = details[0];
-
-          logger.info(`node ${details[0]} with id: ${id} is  online`, {
-            label: "Telemetry",
-          });
-
-          const telemetryNodeDetails: Types.TelemetryNodeDetails =
-            Util.nodeDetailsFromTelemetryMessage(payload);
-
-          // Report the node as online
-          await queries.reportOnline(telemetryNodeDetails);
-
-          // If the node was offline
-          const wasOffline = this.offlineNodes.has(name);
-          if (wasOffline) {
-            const offlineAt = this.offlineNodes.get(name);
-            const offlineTime = now - offlineAt;
-            this.offlineNodes.delete(name);
-            logger.warn(
-              `node ${name} id: ${id} that was offline is now online. Offline time: ${
-                offlineTime / 1000 / 60
-              } minutes `,
-              {
-                label: "Telemetry",
-              },
-            );
-          }
-          const wasDisconnected = this.disconnectedNodes.has(name);
-          if (wasDisconnected) {
-            const disconnectedAt = this.disconnectedNodes.get(name);
-            const disconnectedTime = now - disconnectedAt;
-            this.disconnectedNodes.delete(name);
-            logger.warn(
-              `node ${name} id: ${id} that was disconnected is now online. Disconnection time: ${
-                disconnectedTime / 1000 / 60
-              } minutes`,
-              {
-                label: "Telemetry",
-              },
-            );
-          }
-        }
-        break;
-      case TelemetryMessage.RemovedNode:
-        {
-          const id = parseInt(payload);
-          const now = Date.now();
-
-          //this is to get around security warning vvv
-          const details = MemNodes[id];
-
-          // remove from cache
-          MemNodes[id] = null;
-
-          if (!details) {
-            logger.info(`Unknown node with ${id} reported offline.`);
-            break;
-          }
-
-          const name = details[0];
-
-          // this.beingReported.set(name, true);
-          // await queries.reportOffline(id, name, now);
-          // this.beingReported.set(name, false);
-
-          logger.warn(`setting disconnection ${name} id: ${id} at ${now}`, {
-            label: "Telemetry",
-          });
-          this.disconnectedNodes.set(name, now);
-          // logger.warn(JSON.stringify([...this.disconnectedNodes.entries()]), {
-          //   label: "Telemetry",
-          // });
-        }
-        break;
-      case TelemetryMessage.LocatedNode:
-        {
-          const [id, lat, lon, city] = payload;
-          // await this.db.setLocation(id, city);
-        }
-        break;
-      case TelemetryMessage.ImportedBlock:
-        {
-          const [id, blockDetails] = payload;
-          const now = Date.now();
-
-          const mem = MemNodes[id];
-          if (!mem) {
-            logger.warn(`id: ${id} is not cached`, { label: "Telemetry" });
-            break;
-          }
-          const name = mem[0];
-
-          const wasOffline = this.offlineNodes.has(name);
-          if (wasOffline) {
-            const offlineAt = this.offlineNodes.get(name);
-            const offlineTime = now - offlineAt;
-            this.offlineNodes.delete(name);
-            logger.warn(
-              `node ${name} id: ${id} that was offline has a new block. Offline time: ${
-                offlineTime / 1000 / 60
-              } minutes `,
-              {
-                label: "Telemetry",
-              },
-            );
-          }
-          const wasDisconnected = this.disconnectedNodes.has(name);
-          if (wasDisconnected) {
-            const disconnectedAt = this.disconnectedNodes.get(name);
-            const disconnectedTime = now - disconnectedAt;
-            this.disconnectedNodes.delete(name);
-            logger.warn(
-              `node ${name} id: ${id} that was disconnected has a new block. Disconnection time: ${
-                disconnectedTime / 1000 / 60
-              } minutes`,
-              {
-                label: "Telemetry",
-              },
-            );
-          }
-        }
-        break;
-    }
-  }
-
-  private async _subscribe(chain: string, finality = true) {
-    if (this.config.telemetry.chains.includes(chain)) {
-      this.socket.send(`ping:${chain}`);
-      this.socket.send(`subscribe:${chain}`);
-      logger.info(`Subscribed to ${chain}`, {
+      this._socket.on("close", (event) => {
+        logger.info(`WebSocket connection closed: ${event}`, {
+          label: "Telemetry",
+        });
+        // Handle the close event, possibly by attempting to reconnect
+      });
+    } catch (e) {
+      logger.error(`Error initializing telemetry websocket: ${e}`, {
         label: "Telemetry",
       });
     }
   }
 
-  private async checkOffline() {
-    const now = Date.now();
-    const FIVE_MINUTES = 300000;
+  get host(): string {
+    return this._host;
+  }
+
+  get chains(): string[] {
+    return this._chains;
+  }
+
+  get disconnectedNodes(): Map<string, number> {
+    return this._disconnectedNodes;
+  }
+
+  get offlineNodes(): Map<string, number> {
+    return this._offlineNodes;
+  }
+
+  get memNodes(): any {
+    return this._memNodes;
+  }
+
+  get socket(): WebSocket {
+    return this._socket;
+  }
+
+  async start(retries = 0): Promise<void> {
+    // while (!isOpen(this.socket)) {
+    //   logger.info("Waiting for telemetry connection to open", {
+    //     label: "Telemetry",
+    //   });
+    //   await Util.sleep(1000);
+    // }
+    // if (isOpen(this.socket)) {
+    //   logger.info("Telemetry connection opened", { label: "Telemetry" });
+    // }
+    const maxRetries = 5;
+    if (!this.enable) {
+      logger.warn("Telemetry Client not enabled.", { label: "Telemetry" });
+      return;
+    }
+
+    if (retries >= maxRetries) {
+      logger.error("Maximum retry attempts reached, giving up", {
+        label: "Telemetry",
+      });
+      return;
+    }
+
+    try {
+      await registerTelemetryWs(this);
+      await initIIT(this.config?.telemetry?.ipinfoToken);
+    } catch (error) {
+      logger.error(`Telemetry connection error: ${error}`, {
+        label: "Telemetry",
+      });
+      const retryDelay = Math.pow(2, retries) * 1000; // Exponential backoff
+      await Util.sleep(retryDelay);
+      await this.start(retries + 1);
+    }
+  }
+
+  public async reconnect(retries = 0): Promise<void> {
+    const maxRetries = 5; // Maximum number of retry attempts
+    const retryDelayBase = 2000; // Base delay time in ms (2 seconds)
+
+    if (retries >= maxRetries) {
+      logger.error("Maximum retry attempts reached, giving up", {
+        label: "Telemetry",
+      });
+      return;
+    }
+
+    const retryDelay = retryDelayBase * Math.pow(2, retries); // Exponential backoff
+    logger.info(`Retrying connection in ${retryDelay}ms`, {
+      label: "Telemetry",
+    });
+    // await Util.sleep(retryDelay);
+
+    try {
+      await this.start(0);
+    } catch (e) {
+      logger.error(`Telemetry error on retry: ${e}`, { label: "Telemetry" });
+      await this.reconnect(retries + 1);
+    }
+  }
+
+  public async checkOffline() {
     for (const [name, disconnectedAt] of this.disconnectedNodes.entries()) {
-      if (now - disconnectedAt > FIVE_MINUTES) {
+      if (Date.now() - disconnectedAt > Constants.FIVE_MINUTES) {
         this.disconnectedNodes.delete(name);
         logger.warn(`${name} has been disconnected for more than 5 minutes`, {
           label: "Telemetry",

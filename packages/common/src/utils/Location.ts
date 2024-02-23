@@ -1,64 +1,89 @@
-import { getIIT, getLocation, setLocation } from "../db";
+import {
+  getIIT,
+  getLocation,
+  removeIIT,
+  setIIT,
+  setLocation,
+  updateIITRequestCount,
+} from "../db";
 import { fetchLocationInfo } from "./util";
 import { TelemetryNodeDetails } from "../types";
+import logger from "../logger";
+import { STALE_TELEMETRY_THRESHOLD } from "../constants";
+
+const getBenchmarks = (scores) => {
+  const defaultScores = {
+    cpu_hashrate_score: 0,
+    memory_memcpy_score: 0,
+    disk_sequential_write_score: 0,
+    disk_random_write_score: 0,
+  };
+
+  return scores === null ? defaultScores : scores;
+};
 
 export const nodeDetailsFromTelemetryMessage = (
   payload,
 ): TelemetryNodeDetails => {
-  const [
-    id,
-    [
-      name,
-      nodeImplementation,
-      version,
-      address,
-      networkId,
-      addr,
-      {
-        cpu,
-        memory,
-        core_count,
-        linux_kernel,
-        linux_distro,
-        is_virtual_machine,
-      },
-      {
-        cpu_hashrate_score,
-        memory_memcpy_score,
-        disk_sequential_write_score,
-        disk_random_write_score,
-      },
-    ],
-    nodeStats,
-    nodeIO,
-    nodeHardware,
-    blockDetails,
-    location,
-    startupTime,
-  ] = payload;
+  try {
+    const [
+      id,
+      [
+        name,
+        nodeImplementation,
+        version,
+        address,
+        networkId,
+        addr,
+        {
+          cpu,
+          memory,
+          core_count,
+          linux_kernel,
+          linux_distro,
+          is_virtual_machine,
+        },
+        benchmarkScores,
+      ],
+      nodeStats,
+      nodeIO,
+      nodeHardware,
+      blockDetails,
+      location,
+      startupTime,
+    ] = payload;
 
-  return {
-    telemetryId: id,
-    name: name,
-    nodeImplementation: nodeImplementation,
-    version: version,
-    ipAddress: addr,
-    startupTime: startupTime,
-    hardwareSpec: {
-      cpu: cpu,
-      memory: memory,
-      core_count: core_count,
-      linux_kernel: linux_kernel,
-      linux_distro: linux_distro,
-      is_virtual_machine: is_virtual_machine,
-    },
-    benchmarkSpec: {
-      cpu_hashrate_score: cpu_hashrate_score,
-      memory_memcpy_score: memory_memcpy_score,
-      disk_sequential_write_score: disk_sequential_write_score,
-      disk_random_write_score: disk_random_write_score,
-    },
-  };
+    const benchmarkScore = getBenchmarks(benchmarkScores);
+
+    return {
+      telemetryId: id,
+      name: name,
+      nodeImplementation: nodeImplementation,
+      version: version,
+      ipAddress: addr,
+      startupTime: startupTime,
+      hardwareSpec: {
+        cpu: cpu,
+        memory: memory,
+        core_count: core_count,
+        linux_kernel: linux_kernel,
+        linux_distro: linux_distro,
+        is_virtual_machine: is_virtual_machine,
+      },
+      benchmarkSpec: {
+        cpu_hashrate_score: benchmarkScore?.cpu_hashrate_score || 0,
+        memory_memcpy_score: benchmarkScore?.memory_memcpy_score || 0,
+        disk_sequential_write_score:
+          benchmarkScore?.disk_sequential_write_score || 0,
+        disk_random_write_score: benchmarkScore?.disk_random_write_score || 0,
+      },
+    };
+  } catch (e) {
+    logger.error(e.toString());
+    logger.error(JSON.stringify(payload));
+    logger.error(`Error parsing telemetry message`, { label: "Telemetry" });
+    return null;
+  }
 };
 
 export const fetchAndSetCandidateLocation = async (
@@ -73,13 +98,14 @@ export const fetchAndSetCandidateLocation = async (
     existingLocation?.addr != telemetryNodeDetails.ipAddress ||
     !existingLocation?.address ||
     !existingLocation?.session ||
-    Date.now() - existingLocation?.updated > 720000000; // The location data is older than 200 hours
+    Date.now() - existingLocation?.updated > STALE_TELEMETRY_THRESHOLD; // The location data is older than 200 hours
   if (shouldFetch) {
     const iit = await getIIT();
     const { city, region, country, provider, v } = await fetchLocationInfo(
       telemetryNodeDetails.ipAddress,
       iit && iit.iit ? iit.iit : null,
     );
+    await updateIITRequestCount();
     await setLocation(
       telemetryNodeDetails.name,
       telemetryNodeDetails.ipAddress,
@@ -90,5 +116,23 @@ export const fetchAndSetCandidateLocation = async (
       telemetryNodeDetails.hardwareSpec,
       v,
     );
+  }
+};
+
+export const initIIT = async (ipinfoToken: string): Promise<boolean> => {
+  try {
+    if (ipinfoToken) {
+      await setIIT(ipinfoToken);
+    } else {
+      logger.warn(`No ip info api token set. ip info not enabled`, {
+        label: "Telemetry",
+      });
+      await removeIIT();
+    }
+    return true;
+  } catch (e) {
+    logger.error(e.toString());
+    logger.error(`Error initializing IIT`, { label: "Telemetry" });
+    return false;
   }
 };

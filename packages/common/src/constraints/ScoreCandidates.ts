@@ -35,7 +35,7 @@ export const scoreCandidate = async (
 
   // Scale inclusion between the 20th and 75th percentiles
   const scaledInclusion =
-    scaledDefined(candidate.inclusion, inclusionStats.values, 0.2, 0.75) || 0;
+    scaledDefined(candidate.inclusion, inclusionStats.values, 0.05, 0.95) || 0;
   const inclusionScore =
     (1 - scaledInclusion) * constraints.WEIGHT_CONFIG.INCLUSION_WEIGHT;
 
@@ -44,8 +44,8 @@ export const scoreCandidate = async (
     scaledDefined(
       candidate.spanInclusion,
       spanInclusionStats.values,
-      0.2,
-      0.75,
+      0.05,
+      0.95,
     ) || 0;
   const spanInclusionScore =
     (1 - scaledSpanInclusion) * constraints.WEIGHT_CONFIG.SPAN_INCLUSION_WEIGHT;
@@ -196,8 +196,12 @@ export const scoreCandidate = async (
     }
   }
   const scaledNominatorStake =
-    scaledDefined(totalNominatorStake, nominatorStakeStats.values, 0.1, 0.95) ||
-    0;
+    scaledDefined(
+      totalNominatorStake,
+      nominatorStakeStats.values,
+      0.05,
+      0.95,
+    ) || 0;
   const nominatorStakeScore =
     scaledNominatorStake * constraints.WEIGHT_CONFIG.NOMINATIONS_WEIGHT;
 

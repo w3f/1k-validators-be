@@ -68,7 +68,7 @@ export default class Monitor {
     }
 
     const now = new Date().getTime();
-    const nodes = await queries.allNodes();
+    const nodes = await queries.allCandidates();
 
     for (const node of nodes) {
       const { name, version, updated } = node;

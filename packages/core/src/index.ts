@@ -123,13 +123,19 @@ export const clean = async (scorekeeper) => {
     // Delete the old candidate fields.
     await queries.deleteOldCandidateFields();
 
+    const allTelemetryNodes = await queries.allTelemetryNodes();
+
+    for (const node of allTelemetryNodes) {
+      await queries.clearTelemetryNodeNodeRefsFrom(node.name);
+    }
+
     // Clear node refs and delete old fields from all nodes before starting new
     // telemetry client.
-    const allNodes = await queries.allNodes();
-    for (const [index, node] of allNodes.entries()) {
+    const allCandidates = await queries.allCandidates();
+    for (const [index, node] of allCandidates.entries()) {
       const { name } = node;
       await queries.deleteOldFieldFrom(name);
-      await queries.clearNodeRefsFrom(name);
+      await queries.clearCandidateNodeRefsFrom(name);
     }
 
     // Remove stale nominators.
@@ -276,3 +282,8 @@ program
 
 program.version(version);
 program.parse(process.argv);
+
+process.on("uncaughtException", (error) => {
+  // console.error(`Uncaught Exception: ${error}`);
+  // Consider implementing a graceful shutdown or restart mechanism
+});

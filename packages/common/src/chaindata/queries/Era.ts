@@ -177,3 +177,66 @@ export const findEraBlockHash = async (
     return [null, e];
   }
 };
+
+export const findEraBlockNumber = async (
+  chaindata: ChainData,
+  era: number,
+  chainType: string,
+): Promise<any> => {
+  try {
+    await chaindata.checkApiConnection();
+    const eraBlockLength =
+      chainType == "Kusama"
+        ? KUSAMA_APPROX_ERA_LENGTH_IN_BLOCKS
+        : chainType == "Polkadot"
+          ? POLKADOT_APPROX_ERA_LENGTH_IN_BLOCKS
+          : TESTNET_APPROX_ERA_LENGTH_IN_BLOCKS;
+
+    await chaindata.checkApiConnection();
+
+    const [activeEraIndex, err] = await chaindata.getActiveEraIndex();
+    if (err) {
+      return [null, err];
+    }
+
+    if (era > activeEraIndex) {
+      return [null, "Era has not happened."];
+    }
+
+    const latestBlock = await chaindata.api.rpc.chain.getBlock();
+    if (era == activeEraIndex) {
+      return [latestBlock.block.header.number, null];
+    }
+
+    const diff = activeEraIndex - era;
+    const approxBlocksAgo = diff * eraBlockLength;
+
+    let testBlockNumber =
+      latestBlock.block.header.number.toNumber() - approxBlocksAgo;
+    while (true && testBlockNumber > 0) {
+      const blockHash = await chaindata.api.rpc.chain.getBlockHash(
+        parseInt(String(testBlockNumber)),
+      );
+      const testEra = await chaindata.api.query.staking.activeEra.at(blockHash);
+      if (testEra.isNone) {
+        logger.info(`Test era is none`);
+        return [null, "Test era is none"];
+      }
+      const testIndex = testEra.unwrap().index.toNumber();
+      if (era == testIndex) {
+        return [testBlockNumber, null];
+      }
+
+      if (testIndex > era) {
+        testBlockNumber = testBlockNumber - eraBlockLength / 3;
+      }
+
+      if (testIndex < era) {
+        testBlockNumber = testBlockNumber + eraBlockLength;
+      }
+    }
+  } catch (e) {
+    logger.error(`Error finding block hash for era: ${e}`, chaindataLabel);
+    return [null, e];
+  }
+};

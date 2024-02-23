@@ -173,7 +173,9 @@ export const deleteOldFieldFrom = async (name: string): Promise<boolean> => {
   return true;
 };
 
-export const clearNodeRefsFrom = async (name: string): Promise<boolean> => {
+export const clearCandidateNodeRefsFrom = async (
+  name: string,
+): Promise<boolean> => {
   await CandidateModel.findOneAndUpdate({ name }, { nodeRefs: 0 }).exec();
 
   return true;
@@ -481,29 +483,39 @@ export const updateCandidateOnlineTelemetryDetails = async (
   telemetryNodeDetails: TelemetryNodeDetails,
 ): Promise<boolean> => {
   try {
-    await CandidateModel.findOneAndUpdate({ name: telemetryNodeDetails.name }, [
-      {
-        $set: {
-          telemetryId: telemetryNodeDetails.telemetryId,
-          onlineSince: Date.now(),
-          offlineSince: 0,
-          implementation: telemetryNodeDetails.nodeImplementation,
-          // Set discoveredAt to now if it wasn't before, otherwise maintain it
-          discoveredAt: {
-            $cond: {
-              if: { $eq: ["$discoveredAt", 0] },
-              then: Date.now(),
-              else: "$discoveredAt",
+    await CandidateModel.findOneAndUpdate(
+      { name: telemetryNodeDetails.name }, // Query part
+      [
+        {
+          $set: {
+            telemetryId: { $literal: telemetryNodeDetails.telemetryId },
+            onlineSince: { $literal: Date.now() },
+            offlineSince: { $literal: 0 },
+            implementation: {
+              $literal: telemetryNodeDetails.nodeImplementation,
             },
+            discoveredAt: {
+              $cond: {
+                if: { $eq: ["$discoveredAt", 0] },
+                then: Date.now(),
+                else: "$discoveredAt",
+              },
+            },
+            // Use $add to simulate the $inc behavior within the $set stage
+            nodeRefs: { $add: ["$nodeRefs", 1] },
           },
         },
-        $inc: { nodeRefs: 1 },
-      },
-    ]).exec();
+      ], // Update part using aggregation pipeline
+      { new: true }, // Options: return the modified document rather than the original
+    ).exec();
     return true;
   } catch (e) {
     logger.error(e.toString());
-    logger.error(`Error updating online validity for ${name}`, dbLabel);
+    // Correctly reference telemetryNodeDetails.name in the logging statement
+    logger.error(
+      `Error updating online validity for ${telemetryNodeDetails.name}`,
+      dbLabel,
+    );
     return false;
   }
 };
@@ -566,8 +578,9 @@ export const reportOnline = async (
     return true;
   } catch (e) {
     logger.error(e.toString());
+    logger.error(JSON.stringify(telemetryNodeDetails));
     logger.error(
-      `Error reporting telemetry node online ${telemetryNodeDetails.name}`,
+      `Error reporting telemetry node online ${telemetryNodeDetails?.name}`,
       dbLabel,
     );
     return false;
@@ -601,7 +614,7 @@ export const reportOffline = async (name: string): Promise<boolean> => {
           {
             offlineSince: Date.now(),
             onlineSince: 0,
-            $inc: { nodeRefs: -1 },
+            nodeRefs: { $add: ["$nodeRefs", -1] },
           },
         ).exec();
         await updateCandidateOfflineValidity(name);
@@ -831,10 +844,6 @@ export const validCandidates = async (): Promise<Candidate[]> => {
 
 export const invalidCandidates = async (): Promise<any[]> => {
   return CandidateModel.find({ valid: false }).lean<Candidate[]>();
-};
-
-export const allNodes = async (): Promise<Candidate[]> => {
-  return CandidateModel.find({ name: /.*/ }).lean<Candidate[]>();
 };
 
 /**

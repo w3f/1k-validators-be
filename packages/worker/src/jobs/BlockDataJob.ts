@@ -5,80 +5,84 @@ import { CoinGeckoClient } from "coingecko-api-v3";
 export const blockdataLabel = { label: "Block" };
 
 export const blockDataJob = async (chaindata: ChainData) => {
-  const start = Date.now();
+  try {
+    const start = Date.now();
 
-  logger.info(`Starting blockDataJob`, blockdataLabel);
-  const latestBlock = await chaindata.getLatestBlock();
-  const threshold = 2000;
-  let index = await queries.getBlockIndex();
+    logger.info(`Starting blockDataJob`, blockdataLabel);
+    const latestBlock = await chaindata.getLatestBlock();
+    const threshold = 2000;
+    let index = await queries.getBlockIndex();
 
-  if (!index?.latest && !index?.earliest) {
-    logger.info(
-      `Block index not found. Querying latest block: #${latestBlock}`,
-      blockdataLabel,
-    );
-    await processBlock(chaindata, latestBlock);
-    await queries.setBlockIndex(latestBlock, latestBlock);
-    index = await queries.getBlockIndex();
-  }
-
-  // Try to index from the latest block to the current block
-  if (index?.latest && index?.latest != latestBlock) {
-    const latestTotal = latestBlock - index.latest;
-    logger.info(
-      `Processing ${latestTotal} blocks from latest index: ${index.latest} to current block ${latestBlock}`,
-      blockdataLabel,
-    );
-    let latestCount = 0;
-    for (let i = index.latest; i < latestBlock; i++) {
+    if (!index?.latest && !index?.earliest) {
+      logger.info(
+        `Block index not found. Querying latest block: #${latestBlock}`,
+        blockdataLabel,
+      );
+      await processBlock(chaindata, latestBlock);
+      await queries.setBlockIndex(latestBlock, latestBlock);
       index = await queries.getBlockIndex();
-      if (i > index.latest) {
-        await processBlock(chaindata, i);
-        latestCount++;
-        // Update the latest block index
-        await queries.setBlockIndex(index?.earliest, i);
-        logger.info(
-          `Block Data Job: processed: ${i} (${latestCount}/${latestTotal})`,
-          blockdataLabel,
-        );
-      }
     }
-    logger.info(
-      `Processed ${latestTotal} blocks up to the current block.`,
-      blockdataLabel,
-    );
-  }
-  // index from the earliest block backwards
-  if (index?.earliest && index?.earliest != latestBlock) {
-    const earliestTotal = index?.earliest - (index?.earliest - threshold);
-    logger.info(
-      `Processing ${earliestTotal} blocks from earliest index: ${
-        index.earliest
-      } to threshold block ${index?.earliest - threshold}`,
-      blockdataLabel,
-    );
-    let earliestCount = 0;
-    for (let i = index?.earliest; i > index?.earliest - threshold; i--) {
-      const index = await queries.getBlockIndex();
 
-      if (i < index?.earliest) {
-        await processBlock(chaindata, i);
-        // Update the earliest block
-        await queries.setBlockIndex(i, index?.latest);
-        earliestCount++;
-        logger.info(
-          `Block Data Job: processed: ${i} (${earliestCount}/${earliestTotal})`,
-          blockdataLabel,
-        );
+    // Try to index from the latest block to the current block
+    if (index?.latest && index?.latest != latestBlock) {
+      const latestTotal = latestBlock - index.latest;
+      logger.info(
+        `Processing ${latestTotal} blocks from latest index: ${index.latest} to current block ${latestBlock}`,
+        blockdataLabel,
+      );
+      let latestCount = 0;
+      for (let i = index.latest; i < latestBlock; i++) {
+        index = await queries.getBlockIndex();
+        if (i > index.latest) {
+          await processBlock(chaindata, i);
+          latestCount++;
+          // Update the latest block index
+          await queries.setBlockIndex(index?.earliest, i);
+          logger.info(
+            `Block Data Job: processed: ${i} (${latestCount}/${latestTotal})`,
+            blockdataLabel,
+          );
+        }
       }
+      logger.info(
+        `Processed ${latestTotal} blocks up to the current block.`,
+        blockdataLabel,
+      );
     }
-    logger.info(
-      `Processed ${earliestTotal} blocks up to the threshold`,
-      blockdataLabel,
-    );
+    // index from the earliest block backwards
+    if (index?.earliest && index?.earliest != latestBlock) {
+      const earliestTotal = index?.earliest - (index?.earliest - threshold);
+      logger.info(
+        `Processing ${earliestTotal} blocks from earliest index: ${
+          index.earliest
+        } to threshold block ${index?.earliest - threshold}`,
+        blockdataLabel,
+      );
+      let earliestCount = 0;
+      for (let i = index?.earliest; i > index?.earliest - threshold; i--) {
+        const index = await queries.getBlockIndex();
+
+        if (i < index?.earliest) {
+          await processBlock(chaindata, i);
+          // Update the earliest block
+          await queries.setBlockIndex(i, index?.latest);
+          earliestCount++;
+          logger.info(
+            `Block Data Job: processed: ${i} (${earliestCount}/${earliestTotal})`,
+            blockdataLabel,
+          );
+        }
+      }
+      logger.info(
+        `Processed ${earliestTotal} blocks up to the threshold`,
+        blockdataLabel,
+      );
+    }
+    logger.info(`Done, processed  all blocks`, blockdataLabel);
+    return true;
+  } catch (e) {
+    logger.error(`Error processing block data: ${e}`, blockdataLabel);
   }
-  logger.info(`Done, processed  all blocks`, blockdataLabel);
-  return true;
 };
 
 // Given a block number, process it's extrinsics and events

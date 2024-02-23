@@ -67,10 +67,20 @@ export const getValidatorsAt = async (
 ): Promise<any> => {
   try {
     await chaindata.checkApiConnection();
-    return (await apiAt.query.session.validators()).toHuman();
+    return (await apiAt.query.session.validators()).toJSON();
   } catch (e) {
     logger.error(`Error getting validators at: ${e}`, chaindataLabel);
   }
+};
+
+export const getValidatorsAtEra = async (
+  chaindata: Chaindata,
+  era: number,
+): Promise<any> => {
+  const chainType = await chaindata.getChainType();
+  const [blockHash, err] = await chaindata.findEraBlockHash(era, chainType);
+  const apiAt = await chaindata.api.at(blockHash);
+  return getValidatorsAt(chaindata, apiAt);
 };
 
 export const getAssociatedValidatorAddresses = async (

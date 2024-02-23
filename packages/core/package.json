@@ -44,7 +44,7 @@
     "@polkadot/keyring": "^12.6.2",
     "@types/cron": "^2.4.0",
     "@types/jest": "^29.5.12",
-    "@types/koa": "^2.14.0",
+    "@types/koa": "^2.15.0",
     "@types/koa-bodyparser": "^4.3.12",
     "@types/node": "^20.11.5",
     "@types/semver": "^7.5.6",

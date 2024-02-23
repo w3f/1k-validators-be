@@ -466,7 +466,7 @@ export const updateCandidateOfflineValidity = async (
             valid: false,
             type: "ONLINE",
             updated: Date.now(),
-            details: `${name} offline. Offline since ${Date.now()}.`,
+            details: `Candidate ${name} offline. Offline since ${Date.now()}.`,
           },
         ],
       },
@@ -508,6 +508,12 @@ export const updateCandidateOnlineTelemetryDetails = async (
       ], // Update part using aggregation pipeline
       { new: true }, // Options: return the modified document rather than the original
     ).exec();
+    logger.info(
+      `Telemetry node ${telemetryNodeDetails.name} with id: ${telemetryNodeDetails.telemetryId} is  online`,
+      {
+        label: "Telemetry",
+      },
+    );
     return true;
   } catch (e) {
     logger.error(e.toString());

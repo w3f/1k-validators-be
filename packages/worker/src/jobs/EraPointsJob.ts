@@ -1,4 +1,4 @@
-import { ChainData, logger, queries } from "@1kv/common";
+import { ChainData, logger, queries, Util } from "@1kv/common";
 
 export const erapointsLabel = { label: "EraPointsJob" };
 
@@ -17,24 +17,9 @@ export const individualEraPointsJob = async (
       await chaindata.getTotalEraPoints(eraIndex);
     await queries.setTotalEraPoints(era, total, validators);
   }
-
-  // Update ranks for candidates to be the max number of eras active of any identity within a validators sub/super identity
-  const candidates = await queries.allCandidates();
-  for (const [index, candidate] of candidates.entries()) {
-    const rank =
-      (await queries.getIdentityValidatorEraPointsCountMax(candidate.stash)) ||
-      0;
-    await queries.setRank(candidate.stash, rank);
-    logger.info(
-      `Updated Rank for ${candidate.stash} to ${rank} (${index + 1}/${candidates.length})`,
-      erapointsLabel,
-    );
-  }
 };
 
 export const eraPointsJob = async (chaindata: ChainData) => {
-  const start = Date.now();
-
   // Set Era Points
   //    - get the current active era
   //    - iterate through the previous eras until the first era
@@ -48,12 +33,13 @@ export const eraPointsJob = async (chaindata: ChainData) => {
       erapointsLabel,
     );
   }
-
-  const end = Date.now();
-  const executionTime = (end - start) / 1000;
-
-  logger.info(`Done. (${executionTime}s)`, erapointsLabel);
 };
+
+export const eraPointsJobWithTiming = Util.withExecutionTimeLogging(
+  eraPointsJob,
+  erapointsLabel,
+  "Era Points Job Done",
+);
 
 export const processEraPointsJob = async (job: any, chaindata: ChainData) => {
   await eraPointsJob(chaindata);

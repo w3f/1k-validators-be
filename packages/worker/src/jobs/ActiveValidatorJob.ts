@@ -1,4 +1,4 @@
-import { ChainData, logger, Models, queries } from "@1kv/common";
+import { ChainData, logger, Models, queries, Util } from "@1kv/common";
 
 export const activeLabel = { label: "ActiveValidatorJob" };
 
@@ -22,24 +22,17 @@ export const individualActiveValidatorJob = async (
 };
 
 export const activeValidatorJob = async (chaindata: ChainData) => {
-  const start = Date.now();
-
-  // The current active validators in the validator set.
-  const currentSession = await chaindata.getSession();
-  const currentEra = await chaindata.getCurrentEra();
-  const validators = await chaindata.currentValidators();
-
-  const activeValidators = await chaindata.currentValidators();
-
   const candidates = await queries.allCandidates();
   for (const candidate of candidates) {
     await individualActiveValidatorJob(chaindata, candidate);
   }
-
-  const end = Date.now();
-
-  logger.info(`Done. Took ${(end - start) / 1000} seconds`, activeLabel);
 };
+
+export const activeValidatorJobWithTiming = Util.withExecutionTimeLogging(
+  activeValidatorJob,
+  activeLabel,
+  "Active Validator Job Done",
+);
 
 export const processActiveValidatorJob = async (
   job: any,

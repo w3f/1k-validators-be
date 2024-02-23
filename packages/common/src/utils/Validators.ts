@@ -1,22 +1,20 @@
 import {
   allCandidates,
-  candidateExistsByStash,
   getAllValidatorSets,
   getIdentityAddresses,
   setRank,
 } from "../db";
-import logger from "../logger";
 
 export const setValidatorRanks = async () => {
   const rankMap: Map<string, number> = new Map();
   const candidates = await allCandidates();
+  const candidateAddresses = candidates.map((candidate) => candidate.stash);
   const validatorSets = await getAllValidatorSets();
   for (const era of validatorSets) {
     const validators = era.validators;
 
     for (const validator of validators) {
-      logger.info(`Checking validator: ${validator}`);
-      const candidateExists = await candidateExistsByStash(validator);
+      const candidateExists = candidateAddresses.includes(validator);
       if (candidateExists) {
         if (rankMap.has(validator)) {
           rankMap.set(validator, rankMap.get(validator) + 1);
@@ -26,24 +24,22 @@ export const setValidatorRanks = async () => {
       }
     }
   }
-  await processRanks(rankMap);
-  logger.info(`Rank Map: ${JSON.stringify(Array.from(rankMap.entries()))}`);
+  await processRankMap(rankMap);
 };
 
-export const processRanks = async (
+export const processRankMap = async (
   rankMap: Map<string, number>,
 ): Promise<void[]> => {
-  const eraPointsList: { address: string; eras: number }[] = [];
   return await Promise.all(
     Array.from(rankMap.entries()).map(async ([validator, rank]) => {
+      const rankList: { address: string; rank: number }[] = [];
       const identityAddresses: string[] = await getIdentityAddresses(validator);
       for (const identityAddress of identityAddresses) {
-        const eras = rankMap.get(identityAddress);
-        eraPointsList.push({ address: identityAddress, eras: eras });
+        rankList.push({ address: identityAddress, rank: rank });
       }
-      const sortedEraPointsList = eraPointsList.sort((a, b) => b.eras - a.eras);
+      const sortedRankList = rankList.sort((a, b) => b.rank - a.rank);
       const maxRank: number = Math.max(
-        ...sortedEraPointsList.map((entry) => entry.eras),
+        ...sortedRankList.map((entry) => entry.rank),
       );
 
       await setRank(validator, maxRank);

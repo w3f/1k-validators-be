@@ -1,4 +1,4 @@
-import { ChainData, logger, Models, queries } from "@1kv/common";
+import { ChainData, logger, Models, queries, Util } from "@1kv/common";
 
 export const validatorPrefLabel = { label: "ValidatorPrefJob" };
 
@@ -52,21 +52,11 @@ export const individualValidatorPrefJob = async (
 
 export const validatorPrefJob = async (chaindata: ChainData) => {
   try {
-    const start = Date.now();
-
     const candidates = await queries.allCandidates();
 
     for (const candidate of candidates) {
       await individualValidatorPrefJob(chaindata, candidate);
     }
-
-    const end = Date.now();
-    const executionTime = (end - start) / 1000;
-
-    logger.info(
-      `Set validator preferences for ${candidates.length} candidates (${executionTime}s)`,
-      validatorPrefLabel,
-    );
   } catch (e) {
     logger.error(
       `Error setting validator preferences: ${e}`,
@@ -74,6 +64,12 @@ export const validatorPrefJob = async (chaindata: ChainData) => {
     );
   }
 };
+
+export const validatorPrefJobWithTiming = Util.withExecutionTimeLogging(
+  validatorPrefJob,
+  validatorPrefLabel,
+  "Validator Preferences Job Done",
+);
 
 export const processValidatorPrefJob = async (
   job: any,

@@ -11,31 +11,31 @@ export const monitorJob = async () => {
 
 // Runs Validity Job
 export const validityJob = async (constraints: Constraints.OTV) => {
-  await otvWorker.jobs.validityJob(constraints);
+  await otvWorker.jobs.validityJobWithTiming(constraints);
   return true;
 };
 
 // Runs Score Candidate Job
 export const scoreJob = async (constraints: Constraints.OTV) => {
-  await otvWorker.jobs.scoreJob(constraints);
+  await otvWorker.jobs.scoreJobWithTiming(constraints);
   return true;
 };
 
 // Updates the era stats
 export const eraStatsJob = async (chaindata: ChainData) => {
-  await otvWorker.jobs.eraStatsJob(chaindata);
+  await otvWorker.jobs.eraStatsJobWithTiming(chaindata);
   return true;
 };
 
 // Updates Era Point data for all validators
 export const eraPointsJob = async (chaindata: ChainData) => {
-  await otvWorker.jobs.eraPointsJob(chaindata);
+  await otvWorker.jobs.eraPointsJobWithTiming(chaindata);
   return true;
 };
 
 // Updates validator preferences for all validators
 export const validatorPrefJob = async (chaindata: ChainData) => {
-  await otvWorker.jobs.validatorPrefJob(chaindata);
+  await otvWorker.jobs.validatorPrefJobWithTiming(chaindata);
   return true;
 };
 
@@ -52,7 +52,7 @@ export const inclusionJob = async (chaindata: ChainData) => {
 };
 
 export const activeValidatorJob = async (chaindata: ChainData) => {
-  await otvWorker.jobs.activeValidatorJob(chaindata);
+  await otvWorker.jobs.activeValidatorJobWithTiming(chaindata);
   return true;
 };
 

@@ -92,9 +92,7 @@ export const updateExistingTelemetryNode = async (
           version: telemetryNodeDetails.version,
           onlineSince: Date.now(),
           implementation: telemetryNodeDetails.nodeImplementation,
-          // any other fields you want to set
         },
-
         $inc: { nodeRefs: 1 },
       },
     );
@@ -123,7 +121,12 @@ export const reportTelemetryNodeOnline = async (
     } else {
       await updateExistingTelemetryNode(telemetryNodeDetails);
     }
-
+    logger.info(
+      `Telemetry node ${telemetryNodeDetails.name} with id: ${telemetryNodeDetails.telemetryId} is  online`,
+      {
+        label: "Telemetry",
+      },
+    );
     return true;
   } catch (e) {
     logger.error(e.toString());
@@ -190,9 +193,7 @@ export const reportTelemetryNodeOffline = async (
       if (telemetryNode.nodeRefs > 1) {
         await TelemetryNodeModel.updateOne(
           { name },
-          {
-            $inc: { nodeRefs: -1 },
-          },
+          { $inc: { nodeRefs: -1 } },
         );
       } else {
         await TelemetryNodeModel.updateOne({ name }, [
@@ -201,8 +202,8 @@ export const reportTelemetryNodeOffline = async (
               offlineSince: Date.now(),
               onlineSince: 0,
             },
+            $inc: { nodeRefs: -1 },
           },
-          { $inc: { nodeRefs: -1 } },
         ]);
       }
       return true;

@@ -74,10 +74,6 @@ export const handleAddedNode = async (
     telemetryClient.memNodes[parseInt(id)] = details;
     const name = details[0];
 
-    logger.info(`node ${details[0]} with id: ${id} is  online`, {
-      label: "Telemetry",
-    });
-
     const telemetryNodeDetails: Types.TelemetryNodeDetails =
       Util.nodeDetailsFromTelemetryMessage(payload);
 
@@ -90,7 +86,7 @@ export const handleAddedNode = async (
       const offlineAt = telemetryClient.offlineNodes.get(name);
       const offlineTime = now - offlineAt;
       telemetryClient.offlineNodes.delete(name);
-      logger.warn(
+      logger.info(
         `node ${name} id: ${id} that was offline is now online. Offline time: ${
           offlineTime / 1000 / 60
         } minutes `,
@@ -104,7 +100,7 @@ export const handleAddedNode = async (
       const disconnectedAt = telemetryClient.disconnectedNodes.get(name);
       const disconnectedTime = now - disconnectedAt;
       telemetryClient.disconnectedNodes.delete(name);
-      logger.warn(
+      logger.info(
         `node ${name} id: ${id} that was disconnected is now online. Disconnection time: ${
           disconnectedTime / 1000 / 60
         } minutes`,

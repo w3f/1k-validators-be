@@ -26,7 +26,7 @@ export const checkCandidate = async (
 
   const onlineValid = await checkOnline(candidate);
   if (!onlineValid) {
-    logger.warn(`${candidate.name} online not valid`, constraintsLabel);
+    logger.info(`${candidate.name} online not valid`, constraintsLabel);
   }
 
   const validateValid = await checkValidateIntention(
@@ -35,7 +35,7 @@ export const checkCandidate = async (
     candidate,
   );
   if (!validateValid) {
-    logger.warn(
+    logger.info(
       `${candidate.name} validate intention not valid`,
       constraintsLabel,
     );
@@ -46,7 +46,7 @@ export const checkCandidate = async (
     candidate,
   );
   if (!versionValid) {
-    logger.warn(`${candidate.name} version not valid`, constraintsLabel);
+    logger.info(`${candidate.name} version not valid`, constraintsLabel);
   }
 
   const monitoringWeekValid = await checkConnectionTime(
@@ -54,7 +54,7 @@ export const checkCandidate = async (
     candidate,
   );
   if (!monitoringWeekValid) {
-    logger.warn(
+    logger.info(
       `${candidate.name} monitoring week not valid`,
       constraintsLabel,
     );
@@ -62,12 +62,12 @@ export const checkCandidate = async (
 
   const identityValid = await checkIdentity(constraints.chaindata, candidate);
   if (!identityValid) {
-    logger.warn(`${candidate.name} identity not valid`, constraintsLabel);
+    logger.info(`${candidate.name} identity not valid`, constraintsLabel);
   }
 
   const offlineValid = await checkOffline(candidate);
   if (!offlineValid) {
-    logger.warn(`${candidate.name} offline not valid`, constraintsLabel);
+    logger.info(`${candidate.name} offline not valid`, constraintsLabel);
   }
 
   const commissionValid =
@@ -77,7 +77,7 @@ export const checkCandidate = async (
       candidate,
     )) || false;
   if (!commissionValid) {
-    logger.warn(`${candidate.name} commission not valid`, constraintsLabel);
+    logger.info(`${candidate.name} commission not valid`, constraintsLabel);
   }
 
   const selfStakeValid =
@@ -87,7 +87,7 @@ export const checkCandidate = async (
       candidate,
     )) || false;
   if (!selfStakeValid) {
-    logger.warn(`${candidate.name} self stake not valid`, constraintsLabel);
+    logger.info(`${candidate.name} self stake not valid`, constraintsLabel);
   }
 
   const unclaimedValid =
@@ -102,7 +102,7 @@ export const checkCandidate = async (
   const blockedValid =
     (await checkBlocked(constraints.chaindata, candidate)) || false;
   if (!blockedValid) {
-    logger.warn(`${candidate.name} blocked not valid`, constraintsLabel);
+    logger.info(`${candidate.name} blocked not valid`, constraintsLabel);
   }
 
   let kusamaValid = true;
@@ -114,18 +114,18 @@ export const checkCandidate = async (
     logger.info(`Error trying to get kusama data...`);
   }
   if (!kusamaValid) {
-    logger.warn(`${candidate.name} kusama not valid`, constraintsLabel);
+    logger.info(`${candidate.name} kusama not valid`, constraintsLabel);
   }
 
   const providerValid =
     (await checkProvider(constraints.config, candidate)) || false;
   if (!providerValid) {
-    logger.warn(`${candidate.name} provider not valid`, constraintsLabel);
+    logger.info(`${candidate.name} provider not valid`, constraintsLabel);
   }
 
   const beefyValid = await checkBeefyKeys(candidate);
   if (!beefyValid) {
-    logger.warn(`${candidate.name} beefy keys not valid`, constraintsLabel);
+    logger.info(`${candidate.name} beefy keys not valid`, constraintsLabel);
   }
 
   valid =

@@ -4,8 +4,6 @@ export const erastatsLabel = { label: "EraStatsJob" };
 
 export const eraStatsJob = async (chaindata: ChainData) => {
   try {
-    const start = Date.now();
-
     const currentSession = await chaindata.getSession();
     const currentEra = await chaindata.getCurrentEra();
     const validators = await chaindata.currentValidators();
@@ -22,7 +20,7 @@ export const eraStatsJob = async (chaindata: ChainData) => {
 
     await queries.setValidatorSet(currentSession, currentEra, validators);
 
-    for (let i = currentEra; i > 0; i--) {
+    for (let i = currentEra; i > 20; i--) {
       if (await queries.validatorSetExistsForEra(i)) {
         continue;
       }
@@ -46,15 +44,16 @@ export const eraStatsJob = async (chaindata: ChainData) => {
       valid.length,
       active.length,
     );
-
-    const end = Date.now();
-    const executionTime = (end - start) / 1000;
-
-    logger.info(`Done (${executionTime}s)`, erastatsLabel);
   } catch (e) {
     logger.error(`Error running era stats job: ${e}`, erastatsLabel);
   }
 };
+
+export const eraStatsJobWithTiming = Util.withExecutionTimeLogging(
+  eraStatsJob,
+  erastatsLabel,
+  "Era Stats Job Done",
+);
 
 export const processEraStatsJob = async (job: any, chaindata: ChainData) => {
   await eraStatsJob(chaindata);

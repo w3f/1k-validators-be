@@ -42,26 +42,6 @@ export default class TelemetryClient {
   public initializeWebSocket() {
     try {
       this._socket = new WebSocket(this._host);
-      this._socket.on("error", (err) => {
-        // Handle asynchronous errors here
-        logger.error(`WebSocket error: ${err}`, {
-          label: "Telemetry",
-        });
-      });
-
-      this._socket.on("open", (event) => {
-        logger.info("WebSocket connection established", {
-          label: "Telemetry",
-        });
-        // Handle the open event, e.g., by setting up subscriptions
-      });
-
-      this._socket.on("close", (event) => {
-        logger.info(`WebSocket connection closed: ${event}`, {
-          label: "Telemetry",
-        });
-        // Handle the close event, possibly by attempting to reconnect
-      });
     } catch (e) {
       logger.error(`Error initializing telemetry websocket: ${e}`, {
         label: "Telemetry",
@@ -94,15 +74,6 @@ export default class TelemetryClient {
   }
 
   async start(retries = 0): Promise<void> {
-    // while (!isOpen(this.socket)) {
-    //   logger.info("Waiting for telemetry connection to open", {
-    //     label: "Telemetry",
-    //   });
-    //   await Util.sleep(1000);
-    // }
-    // if (isOpen(this.socket)) {
-    //   logger.info("Telemetry connection opened", { label: "Telemetry" });
-    // }
     const maxRetries = 5;
     if (!this.enable) {
       logger.warn("Telemetry Client not enabled.", { label: "Telemetry" });
@@ -144,7 +115,7 @@ export default class TelemetryClient {
     logger.info(`Retrying connection in ${retryDelay}ms`, {
       label: "Telemetry",
     });
-    // await Util.sleep(retryDelay);
+    await Util.sleep(retryDelay);
 
     try {
       await this.start(0);
@@ -158,7 +129,7 @@ export default class TelemetryClient {
     for (const [name, disconnectedAt] of this.disconnectedNodes.entries()) {
       if (Date.now() - disconnectedAt > Constants.FIVE_MINUTES) {
         this.disconnectedNodes.delete(name);
-        logger.warn(`${name} has been disconnected for more than 5 minutes`, {
+        logger.info(`${name} has been disconnected for more than 5 minutes`, {
           label: "Telemetry",
         });
         await queries.reportOffline(name);

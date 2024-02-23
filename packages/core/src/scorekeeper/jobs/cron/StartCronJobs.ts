@@ -27,6 +27,7 @@ import {
 } from "./WorkerJobs";
 import { scorekeeperLabel } from "../../scorekeeper";
 import { endRound, startRound } from "../../Round";
+import { setupCronJob } from "./SetupCronJob";
 
 // Functions for starting the cron jobs
 
@@ -35,43 +36,37 @@ export const cronLabel = { label: "Cron" };
 // Monitors the latest GitHub releases and ensures nodes have upgraded
 // within a timely period.
 export const startMonitorJob = async (config: Config.ConfigSchema) => {
-  const monitorFrequency = config.cron?.monitor
-    ? config.cron?.monitor
-    : Constants.MONITOR_CRON;
-
-  logger.info(
-    `Starting Monitor Cron Job with frequency ${monitorFrequency}`,
+  await setupCronJob(
+    config.cron?.monitorEnabled ?? true,
+    config.cron?.monitor,
+    Constants.MONITOR_CRON,
+    async () => {
+      logger.info(
+        `Monitoring the node version by polling latest Github releases.`,
+        cronLabel,
+      );
+      await monitorJob();
+    },
+    "Monitor Cron Job",
     cronLabel,
   );
-
-  const monitorCron = new CronJob(monitorFrequency, async () => {
-    logger.info(
-      `Monitoring the node version by polling latest Github releases.`,
-      cronLabel,
-    );
-    await monitorJob();
-  });
-
-  monitorCron.start();
 };
 
 // Once a week reset the offline accumulations of nodes.
 export const startClearAccumulatedOfflineTimeJob = async (
   config: Config.ConfigSchema,
 ) => {
-  const clearFrequency = config.cron?.clearOffline
-    ? config.cron?.clearOffline
-    : Constants.CLEAR_OFFLINE_CRON;
-  logger.info(
-    `Starting Clear Accumulated Offline Time Job with frequency ${clearFrequency}`,
+  await setupCronJob(
+    config.cron?.clearOfflineEnabled ?? true,
+    config.cron?.clearOffline,
+    Constants.CLEAR_OFFLINE_CRON,
+    () => {
+      logger.info(`Running clear offline cron.`, cronLabel);
+      queries.clearAccumulated();
+    },
+    "Clear Accumulated Offline Time Job",
     cronLabel,
   );
-
-  const clearCron = new CronJob(clearFrequency, () => {
-    logger.info(`Running clear offline cron`, cronLabel);
-    queries.clearAccumulated();
-  });
-  clearCron.start();
 };
 
 export const startValidatityJob = async (

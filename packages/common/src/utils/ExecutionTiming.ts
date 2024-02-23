@@ -12,7 +12,7 @@ export const withExecutionTimeLogging = <T extends any[], R>(
     const end = Date.now();
     const executionTime = (end - start) / 1000;
     const coloredExecutionTime = chalk.bgGreen(`(${executionTime}s)`);
-    logger.info(`${label} ${text} ${coloredExecutionTime}`, label);
+    logger.info(`${text} ${coloredExecutionTime}`, label);
     return result;
   };
 };

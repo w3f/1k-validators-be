@@ -284,6 +284,6 @@ program.version(version);
 program.parse(process.argv);
 
 process.on("uncaughtException", (error) => {
-  // console.error(`Uncaught Exception: ${error}`);
-  // Consider implementing a graceful shutdown or restart mechanism
+  logger.error(error.toString());
+  process.exit(1);
 });

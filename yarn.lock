@@ -13,7 +13,7 @@ __metadata:
     "@types/eslint": ^8.44.7
     "@types/jest": ^29.5.12
     "@types/koa-mount": ^4.0.5
-    "@types/node": ^20.11.5
+    "@types/node": ^20.11.20
     "@types/request": ^2.48.12
     "@types/yamljs": ^0.2.34
     "@typescript-eslint/eslint-plugin": ^5.59.9
@@ -45,7 +45,7 @@ __metadata:
   resolution: "@1kv/common@workspace:packages/common"
   dependencies:
     "@types/mongoose": ^5.11.97
-    "@types/node": ^20.11.5
+    "@types/node": ^20.11.20
     hash.js: ^1.1.7
     mongoose: ^8.1.1
     ts-node: ^10.9.2
@@ -71,7 +71,7 @@ __metadata:
     "@types/jest": ^29.5.12
     "@types/koa": ^2.14.0
     "@types/koa-bodyparser": ^4.3.12
-    "@types/node": ^20.11.5
+    "@types/node": ^20.11.20
     "@types/semver": ^7.5.6
     "@types/ws": ^8.5.10
     "@typescript-eslint/eslint-plugin": ^5.59.9
@@ -2284,12 +2284,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:^20.11.5":
+"@types/node@npm:*":
   version: 20.11.19
   resolution: "@types/node@npm:20.11.19"
   dependencies:
     undici-types: ~5.26.4
   checksum: 259d16643ba611ade617a8212e594a3ac014727457507389bbf7213971346ab052d870f1e6e2df0afd0876ecd7874f578bccb130be01e069263cfc7136ddc0c1
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^20.11.20":
+  version: 20.11.20
+  resolution: "@types/node@npm:20.11.20"
+  dependencies:
+    undici-types: ~5.26.4
+  checksum: 79d339622fed1c0e64297c8b9f558815a91edb9fea3acb69c1201b919d450e12915cf98b1a96b2d2c121bf86f30b62b6de3708f8894c5319f8dfb3a991e3ccdd
   languageName: node
   linkType: hard
 

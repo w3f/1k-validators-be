@@ -172,7 +172,7 @@ export const startRound = async (
   const NUM_NOMINATORS = 20;
   if (proxyTxs.length >= NUM_NOMINATORS) {
     const infoMsg = `round was started with ${proxyTxs.length} pending proxy txs. Skipping Round.`;
-    logger.info(infoMsg, scorekeeperLabel);
+    logger.warn(infoMsg, scorekeeperLabel);
     bot?.sendMessage(infoMsg);
     return;
   }

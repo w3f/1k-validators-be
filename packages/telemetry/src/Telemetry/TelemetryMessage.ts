@@ -1,6 +1,6 @@
 import { TelemetryMessage } from "../types";
 import { logger, queries, Types, Util } from "@1kv/common";
-import TelemetryClient from "../telemetry";
+import TelemetryClient from "./Telemetry";
 
 export const deserialize = (
   msg: any,

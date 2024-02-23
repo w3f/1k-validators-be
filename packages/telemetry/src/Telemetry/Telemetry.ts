@@ -1,8 +1,7 @@
 import WebSocket from "ws";
 
 import { Config, Constants, logger, queries, Util } from "@1kv/common";
-import { registerTelemetryWs } from "./Telemetry/TelemetryWS";
-import { initIIT } from "@1kv/common/build/utils";
+import { registerTelemetryWs } from "./TelemetryWS";
 
 export default class TelemetryClient {
   private _chains: string[];
@@ -89,7 +88,7 @@ export default class TelemetryClient {
 
     try {
       await registerTelemetryWs(this);
-      await initIIT(this.config?.telemetry?.ipinfoToken);
+      await Util.initIIT(this.config?.telemetry?.ipinfoToken);
     } catch (error) {
       logger.error(`Telemetry connection error: ${error}`, {
         label: "Telemetry",

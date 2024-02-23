@@ -43,7 +43,9 @@ spec:
                 "global": {
                   "networkPrefix": 2,
                   "apiEndpoints": [
-                    "wss://kusama-rpc.polkadot.io"
+                    "wss://kusama-rpc.polkadot.io",
+                    "wss://kusama-rpc.dwellir.com",
+                    "wss://kusama.public.curie.radiumblock.xyz/ws"
                   ],
                   "candidatesUrl": "https://raw.githubusercontent.com/w3f/1k-validators-be/master/candidates/kusama.json"
                 },

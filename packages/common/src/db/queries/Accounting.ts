@@ -1,4 +1,3 @@
-import logger from "../../logger";
 import { AccountingModel } from "../models";
 
 /**
@@ -10,10 +9,6 @@ export const newAccountingRecord = async (
   stash: string,
   controller: string,
 ): Promise<boolean> => {
-  logger.info(
-    `(Db::newAccountingRecord) Adding stash ${stash} and controller ${controller}`,
-  );
-
   const record = await AccountingModel.findOne({ stash, controller }).lean();
   if (!record) {
     const accounting = new AccountingModel({
@@ -35,10 +30,6 @@ export const updateAccountingRecord = async (
   era: string,
   reward: string,
 ): Promise<boolean> => {
-  logger.info(
-    `(Db::updateAccountingRecord) Adding era ${era} and reward ${reward}`,
-  );
-
   const record = await AccountingModel.findOne({ stash, controller }).lean();
   if (!record) {
     // record doesn't exist just return false

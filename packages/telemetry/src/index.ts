@@ -1,3 +1,3 @@
-import TelemetryClient from "./telemetry";
+import TelemetryClient from "./Telemetry/Telemetry";
 
 export { TelemetryClient };

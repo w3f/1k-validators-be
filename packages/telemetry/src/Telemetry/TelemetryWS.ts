@@ -1,4 +1,4 @@
-import TelemetryClient from "../telemetry";
+import TelemetryClient from "./Telemetry";
 import { logger } from "@1kv/common";
 import { deserialize, handleTelemetryMessage } from "./TelemetryMessage";
 import WebSocket from "ws";

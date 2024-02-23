@@ -245,6 +245,6 @@ export default class ScoreKeeper {
     };
 
     const jobs = await JobsFactory.makeJobs(metadata);
-    jobs.startJobs();
+    await jobs.startJobs();
   }
 }

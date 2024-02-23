@@ -130,7 +130,7 @@ export const setupHealthCheckRoute = (router: Router, handler?) => {
       const isConnected = handler.isConnected();
       if (isConnected) {
         const isHealthy = await handler.healthCheck();
-        ctx.body = `Good! RPC connection: ${handler.currentEndpoint()} (is healthy: ${isHealthy})`;
+        ctx.body = `Good! RPC connection: ${handler.currentEndpoint()} ( healthy: ${isHealthy})`;
         ctx.status = 200;
       } else {
         ctx.body = `API Handler not Connected!`;

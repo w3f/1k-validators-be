@@ -3,7 +3,6 @@
     "dryRun": false,
     "networkPrefix": 2,
     "apiEndpoints": [
-      "wss://kusama-rpc.polkadot.io",
       "wss://kusama-rpc.dwellir.com",
       "wss://kusama.public.curie.radiumblock.xyz/ws"
     ],
@@ -23,7 +22,7 @@
     "unclaimedEraThreshold": 4
   },
   "cron": {
-    "monitor": "0 */15* * * * *",
+    "monitor": "0 */15 * * * *",
     "clearOffline": "0 0 0 * * 0",
     "validity": "0 0-59/1 * * * *",
     "score": "0 0-59/1 * * * *",

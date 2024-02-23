@@ -9,6 +9,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "1k-validators-be@workspace:."
   dependencies:
+    "@polkadot/api": ^10.11.2
+    "@polkadot/rpc-provider": ^10.11.2
     "@types/coingecko-api": ^1.0.13
     "@types/eslint": ^8.44.7
     "@types/jest": ^29.5.12
@@ -1554,7 +1556,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polkadot/rpc-provider@npm:10.11.2":
+"@polkadot/rpc-provider@npm:10.11.2, @polkadot/rpc-provider@npm:^10.11.2":
   version: 10.11.2
   resolution: "@polkadot/rpc-provider@npm:10.11.2"
   dependencies:

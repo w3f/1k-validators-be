@@ -202,9 +202,16 @@ export default class ScoreKeeper {
     logger.info(`Starting Scorekeeper.`, scorekeeperLabel);
 
     const candidates = await queries.allCandidates();
-
+    logger.info(
+      `[Begin] Setting ${candidates.length} Candidate Identities.....`,
+      scorekeeperLabel,
+    );
     // Set all candidate identities
     for (const [index, candidate] of candidates.entries()) {
+      logger.info(
+        `[Begin] Setting Candidate Identity: ${candidate.name} (${index + 1}/${candidates.length})`,
+        scorekeeperLabel,
+      );
       const identity = await this.chaindata.getFormattedIdentity(
         candidate.stash,
       );

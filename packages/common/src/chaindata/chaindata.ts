@@ -67,6 +67,7 @@ export class ChainData {
 
   checkApiConnection = async (retries = 0) => {
     if (!this.api?.isConnected) {
+      logger.warn(`API is not connected, waiting...`, chaindataLabel);
       while (!this.api?.isConnected && retries < CHAINDATA_RETRIES) {
         logger.warn(
           `Retries: ${retries} - API is not connected, waiting...`,

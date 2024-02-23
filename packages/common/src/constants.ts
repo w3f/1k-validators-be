@@ -81,7 +81,7 @@ export const DEFAULT_TELEMETRY_ENDPONT =
 export const defaultExcludeLabels = [
   "Telemetry",
   // "Location",
-  "ValidatorPrefJob",
+  // "ValidatorPrefJob",
   "Block",
   "Gateway",
 ];

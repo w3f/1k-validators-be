@@ -2,7 +2,7 @@ import Koa from "koa";
 import bodyparser from "koa-bodyparser";
 import cors from "koa2-cors";
 
-import { Config, Constants, logger } from "@1kv/common";
+import { ApiHandler, Config, Constants, logger } from "@1kv/common";
 import koaCash from "koa-cash";
 import { KoaAdapter } from "@bull-board/koa";
 import { createBullBoard } from "@bull-board/api";
@@ -12,7 +12,7 @@ import { Queue } from "bullmq";
 import path from "path";
 import serve from "koa-static";
 
-import router from "./routes";
+import router, { setupHealthCheckRoute } from "./routes";
 import mount from "koa-mount";
 import { koaSwagger } from "koa2-swagger-ui";
 import yamljs from "yamljs";
@@ -26,13 +26,15 @@ export default class Server {
   private cache = 180000;
   private config: Config.ConfigSchema;
   private queues: Queue[] = [];
+  private handler: ApiHandler | null;
 
-  constructor(config: Config.ConfigSchema) {
+  constructor(config: Config.ConfigSchema, handler?: ApiHandler) {
     this.config = config;
     this.app = new Koa();
     this.port = config?.server?.port;
     this.enable = config?.server?.enable || true;
     this.cache = config?.server?.cache;
+    this.handler = handler || null;
 
     this.app.use(cors());
     this.app.use(bodyparser());
@@ -55,22 +57,17 @@ export default class Server {
     );
 
     // If onlyHealth is true, only serve the health check route. Used when imported from other services for service health checks. False by default
-    const onlyHealth = config?.server?.onlyHealth || false;
+    const onlyHealth = this.config?.server?.onlyHealth || false;
     if (onlyHealth) {
       logger.info(`Only serving health check route`, { label: "Gateway" });
       const healthRouter = new Router();
-      // Health check route
-      healthRouter.get("/healthcheck", (ctx) => {
-        ctx.body = `Good!`;
-        ctx.status = 200;
-      });
+
+      // Set up the health check route on the healthRouter
+      setupHealthCheckRoute(healthRouter, this.handler);
+
       this.app.use(healthRouter.routes());
     } else {
-      // Health check route
-      router.get("/healthcheck", (ctx) => {
-        ctx.body = `Good!`;
-        ctx.status = 200;
-      });
+      setupHealthCheckRoute(router, handler);
 
       // Docusarus docs
       const serveDocs = config?.server?.serveDocs || true;

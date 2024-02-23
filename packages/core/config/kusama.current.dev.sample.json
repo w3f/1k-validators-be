@@ -23,7 +23,7 @@
     "unclaimedEraThreshold": 4
   },
   "cron": {
-    "monitor": "0 */15* * * *",
+    "monitor": "0 */15* * * * *",
     "clearOffline": "0 0 0 * * 0",
     "validity": "0 0-59/1 * * * *",
     "score": "0 0-59/1 * * * *",

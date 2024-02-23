@@ -23,30 +23,44 @@ class ApiHandler extends EventEmitter {
   timeout = 5 * 1000;
 
   private healthCheckInProgress: boolean;
-
+  private _currentEndpint: string;
   constructor(endpoints?: string[]) {
     super();
     this._endpoints = endpoints.sort(() => Math.random() - 0.5);
   }
 
   async healthCheck() {
-    logger.info(`Performing health check for WS Provider for rpc.`, apiLabel);
-    this.healthCheckInProgress = true;
-    await sleep(this.timeout);
-    if (this._wsProvider.isConnected) {
+    try {
       logger.info(
-        `All good. Connected back to ${this._endpoints[0]}`,
+        `Performing health check for WS Provider for rpc: ${this._currentEndpint}`,
         apiLabel,
       );
+      this.healthCheckInProgress = true;
+
+      const chain = await this._api?.rpc.system.chain();
+
+      if (this._wsProvider?.isConnected && chain) {
+        logger.info(`All good. Connected to ${this._currentEndpint}`, apiLabel);
+        this.healthCheckInProgress = false;
+        return true;
+      } else {
+        await sleep(this.timeout);
+        logger.info(`api still disconnected, disconnecting.`, apiLabel);
+        await this._wsProvider.disconnect();
+        throw new Error(
+          `ERROR: rpc endpoint still disconnected after ${this.timeout} seconds.`,
+        );
+      }
+    } catch (e) {
+      logger.error(`Error in health check for WS Provider for rpc.`, apiLabel);
+      logger.error(e, apiLabel);
       this.healthCheckInProgress = false;
-      return true;
-    } else {
-      logger.info(`api still disconnected, disconnecting.`, apiLabel);
-      await this._wsProvider.disconnect();
-      throw new Error(
-        `ERROR: rpc endpoint still disconnected after ${this.timeout} seconds.`,
-      );
+      throw e;
     }
+  }
+
+  public currentEndpoint() {
+    return this._currentEndpint;
   }
 
   async getProvider(endpoints) {
@@ -73,10 +87,8 @@ class ApiHandler extends EventEmitter {
         }
       });
       wsProvider.on("connected", () => {
-        logger.info(
-          `WS provider for rpc ${this._endpoints[0]} connected`,
-          apiLabel,
-        );
+        logger.info(`WS provider for rpc ${endpoints[0]} connected`, apiLabel);
+        this._currentEndpint = endpoints[0];
         resolve(wsProvider);
       });
       wsProvider.on("error", async () => {
@@ -94,17 +106,22 @@ class ApiHandler extends EventEmitter {
   }
 
   async getAPI(retries) {
-    logger.info(`getAPI`, apiLabel);
     if (this._wsProvider && this._api && this._api?.isConnected) {
       return this._api;
     }
     const endpoints = this._endpoints.sort(() => Math.random() - 0.5);
 
     try {
-      logger.info(`getAPI: creating provider`, apiLabel);
+      logger.info(
+        `getAPI: creating provider with endpoint ${endpoints[0]}`,
+        apiLabel,
+      );
       const provider = await this.getProvider(endpoints);
       this._wsProvider = provider;
-      logger.info(`getAPI: provider created`, apiLabel);
+      logger.info(
+        `getAPI: provider created with endpoint: ${endpoints[0]}`,
+        apiLabel,
+      );
       const api = await ApiPromise.create({ provider: provider });
       await api.isReadyOrError;
       logger.info(`Api is ready`, apiLabel);
@@ -125,7 +142,7 @@ class ApiHandler extends EventEmitter {
   }
 
   isConnected(): boolean {
-    return this._api.isConnected;
+    return this._wsProvider.isConnected;
   }
 
   getApi(): ApiPromise {

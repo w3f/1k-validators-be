@@ -22,6 +22,19 @@ const getBenchmarks = (scores) => {
   return scores === null ? defaultScores : scores;
 };
 
+const getHardwareSpec = (hardware) => {
+  const defaultHardware = {
+    cpu: "",
+    memory: "",
+    core_count: 0,
+    linux_kernel: "",
+    linux_distro: "",
+    is_virtual_machine: false,
+  };
+
+  return hardware === null ? defaultHardware : hardware;
+};
+
 export const nodeDetailsFromTelemetryMessage = (
   payload,
 ): TelemetryNodeDetails => {
@@ -35,14 +48,7 @@ export const nodeDetailsFromTelemetryMessage = (
         address,
         networkId,
         addr,
-        {
-          cpu,
-          memory,
-          core_count,
-          linux_kernel,
-          linux_distro,
-          is_virtual_machine,
-        },
+        hardware,
         benchmarkScores,
       ],
       nodeStats,
@@ -54,6 +60,7 @@ export const nodeDetailsFromTelemetryMessage = (
     ] = payload;
 
     const benchmarkScore = getBenchmarks(benchmarkScores);
+    const hardwareSpec = getHardwareSpec(hardware);
 
     return {
       telemetryId: id,
@@ -63,12 +70,12 @@ export const nodeDetailsFromTelemetryMessage = (
       ipAddress: addr,
       startupTime: startupTime,
       hardwareSpec: {
-        cpu: cpu,
-        memory: memory,
-        core_count: core_count,
-        linux_kernel: linux_kernel,
-        linux_distro: linux_distro,
-        is_virtual_machine: is_virtual_machine,
+        cpu: hardwareSpec?.cpu || "",
+        memory: hardwareSpec?.memory || "",
+        core_count: hardwareSpec?.core_count || 0,
+        linux_kernel: hardwareSpec?.linux_kernel || "",
+        linux_distro: hardwareSpec?.linux_distro || "",
+        is_virtual_machine: hardwareSpec?.is_virtual_machine || false,
       },
       benchmarkSpec: {
         cpu_hashrate_score: benchmarkScore?.cpu_hashrate_score || 0,

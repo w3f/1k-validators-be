@@ -67,10 +67,10 @@ export const createDB = async (config) => {
   }
 };
 
-export const createServer = async (config) => {
+export const createServer = async (config, handler) => {
   try {
     logger.info(`Creating Server`, winstonLabel);
-    const server = new Server(config);
+    const server = new Server(config, handler);
     await server.start();
     logger.info(`Server started at: ${config?.server?.port}`, winstonLabel);
   } catch (e) {
@@ -265,7 +265,7 @@ const start = async (cmd: { config: string }) => {
   await addCandidates(config);
 
   // Start the API server.
-  await createServer(config);
+  await createServer(config, handler);
 
   // Start the telemetry client.
   await createTelemetry(config);

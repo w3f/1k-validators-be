@@ -13,7 +13,7 @@ export const getLatestTaggedRelease = async () => {
     const ghApi = new Octokit();
 
     try {
-      latestRelease = await this.ghApi.repos.getLatestRelease({
+      latestRelease = await ghApi.repos.getLatestRelease({
         owner: "paritytech",
         repo: "polkadot-sdk",
       });

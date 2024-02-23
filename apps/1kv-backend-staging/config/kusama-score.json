@@ -1,8 +1,8 @@
 {
   "inclusion": "220",
   "spanInclusion": "220",
-  "discovered": "5",
-  "nominated": "80",
+  "discovered": "30",
+  "nominated": "100",
   "rank": "50",
   "bonded": "50",
   "faults": "5",

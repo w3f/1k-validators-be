@@ -1,6 +1,6 @@
-import Monitor from "../../src/monitor";
+import Monitor from "../../../common/src/monitor";
 import { queries } from "@1kv/common"; // Assuming logger and queries are exported from this module
-import { Octokit } from "@octokit/rest";
+import { Octokit } from "@octokit/rest"; // Mock the logger, Octokit, and queries modules
 
 // Mock the logger, Octokit, and queries modules
 jest.mock("@1kv/common", () => ({

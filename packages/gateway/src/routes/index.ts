@@ -10,6 +10,8 @@ import Location from "../controllers/Location";
 import Validator from "../controllers/Validators";
 import Rewards from "../controllers/Rewards";
 import Block from "../controllers/Block";
+import { ScoreKeeper } from "@1kv/common";
+import { response } from "../controllers";
 
 const router: any = new Router();
 
@@ -141,6 +143,17 @@ export const setupHealthCheckRoute = (router: Router, handler?) => {
       ctx.status = 200;
     }
   });
+};
+
+export const setupScorekeeperRoutes = (
+  router: Router,
+  scorekeeper: ScoreKeeper,
+) => {
+  if (scorekeeper) {
+    router.get("/scorekeeper/jobs", async (ctx) => {
+      response(ctx, 200, scorekeeper.getJobsStatusAsJson());
+    });
+  }
 };
 
 export default router;

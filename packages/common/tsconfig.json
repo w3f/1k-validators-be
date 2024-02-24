@@ -8,8 +8,8 @@
     "src/db/index.ts",
     "src/index.ts",
     "src/logger.ts",
-//    "src/matrix.ts",
-//    "src/monitor.ts",
+    "src/matrix.ts",
+    "src/monitor.ts",
 //    "src/nominator.ts",
 //    "src/scorekeeper.ts",
 //    "src/server.ts",
@@ -75,5 +75,5 @@
     // "experimentalDecorators": true,        /* Enables experimental support for ES7 decorators. */
     // "emitDecoratorMetadata": true,         /* Enables experimental support for emitting type metadata for decorators. */
     "resolveJsonModule": true
-  }
+  },
 }

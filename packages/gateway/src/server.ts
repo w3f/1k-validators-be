@@ -2,7 +2,14 @@ import Koa from "koa";
 import bodyparser from "koa-bodyparser";
 import cors from "koa2-cors";
 
-import { ApiHandler, Config, Constants, logger } from "@1kv/common";
+import {
+  ApiHandler,
+  Config,
+  Constants,
+  logger,
+  ScoreKeeper,
+} from "@1kv/common";
+
 import koaCash from "koa-cash";
 import { KoaAdapter } from "@bull-board/koa";
 import { createBullBoard } from "@bull-board/api";
@@ -12,7 +19,10 @@ import { Queue } from "bullmq";
 import path from "path";
 import serve from "koa-static";
 
-import router, { setupHealthCheckRoute } from "./routes";
+import router, {
+  setupHealthCheckRoute,
+  setupScorekeeperRoutes,
+} from "./routes";
 import mount from "koa-mount";
 import { koaSwagger } from "koa2-swagger-ui";
 import yamljs from "yamljs";
@@ -27,14 +37,20 @@ export default class Server {
   private config: Config.ConfigSchema;
   private queues: Queue[] = [];
   private handler: ApiHandler | null;
+  private scorekeeper: ScoreKeeper | null;
 
-  constructor(config: Config.ConfigSchema, handler?: ApiHandler) {
+  constructor(
+    config: Config.ConfigSchema,
+    handler?: ApiHandler,
+    scorekeeper?: ScoreKeeper | null,
+  ) {
     this.config = config;
     this.app = new Koa();
     this.port = config?.server?.port;
     this.enable = config?.server?.enable || true;
     this.cache = config?.server?.cache;
     this.handler = handler || null;
+    this.scorekeeper = scorekeeper || null;
 
     this.app.use(cors());
     this.app.use(bodyparser());
@@ -64,10 +80,12 @@ export default class Server {
 
       // Set up the health check route on the healthRouter
       setupHealthCheckRoute(healthRouter, this.handler);
+      setupScorekeeperRoutes(healthRouter, this.scorekeeper);
 
       this.app.use(healthRouter.routes());
     } else {
       setupHealthCheckRoute(router, handler);
+      setupScorekeeperRoutes(router, this.scorekeeper);
 
       // Docusarus docs
       const serveDocs = config?.server?.serveDocs || true;

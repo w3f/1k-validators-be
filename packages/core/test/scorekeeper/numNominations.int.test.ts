@@ -1,6 +1,6 @@
 import { ApiPromise, WsProvider } from "@polkadot/api";
 import { Constants } from "@1kv/common";
-import { autoNumNominations } from "../../src/scorekeeper/NumNominations";
+import { autoNumNominations } from "../../../common/src/scorekeeper/NumNominations";
 
 describe("autoNumNominations Integration Test", () => {
   it("queries the real API and retrieves data", async () => {

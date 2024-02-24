@@ -6,14 +6,13 @@ import {
   Constants,
   Db,
   logger,
+  MatrixBot,
   queries,
+  ScoreKeeper,
   Util,
 } from "@1kv/common";
-import MatrixBot from "./matrix";
-import Scorekeeper from "./scorekeeper/scorekeeper";
-import { TelemetryClient } from "@1kv/telemetry";
 
-import { startClearAccumulatedOfflineTimeJob } from "./scorekeeper/jobs/cron/StartCronJobs";
+import { TelemetryClient } from "@1kv/telemetry";
 import { Server } from "@1kv/gateway";
 
 const isCI = process.env.CI;
@@ -67,10 +66,10 @@ export const createDB = async (config) => {
   }
 };
 
-export const createServer = async (config, handler) => {
+export const createServer = async (config, handler?, scorekeeper?) => {
   try {
     logger.info(`Creating Server`, winstonLabel);
-    const server = new Server(config, handler);
+    const server = new Server(config, handler, scorekeeper);
     await server.start();
     logger.info(`Server started at: ${config?.server?.port}`, winstonLabel);
   } catch (e) {
@@ -217,7 +216,7 @@ export const initScorekeeper = async (config, handler, maybeBot) => {
   try {
     logger.info(`Creating Scorekeeper`, winstonLabel);
     // Set up the nominators in the scorekeeper.
-    const scorekeeper = new Scorekeeper(handler, config, maybeBot);
+    const scorekeeper = new ScoreKeeper(handler, config, maybeBot);
     for (const nominatorGroup of config.scorekeeper.nominators) {
       await scorekeeper.addNominatorGroup(nominatorGroup);
     }
@@ -246,9 +245,6 @@ const start = async (cmd: { config: string }) => {
   // Create the matrix bot if enabled.
   const maybeBot = await createMatrixBot(config);
 
-  // Start the clear accumulated offline time job.
-  await startClearAccumulatedOfflineTimeJob(config);
-
   const api = handler.getApi();
   while (!api) {
     logger.info(`Waiting for API to connect...`, winstonLabel);
@@ -265,7 +261,7 @@ const start = async (cmd: { config: string }) => {
   await addCandidates(config);
 
   // Start the API server.
-  await createServer(config, handler);
+  await createServer(config, handler, scorekeeper);
 
   // Start the telemetry client.
   await createTelemetry(config);

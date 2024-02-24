@@ -73,7 +73,7 @@ export class ChainData {
           `Retries: ${retries} - API is not connected, waiting...`,
           chaindataLabel,
         );
-        await this.handler.healthCheck();
+        await this.handler?.healthCheck();
         await sleep(CHAINDATA_SLEEP);
 
         retries++;

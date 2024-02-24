@@ -12,6 +12,10 @@ import * as Constraints from "./constraints/constraints";
 import * as Score from "./constraints/score";
 import * as Scripts from "./scripts";
 import * as Models from "./db/models";
+import ScoreKeeper from "./scorekeeper/scorekeeper";
+import * as Jobs from "./scorekeeper/jobs/specificJobs";
+import MatrixBot from "./matrix";
+import Monitor from "./monitor";
 
 export {
   ApiHandler,
@@ -27,4 +31,8 @@ export {
   Score,
   Scripts,
   Models,
+  ScoreKeeper,
+  Jobs,
+  MatrixBot,
+  Monitor,
 };

@@ -1,6 +1,6 @@
 // Mocking the Nominator module with NominatorMock
 // @ts-ignore
-import Nominator from "../src/nominator";
+import Nominator from "../../common/src/nominator";
 import { ApiHandler, Types } from "@1kv/common";
 
 jest.mock("../src/nominator", () => {

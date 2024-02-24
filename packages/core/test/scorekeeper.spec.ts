@@ -1,6 +1,6 @@
 import test, { ExecutionContext } from "ava";
 import Db from "../src/db";
-import Scorekeeper from "../src/scorekeeper/scorekeeper";
+import Scorekeeper from "../../common/src/scorekeeper/scorekeeper";
 import { CandidateData } from "../src/types";
 
 import { MockApi, MockConfig } from "./mock";

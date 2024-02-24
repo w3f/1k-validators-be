@@ -30,7 +30,7 @@ export const locationStatsJob = async (metadata: jobsMetadata) => {
     });
 
     // Add all candidate entries to the list of nodes
-    for (const candidate of candidates) {
+    for (const [index, candidate] of candidates.entries()) {
       const location = await queries.getCandidateLocation(candidate.name);
       if (
         location?.city != "None" &&
@@ -46,6 +46,15 @@ export const locationStatsJob = async (metadata: jobsMetadata) => {
           provider: location?.provider,
         });
       }
+
+      // Emit progress update for each candidate processed
+      const progressPercentage = ((index + 1) / candidates.length) * 100;
+      jobStatusEmitter.emit("jobProgress", {
+        name: "Location Stats Job",
+        progress: progressPercentage,
+        updated: Date.now(),
+        iteration: `Processed candidate ${candidate.name}`,
+      });
     }
 
     // add any additional validators from the validator set to the list of nodes
@@ -55,7 +64,10 @@ export const locationStatsJob = async (metadata: jobsMetadata) => {
       validatorset?.validators &&
       validatorset.validators.length > 0
     ) {
-      for (const validatorAddress of validatorset.validators) {
+      for (const [
+        index,
+        validatorAddress,
+      ] of validatorset.validators.entries()) {
         // If there's a validator that isn't already in the list of candidates
         if (
           !totalNodes.some((validator) => validator.address == validatorAddress)
@@ -78,8 +90,19 @@ export const locationStatsJob = async (metadata: jobsMetadata) => {
             });
           }
         }
+
+        // Emit progress update for each validator processed
+        const progressPercentage =
+          ((index + 1) / validatorset.validators.length) * 100;
+        jobStatusEmitter.emit("jobProgress", {
+          name: "Location Stats Job",
+          progress: progressPercentage,
+          updated: Date.now(),
+          iteration: `Processed validator ${validatorAddress}`,
+        });
       }
     }
+
     totalNodes = totalNodes.filter((node) => {
       {
         return (
@@ -102,7 +125,7 @@ export const locationStatsJob = async (metadata: jobsMetadata) => {
     });
 
     // Iterate through all candidates and the active validator set
-    for (const node of totalNodes) {
+    for (const [index, node] of totalNodes.entries()) {
       const location = node.location;
       if (!location) {
         continue;
@@ -114,12 +137,30 @@ export const locationStatsJob = async (metadata: jobsMetadata) => {
       } else {
         locationMap.set(location, locationCount + 1);
       }
+
+      // Emit progress update for each node processed
+      const progressPercentage = ((index + 1) / totalNodes.length) * 100;
+      jobStatusEmitter.emit("jobProgress", {
+        name: "Location Stats Job",
+        progress: progressPercentage,
+        updated: Date.now(),
+        iteration: `Processed node ${node.address}`,
+      });
     }
 
-    for (const location of locationMap.entries()) {
-      const [name, numberOfNodes] = location;
+    for (const [name, numberOfNodes] of locationMap.entries()) {
       locationArr.push({ name, numberOfNodes });
+
+      // Emit progress update for each location processed
+      const progressPercentage = (locationArr.length / locationMap.size) * 100;
+      jobStatusEmitter.emit("jobProgress", {
+        name: "Location Stats Job",
+        progress: progressPercentage,
+        updated: Date.now(),
+        iteration: `Processed location ${name}`,
+      });
     }
+
     const locationValues = locationArr.map((location) => {
       return location.numberOfNodes;
     });
@@ -143,10 +184,19 @@ export const locationStatsJob = async (metadata: jobsMetadata) => {
       }
     }
 
-    for (const region of regionMap.entries()) {
-      const [name, numberOfNodes] = region;
+    for (const [name, numberOfNodes] of regionMap.entries()) {
       regionArr.push({ name, numberOfNodes });
+
+      // Emit progress update for each region processed
+      const progressPercentage = (regionArr.length / regionMap.size) * 100;
+      jobStatusEmitter.emit("jobProgress", {
+        name: "Location Stats Job",
+        progress: progressPercentage,
+        updated: Date.now(),
+        iteration: `Processed region ${name}`,
+      });
     }
+
     const regionValues = regionArr.map((region) => {
       return region.numberOfNodes;
     });
@@ -170,10 +220,19 @@ export const locationStatsJob = async (metadata: jobsMetadata) => {
       }
     }
 
-    for (const country of countryMap.entries()) {
-      const [name, numberOfNodes] = country;
+    for (const [name, numberOfNodes] of countryMap.entries()) {
       countryArr.push({ name, numberOfNodes });
+
+      // Emit progress update for each country processed
+      const progressPercentage = (countryArr.length / countryMap.size) * 100;
+      jobStatusEmitter.emit("jobProgress", {
+        name: "Location Stats Job",
+        progress: progressPercentage,
+        updated: Date.now(),
+        iteration: `Processed country ${name}`,
+      });
     }
+
     const countryValues = countryArr.map((country) => {
       return country.numberOfNodes;
     });
@@ -197,10 +256,19 @@ export const locationStatsJob = async (metadata: jobsMetadata) => {
       }
     }
 
-    for (const provider of providerMap.entries()) {
-      const [name, numberOfNodes] = provider;
+    for (const [name, numberOfNodes] of providerMap.entries()) {
       providerArr.push({ name, numberOfNodes });
+
+      // Emit progress update for each provider processed
+      const progressPercentage = (providerArr.length / providerMap.size) * 100;
+      jobStatusEmitter.emit("jobProgress", {
+        name: "Location Stats Job",
+        progress: progressPercentage,
+        updated: Date.now(),
+        iteration: `Processed provider ${name}`,
+      });
     }
+
     const providerValues = providerArr.map((provider) => {
       return provider.numberOfNodes;
     });

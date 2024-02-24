@@ -26,6 +26,7 @@
     { "path":  "./packages/telemetry"},
     { "path": "./packages/worker" },
     { "path": "./packages/core" },
+    { "path":  "./packages/scorekeeper-status-ui"}
   ],
   "files": [],
   "include": ["src/**/*.ts"],

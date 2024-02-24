@@ -42,11 +42,12 @@ export const eraPointsJob = async (
       processedEras++;
       const progress = (processedEras / totalEras) * 100;
 
-      // Emit progress update
+      // Emit progress update with active era as iteration
       jobStatusEmitter.emit("jobProgress", {
         name: "Era Points Job",
         progress,
         updated: Date.now(),
+        iteration: `Active era: ${i}`,
       });
 
       logger.info(

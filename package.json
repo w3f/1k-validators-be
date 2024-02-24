@@ -4,6 +4,7 @@
   "yarnPath": ".yarn/releases/yarn-3.2.2.cjs",
   "private": true,
   "workspaces": [
+    "packages/scorekeeper-status-ui",
     "packages/common",
     "packages/worker",
     "packages/gateway",
@@ -12,6 +13,8 @@
   ],
   "scripts": {
     "docs": "cd docs && npm install && npm run build ",
+    "scorekeeper-status-ui:build": "cd packages/scorekeeper-status-ui && npm build",
+    "scorekeeper-status-ui:dev": "yarn workspace @1kv/scorekeeper-status-ui build",
     "open:polkadot-apps": "open-cli https://polkadot.js.org/apps/?rpc=ws%3A%2F%2F127.0.0.1%3A9944#/staking",
     "open:bull": "open-cli http://localhost:3301/bull",
     "open:mongo-express: ": "open-cli http://localhost:8888",
@@ -40,7 +43,7 @@
     "lint": "yarn workspaces foreach run lint",
     "lint:fix": "yarn workspaces foreach run lint:fix",
     "clean": "rm -rf redis/ && yarn workspaces foreach run clean",
-    "build": "yarn run docs && yarn workspaces foreach -t run build",
+    "build": "yarn run docs && yarn run scorekeeper-status-ui:dev && yarn workspaces foreach -t run build",
     "build:clean": "yarn workspaces foreach run clean:build",
     "start:dev:gateway": "yarn workspace @1kv/gateway run start:dev",
     "start:js:gateway": "NODE_OPTIONS='--max-old-space-size=10096' yarn workspace @1kv/gateway run js:start",
@@ -78,6 +81,7 @@
     "coingecko-api-v3": "^0.0.29",
     "date-fns": "^3.3.1",
     "koa-mount": "^4.0.0",
+    "koa-send": "^5.0.1",
     "koa-static": "^5.0.0",
     "koa-swagger-decorator": "^1.8.7",
     "lru-cache": "latest",

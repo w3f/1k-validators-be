@@ -1,0 +1,209 @@
+/* Global font style */
+body, html {
+  font-family: 'Source Code Pro', monospace;
+  background-color: #0f0f0f; /* Dark background for contrast */
+  color: #0f0; /* Hacker green text color */
+}
+
+
+.App {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: start;
+  min-height: 100vh;
+  width: 100vw;
+  color: #0f0; /* Adjust text color if needed */
+  background-color: #000000;
+  background-image: url("https://www.transparenttextures.com/patterns/nami.png");
+  /* This is mostly intended for prototyping; please download the pattern and re-host for production environments. Thank you! */
+  /*background-blend-mode: overlay; !* Blends the texture with the gradient *!*/
+  font-family: 'Source Code Pro', monospace;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+h1 {
+  color: #0f0; /* Neon green */
+  margin-bottom: 20px;
+}
+
+.jobItem {
+  display: flex; /* Use flexbox for job items */
+  flex-direction: column; /* Stack job details vertically */
+  margin: 10px;
+  padding: 20px;
+  border: 1px solid #0f0; /* Neon green border */
+  border-radius: 10px;
+  flex: 1; /* Allow each job item to grow */
+  min-width: 300px; /* Minimum width for each job item */
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.5); /* Neon green glow */
+  background: rgba(0, 255, 0, 0.05);
+}
+
+.jobHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.progressBarBackground {
+  background: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+  border: 1px solid #0f0; /* Thinner neon green border */
+  border-radius: 5px;
+  overflow: hidden;
+  width: 100%;
+  margin-top: 10px;
+  box-shadow: 0 0 15px 5px rgba(0, 255, 0, 0.3); /* Bigger, more subtle glow */
+  position: relative;
+}
+
+.progressBar {
+  height: 20px; /* Set the height of the progress bar */
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.6), rgba(0, 255, 0, 0.6)); /* Gradient from transparent black to lighter */
+  border-radius: 3px; /* Rounded corners for the progress bar */
+  position: relative;
+  overflow: hidden;
+}
+
+.progressText {
+  text-align: right; /* Right-align the progress text */
+  border-radius: 10px; /* Rounded borders */
+  padding: 5px; /* Add padding to the progress text */
+}
+
+.progressItem {
+  font-size: 11px; /* Adjust the font size as needed */
+  border: 1px solid #4CAF50; /* Green border */
+  border-radius: 5px; /* Rounded border */
+  padding: 5px; /* Add padding for better appearance */
+  white-space: nowrap; /* Prevent wrapping of words */
+  overflow: hidden; /* Hide any overflowing content */
+  text-overflow: ellipsis; /* Display ellipsis (...) for overflowed text */
+  margin-top: 5px; /* Add some space between progress text and iteration */
+}
+
+.progressBar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  backdrop-filter: blur(4px); /* Blur effect */
+  z-index: -1; /* Ensure the blur is behind the gradient */
+}
+
+/* Container for job items to arrange them in a flex row */
+.jobsContainer {
+  display: flex;
+  flex-wrap: wrap; /* Allow items to wrap to the next line */
+  justify-content: center; /* Center items horizontally */
+  width: 100%; /* Take up full container width */
+  max-width: 90%; /* Maximum width of the container */
+  margin: 0 auto; /* Center the container */
+}
+
+.fullPageContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh; /* Full viewport height */
+  width: 100vw; /* Full viewport width */
+  background-color: #0f0f0f; /* Dark background */
+  color: #0f0; /* Hacker green text color */
+  font-family: 'Source Code Pro', monospace;
+}
+
+/* Centered container for error message */
+.errorContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border: 1px solid #0f0; /* Hacker green border */
+  border-radius: 10px;
+  padding: 20px;
+  margin-top: 20px; /* Space between the dropdown and the error box */
+  background: rgba(0, 255, 0, 0.05);
+}
+
+.errorContainer p {
+  font-size: 2em; /* Large text size */
+  margin-top: 20px; /* Space between the loader and the text */
+  padding-left: 10%;
+  padding-right: 10%;
+}
+
+.endpointSelector {
+  padding: 10px;
+  font-size: 16px;
+  background-color: #0f0f0f; /* Dark background */
+  color: #0f0; /* Hacker green text color */
+  border: 1px solid #0f0; /* Hacker green border */
+  border-radius: 10px; /* Rounded borders */
+  outline: none; /* Remove default focus outline */
+  margin-bottom: 20px; /* Space below the dropdown */
+}
+
+.endpointSelector:hover {
+  background-color: #1a1a1a; /* Slightly lighter background on hover */
+}
+
+.jobItemOld {
+  border-color: yellow;
+  color: yellow;
+  background-color: rgba(255, 255, 0, 0.1); /* Yellow background with transparency */
+}
+
+.jobItemError {
+  border-color: red;
+  color: red;
+  background-color: rgba(255, 0, 0, 0.1); /* Red background with transparency */
+}
+
+.lastUpdateBox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid  rgba(255, 255, 0, 0.5); /* Neon green border */
+  background: linear-gradient(to right, rgba(255, 255, 0, 0.05), rgba(255, 255, 0, 0.1)); /* Gradient from transparent black to lighter */
+  border-radius: 3px;
+  padding: 10px;
+}
+
+.warningSymbol {
+  margin-right: 10px;
+}
+
+.lastUpdatedText {
+  font-size: 12px; /* Adjust the font size as needed */
+}
+
+.lastUpdatedBox {
+  display: flex;
+  align-items: center;
+}
+
+.timeIcon {
+  color: #4CAF50; /* Default color for time icon */
+  margin-right: 5px; /* Add spacing between icon and text */
+  display: flex;
+  align-items: center; /* Vertically center the clock icon */
+}
+
+.oldTime {
+  color: yellow; /* Color for old time icon */
+}
+
+@media screen and (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .box {
+    width: 100%;
+  }
+}

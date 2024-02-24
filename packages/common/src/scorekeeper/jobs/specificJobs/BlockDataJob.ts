@@ -47,6 +47,7 @@ export const blockJob = async (metadata: jobsMetadata): Promise<boolean> => {
           name: "Block Data Job",
           progress: (latestCount / latestTotal) * 100,
           updated: Date.now(),
+          iteration: `Block processed: #${i}`,
         });
       }
       logger.info(
@@ -81,6 +82,7 @@ export const blockJob = async (metadata: jobsMetadata): Promise<boolean> => {
           name: "Block Data Job",
           progress: (earliestCount / earliestTotal) * 100,
           updated: Date.now(),
+          iteration: `Block processed: #${i}`,
         });
       }
       logger.info(

@@ -14,7 +14,7 @@ export const validityJob = async (metadata: jobsMetadata): Promise<boolean> => {
   try {
     const { constraints, jobStatusEmitter } = metadata;
     const candidates = await allCandidates();
-    logger.info(`checking ${candidates.length} candidates`, constraintsLabel);
+    logger.info(`Checking ${candidates.length} candidates`, constraintsLabel);
 
     // Calculate total number of candidates
     const totalCandidates = candidates.length;
@@ -28,15 +28,16 @@ export const validityJob = async (metadata: jobsMetadata): Promise<boolean> => {
       const remaining = timeRemaining(index + 1, totalCandidates, end - start);
       const progress = ((index + 1) / totalCandidates) * 100;
 
-      // Emit progress update
+      // Emit progress update with candidate name in the iteration
       jobStatusEmitter.emit("jobProgress", {
         name: "Validity Job",
         progress,
         updated: Date.now(),
+        iteration: `Candidate name: ${candidate.name}`,
       });
 
       logger.info(
-        `checked ${candidate.name}: ${isValid} [${index + 1}/${totalCandidates}] ${percentage(index + 1, totalCandidates)} ${time} ${remaining}`,
+        `Checked ${candidate.name}: ${isValid} [${index + 1}/${totalCandidates}] ${percentage(index + 1, totalCandidates)} ${time} ${remaining}`,
         constraintsLabel,
       );
     }
@@ -122,11 +123,12 @@ export const scoreJob = async (metadata: jobsMetadata): Promise<boolean> => {
       const remaining = timeRemaining(index + 1, totalCandidates, end - start);
       const progress = ((index + 1) / totalCandidates) * 100;
 
-      // Emit progress update
+      // Emit progress update including the candidate name
       jobStatusEmitter.emit("jobProgress", {
         name: "Score Job",
         progress,
         updated: Date.now(),
+        iteration: `Scored candidate ${candidate.name}`,
       });
 
       logger.info(

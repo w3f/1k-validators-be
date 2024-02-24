@@ -13,8 +13,7 @@ import {
 import koaCash from "koa-cash";
 import { KoaAdapter } from "@bull-board/koa";
 import { createBullBoard } from "@bull-board/api";
-import { BullMQAdapter } from "@bull-board/api/bullMQAdapter";
-// import { otvWorker } from "@1kv/worker";
+import { BullMQAdapter } from "@bull-board/api/bullMQAdapter"; // import { otvWorker } from "@1kv/worker";
 import { Queue } from "bullmq";
 import path from "path";
 import serve from "koa-static";
@@ -86,6 +85,20 @@ export default class Server {
     } else {
       setupHealthCheckRoute(router, handler);
       setupScorekeeperRoutes(router, this.scorekeeper);
+
+      // Serve the status UI
+      const viteBuildPath = path.resolve(
+        __dirname,
+        "../../scorekeeper-status-ui/dist",
+      );
+      this.app.use(mount("/status", serve(viteBuildPath)));
+
+      const assetsPath = path.resolve(
+        __dirname,
+        "../../scorekeeper-status-ui/dist/assets",
+      );
+
+      this.app.use(mount("/assets", serve(assetsPath)));
 
       // Docusarus docs
       const serveDocs = config?.server?.serveDocs || true;

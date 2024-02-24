@@ -46,13 +46,14 @@ export const inclusionJob = async (
       const lastActiveEra = lastActiveEraPoints?.era || 0;
       await queries.setNominatedAtEra(candidate.stash, lastActiveEra);
 
-      // Emit progress update for each candidate processed
+      // Emit progress update for each candidate processed, including the candidate's name
       const progressPercentage =
         ((candidates.indexOf(candidate) + 1) / candidates.length) * 100;
       jobStatusEmitter.emit("jobProgress", {
         name: "Inclusion Job",
         progress: progressPercentage,
         updated: Date.now(),
+        iteration: `Processed candidate ${candidate.name}`,
       });
     }
 

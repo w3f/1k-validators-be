@@ -1,30 +1,43 @@
-import logger from "../../logger";
-import { ChainMetadataModel } from "../models";
+import { ChainMetadata, ChainMetadataModel } from "../models";
 
-export const setChainMetadata = async (networkPrefix: number): Promise<any> => {
-  const networkName =
-    networkPrefix == 2
-      ? "Kusama"
-      : networkPrefix == 0
-        ? "Polkadot"
-        : "Local Testnet";
-  const decimals = networkPrefix == 2 ? 12 : networkPrefix == 0 ? 10 : 12;
+export const setChainMetadata = async (
+  networkPrefix: number,
+): Promise<boolean> => {
+  try {
+    const networkName =
+      networkPrefix === 2
+        ? "Kusama"
+        : networkPrefix === 0
+          ? "Polkadot"
+          : "Local Testnet";
+    const decimals = networkPrefix === 2 ? 12 : networkPrefix === 0 ? 10 : 12;
 
-  const data = await ChainMetadataModel.findOne({ name: /.*/ }).lean();
-  if (!data) {
-    const chainMetadata = new ChainMetadataModel({
-      name: networkName,
-      decimals: decimals,
-    });
-    return chainMetadata.save();
+    const existingMetadata = await ChainMetadataModel.findOne({
+      name: /.*/,
+    }).lean();
+    if (!existingMetadata) {
+      const chainMetadata = new ChainMetadataModel({
+        name: networkName,
+        decimals: decimals,
+      });
+      await chainMetadata.save();
+      return true;
+    } else {
+      await ChainMetadataModel.findOneAndUpdate(
+        {},
+        {
+          name: networkName,
+          decimals: decimals,
+        },
+        { new: true },
+      );
+    }
+  } catch (e) {
+    console.error(e);
+    return false;
   }
-
-  ChainMetadataModel.findOneAndUpdate({
-    name: networkName,
-    decimals: decimals,
-  });
 };
 
-export const getChainMetadata = async (): Promise<any> => {
-  return ChainMetadataModel.findOne({ name: /.*/ }).lean().exec();
+export const getChainMetadata = async (): Promise<ChainMetadata> => {
+  return ChainMetadataModel.findOne({ name: /.*/ }).lean();
 };

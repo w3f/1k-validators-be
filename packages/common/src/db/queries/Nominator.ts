@@ -72,23 +72,6 @@ export const addNominator = async (nominator: Nominator): Promise<boolean> => {
   }
 };
 
-// Updates the avg stake amount of a nominator
-export const setNominatorAvgStake = async (
-  address: string,
-  avgStake: number,
-): Promise<boolean> => {
-  const data = await NominatorModel.findOne({ address }).lean();
-  if (!data) return;
-  return NominatorModel.findOneAndUpdate(
-    {
-      address,
-    },
-    {
-      avgStake,
-    },
-  );
-};
-
 export const setTarget = async (
   address: string,
   target: string,
@@ -149,9 +132,6 @@ export const setLastNomination = async (
   address: string,
   now: number,
 ): Promise<boolean> => {
-  logger.info(
-    `(Db::setLastNomination) Setting ${address} last nomination to ${now}.`,
-  );
   await NominatorModel.findOneAndUpdate(
     {
       address,
@@ -181,7 +161,7 @@ export const getCurrentTargets = async (
 };
 
 export const allNominators = async (): Promise<Nominator[]> => {
-  return NominatorModel.find({ address: /.*/ }).lean();
+  return NominatorModel.find({ address: /.*/ }).lean<Nominator[]>();
 };
 
 export const getNominator = async (stash: string): Promise<Nominator> => {

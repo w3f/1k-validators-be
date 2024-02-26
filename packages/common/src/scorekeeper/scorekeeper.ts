@@ -17,7 +17,6 @@ import {
 } from "./RegisterHandler";
 import { jobsMetadata, JobStatus } from "./jobs/JobsClass";
 import { JobsFactory } from "./jobs/JobsFactory";
-import EventEmitter from "eventemitter3";
 // import { monitorJob } from "./jobs";
 
 export type NominatorGroup = Config.NominatorConfig[];
@@ -43,7 +42,6 @@ export default class ScoreKeeper {
   private nominating = false;
 
   private nominatorGroups: Array<SpawnedNominatorGroup> = [];
-  public jobStatusEmitter: EventEmitter = new EventEmitter();
   public _jobsStatus: Record<string, JobStatus> = {};
 
   constructor(handler: ApiHandler, config: Config.ConfigSchema, bot: any) {
@@ -262,22 +260,7 @@ export default class ScoreKeeper {
   async begin(): Promise<void> {
     logger.info(`Starting Scorekeeper.`, scorekeeperLabel);
 
-    // const candidates = await queries.allCandidates();
-    // logger.info(
-    //   `[Begin] Setting ${candidates.length} Candidate Identities.....`,
-    //   scorekeeperLabel,
-    // );
-    // // Set all candidate identities
-    // for (const [index, candidate] of candidates.entries()) {
-    //   logger.info(
-    //     `[Begin] Setting Candidate Identity: ${candidate.name} (${index + 1}/${candidates.length})`,
-    //     scorekeeperLabel,
-    //   );
-    //   const identity = await this.chaindata.getFormattedIdentity(
-    //     candidate.stash,
-    //   );
-    //   await queries.setCandidateIdentity(candidate.stash, identity);
-    // }
+    //await setAllIdentities(this.chaindata, scorekeeperLabel);
 
     // If `forceRound` is on - start immediately.
     if (this.config.scorekeeper.forceRound) {
@@ -310,7 +293,6 @@ export default class ScoreKeeper {
       constraints: this.constraints,
       handler: this.handler,
       currentTargets: this.currentTargets,
-      jobStatusEmitter: this.jobStatusEmitter,
     };
 
     const jobs = await JobsFactory.makeJobs(metadata);

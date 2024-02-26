@@ -1,5 +1,7 @@
-import { ChainData, logger, Models, queries, Util } from "../../../index";
+import { ChainData, logger, Models, queries } from "../../../index";
 import { jobsMetadata } from "../JobsClass";
+import { jobStatusEmitter } from "../../../Events";
+import { withExecutionTimeLogging } from "../../../utils";
 
 export const activeLabel = { label: "ActiveValidatorJob" };
 
@@ -26,7 +28,7 @@ export const activeValidatorJob = async (
   metadata: jobsMetadata,
 ): Promise<boolean> => {
   try {
-    const { chaindata, jobStatusEmitter } = metadata;
+    const { chaindata } = metadata;
     const candidates = await queries.allCandidates();
 
     // Calculate total number of candidates
@@ -42,11 +44,12 @@ export const activeValidatorJob = async (
       // Calculate progress percentage
       const progress = (processedCandidates / totalCandidates) * 100;
 
-      // Emit progress update
+      // Emit progress update with candidate name as the iteration
       jobStatusEmitter.emit("jobProgress", {
         name: "Active Validator Job",
         progress,
         updated: Date.now(),
+        iteration: `Processed candidate: ${candidate.name}`,
       });
     }
     return true;
@@ -56,7 +59,7 @@ export const activeValidatorJob = async (
   }
 };
 
-export const activeValidatorJobWithTiming = Util.withExecutionTimeLogging(
+export const activeValidatorJobWithTiming = withExecutionTimeLogging(
   activeValidatorJob,
   activeLabel,
   "Active Validator Job Done",

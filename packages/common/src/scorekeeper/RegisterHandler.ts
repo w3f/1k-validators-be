@@ -13,6 +13,7 @@ import {
 } from "../index";
 import { dockPoints } from "./Rank";
 import { scorekeeperLabel } from "./scorekeeper";
+import { jobStatusEmitter } from "../Events";
 
 export const registerAPIHandler = (
   handler: ApiHandler,
@@ -55,23 +56,23 @@ export const registerAPIHandler = (
 
 export const registerEventEmitterHandler = (scoreKeeper: ScoreKeeper) => {
   logger.info(`Registering event emitter handler`, scorekeeperLabel);
-  scoreKeeper.jobStatusEmitter.on("jobStarted", (data) => {
+  jobStatusEmitter.on("jobStarted", (data) => {
     scoreKeeper.updateJobStarted(data);
   });
 
-  scoreKeeper.jobStatusEmitter.on("jobRunning", (data) => {
+  jobStatusEmitter.on("jobRunning", (data) => {
     scoreKeeper.updateJobRunning(data);
   });
 
-  scoreKeeper.jobStatusEmitter.on("jobFinished", (data) => {
+  jobStatusEmitter.on("jobFinished", (data) => {
     scoreKeeper.updateJobFinished(data);
   });
 
-  scoreKeeper.jobStatusEmitter.on("jobErrored", (data) => {
+  jobStatusEmitter.on("jobErrored", (data) => {
     scoreKeeper.updateJobErrored(data);
   });
 
-  scoreKeeper.jobStatusEmitter.on("jobProgress", (data) => {
+  jobStatusEmitter.on("jobProgress", (data) => {
     scoreKeeper.updateJobProgress(data);
   });
 };

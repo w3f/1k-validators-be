@@ -133,7 +133,10 @@ class ApiHandler extends EventEmitter {
         `[getAPI]: provider created with endpoint: ${endpoints[0]}`,
         apiLabel,
       );
-      const api = await ApiPromise.create({ provider: provider });
+      const api = await ApiPromise.create({
+        provider: provider,
+        noInitWarn: true,
+      });
       await api.isReadyOrError;
       logger.info(`[getApi] Api is ready`, apiLabel);
       return api;

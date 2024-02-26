@@ -1,5 +1,7 @@
-import { ChainData, logger, queries, Util } from "../../../index";
+import { ChainData, logger, queries } from "../../../index";
 import { jobsMetadata } from "../JobsClass";
+import { jobStatusEmitter } from "../../../Events";
+import { withExecutionTimeLogging } from "../../../utils";
 
 export const erapointsLabel = { label: "EraPointsJob" };
 
@@ -23,7 +25,7 @@ export const eraPointsJob = async (
   metadata: jobsMetadata,
 ): Promise<boolean> => {
   try {
-    const { chaindata, jobStatusEmitter } = metadata;
+    const { chaindata } = metadata;
     // Set Era Points
     //    - get the current active era
     //    - iterate through the previous eras until the first era
@@ -62,7 +64,7 @@ export const eraPointsJob = async (
   }
 };
 
-export const eraPointsJobWithTiming = Util.withExecutionTimeLogging(
+export const eraPointsJobWithTiming = withExecutionTimeLogging(
   eraPointsJob,
   erapointsLabel,
   "Era Points Job Done",

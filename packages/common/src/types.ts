@@ -42,22 +42,22 @@ export type InvalidityReason = {
 export type Identity = {
   name: string;
   address: string;
-  verified: boolean;
-  subIdentities: {
+  verified?: boolean;
+  subIdentities?: {
     name: string;
     address: string;
   }[];
-  display: string;
-  email: string;
-  image: string;
-  judgements: string[];
-  legal: string;
+  display?: string;
+  email?: string;
+  image?: string;
+  judgements?: string[];
+  legal?: string;
   // other: string;
   // parent: string;
-  pgp: string;
-  riot: string;
-  twitter: string;
-  web: string;
+  pgp?: string;
+  riot?: string;
+  twitter?: string;
+  web?: string;
 };
 
 export interface Nominator {
@@ -83,8 +83,8 @@ export interface TelemetryNodeDetails {
 
 export interface HardwareSpec {
   cpu: string;
-  memory: number;
-  core_count: number;
+  memory: number | string;
+  core_count: number | string;
   linux_kernel: string;
   linux_distro: string;
   is_virtual_machine: boolean;

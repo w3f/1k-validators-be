@@ -1,4 +1,3 @@
-import { Constraints, logger, queries, Util } from "../../../index";
 import { SCORE_JOB, VALIDITY_JOB } from "./index";
 import { jobsMetadata } from "../JobsClass";
 import {
@@ -6,13 +5,20 @@ import {
   getLatestValidatorScoreMetadata,
   validCandidates,
 } from "../../../db";
-import { percentage, timeRemaining } from "../../../utils";
+import {
+  percentage,
+  timeRemaining,
+  withExecutionTimeLogging,
+} from "../../../utils";
+import { jobStatusEmitter } from "../../../Events";
+import logger from "../../../logger";
+import { Constraints, queries } from "../../../index";
 
 export const constraintsLabel = { label: "ConstraintsJob" };
 
 export const validityJob = async (metadata: jobsMetadata): Promise<boolean> => {
   try {
-    const { constraints, jobStatusEmitter } = metadata;
+    const { constraints } = metadata;
     const candidates = await allCandidates();
     logger.info(`Checking ${candidates.length} candidates`, constraintsLabel);
 
@@ -48,7 +54,7 @@ export const validityJob = async (metadata: jobsMetadata): Promise<boolean> => {
   }
 };
 
-export const validityJobWithTiming = Util.withExecutionTimeLogging(
+export const validityJobWithTiming = withExecutionTimeLogging(
   validityJob,
   constraintsLabel,
   "Validity Job Done",
@@ -103,7 +109,7 @@ export const individualScoreJob = async (
 
 export const scoreJob = async (metadata: jobsMetadata): Promise<boolean> => {
   try {
-    const { constraints, jobStatusEmitter } = metadata;
+    const { constraints } = metadata;
     await constraints.scoreAllCandidates();
 
     const candidates = await validCandidates();
@@ -145,7 +151,7 @@ export const scoreJob = async (metadata: jobsMetadata): Promise<boolean> => {
   }
 };
 
-export const scoreJobWithTiming = Util.withExecutionTimeLogging(
+export const scoreJobWithTiming = withExecutionTimeLogging(
   scoreJob,
   constraintsLabel,
   "Score Job Done",

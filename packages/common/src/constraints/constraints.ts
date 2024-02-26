@@ -94,12 +94,12 @@ export class OTV implements Constraints {
   }
 
   // Set the score metadata: the ranges of values for valid candidates + statistics on values
-  async setScoreMetadata() {
-    await setScoreMetadata(this);
+  async setScoreMetadata(): Promise<boolean> {
+    return await setScoreMetadata(this);
   }
 
   // Checks the validity of all candidates
-  async checkAllCandidates() {
+  async checkAllCandidates(): Promise<boolean> {
     return await checkAllCandidates(this);
   }
 
@@ -108,15 +108,18 @@ export class OTV implements Constraints {
     return await checkCandidate(this, candidate);
   }
 
-  async scoreAllCandidates() {
+  async scoreAllCandidates(): Promise<boolean> {
     return await scoreAllCandidates(this);
   }
 
-  async scoreCandidate(candidate: Candidate, scoreMetadata: any) {
+  async scoreCandidate(
+    candidate: Candidate,
+    scoreMetadata: any,
+  ): Promise<boolean> {
     return await scoreCandidate(this, candidate, scoreMetadata);
   }
 
-  async scoreCandidates(candidates: Candidate[]) {
+  async scoreCandidates(candidates: Candidate[]): Promise<boolean> {
     return await scoreCandidates(this, candidates);
   }
 

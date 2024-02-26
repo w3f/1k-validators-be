@@ -1,5 +1,7 @@
-import { logger, Models, queries, Util } from "../../../index";
+import { logger, Models, queries } from "../../../index";
 import { jobsMetadata } from "../JobsClass";
+import { jobStatusEmitter } from "../../../Events";
+import { withExecutionTimeLogging } from "../../../utils";
 
 export const validatorPrefLabel = { label: "ValidatorPrefJob" };
 
@@ -70,7 +72,7 @@ export const validatorPrefJob = async (
       );
 
       // Emit progress update event with candidate's name
-      metadata.jobStatusEmitter.emit("jobProgress", {
+      jobStatusEmitter.emit("jobProgress", {
         name: "Validator Pref Job",
         progress,
         updated: Date.now(),
@@ -87,7 +89,7 @@ export const validatorPrefJob = async (
   }
 };
 
-export const validatorPrefJobWithTiming = Util.withExecutionTimeLogging(
+export const validatorPrefJobWithTiming = withExecutionTimeLogging(
   validatorPrefJob,
   validatorPrefLabel,
   "Validator Preferences Job Done",

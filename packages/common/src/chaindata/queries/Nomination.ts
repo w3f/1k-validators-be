@@ -17,32 +17,35 @@ export const getNominatorAddresses = async (
   }
 };
 
-export const getNominators = async (chaindata: Chaindata): Promise<any> => {
+export interface NominatorInfo {
+  address: string;
+  bonded: number;
+  targets: string[];
+}
+
+export const getNominators = async (
+  chaindata: Chaindata,
+): Promise<NominatorInfo[]> => {
   try {
     await chaindata.checkApiConnection();
     const nominatorEntries =
       await chaindata.api.query.staking.nominators.entries();
-    const nominators = await Promise.all(
+    return await Promise.all(
       nominatorEntries.map(async ([key, value]) => {
         const address = key.toHuman()[0];
-        const controller = await chaindata.api.query.staking.bonded(address);
+        const controller = await chaindata.getControllerFromStash(address);
         const denom = await chaindata.getDenom();
-        const bonded = (
-          await chaindata.api.query.staking.ledger(controller.toString())
-        ).toJSON();
-        // @ts-ignore
-        const bondedAmount = bonded?.active ? bonded?.active / denom : 0;
-        // @ts-ignore
-        const targets = value?.toHuman()?.targets;
+        const [bonded, err] = await chaindata.getBondedAmount(controller);
+        const targets = (value?.toHuman() as { targets: string[] })?.targets;
         return {
-          address: address.toString(),
-          bonded: bondedAmount,
-          targets: targets,
+          address,
+          bonded: bonded / denom,
+          targets,
         };
       }),
     );
-    return nominators;
   } catch (e) {
     logger.error(`Error getting nominators: ${e}`, chaindataLabel);
+    return [];
   }
 };

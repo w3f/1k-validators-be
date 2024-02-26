@@ -7,34 +7,11 @@ import {
 } from "../models";
 import { logger } from "../../index";
 import { getLatestSession } from "./Session";
-import { getCandidate } from "./Candidate";
 import { HardwareSpec } from "../../types";
 import { dbLabel } from "../index";
 
-export const getAllLocations = async (address: string): Promise<Location[]> => {
-  const locations = await LocationModel.find({ address })
-    .sort({ updated: -1 })
-    .select({
-      session: 1,
-      name: 1,
-      address: 1,
-      city: 1,
-      region: 1,
-      country: 1,
-      provider: 1,
-      updated: 1,
-      source: 1,
-    })
-    .lean<Location[]>();
-  if (locations.length > 0) {
-    return locations;
-  }
-  const candidate = await getCandidate(address);
-  if (candidate) {
-    const location = await getCandidateLocation(candidate.name);
-    return location ? [location] : [];
-  }
-  return [];
+export const getAllLocations = async (): Promise<Location[]> => {
+  return LocationModel.find({}).lean<Location[]>();
 };
 
 // Get all the locations that belongs to an on-chain stash address, ordered by updated
@@ -96,7 +73,7 @@ export const setLocation = async (
 
     const session = (await getLatestSession())?.session;
     if (session && session == 0) {
-      return;
+      return false;
     }
 
     const candidate = await CandidateModel.findOne({ name: name })
@@ -105,7 +82,12 @@ export const setLocation = async (
 
     const candidateAddress = candidate?.stash ? candidate?.stash : "";
 
-    if (!data || data?.addr != addr || data?.city != city) {
+    if (
+      !data ||
+      data?.addr != addr ||
+      data?.city != city ||
+      data?.session != session
+    ) {
       const location = new LocationModel({
         address: candidateAddress,
         name,

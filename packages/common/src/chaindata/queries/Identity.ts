@@ -67,7 +67,7 @@ export const getIdentity = async (
 export const getFormattedIdentity = async (
   chaindata: Chaindata,
   addr: string,
-): Promise<any> => {
+): Promise<Identity> => {
   try {
     await chaindata.checkApiConnection();
     let identity: Identity, verified, sub;

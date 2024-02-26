@@ -70,8 +70,13 @@ export const createServer = async (config, handler?, scorekeeper?) => {
   try {
     logger.info(`Creating Server`, winstonLabel);
     const server = new Server(config, handler, scorekeeper);
-    await server.start();
-    logger.info(`Server started at: ${config?.server?.port}`, winstonLabel);
+    const didStart = await server.start();
+    if (didStart) {
+      logger.info(
+        `Server started with registered routes at: ${config?.server?.port}`,
+        winstonLabel,
+      );
+    }
   } catch (e) {
     logger.error(e.toString());
     process.exit(1);

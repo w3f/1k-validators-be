@@ -38,33 +38,36 @@ export const getActiveValidatorsInPeriod = async (
   }
 };
 
-export const currentValidators = async (chaindata: Chaindata): Promise<any> => {
+export const currentValidators = async (
+  chaindata: Chaindata,
+): Promise<string[]> => {
   try {
     await chaindata.checkApiConnection();
     const validators = await chaindata.api.query.session.validators();
-    return validators.toJSON();
+    return validators.toJSON() as string[];
   } catch (e) {
     logger.error(`Error getting current validators: ${e}`, chaindataLabel);
   }
 };
 
-export const getValidators = async (chaindata: Chaindata): Promise<any> => {
+export const getValidators = async (
+  chaindata: Chaindata,
+): Promise<string[]> => {
   try {
     const keys = await chaindata.api.query.staking.validators.keys();
-    const validators = keys.map(({ args: [validatorId] }) =>
-      validatorId.toString(),
-    );
+    const validators = keys.map((key) => key.args[0].toString()); // Assuming the first argument of the key is the validatorId
 
     return validators;
   } catch (e) {
     logger.error(`Error getting validators: ${e}`, chaindataLabel);
+    throw new Error(`Failed to get validators: ${e}`); // It's often a good idea to throw an error so that the calling function knows something went wrong.
   }
 };
 
 export const getValidatorsAt = async (
   chaindata: Chaindata,
   apiAt: any,
-): Promise<any> => {
+): Promise<string[]> => {
   try {
     await chaindata.checkApiConnection();
     return (await apiAt.query.session.validators()).toJSON();
@@ -76,7 +79,7 @@ export const getValidatorsAt = async (
 export const getValidatorsAtEra = async (
   chaindata: Chaindata,
   era: number,
-): Promise<any> => {
+): Promise<string[]> => {
   const chainType = await chaindata.getChainType();
   const [blockHash, err] = await chaindata.findEraBlockHash(era, chainType);
   const apiAt = await chaindata.api.at(blockHash);

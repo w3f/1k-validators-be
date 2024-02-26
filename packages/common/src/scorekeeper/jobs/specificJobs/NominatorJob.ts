@@ -1,5 +1,7 @@
-import { logger, queries, Util } from "../../../index";
+import { jobStatusEmitter } from "../../../Events";
+import { logger, queries } from "../../../index";
 import { jobsMetadata } from "../JobsClass";
+import { withExecutionTimeLogging } from "../../../utils";
 
 export const nominatorLabel = { label: "NominatorJob" };
 
@@ -7,7 +9,7 @@ export const nominatorJob = async (
   metadata: jobsMetadata,
 ): Promise<boolean> => {
   try {
-    const { chaindata, jobStatusEmitter } = metadata;
+    const { chaindata } = metadata;
     const [activeEra] = await chaindata.getActiveEraIndex();
     const nominators = await chaindata.getNominators();
     const candidates = await queries.allCandidates();
@@ -33,7 +35,7 @@ export const nominatorJob = async (
       });
       let totalInactiveStake = 0;
       inactiveNominators.forEach((nominator) => {
-        totalInactiveStake += nominator.bonded;
+        totalInactiveStake += Number(nominator.bonded);
       });
 
       await queries.setNominatorStake(
@@ -67,7 +69,7 @@ export const nominatorJob = async (
     return false;
   }
 };
-export const nominatorJobWithTiming = Util.withExecutionTimeLogging(
+export const nominatorJobWithTiming = withExecutionTimeLogging(
   nominatorJob,
   nominatorLabel,
   "Nominator Job Done",

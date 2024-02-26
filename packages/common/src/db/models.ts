@@ -30,6 +30,7 @@ const FaultEventSchema = new Schema({
   prevRank: Number,
 });
 
+//TODO: delete
 const RankEventSchema = new Schema({
   address: String,
   // Timestamp when this event happened.
@@ -40,7 +41,15 @@ const RankEventSchema = new Schema({
   activeEra: Number,
 });
 
+//TODO: delete
 export const RankEventModel = mongoose.model("RankEvent", RankEventSchema);
+
+export interface DelayedTx {
+  number: number;
+  controller: string;
+  targets: string[];
+  callHash: string;
+}
 
 export const DelayedTxSchema = new Schema({
   // The block number the transaction was announced in
@@ -247,15 +256,18 @@ export const NominatorStakeModel = mongoose.model(
   NominatorStakeSchema,
 );
 
+//TODO: delete
 export const UpdatingDelegations = new Schema({
   isUpdating: Boolean,
 });
 
+//TODO: delete
 export const UpdatingDelegationsModel = mongoose.model(
   "UpdatingDelegations",
   UpdatingDelegations,
 );
 
+//TODO: delete
 export const DelegationSchema = new Schema({
   validator: String,
   totalBalance: Number,
@@ -269,8 +281,9 @@ export const DelegationSchema = new Schema({
   ],
   updated: Number,
 });
+//TODO: delete
 export const DelegationModel = mongoose.model("Delegation", DelegationSchema);
-
+//TODO: delete
 export const OpenGovDelegationSchema = new Schema({
   delegate: { type: String, index: true },
   track: { type: Number, index: true },
@@ -286,12 +299,12 @@ export const OpenGovDelegationSchema = new Schema({
   ],
   updated: Number,
 });
-
+//TODO: delete
 export const OpenGovDelegationModel = mongoose.model(
   "OpenGovDelegation",
   OpenGovDelegationSchema,
 );
-
+//TODO: delete
 OpenGovDelegationSchema.index({ delegate: 1, track: 1 });
 
 export interface TelemetryNode {
@@ -454,7 +467,7 @@ export interface Nominator {
   proxyDelay?: number;
   rewardDestination?: string;
   newBondedAmount?: number;
-  current?: [{ name?: string; stash?: string; identity?: any }];
+  current?: { name?: string; stash?: string; identity?: any }[];
   lastNomination?: number;
   createdAt?: number;
   now?: number;
@@ -501,6 +514,11 @@ export const NominationSchema = new Schema({
   blockHash: String,
 });
 
+export interface ChainMetadata {
+  decimals: number;
+  name: string;
+}
+
 export const ChainMetadataSchema = new Schema({
   // Number of decimals
   decimals: Number,
@@ -513,7 +531,7 @@ export const ChainMetadataModel = mongoose.model(
   ChainMetadataSchema,
 );
 
-// A historical event when the bot will claim a reward on behalf of a nominator
+//TODO: delete
 export const BotClaimEventSchema = new Schema({
   // Validator Address
   address: String,
@@ -524,7 +542,7 @@ export const BotClaimEventSchema = new Schema({
   // The finalized blockhash of the Claim tx
   blockHash: String,
 });
-
+//TODO: delete
 export const BotClaimEventModel = mongoose.model(
   "BotClaimEvent",
   BotClaimEventSchema,
@@ -532,6 +550,11 @@ export const BotClaimEventModel = mongoose.model(
 
 export const NominationModel = mongoose.model("Nomination", NominationSchema);
 
+export interface EraPoints {
+  era: number;
+  address: string;
+  eraPoints: number;
+}
 // The individual era points a validator has earned for a given era
 export const EraPointsSchema = new Schema({
   // The Era the era points are in
@@ -546,6 +569,16 @@ EraPointsSchema.index({ address: 1 });
 EraPointsSchema.index({ era: -1 });
 
 export const EraPointsModel = mongoose.model("EraPoints", EraPointsSchema);
+
+export interface TotalEraPoints {
+  totalEraPoints: number;
+  era: number;
+  median: number;
+  average: number;
+  max: number;
+  min: number;
+  validatorsEraPoints: EraPoints[];
+}
 
 export const TotalEraPointsSchema = new Schema({
   // The total era points for all validators in the era
@@ -583,6 +616,247 @@ export const EraStatsSchema = new Schema({
 });
 
 export const EraStatsModel = mongoose.model("EraStatsModel", EraStatsSchema);
+
+export interface ValidatorScoreMetadata {
+  session: number;
+  bondedStats: {
+    values: number[];
+    absoluteMin: number;
+    absoluteMax: number;
+    q10: number;
+    q25: number;
+    q50: number;
+    q75: number;
+    q90: number;
+    mean: number;
+    standardDeviation: number;
+  };
+  bondedWeight: number;
+  faultsStats: {
+    values: number[];
+    absoluteMin: number;
+    absoluteMax: number;
+    q10: number;
+    q25: number;
+    q50: number;
+    q75: number;
+    q90: number;
+    mean: number;
+    standardDeviation: number;
+  };
+  faultWeight: number;
+  inclusionStats: {
+    values: number[];
+    absoluteMin: number;
+    absoluteMax: number;
+    q10: number;
+    q25: number;
+    q50: number;
+    q75: number;
+    q90: number;
+    mean: number;
+    standardDeviation: number;
+  };
+  inclusionWeight: number;
+  spanInclusionStats: {
+    values: number[];
+    absoluteMin: number;
+    absoluteMax: number;
+    q10: number;
+    q25: number;
+    q50: number;
+    q75: number;
+    q90: number;
+    mean: number;
+    standardDeviation: number;
+  };
+  spanInclusionWeight: number;
+  discoveredAtStats: {
+    values: number[];
+    absoluteMin: number;
+    absoluteMax: number;
+    q10: number;
+    q25: number;
+    q50: number;
+    q75: number;
+    q90: number;
+    mean: number;
+    standardDeviation: number;
+  };
+  discoveredAtWeight: number;
+  nominatedAtStats: {
+    values: number[];
+    absoluteMin: number;
+    absoluteMax: number;
+    q10: number;
+    q25: number;
+    q50: number;
+    q75: number;
+    q90: number;
+    mean: number;
+    standardDeviation: number;
+  };
+  nominatedAtWeight: number;
+  offlineStats: {
+    values: number[];
+    absoluteMin: number;
+    absoluteMax: number;
+    q10: number;
+    q25: number;
+    q50: number;
+    q75: number;
+    q90: number;
+    mean: number;
+    standardDeviation: number;
+  };
+  offlineWeight: number;
+  rankStats: {
+    values: number[];
+    absoluteMin: number;
+    absoluteMax: number;
+    q10: number;
+    q25: number;
+    q50: number;
+    q75: number;
+    q90: number;
+    mean: number;
+    standardDeviation: number;
+  };
+  rankWeight: number;
+  locationStats: {
+    values: { name: string; numberOfNodes: number }[];
+    absoluteMin: number;
+    absoluteMax: number;
+    q10: number;
+    q25: number;
+    q50: number;
+    q75: number;
+    q90: number;
+    mean: number;
+    standardDeviation: number;
+  };
+  locationWeight: number;
+  regionStats: {
+    values: { name: string; numberOfNodes: number }[];
+    absoluteMin: number;
+    absoluteMax: number;
+    q10: number;
+    q25: number;
+    q50: number;
+    q75: number;
+    q90: number;
+    mean: number;
+    standardDeviation: number;
+  };
+  regionWeight: number;
+  countryStats: {
+    values: { name: string; numberOfNodes: number }[];
+    absoluteMin: number;
+    absoluteMax: number;
+    q10: number;
+    q25: number;
+    q50: number;
+    q75: number;
+    q90: number;
+    mean: number;
+    standardDeviation: number;
+  };
+  countryWeight: number;
+  providerStats: {
+    values: { name: string; numberOfNodes: number }[];
+    absoluteMin: number;
+    absoluteMax: number;
+    q10: number;
+    q25: number;
+    q50: number;
+    q75: number;
+    q90: number;
+    mean: number;
+    standardDeviation: number;
+  };
+  providerWeight: number;
+  councilStakeWeight?: number;
+  councilStakeStats?: {
+    values: number[];
+    absoluteMin: number;
+    absoluteMax: number;
+    q10: number;
+    q25: number;
+    q50: number;
+    q75: number;
+    q90: number;
+    mean: number;
+    standardDeviation: number;
+  };
+  democracyStats?: {
+    values: number[];
+    absoluteMin: number;
+    absoluteMax: number;
+    q10: number;
+    q25: number;
+    q50: number;
+    q75: number;
+    q90: number;
+    mean: number;
+    standardDeviation: number;
+  };
+  democracyWeight?: number;
+  nominatorStakeStats?: {
+    values: number[];
+    absoluteMin: number;
+    absoluteMax: number;
+    q10: number;
+    q25: number;
+    q50: number;
+    q75: number;
+    q90: number;
+    mean: number;
+    standardDeviation: number;
+  };
+  nominatorStakeWeight: number;
+  delegationStats?: {
+    values: number[];
+    absoluteMin: number;
+    absoluteMax: number;
+    q10: number;
+    q25: number;
+    q50: number;
+    q75: number;
+    q90: number;
+    mean: number;
+    standardDeviation: number;
+  };
+  delegationWeight?: number;
+  openGovStats?: {
+    values: number[];
+    absoluteMin: number;
+    absoluteMax: number;
+    q10: number;
+    q25: number;
+    q50: number;
+    q75: number;
+    q90: number;
+    mean: number;
+    standardDeviation: number;
+  };
+  openGovDelegationWeight?: number;
+  openGovDelegationStats?: {
+    values: number[];
+    absoluteMin: number;
+    absoluteMax: number;
+    q10: number;
+    q25: number;
+    q50: number;
+    q75: number;
+    q90: number;
+    mean: number;
+    standardDeviation: number;
+  };
+  openGovWeight?: number;
+  rpcWeight?: number;
+  clientWeight?: number;
+  updated?: number;
+}
 
 export const ValidatorScoreSchema = new Schema({
   // The last time a score was updated
@@ -895,6 +1169,21 @@ export const ReleaseSchema = new Schema({
 
 export const ReleaseModel = mongoose.model("Release", ReleaseSchema);
 
+export interface LocationStats {
+  totalNodes: number;
+  session: number;
+  locations: { name: string; numberOfNodes: number }[];
+  locationVariance: number;
+  regions: { name: string; numberOfNodes: number }[];
+  regionVariance: number;
+  countries: { name: string; numberOfNodes: number }[];
+  countryVariance: number;
+  providers: { name: string; numberOfNodes: number }[];
+  providerVariance: number;
+  decentralization: number;
+  updated: number;
+}
+
 // Stats on the where nodes are located.
 export const LocationStatsSchema = new Schema({
   // The number of total nodes that were taken account of for this session
@@ -940,7 +1229,7 @@ export const LocationStatsModel = mongoose.model(
   LocationStatsSchema,
 );
 
-// A council member
+//TODO: delete
 export const CouncillorSchema = new Schema({
   // The councillors address
   address: String,
@@ -955,9 +1244,9 @@ export const CouncillorSchema = new Schema({
   // the last time the record was updated
   updated: Number,
 });
-
+//TODO: delete
 export const CouncillorModel = mongoose.model("Councillor", CouncillorSchema);
-
+//TODO: delete
 export const ElectionStatsSchema = new Schema({
   // The duration of the term
   termDuration: Number,
@@ -978,7 +1267,7 @@ export const ElectionStatsSchema = new Schema({
   // the epoch the record was queried in
   session: Number,
 });
-
+//TODO: delete
 export const ElectionStatsModel = mongoose.model(
   "ElectionStats",
   ElectionStatsSchema,
@@ -1024,7 +1313,7 @@ export const EraRewardSchema = new Schema({
 
 export const EraRewardModel = mongoose.model("EraReward", EraRewardSchema);
 
-// Information about a democracy referendum
+//TODO: delete
 export const ReferendumSchema = new Schema({
   // The unique index of the proposal, used to identity and query by
   referendumIndex: Number,
@@ -1063,10 +1352,10 @@ export const ReferendumSchema = new Schema({
   // last block hash the record was updated at
   updatedBlockHash: Number,
 });
-
+//TODO: delete
 export const ReferendumModel = mongoose.model("Referendum", ReferendumSchema);
 
-// Information about a particular vote in a democracy referendum
+//TODO: delete
 export const ReferendumVoteSchema = new Schema({
   // The unique index of the proposal, used to identity and query by
   referendumIndex: { type: Number, index: true },
@@ -1087,15 +1376,12 @@ export const ReferendumVoteSchema = new Schema({
   // last block hash the record was updated at
   updatedBlockHash: String,
 });
-
-// ReferendumVoteSchema.index({ accountId: 1 });
-// ReferendumVoteSchema.index({ referendumIndex: -1 });
-
+//TODO: delete
 export const ReferendumVoteModel = mongoose.model(
   "ReferendumVote",
   ReferendumVoteSchema,
 );
-
+//TODO: delete
 export const ConvictionVote = new Schema({
   // The particular governance track
   track: Number,
@@ -1124,12 +1410,12 @@ export const ConvictionVote = new Schema({
   // The block number the vote was updated at
   updatedBlockNumber: Number,
 });
-
+//TODO: delete
 export const ConvictionVoteModel = mongoose.model(
   "ConvictionVote",
   ConvictionVote,
 );
-
+//TODO: delete
 export const OpenGovReferendum = new Schema({
   index: { type: Number, index: true },
   title: String,
@@ -1159,12 +1445,12 @@ export const OpenGovReferendum = new Schema({
   currentStatus: String,
   updatedTimestamp: Number,
 });
-
+//TODO: delete
 export const OpenGovReferendumModel = mongoose.model(
   "OpenGovReferendum",
   OpenGovReferendum,
 );
-
+//TODO: delete
 export const OpenGovReferendumStats = new Schema({
   index: { type: Number, index: true },
   track: Number,
@@ -1303,12 +1589,12 @@ export const OpenGovReferendumStats = new Schema({
     addresses: [String],
   },
 });
-
+//TODO: delete
 export const OpenGovReferendumStatsModel = mongoose.model(
   "OpenGovReferendumStats",
   OpenGovReferendumStats,
 );
-
+//TODO: delete
 export const OpenGovVoter = new Schema({
   address: { type: String, index: true },
   score: {
@@ -1330,9 +1616,9 @@ export const OpenGovVoter = new Schema({
   votingBalance: Number,
   labels: [String],
 });
-
+//TODO: delete
 export const OpenGovVoterModel = mongoose.model("OpenGovVoter", OpenGovVoter);
-
+//TODO: delete
 export const OpenGovDelegate = new Schema({
   address: { type: String, index: true },
   identity: String,
@@ -1359,12 +1645,12 @@ export const OpenGovDelegate = new Schema({
   longDescription: String,
   isOrganization: Boolean,
 });
-
+//TODO: delete
 export const OpenGovDelegateModel = mongoose.model(
   "OpenGovDelegate",
   OpenGovDelegate,
 );
-
+//TODO: delete
 export const OpenGovTrack = new Schema({
   index: { type: Number, index: true },
   name: String,
@@ -1375,7 +1661,7 @@ export const OpenGovTrack = new Schema({
   confirmPeriod: Number,
   minEnactmentPeriod: Number,
 });
-
+//TODO: delete
 export const OpenGovTrackModel = mongoose.model("OpenGovTrack", OpenGovTrack);
 
 export const IIT = new Schema({

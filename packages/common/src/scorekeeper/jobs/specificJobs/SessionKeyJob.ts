@@ -1,11 +1,13 @@
-import { logger, queries, Util } from "../../../index";
+import { logger, queries } from "../../../index";
 import { jobsMetadata } from "../JobsClass";
+import { jobStatusEmitter } from "../../../Events";
+import { withExecutionTimeLogging } from "../../../utils";
 
 export const sessionkeyLabel = { label: "SessionKeyJob" };
 
 export const sessionKeyJob = async (metadata: jobsMetadata) => {
   try {
-    const { chaindata, jobStatusEmitter } = metadata;
+    const { chaindata } = metadata;
     const candidates = await queries.allCandidates();
 
     const validators = await chaindata.getValidators();
@@ -23,14 +25,8 @@ export const sessionKeyJob = async (metadata: jobsMetadata) => {
 
       const nextKeys = await chaindata.getNextKeys(validator);
 
-      if (nextKeys?.toJSON()) {
-        await queries.setValidatorKeys(validator, nextKeys?.toJSON());
-
-        for (const candidate of candidates) {
-          if (candidate.stash == validator) {
-            await queries.setNextKeys(candidate.stash, nextKeys.toHex());
-          }
-        }
+      if (nextKeys) {
+        await queries.setValidatorKeys(validator, nextKeys);
       }
 
       processedValidators++;
@@ -56,7 +52,7 @@ export const sessionKeyJob = async (metadata: jobsMetadata) => {
   }
 };
 
-export const sessionKeyJobWithTiming = Util.withExecutionTimeLogging(
+export const sessionKeyJobWithTiming = withExecutionTimeLogging(
   sessionKeyJob,
   sessionkeyLabel,
   "Session Key Job Done",

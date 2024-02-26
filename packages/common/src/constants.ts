@@ -85,8 +85,8 @@ export const defaultExcludeLabels = [
   "Telemetry",
   // "Location",
   // "ValidatorPrefJob",
-  "Block",
-  "Gateway",
+  // "Block",
+  // "Gateway",
 ];
 
 /// Endpoint of the Kusama Thousand Validators backend. Used for the Polkadot program.

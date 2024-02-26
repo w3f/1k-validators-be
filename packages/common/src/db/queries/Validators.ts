@@ -1,5 +1,6 @@
 import { ValidatorModel, ValidatorSet, ValidatorSetModel } from "../models";
 import { allCandidates } from "./Candidate";
+import { NextKeys } from "../../chaindata/queries/ValidatorPref";
 
 export const setValidatorSet = async (
   session: number,
@@ -53,16 +54,10 @@ export const validatorSetExistsForEra = async (
 
 export const setValidatorKeys = async (
   address: string,
-  keys: {
-    grandpa: string;
-    babe: string;
-    imOnline: string;
-    paraValidator: string;
-    paraAssingnment: string;
-    authorityDiscovery: string;
-    beefy: string;
-  },
+  nextKeys: NextKeys,
 ): Promise<boolean> => {
+  const { keys } = nextKeys;
+
   const data = await ValidatorModel.findOne({ address }).lean();
   if (!data) {
     const validator = new ValidatorModel({

@@ -3,6 +3,7 @@ import logger from "../../../logger";
 import { scorekeeperLabel } from "../../scorekeeper";
 import { queries } from "../../../index";
 import { endRound, startRound } from "../../Round";
+import { jobStatusEmitter } from "../../../Events";
 
 export const mainScorekeeperJob = async (
   metadata: jobsMetadata,
@@ -17,7 +18,6 @@ export const mainScorekeeperJob = async (
     currentEra,
     bot,
     handler,
-    jobStatusEmitter,
   } = metadata;
 
   if (ending) {

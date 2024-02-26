@@ -1,7 +1,4 @@
 import Koa from "koa";
-import bodyparser from "koa-bodyparser";
-import cors from "koa2-cors";
-
 import {
   ApiHandler,
   Config,
@@ -9,24 +6,10 @@ import {
   logger,
   ScoreKeeper,
 } from "@1kv/common";
-
-import koaCash from "koa-cash";
-import { KoaAdapter } from "@bull-board/koa";
-import { createBullBoard } from "@bull-board/api";
-import { BullMQAdapter } from "@bull-board/api/bullMQAdapter"; // import { otvWorker } from "@1kv/worker";
 import { Queue } from "bullmq";
-import path from "path";
-import serve from "koa-static";
 
-import router, {
-  setupHealthCheckRoute,
-  setupScorekeeperRoutes,
-} from "./routes";
-import mount from "koa-mount";
-import { koaSwagger } from "koa2-swagger-ui";
-import yamljs from "yamljs";
-import Router from "@koa/router";
-import { LRUCache } from "lru-cache";
+import { setupRoutes } from "./routes/setupRoutes";
+import { requestEmitter } from "./events/requestEmitter";
 
 export default class Server {
   public app: Koa;
@@ -38,6 +21,9 @@ export default class Server {
   private handler: ApiHandler | null;
   private scorekeeper: ScoreKeeper | null;
 
+  private totalRequests: number = 0;
+  private endpointCounts: Record<string, number> = {};
+
   constructor(
     config: Config.ConfigSchema,
     handler?: ApiHandler,
@@ -47,157 +33,57 @@ export default class Server {
     this.app = new Koa();
     this.port = config?.server?.port;
     this.enable = config?.server?.enable || true;
-    this.cache = config?.server?.cache;
+    this.cache = config?.server?.cache || Constants.GATEWAY_CACHE_TTL;
     this.handler = handler || null;
     this.scorekeeper = scorekeeper || null;
+    this.queues = [];
 
-    this.app.use(cors());
-    this.app.use(bodyparser());
+    requestEmitter.on("requestReceived", this.updateRequestCounts.bind(this));
 
-    logger.info(`Cache set to ${this.cache}`, { label: "Gateway" });
-
-    const cache = new LRUCache({
-      ttl: this.cache || Constants.GATEWAY_CACHE_TTL, // Cache items will expire after 3 minutes
-      max: 500, // Maximum number of items allowed in the cache
+    this.app.use(async (ctx, next) => {
+      requestEmitter.emit("requestReceived", ctx.path); // Emit the event with the endpoint path
+      await next();
     });
-    this.app.use(
-      koaCash({
-        get: (key) => {
-          return cache.get(key);
-        },
-        set(key, value, maxAge) {
-          return cache.set(key, value, maxAge);
-        },
-      }),
-    );
 
-    // If onlyHealth is true, only serve the health check route. Used when imported from other services for service health checks. False by default
-    const onlyHealth = this.config?.server?.onlyHealth || false;
-    if (onlyHealth) {
-      logger.info(`Only serving health check route`, { label: "Gateway" });
-      const healthRouter = new Router();
+    logger.info(`Server constructed`, { label: "Gateway" });
+  }
 
-      // Set up the health check route on the healthRouter
-      setupHealthCheckRoute(healthRouter, this.handler);
-      setupScorekeeperRoutes(healthRouter, this.scorekeeper);
+  private updateRequestCounts(endpoint: string): void {
+    this.totalRequests++;
+    this.endpointCounts[endpoint] = (this.endpointCounts[endpoint] || 0) + 1;
+  }
 
-      this.app.use(healthRouter.routes());
-    } else {
-      setupHealthCheckRoute(router, handler);
-      setupScorekeeperRoutes(router, this.scorekeeper);
+  public getTotalRequests(): number {
+    return this.totalRequests;
+  }
 
-      // Serve the status UI
-      const viteBuildPath = path.resolve(
-        __dirname,
-        "../../scorekeeper-status-ui/dist",
+  public getEndpointCounts(): Record<string, number> {
+    return this.endpointCounts;
+  }
+
+  async start(): Promise<boolean> {
+    try {
+      logger.info(`Starting server inside Server on port ${this.port}`, {
+        label: "Gateway",
+      });
+      await setupRoutes(
+        this.app,
+        this.config,
+        this.port,
+        this.enable,
+        this.queues,
+        this.cache,
+        this.handler,
+        this.scorekeeper,
       );
-      this.app.use(mount("/status", serve(viteBuildPath)));
-
-      const assetsPath = path.resolve(
-        __dirname,
-        "../../scorekeeper-status-ui/dist/assets",
-      );
-
-      this.app.use(mount("/assets", serve(assetsPath)));
-
-      // Docusarus docs
-      const serveDocs = config?.server?.serveDocs || true;
-      if (serveDocs) {
-        const docsPath = path.join(__dirname, "../../../docs/build");
-        this.app.use(mount("/docs", serve(docsPath)));
-      }
-
-      // Swagger UI
-      const serveSwagger = config?.server?.serveSwagger || true;
-      if (serveSwagger) {
-        const swaggerSpec = yamljs.load(
-          path.join(__dirname, "../src/swagger.yml"),
-        ); //
-        this.app.use(
-          koaSwagger({
-            routePrefix: "/",
-            swaggerOptions: {
-              spec: swaggerSpec,
-            },
-          }),
-        );
-      }
-
-      // Serve all other routes
-      this.app.use(router.routes());
+      return true;
+    } catch (e) {
+      logger.error(e.toString(), { label: "Gateway" });
+      return false;
     }
   }
 
-  // Add BullMQ queues
-  async addQueues() {
-    const releaseMonitorQueue = new Queue("releaseMonitor", {
-      connection: {
-        host: this.config?.redis?.host,
-        port: this.config?.redis?.port,
-      },
-    });
-    const constraintsQueue = new Queue("constraints", {
-      connection: {
-        host: this.config?.redis?.host,
-        port: this.config?.redis?.port,
-      },
-    });
-    const chaindataQueue = new Queue("chaindata", {
-      connection: {
-        host: this.config?.redis?.host,
-        port: this.config?.redis?.port,
-      },
-    });
-    const blockQueue = new Queue("block", {
-      connection: {
-        host: this.config?.redis?.host,
-        port: this.config?.redis?.port,
-      },
-    });
-
-    this.queues.push(
-      releaseMonitorQueue,
-      constraintsQueue,
-      chaindataQueue,
-      blockQueue,
-    );
-  }
-
-  async start(): Promise<void> {
-    if (!this.enable) {
-      logger.info(`Server not enabled`, { label: "Gateway" });
-    } else {
-      // If Redis is in the config and this is run as microservices, add bull board as an endpoint at `/bull`
-      if (this.config?.redis?.host && this.config?.redis?.port) {
-        await this.addQueues();
-        // BullMQBoard
-        const serverAdapter = new KoaAdapter();
-        createBullBoard({
-          queues: this.queues.map((queue) => {
-            return new BullMQAdapter(queue);
-          }),
-          serverAdapter,
-        });
-        serverAdapter.setBasePath("/bull");
-        this.app.use(serverAdapter.registerPlugin());
-      }
-      logger.info(`Now listening on ${this.port}`, { label: "Gateway" });
-      const server = this.app.listen(this.port);
-    }
+  private updateRequestCount(): void {
+    this.requestCount++;
   }
 }
-
-// process.on("SIGTERM", () => {
-//   console.log("received SIGTERM");
-//
-//   console.log("waiting for %d sec to close server", WAIT_BEFORE_SERVER_CLOSE);
-//
-//   setTimeout(() => {
-//     console.log("calling server close");
-//
-//     server.close(() => {
-//       console.log("server closed, exit");
-//       process.exit(0);
-//     });
-//   }, WAIT_BEFORE_SERVER_CLOSE * 1000);
-// });

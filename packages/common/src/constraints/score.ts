@@ -73,17 +73,31 @@ export const scaledDefined = (
   return (value - lowQ) / (highQ - lowQ);
 };
 
-export const getStats = (arr) => {
-  const arrSorted = arr.length != 0 ? asc(arr) : [];
-  const arrAbsMin = arr.length != 0 ? absMin(arr) : 0;
-  const arrAbsMax = arr.length != 0 ? absMax(arr) : 0;
-  const arrQ10 = arr.length != 0 ? q10(arr) : 0;
-  const arrQ25 = arr.length != 0 ? q25(arr) : 0;
-  const arrQ50 = arr.length != 0 ? q50(arr) : 0;
-  const arrQ75 = arr.length != 0 ? q75(arr) : 0;
-  const arrQ90 = arr.length != 0 ? q90(arr) : 0;
-  const arrMean = arr.length != 0 ? mean(arr) : 0;
-  const arrStd = arr.length != 0 ? std(arr) : 0;
+export interface Stats {
+  values: any[];
+  numberOfNodes?: number[];
+  absoluteMin: number;
+  absoluteMax: number;
+  q10: number;
+  q25: number;
+  q50: number;
+  q75: number;
+  q90: number;
+  mean: number;
+  standardDeviation: number;
+}
+
+export const getStats = (arr): Stats => {
+  const arrSorted = arr.length !== 0 ? asc(arr) : [];
+  const arrAbsMin = arr.length !== 0 ? absMin(arr) : 0;
+  const arrAbsMax = arr.length !== 0 ? absMax(arr) : 0;
+  const arrQ10 = arr.length !== 0 ? q10(arr) : 0;
+  const arrQ25 = arr.length !== 0 ? q25(arr) : 0;
+  const arrQ50 = arr.length !== 0 ? q50(arr) : 0;
+  const arrQ75 = arr.length !== 0 ? q75(arr) : 0;
+  const arrQ90 = arr.length !== 0 ? q90(arr) : 0;
+  const arrMean = arr.length !== 0 ? mean(arr) : 0;
+  const arrStd = arr.length !== 0 ? std(arr) : 0;
   return {
     values: arrSorted,
     absoluteMin: arrAbsMin,

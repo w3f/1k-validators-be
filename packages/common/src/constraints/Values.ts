@@ -1,17 +1,26 @@
-import { logger, queries } from "../index";
-import { getStats } from "./score";
-import { allNominators, Candidate, getLatestNominatorStake } from "../db";
+import { logger } from "../index";
+import { getStats, Stats } from "./score";
+import {
+  allNominators,
+  Candidate,
+  getCandidateLocation,
+  getLatestNominatorStake,
+} from "../db";
 import { constraintsLabel } from "./constraints";
 
-export const getBondedValues = (validCandidates: Candidate[]) => {
+export const getBondedValues = (
+  validCandidates: Candidate[],
+): { bondedValues: number[]; bondedStats: Stats } => {
   const bondedValues = validCandidates.map((candidate) => {
     return candidate.bonded ? candidate.bonded : 0;
   });
-  const bondedStats = bondedValues.length > 0 ? getStats(bondedValues) : [];
+  const bondedStats = getStats(bondedValues);
   return { bondedValues, bondedStats };
 };
 
-export const getFaultsValues = (validCandidates: Candidate[]) => {
+export const getFaultsValues = (
+  validCandidates: Candidate[],
+): { faultsValues: string[] | number[]; faultsStats: Stats } => {
   const faultsValues = validCandidates.map((candidate) => {
     return candidate.faults ? candidate.faults : 0;
   });
@@ -19,7 +28,9 @@ export const getFaultsValues = (validCandidates: Candidate[]) => {
   return { faultsValues, faultsStats };
 };
 
-export const getInclusionValues = (validCandidates: Candidate[]) => {
+export const getInclusionValues = (
+  validCandidates: Candidate[],
+): { inclusionValues: string[] | number[]; inclusionStats: Stats } => {
   const inclusionValues = validCandidates.map((candidate) => {
     return candidate.inclusion ? candidate.inclusion : 0;
   });
@@ -27,7 +38,9 @@ export const getInclusionValues = (validCandidates: Candidate[]) => {
   return { inclusionValues, inclusionStats };
 };
 
-export const getSpanInclusionValues = (validCandidates: Candidate[]) => {
+export const getSpanInclusionValues = (
+  validCandidates: Candidate[],
+): { spanInclusionValues: string[] | number[]; spanInclusionStats: Stats } => {
   const spanInclusionValues = validCandidates.map((candidate) => {
     return candidate.spanInclusion ? candidate.spanInclusion : 0;
   });
@@ -35,7 +48,9 @@ export const getSpanInclusionValues = (validCandidates: Candidate[]) => {
   return { spanInclusionValues, spanInclusionStats };
 };
 
-export const getDiscoveredAtValues = (validCandidates: Candidate[]) => {
+export const getDiscoveredAtValues = (
+  validCandidates: Candidate[],
+): { discoveredAtValues: string[] | number[]; discoveredAtStats: Stats } => {
   const discoveredAtValues = validCandidates.map((candidate) => {
     return candidate.discoveredAt ? candidate.discoveredAt : 0;
   });
@@ -43,47 +58,65 @@ export const getDiscoveredAtValues = (validCandidates: Candidate[]) => {
   return { discoveredAtValues, discoveredAtStats };
 };
 
-export const getNominatedAtValues = (validCandidates: Candidate[]) => {
-  const nominatedAtValues = validCandidates.map((candidate) => {
-    return candidate.nominatedAt ? candidate.nominatedAt : 0;
-  });
-  const nominatedAtStats = getStats(nominatedAtValues);
+export const getNominatedAtValues = (
+  validCandidates: Candidate[],
+): { nominatedAtValues: string[] | number[]; nominatedAtStats: Stats } => {
+  const nominatedAtValues: string[] | number[] = validCandidates.map(
+    (candidate) => {
+      return candidate.nominatedAt ? candidate.nominatedAt : 0;
+    },
+  );
+  const nominatedAtStats: Stats = getStats(nominatedAtValues as number[]);
   return { nominatedAtValues, nominatedAtStats };
 };
 
-export const getOfflineValues = (validCandidates: Candidate[]) => {
-  const offlineValues = validCandidates.map((candidate) => {
-    return candidate.offlineAccumulated ? candidate.offlineAccumulated : 0;
-  });
-  const offlineStats = getStats(offlineValues);
+export const getOfflineValues = (
+  validCandidates: Candidate[],
+): { offlineValues: string[] | number[]; offlineStats: Stats } => {
+  const offlineValues: string[] | number[] = validCandidates.map(
+    (candidate) => {
+      return candidate.offlineAccumulated ? candidate.offlineAccumulated : 0;
+    },
+  );
+  const offlineStats: Stats = getStats(offlineValues as number[]);
   return { offlineValues, offlineStats };
 };
 
-export const getRankValues = (validCandidates: Candidate[]) => {
-  const rankValues = validCandidates.map((candidate) => {
+export const getRankValues = (
+  validCandidates: Candidate[],
+): { rankValues: string[] | number[]; rankStats: Stats } => {
+  const rankValues: string[] | number[] = validCandidates.map((candidate) => {
     return candidate.rank ? candidate.rank : 0;
   });
-  const rankStats = getStats(rankValues);
+  const rankStats: Stats = getStats(rankValues as number[]);
   return { rankValues, rankStats };
 };
 
-export const getUnclaimedValues = (validCandidates: Candidate[]) => {
-  const unclaimedValues = validCandidates.map((candidate) => {
-    return candidate.unclaimedEras && candidate.unclaimedEras.length
-      ? candidate.unclaimedEras.length
-      : 0;
-  });
-  const unclaimedStats = getStats(unclaimedValues);
+export const getUnclaimedValues = (
+  validCandidates: Candidate[],
+): { unclaimedValues: string[] | number[]; unclaimedStats: Stats } => {
+  const unclaimedValues: string[] | number[] = validCandidates.map(
+    (candidate) => {
+      return candidate.unclaimedEras && candidate.unclaimedEras.length
+        ? candidate.unclaimedEras.length
+        : 0;
+    },
+  );
+  const unclaimedStats: Stats = getStats(unclaimedValues as number[]);
   return { unclaimedValues, unclaimedStats };
 };
 
-export const getLocationValues = async (validCandidates: Candidate[]) => {
-  const locationMap = new Map();
-  const locationArr = [];
+export const getLocationValues = async (
+  validCandidates: Candidate[],
+): Promise<{
+  locationArr: { name: string; numberOfNodes: number }[];
+  locationValues: string[] | number[];
+  locationStats: Stats;
+}> => {
+  const locationMap = new Map<string, number>();
+  const locationArr: { name: string; numberOfNodes: number }[] = [];
   for (const candidate of validCandidates) {
-    const candidateLocation = await queries.getCandidateLocation(
-      candidate.name,
-    );
+    const candidateLocation = await getCandidateLocation(candidate.name);
     const location = candidateLocation?.city || "No Location";
 
     const locationCount = locationMap.get(location);
@@ -94,29 +127,33 @@ export const getLocationValues = async (validCandidates: Candidate[]) => {
     }
   }
 
-  for (const location of locationMap.entries()) {
-    const [name, numberOfNodes] = location;
-    locationArr.push({ name, numberOfNodes });
+  for (const [location, numberOfNodes] of locationMap.entries()) {
+    locationArr.push({ name: location, numberOfNodes });
   }
 
-  const locationValues = locationArr.map((location) => {
+  const locationValues: string[] | number[] = locationArr.map((location) => {
     return location.numberOfNodes;
   });
-  const locationStats = getStats(locationValues);
-  locationStats.values = locationArr;
+  const locationStats = getStats(locationValues as number[]);
+  locationStats.numberOfNodes = locationValues;
+  locationStats.values = locationValues;
   return { locationArr, locationValues, locationStats };
 };
 
-export const getRegionValues = async (validCandidates: Candidate[]) => {
-  const regionMap = new Map();
-  const regionArr = [];
+export const getRegionValues = async (
+  validCandidates: Candidate[],
+): Promise<{
+  regionArr: { name: string; numberOfNodes: number }[];
+  regionValues: string[] | number[];
+  regionStats: Stats;
+}> => {
+  const regionMap = new Map<string, number>();
+  const regionArr: { name: string; numberOfNodes: number }[] = [];
   for (const candidate of validCandidates) {
-    const candidateLocation = await queries.getCandidateLocation(
-      candidate.name,
-    );
+    const candidateLocation = await getCandidateLocation(candidate.name);
     const region =
-      candidateLocation && candidateLocation?.region
-        ? candidateLocation?.region
+      candidateLocation && candidateLocation.region
+        ? candidateLocation.region
         : "No Location";
 
     const regionCount = regionMap.get(region);
@@ -127,28 +164,32 @@ export const getRegionValues = async (validCandidates: Candidate[]) => {
     }
   }
 
-  for (const region of regionMap.entries()) {
-    const [name, numberOfNodes] = region;
-    regionArr.push({ name, numberOfNodes });
+  for (const [region, numberOfNodes] of regionMap.entries()) {
+    regionArr.push({ name: region, numberOfNodes });
   }
-  const regionValues = regionArr.map((region) => {
+  const regionValues: string[] | number[] = regionArr.map((region) => {
     return region.numberOfNodes;
   });
-  const regionStats = getStats(regionValues);
-  regionStats.values = regionArr;
+  const regionStats: Stats = getStats(regionValues as number[]);
+  regionStats.numberOfNodes = regionValues;
+  regionStats.values = regionValues;
   return { regionArr, regionValues, regionStats };
 };
 
-export const getCountryValues = async (validCandidates: Candidate[]) => {
-  const countryMap = new Map();
-  const countryArr = [];
+export const getCountryValues = async (
+  validCandidates: Candidate[],
+): Promise<{
+  countryArr: { name: string; numberOfNodes: number }[];
+  countryValues: string[] | number[];
+  countryStats: Stats;
+}> => {
+  const countryMap = new Map<string, number>();
+  const countryArr: { name: string; numberOfNodes: number }[] = [];
   for (const candidate of validCandidates) {
-    const candidateLocation = await queries.getCandidateLocation(
-      candidate.name,
-    );
+    const candidateLocation = await getCandidateLocation(candidate.name);
     const country =
-      candidateLocation && candidateLocation?.country
-        ? candidateLocation?.country
+      candidateLocation && candidateLocation.country
+        ? candidateLocation.country
         : "No Location";
 
     const countryCount = countryMap.get(country);
@@ -159,28 +200,31 @@ export const getCountryValues = async (validCandidates: Candidate[]) => {
     }
   }
 
-  for (const country of countryMap.entries()) {
-    const [name, numberOfNodes] = country;
-    countryArr.push({ name, numberOfNodes });
+  for (const [country, numberOfNodes] of countryMap.entries()) {
+    countryArr.push({ name: country, numberOfNodes });
   }
-  const countryValues = countryArr.map((country) => {
+  const countryValues: string[] | number[] = countryArr.map((country) => {
     return country.numberOfNodes;
   });
-  const countryStats = getStats(countryValues);
-  countryStats.values = countryArr;
+  const countryStats: Stats = getStats(countryValues as number[]);
+  countryStats.values = countryValues;
   return { countryArr, countryValues, countryStats };
 };
 
-export const getProviderValues = async (validCandidates: Candidate[]) => {
-  const providerMap = new Map();
-  const providerArr = [];
+export const getProviderValues = async (
+  validCandidates: Candidate[],
+): Promise<{
+  providerArr: { name: string; numberOfNodes: number }[];
+  providerValues: string[] | number[];
+  providerStats: Stats;
+}> => {
+  const providerMap = new Map<string, number>();
+  const providerArr: { name: string; numberOfNodes: number }[] = [];
   for (const candidate of validCandidates) {
-    const candidateLocation = await queries.getCandidateLocation(
-      candidate.name,
-    );
+    const candidateLocation = await getCandidateLocation(candidate.name);
     const provider =
-      candidateLocation && candidateLocation?.provider
-        ? candidateLocation?.provider
+      candidateLocation && candidateLocation.provider
+        ? candidateLocation.provider
         : "No Location";
 
     const providerCount = providerMap.get(provider);
@@ -191,34 +235,39 @@ export const getProviderValues = async (validCandidates: Candidate[]) => {
     }
   }
 
-  for (const provider of providerMap.entries()) {
-    const [name, numberOfNodes] = provider;
-    providerArr.push({ name, numberOfNodes });
+  for (const [provider, numberOfNodes] of providerMap.entries()) {
+    providerArr.push({ name: provider, numberOfNodes });
   }
-  const providerValues = providerArr.map((provider) => {
+  const providerValues: string[] | number[] = providerArr.map((provider) => {
     return provider.numberOfNodes;
   });
-  const providerStats = getStats(providerValues);
+  const providerStats: Stats = getStats(providerValues as number[]);
+  providerStats.numberOfNodes = providerValues;
   providerStats.values = providerArr;
   return { providerArr, providerValues, providerStats };
 };
 
-export const getNominatorStakeValues = async (validCandidates: Candidate[]) => {
+export const getNominatorStakeValues = async (
+  validCandidates: Candidate[],
+): Promise<{
+  ownNominatorAddresses: string[];
+  nominatorStakeValues: number[];
+  nominatorStakeStats: Stats;
+}> => {
   const ownNominators = await allNominators();
   const ownNominatorAddresses = ownNominators.map((nom) => {
     return nom.address;
   });
-  const nominatorStakeValues = [];
+  const nominatorStakeValues: number[] = [];
   for (const [index, candidate] of validCandidates.entries()) {
     const nomStake = await getLatestNominatorStake(candidate.stash);
     if (
       nomStake != undefined &&
-      nomStake?.activeNominators &&
-      nomStake?.inactiveNominators
+      nomStake.activeNominators &&
+      nomStake.inactiveNominators
     ) {
       try {
         const { activeNominators, inactiveNominators } = nomStake;
-
         let total = 0;
         for (const active of activeNominators) {
           if (!ownNominatorAddresses.includes(active.address)) {
@@ -240,6 +289,6 @@ export const getNominatorStakeValues = async (validCandidates: Candidate[]) => {
     }
   }
   if (nominatorStakeValues.length == 0) nominatorStakeValues.push(0);
-  const nominatorStakeStats = getStats(nominatorStakeValues);
+  const nominatorStakeStats: Stats = getStats(nominatorStakeValues);
   return { ownNominatorAddresses, nominatorStakeValues, nominatorStakeStats };
 };

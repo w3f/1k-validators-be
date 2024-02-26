@@ -22,10 +22,19 @@ export const getEraAt = async (
   }
 };
 
+export interface EraPointsInfo {
+  era: number;
+  total: number;
+  validators: Array<{
+    era: number;
+    address: string;
+    eraPoints: number;
+  }>;
+}
 export const getTotalEraPoints = async (
   chaindata: ChainData,
   era: number,
-): Promise<any> => {
+): Promise<EraPointsInfo> => {
   try {
     await chaindata.checkApiConnection();
     const chainType = await chaindata.getChainType();
@@ -50,6 +59,7 @@ export const getTotalEraPoints = async (
     };
   } catch (e) {
     logger.error(`Error getting total era points: ${e}`, chaindataLabel);
+    return {} as EraPointsInfo;
   }
 };
 
@@ -57,7 +67,7 @@ export const getErasMinStakeAt = async (
   chaindata: ChainData,
   apiAt: any,
   era: number,
-): Promise<any> => {
+): Promise<number> => {
   try {
     await chaindata.checkApiConnection();
 

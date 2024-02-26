@@ -37,24 +37,26 @@ export const startJob = async (
   metadata: jobsMetadata,
   jobConfig: JobConfig,
 ) => {
-  const { config, jobStatusEmitter } = metadata;
+  const { config } = metadata;
   const {
-    scheduleKey,
-    enabledKey,
+    scheduleKey = '""',
+    enabledKey = "",
     jobFunction,
     jobName,
-    preventOverlap = true,
+    preventOverlap = false,
+    defaultFrequency,
   } = jobConfig;
 
+  // Check if config.cron exists and use default values if it doesn't
   const isEnabled =
-    config.cron[enabledKey] !== undefined
+    config.cron && config?.cron[enabledKey] !== undefined
       ? Boolean(config.cron[enabledKey])
       : true;
 
   const frequency =
-    config.cron[scheduleKey] !== undefined
-      ? config.cron[scheduleKey].toString()
-      : jobConfig.defaultFrequency;
+    config.cron && config?.cron[scheduleKey] !== undefined
+      ? config?.cron[scheduleKey].toString()
+      : defaultFrequency;
 
   if (!isEnabled) {
     logger.warn(`${jobName} is disabled`, cronLabel);
@@ -64,11 +66,10 @@ export const startJob = async (
   await setupCronJob(
     true, // Assuming the job should always be considered "enabled" at this point.
     frequency,
-    jobConfig.defaultFrequency,
+    defaultFrequency,
     () => jobFunction(metadata),
     jobName,
     cronLabel,
-    jobStatusEmitter,
     preventOverlap,
   );
 };
@@ -149,15 +150,8 @@ export const startEraStatsJob = async (metadata: jobsMetadata) => {
 // specified in the config, otherwise defaults the constant of 10850 (~18 hours).
 // Runs every 15 minutesB
 export const startExecutionJob = async (metadata: jobsMetadata) => {
-  const {
-    config,
-    constraints,
-    chaindata,
-    jobStatusEmitter,
-    nominatorGroups,
-    bot,
-    handler,
-  } = metadata;
+  const { config, constraints, chaindata, nominatorGroups, bot, handler } =
+    metadata;
   const timeDelayBlocks = config.proxy?.timeDelayBlocks
     ? Number(config.proxy?.timeDelayBlocks)
     : Number(Constants.TIME_DELAY_BLOCKS);
@@ -171,7 +165,7 @@ export const startExecutionJob = async (metadata: jobsMetadata) => {
 
   const executionCron = new CronJob(executionFrequency, async () => {
     logger.info(`Running execution cron`, cronLabel);
-    const latestBlock = chaindata.getLatestBlock();
+    const latestBlock = await chaindata.getLatestBlock();
     const api = await handler.getApi();
 
     const era = await chaindata.getCurrentEra();
@@ -322,14 +316,7 @@ export const startExecutionJob = async (metadata: jobsMetadata) => {
 };
 
 export const startCancelJob = async (metadata: jobsMetadata) => {
-  const {
-    config,
-    bot,
-    constraints,
-    chaindata,
-    jobStatusEmitter,
-    nominatorGroups,
-  } = metadata;
+  const { config, bot, constraints, chaindata, nominatorGroups } = metadata;
   const cancelFrequency = config.cron?.cancel
     ? config.cron?.cancel
     : Constants.CANCEL_CRON;
@@ -424,15 +411,8 @@ export const startCancelJob = async (metadata: jobsMetadata) => {
 };
 
 export const startStaleNominationJob = async (metadata: jobsMetadata) => {
-  const {
-    config,
-    constraints,
-    chaindata,
-    jobStatusEmitter,
-    bot,
-    handler,
-    nominatorGroups,
-  } = metadata;
+  const { config, constraints, chaindata, bot, handler, nominatorGroups } =
+    metadata;
   const staleFrequency = config.cron?.stale
     ? config.cron?.stale
     : Constants.STALE_CRON;

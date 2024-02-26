@@ -1,6 +1,6 @@
 import { CronJob } from "cron";
-import EventEmitter from "eventemitter3";
 import { logger } from "../../../index";
+import { jobStatusEmitter } from "../../../Events";
 
 type JobFunction = () => Promise<void> | void;
 export const setupCronJob = async (
@@ -10,7 +10,6 @@ export const setupCronJob = async (
   jobFunction: JobFunction, // Job function to execute
   jobDescription: string, // Description for logging
   loggerLabel, // Optional logging label
-  jobStatusEmitter: EventEmitter,
   preventOverlap = false, // Optional flag to prevent overlapping executions
 ): Promise<void> => {
   if (!enabled) {

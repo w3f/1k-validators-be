@@ -10,8 +10,6 @@ import Location from "../controllers/Location";
 import Validator from "../controllers/Validators";
 import Rewards from "../controllers/Rewards";
 import Block from "../controllers/Block";
-import { ScoreKeeper } from "@1kv/common";
-import { response } from "../controllers";
 
 const router: any = new Router();
 
@@ -125,35 +123,5 @@ router.get(API.RewardsNominatorTotal, Rewards.getRewardsNominatorTotal);
 router.get(API.RewardsAllNominatorsTotal, Rewards.getRewardsAllNominatorsTotal);
 
 router.get(API.BlockIndex, Block.getBlockIndex);
-
-export const setupHealthCheckRoute = (router: Router, handler?) => {
-  router.get("/healthcheck", async (ctx) => {
-    if (handler) {
-      const isConnected = handler.isConnected();
-      if (isConnected) {
-        const isHealthy = await handler.healthCheck();
-        ctx.body = `Good! RPC connection: ${handler.currentEndpoint()} ( healthy: ${isHealthy})`;
-        ctx.status = 200;
-      } else {
-        ctx.body = `API Handler not Connected!`;
-        ctx.status = 403;
-      }
-    } else {
-      ctx.body = `Good!`;
-      ctx.status = 200;
-    }
-  });
-};
-
-export const setupScorekeeperRoutes = (
-  router: Router,
-  scorekeeper: ScoreKeeper,
-) => {
-  if (scorekeeper) {
-    router.get("/scorekeeper/jobs", async (ctx) => {
-      response(ctx, 200, scorekeeper.getJobsStatusAsJson());
-    });
-  }
-};
 
 export default router;

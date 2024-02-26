@@ -7,6 +7,8 @@
 import { ChainData, chaindataLabel } from "../chaindata";
 import { logger } from "../../index";
 
+import { Block } from "@polkadot/types/interfaces";
+
 export const getChainType = async (chaindata: ChainData): Promise<string> => {
   try {
     await chaindata.checkApiConnection();
@@ -76,11 +78,12 @@ export const getBlockHash = async (
 export const getBlock = async (
   chaindata: ChainData,
   blockNumber: number,
-): Promise<any> => {
+): Promise<Block | undefined> => {
   try {
     await chaindata.checkApiConnection();
     const hash = await chaindata.getBlockHash(blockNumber);
-    return await chaindata.api.rpc.chain.getBlock(hash);
+    const signedBlock = await chaindata.api.rpc.chain.getBlock(hash);
+    return signedBlock.block;
   } catch (e) {
     logger.error(`Error getting block: ${e}`, chaindataLabel);
   }

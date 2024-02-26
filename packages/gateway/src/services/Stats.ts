@@ -226,9 +226,6 @@ export const getSessionLocationStats = async (session) => {
   const sortedCountries = locationStats.countries.sort((a, b) => {
     return b.numberOfNodes - a.numberOfNodes;
   });
-  const sortedASNs = locationStats.asns.sort((a, b) => {
-    return b.numberOfNodes - a.numberOfNodes;
-  });
   const sortedProviders = locationStats.providers.sort((a, b) => {
     return b.numberOfNodes - a.numberOfNodes;
   });

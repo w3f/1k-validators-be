@@ -100,21 +100,23 @@ const checkConfigFile = (path: any) => {
   }
 };
 
-if (require.main === module) {
-  // Check Polkadot and Kusama Config Files
-  (async () => {
-    const kusamaConfig = "../../candidates/kusama.json";
-    const polkadotConfig = "../../candidates/polkadot.json";
+const runChecksAndWriteConfig = () => {
+  const kusamaConfig = "../../candidates/kusama.json";
+  const polkadotConfig = "../../candidates/polkadot.json";
 
-    checkConfigFile(kusamaConfig);
-    checkConfigFile(polkadotConfig);
+  checkConfigFile(kusamaConfig);
+  checkConfigFile(polkadotConfig);
 
-    logger.info("✅ Config files are valid!");
-    writeSlotIds(kusamaConfig, "kusama");
-    writeSlotIds(polkadotConfig, "polkadot");
-    logger.info("✅ New Candidates Config written to file!");
+  logger.info("✅ Config files are valid!");
+  writeSlotIds(kusamaConfig, "kusama");
+  writeSlotIds(polkadotConfig, "polkadot");
+  logger.info("✅ New Candidates Config written to file!");
+};
 
-    process.exit(0);
-  })();
+// Export the function
+export { runChecksAndWriteConfig };
+
+// Call the function only if this is the main module
+if (require.main === module && process.env.RUN_SCRIPTS === "true") {
+  runChecksAndWriteConfig();
 }
-export {};

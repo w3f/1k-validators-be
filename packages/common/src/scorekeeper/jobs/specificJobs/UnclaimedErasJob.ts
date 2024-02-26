@@ -1,5 +1,6 @@
-import { logger, Util } from "../../../index";
+import { logger } from "../../../index";
 import { jobsMetadata } from "../JobsClass";
+import { withExecutionTimeLogging } from "../../../utils";
 
 export const unclaimedErasLabel = { label: "UnclaimedErasJob" };
 
@@ -8,7 +9,7 @@ export const unclaimedErasJob = async (metadata: jobsMetadata) => {
   logger.info(`Unclaimed Eras done`, unclaimedErasLabel);
 };
 
-export const unclaimedEraJobWithTiming = Util.withExecutionTimeLogging(
+export const unclaimedEraJobWithTiming = withExecutionTimeLogging(
   unclaimedErasJob,
   unclaimedErasLabel,
   "Unclaimed Eras Job Done",

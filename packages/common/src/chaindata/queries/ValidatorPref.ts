@@ -121,7 +121,14 @@ export const getRewardDestinationAt = async (
   }
 };
 
-export const getQueuedKeys = async (chaindata: ChainData): Promise<any> => {
+export interface QueuedKey {
+  address: string;
+  keys: string; // Hex representation of the keys
+}
+
+export const getQueuedKeys = async (
+  chaindata: ChainData,
+): Promise<QueuedKey[]> => {
   try {
     await chaindata.checkApiConnection();
     const queuedKeys = await chaindata.api.query.session.queuedKeys();
@@ -137,37 +144,80 @@ export const getQueuedKeys = async (chaindata: ChainData): Promise<any> => {
   }
 };
 
+export interface NextKeys {
+  keys: {
+    grandpa: string;
+    babe: string;
+    imOnline: string;
+    paraValidator: string;
+    paraAssignment: string;
+    authorityDiscovery: string;
+    beefy: string;
+  };
+}
+
 export const getNextKeys = async (
   chaindata: ChainData,
   stash: string,
-): Promise<any> => {
+): Promise<NextKeys | undefined> => {
   try {
     await chaindata.checkApiConnection();
-    const nextKeys = await chaindata.api.query.session.nextKeys(stash);
-    return nextKeys;
+    const nextKeysRaw = await chaindata.api.query.session.nextKeys(stash);
+    const nextKeysData = nextKeysRaw.toJSON();
+
+    if (
+      nextKeysData &&
+      typeof nextKeysData === "object" &&
+      "keys" in nextKeysData
+    ) {
+      const keys = nextKeysData["keys"];
+      if (keys && typeof keys === "object") {
+        return { keys } as NextKeys;
+      }
+    }
   } catch (e) {
     logger.error(`Error getting next keys: ${e}`, chaindataLabel);
   }
+  return undefined;
 };
+
+export interface Balance {
+  free: string;
+}
 
 export const getBalance = async (
   chaindata: ChainData,
   address: string,
-): Promise<any> => {
+): Promise<Balance> => {
   try {
     await chaindata.checkApiConnection();
-    const balance = chaindata.api.query.system.account(address);
-    return (await balance).data.toJSON();
+    const accountData = await chaindata.api.query.system.account(address);
+    const balance: Balance = {
+      free: accountData.data.free.toString(),
+    };
+    return balance;
   } catch (e) {
     logger.error(`Error getting balance: ${e}`, chaindataLabel);
+    throw new Error(`Failed to get balance for address ${address}: ${e}`);
   }
 };
+
+export interface Stake {
+  address: string;
+  bonded: number;
+}
+
+export interface Exposure {
+  total: number;
+  own: number;
+  others: Stake[];
+}
 
 export const getExposure = async (
   chaindata: ChainData,
   eraIndex: number,
   validator: string,
-): Promise<any> => {
+): Promise<Exposure> => {
   try {
     await chaindata.checkApiConnection();
     const denom = await chaindata.getDenom();
@@ -175,22 +225,30 @@ export const getExposure = async (
       eraIndex,
       validator,
     );
+
     const total = parseFloat(eraStakers.total.toString()) / denom;
     const own = parseFloat(eraStakers.own.toString()) / denom;
-    // @ts-ignore
-    const activeExposure = eraStakers.others.toJSON().map((stake) => {
-      return {
+
+    const activeExposure: Stake[] = eraStakers.others.map(
+      (stake: {
+        who: { toString: () => string };
+        value: { toString: () => string };
+      }) => ({
         address: stake.who.toString(),
-        bonded: stake.value / denom,
-      };
-    });
+        bonded: parseFloat(stake.value.toString()) / denom,
+      }),
+    );
+
     return {
-      total: total,
-      own: own,
+      total,
+      own,
       others: activeExposure,
     };
   } catch (e) {
     logger.error(`Error getting exposure: ${e}`, chaindataLabel);
+    throw new Error(
+      `Failed to get exposure for validator ${validator} at era ${eraIndex}: ${e}`,
+    );
   }
 };
 

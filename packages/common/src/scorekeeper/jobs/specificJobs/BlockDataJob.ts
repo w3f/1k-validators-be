@@ -1,12 +1,15 @@
-import { ChainData, logger, queries, Util } from "../../../index";
+import { ChainData, logger, queries } from "../../../index";
 import { ApiPromise } from "@polkadot/api";
 import { CoinGeckoClient } from "coingecko-api-v3";
 import { jobsMetadata } from "../JobsClass";
+import { jobStatusEmitter } from "../../../Events";
+import { formatDateFromUnix, withExecutionTimeLogging } from "../../../utils";
+import { Block } from "@polkadot/types/interfaces";
 
 export const blockdataLabel = { label: "Block" };
 
 export const blockJob = async (metadata: jobsMetadata): Promise<boolean> => {
-  const { chaindata, jobStatusEmitter } = metadata;
+  const { chaindata } = metadata;
   try {
     logger.info(`Starting blockDataJob`, blockdataLabel);
     const latestBlock = await chaindata.getLatestBlock();
@@ -98,7 +101,7 @@ export const blockJob = async (metadata: jobsMetadata): Promise<boolean> => {
   }
 };
 
-export const blockJobWithTiming = Util.withExecutionTimeLogging(
+export const blockJobWithTiming = withExecutionTimeLogging(
   blockJob,
   blockdataLabel,
   "Block Job Done",
@@ -114,7 +117,7 @@ export const processBlock = async (
   // logger.info(`Processing block #${blockNumber}`, blockdataLabel);
   const start = Date.now();
 
-  const block = await chaindata.getBlock(blockNumber);
+  const block: Block = await chaindata.getBlock(blockNumber);
 
   const blockHash = await chaindata.getBlockHash(blockNumber);
 
@@ -126,7 +129,7 @@ export const processBlock = async (
 
   const era = await chaindata.getEraAt(apiAt);
 
-  const blockExtrinsics = block.block.extrinsics;
+  const blockExtrinsics = block.extrinsics;
   const blockEvents = await apiAt.query.system.events();
 
   // const blockType = chaindata.getBlockType(block);
@@ -236,7 +239,7 @@ const processPayoutStakers = async (
 
         const rewardAmount = parseFloat(amount) / denom;
 
-        const formattedDate = Util.formatDateFromUnix(blockTimestamp);
+        const formattedDate = formatDateFromUnix(blockTimestamp);
 
         const chainMetadata = await queries.getChainMetadata();
         const networkName = chainMetadata.name.toLowerCase();
@@ -366,19 +369,19 @@ export const parseExtrinsics = async (
   chaindata: any,
 ) => {
   // Get the block number
-  const blockNumber = parseInt(block.block.header.number);
+  const blockNumber = parseInt(block.header.number);
 
   // logger.info(
   //   `Processing extrinsics of block #${blockNumber}..`,
   //   blockdataLabel
   // );
 
-  const extrinsics = block.block.extrinsics;
+  const extrinsics = block.extrinsics;
 
   // The block timestamp
   let blockTimestamp;
   // Set the timestamp
-  block.block.extrinsics.forEach(
+  block.extrinsics.forEach(
     ({ signer, method: { method, section }, args }, index) => {
       if (method == "timestamp" || method == "set") {
         blockTimestamp = parseInt(args[0]);

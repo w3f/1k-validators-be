@@ -23,6 +23,7 @@ import {
   getTotalEraPoints,
 } from "./queries/Era";
 import {
+  Exposure,
   getBalance,
   getBlocked,
   getBondedAmount,
@@ -35,6 +36,8 @@ import {
   getQueuedKeys,
   getRewardDestination,
   getRewardDestinationAt,
+  NextKeys,
+  QueuedKey,
 } from "./queries/ValidatorPref";
 import {
   currentValidators,
@@ -49,9 +52,15 @@ import {
   getIdentity,
   hasIdentity,
 } from "./queries/Identity";
-import { getProxyAnnouncements } from "./queries/Proxy";
-import { getNominatorAddresses, getNominators } from "./queries/Nomination";
+import { getProxyAnnouncements, ProxyAnnouncement } from "./queries/Proxy";
+import {
+  getNominatorAddresses,
+  getNominators,
+  NominatorInfo,
+} from "./queries/Nomination";
 import { CHAINDATA_RETRIES, CHAINDATA_SLEEP } from "../constants";
+import { Identity } from "../db";
+import { Block } from "@polkadot/types/interfaces";
 
 type JSON = any;
 
@@ -102,15 +111,15 @@ export class ChainData {
     return await getBlockHash(this, blockNumber);
   };
 
-  getBlock = async (blockNumber): Promise<any> => {
+  getBlock = async (blockNumber): Promise<Block | undefined> => {
     return await getBlock(this, blockNumber);
   };
 
-  getLatestBlock = async () => {
+  getLatestBlock = async (): Promise<number> => {
     return await getLatestBlock(this);
   };
 
-  getLatestBlockHash = async () => {
+  getLatestBlockHash = async (): Promise<string> => {
     return await getLatestBlockHash(this);
   };
 
@@ -147,7 +156,7 @@ export class ChainData {
   };
 
   // Gets the curent era
-  getCurrentEra = async () => {
+  getCurrentEra = async (): Promise<number> => {
     return getCurrentEra(this);
   };
 
@@ -170,7 +179,7 @@ export class ChainData {
   };
 
   // Gets the validator preferences, and whether or not they block external nominations
-  getBlocked = async (validator: string): Promise<any> => {
+  getBlocked = async (validator: string): Promise<boolean> => {
     return await getBlocked(this, validator);
   };
 
@@ -201,11 +210,11 @@ export class ChainData {
     return await getRewardDestinationAt(this, apiAt, stash);
   };
 
-  getQueuedKeys = async (): Promise<any> => {
+  getQueuedKeys = async (): Promise<QueuedKey[]> => {
     return await getQueuedKeys(this);
   };
 
-  getNextKeys = async (stash: string): Promise<any> => {
+  getNextKeys = async (stash: string): Promise<NextKeys | undefined> => {
     return await getNextKeys(this, stash);
   };
 
@@ -213,7 +222,10 @@ export class ChainData {
     return await getBalance(this, address);
   };
 
-  getExposure = async (eraIndex: number, validator: string): Promise<any> => {
+  getExposure = async (
+    eraIndex: number,
+    validator: string,
+  ): Promise<Exposure> => {
     return await getExposure(this, eraIndex, validator);
   };
 
@@ -233,15 +245,15 @@ export class ChainData {
     return await getActiveValidatorsInPeriod(this, startEra, endEra, chainType);
   };
 
-  currentValidators = async (): Promise<any> => {
+  currentValidators = async (): Promise<string[]> => {
     return await currentValidators(this);
   };
 
-  getValidatorsAt = async (apiAt: ApiPromise): Promise<any> => {
+  getValidatorsAt = async (apiAt: ApiPromise): Promise<string[]> => {
     return await getValidatorsAt(this, apiAt);
   };
 
-  getValidatorsAtEra = async (era: number) => {
+  getValidatorsAtEra = async (era: number): Promise<string[]> => {
     return await getValidatorsAtEra(this, era);
   };
 
@@ -249,7 +261,7 @@ export class ChainData {
    * Gets list of validators that have `validate` intentions
    * @returns list of all validators
    */
-  getValidators = async () => {
+  getValidators = async (): Promise<string[]> => {
     return await getValidators(this);
   };
 
@@ -275,11 +287,13 @@ export class ChainData {
     return await getIdentity(this, account);
   };
 
-  getFormattedIdentity = async (addr) => {
+  getFormattedIdentity = async (addr): Promise<Identity> => {
     return await getFormattedIdentity(this, addr);
   };
 
-  getProxyAnnouncements = async (address: string) => {
+  getProxyAnnouncements = async (
+    address: string,
+  ): Promise<ProxyAnnouncement[]> => {
     return await getProxyAnnouncements(this, address);
   };
 
@@ -287,7 +301,7 @@ export class ChainData {
     return await getNominatorAddresses(this);
   };
 
-  getNominators = async (): Promise<any> => {
+  getNominators = async (): Promise<NominatorInfo[]> => {
     return await getNominators(this);
   };
 }

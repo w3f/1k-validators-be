@@ -58,9 +58,9 @@ export const addCandidate = async (
   kyc: boolean,
   bot?: any,
 ): Promise<boolean> => {
-  if (!slotId) {
+  if (slotId == undefined) {
     logger.warn(`No slotId for ${name} - skipping.`, { label: "Candidate" });
-    return;
+    return false;
   }
 
   const network = (await getChainMetadata()).name;
@@ -966,25 +966,6 @@ export const setQueuedKeys = async (
     },
     {
       $set: { queuedKeys: queuedKeys },
-    },
-  ).exec();
-  return true;
-};
-
-export const setNextKeys = async (
-  address: string,
-  nextKeys: string,
-): Promise<boolean> => {
-  logger.debug(
-    `(Db::setNextKeys) Setting ${address} next keys to ${nextKeys}.`,
-  );
-
-  await CandidateModel.findOneAndUpdate(
-    {
-      stash: address,
-    },
-    {
-      $set: { nextKeys: nextKeys },
     },
   ).exec();
   return true;

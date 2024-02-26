@@ -1,7 +1,7 @@
 import { queries } from "@1kv/common";
 
 export const getValidatorLocation = async (address): Promise<any> => {
-  const locations = await queries.getAllLocations(address);
+  const locations = await queries.getCandidateLocation(address);
   return locations;
 };
 

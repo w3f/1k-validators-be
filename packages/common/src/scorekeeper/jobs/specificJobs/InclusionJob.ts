@@ -1,5 +1,7 @@
-import { logger, queries, Util } from "../../../index";
+import { logger, queries } from "../../../index";
 import { jobsMetadata } from "../JobsClass";
+import { jobStatusEmitter } from "../../../Events";
+import { withExecutionTimeLogging } from "../../../utils";
 
 export const inclusionLabel = { label: "InclusionJob" };
 
@@ -7,7 +9,7 @@ export const inclusionJob = async (
   metadata: jobsMetadata,
 ): Promise<boolean> => {
   try {
-    const { chaindata, jobStatusEmitter } = metadata;
+    const { chaindata } = metadata;
     const [activeEra] = await chaindata.getActiveEraIndex();
 
     const candidates = await queries.allCandidates();
@@ -76,7 +78,7 @@ export const processInclusionJob = async (job: any, metadata: jobsMetadata) => {
   await inclusionJob(metadata);
 };
 
-export const inclusionJobWithTiming = Util.withExecutionTimeLogging(
+export const inclusionJobWithTiming = withExecutionTimeLogging(
   inclusionJob,
   inclusionLabel,
   "Inclusion Job Done",

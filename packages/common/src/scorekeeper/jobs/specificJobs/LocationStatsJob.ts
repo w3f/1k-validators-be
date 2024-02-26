@@ -1,11 +1,13 @@
-import { logger, queries, Score, Util } from "../../../index";
+import { logger, queries, Score } from "../../../index";
 import { jobsMetadata } from "../JobsClass";
+import { jobStatusEmitter } from "../../../Events";
+import { withExecutionTimeLogging } from "../../../utils";
 
 export const locationstatsLabel = { label: "LocationStatsJob" };
 
 export const locationStatsJob = async (metadata: jobsMetadata) => {
   try {
-    const { chaindata, jobStatusEmitter } = metadata;
+    const { chaindata } = metadata;
     await queries.cleanBlankLocations();
 
     jobStatusEmitter.emit("jobProgress", {
@@ -307,7 +309,7 @@ export const locationStatsJob = async (metadata: jobsMetadata) => {
   }
 };
 
-export const locationStatsJobWithTiming = Util.withExecutionTimeLogging(
+export const locationStatsJobWithTiming = withExecutionTimeLogging(
   locationStatsJob,
   locationstatsLabel,
   "Location Stats Job Done",

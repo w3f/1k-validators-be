@@ -1,11 +1,13 @@
-import { logger, queries, Util } from "../../../index";
+import { logger, queries } from "../../../index";
 import { jobsMetadata } from "../JobsClass";
+import { jobStatusEmitter } from "../../../Events";
+import { setValidatorRanks, withExecutionTimeLogging } from "../../../utils";
 
 export const erastatsLabel = { label: "EraStatsJob" };
 
 export const eraStatsJob = async (metadata: jobsMetadata): Promise<boolean> => {
   try {
-    const { chaindata, jobStatusEmitter } = metadata;
+    const { chaindata } = metadata;
     const currentSession = await chaindata.getSession();
     const currentEra = await chaindata.getCurrentEra();
     const validators = await chaindata.currentValidators();
@@ -74,7 +76,7 @@ export const eraStatsJob = async (metadata: jobsMetadata): Promise<boolean> => {
       updated: Date.now(),
     });
 
-    await Util.setValidatorRanks();
+    await setValidatorRanks();
 
     const allCandidates = await queries.allCandidates();
     const valid = allCandidates.filter((candidate) => candidate.valid);
@@ -94,7 +96,7 @@ export const eraStatsJob = async (metadata: jobsMetadata): Promise<boolean> => {
   }
 };
 
-export const eraStatsJobWithTiming = Util.withExecutionTimeLogging(
+export const eraStatsJobWithTiming = withExecutionTimeLogging(
   eraStatsJob,
   erastatsLabel,
   "Era Stats Job Done",

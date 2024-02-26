@@ -13,6 +13,8 @@ import {
   Util,
 } from "./index";
 
+import { DelayedTx } from "./db/models";
+
 const label = { label: "Nominator" };
 
 export default class Nominator {
@@ -169,12 +171,14 @@ export default class Nominator {
         this.bondedAddress,
         blake2AsHex(innerTx.method.toU8a()),
       );
-      await queries.addDelayedTx(
-        number.toNumber(),
-        this.bondedAddress,
+
+      const delayedTx: DelayedTx = {
+        number: number.toNumber(),
+        controller: this.bondedAddress,
         targets,
         callHash,
-      );
+      };
+      await queries.addDelayedTx(delayedTx);
 
       try {
         await tx.signAndSend(this.signer);

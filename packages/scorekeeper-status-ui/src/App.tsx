@@ -3,6 +3,7 @@ import {
   FiAlertTriangle,
   FiCheckCircle,
   FiClock,
+  FiPlay,
   FiXCircle,
 } from "react-icons/fi";
 import { BeatLoader } from "react-spinners";
@@ -98,6 +99,11 @@ const App = () => {
 
     switch (status) {
       case "running":
+        return (
+          <div className="loader">
+            <BeatLoader color={iconColor} size={8} />
+          </div>
+        );
       case "started":
         return (
           <div className="loader">

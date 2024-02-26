@@ -1,4 +1,4 @@
-import * as sdk from "matrix-js-sdk";
+import sdk from "matrix-js-sdk";
 import { Config, logger, queries } from "./index";
 
 const label = { label: "Matrix" };

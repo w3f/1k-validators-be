@@ -159,7 +159,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": ^5.59.9
     "@typescript-eslint/parser": ^5.59.9
     ava: ^6.1.1
-    bullmq: ^5.1.5
+    bullmq: ^5.3.3
     concurrently: ^8.2.2
     eslint: 8.42.0
     nodemon: ^3.0.3
@@ -3247,20 +3247,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bullmq@npm:^5.1.5":
-  version: 5.1.12
-  resolution: "bullmq@npm:5.1.12"
+"bullmq@npm:^5.3.3":
+  version: 5.3.3
+  resolution: "bullmq@npm:5.3.3"
   dependencies:
     cron-parser: ^4.6.0
-    glob: ^8.0.3
+    fast-glob: ^3.3.2
     ioredis: ^5.3.2
     lodash: ^4.17.21
+    minimatch: ^9.0.3
     msgpackr: ^1.10.1
     node-abort-controller: ^3.1.1
     semver: ^7.5.4
     tslib: ^2.0.0
     uuid: ^9.0.0
-  checksum: 15887016b7339e91a232b7b0a0ed9de09694f8a1386c630c72645785a336263ae20437435e0c9a429b86c657001b0de792ed937b4e223b2001b3950cdc382818
+  checksum: 2da94b25ca3d0a3c884591438d0b76a6f08a095f4c6858acc72279bf01a1457c925e17ff5290b9a91fdd45facef15f89ceb9b19d125d1e96755f8b32d3f66f9e
   languageName: node
   linkType: hard
 
@@ -5231,19 +5232,6 @@ __metadata:
     once: ^1.3.0
     path-is-absolute: ^1.0.0
   checksum: 29452e97b38fa704dabb1d1045350fb2467cf0277e155aa9ff7077e90ad81d1ea9d53d3ee63bd37c05b09a065e90f16aec4a65f5b8de401d1dac40bc5605d133
-  languageName: node
-  linkType: hard
-
-"glob@npm:^8.0.3":
-  version: 8.1.0
-  resolution: "glob@npm:8.1.0"
-  dependencies:
-    fs.realpath: ^1.0.0
-    inflight: ^1.0.4
-    inherits: 2
-    minimatch: ^5.0.1
-    once: ^1.3.0
-  checksum: 92fbea3221a7d12075f26f0227abac435de868dd0736a17170663783296d0dd8d3d532a5672b4488a439bf5d7fb85cdd07c11185d6cd39184f0385cbdfb86a47
   languageName: node
   linkType: hard
 
@@ -7451,7 +7439,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minimatch@npm:^9.0.1":
+"minimatch@npm:^9.0.1, minimatch@npm:^9.0.3":
   version: 9.0.3
   resolution: "minimatch@npm:9.0.3"
   dependencies:

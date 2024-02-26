@@ -17,6 +17,7 @@ import {
 } from "./RegisterHandler";
 import { jobsMetadata, JobStatus } from "./jobs/JobsClass";
 import { JobsFactory } from "./jobs/JobsFactory";
+import { setAllIdentities } from "../utils";
 // import { monitorJob } from "./jobs";
 
 export type NominatorGroup = Config.NominatorConfig[];
@@ -260,7 +261,7 @@ export default class ScoreKeeper {
   async begin(): Promise<void> {
     logger.info(`Starting Scorekeeper.`, scorekeeperLabel);
 
-    //await setAllIdentities(this.chaindata, scorekeeperLabel);
+    await setAllIdentities(this.chaindata, scorekeeperLabel);
 
     // If `forceRound` is on - start immediately.
     if (this.config.scorekeeper.forceRound) {

@@ -54,7 +54,7 @@ export const setScoreMetadata = async (constraints: OTV): Promise<boolean> => {
 
     logger.info(JSON.stringify(locationStats));
     const scoreMetadata: ValidatorScoreMetadata = {
-      session: session,
+      session: session || 0,
       bondedStats: bondedStats,
       bondedWeight: constraints.WEIGHT_CONFIG.BONDED_WEIGHT,
       faultsStats: faultsStats,

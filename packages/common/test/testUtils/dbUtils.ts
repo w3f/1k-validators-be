@@ -87,18 +87,34 @@ export const sortByKey = (obj: any[], key: string) => {
 };
 
 export const createTestServer = async () => {
-  const mongoServer = await MongoMemoryServer.create();
-  const mongoUri = mongoServer.getUri();
-  await Db.create(mongoUri);
-  return mongoServer;
+  try {
+    const mongoServer = await MongoMemoryServer.create();
+    const mongoUri = mongoServer.getUri();
+    await Db.create(mongoUri);
+    return mongoServer;
+  } catch (error) {
+    console.error("Error creating test server:", error);
+    throw error;
+  }
 };
 
 export const initTestServerBeforeAll = () => {
   let mongoServer: MongoMemoryServer;
   beforeAll(async () => {
-    mongoServer = await createTestServer();
+    try {
+      mongoServer = await createTestServer();
+    } catch (error) {
+      console.error("Error initializing test server before all tests:", error);
+      throw error;
+    }
   });
   afterAll(async () => {
-    await mongoose.disconnect();
+    try {
+      await mongoose.disconnect();
+      await mongoServer.stop();
+    } catch (error) {
+      console.error("Error stopping test server after all tests:", error);
+      throw error;
+    }
   });
 };

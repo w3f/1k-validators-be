@@ -918,7 +918,7 @@ export const startMainScorekeeperJob = async (
         for (const nominator of nomGroup) {
           // Get the current nominations of an address
           const currentTargets = await queries.getCurrentTargets(
-            nominator.controller,
+            nominator.bondedAddress,
           );
           allCurrentTargets.push(currentTargets);
         }

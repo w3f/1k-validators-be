@@ -156,7 +156,7 @@ export default class ScoreKeeper {
             ? `/ ${Util.addressUrl(n.address, this.config)}`
             : "";
           return `- ${Util.addressUrl(
-            n.controller,
+            n.bondedAddress,
             this.config,
           )} / ${Util.addressUrl(stash, this.config)} (${bal} ${sym}) ${proxy}`;
         }),
@@ -182,7 +182,7 @@ export default class ScoreKeeper {
           });
 
           return `- ${Util.addressUrl(
-            n.controller,
+            n.bondedAddress,
             this.config,
           )} / ${Util.addressUrl(
             stash,

@@ -17,7 +17,7 @@ spec:
   source:
     repoURL: https://w3f.github.io/helm-charts/
     chart: otv-backend
-    targetRevision: v3.0.20
+    targetRevision: v3.0.21
     plugin:
       env:
         - name: HELM_VALUES
@@ -41,9 +41,12 @@ spec:
                 "global": {
                   "networkPrefix": 2,
                   "apiEndpoints": [
-                    "wss://kusama-rpc.polkadot.io",
+                    "wss://kusama-rpc-tn.dwellir.com",
                     "wss://kusama-rpc.dwellir.com",
-                    "wss://kusama.public.curie.radiumblock.xyz/ws"
+                    "wss://kusama.public.curie.radiumblock.xyz/ws",
+                    "wss://rpc.ibp.network/kusama",
+                    "wss://rpc.dotters.network/kusama",
+                    "wss://ksm-rpc.stakeworld.io"
                   ],
                   "candidatesUrl": "https://raw.githubusercontent.com/w3f/1k-validators-be/master/candidates/kusama.json"
                 },
@@ -81,7 +84,7 @@ spec:
                   {{ . }}{{ end }},
                 "scorekeeper": {
                   "candidates": null,
-                  "forceRound": true,
+                  "forceRound": false,
                   "nominating": {{ .Values.kusama.be.nominating }}
                 },
                 "server": {

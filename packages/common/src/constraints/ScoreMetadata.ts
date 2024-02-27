@@ -52,7 +52,6 @@ export const setScoreMetadata = async (constraints: OTV): Promise<boolean> => {
     const { ownNominatorAddresses, nominatorStakeStats } =
       await getNominatorStakeValues(candidates);
 
-    logger.info(JSON.stringify(locationStats));
     const scoreMetadata: ValidatorScoreMetadata = {
       session: session || 0,
       bondedStats: bondedStats,

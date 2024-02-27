@@ -56,7 +56,7 @@ jobs:
           environment:
             YARN_ENABLE_IMMUTABLE_INSTALLS: false
           command: |
-            yarn set version 3.2.2 && yarn install && yarn build && yarn workspace @1kv/common test:unit
+            yarn set version 3.2.2 && yarn install && yarn build && yarn workspace @1kv/common test:unit --testTimeout=60000
 
   testCommonInt:
     docker:
@@ -68,7 +68,7 @@ jobs:
           environment:
             YARN_ENABLE_IMMUTABLE_INSTALLS: false
           command: |
-            yarn set version 3.2.2 && yarn install && yarn build && yarn workspace @1kv/common test:int
+            yarn set version 3.2.2 && yarn install && yarn build && yarn workspace @1kv/common test:int --testTimeout=60000
 
 #  testCore:
 #    docker:

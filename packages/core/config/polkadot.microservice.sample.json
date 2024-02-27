@@ -3,8 +3,11 @@
     "dryRun": false,
     "networkPrefix": 0,
     "apiEndpoints": [
-      "wss://rpc.polkadot.io",
-      "wss://polkadot-rpc.dwellir.com"
+      "wss://rpc.dotters.network/polkadot",
+      "wss://dot-rpc.stakeworld.io",
+      "wss://polkadot.public.curie.radiumblock.co/ws",
+      "wss://rpc.ibp.network/polkadot",
+      "wss://polkadot-rpc-tn.dwellir.com"
     ],
     "bootstrap": false,
     "kusamaBootstrapEndpoint": "https://kusama.w3f.community",

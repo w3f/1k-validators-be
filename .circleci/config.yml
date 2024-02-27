@@ -46,15 +46,6 @@ jobs:
 #          command: |
 #            yarn set version 3.2.2 && yarn install && yarn build && yarn workspace @1kv/common lint
 
-  installLibSSLDev:
-    docker:
-      - image: node:18
-    steps:
-      - checkout
-      - run:
-          command: |
-            apt-get update && \
-            apt-get install -y libssl-dev
 
   testCommonUnit:
     docker:
@@ -225,9 +216,6 @@ workflows:
           # filters:
             # tags:
               # only: /.*/
-      - installLibSSLDev:
-          requires:
-            - checkCandidatesFile
       - checkCandidatesFile:
           filters:
             tags:
@@ -244,14 +232,10 @@ workflows:
           filters:
             tags:
               only: /.*/
-          requires:
-            - installLibSSLDev
       - testCommonInt:
           filters:
             tags:
               only: /.*/
-          requires:
-            - installLibSSLDev
 #      - testCore:
 #          filters:
 #            tags:

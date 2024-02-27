@@ -2,6 +2,7 @@
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { Db } from "../../src";
 import mongoose from "mongoose";
+import { deleteAllDb } from "./deleteAll";
 
 interface ObjectWithId {
   _id: any;
@@ -89,7 +90,10 @@ export const sortByKey = (obj: any[], key: string) => {
 export const createTestServer = async () => {
   try {
     const mongoServer = await MongoMemoryServer.create();
-    const mongoUri = mongoServer.getUri();
+    const dbName = `t${Math.random().toString().replace(".", "")}`;
+    console.log("dbName", dbName);
+    const mongoUri = mongoServer.getUri(dbName);
+    console.log("mongoUri", mongoUri);
     await Db.create(mongoUri);
     return mongoServer;
   } catch (error) {
@@ -100,7 +104,7 @@ export const createTestServer = async () => {
 
 export const initTestServerBeforeAll = () => {
   let mongoServer: MongoMemoryServer;
-  beforeAll(async () => {
+  beforeEach(async () => {
     try {
       mongoServer = await createTestServer();
     } catch (error) {
@@ -108,10 +112,13 @@ export const initTestServerBeforeAll = () => {
       throw error;
     }
   });
-  afterAll(async () => {
+  afterEach(async () => {
     try {
-      await mongoose.disconnect();
-      await mongoServer.stop();
+      await deleteAllDb();
+      await mongoose.connection.close();
+      if (mongoServer) {
+        await mongoServer.stop();
+      }
     } catch (error) {
       console.error("Error stopping test server after all tests:", error);
       throw error;

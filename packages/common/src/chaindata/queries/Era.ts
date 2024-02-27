@@ -77,7 +77,7 @@ export const getTotalEraPoints = async (
 
 export const getErasMinStakeAt = async (
   chaindata: ChainData,
-  apiAt: any,
+  apiAt: ApiDecoration<"promise">,
   era: number,
 ): Promise<number | null> => {
   try {
@@ -90,18 +90,14 @@ export const getErasMinStakeAt = async (
     }
 
     const erasStakers = await apiAt.query.staking.erasStakers.entries(era);
+
     const minStake = erasStakers
-      .map(
-        ([key, stake]: [
-          any,
-          { total: string; own: string; others: string },
-        ]) => {
-          const { total } = stake;
-          return {
-            total: parseFloat(total.replace(/,/g, "")) / denom,
-          };
-        },
-      )
+      .map(([key, stake]) => {
+        const { total } = stake;
+        return {
+          total: parseFloat(total.toString().replace(/,/g, "")) / denom,
+        };
+      })
       .sort((a: { total: number }, b: { total: number }) => a.total - b.total);
 
     if (minStake.length === 0) {

@@ -1,13 +1,8 @@
 import { EraStatsModel } from "../../../src/db/models";
 import { getLatestEraStats, setEraStats } from "../../../src/db/queries";
-import { deleteAllDb } from "../../testUtils/deleteAll";
 import { initTestServerBeforeAll } from "../../testUtils/dbUtils"; // Adjust the path as necessary
 
 initTestServerBeforeAll();
-
-afterEach(async () => {
-  await deleteAllDb();
-});
 
 describe("setEraStats", () => {
   it("should create new era stats if they don't exist", async () => {

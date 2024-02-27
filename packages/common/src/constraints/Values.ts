@@ -289,7 +289,7 @@ export const getNominatorStakeValues = async (
       }
     }
   }
-  if (nominatorStakeValues.length == 0) nominatorStakeValues.push(0);
+
   const nominatorStakeStats: Stats = getStats(nominatorStakeValues);
   return { ownNominatorAddresses, nominatorStakeValues, nominatorStakeStats };
 };

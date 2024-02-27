@@ -97,25 +97,6 @@ export interface BenchmarkSpec {
   disk_random_write_score: number;
 }
 
-export interface JobRunningData {
-  name: string;
-  runCount: number;
-  updated: number;
-}
-
-export interface JobFinishedData {
-  name: string;
-  runCount: number;
-  updated: number;
-}
-
-export interface JobErroredData {
-  name: string;
-  runCount: number;
-  updated: number;
-  error: string;
-}
-
 export type PayloadElement = string | number;
 
 export type Payload = PayloadElement[][];

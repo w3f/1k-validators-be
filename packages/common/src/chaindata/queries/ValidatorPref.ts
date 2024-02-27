@@ -1,6 +1,7 @@
 import { NumberResult } from "../../types";
 import ChainData, { chaindataLabel } from "../chaindata";
 import logger from "../../logger";
+import { ApiDecoration } from "@polkadot/api/types";
 
 export const getCommission = async (
   chaindata: ChainData,
@@ -21,7 +22,7 @@ export const getCommission = async (
 
 export const getCommissionInEra = async (
   chaindata: ChainData,
-  apiAt: any,
+  apiAt: ApiDecoration<"promise">,
   eraIndex: number,
   validator: string,
 ): Promise<number | null> => {

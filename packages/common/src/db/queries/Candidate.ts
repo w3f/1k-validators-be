@@ -644,7 +644,7 @@ export const reportOffline = async (name: string): Promise<boolean> => {
           {
             offlineSince: Date.now(),
             onlineSince: 0,
-            nodeRefs: { $add: ["$nodeRefs", -1] },
+            $inc: { nodeRefs: -1 },
           },
         ).exec();
         await updateCandidateOfflineValidity(name);
@@ -653,7 +653,10 @@ export const reportOffline = async (name: string): Promise<boolean> => {
     return true;
   } catch (e) {
     logger.error(JSON.stringify(e));
-    logger.error(`Error reporting telemetry node offline ${name}`, dbLabel);
+    logger.error(
+      `Error reporting candidate or telemetry node offline ${name}`,
+      dbLabel,
+    );
     return false;
   }
 };

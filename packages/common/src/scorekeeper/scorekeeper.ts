@@ -18,7 +18,6 @@ import {
 import { jobsMetadata, JobStatus } from "./jobs/JobsClass";
 import { JobsFactory } from "./jobs/JobsFactory";
 import { setAllIdentities } from "../utils";
-import { JobErroredData, JobFinishedData, JobRunningData } from "../types";
 // import { monitorJob } from "./jobs";
 
 export type NominatorGroup = Config.NominatorConfig[];
@@ -70,47 +69,44 @@ export default class ScoreKeeper {
     }
   }
 
-  public updateJobStarted(data: {
-    name: string;
-    runCount: number;
-    updated: number;
-  }) {
-    const { name, runCount, updated } = data;
+  public updateJobStarted(data: JobStatus) {
+    const { status, name, runCount, updated } = data;
     this._jobsStatus[name] = {
-      name: name,
+      name,
       runCount,
       updated,
-      status: "started",
+      status,
     };
   }
 
-  public updateJobRunning(data: JobRunningData) {
-    const { name, runCount, updated } = data;
+  public updateJobRunning(data: JobStatus) {
+    const { name, status, runCount, updated, frequency } = data;
     this._jobsStatus[name] = {
-      name: name,
+      frequency,
+      name,
       runCount,
       updated,
-      status: "running",
+      status,
     };
   }
 
-  public updateJobFinished(data: JobFinishedData) {
-    const { name, runCount, updated } = data;
+  public updateJobFinished(data: JobStatus) {
+    const { status, name, runCount, updated } = data;
     this._jobsStatus[name] = {
-      name: name,
+      name,
       runCount,
       updated,
-      status: "finished",
+      status,
     };
   }
 
-  public updateJobErrored(data: JobErroredData) {
-    const { name, runCount, updated, error } = data;
+  public updateJobErrored(data: JobStatus) {
+    const { status, name, runCount, updated, error } = data;
     this._jobsStatus[name] = {
       name: name,
       runCount,
       updated,
-      status: "errored",
+      status,
       error,
     };
   }

@@ -24,6 +24,8 @@ export const setupCronJob = async (
     loggerLabel,
   );
   jobStatusEmitter.emit("jobStarted", {
+    status: "started",
+    frequency: frequency,
     name: jobDescription,
     runCount: jobRunCount,
     updated: Date.now(),
@@ -43,6 +45,7 @@ export const setupCronJob = async (
     isRunning = true;
     logger.info(`Executing ${jobDescription}.`, loggerLabel);
     jobStatusEmitter.emit("jobRunning", {
+      status: "running",
       name: jobDescription,
       runCount: jobRunCount,
       updated: Date.now(),
@@ -53,6 +56,7 @@ export const setupCronJob = async (
     } catch (e) {
       logger.error(`Error executing ${jobDescription}: ${e}`, loggerLabel);
       jobStatusEmitter.emit("jobErrored", {
+        status: "errored",
         name: jobDescription,
         runCount: jobRunCount,
         updated: Date.now(),
@@ -62,6 +66,7 @@ export const setupCronJob = async (
       isRunning = false;
       jobRunCount++;
       jobStatusEmitter.emit("jobFinished", {
+        status: "finished",
         name: jobDescription,
         runCount: jobRunCount,
         updated: Date.now(),

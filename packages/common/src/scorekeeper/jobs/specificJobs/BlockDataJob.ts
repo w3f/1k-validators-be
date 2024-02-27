@@ -199,17 +199,21 @@ export const processBlock = async (
 
 // Process all payout extrinsics, write payout transactions, nominator rewards, and validator rewards to the db
 const processPayoutStakers = async (
-  chaindata: any,
+  chaindata: ChainData,
   args: any,
   extrinsicIndex: any,
   signer: any,
-  blockHash: any,
-  blockNumber: any,
-  blockTimestamp: any,
+  blockHash: string,
+  blockNumber: number,
+  blockTimestamp: number,
   blockEvents: any,
 ) => {
   const denom = await chaindata.getDenom();
   const apiAt = await chaindata.getApiAt(blockNumber);
+  if (!apiAt || !denom) {
+    logger.error(`Error getting api at block ${blockNumber}`, blockdataLabel);
+    return;
+  }
 
   const CoinGecko = new CoinGeckoClient({});
 
@@ -222,7 +226,14 @@ const processPayoutStakers = async (
 
   // Get the commission for the validator
   const commission = await chaindata.getCommissionInEra(apiAt, era, validator);
-  const commissionPercentage = parseFloat(commission) / Math.pow(10, 7);
+  if (!commission) {
+    logger.error(
+      `Error getting commission for validator ${validator}`,
+      blockdataLabel,
+    );
+    return;
+  }
+  const commissionPercentage = commission / Math.pow(10, 7);
 
   // Get the staking exposure of the validator and all of their nominators
   const exposure: Exposure | null = await chaindata.getExposureAt(
@@ -277,6 +288,13 @@ const processPayoutStakers = async (
           apiAt,
           nominator,
         );
+        if (!rewardDestination) {
+          logger.error(
+            `Error getting reward destination for nominator ${nominator}`,
+            blockdataLabel,
+          );
+          return;
+        }
         const isValidator = nominator == validator;
 
         let exposurePercentage;

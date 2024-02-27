@@ -45,9 +45,10 @@ export type jobsMetadata = {
 
 export interface JobStatus {
   name: string;
-  runCount: number;
+  runCount?: number;
   updated: number;
-  status: "started" | "running" | "finished" | "errored";
+  status: string;
+  frequency?: string;
   error?: string;
   progress?: number; // Progress from 0 to 100
   iteration?: string; // Name of the current iteration

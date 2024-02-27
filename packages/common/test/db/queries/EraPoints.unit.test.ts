@@ -17,12 +17,6 @@ import {
 import { initTestServerBeforeAll } from "../../testUtils/dbUtils";
 
 initTestServerBeforeAll();
-
-beforeEach(async () => {
-  await EraPointsModel.deleteMany({});
-  await TotalEraPointsModel.deleteMany({});
-});
-
 describe("setEraPoints", () => {
   it("should set era points for a given era and address", async () => {
     const result = await setEraPoints(1, 100, "address");

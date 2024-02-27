@@ -5,7 +5,7 @@
  */
 import { ApiPromise } from "@polkadot/api";
 import { scorekeeperLabel } from "./scorekeeper";
-import Nominator from "../nominator";
+import Nominator from "../nominator/nominator";
 import { Constants } from "../index";
 import logger from "../logger";
 
@@ -68,8 +68,11 @@ export const autoNumNominations = async (
   for (const validator of info) {
     const { exposure } = validator;
     const { total, own, others } = exposure;
-    // @ts-ignore
-    const formattedTotal = parseFloat(total.toBigInt()) / denom;
+
+    const totalValue = total.unwrap();
+
+    const formattedTotal = parseFloat(totalValue.toBigInt().toString()) / denom;
+
     if (formattedTotal > 0) {
       totalStakeAmounts.push(formattedTotal);
     }

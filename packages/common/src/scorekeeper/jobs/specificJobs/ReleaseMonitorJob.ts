@@ -9,34 +9,46 @@ export const getLatestTaggedRelease = async () => {
 
     logger.info(`Running Monitor job`, monitorLabel);
 
-    let latestRelease, latestTaggedRelease;
+    let latestRelease;
     const ghApi = new Octokit();
 
     try {
-      latestRelease = await ghApi.repos.getLatestRelease({
+      // Assign the result of ghApi.repos.getLatestRelease() to latestRelease
+      const release = await ghApi.repos.getLatestRelease({
         owner: "paritytech",
         repo: "polkadot-sdk",
       });
+      latestRelease = release?.data;
     } catch {
       logger.warn("Could not get latest release.", monitorLabel);
     }
-    if (!latestRelease) return;
-    const { tag_name, published_at } = latestRelease.data;
+
+    // Check if latestRelease is null or if tag_name and published_at are not present
+    if (
+      !latestRelease ||
+      !latestRelease.tag_name ||
+      !latestRelease.published_at
+    ) {
+      return;
+    }
+
+    const { tag_name, published_at } = latestRelease;
     const publishedAt = new Date(published_at).getTime();
 
     await queries.setRelease(tag_name, publishedAt);
 
-    if (latestTaggedRelease && tag_name === latestTaggedRelease?.name) {
+    const taggedReleaseName = latestRelease ? latestRelease?.name : "";
+    if (latestRelease && tag_name === taggedReleaseName) {
       logger.info("No new release found", monitorLabel);
     } else {
-      latestTaggedRelease = {
+      latestRelease = {
         name: tag_name.split(`-`)[0],
         publishedAt,
       };
     }
 
     logger.info(
-      `Latest release updated: ${latestTaggedRelease.name} | Published at: ${publishedAt}`,
+      `Latest release updated: ${taggedReleaseName} | Published at: ${publishedAt}`,
       monitorLabel,
     );
 
@@ -47,7 +59,6 @@ export const getLatestTaggedRelease = async () => {
     logger.error(`Error running monitor job: ${e}`, monitorLabel);
   }
 };
-
 // Called by worker to process Job
 export const processReleaseMonitorJob = async (job: any) => {
   await getLatestTaggedRelease();

@@ -8,18 +8,18 @@ export const hasIdentity = async (
 ): Promise<[boolean, boolean]> => {
   try {
     await chaindata.checkApiConnection();
-    let identity = await chaindata.api.query.identity.identityOf(account);
-    if (!identity.isSome) {
+    let identity = await chaindata.api?.query.identity.identityOf(account);
+    if (!identity || !identity.isSome) {
       // check if it's a sub
-      const superOf = await chaindata.api.query.identity.superOf(account);
-      if (superOf.isSome) {
-        identity = await chaindata.api.query.identity.identityOf(
+      const superOf = await chaindata.api?.query.identity.superOf(account);
+      if (superOf && superOf.isSome) {
+        identity = await chaindata.api?.query.identity.identityOf(
           superOf.unwrap()[0],
         );
       }
     }
     let verified = false;
-    if (identity.isSome) {
+    if (identity && identity.isSome) {
       const { judgements } = identity.unwrap();
       for (const judgement of judgements) {
         const status = judgement[1];
@@ -28,7 +28,7 @@ export const hasIdentity = async (
       }
     }
 
-    return [identity.isSome, verified];
+    return [identity ? identity.isSome : false, verified];
   } catch (e) {
     logger.error(`Error getting identity: ${e}`, chaindataLabel);
     return [false, true];
@@ -41,21 +41,23 @@ export const getIdentity = async (
 ): Promise<any> => {
   try {
     await chaindata.checkApiConnection();
-    const identitiy = await chaindata.api.query.identity.identityOf(account);
-    if (!identitiy.isSome) {
-      const superOf = await chaindata.api.query.identity.superOf(account);
-      if (superOf.isSome) {
-        const id = await chaindata.api.query.identity.identityOf(
+    const identity = await chaindata.api?.query.identity.identityOf(account);
+    if (identity && !identity.isSome) {
+      const superOf = await chaindata.api?.query.identity.superOf(account);
+      if (superOf && superOf.isSome) {
+        const id = await chaindata.api?.query.identity.identityOf(
           superOf.unwrap()[0],
         );
-        if (id.isNone) {
+        if (id && id.isNone) {
           return null;
         }
-        return id.unwrap().info.toString();
+        return id && id.unwrap().info.toString()
+          ? id.unwrap().info.toString()
+          : null;
       }
     }
-    if (identitiy.isSome) {
-      return identitiy.unwrap().info.toString();
+    if (identity && identity.isSome) {
+      return identity.unwrap().info.toString();
     }
 
     return null;
@@ -67,122 +69,87 @@ export const getIdentity = async (
 export const getFormattedIdentity = async (
   chaindata: Chaindata,
   addr: string,
-): Promise<Identity> => {
+): Promise<Identity | null> => {
   try {
     await chaindata.checkApiConnection();
-    let identity: Identity, verified, sub;
-
-    let superAccount;
+    let identity: Identity | null = null;
+    let verified = false;
     const subAccounts: { name: string; address: string }[] = [];
-    const hasId = await chaindata.api.derive.accounts.hasIdentity(addr);
 
-    // The address is a sub identity
-    if (hasId.hasIdentity && hasId.parentId) {
-      const parentAddress = hasId.parentId;
-      // the address is a subidentity, query the superIdentity
+    const hasId = await chaindata.api?.derive.accounts.hasIdentity(addr);
+    if (!hasId || !hasId.hasIdentity) return null;
+
+    const identityInfo = await chaindata.api?.derive.accounts.identity(addr);
+    if (!identityInfo) return null;
+
+    const {
+      display,
+      email,
+      image,
+      judgements,
+      legal,
+      pgp,
+      riot,
+      twitter,
+      web,
+      parent,
+      displayParent,
+    } = identityInfo;
+
+    const judgementKinds = [];
+    for (const judgement of judgements) {
+      const status = judgement[1];
+      if (status.isReasonable || status.isKnownGood) {
+        judgementKinds.push(status.toString());
+        verified = status.isReasonable || status.isKnownGood;
+      }
+    }
+
+    if (parent) {
       const superIdentity =
-        await chaindata.api.derive.accounts.identity(parentAddress);
-      superAccount = {
-        name: superIdentity.display,
-        address: parentAddress,
-      };
-      const {
-        display,
-        displayParent,
-        email,
-        image,
-        judgements,
-        legal,
-        other,
-        parent,
-        pgp,
-        riot,
-        twitter,
-        web,
-      } = superIdentity;
-      const subs = await chaindata.api.query.identity.subsOf(parentAddress);
-
-      // Iterate through all the sub accounts
-      for (const subaccountAddress of subs[1]) {
-        const identityQuery =
-          await chaindata.api.derive.accounts.identity(subaccountAddress);
-        const subAccount: { name: string; address: string } = {
-          name: identityQuery.display,
-          address: subaccountAddress.toString(),
+        await chaindata.api?.derive.accounts.identity(parent);
+      if (superIdentity) {
+        const superAccount: { name: string; address: string } = {
+          name: superIdentity.display || "",
+          address: parent.toString(),
         };
-        subAccounts.push(subAccount);
-      }
-
-      const judgementKinds = [];
-      for (const judgement of judgements) {
-        const status = judgement[1];
-        if (status.isReasonable || status.isKnownGood) {
-          judgementKinds.push(status.toString());
-          verified = status.isReasonable || status.isKnownGood;
-          continue;
+        const subIdentities =
+          await chaindata.api?.query.identity.subsOf(parent);
+        if (subIdentities && subIdentities[1].length > 0) {
+          for (const subaccountAddress of subIdentities[1]) {
+            const subAccountIdentity =
+              await chaindata.api?.derive.accounts.identity(
+                subaccountAddress.toString(),
+              );
+            if (subAccountIdentity) {
+              const subAccount: { name: string; address: string } = {
+                name: subAccountIdentity.display || "",
+                address: subaccountAddress.toString(),
+              };
+              subAccounts.push(subAccount);
+            }
+          }
         }
-      }
 
+        identity = {
+          address: superAccount.address,
+          name: superAccount.name,
+          subIdentities: subAccounts,
+          display,
+          email,
+          image,
+          verified,
+          judgements: judgementKinds,
+          legal,
+          pgp,
+          riot,
+          twitter,
+          web,
+        };
+      }
+    } else {
       identity = {
-        address: superAccount.address,
-        name: superAccount.name,
-        subIdentities: subAccounts,
-        display,
-        email,
-        image,
-        verified,
-        judgements: judgementKinds,
-        legal,
-        pgp,
-        riot,
-        twitter,
-        web,
-      };
-      return identity;
-    } else if (hasId.hasIdentity) {
-      const ident = await chaindata.api.derive.accounts.identity(addr);
-      const {
-        display,
-        displayParent,
-        email,
-        image,
-        judgements,
-        legal,
-        other,
-        parent,
-        pgp,
-        riot,
-        twitter,
-        web,
-      } = ident;
-
-      const judgementKinds = [];
-      for (const judgement of judgements) {
-        const status = judgement[1];
-        if (status.isReasonable || status.isKnownGood) {
-          judgementKinds.push(status.toString());
-          verified = status.isReasonable || status.isKnownGood;
-          continue;
-        }
-      }
-
-      // Check to see if the address is a super-identity and has sub-identities
-      const subidentities = await chaindata.api.query.identity.subsOf(addr);
-      if (subidentities[1].length > 0) {
-        // This account has sub-identities
-        for (const subaccountAddress of subidentities[1]) {
-          const identityQuery =
-            await chaindata.api.derive.accounts.identity(subaccountAddress);
-          const subAccount: { name: string; address: string } = {
-            name: identityQuery.display,
-            address: subaccountAddress.toString(),
-          };
-          subAccounts.push(subAccount);
-        }
-      }
-
-      identity = {
-        name: display,
+        name: display || "",
         address: addr,
         verified,
         subIdentities: subAccounts,
@@ -196,9 +163,11 @@ export const getFormattedIdentity = async (
         twitter,
         web,
       };
-      return identity;
     }
+
+    return identity;
   } catch (e) {
     logger.error(`Error getting identity: ${e}`, chaindataLabel);
+    return null;
   }
 };

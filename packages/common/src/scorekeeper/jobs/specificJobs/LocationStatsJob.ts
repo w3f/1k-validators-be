@@ -20,6 +20,10 @@ export const locationStatsJob = async (metadata: jobsMetadata) => {
 
     const candidates = await queries.allCandidates();
     const session = await chaindata.getSession();
+    if (!session) {
+      logger.error("Error getting current session", locationstatsLabel);
+      return false;
+    }
     await queries.setLatestSession(session);
 
     const locationMap = new Map();
@@ -163,7 +167,7 @@ export const locationStatsJob = async (metadata: jobsMetadata) => {
       });
     }
 
-    const locationValues = locationArr.map((location) => {
+    const locationValues: number[] = locationArr.map((location) => {
       return location.numberOfNodes;
     });
     const locationVariance = Score.variance(locationValues);
@@ -199,10 +203,10 @@ export const locationStatsJob = async (metadata: jobsMetadata) => {
       });
     }
 
-    const regionValues = regionArr.map((region) => {
+    const regionValues: number[] = regionArr.map((region) => {
       return region.numberOfNodes;
     });
-    const regionVariance = Score.variance(regionValues);
+    const regionVariance: number = Score.variance(regionValues);
 
     // ---------------- COUNTRY -----------------------------------
     const countryMap = new Map();
@@ -235,7 +239,7 @@ export const locationStatsJob = async (metadata: jobsMetadata) => {
       });
     }
 
-    const countryValues = countryArr.map((country) => {
+    const countryValues: number[] = countryArr.map((country) => {
       return country.numberOfNodes;
     });
     const countryVariance = Score.variance(countryValues);
@@ -271,7 +275,7 @@ export const locationStatsJob = async (metadata: jobsMetadata) => {
       });
     }
 
-    const providerValues = providerArr.map((provider) => {
+    const providerValues: number[] = providerArr.map((provider) => {
       return provider.numberOfNodes;
     });
     const providerVariance = Score.variance(providerValues);

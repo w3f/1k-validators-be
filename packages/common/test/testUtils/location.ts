@@ -93,6 +93,5 @@ export const addKusamaLocations = async () => {
       },
       location.vpn,
     );
-    console.log(`Set location: ${didSet}`);
   }
 };

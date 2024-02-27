@@ -43,7 +43,7 @@ export const registerTelemetryWs = async (telemetryClient: TelemetryClient) => {
     });
   } catch (e) {
     logger.error(`Telemetry error registering socket`, { label: "Telemetry" });
-    logger.error(e.toString(), { label: "Telemetry" });
+    logger.error(JSON.stringify(e), { label: "Telemetry" });
   }
 };
 
@@ -56,6 +56,6 @@ export const subscribeWs = async (socket: WebSocket, chain: string) => {
     socket.send(`subscribe:${chain}`);
   } catch (e) {
     logger.error(`Telemetry error subscribing socket`, { label: "Telemetry" });
-    logger.error(e.toString(), { label: "Telemetry" });
+    logger.error(JSON.stringify(e), { label: "Telemetry" });
   }
 };

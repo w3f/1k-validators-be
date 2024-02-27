@@ -13,9 +13,9 @@ export type EraReward = {
   era: number;
 };
 
-export type BooleanResult = [boolean | null, string | null];
-export type NumberResult = [number | null, string | null];
-export type StringResult = [string | null, string | null];
+export type BooleanResult = [boolean, string | null];
+export type NumberResult = [number, string | null];
+export type StringResult = [string, string | null];
 
 export enum InvalidityType {
   Online,
@@ -95,4 +95,38 @@ export interface BenchmarkSpec {
   memory_memcpy_score: number;
   disk_sequential_write_score: number;
   disk_random_write_score: number;
+}
+
+export interface JobRunningData {
+  name: string;
+  runCount: number;
+  updated: number;
+}
+
+export interface JobFinishedData {
+  name: string;
+  runCount: number;
+  updated: number;
+}
+
+export interface JobErroredData {
+  name: string;
+  runCount: number;
+  updated: number;
+  error: string;
+}
+
+export type PayloadElement = string | number;
+
+export type Payload = PayloadElement[][];
+
+export interface TelemetryWsPayload extends Array<any> {
+  0: any; // id
+  1: Array<any>; // Array containing name, nodeImplementation, version, etc.
+  2: any; // nodeStats
+  3: any; // nodeIO
+  4: any; // nodeHardware
+  5: any; // blockDetails
+  6: any; // location
+  7: any; // startupTime
 }

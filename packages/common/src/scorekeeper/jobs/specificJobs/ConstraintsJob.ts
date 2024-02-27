@@ -68,15 +68,17 @@ export const candidateValidityJob = async (
     const start = Date.now();
 
     const candidate = await queries.getCandidate(candidateAddress);
-    await constraints.checkCandidate(candidate);
+    if (candidate) {
+      await constraints.checkCandidate(candidate);
 
-    const end = Date.now();
-    const executionTime = (end - start) / 1000;
+      const end = Date.now();
+      const executionTime = (end - start) / 1000;
 
-    logger.info(
-      `validity for ${candidate.name} Done. (${executionTime}s)`,
-      constraintsLabel,
-    );
+      logger.info(
+        `validity for ${candidate.name} Done. (${executionTime}s)`,
+        constraintsLabel,
+      );
+    }
   } catch (e) {
     logger.error(`Error running validity job: ${e}`, constraintsLabel);
   }
@@ -89,19 +91,21 @@ export const individualScoreJob = async (
   try {
     const start = Date.now();
     const candidate = await queries.getCandidate(candidateAddress);
-    let scoreMetadata = await queries.getLatestValidatorScoreMetadata();
-    if (!scoreMetadata) {
-      logger.warn(
-        `no score metadata, cannot score candidates`,
-        constraintsLabel,
-      );
-      await constraints.setScoreMetadata();
-      scoreMetadata = await queries.getLatestValidatorScoreMetadata();
-    }
-    await constraints.scoreCandidate(candidate, scoreMetadata);
+    if (candidate) {
+      let scoreMetadata = await queries.getLatestValidatorScoreMetadata();
+      if (!scoreMetadata) {
+        logger.warn(
+          `no score metadata, cannot score candidates`,
+          constraintsLabel,
+        );
+        await constraints.setScoreMetadata();
+        scoreMetadata = await queries.getLatestValidatorScoreMetadata();
+      }
+      await constraints.scoreCandidate(candidate, scoreMetadata);
 
-    const end = Date.now();
-    const executionTime = (end - start) / 1000;
+      const end = Date.now();
+      const executionTime = (end - start) / 1000;
+    }
   } catch (e) {
     logger.error(`Error running individual score job: ${e}`, constraintsLabel);
   }

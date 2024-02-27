@@ -3,22 +3,21 @@ import mongoose from "mongoose";
 import { EraPointsModel, TotalEraPointsModel } from "../../../src/db/models";
 import {
   getEraPoints,
-  getLastTotalEraPoints,
-  getTotalEraPoints,
-  setEraPoints,
-  setTotalEraPoints,
-} from "../../../src/db/queries";
-
-import {
-  Db,
   getHistoryDepthEraPoints,
   getHistoryDepthTotalEraPoints,
   getIdentityValidatorEraPointsCount,
   getIdentityValidatorEraPointsCountMax,
+  getLastTotalEraPoints,
   getSpanEraPoints,
+  getTotalEraPoints,
   getValidatorEraPointsCount,
   getValidatorLastEraPoints,
-} from "../../../src/db";
+  setEraPoints,
+  setIdentity,
+  setTotalEraPoints,
+} from "../../../src/db/queries";
+
+import { Db } from "../../../src/db";
 
 let mongoServer: MongoMemoryServer;
 
@@ -43,6 +42,11 @@ afterAll(async () => {
     throw error; // Rethrow the error to fail the test suite
   }
 }, 60000);
+
+beforeEach(async () => {
+  await EraPointsModel.deleteMany({});
+  await TotalEraPointsModel.deleteMany({});
+});
 
 describe("setEraPoints", () => {
   it("should set era points for a given era and address", async () => {
@@ -189,6 +193,12 @@ describe("getValidatorEraPointsCount", () => {
 
 describe("getIdentityValidatorEraPointsCount", () => {
   it("should return era points count for each validator of an identity", async () => {
+    await setIdentity({
+      name: "identity1",
+      address: "address1",
+      verified: true,
+    });
+
     await EraPointsModel.create({
       address: "address1",
       era: 1,
@@ -208,6 +218,11 @@ describe("getIdentityValidatorEraPointsCount", () => {
 
 describe("getIdentityValidatorEraPointsCountMax", () => {
   it("should return the maximum era points count for a validator of an identity", async () => {
+    await setIdentity({
+      name: "identity1",
+      address: "address1",
+      verified: true,
+    });
     await EraPointsModel.create({
       address: "address1",
       era: 1,
@@ -269,7 +284,7 @@ describe("setTotalEraPoints", () => {
       { address: "address2", eraPoints: 200 },
     ];
     const result = await setTotalEraPoints(1, 300, validators);
-    expect(result).toBeUndefined();
+    expect(result).toBeTruthy();
     const totalEraPoints = await TotalEraPointsModel.findOne({ era: 1 });
     expect(totalEraPoints).toBeDefined();
     expect(totalEraPoints?.totalEraPoints).toBe(300);

@@ -2,9 +2,11 @@ import { logger } from "@1kv/common";
 import { response } from "./index";
 import * as NominationService from "../services/Nomination";
 import { gatewayLabel } from "../run";
+import { requestEmitter } from "../events/requestEmitter";
 
 export default class NominationController {
   public static async getNominations(context: any): Promise<void> {
+    requestEmitter.emit("requestReceived");
     if (await context.cashed()) {
       logger.info(`{Gateway} getNominations is cached`, gatewayLabel);
       return;
@@ -13,6 +15,7 @@ export default class NominationController {
   }
 
   public static async getNominatorNominations(context: any): Promise<void> {
+    requestEmitter.emit("requestReceived");
     if (await context.cashed()) {
       logger.info(`{Gateway} getNominatorNominations is cached`, gatewayLabel);
       return;
@@ -26,6 +29,7 @@ export default class NominationController {
   }
 
   public static async getLastNomination(context): Promise<void> {
+    requestEmitter.emit("requestReceived");
     if (await context.cashed()) {
       logger.info(`{Gateway} getLastNomination is cached`, gatewayLabel);
       return;
@@ -34,6 +38,7 @@ export default class NominationController {
   }
 
   public static async getProxyTxs(context): Promise<void> {
+    requestEmitter.emit("requestReceived");
     if (await context.cashed()) {
       logger.info(`{Gateway} getProxyTxs is cached`, gatewayLabel);
       return;

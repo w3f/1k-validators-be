@@ -1,5 +1,5 @@
 import { logger } from "../index";
-import { getStats, Stats } from "./score";
+import { getStats, LocationStats, Stats } from "./score";
 import {
   allNominators,
   Candidate,
@@ -110,8 +110,8 @@ export const getLocationValues = async (
   validCandidates: Candidate[],
 ): Promise<{
   locationArr: { name: string; numberOfNodes: number }[];
-  locationValues: string[] | number[];
-  locationStats: Stats;
+  locationValues: number[];
+  locationStats: LocationStats;
 }> => {
   const locationMap = new Map<string, number>();
   const locationArr: { name: string; numberOfNodes: number }[] = [];
@@ -131,13 +131,13 @@ export const getLocationValues = async (
     locationArr.push({ name: location, numberOfNodes });
   }
 
-  const locationValues: string[] | number[] = locationArr.map((location) => {
+  const locationValues: number[] = locationArr.map((location) => {
     return location.numberOfNodes;
   });
-  const locationStats = getStats(locationValues as number[]);
-  locationStats.numberOfNodes = locationValues;
-  locationStats.values = locationValues;
-  return { locationArr, locationValues, locationStats };
+  const locationStats = getStats(locationValues);
+
+  const lStats = { ...locationStats, values: locationArr };
+  return { locationArr, locationValues, locationStats: lStats };
 };
 
 export const getRegionValues = async (
@@ -145,7 +145,7 @@ export const getRegionValues = async (
 ): Promise<{
   regionArr: { name: string; numberOfNodes: number }[];
   regionValues: string[] | number[];
-  regionStats: Stats;
+  regionStats: LocationStats;
 }> => {
   const regionMap = new Map<string, number>();
   const regionArr: { name: string; numberOfNodes: number }[] = [];
@@ -171,9 +171,10 @@ export const getRegionValues = async (
     return region.numberOfNodes;
   });
   const regionStats: Stats = getStats(regionValues as number[]);
-  regionStats.numberOfNodes = regionValues;
-  regionStats.values = regionValues;
-  return { regionArr, regionValues, regionStats };
+  // regionStats.numberOfNodes = regionValues;
+
+  const rStats = { ...regionStats, values: regionArr };
+  return { regionArr, regionValues, regionStats: rStats };
 };
 
 export const getCountryValues = async (
@@ -181,7 +182,7 @@ export const getCountryValues = async (
 ): Promise<{
   countryArr: { name: string; numberOfNodes: number }[];
   countryValues: string[] | number[];
-  countryStats: Stats;
+  countryStats: LocationStats;
 }> => {
   const countryMap = new Map<string, number>();
   const countryArr: { name: string; numberOfNodes: number }[] = [];
@@ -207,8 +208,8 @@ export const getCountryValues = async (
     return country.numberOfNodes;
   });
   const countryStats: Stats = getStats(countryValues as number[]);
-  countryStats.values = countryValues;
-  return { countryArr, countryValues, countryStats };
+  const cStats = { ...countryStats, values: countryArr };
+  return { countryArr, countryValues, countryStats: cStats };
 };
 
 export const getProviderValues = async (
@@ -216,7 +217,7 @@ export const getProviderValues = async (
 ): Promise<{
   providerArr: { name: string; numberOfNodes: number }[];
   providerValues: string[] | number[];
-  providerStats: Stats;
+  providerStats: LocationStats;
 }> => {
   const providerMap = new Map<string, number>();
   const providerArr: { name: string; numberOfNodes: number }[] = [];
@@ -242,9 +243,9 @@ export const getProviderValues = async (
     return provider.numberOfNodes;
   });
   const providerStats: Stats = getStats(providerValues as number[]);
-  providerStats.numberOfNodes = providerValues;
-  providerStats.values = providerArr;
-  return { providerArr, providerValues, providerStats };
+  const pStats = { ...providerStats, values: providerArr };
+
+  return { providerArr, providerValues, providerStats: pStats };
 };
 
 export const getNominatorStakeValues = async (

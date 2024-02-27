@@ -1,9 +1,8 @@
-import Monitor from "../../../common/src/monitor";
-import { queries } from "@1kv/common"; // Assuming logger and queries are exported from this module
-import { Octokit } from "@octokit/rest"; // Mock the logger, Octokit, and queries modules
+import Monitor from "../src/monitor";
+import { Octokit } from "@octokit/rest";
+import { queries } from "../src";
 
-// Mock the logger, Octokit, and queries modules
-jest.mock("@1kv/common", () => ({
+jest.mock("../src/index", () => ({
   logger: {
     info: jest.fn(),
     debug: jest.fn(),
@@ -16,10 +15,7 @@ jest.mock("@octokit/rest");
 
 describe("Monitor", () => {
   beforeEach(() => {
-    // Reset mocks before each test
     jest.clearAllMocks();
-
-    // Setup default mock implementations
     Octokit.prototype.repos = {
       getLatestRelease: jest.fn().mockResolvedValue({
         data: {
@@ -28,8 +24,6 @@ describe("Monitor", () => {
         },
       }),
     };
-
-    // Mock `queries.setRelease` to resolve without modifying the database
     (queries.setRelease as jest.Mock).mockResolvedValue({});
   });
 
@@ -37,21 +31,18 @@ describe("Monitor", () => {
     const monitor = new Monitor(10);
     const latest = await monitor.getLatestTaggedRelease();
 
-    // Assertions about the fetched latest release
     expect(latest).toBeDefined();
-    expect(latest.name).toBe("v1.2.3");
-    expect(latest.publishedAt).toBe(new Date("2021-01-01T00:00:00Z").getTime());
-
-    // Verify that Octokit's `getLatestRelease` was called with the correct parameters
+    expect(latest?.name).toBe("v1.2.3");
+    expect(latest?.publishedAt).toBe(
+      new Date("2021-01-01T00:00:00Z").getTime(),
+    );
     expect(Octokit.prototype.repos.getLatestRelease).toHaveBeenCalledWith({
       owner: "paritytech",
       repo: "polkadot-sdk",
     });
-
-    // Verify that `queries.setRelease` was called with the correct parameters
     expect(queries.setRelease).toHaveBeenCalledWith(
       "v1.2.3",
       expect.any(Number),
     );
-  }, 10000); // Extended timeout for potentially long-running operations
+  }, 10000);
 });

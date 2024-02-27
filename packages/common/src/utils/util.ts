@@ -1,6 +1,4 @@
 import Keyring from "@polkadot/keyring";
-import * as bs58 from "bs58";
-import * as hash from "hash.js";
 import { ConfigSchema } from "../config";
 import logger from "../logger";
 import { LOCATION_URL } from "../constants";
@@ -15,50 +13,11 @@ export const sleep = (ms: number): Promise<void> =>
 
 export const getNow = (): number => new Date().getTime();
 
-export const getRawPeerId = (peerId: string): string => {
-  // There's two versions of the peer id:
-  // - The new versions start with "12"
-  // - The old versions start with "Qm"
-
-  // The first step of either version is to base58 decode it.
-  const buf = bs58.decode(peerId);
-
-  // Get the first two byte prefix.
-  //@ts-ignore
-  const prefix = buf.slice(0, 2).toString("hex");
-
-  // The new prefix.
-  if (prefix == "0024") {
-    return hash.sha256().update(buf.slice(2)).digest("hex");
-  }
-
-  // The old prefix.
-  if (prefix == "1220") {
-    //@ts-ignore
-    return buf.slice(2).toString("hex");
-  }
-
-  return "";
-};
-
-/*
- * Turn the map<String, Object> to an Object so it can be converted to JSON
- */
-export function mapToObj(inputMap: Map<string, number>): any {
-  const obj = {};
-
-  inputMap.forEach(function (value, key) {
-    obj[key] = value;
-  });
-
-  return obj;
-}
-
 // Converts raw decimal to human readible format
 //     - Test Net: 10 Decimals
 //     - Polkadot: 10 Decimals
 //     - Kusama: 12 Decimals
-export const toDecimals = (raw: number, networkDecimals): number => {
+export const toDecimals = (raw: number, networkDecimals: number): number => {
   return raw / Math.pow(10, networkDecimals);
 };
 
@@ -71,8 +30,11 @@ export const formatAddress = (
   return keyring.encodeAddress(address, ss58Prefix);
 };
 
-export const hex2a = (hex) => {
-  return decodeURIComponent("%" + hex.match(/.{1,2}/g).join("%"));
+export const hex2a = (hex: string | null | undefined) => {
+  if (hex) {
+    return decodeURIComponent("%" + hex.match(/.{1,2}/g)!.join("%"));
+  }
+  return null;
 };
 
 export const subscanUrl = (config: ConfigSchema) => {
@@ -292,11 +254,11 @@ export const getFormattedIdentity = async (api: ApiPromise, addr: string) => {
   } else return { name: raw, verified: verified, sub: sub };
 };
 
-export const percentage = (index, total) => {
+export const percentage = (index: number, total: number) => {
   return `${((index / total) * 100).toFixed(2)}%`;
 };
 
-export const timeRemaining = (index, total, time) => {
+export const timeRemaining = (index: number, total: number, time: number) => {
   const remaining = total - index;
   const timeRemaining = ((remaining * time) / 1000).toFixed(2);
   return `(~${timeRemaining}s remaining)`;

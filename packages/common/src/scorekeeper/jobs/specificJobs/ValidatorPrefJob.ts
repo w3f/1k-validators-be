@@ -17,7 +17,9 @@ export const individualValidatorPrefJob = async (
     const exists = await queries.getIdentity(candidate.stash);
     if (!exists || !candidate.identity) {
       const identity = await chaindata.getFormattedIdentity(candidate.stash);
-      await queries.setCandidateIdentity(candidate.stash, identity);
+      if (identity) {
+        await queries.setCandidateIdentity(candidate.stash, identity);
+      }
     }
 
     // Set Commission
@@ -28,16 +30,25 @@ export const individualValidatorPrefJob = async (
 
     // Set Controller
     const controller = await chaindata.getControllerFromStash(candidate.stash);
+    if (!controller) {
+      return;
+    }
     await queries.setController(candidate.stash, controller);
 
     // Set reward destination
     const rewardDestination = await chaindata.getRewardDestination(
       candidate.stash,
     );
+    if (!rewardDestination) {
+      return;
+    }
     await queries.setRewardDestination(candidate.stash, rewardDestination);
 
     // set bonded amount
     const [bonded, err2] = await chaindata.getBondedAmount(candidate.stash);
+    if (!bonded) {
+      return;
+    }
     await queries.setBonded(candidate.stash, bonded);
 
     const end = Date.now();
@@ -104,6 +115,9 @@ export const processValidatorPrefJob = async (
     // Process and individual Validator
     if (candidateAddress) {
       const candidate = await queries.getCandidate(candidateAddress);
+      if (!candidate) {
+        return;
+      }
       await individualValidatorPrefJob(metadata, candidate);
     } else {
       // Process All Validators

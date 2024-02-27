@@ -11,13 +11,17 @@
     "lint:fix": "tsc --noEmit && eslint 'src/**/*.{js,ts,tsx, json}' --quiet --fix",
     "clean": "../../node_modules/.bin/rimraf ./build tsconfig.tsbuildinfo combined.log",
     "clean:build": "yarn clean && yarn build",
-    "writeCandidatesFile": "ts-node src/scripts/writeCandidatesFile.ts && yarn lint:fix"
+    "writeCandidatesFile": "ts-node src/scripts/writeCandidatesFile.ts && yarn lint:fix",
+    "test:unit": "jest --config jest.unit.config.js",
+    "test:int": "jest --config jest.int.config.js",
+    "test": "yarn test:unit && yarn test:int",
+    "ci:checkCandidatesFile": "ts-node src/scripts/ci/checkCandidatesFile.ts"
   },
   "author": "Web3 Foundation <teched@web3.foundation>",
   "license": "GPL-3.0",
   "config": {
     "mongodbMemoryServer": {
-      "debug": "on"
+      "debug": "off"
     }
   },
   "ava": {

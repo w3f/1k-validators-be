@@ -13,7 +13,7 @@ export const deleteTelemetryNode = async (name: string): Promise<boolean> => {
     await TelemetryNodeModel.deleteOne({ name });
     return true;
   } catch (e) {
-    logger.error(e.toString());
+    logger.error(JSON.stringify(e));
     logger.error(`Error deleting telemetry node ${name}`, dbLabel);
     return false;
   }
@@ -36,7 +36,7 @@ export const addNewTelemetryNode = async (
     await telemetryNode.save();
     return true;
   } catch (e) {
-    logger.error(e.toString());
+    logger.error(JSON.stringify(e));
     logger.error(
       `Error adding new telemetry node ${telemetryNodeDetails.name}`,
       dbLabel,
@@ -49,11 +49,11 @@ export const updateTelemetryNodeOfflineTime = async (
   telemetryNodeDetails: TelemetryNodeDetails,
 ): Promise<boolean> => {
   try {
-    const telemetryNode: TelemetryNode = await TelemetryNodeModel.findOne({
+    const telemetryNode = await TelemetryNodeModel.findOne({
       name: telemetryNodeDetails.name,
-    }).lean();
+    }).lean<TelemetryNode>();
 
-    if (telemetryNode.offlineSince > 0) {
+    if (telemetryNode && telemetryNode.offlineSince > 0) {
       const timeOffline = Date.now() - telemetryNode.offlineSince;
       const accumulated = (telemetryNode.offlineAccumulated || 0) + timeOffline;
 
@@ -69,7 +69,7 @@ export const updateTelemetryNodeOfflineTime = async (
     }
     return true;
   } catch (e) {
-    logger.error(e.toString());
+    logger.error(JSON.stringify(e));
     logger.error(
       `Error updating offline time for telemetry node ${telemetryNodeDetails.name}`,
       dbLabel,
@@ -101,7 +101,7 @@ export const updateExistingTelemetryNode = async (
     await updateTelemetryNodeOfflineTime(telemetryNodeDetails);
     return true;
   } catch (e) {
-    logger.error(e.toString());
+    logger.error(JSON.stringify(e));
     logger.error(
       `Error updating existing telemetry node ${telemetryNodeDetails.name}`,
       dbLabel,
@@ -129,7 +129,7 @@ export const reportTelemetryNodeOnline = async (
     );
     return true;
   } catch (e) {
-    logger.error(e.toString());
+    logger.error(JSON.stringify(e));
     logger.error(
       `Error reporting telemetry node online ${telemetryNodeDetails.name}`,
       dbLabel,
@@ -140,11 +140,11 @@ export const reportTelemetryNodeOnline = async (
 
 export const getTelemetryNode = async (
   name: string,
-): Promise<TelemetryNode> => {
+): Promise<TelemetryNode | null> => {
   return TelemetryNodeModel.findOne({ name }).lean<TelemetryNode>();
 };
 
-export const allTelemetryNodes = async (): Promise<TelemetryNode[]> => {
+export const allTelemetryNodes = async (): Promise<TelemetryNode[] | null> => {
   return TelemetryNodeModel.find({}).lean<TelemetryNode[]>();
 };
 
@@ -162,12 +162,12 @@ export const convertTelemetryNodeToCandidate = async (
       await CandidateModel.findOneAndUpdate(
         { name: name },
         {
-          telemetryId: telemetryNode.telemetryId,
-          version: telemetryNode.version,
-          onlineSince: telemetryNode.onlineSince,
-          discoveredAt: telemetryNode.discoveredAt,
-          offlineAccumulated: telemetryNode.offlineAccumulated,
-          nodeRefs: telemetryNode.nodeRefs,
+          telemetryId: telemetryNode?.telemetryId,
+          version: telemetryNode?.version,
+          onlineSince: telemetryNode?.onlineSince,
+          discoveredAt: telemetryNode?.discoveredAt,
+          offlineAccumulated: telemetryNode?.offlineAccumulated,
+          nodeRefs: telemetryNode?.nodeRefs,
         },
       ).exec();
 
@@ -175,7 +175,7 @@ export const convertTelemetryNodeToCandidate = async (
     }
     return true;
   } catch (e) {
-    logger.error(e.toString());
+    logger.error(JSON.stringify(e));
     logger.error(
       `Error converting telemetry node to candidate ${name}`,
       dbLabel,
@@ -207,10 +207,10 @@ export const reportTelemetryNodeOffline = async (
           },
         );
       }
-      return true;
     }
+    return true;
   } catch (e) {
-    logger.error(e.toString());
+    logger.error(JSON.stringify(e));
     logger.error(`Error reporting telemetry node offline ${name}`, dbLabel);
     return false;
   }
@@ -230,7 +230,7 @@ export const clearTelemetryNodeNodeRefsFrom = async (
     );
     return true;
   } catch (e) {
-    logger.error(e.toString());
+    logger.error(JSON.stringify(e));
     logger.error(`Error clearing telemetry node nodeRefs ${name}`, dbLabel);
     return false;
   }

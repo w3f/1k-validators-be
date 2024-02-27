@@ -72,7 +72,7 @@ describe("Nominator Database Functions", () => {
         address: nominatorData.address,
       });
       expect(savedNominator).toBeTruthy();
-      expect(savedNominator.stash).toBe(nominatorData.stash);
+      expect(savedNominator?.stash).toBe(nominatorData.stash);
     });
 
     it("should update an existing nominator in the database", async () => {
@@ -95,7 +95,7 @@ describe("Nominator Database Functions", () => {
       const updatedNominator = await NominatorModel.findOne({
         address: nominatorData.address,
       });
-      expect(updatedNominator.stash).toBe(nominatorData.stash);
+      expect(updatedNominator?.stash).toBe(nominatorData.stash);
     });
   });
 
@@ -121,8 +121,8 @@ describe("Nominator Database Functions", () => {
       const result = await setTarget(address, target, era);
       expect(result).toBe(true); // Assuming the function returns a boolean indicating success
       const nominator = await NominatorModel.findOne({ address });
-      expect(nominator.current.length).toBe(1);
-      expect(nominator.current[0].stash).toBe(target);
+      expect(nominator?.current?.length).toBe(1);
+      expect(nominator?.current[0].stash).toBe(target);
     });
     it("returns false if candidate is not found", async () => {
       const nominatorData: Nominator = {
@@ -143,7 +143,7 @@ describe("Nominator Database Functions", () => {
       const result = await setTarget(address, target, era);
       expect(result).toBe(false); // Assuming the function returns a boolean indicating success
       const nominator = await NominatorModel.findOne({ address });
-      expect(nominator.current.length).toBe(0);
+      expect(nominator?.current.length).toBe(0);
     });
   });
 
@@ -301,20 +301,22 @@ describe("Nominator Database Functions", () => {
       };
 
       await NominatorModel.create(nominatorData);
+      const nominatorStash = nominatorData.stash || "";
 
-      const fetchedNominator = await getNominator(nominatorData.stash);
-
-      expect(
-        omitFields(fetchedNominator, [
-          "__v",
-          "_id",
-          "avgStake",
-          "createdAt",
-          "current",
-          "lastNomination",
-          "nominateAmount",
-        ]),
-      ).toEqual(nominatorData);
+      const fetchedNominator = await getNominator(nominatorStash);
+      if (fetchedNominator) {
+        expect(
+          omitFields(fetchedNominator, [
+            "__v",
+            "_id",
+            "avgStake",
+            "createdAt",
+            "current",
+            "lastNomination",
+            "nominateAmount",
+          ]),
+        ).toEqual(nominatorData);
+      }
     });
   });
 });

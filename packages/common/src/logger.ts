@@ -3,7 +3,7 @@ import { defaultExcludeLabels } from "./constants";
 
 const filters = defaultExcludeLabels;
 
-const logFilter = (labelsToExclude) => {
+const logFilter = (labelsToExclude: string[]) => {
   return winston.format((info) => {
     if (labelsToExclude.includes(info.label)) {
       return false; // Exclude log messages with labels in the exclusion list

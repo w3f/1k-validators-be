@@ -26,6 +26,13 @@ export const setScoreMetadata = async (constraints: OTV): Promise<boolean> => {
     const session = await constraints.chaindata.getSession();
     const candidates = await validCandidates();
 
+    if (!session || candidates.length === 0) {
+      logger.error(`Error getting session or candidates.`, {
+        label: "Constraints",
+      });
+      return false;
+    }
+
     // Get Ranges of Parameters
     //    A validators individual parameter is then scaled to how it compares to others that are also deemed valid
 
@@ -45,6 +52,7 @@ export const setScoreMetadata = async (constraints: OTV): Promise<boolean> => {
     const { ownNominatorAddresses, nominatorStakeStats } =
       await getNominatorStakeValues(candidates);
 
+    logger.info(JSON.stringify(locationStats));
     const scoreMetadata: ValidatorScoreMetadata = {
       session: session,
       bondedStats: bondedStats,

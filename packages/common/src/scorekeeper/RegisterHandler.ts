@@ -25,7 +25,7 @@ export const registerAPIHandler = (
   //     If they have already reaceived an offline fault for that session, it is skipped
   handler.on("someOffline", async (data: { offlineVals: string[] }) => {
     const { offlineVals } = data;
-    const session = await chaindata.getSession();
+    const session = (await chaindata.getSession()) || 0;
     for (const val of offlineVals) {
       const candidate = await queries.getCandidate(val);
       if (!candidate) return;

@@ -53,7 +53,12 @@
     "start:js:telemetry": "NODE_OPTIONS='--max-old-space-size=10096' yarn workspace @1kv/telemetry run js:start",
     "start:dev:worker": "yarn workspace @1kv/worker run start:dev",
     "start:js:worker": "NODE_OPTIONS='--max-old-space-size=10096' yarn workspace @1kv/worker run js:start",
-    "test:core": "yarn workspace @1kv/core run test"
+    "test:core": "yarn workspace @1kv/core run test",
+    "test:common:int": "yarn workspace @1kv/common run test:int",
+    "test:common:unit": "yarn workspace @1kv/common run test:unit",
+    "test:all": "yarn workspaces foreach run test",
+    "test": "jest --config jest.workspace.config.js",
+    "test:watch": "jest --config jest.workspace.config.js --watch"
   },
   "devDependencies": {
     "@types/coingecko-api": "^1.0.13",
@@ -69,7 +74,7 @@
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-prettier": "5.0.0",
     "prettier": "^3.2.4",
-    "ts-jest": "^29.1.2"
+    "ts-jest": "latest"
   },
   "dependencies": {
     "@polkadot/api": "^10.11.2",
@@ -93,5 +98,16 @@
     "swagger2-koa": "^4.0.0",
     "ws": "^8.16.0",
     "yamljs": "^0.3.0"
+  },
+  "jest": {
+    "projects": [
+      "<rootDir>/packages/*/jest.unit.config.js",
+      "<rootDir>/packages/*/jest.int.config.js"
+    ],
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    }
   }
 }

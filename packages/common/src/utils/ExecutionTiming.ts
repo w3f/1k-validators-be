@@ -3,7 +3,7 @@ import logger from "../logger";
 
 export const withExecutionTimeLogging = <T extends any[], R>(
   func: (...args: T) => Promise<R>,
-  label,
+  label: { label: string },
   text: string,
 ): ((...args: T) => Promise<R>) => {
   return async (...args: T): Promise<R> => {

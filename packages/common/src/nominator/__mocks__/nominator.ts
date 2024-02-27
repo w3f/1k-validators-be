@@ -1,6 +1,7 @@
-import { ApiHandler, Types } from "@1kv/common";
 import Keyring from "@polkadot/keyring";
 import { KeyringPair } from "@polkadot/keyring/types";
+import ApiHandler from "../../ApiHandler/ApiHandler";
+import { Types } from "../../index";
 
 type Stash = string; // Simplified for example purposes
 

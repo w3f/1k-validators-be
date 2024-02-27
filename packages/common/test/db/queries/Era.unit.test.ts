@@ -30,6 +30,10 @@ afterAll(async () => {
   }
 }, 60000);
 
+beforeEach(async () => {
+  await EraModel.deleteMany({});
+});
+
 describe("setLastNominatedEraIndex", () => {
   it("should create a new era index if none exists", async () => {
     await setLastNominatedEraIndex(5);

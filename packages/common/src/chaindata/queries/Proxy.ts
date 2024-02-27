@@ -14,7 +14,10 @@ export const getProxyAnnouncements = async (
   try {
     await chaindata.checkApiConnection();
     const announcements =
-      await chaindata.api.query.proxy.announcements(address);
+      await chaindata.api?.query.proxy.announcements(address);
+    if (!announcements) {
+      return [];
+    }
     const json = announcements.toJSON();
 
     // Check if the json variable is an array of objects

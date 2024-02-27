@@ -33,6 +33,10 @@ afterAll(async () => {
   }
 }, 60000);
 
+beforeEach(async () => {
+  await DelayedTxModel.deleteMany({});
+});
+
 describe("addDelayedTx", () => {
   it("should add a delayed transaction", async () => {
     const tx: DelayedTx = {

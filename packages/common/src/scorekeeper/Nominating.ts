@@ -4,37 +4,45 @@
 //     - This will either be a static number, or "auto"
 
 import { autoNumNominations } from "./NumNominations";
-import { scorekeeperLabel, SpawnedNominatorGroup } from "./scorekeeper";
+import { scorekeeperLabel } from "./scorekeeper";
 import logger from "../logger";
-import { queries, Util } from "../index";
+import { ChainData, queries, Util } from "../index";
+import ApiHandler from "../ApiHandler/ApiHandler";
+import MatrixBot from "../matrix";
+import { ConfigSchema } from "../config";
+import Nominator from "../nominator/nominator";
 
 export const doNominations = async (
   candidates: { name: string; stash: string; total: number }[],
-  nominatorGroups: SpawnedNominatorGroup[] = [],
-  chaindata,
-  handler,
-  bot,
-  config,
-  currentTargets,
-): Promise<any> => {
-  if (candidates.length == 0) {
-    logger.warn(
-      `Candidates length was 0. Skipping nominations`,
-      scorekeeperLabel,
-    );
-    return;
-  }
+  nominatorGroups: Nominator[],
+  chaindata: ChainData,
+  handler: ApiHandler,
+  bot: MatrixBot,
+  config: ConfigSchema,
+  currentTargets: { name?: string; stash?: string; identity?: any }[],
+): Promise<number | null> => {
+  try {
+    if (candidates.length == 0) {
+      logger.warn(
+        `Candidates length was 0. Skipping nominations`,
+        scorekeeperLabel,
+      );
+      return null;
+    }
 
-  const allTargets = candidates.map((c) => c.stash);
-  let counter = 0;
-  for (const nomGroup of nominatorGroups) {
+    const allTargets = candidates.map((c) => {
+      return { stash: c.stash };
+    });
+    let counter = 0;
+
     // ensure the group is sorted by least avg stake
-    for (const nominator of nomGroup) {
+    for (const nominator of nominatorGroups) {
       // The number of nominations to do per nominator account
       // This is either hard coded, or set to "auto", meaning it will find a dynamic amount of validators
       //    to nominate based on the lowest staked validator in the validator set
       const api = handler.getApi();
       const denom = await chaindata.getDenom();
+      if (!api || !denom) return null;
       const autoNom = await autoNumNominations(api, nominator);
       const { nominationNum } = autoNom;
       const stash = await nominator.stash();
@@ -45,7 +53,8 @@ export const doNominations = async (
       // Check the free balance of the account. If it doesn't have a free balance, skip.
       const balance = await chaindata.getBalance(nominator.address);
       const metadata = await queries.getChainMetadata();
-      const network = metadata.name.toLowerCase();
+      if (!metadata || !balance || !balance.free) return null;
+      const network = metadata?.name?.toLowerCase();
       const free = Util.toDecimals(Number(balance.free), metadata.decimals);
       // TODO Parameterize this as a constant
       if (free < 0.1) {
@@ -71,11 +80,11 @@ export const doNominations = async (
           `targets length was 0. Skipping nominations`,
           scorekeeperLabel,
         );
-        return;
+        return null;
       }
 
       await Util.sleep(10000);
-      await nominator.nominate(targets);
+      await nominator.nominate(targets.map((t) => t.stash));
 
       // Wait some time between each transaction to avoid nonce issues.
       await Util.sleep(16000);
@@ -83,25 +92,25 @@ export const doNominations = async (
       const targetsString = (
         await Promise.all(
           targets.map(async (target) => {
-            const candidate = await queries.getCandidate(target);
-            const name = candidate.name;
+            const candidate = await queries.getCandidate(target.stash);
+            const name = candidate?.name || "";
             return `- ${name} (${target})`;
           }),
         )
       ).join("\n");
 
       if (!stash) continue;
-      const name = (await queries.getChainMetadata()).name;
+      const name = (await queries.getChainMetadata())?.name;
       const decimals = name == "Kusama" ? 12 : 10;
       const [rawBal, err] = await chaindata.getBondedAmount(stash);
-      const bal = Util.toDecimals(rawBal, decimals);
+      const bal = Util.toDecimals(rawBal || 0, decimals);
       const sym = name == "Kusama" ? "KSM" : "DOT";
 
       const targetsHtml = (
         await Promise.all(
           targets.map(async (target) => {
-            const name = (await queries.getCandidate(target)).name;
-            return `- ${name} (${Util.addressUrl(target, config)})`;
+            const name = (await queries.getCandidate(target.stash))?.name || "";
+            return `- ${name} (${Util.addressUrl(target.stash, config)})`;
           }),
         )
       ).join("<br>");
@@ -117,26 +126,32 @@ export const doNominations = async (
           )} nominated:<br>${targetsHtml}`,
       );
     }
+
+    logger.info(
+      `Number of Validators nominated this round: ${counter}`,
+      scorekeeperLabel,
+    );
+    bot?.sendMessage(`${counter} Validators nominated this round`);
+
+    currentTargets = allTargets.slice(0, counter);
+    const nextTargets = allTargets.slice(counter, allTargets.length);
+
+    const nextTargetsString = (
+      await Promise.all(
+        nextTargets.map(async (target) => {
+          const name = (await queries.getCandidate(target.stash))?.name || "";
+          return `- ${name} (${target})`;
+        }),
+      )
+    ).join("\n");
+    logger.info(`Next targets: \n${nextTargetsString}`, scorekeeperLabel);
+
+    return counter;
+  } catch (e) {
+    logger.error(
+      `Error in doNominations: ${JSON.stringify(e)}`,
+      scorekeeperLabel,
+    );
+    return null;
   }
-
-  logger.info(
-    `Number of Validators nominated this round: ${counter}`,
-    scorekeeperLabel,
-  );
-  bot?.sendMessage(`${counter} Validators nominated this round`);
-
-  currentTargets = allTargets.slice(0, counter);
-  const nextTargets = allTargets.slice(counter, allTargets.length);
-
-  const nextTargetsString = (
-    await Promise.all(
-      nextTargets.map(async (target) => {
-        const name = (await queries.getCandidate(target)).name;
-        return `- ${name} (${target})`;
-      }),
-    )
-  ).join("\n");
-  logger.info(`Next targets: \n${nextTargetsString}`, scorekeeperLabel);
-
-  return counter;
 };

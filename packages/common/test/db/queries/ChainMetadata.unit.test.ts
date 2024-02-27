@@ -1,35 +1,15 @@
-import { MongoMemoryServer } from "mongodb-memory-server";
-import mongoose from "mongoose";
-
 import { ChainMetadataModel } from "../../../src/db/models";
 import {
   getChainMetadata,
   setChainMetadata,
 } from "../../../src/db/queries/ChainMetadata";
-import { Db } from "../../../src/db";
+import { initTestServerBeforeAll } from "../../testUtils/dbUtils";
 
-let mongoServer;
+initTestServerBeforeAll();
 
-beforeAll(async () => {
-  mongoServer = await MongoMemoryServer.create();
-  const mongoUri = mongoServer.getUri();
-  await Db.create(mongoUri);
+beforeEach(async () => {
   await ChainMetadataModel.deleteMany({});
-}, 60000);
-
-afterAll(async () => {
-  try {
-    await mongoose.disconnect();
-    if (mongoServer) {
-      await mongoServer.stop();
-    } else {
-      console.warn("mongoServer is undefined.");
-    }
-  } catch (error) {
-    console.error("Error during afterAll:", error);
-    throw error;
-  }
-}, 60000);
+});
 
 describe("setChainMetadata", () => {
   it("should create chain metadata if none exists", async () => {

@@ -12,6 +12,13 @@ export const eraStatsJob = async (metadata: jobsMetadata): Promise<boolean> => {
     const currentEra = await chaindata.getCurrentEra();
     const validators = await chaindata.currentValidators();
 
+    if (!currentSession || !currentEra || !validators) {
+      logger.error(
+        "Error getting current session, era, or validators",
+        erastatsLabel,
+      );
+      return false;
+    }
     // Emit progress update indicating the start of the job
     jobStatusEmitter.emit("jobProgress", {
       name: "Era Stats Job",
@@ -21,13 +28,6 @@ export const eraStatsJob = async (metadata: jobsMetadata): Promise<boolean> => {
 
     // Try and store identities:
     for (const [index, validator] of validators.entries()) {
-      const exists = await queries.getIdentity(validator);
-      if (!exists) {
-        // If an identity doesn't already exist, query and store it.
-        const identity = await chaindata.getFormattedIdentity(validator);
-        await queries.setIdentity(identity);
-      }
-
       // Emit progress update for each validator processed
       const progressPercentage = ((index + 1) / validators.length) * 100;
       jobStatusEmitter.emit("jobProgress", {
@@ -57,6 +57,13 @@ export const eraStatsJob = async (metadata: jobsMetadata): Promise<boolean> => {
       );
       const validators = await chaindata.getValidatorsAtEra(i);
       const session = await chaindata.getSessionAtEra(i);
+      if (!session || !validators) {
+        logger.error(
+          `Error getting session or validators for era ${i}`,
+          erastatsLabel,
+        );
+        continue;
+      }
       await queries.setValidatorSet(session, i, validators);
 
       // Emit progress update for each era processed

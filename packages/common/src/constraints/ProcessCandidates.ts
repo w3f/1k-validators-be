@@ -76,7 +76,7 @@ export const processCandidates = async (
     }
     return [good, bad];
   } catch (e) {
-    logger.error(e.toString(), constraintsLabel);
+    logger.error(JSON.stringify(e), constraintsLabel);
     throw e;
   }
 };

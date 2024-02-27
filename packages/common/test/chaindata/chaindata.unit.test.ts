@@ -1,13 +1,12 @@
 import { ChainData } from "../../src/chaindata/chaindata";
 import fs from "fs";
-import { ChaindataValues } from "../../src/chaindata/__mocks__/chaindata";
-import ApiHandler from "../../src/ApiHandler";
+import ApiHandler from "../../src/ApiHandler/ApiHandler";
 import path from "path";
 
 jest.mock("../../src/chaindata/chaindata");
 
 describe("ChainData Mock Unit Tests", () => {
-  let mockValues: Partial<ChaindataValues>;
+  let mockValues: any;
   let chainData: ChainData;
   let handler: ApiHandler;
 

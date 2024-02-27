@@ -1,11 +1,13 @@
 import { response } from "./index";
 import * as RewardsService from "../services/Rewards";
 import { logger } from "@1kv/common";
+import { requestEmitter } from "../events/requestEmitter";
 
 const label = { label: "Gateway" };
 
 export default class RewardsController {
   public static async getRewardsValidatorTotal(context: any): Promise<void> {
+    requestEmitter.emit("requestReceived");
     if (await context.cashed()) {
       logger.info(`getRewardsValidatorTotal is cached`, label);
       return;
@@ -20,6 +22,7 @@ export default class RewardsController {
   public static async getRewardsAllValidatorsTotal(
     context: any,
   ): Promise<void> {
+    requestEmitter.emit("requestReceived");
     if (await context.cashed()) {
       logger.info(`getRewardsAllValidatorsTotal is cached`, label);
       return;
@@ -28,6 +31,7 @@ export default class RewardsController {
   }
 
   public static async getRewardsValidatorStats(context: any): Promise<void> {
+    requestEmitter.emit("requestReceived");
     if (await context.cashed()) {
       logger.info(`getRewardsValidatorStats is cached`, label);
       return;
@@ -40,6 +44,7 @@ export default class RewardsController {
   }
 
   public static async getRewardsAllValidatorStats(context: any): Promise<void> {
+    requestEmitter.emit("requestReceived");
     if (await context.cashed()) {
       logger.info(`getRewardsAllValidatorStats is cached`, label);
       return;
@@ -48,6 +53,7 @@ export default class RewardsController {
   }
 
   public static async getRewardsNominatorTotal(context: any): Promise<void> {
+    requestEmitter.emit("requestReceived");
     if (await context.cashed()) {
       logger.info(`getRewardsNominatorTotal is cached`, label);
       return;
@@ -63,6 +69,7 @@ export default class RewardsController {
     context: any,
   ): Promise<void> {
     if (await context.cashed()) {
+      requestEmitter.emit("requestReceived");
       logger.info(`getRewardsAllNominatorsTotal is cached`, label);
       return;
     }
@@ -70,6 +77,7 @@ export default class RewardsController {
   }
 
   public static async getRewardsValidator(context: any): Promise<void> {
+    requestEmitter.emit("requestReceived");
     if (await context.cashed()) {
       logger.info(`getRewardsValidator is cached`, label);
       return;
@@ -82,6 +90,7 @@ export default class RewardsController {
   }
 
   public static async getRewardsNominator(context: any): Promise<void> {
+    requestEmitter.emit("requestReceived");
     if (await context.cashed()) {
       logger.info(`getRewardsNominator is cached`, label);
       return;

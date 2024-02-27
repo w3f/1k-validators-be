@@ -73,7 +73,7 @@ export class JobsMicroservice extends Jobs {
       // TODO update this as queue job
       // await startLocationStatsJob(this.config, this.chaindata);
     } catch (e) {
-      logger.error(e.toString(), scorekeeperLabel);
+      logger.error(JSON.stringify(e), scorekeeperLabel);
       logger.error("Error starting microservice jobs", scorekeeperLabel);
     }
   };

@@ -6,7 +6,7 @@ import {
   logger,
 } from "../../index";
 
-import { scorekeeperLabel, SpawnedNominatorGroup } from "../scorekeeper";
+import { scorekeeperLabel } from "../scorekeeper";
 import {
   startActiveValidatorJob,
   startBlockDataJob,
@@ -27,21 +27,24 @@ import {
   startValidatorPrefJob,
   startValidityJob,
 } from "./cron/StartCronJobs";
+import MatrixBot from "../../matrix";
+import Nominator from "../../nominator/nominator";
 
 export type jobsMetadata = {
   config: Config.ConfigSchema;
   ending: boolean;
   chaindata: ChainData;
-  nominatorGroups: Array<SpawnedNominatorGroup>;
+  nominatorGroups: Nominator[];
   nominating: boolean;
   currentEra: number;
-  bot: any;
+  bot: MatrixBot;
   constraints: Constraints.OTV;
   handler: ApiHandler;
-  currentTargets: string[];
+  currentTargets: { stash?: string; identity?: any }[];
 };
 
 export interface JobStatus {
+  name: string;
   runCount: number;
   updated: number;
   status: "started" | "running" | "finished" | "errored";
@@ -98,7 +101,7 @@ export const startMonolithJobs = async (
     await startScorekeeperJobs(metadata);
     return true;
   } catch (e) {
-    logger.error(e.toString(), scorekeeperLabel);
+    logger.error(JSON.stringify(e), scorekeeperLabel);
     logger.error("Error starting monolith jobs", scorekeeperLabel);
     return false;
   }

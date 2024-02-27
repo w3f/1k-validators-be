@@ -26,7 +26,7 @@ export const getLocations = async (address: string): Promise<Location[]> => {
 export const getLocation = async (
   name: string,
   addr: string,
-): Promise<Location> => {
+): Promise<Location | null> => {
   return LocationModel.findOne({
     $or: [{ addr }, { name }],
   })
@@ -127,7 +127,7 @@ export const setLocation = async (
     }
     return true;
   } catch (e) {
-    logger.error(e.toString());
+    logger.error(JSON.stringify(e));
     logger.error(`Error setting location`, dbLabel);
     return false;
   }
@@ -166,7 +166,7 @@ export const removeIIT = async (): Promise<any> => {
   try {
     return IITModel.deleteOne({}).exec();
   } catch (e) {
-    logger.error(e.toString());
+    logger.error(JSON.stringify(e));
     logger.error(`Error deleting IIT`, dbLabel);
     return false;
   }
@@ -189,7 +189,7 @@ export const updateIITRequestCount = async (): Promise<any> => {
 
     return updateResult;
   } catch (e) {
-    logger.error(e.toString());
+    logger.error(JSON.stringify(e));
     logger.error("Error updating IIT request count", dbLabel);
     return false;
   }

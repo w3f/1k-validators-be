@@ -41,7 +41,7 @@ __metadata:
     swagger-jsdoc: ^6.2.8
     swagger2: ^4.0.3
     swagger2-koa: ^4.0.0
-    ts-jest: ^29.1.2
+    ts-jest: latest
     ws: ^8.16.0
     yamljs: ^0.3.0
   languageName: unknown
@@ -11097,7 +11097,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-jest@npm:^29.1.2":
+"ts-jest@npm:^29.1.2, ts-jest@npm:latest":
   version: 29.1.2
   resolution: "ts-jest@npm:29.1.2"
   dependencies:

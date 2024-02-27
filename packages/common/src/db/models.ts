@@ -1,4 +1,5 @@
 import mongoose, { Schema } from "mongoose";
+import { LocationStats as LStats, Stats } from "../constraints/score";
 
 const RewardRecordScheme = new Schema({
   // Era
@@ -226,6 +227,22 @@ export const LocationSchema = new Schema({
 });
 
 export const LocationModel = mongoose.model("Location", LocationSchema);
+
+export interface NominatorStake {
+  validator: string;
+  era: number;
+  totalStake: number;
+  inactiveStake: number;
+  activeNominators: {
+    address: string;
+    bonded: number;
+  }[];
+  inactiveNominators: {
+    address: string;
+    bonded: number;
+  }[];
+  updated: number;
+}
 
 // Info about a validators nominations
 export const NominatorStakeSchema = new Schema({
@@ -499,21 +516,6 @@ export const NominatorSchema = new Schema({
 
 export const NominatorModel = mongoose.model("Nominator", NominatorSchema);
 
-export const NominationSchema = new Schema({
-  // Nominator address
-  address: String,
-  // The era the nomination took place
-  era: Number,
-  // The validators in the nomination
-  validators: [String],
-  // The timestamp of the nomination
-  timestamp: Number,
-  // The amount of funds bonded in the account
-  bonded: Number,
-  // The block has the tx was finalized in
-  blockHash: String,
-});
-
 export interface ChainMetadata {
   decimals: number;
   name: string;
@@ -547,6 +549,29 @@ export const BotClaimEventModel = mongoose.model(
   "BotClaimEvent",
   BotClaimEventSchema,
 );
+
+export interface Nomination {
+  address: string;
+  era: number;
+  validators: string[];
+  timestamp: number;
+  bonded: number;
+  blockHash: string;
+}
+export const NominationSchema = new Schema({
+  // Nominator address
+  address: String,
+  // The era the nomination took place
+  era: Number,
+  // The validators in the nomination
+  validators: [String],
+  // The timestamp of the nomination
+  timestamp: Number,
+  // The amount of funds bonded in the account
+  bonded: Number,
+  // The block has the tx was finalized in
+  blockHash: String,
+});
 
 export const NominationModel = mongoose.model("Nomination", NominationSchema);
 
@@ -619,239 +644,42 @@ export const EraStatsModel = mongoose.model("EraStatsModel", EraStatsSchema);
 
 export interface ValidatorScoreMetadata {
   session: number;
-  bondedStats: {
-    values: number[];
-    absoluteMin: number;
-    absoluteMax: number;
-    q10: number;
-    q25: number;
-    q50: number;
-    q75: number;
-    q90: number;
-    mean: number;
-    standardDeviation: number;
-  };
+  bondedStats: Stats;
   bondedWeight: number;
-  faultsStats: {
-    values: number[];
-    absoluteMin: number;
-    absoluteMax: number;
-    q10: number;
-    q25: number;
-    q50: number;
-    q75: number;
-    q90: number;
-    mean: number;
-    standardDeviation: number;
-  };
+  faultsStats: Stats;
   faultWeight: number;
-  inclusionStats: {
-    values: number[];
-    absoluteMin: number;
-    absoluteMax: number;
-    q10: number;
-    q25: number;
-    q50: number;
-    q75: number;
-    q90: number;
-    mean: number;
-    standardDeviation: number;
-  };
+  inclusionStats: Stats;
   inclusionWeight: number;
-  spanInclusionStats: {
-    values: number[];
-    absoluteMin: number;
-    absoluteMax: number;
-    q10: number;
-    q25: number;
-    q50: number;
-    q75: number;
-    q90: number;
-    mean: number;
-    standardDeviation: number;
-  };
+  spanInclusionStats: Stats;
   spanInclusionWeight: number;
-  discoveredAtStats: {
-    values: number[];
-    absoluteMin: number;
-    absoluteMax: number;
-    q10: number;
-    q25: number;
-    q50: number;
-    q75: number;
-    q90: number;
-    mean: number;
-    standardDeviation: number;
-  };
+  discoveredAtStats: Stats;
   discoveredAtWeight: number;
-  nominatedAtStats: {
-    values: number[];
-    absoluteMin: number;
-    absoluteMax: number;
-    q10: number;
-    q25: number;
-    q50: number;
-    q75: number;
-    q90: number;
-    mean: number;
-    standardDeviation: number;
-  };
+  nominatedAtStats: Stats;
   nominatedAtWeight: number;
-  offlineStats: {
-    values: number[];
-    absoluteMin: number;
-    absoluteMax: number;
-    q10: number;
-    q25: number;
-    q50: number;
-    q75: number;
-    q90: number;
-    mean: number;
-    standardDeviation: number;
-  };
+  offlineStats: Stats;
   offlineWeight: number;
-  rankStats: {
-    values: number[];
-    absoluteMin: number;
-    absoluteMax: number;
-    q10: number;
-    q25: number;
-    q50: number;
-    q75: number;
-    q90: number;
-    mean: number;
-    standardDeviation: number;
-  };
+  rankStats: Stats;
   rankWeight: number;
-  locationStats: {
-    values: { name: string; numberOfNodes: number }[];
-    absoluteMin: number;
-    absoluteMax: number;
-    q10: number;
-    q25: number;
-    q50: number;
-    q75: number;
-    q90: number;
-    mean: number;
-    standardDeviation: number;
-  };
+  locationStats: LStats;
   locationWeight: number;
-  regionStats: {
-    values: { name: string; numberOfNodes: number }[];
-    absoluteMin: number;
-    absoluteMax: number;
-    q10: number;
-    q25: number;
-    q50: number;
-    q75: number;
-    q90: number;
-    mean: number;
-    standardDeviation: number;
-  };
+  regionStats: LStats;
   regionWeight: number;
-  countryStats: {
-    values: { name: string; numberOfNodes: number }[];
-    absoluteMin: number;
-    absoluteMax: number;
-    q10: number;
-    q25: number;
-    q50: number;
-    q75: number;
-    q90: number;
-    mean: number;
-    standardDeviation: number;
-  };
+  countryStats: LStats;
   countryWeight: number;
-  providerStats: {
-    values: { name: string; numberOfNodes: number }[];
-    absoluteMin: number;
-    absoluteMax: number;
-    q10: number;
-    q25: number;
-    q50: number;
-    q75: number;
-    q90: number;
-    mean: number;
-    standardDeviation: number;
-  };
+  providerStats: LStats;
   providerWeight: number;
   councilStakeWeight?: number;
-  councilStakeStats?: {
-    values: number[];
-    absoluteMin: number;
-    absoluteMax: number;
-    q10: number;
-    q25: number;
-    q50: number;
-    q75: number;
-    q90: number;
-    mean: number;
-    standardDeviation: number;
-  };
-  democracyStats?: {
-    values: number[];
-    absoluteMin: number;
-    absoluteMax: number;
-    q10: number;
-    q25: number;
-    q50: number;
-    q75: number;
-    q90: number;
-    mean: number;
-    standardDeviation: number;
-  };
+  councilStakeStats?: Stats;
+  democracyStats?: Stats;
   democracyWeight?: number;
-  nominatorStakeStats?: {
-    values: number[];
-    absoluteMin: number;
-    absoluteMax: number;
-    q10: number;
-    q25: number;
-    q50: number;
-    q75: number;
-    q90: number;
-    mean: number;
-    standardDeviation: number;
-  };
+  nominatorStakeStats?: Stats;
   nominatorStakeWeight: number;
-  delegationStats?: {
-    values: number[];
-    absoluteMin: number;
-    absoluteMax: number;
-    q10: number;
-    q25: number;
-    q50: number;
-    q75: number;
-    q90: number;
-    mean: number;
-    standardDeviation: number;
-  };
+  delegationStats?: Stats;
   delegationWeight?: number;
-  openGovStats?: {
-    values: number[];
-    absoluteMin: number;
-    absoluteMax: number;
-    q10: number;
-    q25: number;
-    q50: number;
-    q75: number;
-    q90: number;
-    mean: number;
-    standardDeviation: number;
-  };
+  openGovStats?: Stats;
   openGovDelegationWeight?: number;
-  openGovDelegationStats?: {
-    values: number[];
-    absoluteMin: number;
-    absoluteMax: number;
-    q10: number;
-    q25: number;
-    q50: number;
-    q75: number;
-    q90: number;
-    mean: number;
-    standardDeviation: number;
-  };
+  openGovDelegationStats?: Stats;
+  faultsWeight?: number;
   openGovWeight?: number;
   rpcWeight?: number;
   clientWeight?: number;
@@ -1712,6 +1540,18 @@ export const HeartbeatIndexModel = mongoose.model(
   HeartbeatIndex,
 );
 
+export interface Validator {
+  address: string;
+  keys: {
+    grandpa?: string;
+    babe?: string;
+    imOnline?: string;
+    paraValidator?: string;
+    authorityDiscovery?: string;
+    beefy?: string;
+    paraAssignment?: string;
+  };
+}
 export const Validator = new Schema({
   address: { type: String, index: true },
   keys: {
@@ -1750,6 +1590,28 @@ export const PayoutTransactionModel = mongoose.model(
   PayoutTransaction,
 );
 
+export interface Reward {
+  role: string;
+  exposurePercentage: number;
+  exposure: number;
+  totalStake: number;
+  commission: number;
+  era: number;
+  validator: string;
+  nominator: string;
+  rewardAmount: string;
+  rewardDestination: string;
+  erasMinStake: number;
+  validatorStakeEfficiency: number;
+  blockHash: string;
+  blockNumber: number;
+  timestamp: number;
+  date: string;
+  chf: number;
+  usd: number;
+  eur: number;
+}
+
 export const Reward = new Schema({
   role: String,
   exposurePercentage: Number,
@@ -1759,7 +1621,7 @@ export const Reward = new Schema({
   era: { type: Number, index: true },
   validator: { type: String, index: true },
   nominator: { type: String, index: true },
-  rewardAmount: String,
+  rewardAmount: Number,
   rewardDestination: String,
   erasMinStake: Number,
   validatorStakeEfficiency: Number,
@@ -1774,6 +1636,10 @@ export const Reward = new Schema({
 
 export const RewardModel = mongoose.model("Reward", Reward);
 
+export interface BlockIndex {
+  latest: number;
+  earliest: number;
+}
 // Storing the earliest and latest block that has been indexed
 export const BlockIndex = new Schema({
   latest: Number,

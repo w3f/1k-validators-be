@@ -1,5 +1,8 @@
 import { Block } from "@polkadot/types/interfaces";
-import { NumberResult, StringResult } from "../../types";
+
+import fs from "fs";
+import path from "path";
+
 import { EraPointsInfo } from "../queries/Era";
 import {
   Balance,
@@ -7,11 +10,9 @@ import {
   NextKeys,
   QueuedKey,
 } from "../queries/ValidatorPref";
-import { Identity } from "../../db";
 import { ProxyAnnouncement } from "../queries/Proxy";
 import { NominatorInfo } from "../queries/Nomination";
-import fs from "fs";
-import path from "path";
+import { Types } from "../../index";
 
 export interface ChaindataValues {
   chainType: string;
@@ -21,15 +22,15 @@ export interface ChaindataValues {
   block: Block | undefined;
   latestBlockHash: string;
   session: number;
-  activeEra: NumberResult;
+  activeEra: Types.NumberResult;
   currentEra: number;
-  sessionAtEra: any; // Define the type of sessionAtEra according to its actual type
+  sessionAtEra: any;
   totalEraPoints: EraPointsInfo;
-  findEraBlockHash: StringResult;
+  findEraBlockHash: Types.StringResult;
   currentValidators: string[];
-  getCommission: NumberResult;
+  getCommission: Types.NumberResult;
   getBlocked: boolean;
-  getBondedAmount: NumberResult;
+  getBondedAmount: Types.NumberResult;
   getControllerFromStash: string;
   getRewardDestination: string;
   queuedKeys: QueuedKey[];
@@ -41,7 +42,7 @@ export interface ChaindataValues {
   validators: string[];
   hasIdentity: [boolean, boolean];
   getIdentity: string | null;
-  identity: Identity;
+  identity: Types.Identity;
   proxyAnnouncements: ProxyAnnouncement[];
   nominators: NominatorInfo[];
 }
@@ -146,7 +147,7 @@ export class ChainData {
 
   getChainType: jest.Mock;
   getDenom: jest.Mock;
-  getApiAt: jest.Mock;
+  // getApiAt: jest.Mock;
   getBlockHash: jest.Mock;
   getLatestBlockHash: jest.Mock;
   getBlock: jest.Mock;

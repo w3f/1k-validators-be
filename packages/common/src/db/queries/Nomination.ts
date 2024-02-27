@@ -1,5 +1,4 @@
-import logger from "../../logger";
-import { NominationModel } from "../models";
+import { Nomination, NominationModel } from "../models";
 
 export const setNomination = async (
   address: string,
@@ -8,74 +7,78 @@ export const setNomination = async (
   bonded: number,
   blockHash: string,
 ): Promise<boolean> => {
-  logger.info(
-    `(Db::setNomination) Setting nomination for ${address} bonded with ${bonded} for era ${era} to the following validators: ${targets}`,
-  );
+  try {
+    const data = await NominationModel.findOne({
+      address: address,
+      era: era,
+    }).lean();
 
-  const data = await NominationModel.findOne({
-    address: address,
-    era: era,
-  }).lean();
+    if (!!data && data.blockHash) return false;
 
-  if (!!data && data.blockHash) return;
+    if (!data) {
+      const nomination = new NominationModel({
+        address: address,
+        era: era,
+        validators: targets,
+        timestamp: Date.now(),
+        bonded: bonded,
+        blockHash: blockHash,
+      });
+      await nomination.save();
+      return true;
+    }
 
-  if (!data) {
-    const nomination = new NominationModel({
+    await NominationModel.findOneAndUpdate({
       address: address,
       era: era,
       validators: targets,
       timestamp: Date.now(),
       bonded: bonded,
       blockHash: blockHash,
-    });
-    await nomination.save();
+    }).exec();
     return true;
+  } catch (e) {
+    console.error(`Error setting nomination: ${JSON.stringify(e)}`);
+    return false;
   }
-
-  await NominationModel.findOneAndUpdate({
-    address: address,
-    era: era,
-    validators: targets,
-    timestamp: Date.now(),
-    bonded: bonded,
-    blockHash: blockHash,
-  }).exec();
 };
 
 export const getNomination = async (
   address: string,
   era: number,
-): Promise<any> => {
-  const data = await NominationModel.findOne({
+): Promise<Nomination | null> => {
+  return NominationModel.findOne({
     address: address,
     era: era,
-  }).lean();
-  return data;
+  }).lean<Nomination>();
 };
 
 export const getLastNominatorNomination = async (
   address: string,
-): Promise<any> => {
+): Promise<Nomination | null> => {
   // Returns the last nominations for a given nominator controller
-  const data = await NominationModel.find({ address })
-    .lean()
+  const data = await NominationModel.findOne({ address })
+    .lean<Nomination[]>()
     .sort("-timestamp")
     .limit(1);
-  return data[0];
+  if (data) {
+    return data[0];
+  } else {
+    return null;
+  }
 };
 
 export const getLastNominations = async (
   address: string,
   eras: number,
-): Promise<any[]> => {
+): Promise<Nomination[]> => {
   // Returns the last nominations for a given nominator controller
-  const data = await NominationModel.find({ address })
-    .lean()
+  return NominationModel.find({ address })
+    .lean<Nomination[]>()
     .sort("-era")
     .limit(Number(eras));
-  return data;
 };
 
-export const allNominations = async (): Promise<any[]> => {
-  return await NominationModel.find({ address: /.*/ }).lean().exec();
+export const allNominations = async (): Promise<Nomination[]> => {
+  return NominationModel.find({ address: /.*/ }).lean<Nomination[]>();
 };

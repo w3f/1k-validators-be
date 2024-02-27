@@ -16,11 +16,11 @@ describe("Nominations Database Functions", () => {
 
       const nomination = await getNomination(address, era);
       expect(nomination).toBeDefined();
-      expect(nomination.address).toEqual(address);
-      expect(nomination.era).toEqual(era);
-      expect(nomination.validators).toEqual(targets);
-      expect(nomination.bonded).toEqual(bonded);
-      expect(nomination.blockHash).toEqual(blockHash);
+      expect(nomination?.address).toEqual(address);
+      expect(nomination?.era).toEqual(era);
+      expect(nomination?.validators).toEqual(targets);
+      expect(nomination?.bonded).toEqual(bonded);
+      expect(nomination?.blockHash).toEqual(blockHash);
     });
 
     it("should not set a new nomination if existing nomination found", async () => {
@@ -36,7 +36,7 @@ describe("Nominations Database Functions", () => {
       await setNomination(address, era, targets, bonded, newBlockHash);
 
       const nomination = await getNomination(address, era);
-      expect(nomination.blockHash).toEqual(blockHash); // Ensure blockHash remains unchanged
+      expect(nomination?.blockHash).toEqual(blockHash); // Ensure blockHash remains unchanged
     });
   });
 });

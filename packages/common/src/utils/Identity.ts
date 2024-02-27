@@ -1,6 +1,7 @@
 import { logger, queries } from "../index";
-import { scorekeeperLabel } from "../scorekeeper/scorekeeper";
+
 import Chaindata from "../chaindata/chaindata";
+import { scorekeeperLabel } from "../scorekeeper/scorekeeper";
 
 export const setAllIdentities = async (
   chaindata: Chaindata,
@@ -21,7 +22,9 @@ export const setAllIdentities = async (
         scorekeeperLabel,
       );
       const identity = await chaindata.getFormattedIdentity(candidate.stash);
-      await queries.setCandidateIdentity(candidate.stash, identity);
+      if (identity) {
+        await queries.setCandidateIdentity(candidate.stash, identity);
+      }
     }
     return true;
   } catch (e) {

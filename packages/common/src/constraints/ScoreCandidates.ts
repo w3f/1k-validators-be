@@ -203,7 +203,7 @@ export const scoreCandidate = async (
     const scaledNominatorStake =
       scaledDefined(
         totalNominatorStake,
-        nominatorStakeStats.values,
+        nominatorStakeStats?.values || [],
         0.05,
         0.95,
       ) || 0;
@@ -274,7 +274,6 @@ export const scoreCandidate = async (
     return false;
   }
 };
-
 export const scoreCandidates = async (
   constraints: OTV,
   candidates: Candidate[],

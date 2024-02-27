@@ -2,9 +2,11 @@ import { response } from "./index";
 import * as EraPointsService from "../services/EraPoints";
 import { logger } from "@1kv/common";
 import { gatewayLabel } from "../run";
+import { requestEmitter } from "../events/requestEmitter";
 
 export default class EraPointsController {
   public static async getEraPoints(context: any): Promise<any> {
+    requestEmitter.emit("requestReceived");
     if (await context.cashed()) {
       logger.info(`{Gateway} getEraPoints is cached`, gatewayLabel);
       return;
@@ -14,6 +16,7 @@ export default class EraPointsController {
   }
 
   public static async getTotalEraPoints(context: any): Promise<any> {
+    requestEmitter.emit("requestReceived");
     if (await context.cashed()) {
       logger.info(`{Gateway} getTotalEraPoints is cached`, gatewayLabel);
       return;

@@ -21,7 +21,7 @@ export default class Server {
   private handler: ApiHandler | null;
   private scorekeeper: ScoreKeeper | null;
 
-  private totalRequests: number = 0;
+  private totalRequests = 0;
   private endpointCounts: Record<string, number> = {};
 
   constructor(
@@ -78,12 +78,8 @@ export default class Server {
       );
       return true;
     } catch (e) {
-      logger.error(e.toString(), { label: "Gateway" });
+      logger.error(JSON.stringify(e), { label: "Gateway" });
       return false;
     }
-  }
-
-  private updateRequestCount(): void {
-    this.requestCount++;
   }
 }

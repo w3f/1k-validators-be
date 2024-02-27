@@ -8,10 +8,14 @@ export const getCommission = async (
 ): Promise<NumberResult> => {
   try {
     await chaindata.checkApiConnection();
-    const prefs = await chaindata.api.query.staking.validators(validator);
+    const prefs = await chaindata?.api?.query.staking.validators(validator);
+    if (!prefs) {
+      return [0, "No preferences found."];
+    }
     return [prefs.commission.toNumber(), null];
   } catch (e) {
     logger.error(`Error getting commission: ${e}`, chaindataLabel);
+    return [0, JSON.stringify(e)];
   }
 };
 
@@ -20,16 +24,17 @@ export const getCommissionInEra = async (
   apiAt: any,
   eraIndex: number,
   validator: string,
-): Promise<NumberResult> => {
+): Promise<number | null> => {
   try {
     await chaindata.checkApiConnection();
-    const prefs = await apiAt.query.staking.erasValidatorPrefs(
+    const prefs = await apiAt?.query?.staking.erasValidatorPrefs(
       eraIndex,
       validator,
     );
     return prefs?.commission?.toNumber();
   } catch (e) {
     logger.error(`Error getting commission in era: ${e}`, chaindataLabel);
+    return null;
   }
 };
 
@@ -39,12 +44,11 @@ export const getBlocked = async (
 ): Promise<boolean> => {
   try {
     await chaindata.checkApiConnection();
-    const prefs = (
-      await chaindata.api.query.staking.validators(validator)
-    )?.blocked.toString();
-    return prefs == "true";
+    const rawPrefs = await chaindata?.api?.query.staking.validators(validator);
+    return rawPrefs?.blocked?.toString() === "true";
   } catch (e) {
     logger.error(`Error getting blocked: ${e}`, chaindataLabel);
+    return false;
   }
 };
 
@@ -54,45 +58,50 @@ export const getBondedAmount = async (
 ): Promise<NumberResult> => {
   try {
     await chaindata.checkApiConnection();
-    const bondedAddress = await chaindata.api.query.staking.bonded(stash);
-    if (bondedAddress.isNone) {
-      return [null, "Not bonded to any account."];
+    const bondedAddress = await chaindata?.api?.query.staking.bonded(stash);
+    if (!bondedAddress || bondedAddress.isNone) {
+      return [0, "Not bonded to any account."];
     }
 
-    const ledger: any = await chaindata.api.query.staking.ledger(
+    const ledger: any = await chaindata?.api?.query.staking.ledger(
       bondedAddress.toString(),
     );
-    if (ledger.isNone) {
-      return [null, `Ledger is empty.`];
+    if (!ledger || ledger.isNone) {
+      return [0, `Ledger is empty.`];
     }
 
     return [ledger.toJSON().active, null];
   } catch (e) {
     logger.error(`Error getting bonded amount: ${e}`, chaindataLabel);
+    return [0, JSON.stringify(e)];
   }
 };
 
 export const getControllerFromStash = async (
   chaindata: ChainData,
   stash: string,
-): Promise<string> => {
+): Promise<string | null> => {
   try {
     await chaindata.checkApiConnection();
-    const controller = await chaindata.api.query.staking.bonded(stash);
+    const controller = await chaindata?.api?.query.staking.bonded(stash);
+    if (!controller) {
+      return null;
+    }
     return controller.toString();
   } catch (e) {
     logger.error(`Error getting controller from stash: ${e}`, chaindataLabel);
+    return null;
   }
 };
 
 export const getRewardDestination = async (
   chaindata: ChainData,
   stash: string,
-): Promise<string> => {
+): Promise<string | null> => {
   try {
     await chaindata.checkApiConnection();
     const rewardDestination: any =
-      await chaindata.api.query.staking.payee(stash);
+      await chaindata.api?.query.staking.payee(stash);
     if (rewardDestination.toJSON().account) {
       return rewardDestination.toJSON().account;
     } else {
@@ -100,6 +109,7 @@ export const getRewardDestination = async (
     }
   } catch (e) {
     logger.error(`Error getting reward destination: ${e}`, chaindataLabel);
+    return null;
   }
 };
 
@@ -107,7 +117,7 @@ export const getRewardDestinationAt = async (
   chaindata: ChainData,
   apiAt: any,
   stash: string,
-): Promise<string> => {
+): Promise<string | null> => {
   try {
     await chaindata.checkApiConnection();
     const rewardDestination: any = await apiAt.query.staking.payee(stash);
@@ -118,6 +128,7 @@ export const getRewardDestinationAt = async (
     }
   } catch (e) {
     logger.error(`Error getting reward destination: ${e}`, chaindataLabel);
+    return null;
   }
 };
 
@@ -131,7 +142,10 @@ export const getQueuedKeys = async (
 ): Promise<QueuedKey[]> => {
   try {
     await chaindata.checkApiConnection();
-    const queuedKeys = await chaindata.api.query.session.queuedKeys();
+    const queuedKeys = await chaindata.api?.query.session.queuedKeys();
+    if (!queuedKeys) {
+      return [];
+    }
     const keys = queuedKeys.map(([validator, keys]) => {
       return {
         address: validator.toString(),
@@ -141,6 +155,7 @@ export const getQueuedKeys = async (
     return keys;
   } catch (e) {
     logger.error(`Error getting queued keys: ${e}`, chaindataLabel);
+    return [];
   }
 };
 
@@ -159,26 +174,27 @@ export interface NextKeys {
 export const getNextKeys = async (
   chaindata: ChainData,
   stash: string,
-): Promise<NextKeys | undefined> => {
+): Promise<NextKeys | null> => {
   try {
     await chaindata.checkApiConnection();
-    const nextKeysRaw = await chaindata.api.query.session.nextKeys(stash);
+    const nextKeysRaw = await chaindata.api?.query.session.nextKeys(stash);
+    if (!nextKeysRaw) {
+      return null;
+    }
     const nextKeysData = nextKeysRaw.toJSON();
 
-    if (
-      nextKeysData &&
-      typeof nextKeysData === "object" &&
-      "keys" in nextKeysData
-    ) {
-      const keys = nextKeysData["keys"];
-      if (keys && typeof keys === "object") {
-        return { keys } as NextKeys;
+    if (nextKeysData && typeof nextKeysData === "object") {
+      // Check if the object is not empty
+      if (Object.keys(nextKeysData).length > 0) {
+        return { keys: nextKeysData } as NextKeys;
+      } else {
+        return null;
       }
     }
   } catch (e) {
     logger.error(`Error getting next keys: ${e}`, chaindataLabel);
   }
-  return undefined;
+  return null;
 };
 
 export interface Balance {
@@ -188,17 +204,20 @@ export interface Balance {
 export const getBalance = async (
   chaindata: ChainData,
   address: string,
-): Promise<Balance> => {
+): Promise<Balance | null> => {
   try {
     await chaindata.checkApiConnection();
-    const accountData = await chaindata.api.query.system.account(address);
+    const accountData = await chaindata.api?.query.system.account(address);
+    if (!accountData) {
+      return null;
+    }
     const balance: Balance = {
-      free: accountData.data.free.toString(),
+      free: accountData?.data?.free?.toString(),
     };
     return balance;
   } catch (e) {
     logger.error(`Error getting balance: ${e}`, chaindataLabel);
-    throw new Error(`Failed to get balance for address ${address}: ${e}`);
+    return null;
   }
 };
 
@@ -217,38 +236,39 @@ export const getExposure = async (
   chaindata: ChainData,
   eraIndex: number,
   validator: string,
-): Promise<Exposure> => {
+): Promise<Exposure | null> => {
   try {
     await chaindata.checkApiConnection();
     const denom = await chaindata.getDenom();
-    const eraStakers = await chaindata.api.query.staking.erasStakers(
+    const eraStakers = await chaindata.api?.query.staking.erasStakers(
       eraIndex,
       validator,
     );
+    if (eraStakers && denom) {
+      const total = parseFloat(eraStakers.total.toString()) / denom;
+      const own = parseFloat(eraStakers.own.toString()) / denom;
 
-    const total = parseFloat(eraStakers.total.toString()) / denom;
-    const own = parseFloat(eraStakers.own.toString()) / denom;
+      const activeExposure: Stake[] = eraStakers.others.map(
+        (stake: {
+          who: { toString: () => string };
+          value: { toString: () => string };
+        }) => ({
+          address: stake.who.toString(),
+          bonded: parseFloat(stake.value.toString()) / denom,
+        }),
+      );
 
-    const activeExposure: Stake[] = eraStakers.others.map(
-      (stake: {
-        who: { toString: () => string };
-        value: { toString: () => string };
-      }) => ({
-        address: stake.who.toString(),
-        bonded: parseFloat(stake.value.toString()) / denom,
-      }),
-    );
+      return {
+        total,
+        own,
+        others: activeExposure,
+      };
+    }
 
-    return {
-      total,
-      own,
-      others: activeExposure,
-    };
+    return null;
   } catch (e) {
     logger.error(`Error getting exposure: ${e}`, chaindataLabel);
-    throw new Error(
-      `Failed to get exposure for validator ${validator} at era ${eraIndex}: ${e}`,
-    );
+    return null;
   }
 };
 
@@ -257,7 +277,7 @@ export const getExposureAt = async (
   apiAt: any,
   eraIndex: number,
   validator: string,
-): Promise<any> => {
+): Promise<Exposure | null> => {
   try {
     await chaindata.checkApiConnection();
     const denom = await chaindata.getDenom();
@@ -265,21 +285,25 @@ export const getExposureAt = async (
       eraIndex,
       validator,
     );
-    const total = parseFloat(eraStakers.total.toString()) / denom;
-    const own = parseFloat(eraStakers.own.toString()) / denom;
-    // @ts-ignore
-    const activeExposure = eraStakers.others.toJSON().map((stake) => {
+    if (eraStakers && denom) {
+      const total = parseFloat(eraStakers.total.toString()) / denom;
+      const own = parseFloat(eraStakers.own.toString()) / denom;
+      // @ts-ignore
+      const activeExposure = eraStakers.others.toJSON().map((stake) => {
+        return {
+          address: stake.who.toString(),
+          bonded: stake.value / denom,
+        };
+      });
       return {
-        address: stake.who.toString(),
-        bonded: stake.value / denom,
+        total: total,
+        own: own,
+        others: activeExposure,
       };
-    });
-    return {
-      total: total,
-      own: own,
-      others: activeExposure,
-    };
+    }
+    return null;
   } catch (e) {
     logger.error(`Error getting exposure: ${e}`, chaindataLabel);
+    return null;
   }
 };

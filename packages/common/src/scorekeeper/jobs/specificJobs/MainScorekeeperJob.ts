@@ -40,80 +40,81 @@ export const mainScorekeeperJob = async (
     let processedNominatorGroups = 0;
     const totalNominatorGroups = nominatorGroups ? nominatorGroups.length : 0;
 
-    for (const nomGroup of nominatorGroups) {
-      if (!nomGroup) continue;
+    // Process each nominator group
 
-      // Process each nominator group
-
-      if (!config.scorekeeper.nominating) {
-        logger.info(
-          "Nominating is disabled in the settings. Skipping round.",
-          scorekeeperLabel,
-        );
-        return;
-      }
-
-      const allCurrentTargets = [];
-      for (const nominator of nomGroup) {
-        const currentTargets = await queries.getCurrentTargets(
-          nominator.bondedAddress,
-        );
-        allCurrentTargets.push(currentTargets);
-      }
-
-      if (!allCurrentTargets.length) {
-        logger.info(
-          "Current Targets is empty. Starting round.",
-          scorekeeperLabel,
-        );
-        await startRound(
-          nominating,
-          currentEra,
-          bot,
-          constraints,
-          nomGroup, // Pass the current nominator group
-          chaindata,
-          handler,
-          config,
-          allCurrentTargets,
-        );
-      } else {
-        logger.info(`Ending round.`, scorekeeperLabel);
-        await endRound(
-          ending,
-          [nomGroup], // Pass an array containing the current nominator group
-          chaindata,
-          constraints,
-          bot,
-          config,
-        );
-        await startRound(
-          nominating,
-          currentEra,
-          bot,
-          constraints,
-          nomGroup, // Pass the current nominator group
-          chaindata,
-          handler,
-          config,
-          allCurrentTargets,
-        );
-      }
-
-      processedNominatorGroups++;
-
-      // Calculate progress percentage
-      const progress = Math.floor(
-        (processedNominatorGroups / totalNominatorGroups) * 100,
+    if (!config.scorekeeper.nominating) {
+      logger.info(
+        "Nominating is disabled in the settings. Skipping round.",
+        scorekeeperLabel,
       );
-
-      // Emit progress update event with custom iteration name
-      jobStatusEmitter.emit("jobProgress", {
-        name: "Main Scorekeeper Job",
-        progress,
-        updated: Date.now(),
-        iteration: `Processed nominator group ${processedNominatorGroups}`,
-      });
+      return;
     }
+
+    const allCurrentTargets: {
+      name?: string;
+      stash?: string;
+      identity?: any;
+    }[] = [];
+    for (const nominator of nominatorGroups) {
+      const currentTargets = await queries.getCurrentTargets(
+        nominator.bondedAddress,
+      );
+      allCurrentTargets.push(...currentTargets); // Flatten the array
+    }
+
+    if (!allCurrentTargets.length) {
+      logger.info(
+        "Current Targets is empty. Starting round.",
+        scorekeeperLabel,
+      );
+      await startRound(
+        nominating,
+        currentEra,
+        bot,
+        constraints,
+        nominatorGroups,
+        chaindata,
+        handler,
+        config,
+        allCurrentTargets,
+      );
+    } else {
+      logger.info(`Ending round.`, scorekeeperLabel);
+      await endRound(
+        ending,
+        nominatorGroups,
+        chaindata,
+        constraints,
+
+        config,
+        bot,
+      );
+      await startRound(
+        nominating,
+        currentEra,
+        bot,
+        constraints,
+        nominatorGroups,
+        chaindata,
+        handler,
+        config,
+        allCurrentTargets,
+      );
+    }
+
+    processedNominatorGroups++;
+
+    // Calculate progress percentage
+    const progress = Math.floor(
+      (processedNominatorGroups / totalNominatorGroups) * 100,
+    );
+
+    // Emit progress update event with custom iteration name
+    jobStatusEmitter.emit("jobProgress", {
+      name: "Main Scorekeeper Job",
+      progress,
+      updated: Date.now(),
+      iteration: `Processed nominator group ${processedNominatorGroups}`,
+    });
   }
 };

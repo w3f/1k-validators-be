@@ -6,6 +6,7 @@ const label = { label: "Matrix" };
 export default class MatrixBot {
   public client: any;
   public conf: Config.ConfigSchema;
+  private userId = "";
 
   constructor(
     baseUrl: string,
@@ -13,30 +14,37 @@ export default class MatrixBot {
     userId: string,
     config: Config.ConfigSchema,
   ) {
+    this.conf = config;
+    this.userId = userId;
     try {
       this.client = sdk.createClient({
         baseUrl,
         accessToken,
         userId,
       });
-      this.conf = config;
     } catch (e) {
-      logger.error(e.toString());
+      logger.error(JSON.stringify(e));
       logger.error("MatrixBot failed to start", label);
     }
   }
 
   async start(): Promise<void> {
-    this.client.on("RoomMember.membership", function (event, member) {
-      if (member.membership === "invite" && member.userId === this.userId) {
-        this.client.joinRoom(member.roomId).then(function () {
-          logger.info(
-            `User: ${this.userId} auto joined room: ${member.roomId}`,
-            { label: "matrix" },
-          );
-        });
-      }
-    });
+    this.client.on(
+      "RoomMember.membership",
+      (
+        event: any,
+        member: { membership: string; userId: any; roomId: any },
+      ) => {
+        if (member.membership === "invite" && member.userId === this.userId) {
+          this.client.joinRoom(member.roomId).then(() => {
+            logger.info(
+              `User: ${this.userId} auto joined room: ${member.roomId}`,
+              { label: "matrix" },
+            );
+          });
+        }
+      },
+    );
     this.client.startClient();
     // this.listenForCommands();
   }

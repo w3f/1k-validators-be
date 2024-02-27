@@ -5,20 +5,26 @@
  */
 
 import { scorekeeperLabel } from "./scorekeeper";
-import { logger, Models, queries, Types, Util } from "../index";
+import { ChainData, logger, Models, queries, Types, Util } from "../index";
 import { dockPoints } from "./Rank";
 import { doNominations } from "./Nominating";
+import { OTV } from "../constraints/constraints";
+import { ConfigSchema } from "../config";
+import MatrixBot from "../matrix";
+import ApiHandler from "../ApiHandler/ApiHandler";
+import Nominator from "../nominator/nominator";
 
 /**
  * Handles the ending of a Nomination round.
  */
 export const endRound = async (
   ending: boolean,
-  nominatorGroups,
-  chaindata,
-  constraints,
-  bot,
-  config,
+  nominatorGroups: Nominator[],
+  chaindata: ChainData,
+  constraints: OTV,
+
+  config: ConfigSchema,
+  bot?: MatrixBot,
 ): Promise<void> => {
   ending = true;
   logger.info("Ending round", scorekeeperLabel);
@@ -35,6 +41,9 @@ export const endRound = async (
   }
 
   const chainType = await queries.getChainMetadata();
+  if (!chainType) {
+    throw new Error(`Error getting chain metadata`);
+  }
 
   logger.info(
     `finding validators that were active from era ${startEra} to ${activeEra}`,
@@ -43,9 +52,9 @@ export const endRound = async (
   const [activeValidators, err2] = await chaindata.activeValidatorsInPeriod(
     Number(startEra),
     activeEra,
-    chainType.name,
+    chainType?.name,
   );
-  if (err2) {
+  if (!activeValidators || err2) {
     throw new Error(`Error getting active validators: ${err2}`);
   }
 
@@ -53,21 +62,21 @@ export const endRound = async (
   // This includes both the candidates we have nominated as well as all valid candidates
 
   // Gets adds candidates we nominated to the list
-  for (const nomGroup of nominatorGroups) {
-    for (const nominator of nomGroup) {
-      const current = await queries.getCurrentTargets(nominator.bondedAddress);
+  for (const nominator of nominatorGroups) {
+    const current = await queries.getCurrentTargets(nominator.bondedAddress);
 
-      // If not nominating any... then return.
-      if (!current.length) {
-        logger.info(
-          `${nominator.bondedAddress} is not nominating any targets.`,
-          scorekeeperLabel,
-        );
-        continue;
-      }
+    // If not nominating any... then return.
+    if (!current.length) {
+      logger.info(
+        `${nominator.bondedAddress} is not nominating any targets.`,
+        scorekeeperLabel,
+      );
+      continue;
+    }
 
-      for (const val of current) {
-        const candidate = await queries.getCandidate(val.stash);
+    for (const val of current) {
+      if (val?.stash) {
+        const candidate = await queries.getCandidate(val?.stash);
         if (!candidate) {
           logger.warn(
             `Ending round - cannot find candidate for ${val} stash: ${val.stash}`,
@@ -139,31 +148,32 @@ export const endRound = async (
 // - Nominates valid candidates
 // - Sets this current era to the era a nomination round took place in.
 export const startRound = async (
-  nominating,
-  currentEra,
-  bot,
-  constraints,
-  nominatorGroups,
-  chaindata,
-  handler,
-  config,
-  currentTargets,
-): Promise<string[]> => {
+  nominating: boolean,
+  currentEra: number,
+  bot: MatrixBot,
+  constraints: OTV,
+  nominatorGroups: Nominator[],
+  chaindata: ChainData,
+  handler: ApiHandler,
+  config: ConfigSchema,
+  currentTargets: { stash?: string; identity?: any }[],
+): Promise<{ stash?: string; identity?: any }[] | null> => {
   // If this is already in the process of nominating, skip
-  if (nominating) return;
+  if (nominating) return [];
   nominating = true;
 
   const now = new Date().getTime();
 
   // The nominations sent now won't be active until the next era.
-  currentEra = await chaindata.getCurrentEra();
+  const newEra = await chaindata.getCurrentEra();
+  if (!newEra) return [];
 
   logger.info(
     `New round starting at ${now} for next Era ${currentEra + 1}`,
     scorekeeperLabel,
   );
   bot?.sendMessage(
-    `New round is starting! Era ${currentEra} will begin new nominations.`,
+    `New round is starting! Era ${newEra} will begin new nominations.`,
   );
 
   const proxyTxs = await queries.getAllDelayedTxs();
@@ -174,7 +184,7 @@ export const startRound = async (
     const infoMsg = `round was started with ${proxyTxs.length} pending proxy txs. Skipping Round.`;
     logger.warn(infoMsg, scorekeeperLabel);
     bot?.sendMessage(infoMsg);
-    return;
+    return [];
   }
 
   // Get all Candidates and set validity
@@ -225,12 +235,12 @@ export const startRound = async (
     currentTargets,
   );
 
-  if (numValidatorsNominated > 0) {
+  if (numValidatorsNominated && numValidatorsNominated > 0) {
     logger.info(
-      `${numValidatorsNominated} nominated this round, setting last nominated era to ${currentEra}`,
+      `${numValidatorsNominated} nominated this round, setting last nominated era to ${newEra}`,
       scorekeeperLabel,
     );
-    await queries.setLastNominatedEraIndex(currentEra);
+    await queries.setLastNominatedEraIndex(newEra);
   } else {
     logger.info(
       `${numValidatorsNominated} nominated this round, lastNominatedEra not set...`,

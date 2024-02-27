@@ -3,17 +3,10 @@ import Keyring from "@polkadot/keyring";
 import { blake2AsHex } from "@polkadot/util-crypto";
 
 import { KeyringPair } from "@polkadot/keyring/types";
-import {
-  ApiHandler,
-  ChainData,
-  Constants,
-  logger,
-  queries,
-  Types,
-  Util,
-} from "./index";
-
-import { DelayedTx } from "./db/models";
+import { DelayedTx } from "../db/models";
+import ApiHandler from "../ApiHandler/ApiHandler";
+import { ChainData, Constants, queries, Types } from "../index";
+import logger from "../logger";
 
 const label = { label: "Nominator" };
 
@@ -63,7 +56,10 @@ export default class Nominator {
     keyring.setSS58Format(networkPrefix);
 
     this.signer = keyring.createFromUri(cfg.seed);
-    this._bondedAddress = this._isProxy ? cfg.proxyFor : this.signer.address;
+    this._bondedAddress = this._isProxy
+      ? cfg.proxyFor ?? ""
+      : this.signer.address;
+
     logger.info(
       `(Nominator::constructor) Nominator signer spawned: ${this.address} | ${
         this._isProxy ? "Proxy" : "Controller"
@@ -95,28 +91,39 @@ export default class Nominator {
   public async stash(): Promise<string> {
     try {
       const api = this.handler.getApi();
-      const ledger = await api.query.staking.ledger(this.bondedAddress);
-      if (!ledger.isSome) {
+      const ledger = await api?.query.staking.ledger(this.bondedAddress);
+
+      if (ledger !== undefined && !ledger.isSome) {
         logger.warn(`Account ${this.bondedAddress} is not bonded!`);
         return this.bondedAddress;
       }
-      const { stash } = ledger.unwrap();
 
-      return stash.toString();
+      if (ledger !== undefined) {
+        const { stash } = ledger.unwrap();
+        return stash.toString();
+      } else {
+        logger.warn(`No ledger information found for ${this.bondedAddress}`);
+        return this.bondedAddress;
+      }
     } catch (e) {
       logger.error(
         `Error getting stash for ${this.bondedAddress}: ${e}`,
         label,
       );
-      logger.error(e, label);
+      logger.error(JSON.stringify(e), label);
       return this.bondedAddress;
     }
   }
 
   public async payee(): Promise<string> {
     const api = this.handler.getApi();
+    if (!api) {
+      logger.error(`Error getting API in payee`, label);
+      return this._bondedAddress;
+    }
     try {
-      const ledger = await api.query.staking.ledger(this.bondedAddress);
+      const ledger = await api?.query.staking.ledger(this.bondedAddress);
+      if (!ledger) return this._bondedAddress;
       const { stash } = ledger.unwrap();
       const payee = await api.query.staking.payee(stash);
       if (payee) {
@@ -126,13 +133,14 @@ export default class Nominator {
             payee.toJSON()?.account
           : payee.toString();
       }
+      return this._bondedAddress;
     } catch (e) {
       logger.error(
         `Error getting payee for ${this.bondedAddress}: ${e}`,
         label,
       );
-      logger.error(e, label);
-      return this.bondedAddress;
+      logger.error(JSON.stringify(e), label);
+      return this._bondedAddress;
     }
   }
 
@@ -140,10 +148,14 @@ export default class Nominator {
     const now = new Date().getTime();
 
     const api = this.handler.getApi();
+    if (!api) {
+      logger.error(`Error getting API in nominate`, label);
+      return false;
+    }
 
     try {
-      const controller = await api.query.staking.bonded(this.bondedAddress);
-      if (controller.isNone) {
+      const controller = await api?.query.staking.bonded(this.bondedAddress);
+      if (!controller || controller.isNone) {
         logger.warn(`Account ${this.bondedAddress} is not bonded!`);
         return false;
       }
@@ -161,13 +173,20 @@ export default class Nominator {
         label,
       );
 
-      const innerTx = api.tx.staking.nominate(targets);
+      const innerTx = api?.tx.staking.nominate(targets);
 
-      const currentBlock = await api.rpc.chain.getBlock();
+      const currentBlock = await api?.rpc.chain.getBlock();
+      if (!currentBlock) {
+        logger.error(
+          `{Nominator::nominate} there was an error getting the current block`,
+          label,
+        );
+        return false;
+      }
       const { number } = currentBlock.block.header;
       const callHash = innerTx.method.hash.toString();
 
-      tx = api.tx.proxy.announce(
+      tx = api?.tx.proxy.announce(
         this.bondedAddress,
         blake2AsHex(innerTx.method.toU8a()),
       );
@@ -196,7 +215,7 @@ export default class Nominator {
         label,
       );
 
-      const innerTx = api.tx.staking.nominate(targets);
+      const innerTx = api?.tx.staking.nominate(targets);
       const callHash = innerTx.method.hash.toString();
 
       const outerTx = api.tx.proxy.proxy(
@@ -205,27 +224,34 @@ export default class Nominator {
         innerTx,
       );
 
-      const [didSend, finalizedBlockHash] = await this.sendStakingTx(
+      const [didSend, finalizedBlockHash] = (await this.sendStakingTx(
         outerTx,
         targets,
-      );
+      )) ?? [false, ""];
 
       try {
-        const era = (await api.query.staking.activeEra()).toJSON()["index"];
-        const bonded = Util.toDecimals(
-          (await api.query.staking.ledger(this.bondedAddress)).toJSON()[
-            "active"
-          ],
-          (await queries.getChainMetadata()).decimals,
-        );
-
-        await queries.setNomination(
+        const era = await this.chaindata.getCurrentEra();
+        if (!era) {
+          logger.error(
+            `{Nominator::nominate} there was an error getting the current era`,
+            label,
+          );
+          return false;
+        }
+        const [bonded, err] = await this.chaindata.getBondedAmount(
           this.bondedAddress,
-          era,
-          targets,
-          bonded,
-          finalizedBlockHash,
         );
+        const denom = await this.chaindata.getDenom();
+
+        if (bonded && denom) {
+          await queries.setNomination(
+            this.bondedAddress,
+            era,
+            targets,
+            bonded / denom || 0,
+            finalizedBlockHash || "",
+          );
+        }
       } catch (e) {
         logger.error(
           `{Nominator::nominate} there was an error setting the nomination for non-proxy tx in the db`,
@@ -259,7 +285,11 @@ export default class Nominator {
     callHash: string;
     height: number;
   }): Promise<boolean> {
-    const api = await this.handler.getApi();
+    const api = this.handler.getApi();
+    if (!api) {
+      logger.error(`Error getting API in cancelTx`, label);
+      return false;
+    }
     const tx = api.tx.proxy.removeAnnouncement(
       announcement.real,
       announcement.callHash,
@@ -294,10 +324,14 @@ export default class Nominator {
     targets: string[],
   ): Promise<Types.BooleanResult> => {
     const now = new Date().getTime();
-    const api = await this.handler.getApi();
+    const api = this.handler.getApi();
+    if (!api) {
+      logger.error(`Error getting API in sendStakingTx`, label);
+      return [false, "error getting api to send staking tx"]; // Change to return undefined
+    }
 
     let didSend = true;
-    let finalizedBlockHash;
+    let finalizedBlockHash: string | undefined; // Corrected type declaration
 
     logger.info(
       `{Nominator::nominate} sending staking tx for ${this.bondedAddress}`,
@@ -326,42 +360,42 @@ export default class Nominator {
           unsub();
           break;
         case status.isFinalized:
-          finalizedBlockHash = status.asFinalized;
+          finalizedBlockHash = status.asFinalized.toString(); // Convert to string
           didSend = true;
           logger.info(
             `{Nominator::nominate} tx is finalized in block ${finalizedBlockHash}`,
           );
 
-          // Check the events to see if there was any errors - if there are return
-          events
-            .filter(({ event }) => api.events.system.ExtrinsicFailed.is(event))
-            .forEach(
-              async ({
-                event: {
-                  data: [error, info],
-                },
-              }) => {
-                if (error.isModule) {
-                  const decoded = api.registry.findMetaError(error.asModule);
-                  const { docs, method, section } = decoded;
+          for (const event of events) {
+            if (
+              event.event &&
+              api.events.system.ExtrinsicFailed.is(event.event)
+            ) {
+              const {
+                data: [error, info],
+              } = event.event;
 
-                  const errorMsg = `{Nominator::nominate} tx error:  [${section}.${method}] ${docs.join(
-                    " ",
-                  )}`;
-                  logger.info(errorMsg);
-                  if (this.bot) await this.bot?.sendMessage(errorMsg);
-                  didSend = false;
-                  unsub();
-                } else {
-                  // Other, CannotLookup, BadOrigin, no extra info
-                  logger.info(
-                    `{Nominator::nominate} has an error: ${error.toString()}`,
-                  );
-                  didSend = false;
-                  unsub();
-                }
-              },
-            );
+              if (error.isModule) {
+                const decoded = api.registry.findMetaError(error.asModule);
+                const { docs, method, section } = decoded;
+
+                const errorMsg = `{Nominator::nominate} tx error:  [${section}.${method}] ${docs.join(
+                  " ",
+                )}`;
+                logger.info(errorMsg);
+                if (this.bot) await this.bot?.sendMessage(errorMsg);
+                didSend = false;
+                unsub();
+              } else {
+                // Other, CannotLookup, BadOrigin, no extra info
+                logger.info(
+                  `{Nominator::nominate} has an error: ${error.toString()}`,
+                );
+                didSend = false;
+                unsub();
+              }
+            }
+          }
 
           // The tx was otherwise successful
 
@@ -379,14 +413,31 @@ export default class Nominator {
           }
 
           // Update the nomination record in the db
-          const era = (await api.query.staking.activeEra()).toJSON()["index"];
-          const decimals = (await queries.getChainMetadata()).decimals;
-          const bonded = Util.toDecimals(
-            (await api.query.staking.ledger(this.bondedAddress)).toJSON()[
-              "active"
-            ],
-            decimals,
+          const era = await this.chaindata.getCurrentEra();
+          if (!era) {
+            logger.error(
+              `{Nominator::nominate} error getting era for ${this.bondedAddress}`,
+            );
+            return;
+          }
+
+          const decimals = await this.chaindata.getDenom();
+          if (!decimals) {
+            logger.error(
+              `{Nominator::nominate} error getting decimals for ${this.bondedAddress}`,
+            );
+            return;
+          }
+          const bonded = await this.chaindata.getBondedAmount(
+            this.bondedAddress,
           );
+
+          if (!bonded) {
+            logger.error(
+              `{Nominator::nominate} error getting bonded for ${this.bondedAddress}`,
+            );
+            return;
+          }
 
           // update both the list of nominator for the nominator account as well as the time period of the nomination
           for (const stash of targets) {
@@ -403,6 +454,6 @@ export default class Nominator {
           break;
       }
     });
-    return [didSend, finalizedBlockHash];
+    return [didSend, finalizedBlockHash || null]; // Change to return undefined
   };
 }

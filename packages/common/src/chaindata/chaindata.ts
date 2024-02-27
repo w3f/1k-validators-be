@@ -1,7 +1,7 @@
 import { ApiPromise } from "@polkadot/api";
-import ApiHandler from "../ApiHandler";
+import ApiHandler from "../ApiHandler/ApiHandler";
 import logger from "../logger";
-import { NumberResult, StringResult } from "../types";
+import { NumberResult } from "../types";
 import { sleep } from "../utils/util";
 import {
   getApiAt,
@@ -15,6 +15,7 @@ import {
 } from "./queries/ChainMeta";
 import { getSession, getSessionAt, getSessionAtEra } from "./queries/Session";
 import {
+  EraPointsInfo,
   findEraBlockHash,
   getActiveEraIndex,
   getCurrentEra,
@@ -23,6 +24,7 @@ import {
   getTotalEraPoints,
 } from "./queries/Era";
 import {
+  Balance,
   Exposure,
   getBalance,
   getBlocked,
@@ -61,6 +63,7 @@ import {
 import { CHAINDATA_RETRIES, CHAINDATA_SLEEP } from "../constants";
 import { Identity } from "../db";
 import { Block } from "@polkadot/types/interfaces";
+import { ApiDecoration } from "@polkadot/api/types";
 
 type JSON = any;
 
@@ -68,9 +71,10 @@ export const chaindataLabel = { label: "Chaindata" };
 
 export class ChainData {
   public handler: ApiHandler;
-  public api: ApiPromise;
+  public api: ApiPromise | null;
 
   constructor(handler: ApiHandler) {
+    this.handler = handler;
     this.api = handler.getApi();
   }
 
@@ -90,36 +94,40 @@ export class ChainData {
     }
   };
 
-  getChainType = async (): Promise<string> => {
+  getChainType = async (): Promise<string | null> => {
     return getChainType(this);
   };
 
   // Returns the denomination of the chain. Used for formatting planck denomianted amounts
-  getDenom = async (): Promise<number> => {
+  getDenom = async (): Promise<number | null> => {
     return await getDenom(this);
   };
 
-  getApiAt = async (blockNumber: number): Promise<any> => {
+  getApiAt = async (
+    blockNumber: number,
+  ): Promise<ApiDecoration<"promise"> | null> => {
     return await getApiAt(this, blockNumber);
   };
 
-  getApiAtBlockHash = async (blockHash: string): Promise<any> => {
+  getApiAtBlockHash = async (
+    blockHash: string,
+  ): Promise<ApiDecoration<"promise"> | null> => {
     return await getApiAtBlockHash(this, blockHash);
   };
 
-  getBlockHash = async (blockNumber: number): Promise<string> => {
+  getBlockHash = async (blockNumber: number): Promise<string | null> => {
     return await getBlockHash(this, blockNumber);
   };
 
-  getBlock = async (blockNumber): Promise<Block | undefined> => {
+  getBlock = async (blockNumber: number): Promise<Block | null> => {
     return await getBlock(this, blockNumber);
   };
 
-  getLatestBlock = async (): Promise<number> => {
+  getLatestBlock = async (): Promise<number | null> => {
     return await getLatestBlock(this);
   };
 
-  getLatestBlockHash = async (): Promise<string> => {
+  getLatestBlockHash = async (): Promise<string | null> => {
     return await getLatestBlockHash(this);
   };
 
@@ -127,26 +135,33 @@ export class ChainData {
    * Gets the current session
    * @returns session as number
    */
-  getSession = async () => {
+  getSession = async (): Promise<number | null> => {
     return getSession(this);
   };
-  getSessionAt = async (apiAt: ApiPromise) => {
+  getSessionAt = async (
+    apiAt: ApiDecoration<"promise">,
+  ): Promise<number | null> => {
     return getSessionAt(this, apiAt);
   };
 
-  getSessionAtEra = async (era: number) => {
+  getSessionAtEra = async (era: number): Promise<number | null> => {
     return getSessionAtEra(this, era);
   };
 
-  getEraAt = async (apiAt: ApiPromise) => {
+  getEraAt = async (
+    apiAt: ApiDecoration<"promise">,
+  ): Promise<number | null> => {
     return await getEraAt(this, apiAt);
   };
 
-  getTotalEraPoints = async (era: number) => {
+  getTotalEraPoints = async (era: number): Promise<EraPointsInfo | null> => {
     return await getTotalEraPoints(this, era);
   };
 
-  getErasMinStakeAt = async (apiAt: any, era: number) => {
+  getErasMinStakeAt = async (
+    apiAt: any,
+    era: number,
+  ): Promise<number | null> => {
     return await getErasMinStakeAt(this, apiAt, era);
   };
 
@@ -156,7 +171,7 @@ export class ChainData {
   };
 
   // Gets the curent era
-  getCurrentEra = async (): Promise<number> => {
+  getCurrentEra = async (): Promise<number | null> => {
     return getCurrentEra(this);
   };
 
@@ -169,7 +184,7 @@ export class ChainData {
   findEraBlockHash = async (
     era: number,
     chainType: string,
-  ): Promise<StringResult> => {
+  ): Promise<[string | null, string | null]> => {
     return await findEraBlockHash(this, era, chainType);
   };
 
@@ -187,7 +202,7 @@ export class ChainData {
     apiAt: any,
     eraIndex: number,
     validator: string,
-  ): Promise<NumberResult> => {
+  ): Promise<number | null> => {
     return await getCommissionInEra(this, apiAt, eraIndex, validator);
   };
 
@@ -214,18 +229,18 @@ export class ChainData {
     return await getQueuedKeys(this);
   };
 
-  getNextKeys = async (stash: string): Promise<NextKeys | undefined> => {
+  getNextKeys = async (stash: string): Promise<NextKeys | null> => {
     return await getNextKeys(this, stash);
   };
 
-  getBalance = async (address: string) => {
+  getBalance = async (address: string): Promise<Balance | null> => {
     return await getBalance(this, address);
   };
 
   getExposure = async (
     eraIndex: number,
     validator: string,
-  ): Promise<Exposure> => {
+  ): Promise<Exposure | null> => {
     return await getExposure(this, eraIndex, validator);
   };
 
@@ -233,7 +248,7 @@ export class ChainData {
     apiAt: any,
     eraIndex: number,
     validator: string,
-  ): Promise<any> => {
+  ): Promise<Exposure | null> => {
     return await getExposureAt(this, apiAt, eraIndex, validator);
   };
 
@@ -249,7 +264,9 @@ export class ChainData {
     return await currentValidators(this);
   };
 
-  getValidatorsAt = async (apiAt: ApiPromise): Promise<string[]> => {
+  getValidatorsAt = async (
+    apiAt: ApiDecoration<"promise">,
+  ): Promise<string[]> => {
     return await getValidatorsAt(this, apiAt);
   };
 
@@ -287,7 +304,7 @@ export class ChainData {
     return await getIdentity(this, account);
   };
 
-  getFormattedIdentity = async (addr): Promise<Identity> => {
+  getFormattedIdentity = async (addr: string): Promise<Identity | null> => {
     return await getFormattedIdentity(this, addr);
   };
 

@@ -1,7 +1,7 @@
-import { BlockIndexModel } from "../models";
+import { BlockIndex, BlockIndexModel } from "../models";
 
-export const getBlockIndex = async () => {
-  return await BlockIndexModel.findOne({}).exec();
+export const getBlockIndex = async (): Promise<BlockIndex | null> => {
+  return BlockIndexModel.findOne({}).lean<BlockIndex>();
 };
 
 export const setBlockIndex = async (
@@ -9,19 +9,23 @@ export const setBlockIndex = async (
   latest: number,
 ): Promise<boolean> => {
   try {
-    const existingBlockIndex = await BlockIndexModel.findOne({}).lean();
+    const existingBlockIndex = await getBlockIndex();
     if (
       existingBlockIndex &&
-      earliest >= existingBlockIndex.earliest &&
-      latest <= existingBlockIndex.latest
+      existingBlockIndex.earliest &&
+      existingBlockIndex.latest &&
+      earliest >= existingBlockIndex?.earliest &&
+      latest <= existingBlockIndex?.latest
     ) {
       return false;
     }
 
     if (
       existingBlockIndex &&
-      earliest <= existingBlockIndex.earliest &&
-      latest > existingBlockIndex.latest
+      existingBlockIndex.earliest &&
+      existingBlockIndex.latest &&
+      earliest <= existingBlockIndex?.earliest &&
+      latest > existingBlockIndex?.latest
     ) {
       await BlockIndexModel.findOneAndUpdate(
         {},
@@ -42,14 +46,14 @@ export const setBlockIndex = async (
     if (earliest < existingBlockIndex.earliest) {
       await BlockIndexModel.findOneAndUpdate(
         {},
-        { earliest: earliest, latest: existingBlockIndex.latest },
+        { earliest: earliest, latest: existingBlockIndex?.latest },
       ).exec();
     }
 
     if (latest > existingBlockIndex.latest) {
       await BlockIndexModel.findOneAndUpdate(
         {},
-        { latest: latest, earliest: existingBlockIndex.earliest },
+        { latest: latest, earliest: existingBlockIndex?.earliest },
       ).exec();
     }
 

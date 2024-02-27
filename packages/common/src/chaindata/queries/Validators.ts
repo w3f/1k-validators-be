@@ -6,7 +6,7 @@ export const getActiveValidatorsInPeriod = async (
   startEra: number,
   endEra: number,
   chainType: string,
-): Promise<any> => {
+): Promise<[string[] | null, string | null]> => {
   try {
     await chaindata.checkApiConnection();
     const allValidators: Set<string> = new Set();
@@ -16,12 +16,15 @@ export const getActiveValidatorsInPeriod = async (
         testEra,
         chainType,
       );
-      if (err) {
+      if (!blockHash || err) {
         return [null, err];
       }
 
       const validators =
-        await chaindata.api.query.session.validators.at(blockHash);
+        await chaindata.api?.query.session.validators.at(blockHash);
+      if (!validators) {
+        return [null, "Error getting validators"];
+      }
       for (const v of validators.toHuman() as any) {
         if (!allValidators.has(v)) {
           allValidators.add(v);
@@ -34,7 +37,8 @@ export const getActiveValidatorsInPeriod = async (
 
     return [Array.from(allValidators), null];
   } catch (e) {
-    console.error(`Error getting active validators: ${e}`);
+    console.error(`Error getting active validators: ${JSON.stringify(e)}`);
+    return [[], JSON.stringify(e)];
   }
 };
 
@@ -43,10 +47,14 @@ export const currentValidators = async (
 ): Promise<string[]> => {
   try {
     await chaindata.checkApiConnection();
-    const validators = await chaindata.api.query.session.validators();
+    const validators = await chaindata.api?.query.session.validators();
+    if (!validators) {
+      return [];
+    }
     return validators.toJSON() as string[];
   } catch (e) {
     logger.error(`Error getting current validators: ${e}`, chaindataLabel);
+    return [];
   }
 };
 
@@ -54,13 +62,16 @@ export const getValidators = async (
   chaindata: Chaindata,
 ): Promise<string[]> => {
   try {
-    const keys = await chaindata.api.query.staking.validators.keys();
-    const validators = keys.map((key) => key.args[0].toString()); // Assuming the first argument of the key is the validatorId
+    const keys = await chaindata.api?.query.staking.validators.keys();
+    if (!keys) {
+      return [];
+    }
+    const validators = keys.map((key) => key.args[0].toString());
 
     return validators;
   } catch (e) {
     logger.error(`Error getting validators: ${e}`, chaindataLabel);
-    throw new Error(`Failed to get validators: ${e}`); // It's often a good idea to throw an error so that the calling function knows something went wrong.
+    return [];
   }
 };
 
@@ -73,6 +84,7 @@ export const getValidatorsAt = async (
     return (await apiAt.query.session.validators()).toJSON();
   } catch (e) {
     logger.error(`Error getting validators at: ${e}`, chaindataLabel);
+    return [];
   }
 };
 
@@ -81,19 +93,27 @@ export const getValidatorsAtEra = async (
   era: number,
 ): Promise<string[]> => {
   const chainType = await chaindata.getChainType();
-  const [blockHash, err] = await chaindata.findEraBlockHash(era, chainType);
-  const apiAt = await chaindata.api.at(blockHash);
-  return getValidatorsAt(chaindata, apiAt);
+  if (chainType) {
+    const [blockHash, err] = await chaindata.findEraBlockHash(era, chainType);
+    if (blockHash) {
+      const apiAt = await chaindata.api?.at(blockHash);
+      return getValidatorsAt(chaindata, apiAt);
+    }
+  }
+  return [];
 };
 
 export const getAssociatedValidatorAddresses = async (
   chaindata: Chaindata,
-): Promise<any> => {
+): Promise<string[]> => {
   try {
     await chaindata.checkApiConnection();
-    const addresses = [];
+    const addresses: string[] = [];
 
-    const keys = await chaindata.api.query.staking.validators.keys();
+    const keys = await chaindata.api?.query.staking.validators.keys();
+    if (!keys) {
+      return [];
+    }
     const validators = keys.map(({ args: [validatorId] }) =>
       validatorId.toString(),
     );
@@ -102,7 +122,7 @@ export const getAssociatedValidatorAddresses = async (
         addresses.push(validator.toString());
       }
       const controller = await chaindata.getControllerFromStash(validator);
-      if (!addresses.includes(controller.toString())) {
+      if (controller && !addresses.includes(controller.toString())) {
         addresses.push(controller.toString());
       }
     }
@@ -110,5 +130,6 @@ export const getAssociatedValidatorAddresses = async (
     return addresses;
   } catch (e) {
     logger.error(`Error getting validators: ${e}`, chaindataLabel);
+    return [];
   }
 };

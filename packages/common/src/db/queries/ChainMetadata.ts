@@ -32,12 +32,13 @@ export const setChainMetadata = async (
         { new: true },
       );
     }
+    return true;
   } catch (e) {
     console.error(e);
     return false;
   }
 };
 
-export const getChainMetadata = async (): Promise<ChainMetadata> => {
-  return ChainMetadataModel.findOne({ name: /.*/ }).lean();
+export const getChainMetadata = async (): Promise<ChainMetadata | null> => {
+  return ChainMetadataModel.findOne({ name: /.*/ }).lean<ChainMetadata>();
 };

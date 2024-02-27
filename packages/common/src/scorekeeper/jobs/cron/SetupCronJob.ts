@@ -9,7 +9,7 @@ export const setupCronJob = async (
   defaultFrequency: string, // Default frequency
   jobFunction: JobFunction, // Job function to execute
   jobDescription: string, // Description for logging
-  loggerLabel, // Optional logging label
+  loggerLabel: { label: string }, // Optional logging label
   preventOverlap = false, // Optional flag to prevent overlapping executions
 ): Promise<void> => {
   if (!enabled) {

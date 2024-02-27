@@ -25,21 +25,20 @@ import { ConfigSchema } from "../../../config";
 export const cronLabel = { label: "Cron" };
 
 type JobConfig = {
-  scheduleKey: keyof ConfigSchema["cron"];
-  enabledKey: keyof ConfigSchema["cron"];
+  scheduleKey: keyof ConfigSchema["cron"] | "";
+  enabledKey: keyof ConfigSchema["cron"] | "";
   defaultFrequency: string;
   jobFunction: (metadata: jobsMetadata) => Promise<void>;
   jobName: string;
   preventOverlap?: boolean;
 };
-
 export const startJob = async (
   metadata: jobsMetadata,
   jobConfig: JobConfig,
 ) => {
   const { config } = metadata;
   const {
-    scheduleKey = '""',
+    scheduleKey = "",
     enabledKey = "",
     jobFunction,
     jobName,
@@ -47,15 +46,17 @@ export const startJob = async (
     defaultFrequency,
   } = jobConfig;
 
-  // Check if config.cron exists and use default values if it doesn't
+  // Ensure the keys exist in config.cron before accessing them
   const isEnabled =
-    config.cron && config?.cron[enabledKey] !== undefined
-      ? Boolean(config.cron[enabledKey])
-      : true;
+    config.cron &&
+    (config.cron[enabledKey as keyof typeof config.cron] as boolean) !==
+      undefined;
 
   const frequency =
-    config.cron && config?.cron[scheduleKey] !== undefined
-      ? config?.cron[scheduleKey].toString()
+    config.cron &&
+    (config.cron[scheduleKey as keyof typeof config.cron] as string) !==
+      undefined
+      ? config.cron[scheduleKey as keyof typeof config.cron].toString()
       : defaultFrequency;
 
   if (!isEnabled) {
@@ -64,7 +65,7 @@ export const startJob = async (
   }
 
   await setupCronJob(
-    true, // Assuming the job should always be considered "enabled" at this point.
+    true,
     frequency,
     defaultFrequency,
     () => jobFunction(metadata),
@@ -101,6 +102,7 @@ export const startClearAccumulatedOfflineTimeJob = async (
       await queries.clearAccumulated();
     },
     jobName: "Clear Offline Job",
+    preventOverlap: true,
   });
 };
 
@@ -166,9 +168,22 @@ export const startExecutionJob = async (metadata: jobsMetadata) => {
   const executionCron = new CronJob(executionFrequency, async () => {
     logger.info(`Running execution cron`, cronLabel);
     const latestBlock = await chaindata.getLatestBlock();
-    const api = await handler.getApi();
+    if (!latestBlock) {
+      logger.error(`latest block is null`, cronLabel);
+      return;
+    }
+    const api = handler.getApi();
+
+    if (!api) {
+      logger.error(`api is null`, cronLabel);
+      return;
+    }
 
     const era = await chaindata.getCurrentEra();
+    if (!era) {
+      logger.error(`current era is null`, cronLabel);
+      return;
+    }
 
     const allDelayed = await queries.getAllDelayedTxs();
 
@@ -178,12 +193,23 @@ export const startExecutionJob = async (metadata: jobsMetadata) => {
       let validCommission = true;
 
       // find the nominator
-      const nomGroup = nominatorGroups.find((nomGroup) => {
-        return !!nomGroup.find((nom) => {
-          return nom.bondedAddress == controller;
-        });
+      const nomGroup = nominatorGroups.find((nom) => {
+        return nom.bondedAddress == controller;
       });
-      const nominator = nomGroup.find((nom) => nom.bondedAddress == controller);
+      if (!nomGroup) {
+        logger.error(
+          `Nominator group not found for controller: ${controller}`,
+          cronLabel,
+        );
+        continue;
+      }
+      const nominator = nominatorGroups.find(
+        (nom) => nom.bondedAddress == controller,
+      );
+      if (!nominator) {
+        logger.error(`nominator not found for controller: ${controller}`);
+        continue;
+      }
       const [bonded, err] = await chaindata.getBondedAmount(nominator.address);
 
       for (const target of targets) {
@@ -253,7 +279,7 @@ export const startExecutionJob = async (metadata: jobsMetadata) => {
             era,
             targets,
             bonded,
-            finalizedBlockHash,
+            finalizedBlockHash || "",
           );
 
           // Log Execution
@@ -293,14 +319,14 @@ export const startExecutionJob = async (metadata: jobsMetadata) => {
             )
           ).join("<br>");
           const message = `${Util.addressUrl(
-            nominator.address,
+            nominator?.address || "",
             config,
           )} executed announcement in finalized block #${finalizedBlockHash} annouced at #${dataNum} \n Validators Nominated:\n ${validatorsMessage}`;
           logger.info(message);
           if (bot) {
             await bot.sendMessage(
               `${Util.addressUrl(
-                nominator.address,
+                nominator?.address || "",
                 config,
               )} executed announcement in finalized block #${finalizedBlockHash} announced at block #${dataNum} <br> Validators Nominated:<br> ${validatorsHtml}`,
             );
@@ -330,78 +356,80 @@ export const startCancelJob = async (metadata: jobsMetadata) => {
     logger.info(`running cancel cron....`, cronLabel);
 
     const latestBlock = await chaindata.getLatestBlock();
-    const threshold = latestBlock - 1.2 * config.proxy.timeDelayBlocks;
+    if (!latestBlock) {
+      logger.error(`latest block is null`, cronLabel);
+      return;
+    }
+    const threshold = latestBlock - 1.2 * config?.proxy?.timeDelayBlocks;
 
-    for (const nomGroup of nominatorGroups) {
-      for (const nom of nomGroup) {
-        const isProxy = nom.isProxy;
-        if (isProxy) {
-          const announcements = await chaindata.getProxyAnnouncements(
-            nom.address,
-          );
+    for (const nom of nominatorGroups) {
+      const isProxy = nom.isProxy;
+      if (isProxy) {
+        const announcements = await chaindata.getProxyAnnouncements(
+          nom.address,
+        );
 
-          for (const announcement of announcements) {
-            // If there are any specific announcements to cancel, try to cancel them,
-            //     so long as they are registered on chain
-            const blacklistedAnnouncements =
-              config.proxy.blacklistedAnnouncements;
-            if (blacklistedAnnouncements) {
-              for (const blacklistedAnnouncement of blacklistedAnnouncements) {
-                logger.info(
-                  `there is a blacklisted announcement to cancel: ${blacklistedAnnouncement}`,
-                  cronLabel,
-                );
-                if (bot) {
-                  // await bot.sendMessage(
-                  //   `{CancelCron::cancel} there is a blacklisted announcement to cancel: ${blacklistedAnnouncement}`
-                  // );
-                }
-
-                // If the blacklisted announcement matches what's registered on chain, cancel it
-                if (announcement.callHash == blacklistedAnnouncement) {
-                  logger.info(
-                    `cancelling ${announcement.callHash} - ${blacklistedAnnouncement}`,
-                  );
-                  const didCancel = await nom.cancelTx(announcement);
-                  if (didCancel) {
-                    const successfulCancelMessage = `{CancelCron::cancel} ${blacklistedAnnouncement} was successfully cancelled.`;
-                    logger.info(successfulCancelMessage);
-                    // await bot.sendMessage(successfulCancelMessage);
-                  }
-                } else {
-                  logger.info(
-                    `announcement call hash: ${announcement.callHash} does not match ${blacklistedAnnouncement}`,
-                  );
-                }
-              }
-            }
-
-            // if it is too old, cancel it
-            if (announcement.height < threshold) {
-              await Util.sleep(10000);
+        for (const announcement of announcements) {
+          // If there are any specific announcements to cancel, try to cancel them,
+          //     so long as they are registered on chain
+          const blacklistedAnnouncements =
+            config?.proxy?.blacklistedAnnouncements;
+          if (blacklistedAnnouncements) {
+            for (const blacklistedAnnouncement of blacklistedAnnouncements) {
               logger.info(
-                `announcement at ${announcement.height} is older than threshold: ${threshold}. Cancelling...`,
+                `there is a blacklisted announcement to cancel: ${blacklistedAnnouncement}`,
                 cronLabel,
               );
-              const didCancel = await nom.cancelTx(announcement);
-              if (didCancel) {
-                logger.info(
-                  `announcement from ${announcement.real} at ${announcement.height} was older than ${threshold} and has been cancelled`,
-                  cronLabel,
-                );
-                if (bot) {
-                  await bot.sendMessage(
-                    `Proxy announcement from ${Util.addressUrl(
-                      announcement.real,
-                      config,
-                    )} at #${
-                      announcement.height
-                    } was older than #${threshold} and has been cancelled`,
-                  );
-                }
+              if (bot) {
+                // await bot.sendMessage(
+                //   `{CancelCron::cancel} there is a blacklisted announcement to cancel: ${blacklistedAnnouncement}`
+                // );
               }
-              await Util.sleep(10000);
+
+              // If the blacklisted announcement matches what's registered on chain, cancel it
+              if (announcement.callHash == blacklistedAnnouncement) {
+                logger.info(
+                  `cancelling ${announcement.callHash} - ${blacklistedAnnouncement}`,
+                );
+                const didCancel = await nom.cancelTx(announcement);
+                if (didCancel) {
+                  const successfulCancelMessage = `{CancelCron::cancel} ${blacklistedAnnouncement} was successfully cancelled.`;
+                  logger.info(successfulCancelMessage);
+                  // await bot.sendMessage(successfulCancelMessage);
+                }
+              } else {
+                logger.info(
+                  `announcement call hash: ${announcement.callHash} does not match ${blacklistedAnnouncement}`,
+                );
+              }
             }
+          }
+
+          // if it is too old, cancel it
+          if (announcement.height < threshold) {
+            await Util.sleep(10000);
+            logger.info(
+              `announcement at ${announcement.height} is older than threshold: ${threshold}. Cancelling...`,
+              cronLabel,
+            );
+            const didCancel = await nom.cancelTx(announcement);
+            if (didCancel) {
+              logger.info(
+                `announcement from ${announcement.real} at ${announcement.height} was older than ${threshold} and has been cancelled`,
+                cronLabel,
+              );
+              if (bot) {
+                await bot.sendMessage(
+                  `Proxy announcement from ${Util.addressUrl(
+                    announcement.real,
+                    config,
+                  )} at #${
+                    announcement.height
+                  } was older than #${threshold} and has been cancelled`,
+                );
+              }
+            }
+            await Util.sleep(10000);
           }
         }
       }
@@ -413,15 +441,18 @@ export const startCancelJob = async (metadata: jobsMetadata) => {
 export const startStaleNominationJob = async (metadata: jobsMetadata) => {
   const { config, constraints, chaindata, bot, handler, nominatorGroups } =
     metadata;
-  const staleFrequency = config.cron?.stale
-    ? config.cron?.stale
-    : Constants.STALE_CRON;
+  const staleFrequency = config.cron?.stale ?? Constants.STALE_CRON;
 
   logger.info(
     `Running stale nomination cron with frequency: ${staleFrequency}`,
     cronLabel,
   );
-  const api = await handler.getApi();
+  const api = handler.getApi();
+
+  if (!api) {
+    logger.error(`api is null`, cronLabel);
+    return;
+  }
 
   // threshold for a stale nomination - 8 eras for kusama, 2 eras for polkadot
   const threshold = config.global.networkPrefix == 2 ? 8 : 2;
@@ -431,40 +462,45 @@ export const startStaleNominationJob = async (metadata: jobsMetadata) => {
     const currentEra = await api.query.staking.currentEra();
     const allCandidates = await queries.allCandidates();
 
-    for (const nomGroup of nominatorGroups) {
-      for (const nom of nomGroup) {
-        const stash = await nom.stash();
-        if (!stash || stash == "0x") continue;
-        const nominators = await api.query.staking.nominators(stash);
-        if (!nominators.toJSON()) continue;
+    for (const nom of nominatorGroups) {
+      const stash = await nom.stash();
+      if (!stash || stash === "0x") continue;
 
-        const submittedIn = nominators.toJSON()["submittedIn"];
-        const targets = nominators.toJSON()["targets"];
+      const nominators = await api.query.staking.nominators(stash);
+      const nominatorsJson = nominators.toJSON() as {
+        submittedIn?: number;
+        targets?: string[];
+      };
 
-        for (const target of targets) {
-          const isCandidate = allCandidates.filter(
-            (candidate) => candidate.stash == target,
-          );
+      if (!nominatorsJson || nominatorsJson === null) continue;
 
-          if (!isCandidate) {
-            const message = `Nominator ${stash} is nominating ${target}, which is not a 1kv candidate`;
-            logger.info(message);
-            if (bot) {
-              await bot.sendMessage(message);
-            }
-          }
-        }
+      const submittedIn: number = nominatorsJson.submittedIn ?? 0;
+      const targets: string[] = nominatorsJson.targets ?? [];
 
-        if (submittedIn < Number(currentEra) - threshold) {
-          const message = `Nominator ${stash} has a stale nomination. Last nomination was in era ${submittedIn} (it is now era ${currentEra})`;
-          logger.info(message, cronLabel);
+      for (const target of targets) {
+        const isCandidate = allCandidates.filter(
+          (candidate) => candidate.stash == target,
+        );
+
+        if (isCandidate.length === 0) {
+          const message = `Nominator ${stash} is nominating ${target}, which is not a 1kv candidate`;
+          logger.info(message);
           if (bot) {
             await bot.sendMessage(message);
           }
         }
       }
+
+      if (submittedIn < Number(currentEra) - threshold) {
+        const message = `Nominator ${stash} has a stale nomination. Last nomination was in era ${submittedIn} (it is now era ${currentEra})`;
+        logger.info(message, cronLabel);
+        if (bot) {
+          await bot.sendMessage(message);
+        }
+      }
     }
   });
+
   staleCron.start();
 };
 
@@ -601,6 +637,6 @@ export const startMainScorekeeperJob = async (metadata: jobsMetadata) => {
       await mainScorekeeperJob(metadata);
     },
     jobName: "Main Scorekeeper Job",
-    preventOverlap: false,
+    preventOverlap: true,
   });
 };

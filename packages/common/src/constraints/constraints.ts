@@ -1,5 +1,5 @@
 import { ChainData, Config, Constants } from "../index";
-import ApiHandler from "../ApiHandler";
+import ApiHandler from "../ApiHandler/ApiHandler";
 import { setScoreMetadata } from "./ScoreMetadata";
 import { checkAllCandidates, checkCandidate } from "./CheckCandidates";
 import {

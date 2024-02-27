@@ -25,7 +25,7 @@ const catchAndQuit = async (fn: any) => {
   try {
     await fn;
   } catch (e) {
-    logger.error(e.toString());
+    logger.error(JSON.stringify(e));
     process.exit(1);
   }
 };
@@ -44,7 +44,7 @@ export const createAPIHandler = async (config, retries = 0) => {
     await handler.setAPI();
     return handler;
   } catch (e) {
-    logger.error(e.toString(), winstonLabel);
+    logger.error(JSON.stringify(e), winstonLabel);
     if (retries < 20) {
       logger.info(`Retrying... attempt: ${retries}`, winstonLabel);
       return await createAPIHandler(config, retries + 1);
@@ -61,7 +61,7 @@ export const createDB = async (config) => {
     await Db.create(config.db.mongo.uri);
     logger.info(`Connected to ${config.db.mongo.uri}`, winstonLabel);
   } catch (e) {
-    logger.error(e.toString());
+    logger.error(JSON.stringify(e));
     process.exit(1);
   }
 };
@@ -78,7 +78,7 @@ export const createServer = async (config, handler?, scorekeeper?) => {
       );
     }
   } catch (e) {
-    logger.error(e.toString());
+    logger.error(JSON.stringify(e));
     process.exit(1);
   }
 };
@@ -91,7 +91,7 @@ export const createTelemetry = async (config) => {
     await telemetry.start();
     logger.info(`Telemetry client started.`, winstonLabel);
   } catch (e) {
-    logger.error(e.toString());
+    logger.error(JSON.stringify(e));
     process.exit(1);
   }
 };
@@ -111,7 +111,7 @@ export const createMatrixBot = async (config) => {
     logger.info(`matrix client started.`, winstonLabel);
     return maybeBot;
   } catch (e) {
-    logger.error(e.toString());
+    logger.error(JSON.stringify(e));
     process.exit(1);
   }
 };
@@ -158,7 +158,7 @@ export const clean = async (scorekeeper) => {
 
     logger.info(`Cleaning finished`, winstonLabel);
   } catch (e) {
-    logger.error(e.toString());
+    logger.error(JSON.stringify(e));
     process.exit(1);
   }
 };
@@ -202,7 +202,7 @@ export const addCandidates = async (config) => {
       }
     }
   } catch (e) {
-    logger.error(e.toString());
+    logger.error(JSON.stringify(e));
     process.exit(1);
   }
 };
@@ -212,7 +212,7 @@ export const setChainMetadata = async (config) => {
     logger.info(`Setting chain metadata`, winstonLabel);
     await queries.setChainMetadata(config.global.networkPrefix);
   } catch (e) {
-    logger.error(e.toString());
+    logger.error(JSON.stringify(e));
     process.exit(1);
   }
 };
@@ -227,7 +227,7 @@ export const initScorekeeper = async (config, handler, maybeBot) => {
     }
     return scorekeeper;
   } catch (e) {
-    logger.error(e.toString());
+    logger.error(JSON.stringify(e));
     process.exit(1);
   }
 };

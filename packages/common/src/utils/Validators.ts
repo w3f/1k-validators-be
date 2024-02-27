@@ -10,21 +10,24 @@ export const setValidatorRanks = async () => {
   const candidates = await allCandidates();
   const candidateAddresses = candidates.map((candidate) => candidate.stash);
   const validatorSets = await getAllValidatorSets();
-  for (const era of validatorSets) {
-    const validators = era.validators;
+  if (validatorSets) {
+    for (const era of validatorSets) {
+      const validators = era.validators || [];
 
-    for (const validator of validators) {
-      const candidateExists = candidateAddresses.includes(validator);
-      if (candidateExists) {
-        if (rankMap.has(validator)) {
-          rankMap.set(validator, rankMap.get(validator) + 1);
-        } else {
-          rankMap.set(validator, 1);
+      for (const validator of validators) {
+        const candidateExists = candidateAddresses.includes(validator);
+        if (candidateExists) {
+          if (rankMap.has(validator)) {
+            const val = rankMap.get(validator) || 0;
+            rankMap.set(validator, val + 1);
+          } else {
+            rankMap.set(validator, 1);
+          }
         }
       }
     }
+    await processRankMap(rankMap);
   }
-  await processRankMap(rankMap);
 };
 
 export const processRankMap = async (

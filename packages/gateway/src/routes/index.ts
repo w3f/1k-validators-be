@@ -63,6 +63,8 @@ const API = {
   RewardsNominatorTotal: "/rewards/nominator/:address/total",
   RewardsAllNominatorsTotal: "/rewards/nominators/total",
   BlockIndex: "/blockindex",
+  StatsTotalReqeusts: "/stats/totalRequests",
+  StatsEndpointCounts: "/stats/endpointCounts",
 };
 
 // TODO remove
@@ -123,5 +125,24 @@ router.get(API.RewardsNominatorTotal, Rewards.getRewardsNominatorTotal);
 router.get(API.RewardsAllNominatorsTotal, Rewards.getRewardsAllNominatorsTotal);
 
 router.get(API.BlockIndex, Block.getBlockIndex);
+
+router.get(API.StatsTotalReqeusts, Stats.getTotalRequests);
+router.get(API.StatsEndpointCounts, Stats.getEndpointCounts);
+
+// router.get("/stats/totalRequests", (ctx) => {
+//   ctx.body = { totalRequests: requestEmitter.listenerCount("requestReceived") };
+// });
+//
+// // Endpoint to retrieve the count of requests per endpoint
+// router.get("/stats/endpointCounts", (ctx) => {
+//   const endpointCounts = {};
+//
+//   // Iterate over all registered endpoints
+//   requestEmitter.eventNames().forEach((endpoint) => {
+//     endpointCounts[endpoint] = requestEmitter.listenerCount(endpoint);
+//   });
+//
+//   ctx.body = { endpointCounts };
+// });
 
 export default router;

@@ -6,24 +6,30 @@
 
 import { ChainData, chaindataLabel } from "../chaindata";
 import { logger } from "../../index";
-import { ApiPromise } from "@polkadot/api";
+import { ApiDecoration } from "@polkadot/api/types";
 
-export const getSession = async (chaindata: ChainData): Promise<number> => {
+export const getSession = async (
+  chaindata: ChainData,
+): Promise<number | null> => {
   try {
     await chaindata.checkApiConnection();
 
-    return Number(
-      (await chaindata.api.query.session.currentIndex()).toString(),
-    );
+    const currentIndex = await chaindata?.api?.query.session.currentIndex();
+    if (currentIndex !== undefined) {
+      return Number(currentIndex.toString());
+    } else {
+      return null;
+    }
   } catch (e) {
     logger.error(`Error getting session: ${e}`, chaindataLabel);
+    return null;
   }
 };
 
 export const getSessionAt = async (
   chaindata: ChainData,
-  apiAt: ApiPromise,
-): Promise<number> => {
+  apiAt: ApiDecoration<"promise">,
+): Promise<number | null> => {
   try {
     await chaindata.checkApiConnection();
 
@@ -31,12 +37,23 @@ export const getSessionAt = async (
     return parseInt(session.replace(/,/g, ""));
   } catch (e) {
     logger.error(`Error getting session: ${e}`, chaindataLabel);
+    return null;
   }
 };
 
-export const getSessionAtEra = async (chaindata: ChainData, era: number) => {
+export const getSessionAtEra = async (
+  chaindata: ChainData,
+  era: number,
+): Promise<number | null> => {
   const chainType = await chaindata.getChainType();
-  const [blockHash, err] = await chaindata.findEraBlockHash(era, chainType);
-  const apiAt = await chaindata.getApiAtBlockHash(blockHash);
-  return getSessionAt(chaindata, apiAt);
+  if (chainType) {
+    const [blockHash, err] = await chaindata.findEraBlockHash(era, chainType);
+    if (blockHash) {
+      const apiAt = await chaindata.getApiAtBlockHash(blockHash);
+      if (apiAt) {
+        return getSessionAt(chaindata, apiAt);
+      }
+    }
+  }
+  return null;
 };

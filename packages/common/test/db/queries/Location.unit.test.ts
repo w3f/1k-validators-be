@@ -124,22 +124,22 @@ describe("Location queries", () => {
       const result = await getLocation("ExistingLocation", "existingAddr");
 
       expect(result).toBeTruthy();
-      expect(result.name).toBe(existingLocationData.name);
-      expect(result.address).toBe(existingLocationData.address);
-      expect(result.addr).toBe(existingLocationData.addr);
-      expect(result.port).toBe(existingLocationData.port);
-      expect(result.city).toBe(existingLocationData.city);
-      expect(result.region).toBe(existingLocationData.region);
-      expect(result.country).toBe(existingLocationData.country);
-      expect(result.provider).toBe(existingLocationData.provider);
-      expect(result.updated).toBe(existingLocationData.updated);
-      expect(result.session).toBe(existingLocationData.session);
-      expect(result.source).toBe(existingLocationData.source);
-      expect(result.vpn).toBe(existingLocationData.vpn);
-      expect(result.cpu).toBe(existingLocationData.cpu);
-      expect(result.memory).toBe(existingLocationData.memory);
-      expect(result.coreCount).toBe(existingLocationData.coreCount);
-      expect(result.vm).toBe(existingLocationData.vm);
+      expect(result?.name).toBe(existingLocationData.name);
+      expect(result?.address).toBe(existingLocationData.address);
+      expect(result?.addr).toBe(existingLocationData.addr);
+      expect(result?.port).toBe(existingLocationData.port);
+      expect(result?.city).toBe(existingLocationData.city);
+      expect(result?.region).toBe(existingLocationData.region);
+      expect(result?.country).toBe(existingLocationData.country);
+      expect(result?.provider).toBe(existingLocationData.provider);
+      expect(result?.updated).toBe(existingLocationData.updated);
+      expect(result?.session).toBe(existingLocationData.session);
+      expect(result?.source).toBe(existingLocationData.source);
+      expect(result?.vpn).toBe(existingLocationData.vpn);
+      expect(result?.cpu).toBe(existingLocationData.cpu);
+      expect(result?.memory).toBe(existingLocationData.memory);
+      expect(result?.coreCount).toBe(existingLocationData.coreCount);
+      expect(result?.vm).toBe(existingLocationData.vm);
     });
 
     it("should return null if location not found", async () => {
@@ -167,7 +167,10 @@ describe("Location queries", () => {
       )[0];
 
       const location = await getCandidateLocation(candidate.name);
-      const result = omitFields(location, ["_id", "__v", "updated", "session"]);
+      let result;
+      if (location) {
+        result = omitFields(location, ["_id", "__v", "updated", "session"]);
+      }
 
       expect(result).toEqual(testData);
     });
@@ -301,9 +304,9 @@ describe("Location queries", () => {
 
       const counter = await IITRequestCounterModel.findOne({});
 
-      expect(counter.requestCount).toBe(1);
-      expect(counter.firstRequest).toBeTruthy();
-      expect(counter.lastRequest).toBeTruthy();
+      expect(counter?.requestCount).toBe(1);
+      expect(counter?.firstRequest).toBeTruthy();
+      expect(counter?.lastRequest).toBeTruthy();
     });
   });
 });

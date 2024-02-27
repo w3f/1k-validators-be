@@ -2,7 +2,6 @@ import fs from "fs";
 import { decodeAddress, encodeAddress } from "@polkadot/keyring";
 import { hexToU8a, isHex } from "@polkadot/util";
 import { User } from "matrix-js-sdk";
-import { logger } from "@1kv/common";
 
 // Check if a given address is a valid polkadot address
 const isValidAddressPolkadotAddress = (address: string) => {
@@ -84,20 +83,20 @@ const checkValidAddresses = (candidates: any) => {
   }
 };
 
-const checkSlotId = (candidates) => {
-  const slots = new Set();
+const checkSlotId = (candidates: any[]) => {
+  const slots = new Set<number>();
 
-  for (const candidate of candidates) {
+  const hasDuplicateSlotIds = candidates.some((candidate) => {
     // Check if slotId is present
     if (candidate.slotId === undefined || candidate.slotId === null) {
       console.error(`Candidate ${candidate.stash} is missing a slotId.`);
-      process.exit(1);
+      return true;
     }
 
     // Check if slotId is a number
     if (typeof candidate.slotId !== "number") {
       console.error(`slotId for candidate ${candidate.stash} is not a number.`);
-      process.exit(1);
+      return true;
     }
 
     // Check if slotId is an integer
@@ -105,7 +104,7 @@ const checkSlotId = (candidates) => {
       console.error(
         `slotId for candidate ${candidate.stash} is not an integer.`,
       );
-      process.exit(1);
+      return true;
     }
 
     // Check for uniqueness of slotId
@@ -113,9 +112,15 @@ const checkSlotId = (candidates) => {
       console.error(
         `Duplicate slotId found: ${candidate.slotId} for candidate ${candidate.stash}.`,
       );
-      process.exit(1);
+      return true;
     }
     slots.add(candidate.slotId);
+
+    return false;
+  });
+
+  if (hasDuplicateSlotIds) {
+    process.exit(1);
   }
 };
 
@@ -157,15 +162,10 @@ const checkConfigFile = (path: any) => {
 };
 
 // Check Polkadot and Kusama Config Files
-(async () => {
-  const kusamaConfig = "../../candidates/kusama.json";
-  const polkadotConfig = "../../candidates/polkadot.json";
+const kusamaConfig = "../../candidates/kusama.json";
+const polkadotConfig = "../../candidates/polkadot.json";
 
-  checkConfigFile(kusamaConfig);
-  checkConfigFile(polkadotConfig);
+checkConfigFile(kusamaConfig);
+checkConfigFile(polkadotConfig);
 
-  logger.info("✅ Config files are valid!");
-  process.exit(0);
-})();
-
-export {};
+console.log("✅ Config files are valid!");

@@ -110,7 +110,7 @@ export const handleAddedNode = async (
       );
     }
   } catch (e) {
-    logger.error(e.toString());
+    logger.error(JSON.stringify(e));
     logger.error(JSON.stringify(payload));
   }
 };

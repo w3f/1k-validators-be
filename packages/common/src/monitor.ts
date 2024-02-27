@@ -19,7 +19,7 @@ export default class Monitor {
     this.ghApi = new Octokit();
   }
 
-  public async getLatestTaggedRelease(): Promise<TaggedRelease> {
+  public async getLatestTaggedRelease(): Promise<TaggedRelease | null> {
     logger.info("(Monitor::getLatestTaggedRelease) Fetching latest release");
     let latestRelease;
 
@@ -34,7 +34,7 @@ export default class Monitor {
       );
     }
 
-    if (!latestRelease) return;
+    if (!latestRelease) return null;
     const { tag_name, published_at } = latestRelease.data;
     const publishedAt = new Date(published_at).getTime();
 
@@ -45,7 +45,7 @@ export default class Monitor {
       tag_name === this.latestTaggedRelease!.name
     ) {
       logger.info("(Monitor::getLatestTaggedRelease) No new release found");
-      return;
+      return null;
     }
 
     this.latestTaggedRelease = {
@@ -75,38 +75,41 @@ export default class Monitor {
 
       const nodeVersion = semver.coerce(version);
       const latestVersion = semver.clean(
-        this.latestTaggedRelease.name.split(`-`)[0],
+        this.latestTaggedRelease?.name?.split(`-`)[0] || "",
       );
-      logger.debug(
-        `(Monitor::ensureUpgrades) ${name} | version: ${nodeVersion} latest: ${latestVersion}`,
-      );
+      if (latestVersion && nodeVersion) {
+        logger.debug(
+          `(Monitor::ensureUpgrades) ${name} | version: ${nodeVersion} latest: ${latestVersion}`,
+        );
 
-      if (!nodeVersion) {
-        if (updated) {
-          await queries.reportNotUpdated(name);
-        }
-        continue;
-      }
-
-      const isUpgraded = semver.gte(nodeVersion, latestVersion);
-
-      if (isUpgraded) {
-        if (!updated) {
-          await queries.reportUpdated(name);
-        }
-        continue;
-      }
-
-      if (now < this.latestTaggedRelease.publishedAt + this.grace) {
-        // Still in grace, but check if the node is only one patch version away.
-        const incremented = semver.inc(nodeVersion, "patch");
-        if (semver.gte(incremented, latestVersion)) {
-          await queries.reportUpdated(name);
+        if (!nodeVersion) {
+          if (updated) {
+            await queries.reportNotUpdated(name);
+          }
           continue;
         }
-      }
 
-      await queries.reportNotUpdated(name);
+        const isUpgraded = semver.gte(nodeVersion, latestVersion);
+
+        if (isUpgraded) {
+          if (!updated) {
+            await queries.reportUpdated(name);
+          }
+          continue;
+        }
+
+        const published = this.latestTaggedRelease?.publishedAt || 0;
+        if (now < published + this.grace) {
+          // Still in grace, but check if the node is only one patch version away.
+          const incremented = semver.inc(nodeVersion, "patch") || "";
+          if (semver.gte(incremented, latestVersion)) {
+            await queries.reportUpdated(name);
+            continue;
+          }
+        }
+
+        await queries.reportNotUpdated(name);
+      }
     }
   }
 }

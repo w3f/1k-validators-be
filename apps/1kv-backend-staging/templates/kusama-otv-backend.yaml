@@ -63,7 +63,25 @@ spec:
                   "unclaimedEraThreshold": 4
                 },
                 "cron": {
-                  "monitor": "0 */15 * * * *"
+                  "monitor": "0 */15 * * * *",
+                  "monitorEnabled": true,
+                  "clearOfflineEnabled": true,
+                  "validityEnabled": true,
+                  "scoreEnabled": true,
+                  "executionEnabled": true,
+                  "scorekeeperEnabled": true,
+                  "rewardClaimingEnabled": true,
+                  "cancelEnabled": true,
+                  "staleEnabled": true,
+                  "eraPointsEnabled": true,
+                  "activeValidatorEnabled": true,
+                  "inclusionEnabled": true,
+                  "sessionKeyEnabled": true,
+                  "unclaimedErasEnabled": true,
+                  "validatorPrefEnabled": true,
+                  "nominatorEnabled": true,
+                  "locationStatsEnabled": true,
+                  "blockEnabled": true
                 },
                 "db": {
                   "mongo": {

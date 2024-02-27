@@ -9,7 +9,7 @@ import {
   Util,
 } from "../index";
 
-import Nominator from "../nominator";
+import Nominator from "../nominator/nominator";
 import { startRound } from "./Round";
 import {
   registerAPIHandler,
@@ -18,6 +18,7 @@ import {
 import { jobsMetadata, JobStatus } from "./jobs/JobsClass";
 import { JobsFactory } from "./jobs/JobsFactory";
 import { setAllIdentities } from "../utils";
+import { JobErroredData, JobFinishedData, JobRunningData } from "../types";
 // import { monitorJob } from "./jobs";
 
 export type NominatorGroup = Config.NominatorConfig[];
@@ -34,7 +35,7 @@ export default class ScoreKeeper {
   public config: Config.ConfigSchema;
   public constraints: Constraints.OTV;
   public currentEra = 0;
-  public currentTargets: string[];
+  public currentTargets: { stash?: string; identity?: any }[] = [];
 
   private isUpdatingEras = false;
   // Set when the process is ending
@@ -42,7 +43,7 @@ export default class ScoreKeeper {
   // Set when in the process of nominating
   private nominating = false;
 
-  private nominatorGroups: Array<SpawnedNominatorGroup> = [];
+  private nominatorGroups: Nominator[];
   public _jobsStatus: Record<string, JobStatus> = {};
 
   constructor(handler: ApiHandler, config: Config.ConfigSchema, bot: any) {
@@ -52,12 +53,13 @@ export default class ScoreKeeper {
     this.bot = bot || null;
     this.constraints = new Constraints.OTV(this.handler, this.config);
     this._jobsStatus = {};
+    this.nominatorGroups = [];
 
     registerAPIHandler(this.handler, this.config, this.chaindata, this.bot);
     registerEventEmitterHandler(this);
   }
 
-  public updateJobProgress(data) {
+  public updateJobProgress(data: JobStatus) {
     const { name, progress, updated, iteration } = data;
     if (this._jobsStatus[name]) {
       this._jobsStatus[name].progress = progress;
@@ -74,36 +76,43 @@ export default class ScoreKeeper {
     updated: number;
   }) {
     const { name, runCount, updated } = data;
-    this._jobsStatus[name] = { runCount, updated, status: "started" };
+    this._jobsStatus[name] = {
+      name: name,
+      runCount,
+      updated,
+      status: "started",
+    };
   }
 
-  public updateJobRunning(data: {
-    name: string;
-    runCount: number;
-    updated: number;
-  }) {
+  public updateJobRunning(data: JobRunningData) {
     const { name, runCount, updated } = data;
-    this._jobsStatus[name] = { runCount, updated, status: "running" };
+    this._jobsStatus[name] = {
+      name: name,
+      runCount,
+      updated,
+      status: "running",
+    };
   }
 
-  public updateJobFinished(data: {
-    name: string;
-    runCount: number;
-    updated: number;
-  }) {
+  public updateJobFinished(data: JobFinishedData) {
     const { name, runCount, updated } = data;
-    this._jobsStatus[name] = { runCount, updated, status: "finished" };
+    this._jobsStatus[name] = {
+      name: name,
+      runCount,
+      updated,
+      status: "finished",
+    };
   }
 
-  public updateJobErrored(data: {
-    name: string;
-    runCount: number;
-    updated: number;
-    error: string;
-  }) {
+  public updateJobErrored(data: JobErroredData) {
     const { name, runCount, updated, error } = data;
-
-    this._jobsStatus[name] = { runCount, updated, status: "errored", error };
+    this._jobsStatus[name] = {
+      name: name,
+      runCount,
+      updated,
+      status: "errored",
+      error,
+    };
   }
 
   public getJobsStatus(): Record<string, any> {
@@ -114,26 +123,18 @@ export default class ScoreKeeper {
     return JSON.stringify(this._jobsStatus);
   }
 
-  getAllNominatorGroups(): SpawnedNominatorGroup[] {
-    return this.nominatorGroups;
-  }
-
   getAllNominatorBondedAddresses(): string[] {
     const bondedAddresses = [];
-    for (const group of this.nominatorGroups) {
-      bondedAddresses.push(...group.map((n) => n.bondedAddress));
+    const nomGroup = this.nominatorGroups;
+    if (nomGroup) {
+      for (const nom of nomGroup) {
+        bondedAddresses.push(nom?.bondedAddress);
+      }
+
+      return bondedAddresses;
+    } else {
+      return [];
     }
-
-    return bondedAddresses;
-  }
-
-  getNominatorGroupAtIndex(index: number): SpawnedNominatorGroup {
-    if (index < 0 || index >= this.nominatorGroups.length) {
-      throw new Error("Index out of bounds.");
-    }
-
-    // eslint-disable-next-line security/detect-object-injection
-    return this.nominatorGroups[index];
   }
 
   /// Spawns a new nominator.
@@ -143,7 +144,7 @@ export default class ScoreKeeper {
 
   // Adds nominators from the config
   async addNominatorGroup(nominatorGroup: NominatorGroup): Promise<boolean> {
-    let group = [];
+    const group = [];
     const now = Util.getNow();
     for (const nomCfg of nominatorGroup) {
       // Create a new Nominator instance from the nominator in the config
@@ -151,6 +152,13 @@ export default class ScoreKeeper {
 
       // try and get the ledger for the nominator - this means it is bonded. If not then don't add it.
       const api = this.handler.getApi();
+      if (!api) {
+        logger.error(
+          `Error getting API in addNominatorGroup`,
+          scorekeeperLabel,
+        );
+        return false;
+      }
       const ledger = await api.query.staking.ledger(nom.bondedAddress);
       if (!ledger) {
         logger.warn(
@@ -161,7 +169,7 @@ export default class ScoreKeeper {
       } else {
         const stash = await nom.stash();
         const payee = await nom.payee();
-        const [bonded, err] = await this.chaindata.getBondedAmount(stash);
+        const [bonded, err] = await this.chaindata?.getBondedAmount(stash);
         const proxy = nom.isProxy ? nom.address : "";
         const proxyDelay = nom.proxyDelay;
 
@@ -189,15 +197,14 @@ export default class ScoreKeeper {
         group.push(nom);
       }
     }
-    // Sort the group by the lowest avg stake
-    group = group.sort((a, b) => a.avgStake - b.avgStake);
-    this.nominatorGroups.push(group);
+
+    this.nominatorGroups?.push(...group);
 
     const nominatorGroupString = (
       await Promise.all(
         group.map(async (n) => {
           const stash = await n.stash();
-          const proxy = (await n._isProxy) ? `/ ${n.address}` : "";
+          const proxy = (await n.isProxy) ? `/ ${n.address}` : "";
           return `- ${n.bondedAddress} / ${stash} ${proxy}`;
         }),
       )
@@ -206,17 +213,17 @@ export default class ScoreKeeper {
       await Promise.all(
         group.map(async (n) => {
           const stash = await n.stash();
-          const name = (await queries.getChainMetadata()).name;
+          const name = (await queries.getChainMetadata())?.name;
           const decimals = name == "Kusama" ? 12 : 10;
           const [rawBal, err] = await this.chaindata.getBondedAmount(stash);
           const bal = Util.toDecimals(rawBal, decimals);
           const sym = name == "Kusama" ? "KSM" : "DOT";
 
-          const proxy = (await n._isProxy)
+          const proxy = (await n.isProxy)
             ? `/ ${Util.addressUrl(n.address, this.config)}`
             : "";
           return `- ${Util.addressUrl(
-            n.controller,
+            n.bondedAddress,
             this.config,
           )} / ${Util.addressUrl(stash, this.config)} (${bal} ${sym}) ${proxy}`;
         }),
@@ -237,12 +244,12 @@ export default class ScoreKeeper {
           const stash = await n.stash();
 
           const nominations = await queries.getNominator(stash);
-          const current = nominations.current.map((val) => {
+          const current = nominations?.current?.map((val) => {
             return `- ${val.name}<br>`;
           });
 
           return `- ${Util.addressUrl(
-            n.controller,
+            n.bondedAddress,
             this.config,
           )} / ${Util.addressUrl(
             stash,
@@ -287,7 +294,7 @@ export default class ScoreKeeper {
       config: this.config,
       ending: this.ending,
       chaindata: this.chaindata,
-      nominatorGroups: this.nominatorGroups,
+      nominatorGroups: this.nominatorGroups || [],
       nominating: this.nominating,
       currentEra: this.currentEra,
       bot: this.bot,

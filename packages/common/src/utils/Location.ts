@@ -7,11 +7,16 @@ import {
   updateIITRequestCount,
 } from "../db";
 import { fetchLocationInfo } from "./util";
-import { TelemetryNodeDetails } from "../types";
+import {
+  BenchmarkSpec,
+  HardwareSpec,
+  TelemetryNodeDetails,
+  TelemetryWsPayload,
+} from "../types";
 import logger from "../logger";
 import { STALE_TELEMETRY_THRESHOLD } from "../constants";
 
-const getBenchmarks = (scores) => {
+const getBenchmarks = (scores: BenchmarkSpec) => {
   const defaultScores = {
     cpu_hashrate_score: 0,
     memory_memcpy_score: 0,
@@ -22,7 +27,7 @@ const getBenchmarks = (scores) => {
   return scores === null ? defaultScores : scores;
 };
 
-const getHardwareSpec = (hardware) => {
+const getHardwareSpec = (hardware: HardwareSpec) => {
   const defaultHardware = {
     cpu: "",
     memory: "",
@@ -36,8 +41,8 @@ const getHardwareSpec = (hardware) => {
 };
 
 export const nodeDetailsFromTelemetryMessage = (
-  payload,
-): TelemetryNodeDetails => {
+  payload: TelemetryWsPayload,
+): TelemetryNodeDetails | null => {
   try {
     const [
       id,
@@ -86,7 +91,7 @@ export const nodeDetailsFromTelemetryMessage = (
       },
     };
   } catch (e) {
-    logger.error(e.toString());
+    logger.error(JSON.stringify(e));
     logger.error(JSON.stringify(payload));
     logger.error(`Error parsing telemetry message`, { label: "Telemetry" });
     return null;
@@ -138,7 +143,7 @@ export const initIIT = async (ipinfoToken: string): Promise<boolean> => {
     }
     return true;
   } catch (e) {
-    logger.error(e.toString());
+    logger.error(JSON.stringify(e));
     logger.error(`Error initializing IIT`, { label: "Telemetry" });
     return false;
   }

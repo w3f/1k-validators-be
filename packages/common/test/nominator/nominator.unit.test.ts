@@ -1,38 +1,15 @@
-// Mocking the Nominator module with NominatorMock
-// @ts-ignore
-import Nominator from "../../common/src/nominator";
-import { ApiHandler, Types } from "@1kv/common";
+import { Types } from "../../src";
+import Nominator from "../../src/nominator/nominator";
+import ApiHandler from "../../src/ApiHandler/ApiHandler";
 
-jest.mock("../src/nominator", () => {
-  const NominatorMock = jest.requireActual("./mock/nominator.mock").default; // Use jest.requireActual for relative imports
-  return {
-    __esModule: true, // This flag helps Jest understand it's mocking an ES6 module
-    default: NominatorMock, // Mock the default export
-  };
-});
-jest.mock("matrix-js-sdk", () => {
-  // Return a mock implementation or object
-  return {
-    // Mock methods or objects you use from the SDK
-  };
-});
-
-jest.mock("@1kv/common", () => {
-  const actualCommon = jest.requireActual("@1kv/common");
-
-  const ApiHandlerMock = require("./mock/apihandler.mock").default;
-  return {
-    ...actualCommon,
-    ApiHandler: ApiHandlerMock,
-  };
-});
+jest.mock("../../src/nominator/nominator");
+jest.mock("../../src/ApiHandler/ApiHandler");
 
 describe("Nominator Class Unit Tests", () => {
   let nominator: Nominator;
   let handler;
   let nominatorConfig: Types.NominatorConfig;
 
-  // The corresponding address for the seed:
   const signerAddress = "DvDsrjvaJpXNW7XLvtFtEB3D9nnBKMqzvrijFffwpe7CCc6";
   beforeAll(async () => {
     handler = new ApiHandler(["Constants.KusamaEndpoints"]);

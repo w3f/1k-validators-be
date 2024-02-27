@@ -52,7 +52,7 @@ export const addNominator = async (nominator: Nominator): Promise<boolean> => {
       return true;
     }
 
-    return NominatorModel.findOneAndUpdate(
+    await NominatorModel.findOneAndUpdate(
       {
         address,
       },
@@ -65,10 +65,11 @@ export const addNominator = async (nominator: Nominator): Promise<boolean> => {
         rewardDestination,
       },
     );
+    return true;
   } catch (e) {
     logger.info(JSON.stringify(e));
-    logger.error(`Could not add nominator: ${e}`);
     logger.error(`Could not add nominator: ${JSON.stringify(nominator)}`);
+    return false;
   }
 };
 
@@ -156,7 +157,8 @@ export const getCurrentTargets = async (
       return [];
     }
   } catch (e) {
-    logger.error(e.toString());
+    logger.error(JSON.stringify(e));
+    return [];
   }
 };
 
@@ -164,6 +166,8 @@ export const allNominators = async (): Promise<Nominator[]> => {
   return NominatorModel.find({ address: /.*/ }).lean<Nominator[]>();
 };
 
-export const getNominator = async (stash: string): Promise<Nominator> => {
-  return NominatorModel.findOne({ stash: stash }).lean();
+export const getNominator = async (
+  stash: string,
+): Promise<Nominator | null> => {
+  return NominatorModel.findOne({ stash: stash }).lean<Nominator>();
 };

@@ -51,7 +51,7 @@ export const setEraPoints = async (
 export const getEraPoints = async (
   era: number,
   address: string,
-): Promise<EraPoints> => {
+): Promise<EraPoints | null> => {
   return EraPointsModel.findOne({
     address: address,
     era: era,
@@ -76,7 +76,7 @@ export const setTotalEraPoints = async (
     }).lean();
 
     // If it exists and the total era points are the same, return
-    if (!!data && data.totalEraPoints == total && data.median) return false;
+    if (!!data && data.totalEraPoints == total && data.median) return true;
 
     const points = [];
     for (const v of validators) {
@@ -84,11 +84,11 @@ export const setTotalEraPoints = async (
     }
 
     // Find median, max, and average era points
-    const getAverage = (list) =>
+    const getAverage = (list: number[]) =>
       list.reduce((prev, curr) => prev + curr) / list.length;
 
     // Calculate Median
-    const getMedian = (array) => {
+    const getMedian = (array: number[]) => {
       // Check If Data Exists
       if (array.length >= 1) {
         // Sort Array
@@ -156,19 +156,20 @@ export const setTotalEraPoints = async (
 
 export const getTotalEraPoints = async (
   era: number,
-): Promise<TotalEraPoints> => {
+): Promise<TotalEraPoints | null> => {
   return TotalEraPointsModel.findOne({
     era: era,
   }).lean<TotalEraPoints>();
 };
 
-export const getLastTotalEraPoints = async (): Promise<TotalEraPoints> => {
-  const eraPoints = await TotalEraPointsModel.find({})
-    .lean<TotalEraPoints>()
-    .sort("-era")
-    .limit(1);
-  return eraPoints;
-};
+export const getLastTotalEraPoints =
+  async (): Promise<TotalEraPoints | null> => {
+    const eraPoints = await TotalEraPointsModel.find({})
+      .lean<TotalEraPoints>()
+      .sort("-era")
+      .limit(1);
+    return eraPoints;
+  };
 
 export const getSpanEraPoints = async (
   address: string,
@@ -207,7 +208,7 @@ export const getHistoryDepthTotalEraPoints = async (
 
 export const getValidatorLastEraPoints = async (
   address: string,
-): Promise<EraPoints> => {
+): Promise<EraPoints | null> => {
   return await EraPointsModel.findOne({
     address: address,
   })
@@ -226,7 +227,7 @@ export const getValidatorEraPointsCount = async (
   })
     .lean()
     .exec();
-  return eras.length;
+  return eras?.length;
 };
 
 // Gets a list of the total count of era points for every identity that is a part of a validators super/sub identity

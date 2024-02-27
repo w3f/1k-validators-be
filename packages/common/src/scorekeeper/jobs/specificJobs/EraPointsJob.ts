@@ -16,9 +16,11 @@ export const individualEraPointsJob = async (
   if (!!erapoints && erapoints.totalEraPoints >= 0 && erapoints.median) {
     return;
   } else {
-    const { era, total, validators } =
-      await chaindata.getTotalEraPoints(eraIndex);
-    await queries.setTotalEraPoints(era, total, validators);
+    const data = await chaindata.getTotalEraPoints(eraIndex);
+    if (data) {
+      const { era, total, validators } = data;
+      await queries.setTotalEraPoints(era, total, validators);
+    }
   }
 };
 export const eraPointsJob = async (

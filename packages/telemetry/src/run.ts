@@ -23,7 +23,7 @@ export const createServer = async (config) => {
     const server = new Server(config);
     await server.start();
   } catch (e) {
-    logger.error(e.toString());
+    logger.error(JSON.stringify(e));
     process.exit(1);
   }
 };

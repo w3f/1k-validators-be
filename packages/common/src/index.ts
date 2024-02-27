@@ -4,7 +4,7 @@ import * as queries from "./db/queries";
 import * as Config from "./config";
 import logger from "./logger";
 import { ChainData } from "./chaindata/chaindata";
-import ApiHandler from "./ApiHandler";
+import ApiHandler from "./ApiHandler/ApiHandler";
 import * as Constants from "./constants";
 import * as Types from "./types";
 import * as Util from "./utils/";

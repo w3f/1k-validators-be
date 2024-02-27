@@ -1,10 +1,12 @@
 import { ChainData, logger, queries } from "../../../index";
-import { ApiPromise } from "@polkadot/api";
 import { CoinGeckoClient } from "coingecko-api-v3";
 import { jobsMetadata } from "../JobsClass";
 import { jobStatusEmitter } from "../../../Events";
 import { formatDateFromUnix, withExecutionTimeLogging } from "../../../utils";
-import { Block } from "@polkadot/types/interfaces";
+import { ApiDecoration } from "@polkadot/api/types";
+import { Block, EventRecord, Phase } from "@polkadot/types/interfaces";
+import type { FrameSystemEventRecord } from "@polkadot/types/lookup";
+import { Exposure } from "../../../chaindata/queries/ValidatorPref";
 
 export const blockdataLabel = { label: "Block" };
 
@@ -13,6 +15,10 @@ export const blockJob = async (metadata: jobsMetadata): Promise<boolean> => {
   try {
     logger.info(`Starting blockDataJob`, blockdataLabel);
     const latestBlock = await chaindata.getLatestBlock();
+    if (!latestBlock) {
+      logger.error(`Error getting latest block`, blockdataLabel);
+      return false;
+    }
     const threshold = 2000;
     let index = await queries.getBlockIndex();
 
@@ -36,6 +42,10 @@ export const blockJob = async (metadata: jobsMetadata): Promise<boolean> => {
       let latestCount = 0;
       for (let i = index.latest; i < latestBlock; i++) {
         index = await queries.getBlockIndex();
+        if (!index) {
+          logger.error(`Error getting block index`, blockdataLabel);
+          return false;
+        }
         if (i > index.latest) {
           await processBlock(chaindata, i);
           latestCount++;
@@ -70,6 +80,10 @@ export const blockJob = async (metadata: jobsMetadata): Promise<boolean> => {
       let earliestCount = 0;
       for (let i = index?.earliest; i > index?.earliest - threshold; i--) {
         const index = await queries.getBlockIndex();
+        if (!index) {
+          logger.error(`Error getting block index`, blockdataLabel);
+          return false;
+        }
 
         if (i < index?.earliest) {
           await processBlock(chaindata, i);
@@ -117,11 +131,23 @@ export const processBlock = async (
   // logger.info(`Processing block #${blockNumber}`, blockdataLabel);
   const start = Date.now();
 
-  const block: Block = await chaindata.getBlock(blockNumber);
+  const block = await chaindata.getBlock(blockNumber);
 
   const blockHash = await chaindata.getBlockHash(blockNumber);
 
   const apiAt = await chaindata.getApiAt(blockNumber);
+  if (!apiAt) {
+    logger.error(`Error getting api at block ${blockNumber}`, blockdataLabel);
+    return;
+  }
+
+  if (!block || !block.extrinsics || !blockHash || !apiAt) {
+    logger.error(
+      `Error getting block data at block ${blockNumber}`,
+      blockdataLabel,
+    );
+    return;
+  }
 
   // const validators = await chaindata.getValidatorsAt(apiAt);
 
@@ -129,8 +155,17 @@ export const processBlock = async (
 
   const era = await chaindata.getEraAt(apiAt);
 
+  if (!session || !era) {
+    logger.error(
+      `Error getting session or era at block ${blockNumber}`,
+      blockdataLabel,
+    );
+    return;
+  }
+
   const blockExtrinsics = block.extrinsics;
-  const blockEvents = await apiAt.query.system.events();
+  const blockEvents: FrameSystemEventRecord[] =
+    await apiAt.query.system.events();
 
   // const blockType = chaindata.getBlockType(block);
   // const blockAuthor = extractAuthor(
@@ -190,10 +225,25 @@ const processPayoutStakers = async (
   const commissionPercentage = parseFloat(commission) / Math.pow(10, 7);
 
   // Get the staking exposure of the validator and all of their nominators
-  const exposure = await chaindata.getExposureAt(apiAt, era, validator);
+  const exposure: Exposure | null = await chaindata.getExposureAt(
+    apiAt,
+    era,
+    validator,
+  );
+  if (!exposure) {
+    logger.error(
+      `Error getting exposure for validator ${validator}`,
+      blockdataLabel,
+    );
+    return;
+  }
   const { total, own, others } = exposure;
 
   const minStake = await chaindata.getErasMinStakeAt(apiAt, era);
+  if (!minStake) {
+    logger.error(`Error getting minStake for era ${era}`, blockdataLabel);
+    return;
+  }
   const valStakeEfficiency = (1 - (total - minStake) / total) * 100;
 
   // Add add the payout transaction to the list of txs to get written to the db
@@ -209,11 +259,11 @@ const processPayoutStakers = async (
 
   // Go through each of the blocks events and find the ones that corresopnd to the payoutStakers extrinsic
   const rewardEvents = blockEvents
-    .filter(
-      ({ phase }) =>
-        phase.isApplyExtrinsic && phase.asApplyExtrinsic.eq(extrinsicIndex),
-    )
-    .filter(({ event }) => {
+    .filter(({ phase }: FrameSystemEventRecord) => {
+      const p: Phase = phase;
+      return p.isApplyExtrinsic && p.asApplyExtrinsic.eq(extrinsicIndex);
+    })
+    .filter(({ event }: EventRecord) => {
       return event.section == "staking" && event.method == "Rewarded";
     });
 
@@ -234,7 +284,7 @@ const processPayoutStakers = async (
           return ex.address == nominator;
         });
         if (ownExposure.length > 0) {
-          exposurePercentage = (ownExposure[0].bonded / total) * 100;
+          exposurePercentage = (ownExposure[0]?.bonded / total) * 100;
         }
 
         const rewardAmount = parseFloat(amount) / denom;
@@ -242,6 +292,10 @@ const processPayoutStakers = async (
         const formattedDate = formatDateFromUnix(blockTimestamp);
 
         const chainMetadata = await queries.getChainMetadata();
+        if (!chainMetadata) {
+          logger.error(`Error getting chain metadata`, blockdataLabel);
+          return;
+        }
         const networkName = chainMetadata.name.toLowerCase();
 
         let chf, eur, usd;
@@ -264,8 +318,8 @@ const processPayoutStakers = async (
         const reward = {
           era: parseFloat(era),
           exposurePercentage: exposurePercentage || 0,
-          exposure: ownExposure[0]?.value,
-          totalStake: parseInt(total),
+          exposure: ownExposure[0]?.bonded || 0,
+          totalStake: total || 0,
           commission: commissionPercentage || 0,
           validator: validator,
           nominator: nominator,
@@ -363,13 +417,13 @@ const processPayoutStakers = async (
 };
 
 export const parseExtrinsics = async (
-  block: any,
-  blockHash: any,
-  events: any,
-  chaindata: any,
+  block: Block,
+  blockHash: string,
+  events: FrameSystemEventRecord[],
+  chaindata: ChainData,
 ) => {
   // Get the block number
-  const blockNumber = parseInt(block.header.number);
+  const blockNumber = parseInt(block.header.number.unwrap().toString());
 
   // logger.info(
   //   `Processing extrinsics of block #${blockNumber}..`,
@@ -379,12 +433,12 @@ export const parseExtrinsics = async (
   const extrinsics = block.extrinsics;
 
   // The block timestamp
-  let blockTimestamp;
+  let blockTimestamp: number;
   // Set the timestamp
   block.extrinsics.forEach(
     ({ signer, method: { method, section }, args }, index) => {
       if (method == "timestamp" || method == "set") {
-        blockTimestamp = parseInt(args[0]);
+        blockTimestamp = parseInt(args[0].toString());
       }
     },
   );
@@ -393,8 +447,7 @@ export const parseExtrinsics = async (
     extrinsics.map(
       async ({ signer, method: { method, section }, args }, index) => {
         let validator;
-        if (method == "payoutStakers") {
-          // logger.info(`Payout Stakers extrinsics:`, blockdataLabel);
+        if (method === "payoutStakers") {
           await processPayoutStakers(
             chaindata,
             args,
@@ -405,21 +458,26 @@ export const parseExtrinsics = async (
             blockTimestamp,
             events,
           );
-        } else if (method == "batch" || method == "batchAll") {
-          for (const arg of args[0]) {
-            const { method, section } = arg;
-            // If there was a payoutStakers tx
-            if (method.toString() == "payoutStakers") {
-              await processPayoutStakers(
-                chaindata,
-                arg.args,
-                index,
-                signer,
-                blockHash,
-                blockNumber,
-                blockTimestamp,
-                events,
-              );
+        } else if (method === "batch" || method === "batchAll") {
+          if (Array.isArray(args) && args.length > 0) {
+            for (const batchArgs of args) {
+              if (Array.isArray(batchArgs)) {
+                for (const arg of batchArgs) {
+                  const { method, section } = arg;
+                  if (method?.toString() === "payoutStakers") {
+                    await processPayoutStakers(
+                      chaindata,
+                      arg.args,
+                      index,
+                      signer,
+                      blockHash,
+                      blockNumber,
+                      blockTimestamp,
+                      events,
+                    );
+                  }
+                }
+              }
             }
           }
         }
@@ -431,7 +489,7 @@ export const parseExtrinsics = async (
 // Process all the events of a block
 export const parseEvents = async (
   blockEvents: any,
-  apiAt: ApiPromise,
+  apiAt: ApiDecoration<"promise">,
   blockNumber: number,
   blockHash: string,
   era: number,
@@ -439,7 +497,7 @@ export const parseEvents = async (
 ) => {
   blockEvents.map(async (event: any) => {
     if (event.section === "imOnline" && event.method === "SomeOffline") {
-      const offlineVals = event.data.toJSON()[0].map((val) => val[0]);
+      const offlineVals = event.data.toJSON()[0].map((val: any) => val[0]);
 
       logger.info(
         `Offline: vals: ${JSON.stringify(offlineVals)} `,

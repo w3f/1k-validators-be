@@ -17,10 +17,11 @@ export const nominatorJob = async (
     let processedCandidates = 0;
 
     for (const candidate of candidates) {
-      const { total, others } = await chaindata.getExposure(
-        activeEra,
-        candidate.stash,
-      );
+      const exposure = await chaindata.getExposure(activeEra, candidate.stash);
+      if (!exposure) {
+        return false;
+      }
+      const { total, others } = exposure;
       const allNominators = await Promise.all(
         nominators.filter((nom) => nom?.targets?.includes(candidate.stash)),
       );

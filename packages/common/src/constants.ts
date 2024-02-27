@@ -43,6 +43,8 @@ export const CHAINDATA_RETRIES = 20;
 
 export const CHAINDATA_SLEEP = 10000;
 
+export const API_PROVIDER_TIMEOUT = 10000;
+
 /// List of Kusama endpoints we can switch between.
 export const KusamaEndpoints = [
   "wss://kusama-rpc-tn.dwellir.com",

@@ -106,6 +106,10 @@ export const checkLatestClientVersion = async (
         const latestVersion = forceLatestRelease
           ? semver.clean(forceLatestRelease)
           : semver.clean(latestRelease.name);
+        if (!nodeVersion || !latestVersion) {
+          await setLatestClientReleaseValidity(candidate.stash, false);
+          return false;
+        }
 
         const isUpgraded = semver.gte(nodeVersion, latestVersion);
         if (!isUpgraded) {

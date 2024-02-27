@@ -1,9 +1,9 @@
 import { ApiPromise, WsProvider } from "@polkadot/api";
 import EventEmitter from "eventemitter3";
 
-import logger from "./logger";
-import { sleep } from "./utils/util";
-import { POLKADOT_API_TIMEOUT } from "./constants";
+import logger from "../logger";
+import { sleep } from "../utils/util";
+import { API_PROVIDER_TIMEOUT, POLKADOT_API_TIMEOUT } from "../constants";
 
 export const apiLabel = { label: "ApiHandler" };
 
@@ -12,19 +12,14 @@ export const apiLabel = { label: "ApiHandler" };
  * to a different provider if one proves troublesome.
  */
 class ApiHandler extends EventEmitter {
-  private _wsProvider: WsProvider;
-  private _api: ApiPromise;
-  private _endpoints: string[];
-  private _reconnectLock: boolean;
-  private _reconnectTries = 0;
-  static isConnected: any;
-  static _reconnect: any;
+  private _wsProvider?: WsProvider;
+  private _api: ApiPromise | null = null;
+  private readonly _endpoints: string[] = [];
+  static isConnected = false;
+  private healthCheckInProgress = false;
+  private _currentEndpoint?: string;
 
-  timeout = 5 * 1000;
-
-  private healthCheckInProgress: boolean;
-  private _currentEndpoint: string;
-  constructor(endpoints?: string[]) {
+  constructor(endpoints: string[]) {
     super();
     this._endpoints = endpoints.sort(() => Math.random() - 0.5);
   }
@@ -47,16 +42,20 @@ class ApiHandler extends EventEmitter {
         this.healthCheckInProgress = false;
         return true;
       } else {
-        await sleep(this.timeout);
+        await sleep(API_PROVIDER_TIMEOUT);
         logger.info(`api still disconnected, disconnecting.`, apiLabel);
-        await this._wsProvider.disconnect();
+        await this._wsProvider?.disconnect();
         throw new Error(
-          `ERROR: rpc endpoint still disconnected after ${this.timeout} seconds.`,
+          `ERROR: rpc endpoint still disconnected after ${API_PROVIDER_TIMEOUT} seconds.`,
         );
       }
-    } catch (e) {
-      logger.error(`Error in health check for WS Provider for rpc.`, apiLabel);
-      logger.error(e, apiLabel);
+    } catch (e: unknown) {
+      const errorMessage =
+        e instanceof Error ? e.message : "An unknown error occurred";
+      logger.error(
+        `Error in health check for WS Provider for rpc. ${errorMessage}`,
+        apiLabel,
+      );
       this.healthCheckInProgress = false;
       throw e;
     }
@@ -66,8 +65,8 @@ class ApiHandler extends EventEmitter {
     return this._currentEndpoint;
   }
 
-  async getProvider(endpoints) {
-    return await new Promise<WsProvider | undefined>((resolve, reject) => {
+  async getProvider(endpoints: string[]): Promise<WsProvider> {
+    return await new Promise<WsProvider>((resolve, reject) => {
       const wsProvider = new WsProvider(
         endpoints,
         5000,
@@ -116,7 +115,7 @@ class ApiHandler extends EventEmitter {
     });
   }
 
-  async getAPI(retries) {
+  async getAPI(retries: number): Promise<ApiPromise> {
     if (this._wsProvider && this._api && this._api?.isConnected) {
       return this._api;
     }
@@ -144,7 +143,11 @@ class ApiHandler extends EventEmitter {
       if (retries < 15) {
         return await this.getAPI(retries + 1);
       } else {
-        return this._api;
+        const provider = await this.getProvider(endpoints);
+        return await ApiPromise.create({
+          provider: provider,
+          noInitWarn: true,
+        });
       }
     }
   }
@@ -153,65 +156,73 @@ class ApiHandler extends EventEmitter {
     const api = await this.getAPI(0);
     this._api = api;
     this._registerEventHandlers(this._api);
+    return api;
   }
 
   isConnected(): boolean {
-    return this._wsProvider.isConnected;
+    return this._wsProvider?.isConnected || false;
   }
 
-  getApi(): ApiPromise {
-    return this._api;
+  getApi(): ApiPromise | null {
+    if (!this._api) {
+      return null;
+    } else {
+      return this._api;
+    }
   }
 
   _registerEventHandlers(api: ApiPromise): void {
-    if (api) {
-      try {
-        logger.info(`registering event handlers...`, apiLabel);
-        api?.query?.system?.events((events) => {
-          // Loop through the Vec<EventRecord>
-          events.forEach((record) => {
-            // Extract the phase, event and the event types
-            const { event } = record;
-
-            if (event.section == "session" && event.method == "NewSession") {
-              const [session_index] = event.data;
-
-              this.emit("newSession", {
-                sessionIndex: session_index.toString(),
-              });
-            }
-
-            if (
-              event.section == "staking" &&
-              (event.method == "Reward" || event.method == "Rewarded")
-            ) {
-              const [stash, amount] = event.data;
-
-              this.emit("reward", {
-                stash: stash.toString(),
-                amount: amount.toString(),
-              });
-            }
-
-            if (
-              event.section === "imOnline" &&
-              event.method === "SomeOffline"
-            ) {
-              const offlineVals = event.data.toJSON()[0].map((val) => val[0]);
-
-              this.emit("someOffline", {
-                offlineVals: offlineVals,
-              });
-            }
-          });
-        });
-      } catch (e) {
-        logger.error(`there was an error registering event handlers`, apiLabel);
-        logger.error(JSON.stringify(e), apiLabel);
-      }
-    } else {
-      logger.warn(`cannot register event handlers, api is null`, apiLabel);
+    if (!api) {
+      logger.warn(`API is null, cannot register event handlers.`, apiLabel);
+      return;
     }
+
+    logger.info(`Registering event handlers...`, apiLabel);
+
+    api.query.system.events((events) => {
+      events.forEach((record) => {
+        const { event } = record;
+
+        if (event.section === "session" && event.method === "NewSession") {
+          const sessionIndex = Number(event?.data[0]?.toString()) || 0;
+          this.handleNewSessionEvent(sessionIndex);
+        }
+
+        if (
+          event.section === "staking" &&
+          (event.method === "Reward" || event.method === "Rewarded")
+        ) {
+          const [stash, amount] = event.data;
+          this.handleRewardEvent(stash.toString(), amount.toString());
+        }
+
+        if (event.section === "imOnline" && event.method === "SomeOffline") {
+          const data = event.data.toJSON();
+          const offlineVals =
+            Array.isArray(data) && Array.isArray(data[0])
+              ? data[0].reduce((acc: string[], val) => {
+                  if (Array.isArray(val) && typeof val[0] === "string") {
+                    acc.push(val[0]);
+                  }
+                  return acc;
+                }, [])
+              : [];
+          this.handleSomeOfflineEvent(offlineVals as string[]);
+        }
+      });
+    });
+  }
+
+  handleNewSessionEvent(sessionIndex: number): void {
+    this.emit("newSession", { sessionIndex });
+  }
+
+  handleRewardEvent(stash: string, amount: string): void {
+    this.emit("reward", { stash, amount });
+  }
+
+  handleSomeOfflineEvent(offlineVals: string[]): void {
+    this.emit("someOffline", { offlineVals });
   }
 }
 

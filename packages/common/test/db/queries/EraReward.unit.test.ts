@@ -1,37 +1,16 @@
-import { MongoMemoryServer } from "mongodb-memory-server";
-import mongoose from "mongoose";
-import { Db } from "../../../src/db";
 import { EraRewardModel } from "../../../src/db/models";
 import {
   getEraReward,
   getLastEraRewards,
   setEraReward,
 } from "../../../src/db/queries";
+import { initTestServerBeforeAll } from "../../testUtils/dbUtils";
 
-let mongoServer: MongoMemoryServer;
+initTestServerBeforeAll();
 
-beforeAll(async () => {
-  mongoServer = await MongoMemoryServer.create();
-  const mongoUri = mongoServer.getUri();
-  await Db.create(mongoUri);
-
+beforeEach(async () => {
   await EraRewardModel.deleteMany({});
-}, 60000);
-
-afterAll(async () => {
-  try {
-    await EraRewardModel.deleteMany({});
-    await mongoose.disconnect();
-    if (mongoServer) {
-      await mongoServer.stop();
-    } else {
-      console.warn("mongoServer is undefined.");
-    }
-  } catch (error) {
-    console.error("Error during afterAll:", error);
-    throw error;
-  }
-}, 60000);
+});
 
 describe("setEraReward", () => {
   it("should create a new era reward record if it doesn't exist", async () => {

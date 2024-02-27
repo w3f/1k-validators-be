@@ -1,29 +1,11 @@
-import { MongoMemoryServer } from "mongodb-memory-server";
-import mongoose from "mongoose";
 import { LocationStats, LocationStatsModel } from "../../../src/db/models";
 import {
   getLatestLocationStats,
   setLocationStats,
 } from "../../../src/db/queries";
-import { Db } from "../../../src/db";
-import { omitId } from "../../testUtils/dbUtils";
+import { initTestServerBeforeAll, omitId } from "../../testUtils/dbUtils";
 
-let mongoServer: MongoMemoryServer;
-
-beforeAll(async () => {
-  mongoServer = await MongoMemoryServer.create();
-  const mongoUri = mongoServer.getUri();
-  await Db.create(mongoUri);
-});
-
-afterEach(async () => {
-  await LocationStatsModel.deleteMany({});
-});
-
-afterAll(async () => {
-  await mongoose.disconnect();
-  await mongoServer.stop();
-});
+initTestServerBeforeAll();
 
 describe("setLocationStats", () => {
   afterEach(() => {

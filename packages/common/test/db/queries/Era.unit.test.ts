@@ -1,34 +1,11 @@
-import { MongoMemoryServer } from "mongodb-memory-server";
-import mongoose from "mongoose";
 import { EraModel } from "../../../src/db/models";
 import {
   getLastNominatedEraIndex,
   setLastNominatedEraIndex,
 } from "../../../src/db/queries/Era";
-import { Db } from "../../../src/db";
+import { initTestServerBeforeAll } from "../../testUtils/dbUtils";
 
-let mongoServer: MongoMemoryServer;
-
-beforeAll(async () => {
-  mongoServer = await MongoMemoryServer.create(); // Start the in-memory MongoDB server
-  const mongoUri = mongoServer.getUri();
-  await Db.create(mongoUri);
-  await EraModel.deleteMany({});
-}, 60000);
-
-afterAll(async () => {
-  try {
-    await mongoose.disconnect();
-    if (mongoServer) {
-      await mongoServer.stop(); // Stop the in-memory MongoDB server
-    } else {
-      console.warn("mongoServer is undefined.");
-    }
-  } catch (error) {
-    console.error("Error during afterAll:", error);
-    throw error; // Rethrow the error to fail the test suite
-  }
-}, 60000);
+initTestServerBeforeAll();
 
 beforeEach(async () => {
   await EraModel.deleteMany({});

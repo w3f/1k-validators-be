@@ -1,5 +1,3 @@
-import { MongoMemoryServer } from "mongodb-memory-server";
-import mongoose from "mongoose";
 import { EraPointsModel, TotalEraPointsModel } from "../../../src/db/models";
 import {
   getEraPoints,
@@ -16,32 +14,9 @@ import {
   setIdentity,
   setTotalEraPoints,
 } from "../../../src/db/queries";
+import { initTestServerBeforeAll } from "../../testUtils/dbUtils";
 
-import { Db } from "../../../src/db";
-
-let mongoServer: MongoMemoryServer;
-
-beforeAll(async () => {
-  mongoServer = await MongoMemoryServer.create(); // Start the in-memory MongoDB server
-  const mongoUri = mongoServer.getUri();
-  await Db.create(mongoUri);
-  await EraPointsModel.deleteMany({});
-  await TotalEraPointsModel.deleteMany({});
-}, 60000);
-
-afterAll(async () => {
-  try {
-    await mongoose.disconnect();
-    if (mongoServer) {
-      await mongoServer.stop(); // Stop the in-memory MongoDB server
-    } else {
-      console.warn("mongoServer is undefined.");
-    }
-  } catch (error) {
-    console.error("Error during afterAll:", error);
-    throw error; // Rethrow the error to fail the test suite
-  }
-}, 60000);
+initTestServerBeforeAll();
 
 beforeEach(async () => {
   await EraPointsModel.deleteMany({});

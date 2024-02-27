@@ -1,37 +1,12 @@
-import { MongoMemoryServer } from "mongodb-memory-server";
-import mongoose from "mongoose";
-import { Db, DelayedTx, DelayedTxModel } from "../../../src/db";
+import { DelayedTx, DelayedTxModel } from "../../../src/db";
 import {
   addDelayedTx,
   deleteDelayedTx,
   getAllDelayedTxs,
 } from "../../../src/db/queries/DelayedTx";
+import { initTestServerBeforeAll } from "../../testUtils/dbUtils";
 
-let mongoServer: MongoMemoryServer;
-let mongoUri: string;
-
-beforeAll(async () => {
-  mongoServer = await MongoMemoryServer.create(); // Start the in-memory MongoDB server
-  mongoUri = mongoServer.getUri();
-
-  await Db.create(mongoUri);
-  await DelayedTxModel.deleteMany({});
-}, 60000);
-
-afterAll(async () => {
-  try {
-    await DelayedTxModel.deleteMany({});
-    await mongoose.disconnect();
-    if (mongoServer) {
-      await mongoServer.stop(); // Stop the in-memory MongoDB server
-    } else {
-      console.warn("mongoServer is undefined.");
-    }
-  } catch (error) {
-    console.error("Error during afterAll:", error);
-    throw error; // Rethrow the error to fail the test suite
-  }
-}, 60000);
+initTestServerBeforeAll();
 
 beforeEach(async () => {
   await DelayedTxModel.deleteMany({});

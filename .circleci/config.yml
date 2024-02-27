@@ -227,10 +227,10 @@ workflows:
           filters:
             tags:
               only: /.*/
-#      - testCommonUnit:
-#          filters:
-#            tags:
-#              only: /.*/
+      - testCommonUnit:
+          filters:
+            tags:
+              only: /.*/
       - testCommonInt:
           filters:
             tags:

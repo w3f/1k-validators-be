@@ -100,6 +100,5 @@ export const initTestServerBeforeAll = () => {
   });
   afterAll(async () => {
     await mongoose.disconnect();
-    await mongoServer.stop();
   });
 };

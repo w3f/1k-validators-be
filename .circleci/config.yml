@@ -244,10 +244,14 @@ workflows:
           filters:
             tags:
               only: /.*/
+          requires:
+            - installLibSSLDev
       - testCommonInt:
           filters:
             tags:
               only: /.*/
+          requires:
+            - installLibSSLDev
 #      - testCore:
 #          filters:
 #            tags:

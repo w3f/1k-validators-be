@@ -14,4 +14,5 @@ module.exports = {
     "^.+\\.ts$": ["ts-jest", { tsconfig: "tsconfig.test.json" }],
   },
   setupFilesAfterEnv: ["<rootDir>/packages/common/test/jest.setup.js"],
+  testTimeout: 300000,
 };

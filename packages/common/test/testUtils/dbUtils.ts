@@ -3,6 +3,7 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 import { Db } from "../../src";
 import mongoose from "mongoose";
 import { deleteAllDb } from "./deleteAll";
+import * as Util from "../../src/utils/util";
 
 interface ObjectWithId {
   _id: any;
@@ -89,6 +90,7 @@ export const sortByKey = (obj: any[], key: string) => {
 
 export const createTestServer = async () => {
   try {
+    await Util.sleep(300);
     const mongoServer = await MongoMemoryServer.create();
     const dbName = `t${Math.random().toString().replace(".", "")}`;
     console.log("dbName", dbName);

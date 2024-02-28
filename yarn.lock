@@ -118,7 +118,7 @@ __metadata:
     "@1kv/common": "workspace:^"
     "@1kv/worker": "workspace:^"
     "@ava/typescript": ^4.1.0
-    "@bull-board/api": ^5.14.0
+    "@bull-board/api": ^5.14.2
     "@bull-board/koa": ^5.14.0
     "@typescript-eslint/eslint-plugin": ^5.59.9
     "@typescript-eslint/parser": ^5.59.9
@@ -645,7 +645,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@bull-board/api@npm:5.14.1, @bull-board/api@npm:^5.14.0":
+"@bull-board/api@npm:5.14.1":
   version: 5.14.1
   resolution: "@bull-board/api@npm:5.14.1"
   dependencies:
@@ -653,6 +653,17 @@ __metadata:
   peerDependencies:
     "@bull-board/ui": 5.14.1
   checksum: 6c3ab25b799a1c506cce5af0ae9d3d8697bca3715940ba4590cc44799552bd1e288058e2d2b4cb49c8fb370713314787e689375582696c2391b8bbaed1df552d
+  languageName: node
+  linkType: hard
+
+"@bull-board/api@npm:^5.14.2":
+  version: 5.14.2
+  resolution: "@bull-board/api@npm:5.14.2"
+  dependencies:
+    redis-info: ^3.0.8
+  peerDependencies:
+    "@bull-board/ui": 5.14.2
+  checksum: 3ce15dcf883786746f154f87729ce0c13e66db8511415964732d25b89a42c800f5ea9d88244bf53830f3623bf2af73968260e41c012eea7f5a5f599bac38eba8
   languageName: node
   linkType: hard
 

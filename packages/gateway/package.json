@@ -31,7 +31,7 @@
     "@1kv/common": "workspace:^",
     "@1kv/worker": "workspace:^",
     "@bull-board/api": "^5.14.0",
-    "@bull-board/koa": "^5.14.0",
+    "@bull-board/koa": "^5.14.2",
     "koa-swagger-decorator": "^1.8.7",
     "typescript": "^5.3.3"
   },

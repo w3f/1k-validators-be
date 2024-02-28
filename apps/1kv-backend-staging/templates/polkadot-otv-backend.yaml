@@ -22,8 +22,9 @@ spec:
       env:
         - name: HELM_VALUES
           value: |
-            # image:
-            #   tag: "latest"
+            image:
+              imagePullPolicy: Always
+              tag: staging
             environment: {{ .Values.environment }}
             dataPath: "/data"
             backendPort: 3300

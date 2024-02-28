@@ -15,9 +15,9 @@ spec:
   #     prune: true
   #     selfHeal: true 
   source:
-    repoURL: https://w3f.github.io/helm-charts/
-    chart: otv-backend
-    targetRevision: v3.0.22
+    repoURL: 'https://github.com/w3f/1k-validators-be.git'
+    path: charts/otv-backend
+    targetRevision: staging
     plugin:
       env:
         - name: HELM_VALUES

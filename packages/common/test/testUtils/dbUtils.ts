@@ -88,22 +88,28 @@ export const sortByKey = (obj: any[], key: string) => {
   return obj;
 };
 
-export const createTestServer = async () => {
-  try {
-    await Util.sleep(300);
-    const mongoServer = await MongoMemoryServer.create();
-    const dbName = `t${Math.random().toString().replace(".", "")}`;
-    console.log("dbName", dbName);
-    const mongoUri = mongoServer.getUri(dbName);
-    console.log("mongoUri", mongoUri);
-    await Db.create(mongoUri);
-    return mongoServer;
-  } catch (error) {
-    console.error("Error creating test server:", error);
-    throw error;
+export const createTestServer = async (retries = 3, delay = 5000) => {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      await Util.sleep(300);
+      const mongoServer = await MongoMemoryServer.create();
+      const dbName = `t${Math.random().toString().replace(".", "")}`;
+      console.log("dbName", dbName);
+      const mongoUri = mongoServer.getUri(dbName);
+      console.log("mongoUri", mongoUri);
+      await Db.create(mongoUri);
+      return mongoServer;
+    } catch (error) {
+      console.error(`Attempt ${attempt}: Error creating test server`, error);
+      if (attempt < retries) {
+        console.log(`Retrying after ${delay}ms...`);
+        await Util.sleep(delay); //
+      } else {
+        throw error;
+      }
+    }
   }
 };
-
 export const initTestServerBeforeAll = () => {
   let mongoServer: MongoMemoryServer;
   beforeEach(async () => {

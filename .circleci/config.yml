@@ -81,9 +81,19 @@ jobs:
           environment:
             YARN_ENABLE_IMMUTABLE_INSTALLS: false
           command: |
-            if ! yarn set version 3.2.2 && yarn install && yarn build && yarn workspace @1kv/common test:int --testTimeout=60000; then
-              echo "Integration tests failed"
-              exit 0
+            yarn set version 3.2.2
+            yarn install
+            yarn build
+            if ! yarn workspace @1kv/common test:int --testTimeout=60000; then
+              echo "Unit tests failed, but not failing the job."
+              echo 'export TESTS_FAILED=true' >> $BASH_ENV
+            fi
+      - run:
+          name: "Handle Test Failures"
+          command: |
+            if [ "${TESTS_FAILED}" == "true" ]; then
+              echo "Tests failed."
+              exit 1
             fi
 
   #  testCore:

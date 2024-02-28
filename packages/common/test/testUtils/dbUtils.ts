@@ -88,7 +88,7 @@ export const sortByKey = (obj: any[], key: string) => {
   return obj;
 };
 
-export const createTestServer = async (oldMongoServer?) => {
+export const createTestServer = async (oldMongoServer?: MongoMemoryServer) => {
   try {
     if (oldMongoServer) {
       await oldMongoServer.stop();
@@ -110,7 +110,7 @@ export const createTestServer = async (oldMongoServer?) => {
 
 export const initTestServerBeforeAll = () => {
   let mongoServer: MongoMemoryServer;
-  beforeEach(async () => {
+  beforeAll(async () => {
     try {
       // await sleep(300);
       mongoServer = await createTestServer(mongoServer);

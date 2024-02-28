@@ -47,7 +47,6 @@ const App = () => {
     try {
       const response = await axios.get(currentEndpoint);
       if (response.data && Object.keys(response.data).length > 0) {
-        // Check if the response is not empty
         setJobs(
           Object.entries(response.data).map(([name, details]) => ({
             name,
@@ -55,15 +54,36 @@ const App = () => {
           })),
         );
         setHasError(false);
-        setRefreshInterval(100); // Reset to faster refresh rate on success
+        setRefreshInterval(800); // Reset to faster refresh rate on success
       } else {
+        // Handle empty response
+        console.log("Received empty response");
         setHasError(true);
-        setRefreshInterval(5000); // Slow down the refresh rate on empty response
+        setRefreshInterval(5000); // Slow down the refresh rate
       }
     } catch (error) {
       console.error("Error fetching job data:", error);
       setHasError(true);
       setRefreshInterval(5000); // Slow down the refresh rate on error
+
+      // Provide more specific error handling
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        console.log(error.response.data);
+        console.log(error.response.status);
+        console.log(error.response.headers);
+        if (error.response.status === 404) {
+          // Handle 404 Not Found
+          console.error("The requested endpoint was not found.");
+        }
+      } else if (error.request) {
+        // The request was made but no response was received
+        console.error("No response was received from the server.");
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        console.error("Error", error.message);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -275,11 +295,13 @@ const App = () => {
                 </div>
               )}
               {job.error && (
-                <div className="errorContainer">
-                  <p className="errorMessage">
-                    <FiAlertTriangle color="yellow" size={20} />
-                    {job.error}
-                  </p>
+                <div className={`errorContainer ${hasError ? "visible" : ""}`}>
+                  <div className="errorContainer">
+                    <p className="errorMessage">
+                      <FiAlertTriangle color="yellow" size={20} />
+                      {job.error}
+                    </p>
+                  </div>
                 </div>
               )}
             </motion.div>

@@ -59,6 +59,7 @@ h1 {
 }
 
 .progressBar {
+  transition: width 0.5s ease-out;
   height: 20px; /* Set the height of the progress bar */
   background: linear-gradient(to right, rgba(0, 0, 0, 0.6), rgba(0, 255, 0, 0.6)); /* Gradient from transparent black to lighter */
   border-radius: 3px; /* Rounded corners for the progress bar */
@@ -220,6 +221,12 @@ h1 {
   /*margin-top: 20px; !* Spacing from the preceding elements *!*/
   align-content: center;
   justify-content: center;
+  transition: opacity 0.5s ease-in-out; /* Smooth transition for opacity changes */
+  opacity: 0;
+}
+
+.errorContainer.visible {
+  opacity: 1; /* Make the element fully visible */
 }
 
 .errorMessage {
@@ -266,6 +273,7 @@ h1 {
 }
 
 .healthCheckIcon {
+  transition: color 0.3s ease-in-out;
   font-size: 1.5rem; /* Larger icons */
 }
 
@@ -291,4 +299,18 @@ h1 {
   .healthCheckItem {
     justify-content: start; /* Aligns content to the start, giving more room for the text */
   }
+}
+
+.healthCheckIcon, .jobHeader svg {
+  transition: color 0.3s ease-in-out; /* Smooth transition for color changes */
+  /* Other styles remain the same */
+}
+
+.card {
+  transition: transform 0.3s ease-in-out; /* Smooth transition for transform changes */
+  /* Other styles remain the same */
+}
+
+.card:hover {
+  transform: scale(1.05); /* Slightly increase the size on hover */
 }

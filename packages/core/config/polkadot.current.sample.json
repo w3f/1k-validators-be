@@ -3,8 +3,11 @@
     "dryRun": false,
     "networkPrefix": 0,
     "apiEndpoints": [
-      "wss://rpc.polkadot.io",
-      "wss://polkadot-rpc.dwellir.com"
+      "wss://rpc.dotters.network/polkadot",
+      "wss://dot-rpc.stakeworld.io",
+      "wss://polkadot.public.curie.radiumblock.co/ws",
+      "wss://rpc.ibp.network/polkadot",
+      "wss://polkadot-rpc-tn.dwellir.com"
     ],
     "candidatesUrl": "https://raw.githubusercontent.com/w3f/1k-validators-be/master/candidates/polkadot.json"
   },
@@ -17,6 +20,27 @@
     "minSelfStake": 50000000000000,
     "commission": 50000000,
     "unclaimedEraThreshold": 1
+  },
+  "cron": {
+    "monitorEnabled": true,
+    "clearOfflineEnabled": true,
+    "validityEnabled": true,
+    "scoreEnabled": true,
+    "executionEnabled": true,
+    "scorekeeperEnabled": true,
+    "rewardClaimingEnabled": true,
+    "cancelEnabled": true,
+    "staleEnabled": true,
+    "eraPointsEnabled": true,
+    "eraStatsEnabled": true,
+    "activeValidatorEnabled": true,
+    "inclusionEnabled": true,
+    "sessionKeyEnabled": true,
+    "unclaimedErasEnabled": true,
+    "validatorPrefEnabled": true,
+    "nominatorEnabled": true,
+    "locationStatsEnabled": true,
+    "blockEnabled": true
   },
   "db": {
     "mongo": {

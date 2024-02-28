@@ -4,7 +4,6 @@ import Candidate from "../controllers/Candidate";
 import Nominator from "../controllers/Nominator";
 import Nomination from "../controllers/Nomination";
 import EraPoints from "../controllers/EraPoints";
-import Democracy from "../controllers/Democracy";
 import Score from "../controllers/Score";
 import Stats from "../controllers/Stats";
 import Location from "../controllers/Location";
@@ -23,7 +22,6 @@ const API = {
   GetRankCandidates: "/candidates/rank",
   GetValidCandidates: "/candidates/valid",
   GetInvalidCandidates: "/candidates/invalid",
-  GetNodes: "/nodes",
   GetNominators: "/nominators",
   GetNominator: "/nominator/:address",
   GetNominations: "/nominations",
@@ -45,10 +43,6 @@ const API = {
   LocationStats: "/locationstats",
   ValidLocationStats: "/locationstats/valid",
   SessionLocationStats: "/locationstats/:session",
-  Councillors: "/councillor",
-  Councillor: "/councillor/:address",
-  Voters: "/voters",
-  ElectionStats: "/electionstats",
   EraPaid: "/erapaid",
   EraRewards: "/erareward/:stash/:limit",
   EraReward: "/erareward/:stash/:era",
@@ -56,23 +50,6 @@ const API = {
   LatestNominatorStake: "/nominatorstake/:address",
   EraNominatorStake: "/nominatorstake/:address/:era",
   CurrentValidatorSet: "/validators/current",
-  AddressConvictionVotes: "/opengov/votes/address/:address",
-  AddressFinishedConvictionVotes: "/opengov/votes/address/:address/finished",
-  AddressTrackConvictionVotes: "/opengov/votes/address/:address/track/:track",
-  TrackConvictionVotes: "/opengov/votes/track/:track",
-  ReferendumConvictionVotes: "/opengov/votes/referendum/:index",
-  OpenGovReferenda: "/opengov/referenda",
-  OpenGovReferendaIndex: "/opengov/referenda/:index",
-  OpenGovReferendaStats: "/opengov/referenda/stats/",
-  OpenGovReferendumStats: "/opengov/referenda/stats/:index",
-  OpenGovReferendumStatsSegment: "/opengov/referenda/stats/:index/:segment",
-  OpenGovLastReferendum: "/opengov/referenda/last",
-  OpenGovAddressDelegations: "/opengov/delegations/:address",
-  OpenGovVoters: "/opengov/voters",
-  OpenGovVoter: "/opengov/voter/:address",
-  OpenGovDelegates: "/opengov/delegates",
-  OpenGovDelegate: "/opengov/delegates/:address",
-  OpenGovTracks: "/opengov/tracks",
   Validators: "/validators",
   Validator: "/validator/:address",
   ValidatorsBeefyStats: "/validators/beefy",
@@ -86,6 +63,8 @@ const API = {
   RewardsNominatorTotal: "/rewards/nominator/:address/total",
   RewardsAllNominatorsTotal: "/rewards/nominators/total",
   BlockIndex: "/blockindex",
+  StatsTotalReqeusts: "/stats/totalRequests",
+  StatsEndpointCounts: "/stats/endpointCounts",
 };
 
 // TODO remove
@@ -96,8 +75,6 @@ router.get(API.GetCandidates, Candidate.getCandidates);
 router.get(API.GetRankCandidates, Candidate.getRankCandidates);
 router.get(API.GetValidCandidates, Candidate.getValidCandidates);
 router.get(API.GetInvalidCandidates, Candidate.getInvalidCandidates);
-
-router.get(API.GetNodes, Candidate.getNodes);
 
 router.get(API.LatestNominatorStake, Candidate.getLatestNominatorStake);
 router.get(API.EraNominatorStake, Candidate.getEraNominatorStake);
@@ -113,46 +90,6 @@ router.get(API.ProxyTxs, Nomination.getProxyTxs);
 
 router.get(API.EraPoints, EraPoints.getEraPoints);
 router.get(API.TotalEraPoints, EraPoints.getTotalEraPoints);
-
-router.get(API.ElectionStats, Democracy.getElectionStats);
-router.get(API.Councillors, Democracy.getCouncillors);
-router.get(API.Councillor, Democracy.getCouncillor);
-//
-router.get(API.Voters, Democracy.getVoters);
-
-router.get(API.OpenGovReferenda, Democracy.getOpenGovReferenda);
-router.get(API.OpenGovReferendaStats, Democracy.getOpenGovReferendaStats);
-router.get(API.OpenGovReferendaIndex, Democracy.getOpenGovReferendaIndex);
-router.get(API.OpenGovReferendumStats, Democracy.getOpenGovReferendumStats);
-router.get(
-  API.OpenGovReferendumStatsSegment,
-  Democracy.getOpenGovReferendumStatsSegment,
-);
-
-router.get(API.AddressConvictionVotes, Democracy.getAddressConvictionVotes);
-router.get(
-  API.AddressFinishedConvictionVotes,
-  Democracy.getAddressFinishedConvictionVotes,
-);
-router.get(
-  API.AddressTrackConvictionVotes,
-  Democracy.getAddressTrackConvictionVotes,
-);
-router.get(API.TrackConvictionVotes, Democracy.getTrackConvictionVotes);
-router.get(
-  API.ReferendumConvictionVotes,
-  Democracy.getReferendumConvictionVotes,
-);
-router.get(
-  API.OpenGovAddressDelegations,
-  Democracy.getOpenGovAddressDelegations,
-);
-
-router.get(API.OpenGovVoters, Democracy.getOpenGovVoters);
-router.get(API.OpenGovVoter, Democracy.getOpenGovVoter);
-router.get(API.OpenGovDelegates, Democracy.getOpenGovDelegates);
-router.get(API.OpenGovDelegate, Democracy.getOpenGovDelegate);
-router.get(API.OpenGovTracks, Democracy.getOpenGovTracks);
 
 router.get(API.Score, Score.getScore);
 router.get(API.SessionScore, Score.getSessionScore);
@@ -188,5 +125,24 @@ router.get(API.RewardsNominatorTotal, Rewards.getRewardsNominatorTotal);
 router.get(API.RewardsAllNominatorsTotal, Rewards.getRewardsAllNominatorsTotal);
 
 router.get(API.BlockIndex, Block.getBlockIndex);
+
+router.get(API.StatsTotalReqeusts, Stats.getTotalRequests);
+router.get(API.StatsEndpointCounts, Stats.getEndpointCounts);
+
+// router.get("/stats/totalRequests", (ctx) => {
+//   ctx.body = { totalRequests: requestEmitter.listenerCount("requestReceived") };
+// });
+//
+// // Endpoint to retrieve the count of requests per endpoint
+// router.get("/stats/endpointCounts", (ctx) => {
+//   const endpointCounts = {};
+//
+//   // Iterate over all registered endpoints
+//   requestEmitter.eventNames().forEach((endpoint) => {
+//     endpointCounts[endpoint] = requestEmitter.listenerCount(endpoint);
+//   });
+//
+//   ctx.body = { endpointCounts };
+// });
 
 export default router;

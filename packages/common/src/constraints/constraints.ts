@@ -1,5 +1,5 @@
-import { ChainData, Config, Constants, Types } from "../index";
-import ApiHandler from "../ApiHandler";
+import { ChainData, Config, Constants } from "../index";
+import ApiHandler from "../ApiHandler/ApiHandler";
 import { setScoreMetadata } from "./ScoreMetadata";
 import { checkAllCandidates, checkCandidate } from "./CheckCandidates";
 import {
@@ -8,11 +8,10 @@ import {
   scoreCandidates,
 } from "./ScoreCandidates";
 import { processCandidates } from "./ProcessCandidates";
+import { Candidate } from "../db";
 
 export interface Constraints {
-  processCandidates(
-    candidates: Set<Types.CandidateData>,
-  ): Promise<[Set<any>, Set<any>]>;
+  processCandidates(candidates: Set<Candidate>): Promise<[Set<any>, Set<any>]>;
 }
 
 export const constraintsLabel = { label: "Constraints" };
@@ -95,29 +94,32 @@ export class OTV implements Constraints {
   }
 
   // Set the score metadata: the ranges of values for valid candidates + statistics on values
-  async setScoreMetadata() {
-    await setScoreMetadata(this);
+  async setScoreMetadata(): Promise<boolean> {
+    return await setScoreMetadata(this);
   }
 
   // Checks the validity of all candidates
-  async checkAllCandidates() {
+  async checkAllCandidates(): Promise<boolean> {
     return await checkAllCandidates(this);
   }
 
   // Check the candidate and set any invalidity fields
-  async checkCandidate(candidate: Types.CandidateData): Promise<boolean> {
+  async checkCandidate(candidate: Candidate): Promise<boolean> {
     return await checkCandidate(this, candidate);
   }
 
-  async scoreAllCandidates() {
+  async scoreAllCandidates(): Promise<boolean> {
     return await scoreAllCandidates(this);
   }
 
-  async scoreCandidate(candidate: Types.CandidateData, scoreMetadata: any) {
+  async scoreCandidate(
+    candidate: Candidate,
+    scoreMetadata: any,
+  ): Promise<boolean> {
     return await scoreCandidate(this, candidate, scoreMetadata);
   }
 
-  async scoreCandidates(candidates: Types.CandidateData[]) {
+  async scoreCandidates(candidates: Candidate[]): Promise<boolean> {
     return await scoreCandidates(this, candidates);
   }
 
@@ -127,13 +129,8 @@ export class OTV implements Constraints {
   ///     - We go through all the candidates and if they meet all constraints, they get called to the 'good' set
   ///     - If they do not meet all the constraints, they get added to the bad set
   async processCandidates(
-    candidates: Set<Types.CandidateData>,
-  ): Promise<
-    [
-      Set<Types.CandidateData>,
-      Set<{ candidate: Types.CandidateData; reason: string }>,
-    ]
-  > {
+    candidates: Set<Candidate>,
+  ): Promise<[Set<Candidate>, Set<{ candidate: Candidate; reason: string }>]> {
     return await processCandidates(this, candidates);
   }
 }

@@ -6,14 +6,13 @@ import {
   Constants,
   Db,
   logger,
+  MatrixBot,
   queries,
+  ScoreKeeper,
   Util,
 } from "@1kv/common";
-import MatrixBot from "./matrix";
-import Scorekeeper from "./scorekeeper/scorekeeper";
-import { TelemetryClient } from "@1kv/telemetry";
 
-import { startClearAccumulatedOfflineTimeJob } from "./scorekeeper/jobs/cron/StartCronJobs";
+import { TelemetryClient } from "@1kv/telemetry";
 import { Server } from "@1kv/gateway";
 
 const isCI = process.env.CI;
@@ -26,7 +25,7 @@ const catchAndQuit = async (fn: any) => {
   try {
     await fn;
   } catch (e) {
-    logger.error(e.toString());
+    logger.error(JSON.stringify(e));
     process.exit(1);
   }
 };
@@ -45,7 +44,7 @@ export const createAPIHandler = async (config, retries = 0) => {
     await handler.setAPI();
     return handler;
   } catch (e) {
-    logger.error(e.toString(), winstonLabel);
+    logger.error(JSON.stringify(e), winstonLabel);
     if (retries < 20) {
       logger.info(`Retrying... attempt: ${retries}`, winstonLabel);
       return await createAPIHandler(config, retries + 1);
@@ -62,19 +61,24 @@ export const createDB = async (config) => {
     await Db.create(config.db.mongo.uri);
     logger.info(`Connected to ${config.db.mongo.uri}`, winstonLabel);
   } catch (e) {
-    logger.error(e.toString());
+    logger.error(JSON.stringify(e));
     process.exit(1);
   }
 };
 
-export const createServer = async (config) => {
+export const createServer = async (config, handler?, scorekeeper?) => {
   try {
     logger.info(`Creating Server`, winstonLabel);
-    const server = new Server(config);
-    await server.start();
-    logger.info(`Server started at: ${config?.server?.port}`, winstonLabel);
+    const server = new Server(config, handler, scorekeeper);
+    const didStart = await server.start();
+    if (didStart) {
+      logger.info(
+        `Server started with registered routes at: ${config?.server?.port}`,
+        winstonLabel,
+      );
+    }
   } catch (e) {
-    logger.error(e.toString());
+    logger.error(JSON.stringify(e));
     process.exit(1);
   }
 };
@@ -87,7 +91,7 @@ export const createTelemetry = async (config) => {
     await telemetry.start();
     logger.info(`Telemetry client started.`, winstonLabel);
   } catch (e) {
-    logger.error(e.toString());
+    logger.error(JSON.stringify(e));
     process.exit(1);
   }
 };
@@ -107,7 +111,7 @@ export const createMatrixBot = async (config) => {
     logger.info(`matrix client started.`, winstonLabel);
     return maybeBot;
   } catch (e) {
-    logger.error(e.toString());
+    logger.error(JSON.stringify(e));
     process.exit(1);
   }
 };
@@ -123,13 +127,19 @@ export const clean = async (scorekeeper) => {
     // Delete the old candidate fields.
     await queries.deleteOldCandidateFields();
 
+    const allTelemetryNodes = await queries.allTelemetryNodes();
+
+    for (const node of allTelemetryNodes) {
+      await queries.clearTelemetryNodeNodeRefsFrom(node.name);
+    }
+
     // Clear node refs and delete old fields from all nodes before starting new
     // telemetry client.
-    const allNodes = await queries.allNodes();
-    for (const [index, node] of allNodes.entries()) {
+    const allCandidates = await queries.allCandidates();
+    for (const [index, node] of allCandidates.entries()) {
       const { name } = node;
       await queries.deleteOldFieldFrom(name);
-      await queries.clearNodeRefsFrom(name);
+      await queries.clearCandidateNodeRefsFrom(name);
     }
 
     // Remove stale nominators.
@@ -148,7 +158,7 @@ export const clean = async (scorekeeper) => {
 
     logger.info(`Cleaning finished`, winstonLabel);
   } catch (e) {
-    logger.error(e.toString());
+    logger.error(JSON.stringify(e));
     process.exit(1);
   }
 };
@@ -192,7 +202,7 @@ export const addCandidates = async (config) => {
       }
     }
   } catch (e) {
-    logger.error(e.toString());
+    logger.error(JSON.stringify(e));
     process.exit(1);
   }
 };
@@ -202,7 +212,7 @@ export const setChainMetadata = async (config) => {
     logger.info(`Setting chain metadata`, winstonLabel);
     await queries.setChainMetadata(config.global.networkPrefix);
   } catch (e) {
-    logger.error(e.toString());
+    logger.error(JSON.stringify(e));
     process.exit(1);
   }
 };
@@ -211,13 +221,13 @@ export const initScorekeeper = async (config, handler, maybeBot) => {
   try {
     logger.info(`Creating Scorekeeper`, winstonLabel);
     // Set up the nominators in the scorekeeper.
-    const scorekeeper = new Scorekeeper(handler, config, maybeBot);
+    const scorekeeper = new ScoreKeeper(handler, config, maybeBot);
     for (const nominatorGroup of config.scorekeeper.nominators) {
       await scorekeeper.addNominatorGroup(nominatorGroup);
     }
     return scorekeeper;
   } catch (e) {
-    logger.error(e.toString());
+    logger.error(JSON.stringify(e));
     process.exit(1);
   }
 };
@@ -240,9 +250,6 @@ const start = async (cmd: { config: string }) => {
   // Create the matrix bot if enabled.
   const maybeBot = await createMatrixBot(config);
 
-  // Start the clear accumulated offline time job.
-  await startClearAccumulatedOfflineTimeJob(config);
-
   const api = handler.getApi();
   while (!api) {
     logger.info(`Waiting for API to connect...`, winstonLabel);
@@ -259,7 +266,7 @@ const start = async (cmd: { config: string }) => {
   await addCandidates(config);
 
   // Start the API server.
-  await createServer(config);
+  await createServer(config, handler, scorekeeper);
 
   // Start the telemetry client.
   await createTelemetry(config);
@@ -276,3 +283,8 @@ program
 
 program.version(version);
 program.parse(process.argv);
+
+process.on("uncaughtException", (error) => {
+  logger.error(error.toString());
+  process.exit(1);
+});

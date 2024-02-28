@@ -1,29 +1,35 @@
-import { DelayedTxModel } from "../models";
+import { DelayedTx, DelayedTxModel } from "../models";
 
-export const addDelayedTx = async (
-  number: number,
-  controller: string,
-  targets: string[],
-  callHash: string,
-): Promise<boolean> => {
-  const delayedTx = new DelayedTxModel({
-    number,
-    controller,
-    targets,
-    callHash,
-  });
-  await delayedTx.save();
-  return true;
+export const addDelayedTx = async (delayedTx: DelayedTx): Promise<boolean> => {
+  try {
+    const { number, controller, targets, callHash } = delayedTx;
+    const tx = new DelayedTxModel({
+      number,
+      controller,
+      targets,
+      callHash,
+    });
+    await tx.save();
+    return true;
+  } catch (e) {
+    console.error(e);
+    return false;
+  }
 };
 
-export const getAllDelayedTxs = async (): Promise<any[]> => {
-  return DelayedTxModel.find({ controller: /.*/ }).lean().exec();
+export const getAllDelayedTxs = async (): Promise<DelayedTx[]> => {
+  return DelayedTxModel.find({}).lean<DelayedTx[]>();
 };
 
 export const deleteDelayedTx = async (
   number: number,
   controller: string,
 ): Promise<boolean> => {
-  await DelayedTxModel.deleteOne({ number, controller }).exec();
-  return true;
+  try {
+    await DelayedTxModel.deleteOne({ number, controller }).exec();
+    return true;
+  } catch (e) {
+    console.error(e);
+    return false;
+  }
 };

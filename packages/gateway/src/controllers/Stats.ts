@@ -36,4 +36,12 @@ export default class StatsController {
     }
     response(context, 200, await StatsService.getEraStats());
   }
+
+  public static async getTotalRequests(context: any): Promise<void> {
+    response(context, 200, await StatsService.getTotalRequests());
+  }
+
+  public static async getEndpointCounts(context: any): Promise<void> {
+    response(context, 200, await StatsService.getEndpointCounts());
+  }
 }

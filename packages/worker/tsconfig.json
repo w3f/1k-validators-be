@@ -71,6 +71,7 @@
     "resolveJsonModule": true
   },
   "references": [
-    { "path": "../common" }
+    { "path": "../common" },
+    { "path": "../gateway" }
   ]
 }

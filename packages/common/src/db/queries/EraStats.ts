@@ -1,4 +1,6 @@
 import { EraStatsModel } from "../models";
+import logger from "../../logger";
+import { dbLabel } from "../index";
 
 export const setEraStats = async (
   era: number,
@@ -6,44 +8,50 @@ export const setEraStats = async (
   valid: number,
   active: number,
 ): Promise<boolean> => {
-  const data = await EraStatsModel.findOne({
-    era: era,
-  }).lean();
-
-  // If the era stats already exist and are the same as before, return
-  if (
-    !!data &&
-    data.totalNodes == totalNodes &&
-    data.valid == valid &&
-    data.active == active
-  )
-    return;
-
-  // If they don't exist
-  if (!data) {
-    const eraStats = new EraStatsModel({
+  try {
+    const data = await EraStatsModel.findOne({
       era: era,
-      when: Date.now(),
-      totalNodes: totalNodes,
-      valid: valid,
-      active: active,
-    });
-    await eraStats.save();
+    }).lean();
+
+    // If the era stats already exist and are the same as before, return
+    if (
+      !!data &&
+      data.totalNodes == totalNodes &&
+      data.valid == valid &&
+      data.active == active
+    )
+      return false;
+
+    // If they don't exist
+    if (!data) {
+      const eraStats = new EraStatsModel({
+        era: era,
+        when: Date.now(),
+        totalNodes: totalNodes,
+        valid: valid,
+        active: active,
+      });
+      await eraStats.save();
+      return true;
+    }
+
+    // It exists, but has a different value - update it
+    await EraStatsModel.findOneAndUpdate(
+      {
+        era: era,
+      },
+      {
+        when: Date.now(),
+        totalNodes: totalNodes,
+        valid: valid,
+        active: active,
+      },
+    ).exec();
     return true;
+  } catch (e) {
+    logger.error(`Error setting era stats: ${JSON.stringify(e)}`, dbLabel);
+    return false;
   }
-
-  // It exists, but has a different value - update it
-  await EraStatsModel.findOneAndUpdate(
-    {
-      era: era,
-    },
-    {
-      when: Date.now(),
-      totalNodes: totalNodes,
-      valid: valid,
-      active: active,
-    },
-  ).exec();
 };
 
 export const getLatestEraStats = async (): Promise<any> => {

@@ -1,8 +1,4 @@
 import { ApiHandler, Config, Constraints, logger } from "@1kv/common";
-import { createReleaseMonitorWorker } from "./workers/ReleaseMonitorWorker";
-import { createConstraintsWorker } from "./workers/ConstraintsWorker";
-import { createChainDataWorker } from "./workers";
-import { createBlockWorker } from "./workers/BlockWorker";
 
 export const workerLabel = { label: "Worker" };
 
@@ -35,34 +31,34 @@ class Worker {
 
   async startWorker(): Promise<any> {
     logger.info(`starting worker....`, workerLabel);
-    await this.initializeAPI();
-    await this.initializeConstraints();
-    logger.info(`Redis host: ${this.host} port: ${this.port}`, workerLabel);
-    const releaseMonitorWorker = await createReleaseMonitorWorker(
-      this.host,
-      this.port,
-    );
-    logger.info(
-      `Created release monitor worker: ${releaseMonitorWorker.id}`,
-      workerLabel,
-    );
-    const constraintsWorker = await createConstraintsWorker(
-      this.host,
-      this.port,
-      this.constraints,
-    );
-    logger.info(
-      `Created constraints worker: ${constraintsWorker.id}`,
-      workerLabel,
-    );
-    const chaindataWorker = await createChainDataWorker(
-      this.host,
-      this.port,
-      this.api,
-    );
-    logger.info(`Created chaindata worker: ${chaindataWorker.id}`, workerLabel);
-    const blockWorker = await createBlockWorker(this.host, this.port, this.api);
-    logger.info(`Created block worker: ${blockWorker.id}`, workerLabel);
+    // await this.initializeAPI();
+    // await this.initializeConstraints();
+    // logger.info(`Redis host: ${this.host} port: ${this.port}`, workerLabel);
+    // const releaseMonitorWorker = await createReleaseMonitorWorker(
+    //   this.host,
+    //   this.port,
+    // );
+    // logger.info(
+    //   `Created release monitor worker: ${releaseMonitorWorker.id}`,
+    //   workerLabel,
+    // );
+    // const constraintsWorker = await createConstraintsWorker(
+    //   this.host,
+    //   this.port,
+    //   this.constraints,
+    // );
+    // logger.info(
+    //   `Created constraints worker: ${constraintsWorker.id}`,
+    //   workerLabel,
+    // );
+    // const chaindataWorker = await createChainDataWorker(
+    //   this.host,
+    //   this.port,
+    //   this.api,
+    // );
+    // logger.info(`Created chaindata worker: ${chaindataWorker.id}`, workerLabel);
+    // const blockWorker = await createBlockWorker(this.host, this.port, this.api);
+    // logger.info(`Created block worker: ${blockWorker.id}`, workerLabel);
   }
 }
 

@@ -1,10 +1,11 @@
 import { ApiPromise } from "@polkadot/api";
-import ApiHandler from "../ApiHandler";
+import ApiHandler from "../ApiHandler/ApiHandler";
 import logger from "../logger";
-import { NumberResult, StringResult } from "../types";
-import { sleep } from "../util";
+import { NumberResult } from "../types";
+import { sleep } from "../utils/util";
 import {
   getApiAt,
+  getApiAtBlockHash,
   getBlock,
   getBlockHash,
   getChainType,
@@ -12,8 +13,9 @@ import {
   getLatestBlock,
   getLatestBlockHash,
 } from "./queries/ChainMeta";
-import { getSession, getSessionAt } from "./queries/Session";
+import { getSession, getSessionAt, getSessionAtEra } from "./queries/Session";
 import {
+  EraPointsInfo,
   findEraBlockHash,
   getActiveEraIndex,
   getCurrentEra,
@@ -22,6 +24,8 @@ import {
   getTotalEraPoints,
 } from "./queries/Era";
 import {
+  Balance,
+  Exposure,
   getBalance,
   getBlocked,
   getBondedAmount,
@@ -34,6 +38,8 @@ import {
   getQueuedKeys,
   getRewardDestination,
   getRewardDestinationAt,
+  NextKeys,
+  QueuedKey,
 } from "./queries/ValidatorPref";
 import {
   currentValidators,
@@ -41,65 +47,90 @@ import {
   getAssociatedValidatorAddresses,
   getValidators,
   getValidatorsAt,
+  getValidatorsAtEra,
 } from "./queries/Validators";
 import {
   getFormattedIdentity,
   getIdentity,
   hasIdentity,
 } from "./queries/Identity";
-import { getProxyAnnouncements } from "./queries/Proxy";
-import { getNominatorAddresses, getNominators } from "./queries/Nomination";
+import { getProxyAnnouncements, ProxyAnnouncement } from "./queries/Proxy";
+import {
+  getNominatorAddresses,
+  getNominators,
+  NominatorInfo,
+} from "./queries/Nomination";
+import { CHAINDATA_RETRIES, CHAINDATA_SLEEP } from "../constants";
+import { Identity } from "../db";
+import { Block } from "@polkadot/types/interfaces";
+import { ApiDecoration } from "@polkadot/api/types";
 
 type JSON = any;
 
 export const chaindataLabel = { label: "Chaindata" };
 
 export class ChainData {
-  public api: ApiPromise;
+  public handler: ApiHandler;
+  public api: ApiPromise | null;
 
   constructor(handler: ApiHandler) {
+    this.handler = handler;
     this.api = handler.getApi();
-
-    logger.info(
-      `{Chaindata::API::Info} API connected: ${this.api?.isConnected}`,
-    );
   }
 
-  checkApiConnection = async () => {
+  checkApiConnection = async (retries = 0): Promise<boolean> => {
     if (!this.api?.isConnected) {
-      while (!this.api?.isConnected) {
-        logger.warn(`{Chaindata::API::Warn} API is not connected, waiting...`);
-        await sleep(1000);
+      if (retries < CHAINDATA_RETRIES) {
+        logger.warn(
+          `Retries: ${retries} - API is not connected, waiting...`,
+          chaindataLabel,
+        );
+        await sleep(CHAINDATA_SLEEP);
+
+        retries++;
+        return await this.checkApiConnection(retries);
       }
+    } else {
+      return true; // API is connected
     }
+
+    return false; // Exceeded retries without connecting
   };
 
-  getChainType = async (): Promise<string> => {
+  getChainType = async (): Promise<string | null> => {
     return getChainType(this);
   };
 
   // Returns the denomination of the chain. Used for formatting planck denomianted amounts
-  getDenom = async (): Promise<number> => {
+  getDenom = async (): Promise<number | null> => {
     return await getDenom(this);
   };
 
-  getApiAt = async (blockNumber: number): Promise<any> => {
+  getApiAt = async (
+    blockNumber: number,
+  ): Promise<ApiDecoration<"promise"> | null> => {
     return await getApiAt(this, blockNumber);
   };
 
-  getBlockHash = async (blockNumber: number): Promise<string> => {
+  getApiAtBlockHash = async (
+    blockHash: string,
+  ): Promise<ApiDecoration<"promise"> | null> => {
+    return await getApiAtBlockHash(this, blockHash);
+  };
+
+  getBlockHash = async (blockNumber: number): Promise<string | null> => {
     return await getBlockHash(this, blockNumber);
   };
 
-  getBlock = async (blockNumber): Promise<any> => {
+  getBlock = async (blockNumber: number): Promise<Block | null> => {
     return await getBlock(this, blockNumber);
   };
 
-  getLatestBlock = async () => {
+  getLatestBlock = async (): Promise<number | null> => {
     return await getLatestBlock(this);
   };
 
-  getLatestBlockHash = async () => {
+  getLatestBlockHash = async (): Promise<string | null> => {
     return await getLatestBlockHash(this);
   };
 
@@ -107,22 +138,33 @@ export class ChainData {
    * Gets the current session
    * @returns session as number
    */
-  getSession = async () => {
+  getSession = async (): Promise<number | null> => {
     return getSession(this);
   };
-  getSessionAt = async (apiAt: ApiPromise) => {
+  getSessionAt = async (
+    apiAt: ApiDecoration<"promise">,
+  ): Promise<number | null> => {
     return getSessionAt(this, apiAt);
   };
 
-  getEraAt = async (apiAt: ApiPromise) => {
+  getSessionAtEra = async (era: number): Promise<number | null> => {
+    return getSessionAtEra(this, era);
+  };
+
+  getEraAt = async (
+    apiAt: ApiDecoration<"promise">,
+  ): Promise<number | null> => {
     return await getEraAt(this, apiAt);
   };
 
-  getTotalEraPoints = async (era: number) => {
+  getTotalEraPoints = async (era: number): Promise<EraPointsInfo | null> => {
     return await getTotalEraPoints(this, era);
   };
 
-  getErasMinStakeAt = async (apiAt: any, era: number) => {
+  getErasMinStakeAt = async (
+    apiAt: any,
+    era: number,
+  ): Promise<number | null> => {
     return await getErasMinStakeAt(this, apiAt, era);
   };
 
@@ -132,7 +174,7 @@ export class ChainData {
   };
 
   // Gets the curent era
-  getCurrentEra = async () => {
+  getCurrentEra = async (): Promise<number | null> => {
     return getCurrentEra(this);
   };
 
@@ -145,7 +187,7 @@ export class ChainData {
   findEraBlockHash = async (
     era: number,
     chainType: string,
-  ): Promise<StringResult> => {
+  ): Promise<[string | null, string | null]> => {
     return await findEraBlockHash(this, era, chainType);
   };
 
@@ -155,7 +197,7 @@ export class ChainData {
   };
 
   // Gets the validator preferences, and whether or not they block external nominations
-  getBlocked = async (validator: string): Promise<any> => {
+  getBlocked = async (validator: string): Promise<boolean> => {
     return await getBlocked(this, validator);
   };
 
@@ -163,7 +205,7 @@ export class ChainData {
     apiAt: any,
     eraIndex: number,
     validator: string,
-  ): Promise<NumberResult> => {
+  ): Promise<number | null> => {
     return await getCommissionInEra(this, apiAt, eraIndex, validator);
   };
 
@@ -186,19 +228,22 @@ export class ChainData {
     return await getRewardDestinationAt(this, apiAt, stash);
   };
 
-  getQueuedKeys = async (): Promise<any> => {
+  getQueuedKeys = async (): Promise<QueuedKey[]> => {
     return await getQueuedKeys(this);
   };
 
-  getNextKeys = async (stash: string): Promise<any> => {
+  getNextKeys = async (stash: string): Promise<NextKeys | null> => {
     return await getNextKeys(this, stash);
   };
 
-  getBalance = async (address: string) => {
+  getBalance = async (address: string): Promise<Balance | null> => {
     return await getBalance(this, address);
   };
 
-  getExposure = async (eraIndex: number, validator: string): Promise<any> => {
+  getExposure = async (
+    eraIndex: number,
+    validator: string,
+  ): Promise<Exposure | null> => {
     return await getExposure(this, eraIndex, validator);
   };
 
@@ -206,7 +251,7 @@ export class ChainData {
     apiAt: any,
     eraIndex: number,
     validator: string,
-  ): Promise<any> => {
+  ): Promise<Exposure | null> => {
     return await getExposureAt(this, apiAt, eraIndex, validator);
   };
 
@@ -218,19 +263,25 @@ export class ChainData {
     return await getActiveValidatorsInPeriod(this, startEra, endEra, chainType);
   };
 
-  currentValidators = async (): Promise<any> => {
+  currentValidators = async (): Promise<string[]> => {
     return await currentValidators(this);
   };
 
-  getValidatorsAt = async (apiAt: ApiPromise): Promise<any> => {
+  getValidatorsAt = async (
+    apiAt: ApiDecoration<"promise">,
+  ): Promise<string[]> => {
     return await getValidatorsAt(this, apiAt);
+  };
+
+  getValidatorsAtEra = async (era: number): Promise<string[]> => {
+    return await getValidatorsAtEra(this, era);
   };
 
   /**
    * Gets list of validators that have `validate` intentions
    * @returns list of all validators
    */
-  getValidators = async () => {
+  getValidators = async (): Promise<string[]> => {
     return await getValidators(this);
   };
 
@@ -256,11 +307,13 @@ export class ChainData {
     return await getIdentity(this, account);
   };
 
-  getFormattedIdentity = async (addr) => {
+  getFormattedIdentity = async (addr: string): Promise<Identity | null> => {
     return await getFormattedIdentity(this, addr);
   };
 
-  getProxyAnnouncements = async (address: string) => {
+  getProxyAnnouncements = async (
+    address: string,
+  ): Promise<ProxyAnnouncement[]> => {
     return await getProxyAnnouncements(this, address);
   };
 
@@ -268,7 +321,7 @@ export class ChainData {
     return await getNominatorAddresses(this);
   };
 
-  getNominators = async (): Promise<any> => {
+  getNominators = async (): Promise<NominatorInfo[]> => {
     return await getNominators(this);
   };
 }

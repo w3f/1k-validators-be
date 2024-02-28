@@ -20,9 +20,9 @@ jobs:
             environment:
               YARN_ENABLE_IMMUTABLE_INSTALLS: false
             command: |
-                yarn set version 3.2.2 && yarn install && yarn build && yarn workspace @1kv/core test:candidates
+                yarn set version 3.2.2 && yarn install && yarn build && yarn workspace @1kv/common ci:checkCandidatesFile
 
-  checkESLint:
+  checkCoreESLint:
     docker:
       - image: node:18
     resource_class: large      
@@ -34,17 +34,54 @@ jobs:
           command: |
             yarn set version 3.2.2 && yarn install && yarn build && yarn workspace @1kv/core lint
 
-  testCore:
+#  checkCommonESLint:
+#    docker:
+#      - image: node:18
+#    resource_class: large
+#    steps:
+#      - checkout
+#      - run:
+#          environment:
+#            YARN_ENABLE_IMMUTABLE_INSTALLS: false
+#          command: |
+#            yarn set version 3.2.2 && yarn install && yarn build && yarn workspace @1kv/common lint
+
+
+  testCommonUnit:
     docker:
-      - image: node:18
-    resource_class: large
+      - image: node:bullseye
+    resource_class: xlarge
     steps:
       - checkout
       - run:
           environment:
             YARN_ENABLE_IMMUTABLE_INSTALLS: false
           command: |
-            yarn set version 3.2.2 && yarn install && yarn build && yarn workspace @1kv/core test
+            yarn set version 3.2.2 && yarn install && yarn build && yarn workspace @1kv/common test:unit --testTimeout=60000
+
+  testCommonInt:
+    docker:
+      - image: node:bullseye
+    resource_class: xlarge
+    steps:
+      - checkout
+      - run:
+          environment:
+            YARN_ENABLE_IMMUTABLE_INSTALLS: false
+          command: |
+            yarn set version 3.2.2 && yarn install && yarn build && yarn workspace @1kv/common test:int --testTimeout=60000
+
+#  testCore:
+#    docker:
+#      - image: node:18
+#    resource_class: large
+#    steps:
+#      - checkout
+#      - run:
+#          environment:
+#            YARN_ENABLE_IMMUTABLE_INSTALLS: false
+#          command: |
+#            yarn set version 3.2.2 && yarn install && yarn build && yarn workspace @1kv/core test
 
   helmLint:
     docker:
@@ -120,6 +157,16 @@ jobs:
           command: |
             /scripts/publish-image.sh web3f/otv-backend
 
+  publishCoreImageStaging:
+    docker:
+      - image: web3f/ci-commons:v3.2.3
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          command: |
+            /scripts/publish-image.sh web3f/otv-backend staging      
+
   publishGatewayImage:
     docker:
       - image: web3f/ci-commons:v3.2.3
@@ -183,14 +230,26 @@ workflows:
           filters:
             tags:
               ignore: /pull\/[0-9]+/
-      - checkESLint:
+#      - checkCommonESLint:
+#          filters:
+#            tags:
+#              only: /.*/
+      - checkCoreESLint:
           filters:
             tags:
               only: /.*/
-      - testCore:
+      - testCommonUnit:
           filters:
             tags:
               only: /.*/
+      - testCommonInt:
+          filters:
+            tags:
+              only: /.*/
+#      - testCore:
+#          filters:
+#            tags:
+#              only: /.*/
       - helmLint:
           filters:
             tags:
@@ -223,6 +282,8 @@ workflows:
             - helmLint
             - buildCoreImage
             - buildGatewayImage
+            - testCommonUnit
+            - testCommonInt
       - publishCoreImage:
           context: dockerhub-bot
           filters:
@@ -232,6 +293,13 @@ workflows:
               only: /v[0-9]+(\.[0-9]+)*/
           requires:
             - integrationTests
+      - publishCoreImageStaging:
+          context: dockerhub-bot
+          filters:
+            branches:
+              only: staging
+          requires:
+            - integrationTests      
       - publishGatewayImage:
           context: dockerhub-bot
           filters:
@@ -268,17 +336,5 @@ workflows:
               only: /v[0-9]+(\.[0-9]+)*/
           requires:
             - integrationTests
-      # - deploy:
-      #     context: 
-      #     - digital_ocean_access
-      #     - vault_community
-      #     filters:
-      #       branches:
-      #         ignore: /.*/
-      #       tags:
-      #         only: /v[0-9]+(\.[0-9]+)*/
-      #     requires:
-      #       - publishCoreImage
-      #       - publishChart
 
 

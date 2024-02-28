@@ -92,16 +92,15 @@ export const getInvalidCandidates = async (): Promise<any> => {
 };
 
 export const getCandidates = async (): Promise<any> => {
-  let allCandidates = await queries.allCandidates();
-  allCandidates = await Promise.all(
+  const allCandidates = await queries.allCandidates();
+  const candidatesWithAdditionalFields = await Promise.all(
     allCandidates.map(async (candidate) => {
       return await getCandidateData(candidate);
     }),
   );
-  allCandidates = allCandidates.sort((a, b) => {
+  return candidatesWithAdditionalFields.sort((a, b) => {
     return b.total - a.total;
   });
-  return allCandidates;
 };
 
 export const getRankCandidates = async (): Promise<any> => {
@@ -115,26 +114,6 @@ export const getRankCandidates = async (): Promise<any> => {
     return b.rank - a.rank;
   });
   return allCandidates;
-};
-
-export const getNodes = async (): Promise<any> => {
-  const allNodes: Array<any> = await queries.allNodes();
-  return allNodes.map((node) => {
-    return {
-      name: node.name,
-      version: node.version,
-      implementation: node.implementation,
-      vpn: node.infrastructureLocation?.vpn,
-      cpu: node.infrastructureLocation?.cpu,
-      memory: node.infrastructureLocation?.memory,
-      coreCount: node.infrastructureLocation?.coreCount,
-      vm: node.infrastructureLocation?.vm,
-      location: node.infrastructureLocation?.location,
-      region: node.infrastructureLocation?.region,
-      country: node.infrastructureLocation?.country,
-      provider: node.infrastructureLocation?.provider,
-    };
-  });
 };
 
 export const getLatestNominatorStake = async (address): Promise<any> => {

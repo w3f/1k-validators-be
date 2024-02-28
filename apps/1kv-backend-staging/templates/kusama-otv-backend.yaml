@@ -15,15 +15,16 @@ spec:
   #     prune: true
   #     selfHeal: true 
   source:
-    repoURL: https://w3f.github.io/helm-charts/
-    chart: otv-backend
-    targetRevision: v3.0.20
+    repoURL: 'https://github.com/w3f/1k-validators-be.git'
+    path: charts/otv-backend
+    targetRevision: staging
     plugin:
       env:
         - name: HELM_VALUES
           value: |
-            # image:
-            #   tag: "latest"
+            image:
+              imagePullPolicy: Always
+              tag: staging
             environment: {{ .Values.environment }}
             dataPath: "/data"
             backendPort: 3300
@@ -43,7 +44,12 @@ spec:
                 "global": {
                   "networkPrefix": 2,
                   "apiEndpoints": [
-                    "wss://kusama-rpc.polkadot.io"
+                    "wss://kusama-rpc-tn.dwellir.com",
+                    "wss://kusama-rpc.dwellir.com",
+                    "wss://kusama.public.curie.radiumblock.xyz/ws",
+                    "wss://rpc.ibp.network/kusama",
+                    "wss://rpc.dotters.network/kusama",
+                    "wss://ksm-rpc.stakeworld.io"
                   ],
                   "candidatesUrl": "https://raw.githubusercontent.com/w3f/1k-validators-be/master/candidates/kusama.json"
                 },
@@ -58,7 +64,26 @@ spec:
                   "unclaimedEraThreshold": 4
                 },
                 "cron": {
-                  "monitor": "0 */15 * * * *"
+                  "monitor": "0 */15 * * * *",
+                  "monitorEnabled": true,
+                  "clearOfflineEnabled": true,
+                  "validityEnabled": true,
+                  "scoreEnabled": true,
+                  "executionEnabled": true,
+                  "scorekeeperEnabled": true,
+                  "rewardClaimingEnabled": true,
+                  "cancelEnabled": true,
+                  "staleEnabled": true,
+                  "eraPointsEnabled": true,
+                  "eraStatsEnabled": true,
+                  "activeValidatorEnabled": true,
+                  "inclusionEnabled": true,
+                  "sessionKeyEnabled": true,
+                  "unclaimedErasEnabled": true,
+                  "validatorPrefEnabled": true,
+                  "nominatorEnabled": true,
+                  "locationStatsEnabled": true,
+                  "blockEnabled": true
                 },
                 "db": {
                   "mongo": {

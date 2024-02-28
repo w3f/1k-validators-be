@@ -1,4 +1,5 @@
 import mongoose, { Schema } from "mongoose";
+import { LocationStats as LStats, Stats } from "../constraints/score";
 
 const RewardRecordScheme = new Schema({
   // Era
@@ -30,6 +31,7 @@ const FaultEventSchema = new Schema({
   prevRank: Number,
 });
 
+//TODO: delete
 const RankEventSchema = new Schema({
   address: String,
   // Timestamp when this event happened.
@@ -40,7 +42,15 @@ const RankEventSchema = new Schema({
   activeEra: Number,
 });
 
+//TODO: delete
 export const RankEventModel = mongoose.model("RankEvent", RankEventSchema);
+
+export interface DelayedTx {
+  number: number;
+  controller: string;
+  targets: string[];
+  callHash: string;
+}
 
 export const DelayedTxSchema = new Schema({
   // The block number the transaction was announced in
@@ -54,6 +64,26 @@ export const DelayedTxSchema = new Schema({
 
 export const DelayedTxModel = mongoose.model("DelayedTx", DelayedTxSchema);
 
+export interface SubIdentity {
+  name: string;
+  address: string;
+}
+
+export interface Identity {
+  name: string;
+  address: string;
+  verified?: boolean;
+  subIdentities?: SubIdentity[];
+  display?: string;
+  email?: string;
+  image?: string;
+  judgements?: string[];
+  legal?: string;
+  pgp?: string;
+  riot?: string;
+  twitter?: string;
+  web?: string;
+}
 export const Identity = new Schema({
   name: { type: String, index: true },
   address: { type: String, index: true },
@@ -76,6 +106,31 @@ export const Identity = new Schema({
 });
 
 export const IdentityModel = mongoose.model("Identity", Identity);
+
+export enum InvalidityReasonType {
+  ONLINE = "ONLINE",
+  VALIDATE_INTENTION = "VALIDATE_INTENTION",
+  CLIENT_UPGRADE = "CLIENT_UPGRADE",
+  CONNECTION_TIME = "CONNECTION_TIME",
+  IDENTITY = "IDENTITY",
+  MULTIPLE_IDENTITIES = "MULTIPLE_IDENTITIES",
+  ACCUMULATED_OFFLINE_TIME = "ACCUMULATED_OFFLINE_TIME",
+  REWARD_DESTINATION = "REWARD_DESTINATION",
+  COMMISION = "COMMISION",
+  SELF_STAKE = "SELF_STAKE",
+  UNCLAIMED_REWARDS = "UNCLAIMED_REWARDS",
+  BLOCKED = "BLOCKED",
+  KUSAMA_RANK = "KUSAMA_RANK",
+  PROVIDER = "PROVIDER",
+  BEEFY = "BEEFY",
+}
+
+export interface InvalidityReason {
+  valid?: boolean;
+  type: InvalidityReasonType;
+  details: any;
+  updated?: number;
+}
 
 export const InvalidityReason = new Schema({
   valid: Boolean,
@@ -114,16 +169,43 @@ export const LatestSessionModel = mongoose.model(
   LatestSessionSchema,
 );
 
-export const LatestValidatorSetSchema = new Schema({
+export interface ValidatorSet {
+  session: number;
+  era: number;
+  validators: string[];
+}
+
+export const ValidatorSetSchema = new Schema({
   session: Number,
   era: Number,
   validators: [String],
 });
 
-export const LatestValidatorSetModel = mongoose.model(
-  "LatestValidatorSet",
-  LatestValidatorSetSchema,
+// Explicitly specify the collection name to ensure it uses the original collection
+export const ValidatorSetModel = mongoose.model(
+  "ValidatorSet", // New model name
+  ValidatorSetSchema,
+  "latestvalidatorsets", // Original collection name, typically the plural form of your original model name, lowercased
 );
+
+export interface Location {
+  name: string;
+  address: string;
+  addr: string;
+  port: number;
+  city: string;
+  region: string;
+  country: string;
+  provider: string;
+  updated: number;
+  session: number;
+  source: string;
+  vpn: boolean;
+  cpu: string;
+  memory: string;
+  coreCount: string;
+  vm: boolean;
+}
 
 export const LocationSchema = new Schema({
   name: { type: String, index: true }, // The Telemetry name of the node
@@ -145,6 +227,22 @@ export const LocationSchema = new Schema({
 });
 
 export const LocationModel = mongoose.model("Location", LocationSchema);
+
+export interface NominatorStake {
+  validator: string;
+  era: number;
+  totalStake: number;
+  inactiveStake: number;
+  activeNominators: {
+    address: string;
+    bonded: number;
+  }[];
+  inactiveNominators: {
+    address: string;
+    bonded: number;
+  }[];
+  updated: number;
+}
 
 // Info about a validators nominations
 export const NominatorStakeSchema = new Schema({
@@ -175,15 +273,18 @@ export const NominatorStakeModel = mongoose.model(
   NominatorStakeSchema,
 );
 
+//TODO: delete
 export const UpdatingDelegations = new Schema({
   isUpdating: Boolean,
 });
 
+//TODO: delete
 export const UpdatingDelegationsModel = mongoose.model(
   "UpdatingDelegations",
   UpdatingDelegations,
 );
 
+//TODO: delete
 export const DelegationSchema = new Schema({
   validator: String,
   totalBalance: Number,
@@ -197,8 +298,9 @@ export const DelegationSchema = new Schema({
   ],
   updated: Number,
 });
+//TODO: delete
 export const DelegationModel = mongoose.model("Delegation", DelegationSchema);
-
+//TODO: delete
 export const OpenGovDelegationSchema = new Schema({
   delegate: { type: String, index: true },
   track: { type: Number, index: true },
@@ -214,13 +316,78 @@ export const OpenGovDelegationSchema = new Schema({
   ],
   updated: Number,
 });
-
+//TODO: delete
 export const OpenGovDelegationModel = mongoose.model(
   "OpenGovDelegation",
   OpenGovDelegationSchema,
 );
-
+//TODO: delete
 OpenGovDelegationSchema.index({ delegate: 1, track: 1 });
+
+export interface TelemetryNode {
+  telemetryId: number;
+  name: string;
+  nodeRefs: number;
+  version: string;
+  discoveredAt: number;
+  offlineSince: number;
+  offlineAccumulated: number;
+  onlineSince: number;
+}
+
+export const TelemetryNodeSchema = new Schema({
+  telemetryId: { type: Number, index: true },
+  name: { type: String, index: true },
+  nodeRefs: Number,
+  version: String,
+  discoveredAt: { type: Number, default: 0 },
+  offlineSince: { type: Number, default: 0 },
+  offlineAccumulated: { type: Number, default: 0 },
+  onlineSince: { type: Number, default: 0 },
+});
+
+export const TelemetryNodeModel = mongoose.model(
+  "TelemetryNode",
+  TelemetryNodeSchema,
+);
+
+export interface Candidate {
+  slotId: number;
+  kyc: boolean;
+  telemetryId: number;
+  nodeRefs: number;
+  name: string;
+  version: string;
+  discoveredAt: number;
+  nominatedAt: number;
+  offlineSince: number;
+  offlineAccumulated: number;
+  onlineSince: number;
+  updated: boolean;
+  rank: number;
+  faults: number;
+  stash: string;
+  controller: string;
+  invalidityReasons: string;
+  faultEvents: { when: string; reason: string; prevRank: number }[];
+  unclaimedEras: number[];
+  kusamaStash: string;
+  inclusion: number;
+  spanInclusion: number;
+  valid: boolean;
+  lastValid: number;
+  commission: number;
+  identity: Identity;
+  active: boolean;
+  rewardDestination: string;
+  queuedKeys: string;
+  nextKeys: string;
+  bonded: number;
+  skipSelfStake: boolean;
+  invalidity: InvalidityReason[];
+  matrix: string[];
+  implementation: string;
+}
 
 export const CandidateSchema = new Schema({
   // The unique identifier of the candidate's node for a given slot.
@@ -229,8 +396,6 @@ export const CandidateSchema = new Schema({
   kyc: Boolean,
   // The inherited telemetry ID.
   telemetryId: Number,
-  // The network identifier derived from the networking key.
-  networkId: String,
   // The number of nodes that are online for this candidate (this handles upgrade situations).
   nodeRefs: Number,
   // The name registered on the candidates list.
@@ -262,8 +427,6 @@ export const CandidateSchema = new Schema({
   invalidityReasons: { type: String, default: "" },
   // If a validator has faults, this will contain the details.
   faultEvents: { type: [FaultEventSchema], default: [] },
-  // If a validator had its rank increased, this will contian details.
-  rankEvents: { type: [RankEventSchema], default: [] },
   // Unclaimed Era Rewards
   unclaimedEras: { type: [Number], default: [] },
   // Polkadot specific: Kusama Stash
@@ -294,11 +457,6 @@ export const CandidateSchema = new Schema({
   skipSelfStake: Boolean,
   // array of invalidity reasons
   invalidity: [InvalidityReason],
-  // The node location according to telemetry
-  location: String,
-  // The amount of stake going towards backing council members
-  totalRewards: Number,
-  infrastructureLocation: LocationSchema,
   matrix: [String],
   implementation: String,
 });
@@ -326,7 +484,7 @@ export interface Nominator {
   proxyDelay?: number;
   rewardDestination?: string;
   newBondedAmount?: number;
-  current?: [{ name?: string; stash?: string; identity?: any }];
+  current?: { name?: string; stash?: string; identity?: any }[];
   lastNomination?: number;
   createdAt?: number;
   now?: number;
@@ -358,6 +516,48 @@ export const NominatorSchema = new Schema({
 
 export const NominatorModel = mongoose.model("Nominator", NominatorSchema);
 
+export interface ChainMetadata {
+  decimals: number;
+  name: string;
+}
+
+export const ChainMetadataSchema = new Schema({
+  // Number of decimals
+  decimals: Number,
+  // Chain name
+  name: String,
+});
+
+export const ChainMetadataModel = mongoose.model(
+  "ChainMetadata",
+  ChainMetadataSchema,
+);
+
+//TODO: delete
+export const BotClaimEventSchema = new Schema({
+  // Validator Address
+  address: String,
+  // The era the reward was claimed for
+  era: Number,
+  // The timestamp the event occured
+  timestamp: Number,
+  // The finalized blockhash of the Claim tx
+  blockHash: String,
+});
+//TODO: delete
+export const BotClaimEventModel = mongoose.model(
+  "BotClaimEvent",
+  BotClaimEventSchema,
+);
+
+export interface Nomination {
+  address: string;
+  era: number;
+  validators: string[];
+  timestamp: number;
+  bonded: number;
+  blockHash: string;
+}
 export const NominationSchema = new Schema({
   // Nominator address
   address: String,
@@ -373,37 +573,13 @@ export const NominationSchema = new Schema({
   blockHash: String,
 });
 
-export const ChainMetadataSchema = new Schema({
-  // Number of decimals
-  decimals: Number,
-  // Chain name
-  name: String,
-});
-
-export const ChainMetadataModel = mongoose.model(
-  "ChainMetadata",
-  ChainMetadataSchema,
-);
-
-// A historical event when the bot will claim a reward on behalf of a nominator
-export const BotClaimEventSchema = new Schema({
-  // Validator Address
-  address: String,
-  // The era the reward was claimed for
-  era: Number,
-  // The timestamp the event occured
-  timestamp: Number,
-  // The finalized blockhash of the Claim tx
-  blockHash: String,
-});
-
-export const BotClaimEventModel = mongoose.model(
-  "BotClaimEvent",
-  BotClaimEventSchema,
-);
-
 export const NominationModel = mongoose.model("Nomination", NominationSchema);
 
+export interface EraPoints {
+  era: number;
+  address: string;
+  eraPoints: number;
+}
 // The individual era points a validator has earned for a given era
 export const EraPointsSchema = new Schema({
   // The Era the era points are in
@@ -418,6 +594,16 @@ EraPointsSchema.index({ address: 1 });
 EraPointsSchema.index({ era: -1 });
 
 export const EraPointsModel = mongoose.model("EraPoints", EraPointsSchema);
+
+export interface TotalEraPoints {
+  totalEraPoints: number;
+  era: number;
+  median: number;
+  average: number;
+  max: number;
+  min: number;
+  validatorsEraPoints: EraPoints[];
+}
 
 export const TotalEraPointsSchema = new Schema({
   // The total era points for all validators in the era
@@ -455,6 +641,50 @@ export const EraStatsSchema = new Schema({
 });
 
 export const EraStatsModel = mongoose.model("EraStatsModel", EraStatsSchema);
+
+export interface ValidatorScoreMetadata {
+  session: number;
+  bondedStats: Stats;
+  bondedWeight: number;
+  faultsStats: Stats;
+  faultWeight: number;
+  inclusionStats: Stats;
+  inclusionWeight: number;
+  spanInclusionStats: Stats;
+  spanInclusionWeight: number;
+  discoveredAtStats: Stats;
+  discoveredAtWeight: number;
+  nominatedAtStats: Stats;
+  nominatedAtWeight: number;
+  offlineStats: Stats;
+  offlineWeight: number;
+  rankStats: Stats;
+  rankWeight: number;
+  locationStats: LStats;
+  locationWeight: number;
+  regionStats: LStats;
+  regionWeight: number;
+  countryStats: LStats;
+  countryWeight: number;
+  providerStats: LStats;
+  providerWeight: number;
+  councilStakeWeight?: number;
+  councilStakeStats?: Stats;
+  democracyStats?: Stats;
+  democracyWeight?: number;
+  nominatorStakeStats?: Stats;
+  nominatorStakeWeight: number;
+  delegationStats?: Stats;
+  delegationWeight?: number;
+  openGovStats?: Stats;
+  openGovDelegationWeight?: number;
+  openGovDelegationStats?: Stats;
+  faultsWeight?: number;
+  openGovWeight?: number;
+  rpcWeight?: number;
+  clientWeight?: number;
+  updated?: number;
+}
 
 export const ValidatorScoreSchema = new Schema({
   // The last time a score was updated
@@ -767,6 +997,21 @@ export const ReleaseSchema = new Schema({
 
 export const ReleaseModel = mongoose.model("Release", ReleaseSchema);
 
+export interface LocationStats {
+  totalNodes: number;
+  session: number;
+  locations: { name: string; numberOfNodes: number }[];
+  locationVariance: number;
+  regions: { name: string; numberOfNodes: number }[];
+  regionVariance: number;
+  countries: { name: string; numberOfNodes: number }[];
+  countryVariance: number;
+  providers: { name: string; numberOfNodes: number }[];
+  providerVariance: number;
+  decentralization: number;
+  updated: number;
+}
+
 // Stats on the where nodes are located.
 export const LocationStatsSchema = new Schema({
   // The number of total nodes that were taken account of for this session
@@ -812,7 +1057,7 @@ export const LocationStatsModel = mongoose.model(
   LocationStatsSchema,
 );
 
-// A council member
+//TODO: delete
 export const CouncillorSchema = new Schema({
   // The councillors address
   address: String,
@@ -827,9 +1072,9 @@ export const CouncillorSchema = new Schema({
   // the last time the record was updated
   updated: Number,
 });
-
+//TODO: delete
 export const CouncillorModel = mongoose.model("Councillor", CouncillorSchema);
-
+//TODO: delete
 export const ElectionStatsSchema = new Schema({
   // The duration of the term
   termDuration: Number,
@@ -850,7 +1095,7 @@ export const ElectionStatsSchema = new Schema({
   // the epoch the record was queried in
   session: Number,
 });
-
+//TODO: delete
 export const ElectionStatsModel = mongoose.model(
   "ElectionStats",
   ElectionStatsSchema,
@@ -896,7 +1141,7 @@ export const EraRewardSchema = new Schema({
 
 export const EraRewardModel = mongoose.model("EraReward", EraRewardSchema);
 
-// Information about a democracy referendum
+//TODO: delete
 export const ReferendumSchema = new Schema({
   // The unique index of the proposal, used to identity and query by
   referendumIndex: Number,
@@ -935,10 +1180,10 @@ export const ReferendumSchema = new Schema({
   // last block hash the record was updated at
   updatedBlockHash: Number,
 });
-
+//TODO: delete
 export const ReferendumModel = mongoose.model("Referendum", ReferendumSchema);
 
-// Information about a particular vote in a democracy referendum
+//TODO: delete
 export const ReferendumVoteSchema = new Schema({
   // The unique index of the proposal, used to identity and query by
   referendumIndex: { type: Number, index: true },
@@ -959,15 +1204,12 @@ export const ReferendumVoteSchema = new Schema({
   // last block hash the record was updated at
   updatedBlockHash: String,
 });
-
-// ReferendumVoteSchema.index({ accountId: 1 });
-// ReferendumVoteSchema.index({ referendumIndex: -1 });
-
+//TODO: delete
 export const ReferendumVoteModel = mongoose.model(
   "ReferendumVote",
   ReferendumVoteSchema,
 );
-
+//TODO: delete
 export const ConvictionVote = new Schema({
   // The particular governance track
   track: Number,
@@ -996,12 +1238,12 @@ export const ConvictionVote = new Schema({
   // The block number the vote was updated at
   updatedBlockNumber: Number,
 });
-
+//TODO: delete
 export const ConvictionVoteModel = mongoose.model(
   "ConvictionVote",
   ConvictionVote,
 );
-
+//TODO: delete
 export const OpenGovReferendum = new Schema({
   index: { type: Number, index: true },
   title: String,
@@ -1031,12 +1273,12 @@ export const OpenGovReferendum = new Schema({
   currentStatus: String,
   updatedTimestamp: Number,
 });
-
+//TODO: delete
 export const OpenGovReferendumModel = mongoose.model(
   "OpenGovReferendum",
   OpenGovReferendum,
 );
-
+//TODO: delete
 export const OpenGovReferendumStats = new Schema({
   index: { type: Number, index: true },
   track: Number,
@@ -1175,12 +1417,12 @@ export const OpenGovReferendumStats = new Schema({
     addresses: [String],
   },
 });
-
+//TODO: delete
 export const OpenGovReferendumStatsModel = mongoose.model(
   "OpenGovReferendumStats",
   OpenGovReferendumStats,
 );
-
+//TODO: delete
 export const OpenGovVoter = new Schema({
   address: { type: String, index: true },
   score: {
@@ -1202,9 +1444,9 @@ export const OpenGovVoter = new Schema({
   votingBalance: Number,
   labels: [String],
 });
-
+//TODO: delete
 export const OpenGovVoterModel = mongoose.model("OpenGovVoter", OpenGovVoter);
-
+//TODO: delete
 export const OpenGovDelegate = new Schema({
   address: { type: String, index: true },
   identity: String,
@@ -1231,12 +1473,12 @@ export const OpenGovDelegate = new Schema({
   longDescription: String,
   isOrganization: Boolean,
 });
-
+//TODO: delete
 export const OpenGovDelegateModel = mongoose.model(
   "OpenGovDelegate",
   OpenGovDelegate,
 );
-
+//TODO: delete
 export const OpenGovTrack = new Schema({
   index: { type: Number, index: true },
   name: String,
@@ -1247,7 +1489,7 @@ export const OpenGovTrack = new Schema({
   confirmPeriod: Number,
   minEnactmentPeriod: Number,
 });
-
+//TODO: delete
 export const OpenGovTrackModel = mongoose.model("OpenGovTrack", OpenGovTrack);
 
 export const IIT = new Schema({
@@ -1255,6 +1497,22 @@ export const IIT = new Schema({
 });
 
 export const IITModel = mongoose.model("IIT", IIT);
+
+export interface IITRequestCounter {
+  requestCount: number;
+  lastRequest: number;
+  firstRequest: number;
+}
+export const IITRequestCounter = new Schema({
+  requestCount: Number,
+  lastRequest: Number,
+  firstRequest: Number,
+});
+
+export const IITRequestCounterModel = mongoose.model(
+  "IITRequestCounter",
+  IITRequestCounter,
+);
 
 export const EraInfo = new Schema({
   index: Number,
@@ -1282,6 +1540,18 @@ export const HeartbeatIndexModel = mongoose.model(
   HeartbeatIndex,
 );
 
+export interface Validator {
+  address: string;
+  keys: {
+    grandpa?: string;
+    babe?: string;
+    imOnline?: string;
+    paraValidator?: string;
+    authorityDiscovery?: string;
+    beefy?: string;
+    paraAssignment?: string;
+  };
+}
 export const Validator = new Schema({
   address: { type: String, index: true },
   keys: {
@@ -1320,6 +1590,28 @@ export const PayoutTransactionModel = mongoose.model(
   PayoutTransaction,
 );
 
+export interface Reward {
+  role: string;
+  exposurePercentage: number;
+  exposure: number;
+  totalStake: number;
+  commission: number;
+  era: number;
+  validator: string;
+  nominator: string;
+  rewardAmount: string;
+  rewardDestination: string;
+  erasMinStake: number;
+  validatorStakeEfficiency: number;
+  blockHash: string;
+  blockNumber: number;
+  timestamp: number;
+  date: string;
+  chf: number;
+  usd: number;
+  eur: number;
+}
+
 export const Reward = new Schema({
   role: String,
   exposurePercentage: Number,
@@ -1329,7 +1621,7 @@ export const Reward = new Schema({
   era: { type: Number, index: true },
   validator: { type: String, index: true },
   nominator: { type: String, index: true },
-  rewardAmount: String,
+  rewardAmount: Number,
   rewardDestination: String,
   erasMinStake: Number,
   validatorStakeEfficiency: Number,
@@ -1344,6 +1636,10 @@ export const Reward = new Schema({
 
 export const RewardModel = mongoose.model("Reward", Reward);
 
+export interface BlockIndex {
+  latest: number;
+  earliest: number;
+}
 // Storing the earliest and latest block that has been indexed
 export const BlockIndex = new Schema({
   latest: Number,

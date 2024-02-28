@@ -1,8 +1,8 @@
 import { Config, Db, logger } from "@1kv/common";
-import TelemetryClient from "./telemetry";
 import { Command } from "commander";
 import path from "path";
 import { Server } from "@1kv/gateway";
+import TelemetryClient from "./Telemetry/Telemetry";
 
 const version = "v2.6.87";
 
@@ -23,7 +23,7 @@ export const createServer = async (config) => {
     const server = new Server(config);
     await server.start();
   } catch (e) {
-    logger.error(e.toString());
+    logger.error(JSON.stringify(e));
     process.exit(1);
   }
 };

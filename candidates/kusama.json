@@ -5818,6 +5818,13 @@
     },
     {
       "slotId": 834,
+      "name": "ToTheMars",
+      "stash": "HZJ2qAYW5LSsR4ixpKPNNCm4dbyC8Lv1zHAcqTVLvfz5779",
+      "riotHandle": "@tothemars1:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 835,
       "name": "Block shield-2",
       "stash": "G28CD89C2iv7FiYDge4GMLQXGo1vNj4EAssVoWPLjCFJn47",
       "riotHandle": "@blockshield:matrix.org",

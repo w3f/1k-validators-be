@@ -8,16 +8,5 @@ export const getEraPoints = async (stash): Promise<any> => {
 
 export const getTotalEraPoints = async (): Promise<any> => {
   const latestEra = (await queries.getLastTotalEraPoints())[0].era;
-  let eras = await queries.getHistoryDepthTotalEraPoints(latestEra);
-  eras = eras.map((era) => {
-    return {
-      era: era.era,
-      totalEraPoints: era.totalEraPoints,
-      min: era.min,
-      max: era.max,
-      average: era.average,
-      median: era.median,
-    };
-  });
-  return eras;
+  return await queries.getHistoryDepthTotalEraPoints(latestEra);
 };

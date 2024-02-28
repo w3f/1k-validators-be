@@ -46,30 +46,30 @@ jobs:
   #          command: |
   #            yarn set version 3.2.2 && yarn install && yarn build && yarn workspace @1kv/common lint
 
-testCommonUnit:
-  docker:
-    - image: node:bullseye
-  resource_class: xlarge
-  steps:
-    - checkout
-    - run:
-        environment:
-          YARN_ENABLE_IMMUTABLE_INSTALLS: false
-        command: |
-          yarn set version 3.2.2
-          yarn install
-          yarn build
-          if ! yarn workspace @1kv/common test:unit --testTimeout=60000; then
-            echo "Unit tests failed, but not failing the job."
-            echo 'export TESTS_FAILED=true' >> $BASH_ENV
-          fi
-    - run:
-        name: "Handle Test Failures"
-        command: |
-          if [ "${TESTS_FAILED}" == "true" ]; then
-            echo "Tests failed."
-            exit 1
-          fi
+  testCommonUnit:
+    docker:
+      - image: node:bullseye
+    resource_class: xlarge
+    steps:
+      - checkout
+      - run:
+          environment:
+            YARN_ENABLE_IMMUTABLE_INSTALLS: false
+          command: |
+            yarn set version 3.2.2
+            yarn install
+            yarn build
+            if ! yarn workspace @1kv/common test:unit --testTimeout=60000; then
+              echo "Unit tests failed, but not failing the job."
+              echo 'export TESTS_FAILED=true' >> $BASH_ENV
+            fi
+      - run:
+          name: "Handle Test Failures"
+          command: |
+            if [ "${TESTS_FAILED}" == "true" ]; then
+              echo "Tests failed."
+              exit 1
+            fi
 
   testCommonInt:
     docker:

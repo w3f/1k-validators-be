@@ -25,7 +25,7 @@ spec:
       containers:
       - name: {{ .Release.Name }}
         image: {{ .Values.image.repo }}:{{ .Values.image.tag | default .Chart.AppVersion }}
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: {{ .Values.image.imagePullPolicy }}
         ports:
         - name: backend
           containerPort: {{ .Values.backendPort }}

@@ -3,6 +3,7 @@ environment: production
 image:
   repo: web3f/otv-backend
   #tag: latest
+  imagePullPolicy: IfNotPresent
 
 ingress:
   domain: otv.w3f.community

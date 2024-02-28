@@ -157,6 +157,16 @@ jobs:
           command: |
             /scripts/publish-image.sh web3f/otv-backend
 
+  publishCoreImageStaging:
+    docker:
+      - image: web3f/ci-commons:v3.2.3
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          command: |
+            /scripts/publish-image.sh web3f/otv-backend staging      
+
   publishGatewayImage:
     docker:
       - image: web3f/ci-commons:v3.2.3
@@ -281,6 +291,13 @@ workflows:
               only: /v[0-9]+(\.[0-9]+)*/
           requires:
             - integrationTests
+      - publishCoreImageStaging:
+          context: dockerhub-bot
+          filters:
+            branches:
+              only: staging
+          requires:
+            - integrationTests      
       - publishGatewayImage:
           context: dockerhub-bot
           filters:
@@ -317,17 +334,5 @@ workflows:
               only: /v[0-9]+(\.[0-9]+)*/
           requires:
             - integrationTests
-      # - deploy:
-      #     context: 
-      #     - digital_ocean_access
-      #     - vault_community
-      #     filters:
-      #       branches:
-      #         ignore: /.*/
-      #       tags:
-      #         only: /v[0-9]+(\.[0-9]+)*/
-      #     requires:
-      #       - publishCoreImage
-      #       - publishChart
 
 

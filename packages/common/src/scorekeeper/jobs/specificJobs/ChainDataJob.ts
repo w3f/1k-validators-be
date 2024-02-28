@@ -14,11 +14,14 @@ import {
   SESSION_KEY_JOB,
   VALIDATOR_PREF_JOB,
 } from "./index";
-import { jobsMetadata } from "../JobsClass";
+import { JobRunnerMetadata } from "../JobsClass";
 
 export const chaindataLabel = { label: "Chaindata" };
 
-export const processChainDataJob = async (job: any, metadata: jobsMetadata) => {
+export const processChainDataJob = async (
+  job: any,
+  metadata: JobRunnerMetadata,
+) => {
   const { jobType, candidateAddress } = job.data;
   // logger.info(`Processing type: ${jobType}`, chaindataLabel);
   switch (jobType) {

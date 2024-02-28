@@ -11,28 +11,32 @@ import { motion } from "framer-motion";
 import "./App.css";
 import axios from "axios"; // Ensure the path to your CSS file is correct
 import { debounce } from "lodash";
+import HealthCheckBar from "./HealthCheckBar";
 
 interface Job {
   name: string;
   runCount: number;
   updated: number;
-  status: "running" | "finished" | "errored";
+  status: "running" | "finished" | "errored" | "started" | "Not Running";
   progress?: number;
   error?: string;
-  iteration?: string; // Add the progressItem property
+  iteration?: string;
+  frequency: string; // Added frequency field
 }
 
 const endpoints = {
   Polkadot: "https://polkadot.w3f.community/scorekeeper/jobs",
   Kusama: "https://kusama.w3f.community/scorekeeper/jobs",
-  "Polkadot Staging": "https://polkadot-staging.w3f.community/scorekeeper/jobs",
-  "Kusama Staging": "https://kusama-staging.w3f.community/scorekeeper/jobs",
+  PolkadotStaging: "https://polkadot-staging.w3f.community/scorekeeper/jobs",
+  KusamaStaging: "https://kusama-staging.w3f.community/scorekeeper/jobs",
   Local: "http://localhost:3300/scorekeeper/jobs",
 };
 
 const OLD_JOB_THRESHOLD_SECONDS = 120;
 const App = () => {
-  const [currentEndpoint, setCurrentEndpoint] = useState(endpoints.Local);
+  const [currentEndpoint, setCurrentEndpoint] = useState(
+    endpoints.KusamaStaging,
+  );
   const [jobs, setJobs] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
@@ -97,34 +101,84 @@ const App = () => {
       iconColor = "#FFFF00"; // Yellow
     }
 
+    let statusText = ""; // Initialize status text
+    let iconComponent; // Initialize icon component
+
     switch (status) {
       case "running":
-        return (
-          <div className="loader">
-            <BeatLoader color={iconColor} size={8} />
-          </div>
-        );
+        iconComponent = <BeatLoader color={iconColor} size={8} />;
+        statusText = "Running";
+        break;
       case "started":
-        return (
-          <div className="loader">
-            <FiPlay color={iconColor} size={iconSize} />
-          </div>
-        );
+        iconComponent = <FiPlay color={iconColor} size={iconSize} />;
+        statusText = "Started";
+        break;
       case "finished":
-        return <FiCheckCircle color="#0f0" size={iconSize} />;
+        iconComponent = <FiCheckCircle color="#0f0" size={iconSize} />;
+        statusText = "Finished";
+        break;
       case "errored":
-        return <FiXCircle color="#f00" size={iconSize} />;
+        iconComponent = <FiXCircle color="#f00" size={iconSize} />;
+        statusText = "Errored";
+        break;
       default:
-        return (
-          <div className="loader">
-            <BeatLoader color={iconColor} size={8} />
-          </div>
-        );
+        iconComponent = <BeatLoader color={iconColor} size={8} />;
+        statusText = "Unknown";
+        break;
     }
+    return (
+      <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+        {iconComponent}
+        <span>{statusText}</span>
+      </div>
+    );
+  };
+
+  const getCronFrequencyInSeconds = (cron: string): number => {
+    // Simple parsing for common cron patterns, returning frequency in seconds
+    if (cron.startsWith("*/")) {
+      const seconds = parseInt(cron.split("/")[1], 10);
+      return isNaN(seconds) ? 0 : seconds; // Every X seconds
+    } else if (cron.startsWith("0 */")) {
+      const minutes = parseInt(cron.split(" ")[1].split("/")[1], 10);
+      return isNaN(minutes) ? 0 : minutes * 60; // Every X minutes
+    }
+    // Add more parsing logic as needed for hours, days, etc.
+
+    return 0; // Default to 0 for unhandled expressions or complex schedules
+  };
+
+  // Determines if a job is "old" based on its last updated time and cron frequency
+  const isJobOld = (job: Job): boolean => {
+    const currentTime = Date.now(); // Current time in milliseconds
+    const lastUpdated = job.updated; // Assuming 'updated' is in milliseconds
+    const cronFrequencySeconds = getCronFrequencyInSeconds(job.frequency);
+    const oldJobThreshold = cronFrequencySeconds * 1000; // Convert seconds to milliseconds
+
+    // Calculate the time difference between now and the last update
+    const timeSinceLastUpdate = currentTime - lastUpdated;
+
+    // Determine if the job is old based on the cron frequency
+    return timeSinceLastUpdate > oldJobThreshold;
+  };
+
+  const parseCronExpression = (cron: string) => {
+    const parts = cron.split(" ");
+    // Assuming the cron format is standard and the minute field is the second part (0-59/interval)
+    if (parts.length >= 2) {
+      const minutePart = parts[1];
+      if (minutePart.includes("/")) {
+        const interval = minutePart.split("/")[1];
+        return `Running every ${interval}m`;
+      }
+    }
+    // Fallback if the cron expression doesn't match expected patterns
+    return "at a specific time";
   };
 
   return (
     <div className="App">
+      <HealthCheckBar currentEndpoint={currentEndpoint} />
       <h1>Scorekeeper Status</h1>
       <select
         value={currentEndpoint}
@@ -139,7 +193,7 @@ const App = () => {
       </select>
 
       <div className="jobsContainer">
-        {jobs.map((job: any) => {
+        {jobs.map((job: Job) => {
           const jobAgeInSeconds = (Date.now() - job.updated) / 1000; // Convert milliseconds to seconds
           const isOld = jobAgeInSeconds > OLD_JOB_THRESHOLD_SECONDS;
           const isError = job.status === "errored";
@@ -170,6 +224,7 @@ const App = () => {
                 )}
               </div>
               <p>Run Count: {job.runCount}</p>
+              <p>{parseCronExpression(job.frequency)}</p>
 
               <div className="progressBarContainer">
                 <div className="progressBarBackground">
@@ -219,7 +274,14 @@ const App = () => {
                   <p>Last Update: {formatLastUpdate(job.updated)}</p>
                 </div>
               )}
-              {job.error && <p className="errorMessage">Error: {job.error}</p>}
+              {job.error && (
+                <div className="errorContainer">
+                  <p className="errorMessage">
+                    <FiAlertTriangle color="yellow" size={20} />
+                    {job.error}
+                  </p>
+                </div>
+              )}
             </motion.div>
           );
 

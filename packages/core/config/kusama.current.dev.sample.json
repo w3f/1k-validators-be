@@ -43,7 +43,26 @@
     "validatorPref": "0 0-59/1 * * * *",
     "nominator": "0 0-59/1 * * * *",
     "delegation": "0 0-59/1 * * * *",
-    "democracy": "0 0-59/1 * * * *"
+    "democracy": "0 0-59/1 * * * *",
+    "monitorEnabled": true,
+    "clearOfflineEnabled": true,
+    "validityEnabled": true,
+    "scoreEnabled": true,
+    "executionEnabled": true,
+    "scorekeeperEnabled": true,
+    "rewardClaimingEnabled": true,
+    "cancelEnabled": true,
+    "staleEnabled": true,
+    "eraPointsEnabled": true,
+    "eraStatsEnabled": true,
+    "activeValidatorEnabled": true,
+    "inclusionEnabled": true,
+    "sessionKeyEnabled": true,
+    "unclaimedErasEnabled": true,
+    "validatorPrefEnabled": true,
+    "nominatorEnabled": true,
+    "locationStatsEnabled": true,
+    "blockEnabled": true
   },
   "db": {
     "mongo": {

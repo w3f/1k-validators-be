@@ -1,12 +1,19 @@
 import { logger, Models, queries } from "../../../index";
-import { jobsMetadata } from "../JobsClass";
+import { Job, JobConfig, JobRunnerMetadata, JobStatus } from "../JobsClass";
 import { jobStatusEmitter } from "../../../Events";
 import { withExecutionTimeLogging } from "../../../utils";
+import { JobNames } from "../JobConfigs";
 
 export const validatorPrefLabel = { label: "ValidatorPrefJob" };
 
+export class ValidatorPrefJob extends Job {
+  constructor(jobConfig: JobConfig, jobRunnerMetadata: JobRunnerMetadata) {
+    super(jobConfig, jobRunnerMetadata);
+  }
+}
+
 export const individualValidatorPrefJob = async (
-  metadata: jobsMetadata,
+  metadata: JobRunnerMetadata,
   candidate: Models.Candidate,
 ) => {
   try {
@@ -66,7 +73,7 @@ export const individualValidatorPrefJob = async (
 };
 
 export const validatorPrefJob = async (
-  metadata: jobsMetadata,
+  metadata: JobRunnerMetadata,
 ): Promise<boolean> => {
   try {
     const candidates = await queries.allCandidates();
@@ -84,7 +91,7 @@ export const validatorPrefJob = async (
 
       // Emit progress update event with candidate's name
       jobStatusEmitter.emit("jobProgress", {
-        name: "Validator Pref Job",
+        name: JobNames.ValidatorPref,
         progress,
         updated: Date.now(),
         iteration: `Processed candidate ${candidate.name}`,
@@ -96,6 +103,15 @@ export const validatorPrefJob = async (
       `Error setting validator preferences: ${e}`,
       validatorPrefLabel,
     );
+
+    const errorStatus: JobStatus = {
+      status: "errored",
+      name: JobNames.ValidatorPref,
+      updated: Date.now(),
+      error: JSON.stringify(e),
+    };
+
+    jobStatusEmitter.emit("jobErrored", errorStatus);
     return false;
   }
 };
@@ -108,7 +124,7 @@ export const validatorPrefJobWithTiming = withExecutionTimeLogging(
 
 export const processValidatorPrefJob = async (
   job: any,
-  metadata: jobsMetadata,
+  metadata: JobRunnerMetadata,
   candidateAddress?: string,
 ) => {
   try {

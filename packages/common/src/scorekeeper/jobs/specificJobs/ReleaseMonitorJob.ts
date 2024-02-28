@@ -1,7 +1,16 @@
 import { logger, queries } from "../../../index";
 import { Octokit } from "@octokit/rest";
+import { Job, JobConfig, JobRunnerMetadata, JobStatus } from "../JobsClass";
+import { JobNames } from "../JobConfigs";
+import { jobStatusEmitter } from "../../../Events";
 
 export const monitorLabel = { label: "Monitor" };
+
+export class MonitorJob extends Job {
+  constructor(jobConfig: JobConfig, jobRunnerMetadata: JobRunnerMetadata) {
+    super(jobConfig, jobRunnerMetadata);
+  }
+}
 
 export const getLatestTaggedRelease = async () => {
   try {
@@ -57,6 +66,14 @@ export const getLatestTaggedRelease = async () => {
     logger.info(`Done. Took ${(end - start) / 1000} seconds`, monitorLabel);
   } catch (e) {
     logger.error(`Error running monitor job: ${e}`, monitorLabel);
+    const errorStatus: JobStatus = {
+      status: "errored",
+      name: JobNames.Monitor,
+      updated: Date.now(),
+      error: JSON.stringify(e),
+    };
+
+    jobStatusEmitter.emit("jobErrored", errorStatus);
   }
 };
 // Called by worker to process Job

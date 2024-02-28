@@ -207,3 +207,88 @@ h1 {
     width: 100%;
   }
 }
+
+.errorContainer {
+  border: 2px solid rgba(255, 0, 0, 0.1); /* Adjusted red shade for consistency */
+  color: red;
+  background-color: rgba(255, 0, 0, 0.1); /* Red background with transparency */
+  padding: 10px 15px; /* Adjusted padding for consistency */
+  border-radius: 4px; /* Rounded corners similar to your buttons */
+  display: flex;
+  align-items: center; /* Vertical alignment */
+  gap: 10px; /* Space between icon and text */
+  /*margin-top: 20px; !* Spacing from the preceding elements *!*/
+  align-content: center;
+  justify-content: center;
+}
+
+.errorMessage {
+  margin: 0; /* Remove default paragraph margins */
+  font-size: 10px; /* Keeping font size consistent with your design */
+  /*font-weight: 200; !* Medium font weight for emphasis *!*/
+  align-content: center;
+  justify-content: center;
+  display: block;
+}
+
+.errorIcon {
+  font-size: 20px; /* Icon size, adjust based on your design */
+  /* If using an SVG or <img> for icons, set width and height instead */
+}
+.healthCheckBar, .healthCheckItem {
+  display: flex;
+  align-items: center; /* Ensures vertical alignment is centered */
+  justify-content: center; /* Centers content horizontally */
+  gap: 10px; /* Space between items */
+  padding: 10px;
+  border-radius: 5px;
+  margin: 10px 0; /* Adds some space between the health check bar and items */
+}
+
+.healthCheckBar {
+  width: 80%; /* Adjusted for better responsiveness */
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.5); /* Neon green glow */
+  background: rgba(0, 255, 0, 0.05);
+  border: 1px solid rgba(0, 255, 0, 0.5);
+  margin: 0 auto; /* Center the bar */
+  flex-wrap: wrap; /* Allows items to wrap if necessary */
+}
+
+.healthCheckItem {
+  flex: 1 1 auto; /* Allows items to grow and shrink as needed, but not beyond their content's size */
+  min-width: 0; /* Allows the item to shrink below its content's intrinsic size if necessary */
+}
+
+.healthCheckItem span {
+  white-space: nowrap; /* Prevents text from wrapping */
+  overflow: hidden; /* Hides overflow */
+  text-overflow: ellipsis; /* Adds ellipsis to overflowed text */
+}
+
+.healthCheckIcon {
+  font-size: 1.5rem; /* Larger icons */
+}
+
+.connected, .disconnected {
+  flex-shrink: 0; /* Prevents icons from shrinking */
+}
+
+.connected {
+  color: #4CAF50; /* Green for connected */
+}
+
+.disconnected {
+  color: #F44336; /* Red for disconnected */
+}
+
+@media (max-width: 768px) {
+  .healthCheckBar {
+    flex-direction: column; /* Stack items vertically on smaller screens */
+    width: 95%; /* Use more of the screen width on smaller devices */
+    align-items: stretch; /* Stretches items to fill the container */
+  }
+
+  .healthCheckItem {
+    justify-content: start; /* Aligns content to the start, giving more room for the text */
+  }
+}

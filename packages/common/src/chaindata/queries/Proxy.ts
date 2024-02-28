@@ -12,7 +12,9 @@ export const getProxyAnnouncements = async (
   address: string,
 ): Promise<ProxyAnnouncement[]> => {
   try {
-    await chaindata.checkApiConnection();
+    if (!(await chaindata.checkApiConnection())) {
+      return [];
+    }
     const announcements =
       await chaindata.api?.query.proxy.announcements(address);
     if (!announcements) {

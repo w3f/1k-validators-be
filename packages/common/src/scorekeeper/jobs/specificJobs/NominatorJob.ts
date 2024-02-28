@@ -1,12 +1,19 @@
 import { jobStatusEmitter } from "../../../Events";
 import { logger, queries } from "../../../index";
-import { jobsMetadata } from "../JobsClass";
+import { Job, JobConfig, JobRunnerMetadata, JobStatus } from "../JobsClass";
 import { withExecutionTimeLogging } from "../../../utils";
+import { JobNames } from "../JobConfigs";
 
 export const nominatorLabel = { label: "NominatorJob" };
 
+export class NominatorJob extends Job {
+  constructor(jobConfig: JobConfig, jobRunnerMetadata: JobRunnerMetadata) {
+    super(jobConfig, jobRunnerMetadata);
+  }
+}
+
 export const nominatorJob = async (
-  metadata: jobsMetadata,
+  metadata: JobRunnerMetadata,
 ): Promise<boolean> => {
   try {
     const { chaindata } = metadata;
@@ -57,7 +64,7 @@ export const nominatorJob = async (
 
       // Emit progress update event with candidate's name
       jobStatusEmitter.emit("jobProgress", {
-        name: "Nominator Job",
+        name: JobNames.Nominator,
         progress,
         updated: Date.now(),
         iteration: `Processed candidate ${candidate.name}`,
@@ -67,6 +74,14 @@ export const nominatorJob = async (
     return true;
   } catch (e) {
     logger.error(`Error running nominator job: ${e}`, nominatorLabel);
+    const errorStatus: JobStatus = {
+      status: "errored",
+      name: JobNames.Nominator,
+      updated: Date.now(),
+      error: JSON.stringify(e),
+    };
+
+    jobStatusEmitter.emit("jobErrored", errorStatus);
     return false;
   }
 };
@@ -76,7 +91,10 @@ export const nominatorJobWithTiming = withExecutionTimeLogging(
   "Nominator Job Done",
 );
 
-export const processNominatorJob = async (job: any, metadata: jobsMetadata) => {
+export const processNominatorJob = async (
+  job: any,
+  metadata: JobRunnerMetadata,
+) => {
   logger.info(`Processing Nominator Job....`, nominatorLabel);
   await nominatorJob(metadata);
 };

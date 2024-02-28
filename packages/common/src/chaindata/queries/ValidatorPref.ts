@@ -8,7 +8,9 @@ export const getCommission = async (
   validator: string,
 ): Promise<NumberResult> => {
   try {
-    await chaindata.checkApiConnection();
+    if (!(await chaindata.checkApiConnection())) {
+      return [0, "API not connected."];
+    }
     const prefs = await chaindata?.api?.query.staking.validators(validator);
     if (!prefs) {
       return [0, "No preferences found."];
@@ -27,7 +29,9 @@ export const getCommissionInEra = async (
   validator: string,
 ): Promise<number | null> => {
   try {
-    await chaindata.checkApiConnection();
+    if (!(await chaindata.checkApiConnection())) {
+      return null;
+    }
     const prefs = await apiAt?.query?.staking.erasValidatorPrefs(
       eraIndex,
       validator,
@@ -44,7 +48,9 @@ export const getBlocked = async (
   validator: string,
 ): Promise<boolean> => {
   try {
-    await chaindata.checkApiConnection();
+    if (!(await chaindata.checkApiConnection())) {
+      return false;
+    }
     const rawPrefs = await chaindata?.api?.query.staking.validators(validator);
     return rawPrefs?.blocked?.toString() === "true";
   } catch (e) {
@@ -58,7 +64,9 @@ export const getBondedAmount = async (
   stash: string,
 ): Promise<NumberResult> => {
   try {
-    await chaindata.checkApiConnection();
+    if (!(await chaindata.checkApiConnection())) {
+      return [0, "API not connected."];
+    }
     const bondedAddress = await chaindata?.api?.query.staking.bonded(stash);
     if (!bondedAddress || bondedAddress.isNone) {
       return [0, "Not bonded to any account."];
@@ -83,7 +91,9 @@ export const getControllerFromStash = async (
   stash: string,
 ): Promise<string | null> => {
   try {
-    await chaindata.checkApiConnection();
+    if (!(await chaindata.checkApiConnection())) {
+      return null;
+    }
     const controller = await chaindata?.api?.query.staking.bonded(stash);
     if (!controller) {
       return null;
@@ -100,7 +110,9 @@ export const getRewardDestination = async (
   stash: string,
 ): Promise<string | null> => {
   try {
-    await chaindata.checkApiConnection();
+    if (!(await chaindata.checkApiConnection())) {
+      return null;
+    }
     const rewardDestination: any =
       await chaindata.api?.query.staking.payee(stash);
     if (rewardDestination.toJSON().account) {
@@ -120,7 +132,9 @@ export const getRewardDestinationAt = async (
   stash: string,
 ): Promise<string | null> => {
   try {
-    await chaindata.checkApiConnection();
+    if (!(await chaindata.checkApiConnection())) {
+      return null;
+    }
     const rewardDestination: any = await apiAt.query.staking.payee(stash);
     if (rewardDestination.toJSON().account) {
       return rewardDestination.toJSON().account;
@@ -142,7 +156,9 @@ export const getQueuedKeys = async (
   chaindata: ChainData,
 ): Promise<QueuedKey[]> => {
   try {
-    await chaindata.checkApiConnection();
+    if (!(await chaindata.checkApiConnection())) {
+      return [];
+    }
     const queuedKeys = await chaindata.api?.query.session.queuedKeys();
     if (!queuedKeys) {
       return [];
@@ -177,7 +193,9 @@ export const getNextKeys = async (
   stash: string,
 ): Promise<NextKeys | null> => {
   try {
-    await chaindata.checkApiConnection();
+    if (!(await chaindata.checkApiConnection())) {
+      return null;
+    }
     const nextKeysRaw = await chaindata.api?.query.session.nextKeys(stash);
     if (!nextKeysRaw) {
       return null;
@@ -207,7 +225,9 @@ export const getBalance = async (
   address: string,
 ): Promise<Balance | null> => {
   try {
-    await chaindata.checkApiConnection();
+    if (!(await chaindata.checkApiConnection())) {
+      return null;
+    }
     const accountData = await chaindata.api?.query.system.account(address);
     if (!accountData) {
       return null;
@@ -239,7 +259,9 @@ export const getExposure = async (
   validator: string,
 ): Promise<Exposure | null> => {
   try {
-    await chaindata.checkApiConnection();
+    if (!(await chaindata.checkApiConnection())) {
+      return null;
+    }
     const denom = await chaindata.getDenom();
     const eraStakers = await chaindata.api?.query.staking.erasStakers(
       eraIndex,
@@ -280,7 +302,9 @@ export const getExposureAt = async (
   validator: string,
 ): Promise<Exposure | null> => {
   try {
-    await chaindata.checkApiConnection();
+    if (!(await chaindata.checkApiConnection())) {
+      return null;
+    }
     const denom = await chaindata.getDenom();
     const eraStakers = await apiAt.query.staking.erasStakers(
       eraIndex,

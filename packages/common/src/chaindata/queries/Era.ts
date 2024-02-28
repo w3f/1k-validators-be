@@ -13,7 +13,9 @@ export const getEraAt = async (
   apiAt: ApiDecoration<"promise">,
 ): Promise<number | null> => {
   try {
-    await chaindata.checkApiConnection();
+    if (!(await chaindata.checkApiConnection())) {
+      return null;
+    }
 
     return ((await apiAt.query.staking.activeEra()).toJSON() as any)
       .index as number;
@@ -37,7 +39,9 @@ export const getTotalEraPoints = async (
   era: number,
 ): Promise<EraPointsInfo> => {
   try {
-    await chaindata.checkApiConnection();
+    if (!(await chaindata.checkApiConnection())) {
+      return {} as EraPointsInfo;
+    }
     const chainType = await chaindata.getChainType();
     if (!chainType) {
       return {} as EraPointsInfo;
@@ -81,7 +85,9 @@ export const getErasMinStakeAt = async (
   era: number,
 ): Promise<number | null> => {
   try {
-    await chaindata.checkApiConnection();
+    if (!(await chaindata.checkApiConnection())) {
+      return null;
+    }
 
     const denom: number | null = await chaindata.getDenom();
     if (denom === null) {
@@ -118,7 +124,9 @@ export const getActiveEraIndex = async (
   chaindata: ChainData,
 ): Promise<NumberResult> => {
   try {
-    await chaindata.checkApiConnection();
+    if (!(await chaindata.checkApiConnection())) {
+      return [0, "API not connected"];
+    }
     const activeEra = await chaindata?.api?.query.staking.activeEra();
     if (!activeEra || activeEra.isNone) {
       logger.info(`NO ACTIVE ERA:`);
@@ -139,7 +147,9 @@ export const getCurrentEra = async (
   chaindata: ChainData,
 ): Promise<number | null> => {
   try {
-    await chaindata.checkApiConnection();
+    if (!(await chaindata.checkApiConnection())) {
+      return null;
+    }
     const currentEra = await chaindata?.api?.query.staking.currentEra();
     return Number(currentEra);
   } catch (e) {
@@ -154,7 +164,9 @@ export const findEraBlockHash = async (
   chainType: string,
 ): Promise<StringResult> => {
   try {
-    await chaindata.checkApiConnection();
+    if (!(await chaindata.checkApiConnection())) {
+      return ["", "API not connected."];
+    }
     const eraBlockLength =
       chainType == "Kusama"
         ? KUSAMA_APPROX_ERA_LENGTH_IN_BLOCKS
@@ -226,7 +238,9 @@ export const findEraBlockNumber = async (
   chainType: string,
 ): Promise<NumberResult> => {
   try {
-    await chaindata.checkApiConnection();
+    if (!(await chaindata.checkApiConnection())) {
+      return [0, "API not connected."];
+    }
     const eraBlockLength =
       chainType == "Kusama"
         ? KUSAMA_APPROX_ERA_LENGTH_IN_BLOCKS

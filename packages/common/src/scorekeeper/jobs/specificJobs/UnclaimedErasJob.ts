@@ -1,10 +1,16 @@
 import { logger } from "../../../index";
-import { jobsMetadata } from "../JobsClass";
+import { Job, JobConfig, JobRunnerMetadata } from "../JobsClass";
 import { withExecutionTimeLogging } from "../../../utils";
 
 export const unclaimedErasLabel = { label: "UnclaimedErasJob" };
 
-export const unclaimedErasJob = async (metadata: jobsMetadata) => {
+export class UnclaimedErasJob extends Job {
+  constructor(jobConfig: JobConfig, jobRunnerMetadata: JobRunnerMetadata) {
+    super(jobConfig, jobRunnerMetadata);
+  }
+}
+
+export const unclaimedErasJob = async (metadata: JobRunnerMetadata) => {
   const { chaindata } = metadata;
   logger.info(`Unclaimed Eras done`, unclaimedErasLabel);
 };

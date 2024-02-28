@@ -1,11 +1,20 @@
 import { logger, queries } from "../../../index";
-import { jobsMetadata } from "../JobsClass";
+import { Job, JobConfig, JobRunnerMetadata, JobStatus } from "../JobsClass";
 import { jobStatusEmitter } from "../../../Events";
 import { setValidatorRanks, withExecutionTimeLogging } from "../../../utils";
+import { JobNames } from "../JobConfigs";
 
 export const erastatsLabel = { label: "EraStatsJob" };
 
-export const eraStatsJob = async (metadata: jobsMetadata): Promise<boolean> => {
+export class EraStatsJob extends Job {
+  constructor(jobConfig: JobConfig, jobRunnerMetadata: JobRunnerMetadata) {
+    super(jobConfig, jobRunnerMetadata);
+  }
+}
+
+export const eraStatsJob = async (
+  metadata: JobRunnerMetadata,
+): Promise<boolean> => {
   try {
     const { chaindata } = metadata;
     const currentSession = await chaindata.getSession();
@@ -21,7 +30,7 @@ export const eraStatsJob = async (metadata: jobsMetadata): Promise<boolean> => {
     }
     // Emit progress update indicating the start of the job
     jobStatusEmitter.emit("jobProgress", {
-      name: "Era Stats Job",
+      name: JobNames.EraStats,
       progress: 0,
       updated: Date.now(),
     });
@@ -31,7 +40,7 @@ export const eraStatsJob = async (metadata: jobsMetadata): Promise<boolean> => {
       // Emit progress update for each validator processed
       const progressPercentage = ((index + 1) / validators.length) * 100;
       jobStatusEmitter.emit("jobProgress", {
-        name: "Era Stats Job",
+        name: JobNames.EraStats,
         progress: progressPercentage,
         updated: Date.now(),
         iteration: `Processed validator: ${validator}`,
@@ -42,7 +51,7 @@ export const eraStatsJob = async (metadata: jobsMetadata): Promise<boolean> => {
 
     // Emit progress update after storing identities
     jobStatusEmitter.emit("jobProgress", {
-      name: "Era Stats Job",
+      name: JobNames.EraStats,
       progress: 25,
       updated: Date.now(),
     });
@@ -69,7 +78,7 @@ export const eraStatsJob = async (metadata: jobsMetadata): Promise<boolean> => {
       // Emit progress update for each era processed
       const progressPercentage = ((currentEra - i) / (currentEra - 20)) * 100;
       jobStatusEmitter.emit("jobProgress", {
-        name: "Era Stats Job",
+        name: JobNames.EraStats,
         progress: progressPercentage,
         updated: Date.now(),
         iteration: `Processed era: ${i}`,
@@ -78,7 +87,7 @@ export const eraStatsJob = async (metadata: jobsMetadata): Promise<boolean> => {
 
     // Emit progress update after processing eras
     jobStatusEmitter.emit("jobProgress", {
-      name: "Era Stats Job",
+      name: JobNames.EraStats,
       progress: 100,
       updated: Date.now(),
     });
@@ -96,9 +105,22 @@ export const eraStatsJob = async (metadata: jobsMetadata): Promise<boolean> => {
       active.length,
     );
 
+    const finishedStatus: JobStatus = {
+      status: "finished",
+      name: JobNames.EraStats,
+      updated: Date.now(),
+    };
+    jobStatusEmitter.emit("jobFinished", finishedStatus);
     return true;
   } catch (e) {
     logger.error(`Error running era stats job: ${e}`, erastatsLabel);
+    const errorStatus: JobStatus = {
+      status: "errored",
+      name: JobNames.EraStats,
+      updated: Date.now(),
+      error: JSON.stringify(e),
+    };
+    jobStatusEmitter.emit("jobErrored", errorStatus);
     return false;
   }
 };
@@ -109,6 +131,9 @@ export const eraStatsJobWithTiming = withExecutionTimeLogging(
   "Era Stats Job Done",
 );
 
-export const processEraStatsJob = async (job: any, metadata: jobsMetadata) => {
+export const processEraStatsJob = async (
+  job: any,
+  metadata: JobRunnerMetadata,
+) => {
   await eraStatsJob(metadata);
 };

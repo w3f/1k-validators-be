@@ -1,5 +1,5 @@
 import { SCORE_JOB, VALIDITY_JOB } from "./index";
-import { jobsMetadata } from "../JobsClass";
+import { Job, JobConfig, JobRunnerMetadata, JobStatus } from "../JobsClass";
 import {
   allCandidates,
   getLatestValidatorScoreMetadata,
@@ -13,10 +13,25 @@ import {
 import { jobStatusEmitter } from "../../../Events";
 import logger from "../../../logger";
 import { Constraints, queries } from "../../../index";
+import { JobNames } from "../JobConfigs";
 
 export const constraintsLabel = { label: "ConstraintsJob" };
 
-export const validityJob = async (metadata: jobsMetadata): Promise<boolean> => {
+export class ValidityJob extends Job {
+  constructor(jobConfig: JobConfig, jobRunnerMetadata: JobRunnerMetadata) {
+    super(jobConfig, jobRunnerMetadata);
+  }
+}
+
+export class ScoreJob extends Job {
+  constructor(jobConfig: JobConfig, jobRunnerMetadata: JobRunnerMetadata) {
+    super(jobConfig, jobRunnerMetadata);
+  }
+}
+
+export const validityJob = async (
+  metadata: JobRunnerMetadata,
+): Promise<boolean> => {
   try {
     const { constraints } = metadata;
     const candidates = await allCandidates();
@@ -36,7 +51,7 @@ export const validityJob = async (metadata: jobsMetadata): Promise<boolean> => {
 
       // Emit progress update with candidate name in the iteration
       jobStatusEmitter.emit("jobProgress", {
-        name: "Validity Job",
+        name: JobNames.Validity,
         progress,
         updated: Date.now(),
         iteration: `Candidate name: ${candidate.name}`,
@@ -50,6 +65,13 @@ export const validityJob = async (metadata: jobsMetadata): Promise<boolean> => {
     return true;
   } catch (e) {
     logger.error(`Error running validity job: ${e}`, constraintsLabel);
+    const errorStatus: JobStatus = {
+      status: "errored",
+      name: JobNames.Validity,
+      updated: Date.now(),
+      error: JSON.stringify(e),
+    };
+    jobStatusEmitter.emit("jobErrored", errorStatus);
     return false;
   }
 };
@@ -111,7 +133,9 @@ export const individualScoreJob = async (
   }
 };
 
-export const scoreJob = async (metadata: jobsMetadata): Promise<boolean> => {
+export const scoreJob = async (
+  metadata: JobRunnerMetadata,
+): Promise<boolean> => {
   try {
     const { constraints } = metadata;
     await constraints.scoreAllCandidates();
@@ -135,7 +159,7 @@ export const scoreJob = async (metadata: jobsMetadata): Promise<boolean> => {
 
       // Emit progress update including the candidate name
       jobStatusEmitter.emit("jobProgress", {
-        name: "Score Job",
+        name: JobNames.Score,
         progress,
         updated: Date.now(),
         iteration: `Scored candidate ${candidate.name}`,
@@ -151,6 +175,13 @@ export const scoreJob = async (metadata: jobsMetadata): Promise<boolean> => {
     return true;
   } catch (e) {
     logger.error(`Error running score job: ${e}`, constraintsLabel);
+    const errorStatus: JobStatus = {
+      status: "errored",
+      name: JobNames.Score,
+      updated: Date.now(),
+      error: JSON.stringify(e),
+    };
+    jobStatusEmitter.emit("jobErrored", errorStatus);
     return false;
   }
 };
@@ -164,7 +195,7 @@ export const scoreJobWithTiming = withExecutionTimeLogging(
 // Called by worker to process Job
 export const processConstraintsJob = async (
   job: any,
-  metadata: jobsMetadata,
+  metadata: JobRunnerMetadata,
 ) => {
   const { jobType } = job.data;
   switch (jobType) {

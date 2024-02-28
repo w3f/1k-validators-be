@@ -14,7 +14,9 @@ export const getChainType = async (
   chaindata: ChainData,
 ): Promise<string | null> => {
   try {
-    await chaindata.checkApiConnection();
+    if (!(await chaindata.checkApiConnection())) {
+      return null;
+    }
 
     const chainType = await chaindata?.api?.rpc.system.chain();
     if (chainType) {
@@ -31,7 +33,9 @@ export const getDenom = async (
   chaindata: ChainData,
 ): Promise<number | null> => {
   try {
-    await chaindata.checkApiConnection();
+    if (!(await chaindata.checkApiConnection())) {
+      return null;
+    }
 
     const chainType = await chaindata?.api?.rpc.system.chain();
     if (!chainType) {
@@ -51,7 +55,9 @@ export const getApiAt = async (
   blockNumber: number,
 ): Promise<ApiDecoration<"promise"> | null> => {
   try {
-    await chaindata.checkApiConnection();
+    if (!(await chaindata.checkApiConnection())) {
+      return null;
+    }
 
     const hash = await chaindata.getBlockHash(blockNumber);
     if (hash) {
@@ -69,7 +75,9 @@ export const getApiAtBlockHash = async (
   blockHash: string,
 ): Promise<ApiDecoration<"promise"> | null> => {
   try {
-    await chaindata.checkApiConnection();
+    if (!(await chaindata.checkApiConnection())) {
+      return null;
+    }
     const api = chaindata?.api;
     if (api) {
       const apiResult = await api.at(blockHash);
@@ -91,7 +99,9 @@ export const getBlockHash = async (
   blockNumber: number,
 ): Promise<string | null> => {
   try {
-    await chaindata.checkApiConnection();
+    if (!(await chaindata.checkApiConnection())) {
+      return null;
+    }
 
     const hash = await chaindata?.api?.rpc.chain.getBlockHash(blockNumber);
     if (hash) {
@@ -109,7 +119,9 @@ export const getBlock = async (
   blockNumber: number,
 ): Promise<Block | null> => {
   try {
-    await chaindata.checkApiConnection();
+    if (!(await chaindata.checkApiConnection())) {
+      return null;
+    }
     const hash = await chaindata.getBlockHash(blockNumber);
     if (hash) {
       const signedBlock = await chaindata?.api?.rpc.chain.getBlock(hash);
@@ -127,7 +139,9 @@ export const getLatestBlock = async (
   chaindata: ChainData,
 ): Promise<number | null> => {
   try {
-    await chaindata.checkApiConnection();
+    if (!(await chaindata.checkApiConnection())) {
+      return null;
+    }
     const block = await chaindata?.api?.rpc.chain.getBlock();
     return block?.block.header.number.toNumber() ?? null;
   } catch (e) {
@@ -139,7 +153,9 @@ export const getLatestBlockHash = async (
   chaindata: ChainData,
 ): Promise<string | null> => {
   try {
-    await chaindata.checkApiConnection();
+    if (!(await chaindata.checkApiConnection())) {
+      return null;
+    }
     const hash = await chaindata?.api?.rpc.chain.getBlockHash();
     if (hash) {
       return hash.toString();

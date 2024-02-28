@@ -1,6 +1,7 @@
 import { CronJob } from "cron";
 import { logger } from "../../../index";
 import { jobStatusEmitter } from "../../../Events";
+import { JobStatus } from "../JobsClass";
 
 type JobFunction = () => Promise<void> | void;
 export const setupCronJob = async (
@@ -8,71 +9,70 @@ export const setupCronJob = async (
   configFrequency: string | undefined, // Frequency from config
   defaultFrequency: string, // Default frequency
   jobFunction: JobFunction, // Job function to execute
-  jobDescription: string, // Description for logging
+  name: string, // Description for logging
   loggerLabel: { label: string }, // Optional logging label
   preventOverlap = false, // Optional flag to prevent overlapping executions
 ): Promise<void> => {
   if (!enabled) {
-    logger.warn(`${jobDescription} is disabled.`, loggerLabel);
+    logger.warn(`${name} is disabled.`, loggerLabel);
     return;
   }
 
   let jobRunCount = 0;
   const frequency = configFrequency || defaultFrequency;
-  logger.info(
-    `Starting ${jobDescription} with frequency ${frequency}`,
-    loggerLabel,
-  );
-  jobStatusEmitter.emit("jobStarted", {
+  logger.info(`Starting ${name} with frequency ${frequency}`, loggerLabel);
+  const startedStatus: JobStatus = {
     status: "started",
     frequency: frequency,
-    name: jobDescription,
+    name: name,
     runCount: jobRunCount,
     updated: Date.now(),
-  });
+  };
+  jobStatusEmitter.emit("jobStarted", startedStatus);
 
   let isRunning = false;
 
   const cron = new CronJob(frequency, async () => {
     if (preventOverlap && isRunning) {
-      logger.info(
-        `Skipped ${jobDescription} execution due to overlap.`,
-        loggerLabel,
-      );
+      logger.info(`Skipped ${name} execution due to overlap.`, loggerLabel);
       return;
     }
 
     isRunning = true;
-    logger.info(`Executing ${jobDescription}.`, loggerLabel);
-    jobStatusEmitter.emit("jobRunning", {
+    logger.info(`Executing ${name}.`, loggerLabel);
+    const runningStatus: JobStatus = {
       status: "running",
-      name: jobDescription,
+      name: name,
       runCount: jobRunCount,
       updated: Date.now(),
-    });
+    };
+    jobStatusEmitter.emit("jobRunning", runningStatus);
 
     try {
       await jobFunction();
     } catch (e) {
-      logger.error(`Error executing ${jobDescription}: ${e}`, loggerLabel);
-      jobStatusEmitter.emit("jobErrored", {
+      logger.error(`Error executing ${name}: ${e}`, loggerLabel);
+      const errorStatus: JobStatus = {
         status: "errored",
-        name: jobDescription,
+        name: name,
         runCount: jobRunCount,
         updated: Date.now(),
         error: JSON.stringify(e),
-      });
+      };
+
+      jobStatusEmitter.emit("jobErrored", errorStatus);
     } finally {
       isRunning = false;
       jobRunCount++;
-      jobStatusEmitter.emit("jobFinished", {
+      const finishedStatus: JobStatus = {
         status: "finished",
-        name: jobDescription,
+        name: name,
         runCount: jobRunCount,
         updated: Date.now(),
-      });
+      };
+      jobStatusEmitter.emit("jobFinished", finishedStatus);
     }
   });
 
-  await cron.start();
+  cron.start();
 };

@@ -7,7 +7,9 @@ export const hasIdentity = async (
   account: string,
 ): Promise<[boolean, boolean]> => {
   try {
-    await chaindata.checkApiConnection();
+    if (!(await chaindata.checkApiConnection())) {
+      return [false, false];
+    }
     let identity = await chaindata.api?.query.identity.identityOf(account);
     if (!identity || !identity.isSome) {
       // check if it's a sub
@@ -40,7 +42,9 @@ export const getIdentity = async (
   account: string,
 ): Promise<any> => {
   try {
-    await chaindata.checkApiConnection();
+    if (!(await chaindata.checkApiConnection())) {
+      return null;
+    }
     const identity = await chaindata.api?.query.identity.identityOf(account);
     if (identity && !identity.isSome) {
       const superOf = await chaindata.api?.query.identity.superOf(account);
@@ -71,7 +75,9 @@ export const getFormattedIdentity = async (
   addr: string,
 ): Promise<Identity | null> => {
   try {
-    await chaindata.checkApiConnection();
+    if (!(await chaindata.checkApiConnection())) {
+      return null;
+    }
     let identity: Identity | null = null;
     let verified = false;
     const subAccounts: { name: string; address: string }[] = [];

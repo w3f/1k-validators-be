@@ -1,16 +1,25 @@
 import { ChainData, logger, queries } from "../../../index";
 import { CoinGeckoClient } from "coingecko-api-v3";
-import { jobsMetadata } from "../JobsClass";
+import { Job, JobConfig, JobRunnerMetadata } from "../JobsClass";
 import { jobStatusEmitter } from "../../../Events";
 import { formatDateFromUnix, withExecutionTimeLogging } from "../../../utils";
 import { ApiDecoration } from "@polkadot/api/types";
 import { Block, EventRecord, Phase } from "@polkadot/types/interfaces";
 import type { FrameSystemEventRecord } from "@polkadot/types/lookup";
 import { Exposure } from "../../../chaindata/queries/ValidatorPref";
+import { JobNames } from "../JobConfigs";
 
 export const blockdataLabel = { label: "Block" };
 
-export const blockJob = async (metadata: jobsMetadata): Promise<boolean> => {
+export class BlockDataJob extends Job {
+  constructor(jobConfig: JobConfig, jobRunnerMetadata: JobRunnerMetadata) {
+    super(jobConfig, jobRunnerMetadata);
+  }
+}
+
+export const blockJob = async (
+  metadata: JobRunnerMetadata,
+): Promise<boolean> => {
   const { chaindata } = metadata;
   try {
     logger.info(`Starting blockDataJob`, blockdataLabel);
@@ -57,7 +66,7 @@ export const blockJob = async (metadata: jobsMetadata): Promise<boolean> => {
           );
         }
         jobStatusEmitter.emit("jobProgress", {
-          name: "Block Data Job",
+          name: JobNames.BlockData,
           progress: (latestCount / latestTotal) * 100,
           updated: Date.now(),
           iteration: `Block processed: #${i}`,
@@ -96,7 +105,7 @@ export const blockJob = async (metadata: jobsMetadata): Promise<boolean> => {
           );
         }
         jobStatusEmitter.emit("jobProgress", {
-          name: "Block Data Job",
+          name: JobNames.BlockData,
           progress: (earliestCount / earliestTotal) * 100,
           updated: Date.now(),
           iteration: `Block processed: #${i}`,
@@ -305,7 +314,7 @@ const processPayoutStakers = async (
           exposurePercentage = (ownExposure[0]?.bonded / total) * 100;
         }
 
-        const rewardAmount = parseFloat(amount) / denom;
+        const rewardAmount = parseFloat(amount) / denom || 0;
 
         const formattedDate = formatDateFromUnix(blockTimestamp);
 
@@ -341,7 +350,8 @@ const processPayoutStakers = async (
           commission: commissionPercentage || 0,
           validator: validator,
           nominator: nominator,
-          rewardAmount: parseFloat(amount) / denom,
+          rewardAmount:
+            amount && parseFloat(amount) ? parseFloat(amount) / denom : 0,
           rewardDestination: rewardDestination,
           erasMinStake: minStake,
           validatorStakeEfficiency: valStakeEfficiency,

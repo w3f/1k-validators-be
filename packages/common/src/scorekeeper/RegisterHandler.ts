@@ -14,6 +14,7 @@ import {
 import { dockPoints } from "./Rank";
 import { scorekeeperLabel } from "./scorekeeper";
 import { jobStatusEmitter } from "../Events";
+import { Job, JobStatus } from "./jobs/JobsClass";
 
 export const registerAPIHandler = (
   handler: ApiHandler,
@@ -57,22 +58,48 @@ export const registerAPIHandler = (
 export const registerEventEmitterHandler = (scoreKeeper: ScoreKeeper) => {
   logger.info(`Registering event emitter handler`, scorekeeperLabel);
   jobStatusEmitter.on("jobStarted", (data) => {
-    scoreKeeper.updateJobStarted(data);
+    // scoreKeeper.updateJobStarted(data);
   });
 
   jobStatusEmitter.on("jobRunning", (data) => {
-    scoreKeeper.updateJobRunning(data);
+    // scoreKeeper.updateJobRunning(data);
   });
 
   jobStatusEmitter.on("jobFinished", (data) => {
-    scoreKeeper.updateJobFinished(data);
+    // scoreKeeper.updateJobFinished(data);
   });
 
   jobStatusEmitter.on("jobErrored", (data) => {
-    scoreKeeper.updateJobErrored(data);
+    // scoreKeeper.updateJobErrored(data);
   });
 
   jobStatusEmitter.on("jobProgress", (data) => {
-    scoreKeeper.updateJobProgress(data);
+    // scoreKeeper.updateJobProgress(data);
+  });
+};
+
+export const registerJobStatusEventEmitterHandler = (job: Job) => {
+  logger.info(
+    `Registering event emitter handler for job: ${job.getName()}`,
+    scorekeeperLabel,
+  );
+  jobStatusEmitter.on("jobStarted", (data: JobStatus) => {
+    job.updateJobStatus(data);
+  });
+
+  jobStatusEmitter.on("jobRunning", (data: JobStatus) => {
+    job.updateJobStatus(data);
+  });
+
+  jobStatusEmitter.on("jobFinished", (data: JobStatus) => {
+    job.updateJobStatus(data);
+  });
+
+  jobStatusEmitter.on("jobErrored", (data: JobStatus) => {
+    job.updateJobStatus(data);
+  });
+
+  jobStatusEmitter.on("jobProgress", (data: JobStatus) => {
+    job.updateJobStatus(data);
   });
 };

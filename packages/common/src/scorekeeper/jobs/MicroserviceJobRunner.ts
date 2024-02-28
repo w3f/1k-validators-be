@@ -2,17 +2,18 @@ import { logger } from "../..//index";
 
 // import { otvWorker } from "@1kv/worker";
 import { scorekeeperLabel } from "../scorekeeper";
-import { Jobs } from "./JobsClass";
+import { JobsRunner } from "./JobRunner";
+import { Job } from "./JobsClass";
 
-export class JobsMicroservice extends Jobs {
-  _startSpecificJobs = async (): Promise<void> => {
+export class MicroserviceJobRunner extends JobsRunner {
+  _startSpecificJobs = async (): Promise<Job[]> => {
     const { config, chaindata } = this.metadata;
     if (!config?.redis?.host || !config?.redis?.port) {
       logger.error(
         `No redis config found. Microservice Jobs will not be started.`,
         scorekeeperLabel,
       );
-      return;
+      return [];
     }
     try {
       // Jobs get run in separate worker
@@ -72,9 +73,11 @@ export class JobsMicroservice extends Jobs {
       // await otvWorker.queues.addAllBlocks(blockQueue, chaindata);
       // TODO update this as queue job
       // await startLocationStatsJob(this.config, this.chaindata);
+      return [];
     } catch (e) {
       logger.error(JSON.stringify(e), scorekeeperLabel);
       logger.error("Error starting microservice jobs", scorekeeperLabel);
+      return [];
     }
   };
 }

@@ -10,14 +10,14 @@ import {
 } from "../index";
 
 import Nominator from "../nominator/nominator";
-import { startRound } from "./Round";
 import {
   registerAPIHandler,
   registerEventEmitterHandler,
 } from "./RegisterHandler";
-import { jobsMetadata, JobStatus } from "./jobs/JobsClass";
-import { JobsFactory } from "./jobs/JobsFactory";
+import { Job, JobRunnerMetadata, JobStatus } from "./jobs/JobsClass";
+import { JobsRunnerFactory } from "./jobs/JobsRunnerFactory";
 import { setAllIdentities } from "../utils";
+import { startRound } from "./Round";
 // import { monitorJob } from "./jobs";
 
 export type NominatorGroup = Config.NominatorConfig[];
@@ -36,14 +36,14 @@ export default class ScoreKeeper {
   public currentEra = 0;
   public currentTargets: { stash?: string; identity?: any }[] = [];
 
-  private isUpdatingEras = false;
   // Set when the process is ending
   private ending = false;
   // Set when in the process of nominating
   private nominating = false;
 
   private nominatorGroups: Nominator[];
-  public _jobsStatus: Record<string, JobStatus> = {};
+
+  private _jobs: Job[] = [];
 
   constructor(handler: ApiHandler, config: Config.ConfigSchema, bot: any) {
     this.handler = handler;
@@ -51,72 +51,17 @@ export default class ScoreKeeper {
     this.config = config;
     this.bot = bot || null;
     this.constraints = new Constraints.OTV(this.handler, this.config);
-    this._jobsStatus = {};
     this.nominatorGroups = [];
 
     registerAPIHandler(this.handler, this.config, this.chaindata, this.bot);
     registerEventEmitterHandler(this);
   }
-
-  public updateJobProgress(data: JobStatus) {
-    const { name, progress, updated, iteration } = data;
-    if (this._jobsStatus[name]) {
-      this._jobsStatus[name].progress = progress;
-      this._jobsStatus[name].updated = updated;
-      this._jobsStatus[name].iteration = iteration;
-    } else {
-      logger.warn(`Job with name ${name} not found.`, scorekeeperLabel);
+  public getJobsStatusAsJson() {
+    const statuses: Record<string, JobStatus> = {};
+    for (const job of this._jobs) {
+      statuses[job.getName()] = job.getStatus();
     }
-  }
-
-  public updateJobStarted(data: JobStatus) {
-    const { status, name, runCount, updated } = data;
-    this._jobsStatus[name] = {
-      name,
-      runCount,
-      updated,
-      status,
-    };
-  }
-
-  public updateJobRunning(data: JobStatus) {
-    const { name, status, runCount, updated, frequency } = data;
-    this._jobsStatus[name] = {
-      frequency,
-      name,
-      runCount,
-      updated,
-      status,
-    };
-  }
-
-  public updateJobFinished(data: JobStatus) {
-    const { status, name, runCount, updated } = data;
-    this._jobsStatus[name] = {
-      name,
-      runCount,
-      updated,
-      status,
-    };
-  }
-
-  public updateJobErrored(data: JobStatus) {
-    const { status, name, runCount, updated, error } = data;
-    this._jobsStatus[name] = {
-      name: name,
-      runCount,
-      updated,
-      status,
-      error,
-    };
-  }
-
-  public getJobsStatus(): Record<string, any> {
-    return this._jobsStatus;
-  }
-
-  public getJobsStatusAsJson(): string {
-    return JSON.stringify(this._jobsStatus);
+    return statuses;
   }
 
   getAllNominatorBondedAddresses(): string[] {
@@ -266,7 +211,7 @@ export default class ScoreKeeper {
 
     await setAllIdentities(this.chaindata, scorekeeperLabel);
 
-    // If `forceRound` is on - start immediately.
+    // If force round is set in the configs
     if (this.config.scorekeeper.forceRound) {
       logger.info(
         `Force Round: ${this.config.scorekeeper.forceRound} starting round....`,
@@ -286,7 +231,7 @@ export default class ScoreKeeper {
     }
 
     // Start all Cron Jobs
-    const metadata: jobsMetadata = {
+    const metadata: JobRunnerMetadata = {
       config: this.config,
       ending: this.ending,
       chaindata: this.chaindata,
@@ -299,7 +244,8 @@ export default class ScoreKeeper {
       currentTargets: this.currentTargets,
     };
 
-    const jobs = await JobsFactory.makeJobs(metadata);
-    await jobs.startJobs();
+    const jobRunner = await JobsRunnerFactory.makeJobs(metadata);
+
+    this._jobs = await jobRunner.startJobs();
   }
 }

@@ -17,7 +17,7 @@ spec:
   source:
     repoURL: https://w3f.github.io/helm-charts/
     chart: otv-backend
-    targetRevision: v3.0.21
+    targetRevision: v3.0.22
     plugin:
       env:
         - name: HELM_VALUES
@@ -74,6 +74,7 @@ spec:
                   "cancelEnabled": true,
                   "staleEnabled": true,
                   "eraPointsEnabled": true,
+                  "eraStatsEnabled": true,
                   "activeValidatorEnabled": true,
                   "inclusionEnabled": true,
                   "sessionKeyEnabled": true,

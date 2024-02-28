@@ -8,7 +8,9 @@ export const getActiveValidatorsInPeriod = async (
   chainType: string,
 ): Promise<[string[] | null, string | null]> => {
   try {
-    await chaindata.checkApiConnection();
+    if (!(await chaindata.checkApiConnection())) {
+      return [null, null];
+    }
     const allValidators: Set<string> = new Set();
     let testEra = startEra;
     while (testEra <= endEra) {
@@ -46,7 +48,10 @@ export const currentValidators = async (
   chaindata: Chaindata,
 ): Promise<string[]> => {
   try {
-    await chaindata.checkApiConnection();
+    if (!(await chaindata.checkApiConnection())) {
+      return [];
+    }
+
     const validators = await chaindata.api?.query.session.validators();
     if (!validators) {
       return [];
@@ -62,6 +67,9 @@ export const getValidators = async (
   chaindata: Chaindata,
 ): Promise<string[]> => {
   try {
+    if (!(await chaindata.checkApiConnection())) {
+      return [];
+    }
     const keys = await chaindata.api?.query.staking.validators.keys();
     if (!keys) {
       return [];
@@ -80,7 +88,9 @@ export const getValidatorsAt = async (
   apiAt: any,
 ): Promise<string[]> => {
   try {
-    await chaindata.checkApiConnection();
+    if (!(await chaindata.checkApiConnection())) {
+      return [];
+    }
     return (await apiAt.query.session.validators()).toJSON();
   } catch (e) {
     logger.error(`Error getting validators at: ${e}`, chaindataLabel);
@@ -92,6 +102,9 @@ export const getValidatorsAtEra = async (
   chaindata: Chaindata,
   era: number,
 ): Promise<string[]> => {
+  if (!(await chaindata.checkApiConnection())) {
+    return [];
+  }
   const chainType = await chaindata.getChainType();
   if (chainType) {
     const [blockHash, err] = await chaindata.findEraBlockHash(era, chainType);
@@ -107,7 +120,9 @@ export const getAssociatedValidatorAddresses = async (
   chaindata: Chaindata,
 ): Promise<string[]> => {
   try {
-    await chaindata.checkApiConnection();
+    if (!(await chaindata.checkApiConnection())) {
+      return [];
+    }
     const addresses: string[] = [];
 
     const keys = await chaindata.api?.query.staking.validators.keys();

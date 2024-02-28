@@ -5,7 +5,9 @@ export const getNominatorAddresses = async (
   chaindata: Chaindata,
 ): Promise<string[]> => {
   try {
-    await chaindata.checkApiConnection();
+    if (!(await chaindata.checkApiConnection())) {
+      return [];
+    }
     const nominators = await chaindata.api?.query.staking.nominators.entries();
     const nominatorMap = nominators
       ?.map((nominator) => {
@@ -36,7 +38,9 @@ export const getNominators = async (
   chaindata: Chaindata,
 ): Promise<NominatorInfo[]> => {
   try {
-    await chaindata.checkApiConnection();
+    if (!(await chaindata.checkApiConnection())) {
+      return [];
+    }
     const nominatorEntries =
       await chaindata.api?.query.staking.nominators.entries();
     if (!nominatorEntries) {

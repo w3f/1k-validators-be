@@ -12,7 +12,9 @@ export const getSession = async (
   chaindata: ChainData,
 ): Promise<number | null> => {
   try {
-    await chaindata.checkApiConnection();
+    if (!(await chaindata.checkApiConnection())) {
+      return null;
+    }
 
     const currentIndex = await chaindata?.api?.query.session.currentIndex();
     if (currentIndex !== undefined) {
@@ -31,7 +33,9 @@ export const getSessionAt = async (
   apiAt: ApiDecoration<"promise">,
 ): Promise<number | null> => {
   try {
-    await chaindata.checkApiConnection();
+    if (!(await chaindata.checkApiConnection())) {
+      return null;
+    }
 
     const session = (await apiAt.query.session.currentIndex()).toString();
     return parseInt(session.replace(/,/g, ""));
@@ -45,6 +49,9 @@ export const getSessionAtEra = async (
   chaindata: ChainData,
   era: number,
 ): Promise<number | null> => {
+  if (!(await chaindata.checkApiConnection())) {
+    return null;
+  }
   const chainType = await chaindata.getChainType();
   if (chainType) {
     const [blockHash, err] = await chaindata.findEraBlockHash(era, chainType);

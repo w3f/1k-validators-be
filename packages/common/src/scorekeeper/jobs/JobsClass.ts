@@ -1,36 +1,14 @@
-import {
-  ApiHandler,
-  ChainData,
-  Config,
-  Constraints,
-  logger,
-} from "../../index";
-
-import { scorekeeperLabel } from "../scorekeeper";
-import {
-  startActiveValidatorJob,
-  startBlockDataJob,
-  startCancelJob,
-  startClearAccumulatedOfflineTimeJob,
-  startEraPointsJob,
-  startEraStatsJob,
-  startExecutionJob,
-  startInclusionJob,
-  startLocationStatsJob,
-  startMainScorekeeperJob,
-  startMonitorJob,
-  startNominatorJob,
-  startScoreJob,
-  startSessionKeyJob,
-  startStaleNominationJob,
-  startUnclaimedEraJob,
-  startValidatorPrefJob,
-  startValidityJob,
-} from "./cron/StartCronJobs";
+import { ApiHandler, ChainData, Config, Constraints } from "../../index";
 import MatrixBot from "../../matrix";
 import Nominator from "../../nominator/nominator";
+import { ConfigSchema } from "../../config";
+import { startJob } from "./cron/StartCronJobs";
+import logger from "../../logger";
+import { registerJobStatusEventEmitterHandler } from "../RegisterHandler";
 
-export type jobsMetadata = {
+export const jobsLabel = { label: "Jobs" };
+
+export type JobRunnerMetadata = {
   config: Config.ConfigSchema;
   ending: boolean;
   chaindata: ChainData;
@@ -43,10 +21,19 @@ export type jobsMetadata = {
   currentTargets: { stash?: string; identity?: any }[];
 };
 
+export type JobConfig = {
+  jobKey: keyof ConfigSchema["cron"] | "";
+  defaultFrequency: string;
+  jobFunction: (metadata: JobRunnerMetadata) => Promise<void>;
+  name: string;
+  preventOverlap?: boolean;
+};
+
 export interface JobStatus {
   name: string;
-  runCount?: number;
   updated: number;
+  enabled?: boolean;
+  runCount?: number;
   status: string;
   frequency?: string;
   error?: string;
@@ -54,56 +41,45 @@ export interface JobStatus {
   iteration?: string; // Name of the current iteration
 }
 
-export abstract class Jobs {
-  constructor(protected readonly metadata: jobsMetadata) {}
+export abstract class Job {
+  protected _status: JobStatus;
+  protected _jobConfig: JobConfig;
+  protected _jobRunnerMetadata: JobRunnerMetadata;
 
-  abstract _startSpecificJobs(): Promise<void>;
+  constructor(jobConfig: JobConfig, jobRunnerMetadata: JobRunnerMetadata) {
+    this._status = {
+      name: jobConfig.name,
+      updated: Date.now(),
+      status: "Not Running",
+    };
+    this._jobConfig = jobConfig;
+    this._jobRunnerMetadata = jobRunnerMetadata;
+  }
 
-  public startJobs = async (): Promise<void> => {
-    try {
-      await this._startSpecificJobs();
-    } catch (e) {
-      logger.warn(
-        `There was an error running some cron jobs...`,
-        scorekeeperLabel,
-      );
-      logger.error(e);
+  public setupAndStartJob = async (): Promise<void> => {
+    logger.info(
+      `Registering Event Emitter for ${this._jobConfig.name}`,
+      jobsLabel,
+    );
+    registerJobStatusEventEmitterHandler(this);
+    logger.info(`Starting ${this._jobConfig.name}`, jobsLabel);
+    await startJob(this._jobRunnerMetadata, this._jobConfig);
+  };
+
+  public getName = (): string => {
+    return this._jobConfig.name;
+  };
+
+  public updateJobStatus(status: JobStatus) {
+    if (status.name == this._jobConfig.name) {
+      this._status = { ...this._status, ...status };
     }
+  }
+
+  public getStatusAsJson(): string {
+    return JSON.stringify(this._status);
+  }
+  public getStatus = (): JobStatus => {
+    return this._status;
   };
 }
-
-// Jobs specific to scorekeeper, that usually have accounts and transactions that need to be made
-const startScorekeeperJobs = async (metadata: jobsMetadata): Promise<any> => {
-  await startExecutionJob(metadata);
-  await startUnclaimedEraJob(metadata);
-  await startCancelJob(metadata);
-  await startStaleNominationJob(metadata);
-  await startMainScorekeeperJob(metadata);
-};
-
-export const startMonolithJobs = async (
-  metadata: jobsMetadata,
-): Promise<boolean> => {
-  try {
-    await startMonitorJob(metadata);
-    await startValidityJob(metadata);
-    await startScoreJob(metadata);
-    await startEraPointsJob(metadata);
-    await startActiveValidatorJob(metadata);
-    await startInclusionJob(metadata);
-    await startSessionKeyJob(metadata);
-    await startValidatorPrefJob(metadata);
-    await startEraStatsJob(metadata);
-    await startLocationStatsJob(metadata);
-    await startNominatorJob(metadata);
-    await startBlockDataJob(metadata);
-    await startClearAccumulatedOfflineTimeJob(metadata);
-
-    await startScorekeeperJobs(metadata);
-    return true;
-  } catch (e) {
-    logger.error(JSON.stringify(e), scorekeeperLabel);
-    logger.error("Error starting monolith jobs", scorekeeperLabel);
-    return false;
-  }
-};

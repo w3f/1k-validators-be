@@ -1,9 +1,16 @@
 import { ChainData, logger, Models, queries } from "../../../index";
-import { jobsMetadata } from "../JobsClass";
+import { Job, JobConfig, JobRunnerMetadata } from "../JobsClass";
 import { jobStatusEmitter } from "../../../Events";
 import { withExecutionTimeLogging } from "../../../utils";
+import { JobNames } from "../JobConfigs";
 
 export const activeLabel = { label: "ActiveValidatorJob" };
+
+export class ActiveValidatorJob extends Job {
+  constructor(jobConfig: JobConfig, jobRunnerMetadata: JobRunnerMetadata) {
+    super(jobConfig, jobRunnerMetadata);
+  }
+}
 
 export const individualActiveValidatorJob = async (
   chaindata: ChainData,
@@ -25,7 +32,7 @@ export const individualActiveValidatorJob = async (
 };
 
 export const activeValidatorJob = async (
-  metadata: jobsMetadata,
+  metadata: JobRunnerMetadata,
 ): Promise<boolean> => {
   try {
     const { chaindata } = metadata;
@@ -46,7 +53,7 @@ export const activeValidatorJob = async (
 
       // Emit progress update with candidate name as the iteration
       jobStatusEmitter.emit("jobProgress", {
-        name: "Active Validator Job",
+        name: JobNames.ActiveValidator,
         progress,
         updated: Date.now(),
         iteration: `Processed candidate: ${candidate.name}`,
@@ -67,7 +74,7 @@ export const activeValidatorJobWithTiming = withExecutionTimeLogging(
 
 export const processActiveValidatorJob = async (
   job: any,
-  metadata: jobsMetadata,
+  metadata: JobRunnerMetadata,
 ) => {
   logger.info(`Processing Active Validator Job....`, activeLabel);
   await activeValidatorJob(metadata);

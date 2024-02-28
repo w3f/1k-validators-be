@@ -1,12 +1,19 @@
 import { logger, queries } from "../../../index";
-import { jobsMetadata } from "../JobsClass";
+import { Job, JobConfig, JobRunnerMetadata, JobStatus } from "../JobsClass";
 import { jobStatusEmitter } from "../../../Events";
 import { withExecutionTimeLogging } from "../../../utils";
+import { JobNames } from "../JobConfigs";
 
 export const inclusionLabel = { label: "InclusionJob" };
 
+export class InclusionJob extends Job {
+  constructor(jobConfig: JobConfig, jobRunnerMetadata: JobRunnerMetadata) {
+    super(jobConfig, jobRunnerMetadata);
+  }
+}
+
 export const inclusionJob = async (
-  metadata: jobsMetadata,
+  metadata: JobRunnerMetadata,
 ): Promise<boolean> => {
   try {
     const { chaindata } = metadata;
@@ -16,7 +23,7 @@ export const inclusionJob = async (
 
     // Emit progress update indicating the start of the job
     jobStatusEmitter.emit("jobProgress", {
-      name: "Inclusion Job",
+      name: JobNames.Inclusion,
       progress: 0,
       updated: Date.now(),
     });
@@ -52,7 +59,7 @@ export const inclusionJob = async (
       const progressPercentage =
         ((candidates.indexOf(candidate) + 1) / candidates.length) * 100;
       jobStatusEmitter.emit("jobProgress", {
-        name: "Inclusion Job",
+        name: JobNames.Inclusion,
         progress: progressPercentage,
         updated: Date.now(),
         iteration: `Processed candidate ${candidate.name}`,
@@ -69,11 +76,22 @@ export const inclusionJob = async (
     return true;
   } catch (e) {
     logger.error(`Error running inclusion job: ${e}`, inclusionLabel);
+    const errorStatus: JobStatus = {
+      status: "errored",
+      name: JobNames.Inclusion,
+      updated: Date.now(),
+      error: JSON.stringify(e),
+    };
+
+    jobStatusEmitter.emit("jobErrored", errorStatus);
     return false;
   }
 };
 
-export const processInclusionJob = async (job: any, metadata: jobsMetadata) => {
+export const processInclusionJob = async (
+  job: any,
+  metadata: JobRunnerMetadata,
+) => {
   logger.info(`Processing Inclusion Job....`, inclusionLabel);
   await inclusionJob(metadata);
 };

@@ -1,12 +1,19 @@
-import { jobsMetadata } from "../JobsClass";
+import { Job, JobConfig, JobRunnerMetadata, JobStatus } from "../JobsClass";
 import logger from "../../../logger";
 import { scorekeeperLabel } from "../../scorekeeper";
 import { queries } from "../../../index";
 import { endRound, startRound } from "../../Round";
 import { jobStatusEmitter } from "../../../Events";
+import { JobNames } from "../JobConfigs";
+
+export class MainScorekeeperJob extends Job {
+  constructor(jobConfig: JobConfig, jobRunnerMetadata: JobRunnerMetadata) {
+    super(jobConfig, jobRunnerMetadata);
+  }
+}
 
 export const mainScorekeeperJob = async (
-  metadata: jobsMetadata,
+  metadata: JobRunnerMetadata,
 ): Promise<void> => {
   const {
     constraints,
@@ -28,6 +35,14 @@ export const mainScorekeeperJob = async (
   const [activeEra, err] = await chaindata.getActiveEraIndex();
   if (err) {
     logger.warn(`CRITICAL: ${err}`, scorekeeperLabel);
+    const errorStatus: JobStatus = {
+      status: "errored",
+      name: JobNames.MainScorekeeper,
+      updated: Date.now(),
+      error: JSON.stringify(err),
+    };
+
+    jobStatusEmitter.emit("jobErrored", errorStatus);
     return;
   }
 
@@ -47,6 +62,14 @@ export const mainScorekeeperJob = async (
         "Nominating is disabled in the settings. Skipping round.",
         scorekeeperLabel,
       );
+      const errorStatus: JobStatus = {
+        status: "errored",
+        name: JobNames.MainScorekeeper,
+        updated: Date.now(),
+        error: "Nominating Disabled",
+      };
+
+      jobStatusEmitter.emit("jobErrored", errorStatus);
       return;
     }
 
@@ -111,7 +134,7 @@ export const mainScorekeeperJob = async (
 
     // Emit progress update event with custom iteration name
     jobStatusEmitter.emit("jobProgress", {
-      name: "Main Scorekeeper Job",
+      name: JobNames.MainScorekeeper,
       progress,
       updated: Date.now(),
       iteration: `Processed nominator group ${processedNominatorGroups}`,

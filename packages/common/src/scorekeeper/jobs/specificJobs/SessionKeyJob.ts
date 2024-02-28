@@ -1,11 +1,18 @@
 import { logger, queries } from "../../../index";
-import { jobsMetadata } from "../JobsClass";
+import { Job, JobConfig, JobRunnerMetadata, JobStatus } from "../JobsClass";
 import { jobStatusEmitter } from "../../../Events";
 import { withExecutionTimeLogging } from "../../../utils";
+import { JobNames } from "../JobConfigs";
 
 export const sessionkeyLabel = { label: "SessionKeyJob" };
 
-export const sessionKeyJob = async (metadata: jobsMetadata) => {
+export class SessionKeyJob extends Job {
+  constructor(jobConfig: JobConfig, jobRunnerMetadata: JobRunnerMetadata) {
+    super(jobConfig, jobRunnerMetadata);
+  }
+}
+
+export const sessionKeyJob = async (metadata: JobRunnerMetadata) => {
   try {
     const { chaindata } = metadata;
     const candidates = await queries.allCandidates();
@@ -38,7 +45,7 @@ export const sessionKeyJob = async (metadata: jobsMetadata) => {
 
       // Emit progress update event with validator's name
       jobStatusEmitter.emit("jobProgress", {
-        name: "Session Key Job",
+        name: JobNames.SessionKey,
         progress,
         updated: Date.now(),
         iteration: `Processed validator ${validator}`,
@@ -48,6 +55,14 @@ export const sessionKeyJob = async (metadata: jobsMetadata) => {
     return true;
   } catch (e) {
     logger.error(`Error running session key job: ${e}`, sessionkeyLabel);
+    const errorStatus: JobStatus = {
+      status: "errored",
+      name: JobNames.SessionKey,
+      updated: Date.now(),
+      error: JSON.stringify(e),
+    };
+
+    jobStatusEmitter.emit("jobErrored", errorStatus);
     return false;
   }
 };
@@ -60,7 +75,7 @@ export const sessionKeyJobWithTiming = withExecutionTimeLogging(
 
 export const processSessionKeyJob = async (
   job: any,
-  metadata: jobsMetadata,
+  metadata: JobRunnerMetadata,
 ) => {
   logger.info(`Processing Session Key Job....`, sessionkeyLabel);
   await sessionKeyJob(metadata);

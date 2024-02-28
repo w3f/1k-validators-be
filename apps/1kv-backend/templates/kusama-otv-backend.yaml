@@ -73,6 +73,7 @@ spec:
                   "cancelEnabled": true,
                   "staleEnabled": true,
                   "eraPointsEnabled": true,
+                  "eraStatsEnabled": true,
                   "activeValidatorEnabled": true,
                   "inclusionEnabled": true,
                   "sessionKeyEnabled": true,

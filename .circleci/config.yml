@@ -282,6 +282,8 @@ workflows:
             - helmLint
             - buildCoreImage
             - buildGatewayImage
+            - testCommonUnit
+            - testCommonInt
       - publishCoreImage:
           context: dockerhub-bot
           filters:

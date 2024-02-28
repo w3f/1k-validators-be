@@ -88,34 +88,32 @@ export const sortByKey = (obj: any[], key: string) => {
   return obj;
 };
 
-export const createTestServer = async (retries = 3, delay = 5000) => {
-  for (let attempt = 1; attempt <= retries; attempt++) {
-    try {
+export const createTestServer = async (oldMongoServer?) => {
+  try {
+    if (oldMongoServer) {
+      await oldMongoServer.stop();
       await Util.sleep(300);
-      const mongoServer = await MongoMemoryServer.create();
-      const dbName = `t${Math.random().toString().replace(".", "")}`;
-      console.log("dbName", dbName);
-      const mongoUri = mongoServer.getUri(dbName);
-      console.log("mongoUri", mongoUri);
-      await Db.create(mongoUri);
-      return mongoServer;
-    } catch (error) {
-      console.error(`Attempt ${attempt}: Error creating test server`, error);
-      if (attempt < retries) {
-        console.log(`Retrying after ${delay}ms...`);
-        await Util.sleep(delay); //
-      } else {
-        throw error;
-      }
     }
+
+    const mongoServer = await MongoMemoryServer.create();
+    const dbName = `t${Math.random().toString().replace(".", "")}`;
+    console.log("dbName", dbName);
+    const mongoUri = mongoServer.getUri(dbName);
+    console.log("mongoUri", mongoUri);
+    await Db.create(mongoUri);
+    return mongoServer;
+  } catch (error) {
+    console.error("Error creating test server:", error);
+    throw error;
   }
 };
+
 export const initTestServerBeforeAll = () => {
   let mongoServer: MongoMemoryServer;
   beforeEach(async () => {
     try {
       // await sleep(300);
-      mongoServer = await createTestServer();
+      mongoServer = await createTestServer(mongoServer);
     } catch (error) {
       console.error("Error initializing test server before all tests:", error);
       throw error;
@@ -125,14 +123,12 @@ export const initTestServerBeforeAll = () => {
     try {
       // await sleep(300);
       await deleteAllDb();
-      // await sleep(300);
+      await Util.sleep(300);
       await mongoose.disconnect();
-      if (mongoServer) {
-        await mongoServer.stop();
-      }
+      await Util.sleep(300);
     } catch (error) {
       console.error("Error stopping test server after all tests:", error);
-      throw error;
+      // throw error;
     }
   });
 };

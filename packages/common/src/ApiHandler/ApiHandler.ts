@@ -31,10 +31,14 @@ class ApiHandler extends EventEmitter {
         apiLabel,
       );
       this.healthCheckInProgress = true;
+      let chain;
 
-      const chain = await this._api?.rpc.system.chain();
+      const isConnected = this._wsProvider?.isConnected;
+      if (isConnected) {
+        chain = await this._api?.rpc.system.chain();
+      }
 
-      if (this._wsProvider?.isConnected && chain) {
+      if (isConnected && chain) {
         logger.info(
           `All good. Connected to ${this._currentEndpoint}`,
           apiLabel,

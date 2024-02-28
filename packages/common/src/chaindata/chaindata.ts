@@ -89,6 +89,14 @@ export class ChainData {
 
         retries++;
         return await this.checkApiConnection(retries);
+      } else {
+        logger.warn(`Performing health check on api...`, chaindataLabel);
+        await this.api?.disconnect();
+        const healthy = await this.handler.healthCheck();
+        if (healthy) {
+          this.api = this.handler.getApi();
+          return true;
+        }
       }
     } else {
       return true; // API is connected

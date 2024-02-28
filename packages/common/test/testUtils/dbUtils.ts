@@ -106,6 +106,7 @@ export const initTestServerBeforeAll = () => {
   let mongoServer: MongoMemoryServer;
   beforeEach(async () => {
     try {
+      // await sleep(300);
       mongoServer = await createTestServer();
     } catch (error) {
       console.error("Error initializing test server before all tests:", error);
@@ -114,8 +115,10 @@ export const initTestServerBeforeAll = () => {
   });
   afterEach(async () => {
     try {
+      // await sleep(300);
       await deleteAllDb();
-      await mongoose.connection.close();
+      // await sleep(300);
+      await mongoose.disconnect();
       if (mongoServer) {
         await mongoServer.stop();
       }

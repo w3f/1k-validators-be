@@ -1,4 +1,5 @@
 import { Constants, queries, Score } from "@1kv/common";
+import { requestEmitter } from "../events/requestEmitter";
 
 export const getLocationStats = async () => {
   const locationStats = await queries.getLatestLocationStats();
@@ -226,9 +227,6 @@ export const getSessionLocationStats = async (session) => {
   const sortedCountries = locationStats.countries.sort((a, b) => {
     return b.numberOfNodes - a.numberOfNodes;
   });
-  const sortedASNs = locationStats.asns.sort((a, b) => {
-    return b.numberOfNodes - a.numberOfNodes;
-  });
   const sortedProviders = locationStats.providers.sort((a, b) => {
     return b.numberOfNodes - a.numberOfNodes;
   });
@@ -251,4 +249,21 @@ export const getSessionLocationStats = async (session) => {
 export const getEraStats = async (): Promise<any> => {
   const latestEraStats = await queries.getLatestEraStats();
   return latestEraStats;
+};
+
+export const getTotalRequests = async (): Promise<any> => {
+  return requestEmitter.listenerCount("requestReceived");
+};
+
+export const getEndpointCounts = async (): Promise<{
+  [key: string]: number;
+}> => {
+  const endpointCounts: { [key: string]: number } = {};
+
+  requestEmitter.eventNames().forEach((event) => {
+    const endpoint = event.toString();
+    endpointCounts[endpoint] = requestEmitter.listenerCount(event);
+  });
+
+  return endpointCounts;
 };

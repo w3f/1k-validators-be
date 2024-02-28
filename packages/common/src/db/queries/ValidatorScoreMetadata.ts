@@ -1,54 +1,100 @@
 import logger from "../../logger";
-import { ValidatorScoreMetadataModel } from "../models";
+import { ValidatorScoreMetadata, ValidatorScoreMetadataModel } from "../models";
 
 export const setValidatorScoreMetadata = async (
-  scoreMetadata: any,
+  scoreMetadata: ValidatorScoreMetadata,
   updated: number,
 ): Promise<boolean> => {
-  const {
-    session,
-    bondedStats,
-    bondedWeight,
-    faultsStats,
-    faultsWeight,
-    inclusionStats,
-    inclusionWeight,
-    spanInclusionStats,
-    spanInclusionWeight,
-    discoveredAtStats,
-    discoveredAtWeight,
-    nominatedAtStats,
-    nominatedAtWeight,
-    offlineStats,
-    offlineWeight,
-    rankStats,
-    rankWeight,
-    locationStats,
-    locationWeight,
-    regionStats,
-    regionWeight,
-    countryStats,
-    countryWeight,
-    providerStats,
-    providerWeight,
-    nominatorStakeStats,
-    nominatorStakeWeight,
-    openGovStats,
-    openGovWeight,
-    openGovDelegationStats,
-    openGovDelegationWeight,
-  } = scoreMetadata;
+  try {
+    const {
+      session,
+      bondedStats,
+      bondedWeight,
+      faultsStats,
+      faultsWeight,
+      inclusionStats,
+      inclusionWeight,
+      spanInclusionStats,
+      spanInclusionWeight,
+      discoveredAtStats,
+      discoveredAtWeight,
+      nominatedAtStats,
+      nominatedAtWeight,
+      offlineStats,
+      offlineWeight,
+      rankStats,
+      rankWeight,
+      locationStats,
+      locationWeight,
+      regionStats,
+      regionWeight,
+      countryStats,
+      countryWeight,
+      providerStats,
+      providerWeight,
+      nominatorStakeStats,
+      nominatorStakeWeight,
+      openGovStats,
+      openGovWeight,
+      openGovDelegationStats,
+      openGovDelegationWeight,
+    } = scoreMetadata;
 
-  const data = await ValidatorScoreMetadataModel.findOne({
-    session: session,
-  })
-    .lean()
-    .exec();
+    const data = await ValidatorScoreMetadataModel.findOne({
+      session: session,
+    })
+      .lean()
+      .exec();
 
-  // If they don't exist
-  if (!data) {
-    try {
-      const validatorScoreMetadata = new ValidatorScoreMetadataModel({
+    // If they don't exist
+    if (!data) {
+      try {
+        const validatorScoreMetadata = new ValidatorScoreMetadataModel({
+          session,
+          bondedStats,
+          bondedWeight,
+          faultsStats,
+          faultsWeight,
+          inclusionStats,
+          inclusionWeight,
+          spanInclusionStats,
+          spanInclusionWeight,
+          discoveredAtStats,
+          discoveredAtWeight,
+          nominatedAtStats,
+          nominatedAtWeight,
+          offlineStats,
+          offlineWeight,
+          rankStats,
+          rankWeight,
+          locationStats,
+          locationWeight,
+          regionStats,
+          regionWeight,
+          countryStats,
+          countryWeight,
+          providerStats,
+          providerWeight,
+          nominatorStakeStats,
+          nominatorStakeWeight,
+          openGovStats,
+          openGovWeight,
+          openGovDelegationStats,
+          openGovDelegationWeight,
+          updated,
+        });
+        await validatorScoreMetadata.save();
+        return true;
+      } catch (e) {
+        logger.error(JSON.stringify(e));
+        return false;
+      }
+    }
+
+    // It exists, but has a different value - update it
+    await ValidatorScoreMetadataModel.findOneAndUpdate(
+      { session: session },
+      {
         session,
         bondedStats,
         bondedWeight,
@@ -81,60 +127,26 @@ export const setValidatorScoreMetadata = async (
         openGovDelegationStats,
         openGovDelegationWeight,
         updated,
-      });
-      await validatorScoreMetadata.save();
-      return true;
-    } catch (e) {
-      logger.error(JSON.stringify(e));
-    }
+      },
+    ).exec();
+    return true;
+  } catch (e) {
+    logger.error(JSON.stringify(e));
+    return false;
   }
-
-  // It exists, but has a different value - update it
-  await ValidatorScoreMetadataModel.findOneAndUpdate(
-    { session: session },
-    {
-      session,
-      bondedStats,
-      bondedWeight,
-      faultsStats,
-      faultsWeight,
-      inclusionStats,
-      inclusionWeight,
-      spanInclusionStats,
-      spanInclusionWeight,
-      discoveredAtStats,
-      discoveredAtWeight,
-      nominatedAtStats,
-      nominatedAtWeight,
-      offlineStats,
-      offlineWeight,
-      rankStats,
-      rankWeight,
-      locationStats,
-      locationWeight,
-      regionStats,
-      regionWeight,
-      countryStats,
-      countryWeight,
-      providerStats,
-      providerWeight,
-      nominatorStakeStats,
-      nominatorStakeWeight,
-      openGovStats,
-      openGovWeight,
-      openGovDelegationStats,
-      openGovDelegationWeight,
-      updated,
-    },
-  ).exec();
 };
 
-export const getValidatorScoreMetadata = async (session): Promise<any> => {
-  return ValidatorScoreMetadataModel.findOne({ session }).lean();
+export const getValidatorScoreMetadata = async (
+  session: number,
+): Promise<ValidatorScoreMetadata | null> => {
+  return ValidatorScoreMetadataModel.findOne({
+    session,
+  }).lean<ValidatorScoreMetadata>();
 };
 
-export const getLatestValidatorScoreMetadata = async (): Promise<any> => {
-  return (
-    await ValidatorScoreMetadataModel.find({}).lean().sort("-updated").limit(1)
-  )[0];
-};
+export const getLatestValidatorScoreMetadata =
+  async (): Promise<ValidatorScoreMetadata | null> => {
+    return ValidatorScoreMetadataModel.findOne({})
+      .lean<ValidatorScoreMetadata>()
+      .sort("-updated");
+  };

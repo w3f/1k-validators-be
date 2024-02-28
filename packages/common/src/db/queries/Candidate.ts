@@ -1,12 +1,51 @@
 // Adds a new candidate from the configuration file data.
 import { Keyring } from "@polkadot/keyring";
 import logger from "../../logger";
-import { CandidateModel, IdentityModel, RankEventModel } from "../models";
-import { NodeDetails } from "../index";
-import { fetchLocationInfo } from "../../util";
+import {
+  Candidate,
+  CandidateModel,
+  IdentityModel,
+  RankEventModel,
+} from "../models";
+import { dbLabel, NodeDetails } from "../index";
 import { getChainMetadata } from "./ChainMetadata";
-import { getIIT, getLocation, setLocation } from "./Location";
-import { Identity } from "../../types";
+import { Identity, TelemetryNodeDetails } from "../../types";
+import { fetchAndSetCandidateLocation } from "../../utils/Location";
+import {
+  convertTelemetryNodeToCandidate,
+  reportTelemetryNodeOffline,
+  reportTelemetryNodeOnline,
+} from "./TelemetryNode";
+
+export const candidateExists = async (
+  slotId: number,
+  name: string,
+  stash: string,
+): Promise<boolean> => {
+  const exists = await CandidateModel.exists({
+    $or: [{ slotId: slotId }, { name: name }, { stash: stash }],
+  });
+  return !!exists;
+};
+
+export const candidateExistsByName = async (name: string): Promise<boolean> => {
+  const exists = await CandidateModel.exists({ name });
+  return !!exists;
+};
+
+export const candidateExistsByStash = async (
+  stash: string,
+): Promise<boolean> => {
+  const exists = await CandidateModel.exists({ stash });
+  return !!exists;
+};
+
+export const candidateExistsBySlotId = async (
+  slotId: number,
+): Promise<boolean> => {
+  const exists = await CandidateModel.exists({ slotId });
+  return !!exists;
+};
 
 // Adds a new candidate from the configuration file data.
 export const addCandidate = async (
@@ -19,59 +58,71 @@ export const addCandidate = async (
   kyc: boolean,
   bot?: any,
 ): Promise<boolean> => {
-  const network = (await getChainMetadata()).name;
-  const keyring = new Keyring();
-  const ss58Prefix = network == "Kusama" ? 2 : 0;
-  stash = keyring.encodeAddress(stash, ss58Prefix);
-
-  let data;
-
-  // Check to see if the candidate has already been added as a node.
-  data = await CandidateModel.findOne({ slotId }).lean();
-
-  if (!data) {
-    data = await CandidateModel.findOne({ name }).lean();
-  }
-
-  if (!data) {
-    logger.info(
-      `Did not find candidate data for ${name} - inserting new document.`,
-      { label: "Candidate" },
-    );
-
-    const candidate = new CandidateModel({
-      slotId,
-      name,
-      stash,
-      kusamaStash,
-      skipSelfStake,
-      matrix,
-      kyc,
-    });
-
-    if (!!bot) {
-      await bot.sendMessage(
-        `Adding new candidate: ${name} (${stash}) id: ${slotId}`,
-      );
+  try {
+    if (slotId == undefined) {
+      logger.warn(`No slotId for ${name} - skipping.`, { label: "Candidate" });
+      return false;
     }
-    await candidate.save();
-    return true;
-  }
 
-  // If already has the node data by name, just store the candidate specific
-  // stuff.
-  return CandidateModel.findOneAndUpdate(
-    { $or: [{ slotId: slotId }, { name: name }] },
-    {
-      name,
-      slotId,
-      stash,
-      kusamaStash,
-      skipSelfStake,
-      matrix,
-      kyc,
-    },
-  );
+    const network = (await getChainMetadata())?.name;
+    const keyring = new Keyring();
+    const ss58Prefix = network == "Kusama" ? 2 : 0;
+    stash = keyring.encodeAddress(stash, ss58Prefix);
+
+    let data;
+
+    // Check to see if the candidate has already been added as a node.
+    data = await CandidateModel.findOne({ slotId }).lean();
+
+    if (!data) {
+      data = await CandidateModel.findOne({ name }).lean();
+    }
+
+    if (!data) {
+      logger.info(
+        `Did not find candidate data for ${name} - inserting new document.`,
+        { label: "Candidate" },
+      );
+
+      const candidate = new CandidateModel({
+        slotId,
+        name,
+        stash,
+        kusamaStash,
+        skipSelfStake,
+        matrix,
+        kyc,
+      });
+
+      if (!!bot) {
+        await bot.sendMessage(
+          `Adding new candidate: ${name} (${stash}) id: ${slotId}`,
+        );
+      }
+      await candidate.save();
+      return true;
+    }
+
+    // If already has the node data by name, just store the candidate specific
+    // stuff.
+    await CandidateModel.findOneAndUpdate(
+      { $or: [{ slotId: slotId }, { name: name }] },
+      {
+        name,
+        slotId,
+        stash,
+        kusamaStash,
+        skipSelfStake,
+        matrix,
+        kyc,
+      },
+    ).exec();
+    return true;
+  } catch (e) {
+    logger.error(JSON.stringify(e));
+    logger.error(`Error adding candidate ${name}`, dbLabel);
+    return false;
+  }
 };
 
 // Unsets old candidate fields.
@@ -80,18 +131,26 @@ export const deleteOldCandidateFields = async (): Promise<boolean> => {
     {},
     {
       $unset: {
-        bio: 1,
-        networkId: 1,
-        sentryId: 1,
-        sentryOnlineSince: 1,
-        sentryOfflineSince: 1,
-        telemetryId: 1,
-        rankEvents: 1,
-        invalidityReasons: 1,
-        avgClaimTimestampDelta: 1,
-        avgClaimBlockDelta: 1,
+        bio: "",
+        networkId: "",
+        sentryId: "",
+        sentryOnlineSince: "",
+        sentryOfflineSince: "",
+        telemetryId: "",
+        rankEvents: "",
+        invalidityReasons: "",
+        avgClaimTimestampDelta: "",
+        avgClaimBlockDelta: "",
+        totalRewards: "",
+        democracyVoteCount: "",
+        democracyVotes: "",
+        councilStake: "",
+        councilVotes: "",
         location: "",
         infrastructureLocation: "",
+        telemetryDetails: "",
+        convictionVoteCount: "",
+        convictionVotes: "",
       },
     },
     // { multi: true, safe: true }
@@ -105,13 +164,13 @@ export const deleteOldFieldFrom = async (name: string): Promise<boolean> => {
     { name },
     {
       $unset: {
-        sentryId: 1,
-        sentryOnlineSince: 1,
-        sentryOfflineSince: 1,
-        telemetryId: 1,
-        rankEvents: 1,
-        avgClaimTimestampDelta: 1,
-        avgClaimBlockDelta: 1,
+        sentryId: "",
+        sentryOnlineSince: "",
+        sentryOfflineSince: "",
+        telemetryId: "",
+        rankEvents: "",
+        avgClaimTimestampDelta: "",
+        avgClaimBlockDelta: "",
         location: "",
         infrastructureLocation: "",
       },
@@ -121,7 +180,9 @@ export const deleteOldFieldFrom = async (name: string): Promise<boolean> => {
   return true;
 };
 
-export const clearNodeRefsFrom = async (name: string): Promise<boolean> => {
+export const clearCandidateNodeRefsFrom = async (
+  name: string,
+): Promise<boolean> => {
   await CandidateModel.findOneAndUpdate({ name }, { nodeRefs: 0 }).exec();
 
   return true;
@@ -230,21 +291,31 @@ export const setCandidateIdentity = async (
   stash: string,
   identity: Identity,
 ): Promise<boolean> => {
-  if (identity) {
-    let data;
-    data = await getIdentity(stash);
-    if (!data) {
-      await setIdentity(identity);
+  try {
+    if (identity) {
+      let data;
       data = await getIdentity(stash);
-    }
+      if (!data) {
+        await setIdentity(identity);
+        data = await getIdentity(stash);
+      }
 
-    await CandidateModel.findOneAndUpdate({ stash }, { identity: data }).exec();
+      await CandidateModel.findOneAndUpdate(
+        { stash },
+        { identity: data },
+      ).exec();
+      return true;
+    }
     return true;
+  } catch (e) {
+    logger.error(JSON.stringify(e));
+    logger.error(`Error setting identity for ${stash}`, dbLabel);
+    return false;
   }
 };
 
-export const getAllIdentities = async () => {
-  return await IdentityModel.find({}).lean().exec();
+export const getAllIdentities = async (): Promise<Identity[]> => {
+  return await IdentityModel.find({}).lean<Identity[]>();
 };
 
 export const getIdentityName = async (address: string) => {
@@ -266,15 +337,15 @@ export const getIdentityName = async (address: string) => {
   }
 };
 
-export const getIdentity = async (address: string) => {
-  if (!address) return;
+export const getIdentity = async (
+  address: string,
+): Promise<Identity | null> => {
   const superIdentity = await IdentityModel.findOne({ address: address })
     .select({
       _id: 0,
       __v: 0,
     })
-    .lean()
-    .exec();
+    .lean<Identity>();
   if (superIdentity) {
     return superIdentity;
   } else {
@@ -285,20 +356,26 @@ export const getIdentity = async (address: string) => {
         _id: 0,
         __v: 0,
       })
-      .lean()
-      .exec();
+      .lean<Identity>();
     return identity;
   }
 };
 
 // Given an address, get all the other addresses that are a part of the identity
-export const getIdentityAddresses = async (address: string) => {
+export const getIdentityAddresses = async (
+  address: string,
+): Promise<string[]> => {
   const identity = await getIdentity(address);
-  const addresses = [];
+  const addresses: string[] = [];
   if (identity) {
-    addresses.push(identity.address);
-    for (const subIdentity of identity.subIdentities) {
-      addresses.push(subIdentity.address);
+    const address = identity?.address;
+    addresses.push(address);
+    const subIdentities = identity?.subIdentities;
+
+    if (subIdentities) {
+      for (const subIdentity of subIdentities) {
+        addresses.push(subIdentity?.address);
+      }
     }
   }
   return addresses;
@@ -349,203 +426,25 @@ export const reportBestBlock = async (
   return true;
 };
 
-// Reports a node online that has joined telemetry.
-export const reportOnline = async (
-  telemetryId: number,
-  details: NodeDetails,
-  now: number,
-  startupTime: number,
+export const updateCandidateOnlineValidity = async (
+  name: string,
 ): Promise<boolean> => {
-  const [
-    name,
-    nodeImplementation,
-    version,
-    address,
-    networkId,
-    addr,
-    sys,
-    bench,
-  ] = details;
+  try {
+    const candidate = await getCandidateByName(name);
 
-  const {
-    cpu,
-    memory,
-    core_count,
-    linux_kernel,
-    linux_distro,
-    is_virtual_machine,
-  } = sys ?? {
-    cpu: "",
-    memory: 0,
-    core_count: 0,
-    linux_kernel: "",
-    linux_distro: "",
-    is_virtual_machine: false,
-  };
-
-  const {
-    cpu_hashrate_score,
-    memory_memcpy_score,
-    disk_sequential_write_score,
-    disk_random_write_score,
-  } = bench ?? {
-    cpu_hashrate_score: 0,
-    memory_memcpy_score: 0,
-    disk_sequential_write_score: 0,
-    disk_random_write_score: 0,
-  };
-
-  let locationData;
-  locationData = await getLocation(name, addr);
-  const shouldFetch =
-    !locationData ||
-    (locationData?.addr && locationData?.addr != addr) ||
-    !locationData.address ||
-    !locationData.session ||
-    Date.now() - locationData?.updated > 720000000; // The location data is older than 200 hours
-  if (shouldFetch) {
-    const iit = await getIIT();
-    const { city, region, country, provider, v } = await fetchLocationInfo(
-      addr,
-      iit && iit.iit ? iit.iit : null,
-    );
-
-    await setLocation(name, addr, city, region, country, provider, sys, v);
-    locationData = await getLocation(name, addr);
-  }
-
-  if (!addr) {
-    logger.info(`{reportOnline}: no addr sent for ${name}`);
-  }
-
-  const data = await CandidateModel.findOne({ name }).lean();
-  if (!data) {
-    // A new node that is not already registered as a candidate.
-    const candidate = new CandidateModel({
-      telemetryId,
-      networkId: null,
-      nodeRefs: 1,
-      name,
-      version,
-      discoveredAt: startupTime,
-      onlineSince: startupTime,
-      offlineSince: 0,
-      implementation: nodeImplementation,
-    });
-
-    await candidate.save();
-    return true;
-  }
-
-  // Get the list of all other validtity reasons besides online
-  const invalidityReasons = data?.invalidity?.filter((invalidityReason) => {
-    return invalidityReason.type !== "ONLINE";
-  });
-  if (!invalidityReasons || invalidityReasons.length == 0) return;
-
-  // T
-  if (!data.discoveredAt) {
-    await CandidateModel.findOneAndUpdate(
-      { name },
-      {
-        telemetryId,
-        discoveredAt: now,
-        onlineSince: now,
-        offlineSince: 0,
-        invalidity: [
-          ...invalidityReasons,
-          {
-            valid: true,
-            type: "ONLINE",
-            updated: Date.now(),
-            details: ``,
-          },
-        ],
-        implementation: nodeImplementation,
+    // Get the list of all other validtity reasons besides online
+    const invalidityReasons = candidate?.invalidity?.filter(
+      (invalidityReason) => {
+        return invalidityReason.type !== "ONLINE";
       },
-    ).exec();
-  }
-
-  // Always
-  //  - Update the version
-  //  - Telemetry Id
-  //  - Update the node refs
-  //  - Update that the node is online
-  await CandidateModel.findOneAndUpdate(
-    { name },
-    {
-      telemetryId,
-      onlineSince: now,
-      version,
-      implementation: nodeImplementation,
-      invalidity: [
-        ...invalidityReasons,
-        {
-          valid: true,
-          type: "ONLINE",
-          updated: Date.now(),
-          details: ``,
-        },
-      ],
-      $inc: { nodeRefs: 1 },
-    },
-  ).exec();
-
-  if (data.offlineSince && data.offlineSince !== 0) {
-    // logger.info(
-    //   `Online node ${data.name} with id ${telemetryId} was offline since: ${data.offlineSince}`
-    // );
-    // The node was previously offline.
-    const timeOffline = now - data.offlineSince;
-    const accumulated = (data.offlineAccumulated || 0) + timeOffline;
+    );
+    if (!invalidityReasons || invalidityReasons.length == 0) return false;
 
     await CandidateModel.findOneAndUpdate(
       {
         name,
       },
       {
-        offlineSince: 0,
-        offlineAccumulated: accumulated,
-      },
-    ).exec();
-    return true;
-  }
-};
-
-/**
- * The reportOffline function does no verification, so its anticipated that
- * whatever is calling it has already verified the node is indeed offline.
- * @param telemetryId The inerited ID from telemetry for this node.
- * @param name The name of the node.
- * @param now The timestamp for now (in ms).
- */
-export const reportOffline = async (
-  name: string,
-  now: number,
-): Promise<boolean> => {
-  logger.warn(`Reporting ${name} offline at ${now}.`, { label: "Telemetry" });
-
-  const data = await CandidateModel.findOne({ name }).lean();
-
-  if (!data) {
-    logger.info(`(Db::reportOffline) No data for node named ${name}.`);
-    return false;
-  }
-
-  // Get the list of all other validtity reasons besides online
-  const invalidityReasons = data?.invalidity?.filter((invalidityReason) => {
-    return invalidityReason.type !== "ONLINE";
-  });
-
-  // If more than one node has this name, we assume the validator is updating.
-  // Only decrement the nodeRefs, don't mark offline.
-  if (data.nodeRefs > 1) {
-    return CandidateModel.findOneAndUpdate(
-      { name },
-      {
-        $inc: {
-          nodeRefs: -1,
-        },
         invalidity: [
           ...invalidityReasons,
           {
@@ -556,30 +455,210 @@ export const reportOffline = async (
           },
         ],
       },
-    );
+    ).exec();
+    return true;
+  } catch (e) {
+    logger.error(JSON.stringify(e));
+    logger.error(`Error updating online validity for ${name}`, dbLabel);
+    return false;
   }
+};
 
-  return CandidateModel.findOneAndUpdate(
-    {
-      name,
-    },
-    {
-      offlineSince: now,
-      onlineSince: 0,
-      $inc: {
-        nodeRefs: -1,
+export const updateCandidateOfflineValidity = async (
+  name: string,
+): Promise<boolean> => {
+  try {
+    const candidate = await getCandidateByName(name);
+
+    // Get the list of all other validtity reasons besides online
+    const invalidityReasons = candidate?.invalidity?.filter(
+      (invalidityReason) => {
+        return invalidityReason.type !== "ONLINE";
       },
-      invalidity: [
-        ...invalidityReasons,
+    );
+    if (!invalidityReasons || invalidityReasons.length == 0) return false;
+
+    await CandidateModel.findOneAndUpdate(
+      {
+        name,
+      },
+      {
+        invalidity: [
+          ...invalidityReasons,
+          {
+            valid: false,
+            type: "ONLINE",
+            updated: Date.now(),
+            details: `Candidate ${name} offline. Offline since ${Date.now()}.`,
+          },
+        ],
+      },
+    );
+    return true;
+  } catch (e) {
+    logger.error(JSON.stringify(e));
+    logger.error(`Error updating offline validity for ${name}`, dbLabel);
+    return false;
+  }
+};
+
+// A candidate node has an online message from telemetry, update the online telemetry details
+export const updateCandidateOnlineTelemetryDetails = async (
+  telemetryNodeDetails: TelemetryNodeDetails,
+): Promise<boolean> => {
+  try {
+    await CandidateModel.findOneAndUpdate(
+      { name: telemetryNodeDetails.name }, // Query part
+      [
         {
-          valid: false,
-          type: "ONLINE",
-          updated: Date.now(),
-          details: `${data.name} offline. Offline since ${data.offlineSince}.`,
+          $set: {
+            telemetryId: { $literal: telemetryNodeDetails.telemetryId },
+            onlineSince: { $literal: Date.now() },
+            offlineSince: { $literal: 0 },
+            implementation: {
+              $literal: telemetryNodeDetails.nodeImplementation,
+            },
+            discoveredAt: {
+              $cond: {
+                if: { $eq: ["$discoveredAt", 0] },
+                then: Date.now(),
+                else: "$discoveredAt",
+              },
+            },
+            // Use $add to simulate the $inc behavior within the $set stage
+            nodeRefs: { $add: ["$nodeRefs", 1] },
+          },
         },
-      ],
-    },
-  );
+      ], // Update part using aggregation pipeline
+      { new: true }, // Options: return the modified document rather than the original
+    ).exec();
+    logger.info(
+      `Candidate node ${telemetryNodeDetails.name} with id: ${telemetryNodeDetails.telemetryId} is  online`,
+      {
+        label: "Telemetry",
+      },
+    );
+    return true;
+  } catch (e) {
+    logger.error(JSON.stringify(e));
+    // Correctly reference telemetryNodeDetails.name in the logging statement
+    logger.error(
+      `Error updating online validity for ${telemetryNodeDetails.name}`,
+      dbLabel,
+    );
+    return false;
+  }
+};
+
+export const updateCandidateOfflineTime = async (
+  name: string,
+): Promise<boolean> => {
+  try {
+    const candidate = await getCandidateByName(name);
+    if (candidate && candidate.offlineSince > 0) {
+      const timeOffline = Date.now() - candidate.offlineSince;
+      const accumulated = (candidate.offlineAccumulated || 0) + timeOffline;
+
+      await CandidateModel.findOneAndUpdate(
+        {
+          name,
+        },
+        {
+          offlineSince: 0,
+          offlineAccumulated: accumulated,
+        },
+      ).exec();
+    }
+    return true;
+  } catch (e) {
+    logger.error(JSON.stringify(e));
+    logger.error(`Error updating offline time for ${name}`, dbLabel);
+    return false;
+  }
+};
+
+// Reports a node online that has joined telemetry.
+export const reportOnline = async (
+  telemetryNodeDetails: TelemetryNodeDetails,
+): Promise<boolean> => {
+  try {
+    const candidateExists = await candidateExistsByName(
+      telemetryNodeDetails.name,
+    );
+
+    if (!candidateExists) {
+      // The node is not a Candidate, report telemetry node online
+      await reportTelemetryNodeOnline(telemetryNodeDetails);
+    } else {
+      // The node is a Candidate
+      await convertTelemetryNodeToCandidate(telemetryNodeDetails.name);
+
+      // Try and update or make a new Location record
+      await fetchAndSetCandidateLocation(telemetryNodeDetails);
+
+      // Update the candidate online validity
+      await updateCandidateOnlineValidity(telemetryNodeDetails.name);
+
+      // Update any offline time
+      await updateCandidateOfflineTime(telemetryNodeDetails.name);
+
+      // Update the online telemetry details
+      await updateCandidateOnlineTelemetryDetails(telemetryNodeDetails);
+    }
+    return true;
+  } catch (e) {
+    logger.error(JSON.stringify(e));
+    logger.error(JSON.stringify(telemetryNodeDetails));
+    logger.error(
+      `Error reporting telemetry node online ${telemetryNodeDetails?.name}`,
+      dbLabel,
+    );
+    return false;
+  }
+};
+
+export const reportOffline = async (name: string): Promise<boolean> => {
+  try {
+    const candidateExists = await candidateExistsByName(name);
+
+    if (!candidateExists) {
+      // The node is not a Candidate, report telemetry node offline
+      await reportTelemetryNodeOffline(name);
+    } else {
+      const candidate = await getCandidateByName(name);
+
+      // There is more than one node online with that telemetry name - decrease it refs but don't make it invalid
+      if (candidate && candidate.nodeRefs > 1) {
+        await CandidateModel.findOneAndUpdate(
+          {
+            name,
+          },
+          { $inc: { nodeRefs: -1 } },
+        ).exec();
+        await updateCandidateOnlineValidity(name);
+      } else {
+        await CandidateModel.findOneAndUpdate(
+          {
+            name,
+          },
+          {
+            offlineSince: Date.now(),
+            onlineSince: 0,
+            $inc: { nodeRefs: -1 },
+          },
+        ).exec();
+        await updateCandidateOfflineValidity(name);
+      }
+    }
+    return true;
+  } catch (e) {
+    logger.error(JSON.stringify(e));
+    logger.error(
+      `Error reporting candidate or telemetry node offline ${name}`,
+      dbLabel,
+    );
+    return false;
+  }
 };
 
 export const reportUpdated = async (name: string): Promise<boolean> => {
@@ -688,14 +767,16 @@ export const addPoint = async (stash: string): Promise<boolean> => {
   logger.info(`Adding a point to ${stash}.`);
 
   const data = await CandidateModel.findOne({ stash }).lean();
-  await CandidateModel.findOneAndUpdate(
-    {
-      stash,
-    },
-    {
-      rank: data.rank + 1,
-    },
-  ).exec();
+  if (data) {
+    await CandidateModel.findOneAndUpdate(
+      {
+        stash,
+      },
+      {
+        rank: data?.rank + 1,
+      },
+    ).exec();
+  }
 
   return true;
 };
@@ -704,15 +785,17 @@ export const dockPoints = async (stash: string): Promise<boolean> => {
   logger.info(`Docking points for ${stash}.`);
 
   const data = await CandidateModel.findOne({ stash }).lean();
-  await CandidateModel.findOneAndUpdate(
-    {
-      stash,
-    },
-    {
-      rank: data.rank - Math.floor(data.rank / 6),
-      faults: data.faults + 1,
-    },
-  ).exec();
+  if (data) {
+    await CandidateModel.findOneAndUpdate(
+      {
+        stash,
+      },
+      {
+        rank: data.rank - Math.floor(data.rank / 6),
+        faults: data.faults + 1,
+      },
+    ).exec();
+  }
 
   return true;
 };
@@ -724,14 +807,16 @@ export const dockPointsUnclaimedReward = async (
   logger.info(`Docking points for ${stash}.`);
 
   const data = await CandidateModel.findOne({ stash }).lean();
-  await CandidateModel.findOneAndUpdate(
-    {
-      stash,
-    },
-    {
-      rank: data.rank - 3,
-    },
-  ).exec();
+  if (data) {
+    await CandidateModel.findOneAndUpdate(
+      {
+        stash,
+      },
+      {
+        rank: data.rank - 3,
+      },
+    ).exec();
+  }
 
   return true;
 };
@@ -788,42 +873,48 @@ export const clearCandidates = async (): Promise<boolean> => {
   return true;
 };
 
-export const allCandidates = async (): Promise<any[]> => {
-  return CandidateModel.find({ stash: /.*/ }).lean().exec();
+export const allCandidates = async (): Promise<Candidate[]> => {
+  return CandidateModel.find({ stash: /.*/ }).lean<Candidate[]>();
 };
 
-export const validCandidates = async (): Promise<any[]> => {
-  return CandidateModel.find({ valid: true }).lean().exec();
+export const validCandidates = async (): Promise<Candidate[]> => {
+  return CandidateModel.find({ valid: true }).lean<Candidate[]>();
 };
 
 export const invalidCandidates = async (): Promise<any[]> => {
-  return CandidateModel.find({ valid: false }).lean().exec();
-};
-
-export const allNodes = async (): Promise<any[]> => {
-  return CandidateModel.find({ name: /.*/ }).lean().exec();
+  return CandidateModel.find({ valid: false }).lean<Candidate[]>();
 };
 
 /**
  * Gets a candidate by its stash address.
  * @param stashOrName The DOT / KSM address or the name of the validator.
  */
-export const getCandidate = async (stashOrName: string): Promise<any> => {
-  let data = await CandidateModel.findOne({ stash: stashOrName }).lean().exec();
+export const getCandidate = async (
+  stashOrName: string,
+): Promise<Candidate | null> => {
+  let data = await CandidateModel.findOne({
+    stash: stashOrName,
+  }).lean<Candidate>();
 
   if (!data) {
-    data = await CandidateModel.findOne({ name: stashOrName }).lean().exec();
+    data = await CandidateModel.findOne({
+      name: stashOrName,
+    }).lean<Candidate>();
   }
 
   return data;
 };
 
-export const getNodeByName = async (name: string): Promise<any> => {
-  return CandidateModel.findOne({ name }).lean().exec();
+export const getCandidateByName = async (
+  name: string,
+): Promise<Candidate | null> => {
+  return CandidateModel.findOne({ name }).lean<Candidate>();
 };
 
-export const getCandidateBySlotId = async (id: number) => {
-  return CandidateModel.findOne({ slotId: id }).lean().exec();
+export const getCandidateBySlotId = async (
+  id: number,
+): Promise<Candidate | null> => {
+  return CandidateModel.findOne({ slotId: id }).lean<Candidate>();
 };
 
 export const setInclusion = async (
@@ -914,25 +1005,6 @@ export const setQueuedKeys = async (
     },
     {
       $set: { queuedKeys: queuedKeys },
-    },
-  ).exec();
-  return true;
-};
-
-export const setNextKeys = async (
-  address: string,
-  nextKeys: string,
-): Promise<boolean> => {
-  logger.debug(
-    `(Db::setNextKeys) Setting ${address} next keys to ${nextKeys}.`,
-  );
-
-  await CandidateModel.findOneAndUpdate(
-    {
-      stash: address,
-    },
-    {
-      $set: { nextKeys: nextKeys },
     },
   ).exec();
   return true;

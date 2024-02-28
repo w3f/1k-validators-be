@@ -1,14 +1,5 @@
 import { Queue } from "bullmq";
-import { logger, queries } from "@1kv/common";
-import {
-  ACTIVE_VALIDATOR_JOB,
-  ERA_POINTS_JOB,
-  ERA_STATS_JOB,
-  INCLUSION_JOB,
-  NOMINATOR_JOB,
-  SESSION_KEY_JOB,
-  VALIDATOR_PREF_JOB,
-} from "../jobs";
+import { Jobs, logger, queries } from "@1kv/common";
 
 const label = { label: "ChainDataQueue" };
 
@@ -26,7 +17,7 @@ export const addActiveValidatorJob = async (queue: Queue, repeat: number) => {
   logger.info(`adding Active Validator Job to Queue.....`, label);
   await queue.add(
     "chaindata",
-    { jobType: ACTIVE_VALIDATOR_JOB },
+    { jobType: Jobs.ACTIVE_VALIDATOR_JOB },
     {
       repeat: {
         every: repeat,
@@ -45,7 +36,7 @@ export const addEraPointsJob = async (queue: Queue, repeat: number) => {
   logger.info(`adding Era Points Job to Queue.....`);
   await queue.add(
     "chaindata",
-    { jobType: ERA_POINTS_JOB },
+    { jobType: Jobs.ERA_POINTS_JOB },
     {
       repeat: {
         every: repeat,
@@ -64,7 +55,7 @@ export const addEraStatsJob = async (queue: Queue, repeat: number) => {
   logger.info(`adding Era Stats Job to Queue.....`);
   await queue.add(
     "chaindata",
-    { jobType: ERA_STATS_JOB },
+    { jobType: Jobs.ERA_STATS_JOB },
     {
       repeat: {
         every: repeat,
@@ -83,7 +74,7 @@ export const addInclusionJob = async (queue: Queue, repeat: number) => {
   logger.info(`adding Inclusion Job to Queue.....`);
   await queue.add(
     "chaindata",
-    { jobType: INCLUSION_JOB },
+    { jobType: Jobs.INCLUSION_JOB },
     {
       repeat: {
         every: repeat,
@@ -102,7 +93,7 @@ export const addNominatorJob = async (queue: Queue, repeat: number) => {
   logger.info(`adding Nominator Job to Queue.....`);
   await queue.add(
     "chaindata",
-    { jobType: NOMINATOR_JOB },
+    { jobType: Jobs.NOMINATOR_JOB },
     {
       repeat: {
         every: repeat,
@@ -121,7 +112,7 @@ export const addSessionKeyJob = async (queue: Queue, repeat: number) => {
   logger.info(`adding Session Key Job to Queue.....`);
   await queue.add(
     "chaindata",
-    { jobType: SESSION_KEY_JOB },
+    { jobType: Jobs.SESSION_KEY_JOB },
     {
       repeat: {
         every: repeat,
@@ -140,7 +131,7 @@ export const addSessionKeyJob = async (queue: Queue, repeat: number) => {
 export const addValidatorPrefJobAll = async (queue: Queue, repeat: number) => {
   await queue.add(
     "chaindata",
-    { jobType: VALIDATOR_PREF_JOB },
+    { jobType: Jobs.VALIDATOR_PREF_JOB },
     {
       repeat: {
         every: repeat,
@@ -161,7 +152,7 @@ export const addValidatorPrefJob = async (queue: Queue, repeat: number) => {
   for (const [index, candidate] of candidates.entries()) {
     await queue.add(
       "chaindata",
-      { jobType: VALIDATOR_PREF_JOB, candidateAddress: candidate.stash },
+      { jobType: Jobs.VALIDATOR_PREF_JOB, candidateAddress: candidate.stash },
       {
         repeat: {
           every: repeat + index,

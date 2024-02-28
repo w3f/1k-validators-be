@@ -1,50 +1,61 @@
 // Create new Era Points records
-import { EraPointsModel, TotalEraPointsModel } from "../models";
+import {
+  EraPoints,
+  EraPointsModel,
+  TotalEraPoints,
+  TotalEraPointsModel,
+} from "../models";
 import { getIdentityAddresses } from "./Candidate";
+import { dbLabel } from "../index";
+import logger from "../../logger";
 
 export const setEraPoints = async (
   era: number,
   points: number,
   address: string,
-): Promise<any> => {
-  const data = await EraPointsModel.findOne({
-    address: address,
-    era: era,
-  }).lean();
-
-  // If the era points already exist and are the same as before, return
-  if (!!data && data.eraPoints == points) return;
-
-  // If they don't exist
-  if (!data) {
-    const eraPoints = new EraPointsModel({
+): Promise<boolean> => {
+  try {
+    const data = await EraPointsModel.findOne({
       address: address,
       era: era,
-      eraPoints: points,
-    });
+    }).lean();
 
-    return eraPoints.save();
+    // If they don't exist
+    if (!data) {
+      const eraPoints = new EraPointsModel({
+        address: address,
+        era: era,
+        eraPoints: points,
+      });
+
+      await eraPoints.save();
+      return true;
+    }
+
+    await EraPointsModel.findOneAndUpdate(
+      {
+        address: address,
+        era: era,
+      },
+      {
+        eraPoints: points,
+      },
+    ).exec();
+    return true;
+  } catch (e) {
+    logger.error(`Error setting era points: ${e}`, dbLabel);
+    return false;
   }
-
-  await EraPointsModel.findOneAndUpdate(
-    {
-      address: address,
-      era: era,
-    },
-    {
-      eraPoints: points,
-    },
-  ).exec();
 };
 
 export const getEraPoints = async (
   era: number,
   address: string,
-): Promise<any> => {
+): Promise<EraPoints | null> => {
   return EraPointsModel.findOne({
     address: address,
     era: era,
-  }).lean();
+  }).lean<EraPoints>();
 };
 
 // Creates new record of era points for all validators for an era
@@ -52,113 +63,123 @@ export const setTotalEraPoints = async (
   era: number,
   total: number,
   validators: { address: string; eraPoints: number }[],
-): Promise<any> => {
-  for (const validator of validators) {
-    // Try setting the era points
-    await setEraPoints(era, validator.eraPoints, validator.address);
-  }
+): Promise<boolean> => {
+  try {
+    for (const validator of validators) {
+      // Try setting the era points
+      await setEraPoints(era, validator.eraPoints, validator.address);
+    }
 
-  // Check if a record already exists
-  const data = await TotalEraPointsModel.findOne({
-    era: era,
-  }).lean();
+    // Check if a record already exists
+    const data = await TotalEraPointsModel.findOne({
+      era: era,
+    }).lean();
 
-  // If it exists and the total era points are the same, return
-  if (!!data && data.totalEraPoints == total && data.median) return;
+    // If it exists and the total era points are the same, return
+    if (!!data && data.totalEraPoints == total && data.median) return true;
 
-  const points = [];
-  for (const v of validators) {
-    points.push(v.eraPoints);
-  }
+    const points = [];
+    for (const v of validators) {
+      points.push(v.eraPoints);
+    }
 
-  // Find median, max, and average era points
-  const getAverage = (list) =>
-    list.reduce((prev, curr) => prev + curr) / list.length;
+    // Find median, max, and average era points
+    const getAverage = (list: number[]) =>
+      list.reduce((prev, curr) => prev + curr) / list.length;
 
-  // Calculate Median
-  const getMedian = (array) => {
-    // Check If Data Exists
-    if (array.length >= 1) {
-      // Sort Array
-      array = array.sort((a, b) => {
-        return a - b;
+    // Calculate Median
+    const getMedian = (array: number[]) => {
+      // Check If Data Exists
+      if (array.length >= 1) {
+        // Sort Array
+        array = array.sort((a, b) => {
+          return a - b;
+        });
+
+        // Array Length: Even
+        if (array.length % 2 === 0) {
+          // Average Of Two Middle Numbers
+          return (array[array.length / 2 - 1] + array[array.length / 2]) / 2;
+        }
+        // Array Length: Odd
+        else {
+          // Middle Number
+          return array[(array.length - 1) / 2];
+        }
+      } else {
+        // Error
+        console.error("Error: Empty Array (calculateMedian)");
+      }
+    };
+
+    const max = Math.max(...points);
+    const min = Math.min(...points);
+    const avg = getAverage(points);
+    const median = getMedian(points);
+
+    // If it doesn't exist, create it
+    if (!data) {
+      const totalEraPoints = new TotalEraPointsModel({
+        era: era,
+        totalEraPoints: total,
+        validatorsEraPoints: validators,
+        median: median,
+        average: avg,
+        max: max,
+        min: min,
       });
 
-      // Array Length: Even
-      if (array.length % 2 === 0) {
-        // Average Of Two Middle Numbers
-        return (array[array.length / 2 - 1] + array[array.length / 2]) / 2;
-      }
-      // Array Length: Odd
-      else {
-        // Middle Number
-        return array[(array.length - 1) / 2];
-      }
-    } else {
-      // Error
-      console.error("Error: Empty Array (calculateMedian)");
+      await totalEraPoints.save();
+      return true;
     }
-  };
 
-  const max = Math.max(...points);
-  const min = Math.min(...points);
-  const avg = getAverage(points);
-  const median = getMedian(points);
-
-  // If it doesn't exist, create it
-  if (!data) {
-    const totalEraPoints = new TotalEraPointsModel({
-      era: era,
-      totalEraPoints: total,
-      validatorsEraPoints: validators,
-      median: median,
-      average: avg,
-      max: max,
-      min: min,
-    });
-
-    return totalEraPoints.save();
+    // It exists, update it
+    await TotalEraPointsModel.findOneAndUpdate(
+      {
+        era: era,
+      },
+      {
+        totalEraPoints: total,
+        validatorsEraPoints: validators,
+        median: median,
+        average: avg,
+        max: max,
+        min: min,
+      },
+    ).exec();
+    return true;
+  } catch (e) {
+    logger.error(`Error setting total era points: ${e}`, dbLabel);
+    return false;
   }
-
-  // It exists, update it
-  await TotalEraPointsModel.findOneAndUpdate(
-    {
-      era: era,
-    },
-    {
-      totalEraPoints: total,
-      validatorsEraPoints: validators,
-      median: median,
-      average: avg,
-      max: max,
-      min: min,
-    },
-  ).exec();
 };
 
-export const getTotalEraPoints = async (era: number): Promise<any> => {
+export const getTotalEraPoints = async (
+  era: number,
+): Promise<TotalEraPoints | null> => {
   return TotalEraPointsModel.findOne({
     era: era,
-  }).lean();
+  }).lean<TotalEraPoints>();
 };
 
-export const getLastTotalEraPoints = async (): Promise<any> => {
-  const eraPoints = await TotalEraPointsModel.find({})
-    .lean()
-    .sort("-era")
-    .limit(1);
-  return eraPoints;
-};
+export const getLastTotalEraPoints =
+  async (): Promise<TotalEraPoints | null> => {
+    const eraPoints = await TotalEraPointsModel.find({})
+      .lean<TotalEraPoints>()
+      .sort("-era")
+      .limit(1);
+    return eraPoints;
+  };
 
 export const getSpanEraPoints = async (
   address: string,
   currentEra: number,
-): Promise<any> => {
+): Promise<EraPoints[]> => {
   return await EraPointsModel.find({
     address: address,
     era: { $gte: currentEra - 27 },
   })
-    .lean()
+    .lean<EraPoints[]>()
     .exec();
 };
 
@@ -166,32 +187,32 @@ export const getSpanEraPoints = async (
 export const getHistoryDepthEraPoints = async (
   address: string,
   currentEra: number,
-): Promise<any> => {
+): Promise<EraPoints[]> => {
   return await EraPointsModel.find({
     address: address,
     era: { $gte: currentEra - 83 },
   })
-    .lean()
+    .lean<EraPoints[]>()
     .exec();
 };
 
 export const getHistoryDepthTotalEraPoints = async (
   currentEra: number,
-): Promise<any> => {
+): Promise<EraPoints[]> => {
   return await TotalEraPointsModel.find({
     era: { $gte: currentEra - 83 },
   })
-    .lean()
+    .lean<EraPoints[]>()
     .exec();
 };
 
 export const getValidatorLastEraPoints = async (
   address: string,
-): Promise<any> => {
+): Promise<EraPoints | null> => {
   return await EraPointsModel.findOne({
     address: address,
   })
-    .lean()
+    .lean<EraPoints>()
     .sort("-era")
     .limit(1)
     .exec();
@@ -206,7 +227,7 @@ export const getValidatorEraPointsCount = async (
   })
     .lean()
     .exec();
-  return eras.length;
+  return eras?.length;
 };
 
 // Gets a list of the total count of era points for every identity that is a part of a validators super/sub identity

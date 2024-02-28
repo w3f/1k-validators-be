@@ -1,4 +1,4 @@
-import { PayoutTransactionModel, RewardModel } from "../models";
+import { PayoutTransactionModel, Reward, RewardModel } from "../models";
 import { getIdentity } from "./Candidate";
 
 export const setPayoutTransaction = async (
@@ -54,7 +54,7 @@ export const setReward = async (
   era: number,
   validator: string,
   nominator: string,
-  rewardAmount: string,
+  rewardAmount: number,
   rewardDestination: string,
   validatorStakeEfficiency: number,
   erasMinStake: number,
@@ -182,46 +182,50 @@ export const getValidatorStats = async (validator: string) => {
 export const getAllValidatorStats = async () => {
   const rewards = await RewardModel.find({
     role: "validator",
-  }).lean();
+  }).lean<Reward[]>();
 
-  const rewardsMap = new Map();
-  const rewardsList = [];
+  const rewardsMap = new Map<
+    string,
+    {
+      numRewards: number;
+      totalRewards: number;
+      efficiency: number;
+      stake: number;
+      minStake: number;
+      commission: number;
+    }
+  >();
 
   for (const reward of rewards) {
-    // logger.info(reward.validator);
-    // logger.info(reward.rewardAmount);
-    const numRewards =
-      parseFloat(rewardsMap.get(reward.validator)?.numRewards) || 0;
-    const totalRewardsSum =
-      parseFloat(rewardsMap.get(reward.validator)?.totalRewards) || 0;
-    const efficiencySum =
-      parseFloat(rewardsMap.get(reward.validator)?.efficiency) || 0;
-    const stakeSum = parseFloat(rewardsMap.get(reward.validator)?.stake) || 0;
-    const minStake =
-      parseFloat(rewardsMap.get(reward.validator)?.minStake) || 0;
-    const commission =
-      parseFloat(rewardsMap.get(reward.validator)?.commission) || 0;
-    rewardsMap.set(reward.validator, {
-      numRewards: numRewards + 1,
-      totalRewards: totalRewardsSum + parseFloat(reward.rewardAmount),
-      efficiency: efficiencySum + reward.validatorStakeEfficiency,
-      stake: stakeSum + reward.totalStake,
-      minStake: minStake + reward.erasMinStake,
-      commission: commission + reward.commission,
-    });
+    if (reward.rewardAmount !== null && reward.rewardAmount !== undefined) {
+      const numRewards = rewardsMap.get(reward.validator)?.numRewards || 0;
+      const totalRewardsSum =
+        rewardsMap.get(reward.validator)?.totalRewards || 0;
+      const efficiencySum = rewardsMap.get(reward.validator)?.efficiency || 0;
+      const stakeSum = rewardsMap.get(reward.validator)?.stake || 0;
+      const minStake = rewardsMap.get(reward.validator)?.minStake || 0;
+      const commission = rewardsMap.get(reward.validator)?.commission || 0;
+      rewardsMap.set(reward.validator, {
+        numRewards: numRewards + 1,
+        totalRewards: totalRewardsSum + parseFloat(reward.rewardAmount),
+        efficiency: efficiencySum + (reward.validatorStakeEfficiency || 0),
+        stake: stakeSum + (reward.totalStake || 0),
+        minStake: minStake + (reward.erasMinStake || 0),
+        commission: commission + (reward.commission || 0),
+      });
+    }
   }
 
-  for (const [key, value] of rewardsMap.entries()) {
-    rewardsList.push({
-      validator: key,
-      numRewards: value.numRewards,
-      totalRewards: value.totalRewards,
-      avgEfficiency: value.efficiency / value.numRewards,
-      avgStake: value.stake / value.numRewards,
-      avgEraMinStake: value.minStake / value.numRewards,
-      avgCommission: value.commission / value.numRewards,
-    });
-  }
+  const rewardsList = Array.from(rewardsMap.entries()).map(([key, value]) => ({
+    validator: key,
+    numRewards: value.numRewards,
+    totalRewards: value.totalRewards,
+    avgEfficiency: value.efficiency / value.numRewards,
+    avgStake: value.stake / value.numRewards,
+    avgEraMinStake: value.minStake / value.numRewards,
+    avgCommission: value.commission / value.numRewards,
+  }));
+
   const identityList = await Promise.all(
     rewardsList.map(async (reward) => {
       const identity = await getIdentity(reward.validator);
@@ -254,16 +258,22 @@ export const getTotalValidatorRewards = async (validator: string) => {
 export const getRewardsAllValidatorsTotal = async () => {
   const rewards = await RewardModel.find({
     role: "validator",
-  }).lean();
+  }).lean<Reward[]>();
+  if (!rewards) return [];
 
-  const rewardsMap = new Map();
+  const rewardsMap = new Map<string, number>();
   const rewardsList = [];
 
   for (const reward of rewards) {
-    // logger.info(reward.validator);
-    // logger.info(reward.rewardAmount);
-    const sum = parseFloat(rewardsMap.get(reward.validator)) || 0;
-    rewardsMap.set(reward.validator, sum + parseFloat(reward.rewardAmount));
+    if (
+      reward.validator !== null &&
+      reward.validator !== undefined &&
+      reward.rewardAmount
+    ) {
+      const sum = rewardsMap.get(reward.validator) || 0;
+      const newSum = sum + parseFloat(reward.rewardAmount);
+      rewardsMap.set(reward.validator, newSum);
+    }
   }
 
   for (const [key, value] of rewardsMap.entries()) {
@@ -288,14 +298,19 @@ export const getRewardsAllValidatorsTotal = async () => {
 export const getRewardsAllNominatorsTotal = async () => {
   const rewards = await RewardModel.find({
     role: "nominator",
-  }).lean();
+  }).lean<Reward[]>();
+
+  if (!rewards) return [];
 
   const rewardsMap = new Map();
   const rewardsList = [];
 
   for (const reward of rewards) {
-    const sum = parseFloat(rewardsMap.get(reward.nominator)) || 0;
-    rewardsMap.set(reward.nominator, sum + parseFloat(reward.rewardAmount));
+    if (reward && reward.nominator && reward.rewardAmount) {
+      const sum = parseFloat(rewardsMap.get(reward.nominator)) || 0;
+      const newSum = sum + parseFloat(reward.rewardAmount);
+      rewardsMap.set(reward.nominator, sum + newSum);
+    }
   }
 
   for (const [key, value] of rewardsMap.entries()) {

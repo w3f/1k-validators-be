@@ -1,53 +1,68 @@
-import { LatestValidatorSetModel, ValidatorModel } from "../models";
+import {
+  Candidate,
+  Validator,
+  ValidatorModel,
+  ValidatorSet,
+  ValidatorSetModel,
+} from "../models";
 import { allCandidates } from "./Candidate";
+import { NextKeys } from "../../chaindata/queries/ValidatorPref";
 
-export const setLatestValidatorSet = async (
+export const setValidatorSet = async (
   session: number,
   era: number,
   validators: string[],
 ): Promise<boolean> => {
-  const data = await LatestValidatorSetModel.findOne({}).lean();
-  if (!data) {
-    const latestValidatorSet = new LatestValidatorSetModel({
-      session: session,
-      era: era,
-      validators: validators,
+  const exists = await validatorSetExistsForEra(era);
+  if (!exists) {
+    const validatorSet = new ValidatorSetModel({
+      session,
+      era,
+      validators,
       updated: Date.now(),
     });
-    await latestValidatorSet.save();
+    await validatorSet.save();
     return true;
-  }
-
-  await LatestValidatorSetModel.findOneAndUpdate(
-    {},
-    {
-      $set: {
-        session: session,
-        era: era,
-        validators: validators,
+  } else {
+    await ValidatorSetModel.findOneAndUpdate(
+      { era },
+      {
+        session,
+        era,
+        validators,
         updated: Date.now(),
       },
-    },
-  ).exec();
+    ).exec();
+  }
   return true;
 };
 
-export const getLatestValidatorSet = async (): Promise<any> => {
-  return LatestValidatorSetModel.findOne({}).lean().exec();
+export const getLatestValidatorSet = async (): Promise<ValidatorSet | null> => {
+  return ValidatorSetModel.findOne({})
+    .sort({ session: -1 })
+    .lean<ValidatorSet>();
+};
+
+export const getAllValidatorSets = async (): Promise<ValidatorSet[]> => {
+  return ValidatorSetModel.find({})
+    .sort({ era: -1 })
+    .lean<ValidatorSet[]>()
+    .exec();
+};
+
+export const validatorSetExistsForEra = async (
+  era: number,
+): Promise<boolean> => {
+  const exists = await ValidatorSetModel.exists({ era });
+  return !!exists;
 };
 
 export const setValidatorKeys = async (
   address: string,
-  keys: {
-    grandpa: string;
-    babe: string;
-    imOnline: string;
-    paraValidator: string;
-    paraAssingnment: string;
-    authorityDiscovery: string;
-    beefy: string;
-  },
+  nextKeys: NextKeys,
 ): Promise<boolean> => {
+  const { keys } = nextKeys;
+
   const data = await ValidatorModel.findOne({ address }).lean();
   if (!data) {
     const validator = new ValidatorModel({
@@ -67,57 +82,79 @@ export const setValidatorKeys = async (
   return true;
 };
 
-export const getValidator = async (address: string): Promise<any> => {
-  return ValidatorModel.find({ address }).lean().exec();
+export const getValidator = async (
+  address: string,
+): Promise<Validator | null> => {
+  return ValidatorModel.findOne({ address }).lean<Validator>();
 };
 
-export const getValidators = async (): Promise<any> => {
-  return ValidatorModel.find({}).lean().exec();
+export const getValidators = async (): Promise<Validator[]> => {
+  return ValidatorModel.find({}).lean<Validator[]>();
 };
 
-export const getValidatorsBeefyStats = async (): Promise<any> => {
+interface BeefyStats {
+  beefy1KVCount: number;
+  activeBeefy1KVCount: number;
+  activeBeefy1KVPercentage: number;
+  total1KVValidatorCount: number;
+  beefyTotalValidatorCount: number;
+  activeBeefyValidatorCount: number;
+  activeBeefyPercentage: number;
+  activeValidatorCount: number;
+  totalValidators: number;
+  totalBeefyValidators: number;
+}
+
+export const getValidatorsBeefyStats = async (): Promise<BeefyStats> => {
   const latestValidatorSet = await getLatestValidatorSet();
-  const validators = await getValidators();
-  const beefyValidators = validators.filter((validator: any) => {
-    return validator?.keys?.beefy?.slice(0, 10) != "0x62656566";
+  const validators: Validator[] = (await getValidators()) ?? [];
+  const candidates: Candidate[] = (await allCandidates()) ?? [];
+
+  const beefyValidators = validators.filter(
+    (validator) => validator.keys?.beefy?.slice(0, 10) !== "0x62656566",
+  );
+
+  const activeBeefyValidators = beefyValidators.filter((validator) =>
+    latestValidatorSet?.validators?.includes(validator.address),
+  );
+
+  const activeBeefy1KVValidators = candidates.filter((candidate) => {
+    return activeBeefyValidators.some(
+      (validator) => validator.address === candidate.stash,
+    );
   });
 
-  const activeBeefyValidators = beefyValidators.filter((validator: any) => {
-    return latestValidatorSet?.validators?.includes(validator.address);
+  const totalBeefy1KVValidators = candidates.filter((candidate) => {
+    return beefyValidators.some(
+      (validator) => validator.address === candidate.stash,
+    );
   });
 
-  const candidates = await allCandidates();
-  const activeBeefy1KVValidators = candidates.filter((candidate: any) => {
-    for (const validator of activeBeefyValidators) {
-      if (validator.address == candidate.stash) {
-        return true;
-      }
-    }
-  });
+  const activeBeefy1KVPercentage = latestValidatorSet?.validators
+    ? (activeBeefy1KVValidators.length / latestValidatorSet.validators.length) *
+      100
+    : 0;
 
-  const totalBeefy1KVValidators = candidates.filter((candidate: any) => {
-    for (const validator of beefyValidators) {
-      if (validator.address == candidate.stash) {
-        return true;
-      }
-    }
-  });
+  const activeBeefyPercentage = latestValidatorSet?.validators
+    ? (activeBeefyValidators.length / latestValidatorSet.validators.length) *
+      100
+    : 0;
+
+  const totalBeefyValidators = validators?.length
+    ? (beefyValidators.length / validators.length) * 100
+    : 0;
 
   return {
     beefy1KVCount: totalBeefy1KVValidators.length,
     activeBeefy1KVCount: activeBeefy1KVValidators.length,
-    activeBeefy1KVPercentage:
-      (activeBeefy1KVValidators.length / latestValidatorSet.validators.length) *
-      100,
+    activeBeefy1KVPercentage,
     total1KVValidatorCount: candidates.length,
     beefyTotalValidatorCount: beefyValidators.length,
     activeBeefyValidatorCount: activeBeefyValidators.length,
-    activeBeefyPercentage:
-      (activeBeefyValidators.length / latestValidatorSet.validators.length) *
-      100,
-    activeValidatorCount: latestValidatorSet.validators.length,
+    activeBeefyPercentage,
+    activeValidatorCount: latestValidatorSet?.validators?.length ?? 0,
     totalValidators: validators.length,
-    totalBeefyValidators: (beefyValidators.length / validators.length) * 100,
+    totalBeefyValidators,
   };
 };
 
@@ -131,8 +168,5 @@ export const getValidatorsBeefyDummy = async (): Promise<any> => {
 
 export const hasBeefyDummy = async (address: string): Promise<boolean> => {
   const validator = await getValidator(address);
-  if (validator.length == 0) {
-    return false;
-  }
-  return validator[0]?.keys?.beefy?.slice(0, 10) == "0x62656566";
+  return validator?.keys?.beefy?.slice(0, 10) == "0x62656566";
 };

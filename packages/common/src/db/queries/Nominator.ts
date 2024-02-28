@@ -35,8 +35,6 @@ export const addNominator = async (nominator: Nominator): Promise<boolean> => {
       proxyDelay,
       rewardDestination,
     } = nominator;
-
-    logger.info(`(Db::addNominator) Adding ${address} at ${now}.`);
     const data = await NominatorModel.findOne({ address }).lean<Nominator>();
     if (!data) {
       const nominator = new NominatorModel({
@@ -54,7 +52,7 @@ export const addNominator = async (nominator: Nominator): Promise<boolean> => {
       return true;
     }
 
-    return NominatorModel.findOneAndUpdate(
+    await NominatorModel.findOneAndUpdate(
       {
         address,
       },
@@ -67,28 +65,12 @@ export const addNominator = async (nominator: Nominator): Promise<boolean> => {
         rewardDestination,
       },
     );
+    return true;
   } catch (e) {
     logger.info(JSON.stringify(e));
-    logger.error(`Could not add nominator: ${e}`);
     logger.error(`Could not add nominator: ${JSON.stringify(nominator)}`);
+    return false;
   }
-};
-
-// Updates the avg stake amount of a nominator
-export const setNominatorAvgStake = async (
-  address: string,
-  avgStake: number,
-): Promise<boolean> => {
-  const data = await NominatorModel.findOne({ address }).lean();
-  if (!data) return;
-  return NominatorModel.findOneAndUpdate(
-    {
-      address,
-    },
-    {
-      avgStake,
-    },
-  );
 };
 
 export const setTarget = async (
@@ -151,9 +133,6 @@ export const setLastNomination = async (
   address: string,
   now: number,
 ): Promise<boolean> => {
-  logger.info(
-    `(Db::setLastNomination) Setting ${address} last nomination to ${now}.`,
-  );
   await NominatorModel.findOneAndUpdate(
     {
       address,
@@ -178,14 +157,17 @@ export const getCurrentTargets = async (
       return [];
     }
   } catch (e) {
-    logger.error(e.toString());
+    logger.error(JSON.stringify(e));
+    return [];
   }
 };
 
 export const allNominators = async (): Promise<Nominator[]> => {
-  return NominatorModel.find({ address: /.*/ }).lean();
+  return NominatorModel.find({ address: /.*/ }).lean<Nominator[]>();
 };
 
-export const getNominator = async (stash: string): Promise<Nominator> => {
-  return NominatorModel.findOne({ stash: stash }).lean();
+export const getNominator = async (
+  stash: string,
+): Promise<Nominator | null> => {
+  return NominatorModel.findOne({ stash: stash }).lean<Nominator>();
 };

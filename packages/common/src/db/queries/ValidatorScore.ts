@@ -1,42 +1,12 @@
 import { ValidatorScoreModel } from "../models";
-import { logger } from "../../index";
 
 export const setValidatorScore = async (
   address: string,
   session: number,
   score: any,
 ): Promise<boolean> => {
-  const {
-    total,
-    aggregate,
-    inclusion,
-    spanInclusion,
-    discovered,
-    nominated,
-    rank,
-    unclaimed,
-    bonded,
-    faults,
-    offline,
-    location,
-    region,
-    country,
-    provider,
-    nominatorStake,
-    randomness,
-    updated,
-  } = score;
-
-  const data = await ValidatorScoreModel.findOne({
-    address: address,
-    session: session,
-  }).lean();
-
-  if (!data) {
-    const score = new ValidatorScoreModel({
-      address,
-      session,
-      updated,
+  try {
+    const {
       total,
       aggregate,
       inclusion,
@@ -54,37 +24,72 @@ export const setValidatorScore = async (
       provider,
       nominatorStake,
       randomness,
-    });
-    await score.save();
-    return true;
-  }
+      updated,
+    } = score;
 
-  await ValidatorScoreModel.findOneAndUpdate(
-    {
+    const data = await ValidatorScoreModel.findOne({
       address: address,
       session: session,
-    },
-    {
-      updated,
-      total,
-      aggregate,
-      inclusion,
-      spanInclusion,
-      discovered,
-      nominated,
-      rank,
-      unclaimed,
-      bonded,
-      faults,
-      offline,
-      location,
-      region,
-      country,
-      provider,
-      nominatorStake,
-      randomness,
-    },
-  ).exec();
+    }).lean();
+
+    if (!data) {
+      const score = new ValidatorScoreModel({
+        address,
+        session,
+        updated,
+        total,
+        aggregate,
+        inclusion,
+        spanInclusion,
+        discovered,
+        nominated,
+        rank,
+        unclaimed,
+        bonded,
+        faults,
+        offline,
+        location,
+        region,
+        country,
+        provider,
+        nominatorStake,
+        randomness,
+      });
+      await score.save();
+      return true;
+    }
+
+    await ValidatorScoreModel.findOneAndUpdate(
+      {
+        address: address,
+        session: session,
+      },
+      {
+        updated,
+        total,
+        aggregate,
+        inclusion,
+        spanInclusion,
+        discovered,
+        nominated,
+        rank,
+        unclaimed,
+        bonded,
+        faults,
+        offline,
+        location,
+        region,
+        country,
+        provider,
+        nominatorStake,
+        randomness,
+      },
+    ).exec();
+    return true;
+  } catch (e) {
+    console.error(`Error setting validator score: ${JSON.stringify(e)}`);
+    return false;
+  }
 };
 
 export const getValidatorScore = async (
@@ -112,7 +117,6 @@ export const getLatestValidatorScore = async (
 };
 
 export const deleteOldValidatorScores = async (): Promise<any> => {
-  logger.info(`removing old validator scores...`);
   const FIVE_MINUTES = 300000;
   const ONE_WEEK = 604800016.56;
   const ONE_MONTH = 2629800000;

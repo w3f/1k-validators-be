@@ -33,3 +33,4 @@ docs/.DS_Store
 /packages/common/kusama-slots.json
 /packages/common/polkadot-slots.json
 /packages/core/coverage/
+/packages/common/coverage/

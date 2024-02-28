@@ -1,4 +1,8 @@
 /// One week in milliseconds.
+import WS from "ws";
+
+export const FIVE_MINUTES = 5 * 60 * 1000;
+
 export const WEEK = 7 * 24 * 60 * 60 * 1000;
 
 /// The time a node has to make an upgrade to the latest release.
@@ -35,11 +39,20 @@ export const BALANCE_BUFFER_AMOUNT = 20;
 // Timeout threshold for polkadot js api - 360 seconds
 export const POLKADOT_API_TIMEOUT = 1000000;
 
+export const CHAINDATA_RETRIES = 20;
+
+export const CHAINDATA_SLEEP = 10000;
+
+export const API_PROVIDER_TIMEOUT = 10000;
+
 /// List of Kusama endpoints we can switch between.
 export const KusamaEndpoints = [
-  "wss://kusama-rpc.polkadot.io",
+  "wss://kusama-rpc-tn.dwellir.com",
   "wss://kusama-rpc.dwellir.com",
   "wss://kusama.public.curie.radiumblock.xyz/ws",
+  "wss://rpc.ibp.network/kusama",
+  "wss://rpc.dotters.network/kusama",
+  "wss://ksm-rpc.stakeworld.io",
 ];
 
 /// List of Polkadot endpoints we can switch between.
@@ -56,13 +69,26 @@ export const LocalEndpoints = [
   "ws://172.28.1.4:9947",
 ];
 
+export const defaultWsOptions = {
+  WebSocket: WS,
+  connectionTimeout: 0,
+  maxRetries: 15,
+  debug: true,
+};
+
+// 200 hours in milliseconds
+export const STALE_TELEMETRY_THRESHOLD = 720000000;
+
+export const DEFAULT_TELEMETRY_ENDPONT =
+  "wss://telemetry.w3f.community/submit/";
+
 // List of log labels that are omitted from logging
 export const defaultExcludeLabels = [
-  // "Telemetry",
+  "Telemetry",
   // "Location",
-  "ValidatorPrefJob",
-  "Block",
-  "Gateway",
+  // "ValidatorPrefJob",
+  // "Block",
+  // "Gateway",
 ];
 
 /// Endpoint of the Kusama Thousand Validators backend. Used for the Polkadot program.
@@ -103,7 +129,7 @@ export const STALE_CRON = "0 0-59/45 * * * *";
 export const SCORE_CRON = "0 0-59/5 * * * *";
 
 // Era Stats Cron Job. This runs every 5 minutes by default
-export const ERA_STATS_CRON = "0 0-59/5 * * * *";
+export const ERA_STATS_CRON = "0 0-59/1 * * * *";
 
 // Location Stats Cron Job. This runs every 15 minutes by default
 export const LOCATION_STATS_CRON = "0 0-59/5 * * * *";

@@ -2,11 +2,13 @@ import { response } from "./index";
 import * as ValidatorService from "../services/Validator";
 import { logger } from "@1kv/common";
 import { gatewayLabel } from "../run";
+import { requestEmitter } from "../events/requestEmitter";
 
 const label = { label: "Gateway" };
 
 export default class ValidatorController {
   public static async getLatestValidatorSet(context: any): Promise<void> {
+    requestEmitter.emit("requestReceived");
     if (await context.cashed()) {
       logger.info(`{Gateway} getNominators is cached`, gatewayLabel);
       return;
@@ -15,6 +17,7 @@ export default class ValidatorController {
   }
 
   public static async getValidators(context: any): Promise<void> {
+    requestEmitter.emit("requestReceived");
     if (await context.cashed()) {
       logger.info(`getValdiators is cached`, gatewayLabel);
       return;
@@ -23,6 +26,7 @@ export default class ValidatorController {
   }
 
   public static async getValidator(context: any): Promise<void> {
+    requestEmitter.emit("requestReceived");
     if (await context.cashed()) {
       logger.info(`getValdiator is cached`, gatewayLabel);
       return;
@@ -35,6 +39,7 @@ export default class ValidatorController {
   }
 
   public static async getBeefyStats(context: any): Promise<void> {
+    requestEmitter.emit("requestReceived");
     if (await context.cashed()) {
       logger.info(`getBeefyStats is cached`, gatewayLabel);
       return;
@@ -43,6 +48,7 @@ export default class ValidatorController {
   }
 
   public static async getBeefyDummy(context: any): Promise<void> {
+    requestEmitter.emit("requestReceived");
     if (await context.cashed()) {
       logger.info(`getBeefyDummy is cached`, gatewayLabel);
       return;

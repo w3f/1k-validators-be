@@ -20,9 +20,9 @@ jobs:
             environment:
               YARN_ENABLE_IMMUTABLE_INSTALLS: false
             command: |
-                yarn set version 3.2.2 && yarn install && yarn build && yarn workspace @1kv/core test:candidates
+                yarn set version 3.2.2 && yarn install && yarn build && yarn workspace @1kv/common ci:checkCandidatesFile
 
-  checkESLint:
+  checkCoreESLint:
     docker:
       - image: node:18
     resource_class: large      
@@ -34,17 +34,54 @@ jobs:
           command: |
             yarn set version 3.2.2 && yarn install && yarn build && yarn workspace @1kv/core lint
 
-  testCore:
+#  checkCommonESLint:
+#    docker:
+#      - image: node:18
+#    resource_class: large
+#    steps:
+#      - checkout
+#      - run:
+#          environment:
+#            YARN_ENABLE_IMMUTABLE_INSTALLS: false
+#          command: |
+#            yarn set version 3.2.2 && yarn install && yarn build && yarn workspace @1kv/common lint
+
+
+  testCommonUnit:
     docker:
-      - image: node:18
-    resource_class: large
+      - image: node:bullseye
+    resource_class: xlarge
     steps:
       - checkout
       - run:
           environment:
             YARN_ENABLE_IMMUTABLE_INSTALLS: false
           command: |
-            yarn set version 3.2.2 && yarn install && yarn build && yarn workspace @1kv/core test
+            yarn set version 3.2.2 && yarn install && yarn build && yarn workspace @1kv/common test:unit --testTimeout=60000
+
+  testCommonInt:
+    docker:
+      - image: node:bullseye
+    resource_class: xlarge
+    steps:
+      - checkout
+      - run:
+          environment:
+            YARN_ENABLE_IMMUTABLE_INSTALLS: false
+          command: |
+            yarn set version 3.2.2 && yarn install && yarn build && yarn workspace @1kv/common test:int --testTimeout=60000
+
+#  testCore:
+#    docker:
+#      - image: node:18
+#    resource_class: large
+#    steps:
+#      - checkout
+#      - run:
+#          environment:
+#            YARN_ENABLE_IMMUTABLE_INSTALLS: false
+#          command: |
+#            yarn set version 3.2.2 && yarn install && yarn build && yarn workspace @1kv/core test
 
   helmLint:
     docker:
@@ -183,14 +220,26 @@ workflows:
           filters:
             tags:
               ignore: /pull\/[0-9]+/
-      - checkESLint:
+#      - checkCommonESLint:
+#          filters:
+#            tags:
+#              only: /.*/
+      - checkCoreESLint:
           filters:
             tags:
               only: /.*/
-      - testCore:
+      - testCommonUnit:
           filters:
             tags:
               only: /.*/
+      - testCommonInt:
+          filters:
+            tags:
+              only: /.*/
+#      - testCore:
+#          filters:
+#            tags:
+#              only: /.*/
       - helmLint:
           filters:
             tags:

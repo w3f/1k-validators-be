@@ -9,7 +9,7 @@ const catchAndQuit = async (fn: any) => {
   try {
     await fn;
   } catch (e) {
-    console.error(e.toString());
+    console.error(JSON.stringify(e));
     process.exit(1);
   }
 };

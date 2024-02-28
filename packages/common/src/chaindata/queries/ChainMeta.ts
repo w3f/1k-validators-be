@@ -6,91 +6,163 @@
 
 import { ChainData, chaindataLabel } from "../chaindata";
 import { logger } from "../../index";
+import { ApiDecoration } from "@polkadot/api/types";
 
-export const getChainType = async (chaindata: ChainData): Promise<string> => {
+import { Block } from "@polkadot/types/interfaces";
+
+export const getChainType = async (
+  chaindata: ChainData,
+): Promise<string | null> => {
   try {
-    await chaindata.checkApiConnection();
+    if (!(await chaindata.checkApiConnection())) {
+      return null;
+    }
 
-    const chainType = await chaindata.api.rpc.system.chain();
-    return chainType.toString();
+    const chainType = await chaindata?.api?.rpc.system.chain();
+    if (chainType) {
+      return chainType.toString();
+    }
+    return null;
   } catch (e) {
     logger.error(`Error getting chain type: ${e}`, chaindataLabel);
+    return null;
   }
 };
 
-export const getDenom = async (chaindata: ChainData): Promise<number> => {
+export const getDenom = async (
+  chaindata: ChainData,
+): Promise<number | null> => {
   try {
-    await chaindata.checkApiConnection();
+    if (!(await chaindata.checkApiConnection())) {
+      return null;
+    }
 
-    const chainType = await chaindata.api.rpc.system.chain();
+    const chainType = await chaindata?.api?.rpc.system.chain();
+    if (!chainType) {
+      return null;
+    }
     const denom =
       chainType.toString() == "Polkadot" ? 10000000000 : 1000000000000;
     return denom;
   } catch (e) {
     logger.error(`Error getting chain denom: ${e}`, chaindataLabel);
+    return null;
   }
 };
 
 export const getApiAt = async (
   chaindata: ChainData,
   blockNumber: number,
-): Promise<any> => {
+): Promise<ApiDecoration<"promise"> | null> => {
   try {
-    await chaindata.checkApiConnection();
+    if (!(await chaindata.checkApiConnection())) {
+      return null;
+    }
 
     const hash = await chaindata.getBlockHash(blockNumber);
-    return await chaindata.api.at(hash);
+    if (hash) {
+      return (await chaindata?.api?.at(hash)) ?? null;
+    } else {
+      return null;
+    }
   } catch (e) {
     logger.error(`Error getting api at block: ${e}`, chaindataLabel);
+    return null;
+  }
+};
+export const getApiAtBlockHash = async (
+  chaindata: ChainData,
+  blockHash: string,
+): Promise<ApiDecoration<"promise"> | null> => {
+  try {
+    if (!(await chaindata.checkApiConnection())) {
+      return null;
+    }
+    const api = chaindata?.api;
+    if (api) {
+      const apiResult = await api.at(blockHash);
+      return apiResult ?? null;
+    } else {
+      return null;
+    }
+  } catch (e) {
+    logger.error(
+      `Error getting api at block hash ${blockHash}: ${e}`,
+      chaindataLabel,
+    );
+    return null;
   }
 };
 
 export const getBlockHash = async (
   chaindata: ChainData,
   blockNumber: number,
-): Promise<string> => {
+): Promise<string | null> => {
   try {
-    await chaindata.checkApiConnection();
+    if (!(await chaindata.checkApiConnection())) {
+      return null;
+    }
 
-    return (await chaindata.api.rpc.chain.getBlockHash(blockNumber)).toString();
+    const hash = await chaindata?.api?.rpc.chain.getBlockHash(blockNumber);
+    if (hash) {
+      return hash.toString();
+    }
+    return null;
   } catch (e) {
     logger.error(`Error getting block hash: ${e}`, chaindataLabel);
+    return null;
   }
 };
 
 export const getBlock = async (
   chaindata: ChainData,
   blockNumber: number,
-): Promise<any> => {
+): Promise<Block | null> => {
   try {
-    await chaindata.checkApiConnection();
+    if (!(await chaindata.checkApiConnection())) {
+      return null;
+    }
     const hash = await chaindata.getBlockHash(blockNumber);
-    return await chaindata.api.rpc.chain.getBlock(hash);
+    if (hash) {
+      const signedBlock = await chaindata?.api?.rpc.chain.getBlock(hash);
+      return signedBlock?.block ?? null;
+    } else {
+      return null;
+    }
   } catch (e) {
     logger.error(`Error getting block: ${e}`, chaindataLabel);
+    return null;
   }
 };
 
-export const getLatestBlock = async (chaindata: ChainData): Promise<number> => {
+export const getLatestBlock = async (
+  chaindata: ChainData,
+): Promise<number | null> => {
   try {
-    await chaindata.checkApiConnection();
-    return (
-      await chaindata.api.rpc.chain.getBlock()
-    ).block.header.number.toNumber();
+    if (!(await chaindata.checkApiConnection())) {
+      return null;
+    }
+    const block = await chaindata?.api?.rpc.chain.getBlock();
+    return block?.block.header.number.toNumber() ?? null;
   } catch (e) {
     logger.error(`Error getting latest block: ${e}`, chaindataLabel);
+    return null;
   }
 };
-
 export const getLatestBlockHash = async (
   chaindata: ChainData,
-): Promise<string> => {
+): Promise<string | null> => {
   try {
-    await chaindata.checkApiConnection();
-    return (
-      await chaindata.api.rpc.chain.getBlock()
-    ).block.header.hash.toString();
+    if (!(await chaindata.checkApiConnection())) {
+      return null;
+    }
+    const hash = await chaindata?.api?.rpc.chain.getBlockHash();
+    if (hash) {
+      return hash.toString();
+    }
+    return null;
   } catch (e) {
     logger.error(`Error getting latest block hash: ${e}`, chaindataLabel);
+    return null;
   }
 };

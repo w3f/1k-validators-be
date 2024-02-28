@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import path from "path";
-import { isValidUrl } from "./util";
+import { isValidUrl } from "./utils/util";
 
 type CandidateConfig = {
   slotId: number;
@@ -33,22 +33,24 @@ export type ConfigSchema = {
   };
   cron: {
     monitor: string;
+    monitorEnabled: boolean;
     clearOffline: string;
+    clearOfflineEnabled: boolean;
     validity: string;
     validityEnabled: boolean;
     execution: string;
     scorekeeper: string;
-    rewardClaiming: string;
+    scorekeeperEnabled: boolean;
     cancel: string;
+    cancelEnabled: boolean;
     stale: string;
+    staleEnabled: boolean;
     score: string;
     scoreEnabled: boolean;
     eraStats: string;
     eraStatsEnabled: boolean;
     locationStats: string;
     locationStatsEnabled: boolean;
-    democracy: string;
-    democracyEnabled: boolean;
     // chain querying crons
     eraPoints: string;
     eraPointsEnabled: boolean;
@@ -64,8 +66,6 @@ export type ConfigSchema = {
     validatorPrefEnabled: boolean;
     nominator: string;
     nominatorEnabled: boolean;
-    delegation: string;
-    delegationEnabled: boolean;
     block: string;
     blockEnabled: boolean;
   };

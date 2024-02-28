@@ -3,7 +3,7 @@ import { defaultExcludeLabels } from "./constants";
 
 const filters = defaultExcludeLabels;
 
-const logFilter = (labelsToExclude) => {
+const logFilter = (labelsToExclude: string[]) => {
   return winston.format((info) => {
     if (labelsToExclude.includes(info.label)) {
       return false; // Exclude log messages with labels in the exclusion list
@@ -23,7 +23,9 @@ export const logger = winston.createLogger({
     }),
   ),
   transports: [
-    new winston.transports.Console(),
+    new winston.transports.Console({
+      format: winston.format.combine(winston.format.colorize()),
+    }),
     new winston.transports.File({ filename: "combined.log" }),
   ],
 });

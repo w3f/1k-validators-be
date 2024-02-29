@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@emotion/react": "^11.11.3",
+    "@polkadot/react-identicon": "^3.6.5",
     "@types/lodash.debounce": "^4.0.9",
     "axios": "^1.6.7",
     "dayjs": "^1.11.10",

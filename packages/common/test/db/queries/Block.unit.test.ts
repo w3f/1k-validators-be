@@ -4,10 +4,6 @@ import { initTestServerBeforeAll } from "../../testUtils/dbUtils";
 
 initTestServerBeforeAll();
 
-beforeEach(async () => {
-  await BlockIndexModel.deleteMany({});
-});
-
 describe("Block Index Database Functions", () => {
   describe("getBlockIndex", () => {
     it("should return null if no block index exists", async () => {

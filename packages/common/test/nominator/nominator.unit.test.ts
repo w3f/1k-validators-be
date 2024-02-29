@@ -4,8 +4,7 @@ import ApiHandler from "../../src/ApiHandler/ApiHandler";
 
 jest.mock("../../src/nominator/nominator");
 jest.mock("../../src/ApiHandler/ApiHandler");
-
-describe("Nominator Class Unit Tests", () => {
+describe("Nominator Mock Class Unit Tests", () => {
   let nominator: Nominator;
   let handler;
   let nominatorConfig: Types.NominatorConfig;

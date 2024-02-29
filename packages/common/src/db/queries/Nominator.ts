@@ -163,7 +163,7 @@ export const getCurrentTargets = async (
 };
 
 export const allNominators = async (): Promise<Nominator[]> => {
-  return NominatorModel.find({ address: /.*/ }).lean<Nominator[]>();
+  return NominatorModel.find({}).lean<Nominator[]>();
 };
 
 export const getNominator = async (

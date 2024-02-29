@@ -3,7 +3,7 @@ import { EraModel } from "../models";
 export const setLastNominatedEraIndex = async (
   index: number,
 ): Promise<boolean> => {
-  const data = await EraModel.findOne({ lastNominatedEraIndex: /.*/ }).lean();
+  const data = await EraModel.findOne({}).lean();
   if (!data) {
     const eraIndex = new EraModel({
       lastNominatedEraIndex: index.toString(),

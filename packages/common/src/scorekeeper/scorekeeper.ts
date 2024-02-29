@@ -9,7 +9,7 @@ import {
   Util,
 } from "../index";
 
-import Nominator from "../nominator/nominator";
+import Nominator, { NominatorStatus } from "../nominator/nominator";
 import {
   registerAPIHandler,
   registerEventEmitterHandler,
@@ -76,6 +76,18 @@ export default class ScoreKeeper {
     } else {
       return [];
     }
+  }
+
+  getAllNominatorStatus(): NominatorStatus[] {
+    const statuses = [];
+    for (const nom of this.nominatorGroups) {
+      statuses.push(nom.getStatus());
+    }
+    return statuses;
+  }
+
+  getAllNominatorStatusJson() {
+    return JSON.stringify(this.getAllNominatorStatus());
   }
 
   /// Spawns a new nominator.

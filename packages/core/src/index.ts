@@ -233,46 +233,52 @@ export const initScorekeeper = async (config, handler, maybeBot) => {
 };
 
 const start = async (cmd: { config: string }) => {
-  const config = await Config.loadConfigDir(cmd.config);
-  const winstonLabel = { label: "start" };
+  try {
+    const config = await Config.loadConfigDir(cmd.config);
+    const winstonLabel = { label: "start" };
 
-  logger.info(`Starting the backend services. ${version}`, winstonLabel);
-  logger.info(`Network prefix: ${config.global.networkPrefix}`, winstonLabel);
+    logger.info(`Starting the backend services. ${version}`, winstonLabel);
+    logger.info(`Network prefix: ${config.global.networkPrefix}`, winstonLabel);
 
-  const handler = await createAPIHandler(config);
+    const handler = await createAPIHandler(config);
 
-  // Create the Database.
-  await createDB(config);
+    // Create the Database.
+    await createDB(config);
 
-  // Set the chain metadata
-  await setChainMetadata(config);
+    // Set the chain metadata
+    await setChainMetadata(config);
 
-  // Create the matrix bot if enabled.
-  const maybeBot = await createMatrixBot(config);
+    // Create the matrix bot if enabled.
+    const maybeBot = await createMatrixBot(config);
 
-  const api = handler.getApi();
-  while (!api) {
-    logger.info(`Waiting for API to connect...`, winstonLabel);
-    await Util.sleep(1000);
+    const api = handler.getApi();
+    while (!api) {
+      logger.info(`Waiting for API to connect...`, winstonLabel);
+      await Util.sleep(1000);
+    }
+
+    // Create the scorekeeper.
+    const scorekeeper = await initScorekeeper(config, handler, maybeBot);
+
+    // Clean the DB.
+    await clean(scorekeeper);
+
+    // Add the candidates
+    await addCandidates(config);
+
+    // Start the API server.
+    await createServer(config, handler, scorekeeper);
+
+    // Start the telemetry client.
+    await createTelemetry(config);
+
+    // Start the scorekeeper
+    await scorekeeper.begin();
+  } catch (e) {
+    logger.error(`Error starting backend services`, winstonLabel);
+    logger.error(JSON.stringify(e));
+    process.exit(1);
   }
-
-  // Create the scorekeeper.
-  const scorekeeper = await initScorekeeper(config, handler, maybeBot);
-
-  // Clean the DB.
-  await clean(scorekeeper);
-
-  // Add the candidates
-  await addCandidates(config);
-
-  // Start the API server.
-  await createServer(config, handler, scorekeeper);
-
-  // Start the telemetry client.
-  await createTelemetry(config);
-
-  // Start the scorekeeper
-  await scorekeeper.begin();
 };
 
 const program = new Command();

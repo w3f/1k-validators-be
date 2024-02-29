@@ -1,16 +1,36 @@
 import { SubmittableExtrinsic } from "@polkadot/api/types";
 import Keyring from "@polkadot/keyring";
-import { blake2AsHex } from "@polkadot/util-crypto";
 
 import { KeyringPair } from "@polkadot/keyring/types";
-import { DelayedTx } from "../db/models";
 import ApiHandler from "../ApiHandler/ApiHandler";
 import { ChainData, Constants, queries, Types } from "../index";
 import logger from "../logger";
+import EventEmitter from "eventemitter3";
+import { sendProxyDelayTx, sendProxyTx } from "./NominatorTx";
 
-const label = { label: "Nominator" };
+export const nominatorLabel = { label: "Nominator" };
 
-export default class Nominator {
+export interface NominatorStatus {
+  status?: string;
+  isBonded?: boolean;
+  bondedAddress?: string;
+  bondedAmount?: number;
+  stashAddress?: string;
+  proxyAddress?: string;
+  isProxy?: boolean;
+  proxyDelay?: number;
+  isNominating?: boolean;
+  lastNominationEra?: number;
+  lastNominationTime?: number;
+  currentTargets?: string[];
+  nextTargets?: string[];
+  proxyTxs?: any[];
+  updated: number;
+  rewardDestination?: string;
+  stale?: boolean;
+}
+
+export default class Nominator extends EventEmitter {
   public currentlyNominating: Types.Stash[] = [];
 
   private _bondedAddress: string;
@@ -25,12 +45,33 @@ export default class Nominator {
   // The amount of blocks for a time delay proxy
   private _proxyDelay: number;
 
+  private _canNominate: { canNominate: boolean; reason: string } = {
+    canNominate: false,
+    reason: "",
+  };
+
+  private _status: NominatorStatus = {
+    status: "Init",
+    bondedAddress: "",
+    stashAddress: "",
+    bondedAmount: 0,
+    isBonded: false,
+    isProxy: false,
+    proxyDelay: 0,
+    proxyAddress: "",
+    lastNominationEra: 0,
+    currentTargets: [],
+    proxyTxs: [],
+    updated: Date.now(),
+  };
+
   constructor(
     handler: ApiHandler,
     cfg: Types.NominatorConfig,
     networkPrefix = 2,
     bot: any,
   ) {
+    super();
     this.handler = handler;
     this.chaindata = new ChainData(handler);
     this.bot = bot;
@@ -42,11 +83,11 @@ export default class Nominator {
 
     logger.info(
       `{nominator::proxyDelay} config proxy delay: ${cfg.proxyDelay}`,
-      label,
+      nominatorLabel,
     );
     logger.info(
       `{nominator::proxy} nominator proxy delay: ${this._proxyDelay}`,
-      label,
+      nominatorLabel,
     );
 
     const keyring = new Keyring({
@@ -64,8 +105,61 @@ export default class Nominator {
       `(Nominator::constructor) Nominator signer spawned: ${this.address} | ${
         this._isProxy ? "Proxy" : "Controller"
       }`,
-      label,
+      nominatorLabel,
     );
+  }
+
+  public getStatus = (): NominatorStatus => {
+    return this._status;
+  };
+
+  public updateNominatorStatus = (newStatus: NominatorStatus) => {
+    this._status = { ...this._status, ...newStatus };
+  };
+
+  public async init(): Promise<NominatorStatus> {
+    const stash = await this.stash();
+    const isBonded = await this.chaindata.isBonded(stash);
+    const [bonded, err] = await this.chaindata.getDenomBondedAmount(stash);
+
+    const lastNominationEra =
+      (await this.chaindata.getNominatorLastNominationEra(stash)) || 0;
+    const currentTargets =
+      (await this.chaindata.getNominatorCurrentTargets(stash)) || [];
+
+    const proxyAnnouncements = await this.chaindata.getProxyAnnouncements(
+      this.signer.address,
+    );
+
+    const rewardDestination = await this.payee();
+    const currentEra = (await this.chaindata.getCurrentEra()) || 0;
+    const stale = isBonded && currentEra - lastNominationEra > 8;
+    const status: NominatorStatus = {
+      status: "Init",
+      bondedAddress: this.bondedAddress,
+      stashAddress: await this.stash(),
+      bondedAmount: Number(bonded),
+      isBonded: isBonded,
+      isProxy: this._isProxy,
+      proxyDelay: this._proxyDelay,
+      proxyAddress: this.signer.address,
+      rewardDestination: rewardDestination,
+      lastNominationEra: lastNominationEra,
+      currentTargets: currentTargets,
+      proxyTxs: proxyAnnouncements,
+      stale: stale,
+      updated: Date.now(),
+    };
+    this.updateNominatorStatus(status);
+    this._canNominate = {
+      canNominate: isBonded,
+      reason: isBonded ? "Bonded" : "Not bonded",
+    };
+    return status;
+  }
+
+  public get status(): NominatorStatus {
+    return this._status;
   }
 
   public get address(): string {
@@ -108,9 +202,9 @@ export default class Nominator {
     } catch (e) {
       logger.error(
         `Error getting stash for ${this.bondedAddress}: ${e}`,
-        label,
+        nominatorLabel,
       );
-      logger.error(JSON.stringify(e), label);
+      logger.error(JSON.stringify(e), nominatorLabel);
       return this.bondedAddress;
     }
   }
@@ -118,29 +212,42 @@ export default class Nominator {
   public async payee(): Promise<string> {
     const api = this.handler.getApi();
     if (!api) {
-      logger.error(`Error getting API in payee`, label);
-      return this._bondedAddress;
+      logger.error(`Error getting API in payee`, nominatorLabel);
+      return "";
     }
     try {
-      const ledger = await api?.query.staking.ledger(this.bondedAddress);
-      if (!ledger) return this._bondedAddress;
-      const { stash } = ledger.unwrap();
-      const payee = await api.query.staking.payee(stash);
-      if (payee) {
-        // @ts-ignore
-        return payee.toJSON()?.account
-          ? // @ts-ignore
-            payee.toJSON()?.account
-          : payee.toString();
+      const isBonded = await this.chaindata.isBonded(this.bondedAddress);
+      if (!isBonded) {
+        return "";
       }
-      return this._bondedAddress;
+      const stash = await this.stash();
+      const rewardDestination =
+        await this.chaindata.getRewardDestination(stash);
+      if (rewardDestination) {
+        return rewardDestination;
+      } else {
+        return "";
+      }
     } catch (e) {
       logger.error(
         `Error getting payee for ${this.bondedAddress}: ${e}`,
-        label,
+        nominatorLabel,
       );
-      logger.error(JSON.stringify(e), label);
-      return this._bondedAddress;
+      logger.error(JSON.stringify(e), nominatorLabel);
+      return "";
+    }
+  }
+
+  public async signAndSendTx(
+    tx: SubmittableExtrinsic<"promise">,
+  ): Promise<boolean> {
+    try {
+      await tx.signAndSend(this.signer);
+      return true;
+    } catch (e) {
+      logger.error(`Error sending tx: `, nominatorLabel);
+      logger.error(JSON.stringify(e), nominatorLabel);
+      return false;
     }
   }
 
@@ -149,16 +256,13 @@ export default class Nominator {
 
     const api = this.handler.getApi();
     if (!api) {
-      logger.error(`Error getting API in nominate`, label);
+      logger.error(`Error getting API in nominate`, nominatorLabel);
       return false;
     }
 
     try {
-      const controller = await api?.query.staking.bonded(this.bondedAddress);
-      if (!controller || controller.isNone) {
-        logger.warn(`Account ${this.bondedAddress} is not bonded!`);
-        return false;
-      }
+      const isBonded = await this.chaindata.isBonded(this.bondedAddress);
+      if (!isBonded) return false;
     } catch (e) {
       logger.error(`Error checking if ${this.bondedAddress} is bonded: ${e}`);
       return false;
@@ -168,112 +272,13 @@ export default class Nominator {
 
     // Start an announcement for a delayed proxy tx
     if (this._isProxy && this._proxyDelay > 0) {
-      logger.info(
-        `{Nominator::nominate::proxy} starting tx for ${this.address} with proxy delay ${this._proxyDelay} blocks`,
-        label,
-      );
-
-      const innerTx = api?.tx.staking.nominate(targets);
-
-      const currentBlock = await api?.rpc.chain.getBlock();
-      if (!currentBlock) {
-        logger.error(
-          `{Nominator::nominate} there was an error getting the current block`,
-          label,
-        );
-        return false;
-      }
-      const { number } = currentBlock.block.header;
-      const callHash = innerTx.method.hash.toString();
-
-      tx = api?.tx.proxy.announce(
-        this.bondedAddress,
-        blake2AsHex(innerTx.method.toU8a()),
-      );
-
-      const delayedTx: DelayedTx = {
-        number: number.toNumber(),
-        controller: this.bondedAddress,
-        targets,
-        callHash,
-      };
-      await queries.addDelayedTx(delayedTx);
-
-      try {
-        await tx.signAndSend(this.signer);
-      } catch (e) {
-        logger.error(
-          `{Nominator::nominate} there was an error sending the tx`,
-          label,
-        );
-        logger.error(e);
-      }
+      await sendProxyDelayTx(this, targets, this.chaindata, api);
     } else if (this._isProxy && this._proxyDelay == 0) {
-      // Start a normal proxy tx call
-      logger.info(
-        `{Nominator::nominate::proxy} starting tx for ${this.address} with proxy delay ${this._proxyDelay} blocks`,
-        label,
-      );
-
-      const innerTx = api?.tx.staking.nominate(targets);
-      const callHash = innerTx.method.hash.toString();
-
-      const outerTx = api.tx.proxy.proxy(
-        this.bondedAddress,
-        "Staking",
-        innerTx,
-      );
-
-      const [didSend, finalizedBlockHash] = (await this.sendStakingTx(
-        outerTx,
-        targets,
-      )) ?? [false, ""];
-
-      try {
-        const era = await this.chaindata.getCurrentEra();
-        if (!era) {
-          logger.error(
-            `{Nominator::nominate} there was an error getting the current era`,
-            label,
-          );
-          return false;
-        }
-        const [bonded, err] = await this.chaindata.getBondedAmount(
-          this.bondedAddress,
-        );
-        const denom = await this.chaindata.getDenom();
-
-        if (bonded && denom) {
-          await queries.setNomination(
-            this.bondedAddress,
-            era,
-            targets,
-            bonded / denom || 0,
-            finalizedBlockHash || "",
-          );
-        }
-      } catch (e) {
-        logger.error(
-          `{Nominator::nominate} there was an error setting the nomination for non-proxy tx in the db`,
-          label,
-        );
-        logger.error(e);
-      }
-
-      const nominateMsg = `{Nominator::nominate::proxy} non-delay ${this.address} sent tx: ${didSend} finalized in block #${finalizedBlockHash}`;
-      logger.info(nominateMsg, label);
-      if (this.bot) await this.bot?.sendMessage(nominateMsg);
+      // Start a non delay proxy tx
+      await sendProxyTx(this, targets, this.chaindata, api, this.bot);
     } else {
       // Do a non-proxy tx
-      logger.info(
-        `(Nominator::nominate) Creating extrinsic Staking::nominate from ${this.address} to targets ${targets} at ${now}`,
-        label,
-      );
       tx = api.tx.staking.nominate(targets);
-      logger.info(
-        "(Nominator::nominate} Sending extrinsic to network...",
-        label,
-      );
       await this.sendStakingTx(tx, targets);
     }
 
@@ -287,7 +292,7 @@ export default class Nominator {
   }): Promise<boolean> {
     const api = this.handler.getApi();
     if (!api) {
-      logger.error(`Error getting API in cancelTx`, label);
+      logger.error(`Error getting API in cancelTx`, nominatorLabel);
       return false;
     }
     const tx = api.tx.proxy.removeAnnouncement(
@@ -326,7 +331,7 @@ export default class Nominator {
     const now = new Date().getTime();
     const api = this.handler.getApi();
     if (!api) {
-      logger.error(`Error getting API in sendStakingTx`, label);
+      logger.error(`Error getting API in sendStakingTx`, nominatorLabel);
       return [false, "error getting api to send staking tx"]; // Change to return undefined
     }
 

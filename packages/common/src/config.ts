@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import path from "path";
 import { isValidUrl } from "./utils/util";
+import logger from "./logger";
 
 type CandidateConfig = {
   slotId: number;
@@ -171,28 +172,32 @@ export const loadConfig = (configPath: string): ConfigSchema => {
 };
 
 export const loadConfigDir = async (configDir: string) => {
-  const secretPath = path.join(configDir, "secret.json");
-  const secretConf = loadConfig(secretPath);
+  try {
+    const secretPath = path.join(configDir, "secret.json");
+    const secretConf = loadConfig(secretPath);
 
-  const mainPath = path.join(configDir, "main.json");
-  const mainConf = loadConfig(mainPath);
+    const mainPath = path.join(configDir, "main.json");
+    const mainConf = loadConfig(mainPath);
 
-  mainConf.matrix.accessToken = secretConf?.matrix?.accessToken;
-  mainConf.scorekeeper.nominators = secretConf?.scorekeeper?.nominators;
+    mainConf.matrix.accessToken = secretConf?.matrix?.accessToken;
+    mainConf.scorekeeper.nominators = secretConf?.scorekeeper?.nominators;
 
-  const candidatesUrl = mainConf.global.candidatesUrl;
+    const candidatesUrl = mainConf.global.candidatesUrl;
 
-  // If the candidates url specified in the config is a valid url, fetch the candidates from the url, otherwise read the candidates from the file
-  if (isValidUrl(candidatesUrl)) {
-    const response = await fetch(candidatesUrl);
-    const candidatesJSON = await response.json();
+    // If the candidates url specified in the config is a valid url, fetch the candidates from the url, otherwise read the candidates from the file
+    if (isValidUrl(candidatesUrl)) {
+      const response = await fetch(candidatesUrl);
+      const candidatesJSON = await response.json();
 
-    mainConf.scorekeeper.candidates = candidatesJSON.candidates;
-  } else {
-    const conf = fs.readFileSync(candidatesUrl, { encoding: "utf-8" });
-    const candidates = JSON.parse(conf);
-    mainConf.scorekeeper.candidates = candidates.candidates;
+      mainConf.scorekeeper.candidates = candidatesJSON.candidates;
+    } else {
+      const conf = fs.readFileSync(candidatesUrl, { encoding: "utf-8" });
+      const candidates = JSON.parse(conf);
+      mainConf.scorekeeper.candidates = candidates.candidates;
+    }
+
+    return mainConf;
+  } catch (e) {
+    logger.error(`Error loading config: ${JSON.stringify(e)}`);
   }
-
-  return mainConf;
 };

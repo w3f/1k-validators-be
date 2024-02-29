@@ -874,7 +874,7 @@ export const clearCandidates = async (): Promise<boolean> => {
 };
 
 export const allCandidates = async (): Promise<Candidate[]> => {
-  return CandidateModel.find({ stash: /.*/ }).lean<Candidate[]>();
+  return CandidateModel.find({}).lean<Candidate[]>();
 };
 
 export const validCandidates = async (): Promise<Candidate[]> => {

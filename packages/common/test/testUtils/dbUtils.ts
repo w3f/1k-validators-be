@@ -3,6 +3,7 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 import { Db } from "../../src";
 import mongoose from "mongoose";
 import { deleteAllDb } from "./deleteAll";
+import * as Util from "../../src/utils/util";
 
 interface ObjectWithId {
   _id: any;
@@ -87,8 +88,13 @@ export const sortByKey = (obj: any[], key: string) => {
   return obj;
 };
 
-export const createTestServer = async () => {
+export const createTestServer = async (oldMongoServer?: MongoMemoryServer) => {
   try {
+    if (oldMongoServer) {
+      await oldMongoServer.stop();
+      await Util.sleep(300);
+    }
+
     const mongoServer = await MongoMemoryServer.create();
     const dbName = `t${Math.random().toString().replace(".", "")}`;
     console.log("dbName", dbName);
@@ -104,9 +110,10 @@ export const createTestServer = async () => {
 
 export const initTestServerBeforeAll = () => {
   let mongoServer: MongoMemoryServer;
-  beforeEach(async () => {
+  beforeAll(async () => {
     try {
-      mongoServer = await createTestServer();
+      // await sleep(300);
+      mongoServer = await createTestServer(mongoServer);
     } catch (error) {
       console.error("Error initializing test server before all tests:", error);
       throw error;
@@ -114,14 +121,17 @@ export const initTestServerBeforeAll = () => {
   });
   afterEach(async () => {
     try {
+      // await sleep(300);
       await deleteAllDb();
-      await mongoose.connection.close();
-      if (mongoServer) {
-        await mongoServer.stop();
-      }
+      await Util.sleep(300);
     } catch (error) {
       console.error("Error stopping test server after all tests:", error);
-      throw error;
+      // throw error;
     }
+  });
+  afterAll(async () => {
+    await Util.sleep(300);
+    await mongoose.disconnect();
+    await Util.sleep(300);
   });
 };

@@ -59,6 +59,62 @@ export const getBlocked = async (
   }
 };
 
+// TODO: add tests
+// bondedAddress - formerly controller
+export const isBonded = async (
+  chaindata: ChainData,
+  bondedAddress: string,
+): Promise<boolean> => {
+  try {
+    if (!(await chaindata.checkApiConnection())) {
+      return false;
+    }
+    const bonded = await chaindata?.api?.query.staking.bonded(bondedAddress);
+    if (bonded) {
+      return bonded.isSome;
+    } else {
+      return false;
+    }
+  } catch (e) {
+    logger.error(`Error getting bonded: ${e}`, chaindataLabel);
+    return false;
+  }
+};
+
+// TODO: Add tests
+export const getDenomBondedAmount = async (
+  chaindata: ChainData,
+  stash: string,
+): Promise<NumberResult> => {
+  try {
+    if (!(await chaindata.checkApiConnection())) {
+      return [0, "API not connected."];
+    }
+    const bondedAddress = await chaindata?.api?.query.staking.bonded(stash);
+    if (!bondedAddress || bondedAddress.isNone) {
+      return [0, "Not bonded to any account."];
+    }
+
+    const ledger: any = await chaindata?.api?.query.staking.ledger(
+      bondedAddress.toString(),
+    );
+    if (!ledger || ledger.isNone) {
+      return [0, `Ledger is empty.`];
+    }
+    const denom = await chaindata.getDenom();
+    if (denom) {
+      const denomBondedAmount = Number(ledger.toJSON().active) / denom;
+
+      return [denomBondedAmount, null];
+    } else {
+      return [0, null];
+    }
+  } catch (e) {
+    logger.error(`Error getting bonded amount: ${e}`, chaindataLabel);
+    return [0, JSON.stringify(e)];
+  }
+};
+
 export const getBondedAmount = async (
   chaindata: ChainData,
   stash: string,

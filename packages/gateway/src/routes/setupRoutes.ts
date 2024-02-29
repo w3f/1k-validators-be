@@ -71,6 +71,9 @@ export const setupScorekeeperRoutes = (
       router.get("/scorekeeper/jobs", async (ctx) => {
         response(ctx, 200, scorekeeper.getJobsStatusAsJson());
       });
+      router.get("/nominator/status", async (ctx) => {
+        response(ctx, 200, scorekeeper.getAllNominatorStatusJson());
+      });
     }
 
     // Scorekeeper Status UI

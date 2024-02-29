@@ -128,6 +128,7 @@ export const sendProxyTx = async (
       updated: Date.now(),
       stale: false,
     });
+    nominator.currentlyNominating = targets;
 
     const nominateMsg = `{Nominator::nominate::proxy} non-delay ${nominator.address} sent tx: ${didSend} finalized in block #${finalizedBlockHash}`;
     logger.info(nominateMsg, nominatorLabel);

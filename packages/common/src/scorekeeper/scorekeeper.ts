@@ -91,8 +91,13 @@ export default class ScoreKeeper {
   }
 
   /// Spawns a new nominator.
-  _spawn(cfg: Config.NominatorConfig, networkPrefix = 2): Nominator {
-    return new Nominator(this.handler, cfg, networkPrefix, this.bot);
+  async _spawn(
+    cfg: Config.NominatorConfig,
+    networkPrefix = 2,
+  ): Promise<Nominator> {
+    const nominator = new Nominator(this.handler, cfg, networkPrefix, this.bot);
+    await nominator.init();
+    return nominator;
   }
 
   // Adds nominators from the config
@@ -101,7 +106,7 @@ export default class ScoreKeeper {
     const now = Util.getNow();
     for (const nomCfg of nominatorGroup) {
       // Create a new Nominator instance from the nominator in the config
-      const nom = this._spawn(nomCfg, this.config.global.networkPrefix);
+      const nom = await this._spawn(nomCfg, this.config.global.networkPrefix);
 
       // try and get the ledger for the nominator - this means it is bonded. If not then don't add it.
       const api = this.handler.getApi();

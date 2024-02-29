@@ -1,17 +1,26 @@
 import React, { useCallback, useEffect, useState } from "react";
 import {
   FiAlertTriangle,
+  FiCalendar,
   FiCheckCircle,
   FiClock,
+  FiDollarSign,
+  FiInfo,
   FiPlay,
+  FiRefreshCcw,
+  FiShield,
+  FiTarget,
+  FiUserCheck,
   FiXCircle,
 } from "react-icons/fi";
+
 import { BeatLoader } from "react-spinners";
 import { motion } from "framer-motion";
 import "./App.css";
 import axios from "axios"; // Ensure the path to your CSS file is correct
 import { debounce } from "lodash";
 import HealthCheckBar from "./HealthCheckBar";
+import { Identicon } from "@polkadot/react-identicon";
 
 interface Job {
   name: string;
@@ -25,11 +34,11 @@ interface Job {
 }
 
 const endpoints = {
-  Polkadot: "https://polkadot.w3f.community/scorekeeper/jobs",
-  Kusama: "https://kusama.w3f.community/scorekeeper/jobs",
-  PolkadotStaging: "https://polkadot-staging.w3f.community/scorekeeper/jobs",
-  KusamaStaging: "https://kusama-staging.w3f.community/scorekeeper/jobs",
-  Local: "http://localhost:3300/scorekeeper/jobs",
+  Polkadot: "https://polkadot.w3f.community",
+  Kusama: "https://kusama.w3f.community",
+  PolkadotStaging: "https://polkadot-staging.w3f.community",
+  KusamaStaging: "https://kusama-staging.w3f.community",
+  Local: "http://localhost:3300",
 };
 
 const OLD_JOB_THRESHOLD_SECONDS = 120;
@@ -41,11 +50,12 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [refreshInterval, setRefreshInterval] = useState(500); // Default refresh interval
+  const [nominators, setNominators] = useState([]);
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get(currentEndpoint);
+      const response = await axios.get(`${currentEndpoint}/scorekeeper/jobs`);
       if (response.data && Object.keys(response.data).length > 0) {
         setJobs(
           Object.entries(response.data).map(([name, details]) => ({
@@ -89,10 +99,35 @@ const App = () => {
     }
   }, [currentEndpoint]);
 
+  const fetchNominatorsData = useCallback(async () => {
+    setIsLoading(true); // Reuse the existing loading state
+    try {
+      const response = await axios.get(`${currentEndpoint}/nominators/status`);
+      if (response.data) {
+        console.log(response.data);
+        setNominators(response.data); // Assuming the response is an array of nominators
+        setHasError(false);
+      } else {
+        console.log("Received empty response for nominators");
+        setHasError(true);
+      }
+    } catch (error) {
+      console.error("Error fetching nominators data:", error);
+      setHasError(true);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [currentEndpoint]);
+
   useEffect(() => {
     const interval = setInterval(fetchData, 500);
     return () => clearInterval(interval);
   }, [fetchData]);
+
+  useEffect(() => {
+    const interval = setInterval(fetchNominatorsData, 500);
+    return () => clearInterval(interval);
+  }, [fetchNominatorsData]);
 
   const debouncedFetchData = useCallback(debounce(fetchData, 2000), [
     fetchData,
@@ -195,6 +230,10 @@ const App = () => {
     // Fallback if the cron expression doesn't match expected patterns
     return "at a specific time";
   };
+
+  function truncateAddress(address, length = 10) {
+    return `${address.slice(0, length / 2)}..${address.slice(-length / 2)}`;
+  }
 
   return (
     <div className="App">
@@ -318,6 +357,99 @@ const App = () => {
             }
           }
         })}
+      </div>
+
+      <h2>Nominators</h2>
+      <div className="nominatorsContainer">
+        {nominators.map((nominator, index) => (
+          <div key={index} className="nominatorItem">
+            <h3>Nominator</h3>
+            {nominator.stashAddress && (
+              <p>
+                <Identicon
+                  value={nominator.stashAddress}
+                  size={24}
+                  theme="polkadot"
+                />
+                Stash Address: {truncateAddress(nominator.stashAddress)}
+              </p>
+            )}
+            {nominator.status && (
+              <p>
+                <FiInfo className="icon" /> Status: {nominator.status}
+              </p>
+            )}
+            {nominator.isBonded !== undefined && (
+              <p>
+                <FiCheckCircle
+                  className="icon"
+                  style={{ color: nominator.isBonded ? "green" : "red" }}
+                />
+                Bonded: {nominator.isBonded ? "Yes" : "No"}
+              </p>
+            )}
+            {nominator.bondedAmount && (
+              <p>
+                <FiDollarSign className="icon" /> Bonded Amount:{" "}
+                {nominator.bondedAmount.toFixed(2)}
+              </p>
+            )}
+
+            {nominator.proxyAddress && (
+              <p>
+                <FiUserCheck className="icon" /> Proxy Address:{" "}
+                {truncateAddress(nominator.proxyAddress)}
+              </p>
+            )}
+            {nominator.isProxy !== undefined && (
+              <p>
+                <FiShield
+                  className="icon"
+                  style={{ color: nominator.isProxy ? "blue" : "grey" }}
+                />
+                Is Proxy: {nominator.isProxy ? "Yes" : "No"}
+              </p>
+            )}
+            {nominator.proxyDelay && (
+              <p>
+                <FiClock className="icon" /> Proxy Delay: {nominator.proxyDelay}{" "}
+                seconds
+              </p>
+            )}
+            {nominator.lastNominationEra && (
+              <p>
+                <FiCalendar className="icon" /> Last Nomination Era:{" "}
+                {nominator.lastNominationEra}
+              </p>
+            )}
+            {nominator.currentTargets &&
+              nominator.currentTargets.length > 0 && (
+                <div>
+                  <FiTarget className="icon" /> Current Targets:
+                  <ul>
+                    {nominator.currentTargets.map((target, index) => (
+                      <li key={index}>{truncateAddress(target)}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            {nominator.updated && (
+              <p>
+                <FiRefreshCcw className="icon" /> Last Updated:{" "}
+                {new Date(nominator.updated).toLocaleString()}
+              </p>
+            )}
+            {nominator.stale !== undefined && (
+              <p>
+                <FiAlertTriangle
+                  className="icon"
+                  style={{ color: nominator.stale ? "orange" : "grey" }}
+                />
+                Stale: {nominator.stale ? "Yes" : "No"}
+              </p>
+            )}
+          </div>
+        ))}
       </div>
     </div>
   );

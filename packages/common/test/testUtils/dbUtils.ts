@@ -90,6 +90,7 @@ export const sortByKey = (obj: any[], key: string) => {
 
 export const createTestServer = async (oldMongoServer?: MongoMemoryServer) => {
   try {
+    await Util.sleep(500);
     if (oldMongoServer) {
       await oldMongoServer.stop();
       await Util.sleep(300);
@@ -123,15 +124,12 @@ export const initTestServerBeforeAll = () => {
     try {
       // await sleep(300);
       await deleteAllDb();
-      await Util.sleep(300);
     } catch (error) {
       console.error("Error stopping test server after all tests:", error);
       // throw error;
     }
   });
   afterAll(async () => {
-    await Util.sleep(300);
     await mongoose.disconnect();
-    await Util.sleep(300);
   });
 };

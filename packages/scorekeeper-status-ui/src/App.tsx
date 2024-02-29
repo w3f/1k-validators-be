@@ -363,16 +363,23 @@ const App = () => {
       <div className="nominatorsContainer">
         {nominators.map((nominator, index) => (
           <div key={index} className="nominatorItem">
-            <h3>Nominator</h3>
             {nominator.stashAddress && (
-              <p>
-                <Identicon
-                  value={nominator.stashAddress}
-                  size={24}
-                  theme="polkadot"
-                />
-                Stash Address: {truncateAddress(nominator.stashAddress)}
-              </p>
+              <h3>
+                Stash:
+                <a
+                  href={`https://www.subscan.io/account/${nominator.stashAddress}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ display: "flex", alignItems: "center", gap: "5px" }}
+                >
+                  <Identicon
+                    value={nominator.stashAddress}
+                    size={20}
+                    theme="polkadot"
+                  />
+                  {truncateAddress(nominator.stashAddress)}
+                </a>
+              </h3>
             )}
             {nominator.status && (
               <p>
@@ -388,35 +395,42 @@ const App = () => {
                 Bonded: {nominator.isBonded ? "Yes" : "No"}
               </p>
             )}
-            {nominator.bondedAmount && (
+            {nominator.bondedAmount > 0 && (
               <p>
                 <FiDollarSign className="icon" /> Bonded Amount:{" "}
-                {nominator.bondedAmount.toFixed(2)}
+                {new Intl.NumberFormat().format(
+                  nominator.bondedAmount.toFixed(2),
+                )}{" "}
+                {currentEndpoint.includes("kusama") ? "KSM" : "DOT"}
               </p>
             )}
-
             {nominator.proxyAddress && (
               <p>
-                <FiUserCheck className="icon" /> Proxy Address:{" "}
-                {truncateAddress(nominator.proxyAddress)}
+                <FiUserCheck className="icon" /> Proxy Address:
+                <a
+                  href={`https://www.subscan.io/account/${nominator.proxyAddress}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ display: "flex", alignItems: "center", gap: "5px" }}
+                >
+                  <Identicon
+                    value={nominator.proxyAddress}
+                    size={20}
+                    theme="polkadot"
+                  />
+                  {truncateAddress(nominator.proxyAddress)}
+                </a>
               </p>
             )}
-            {nominator.isProxy !== undefined && (
+            {nominator.isProxy && (
               <p>
-                <FiShield
-                  className="icon"
-                  style={{ color: nominator.isProxy ? "blue" : "grey" }}
-                />
-                Is Proxy: {nominator.isProxy ? "Yes" : "No"}
+                <FiShield className="icon" style={{ color: "blue" }} />
+                {nominator.proxyDelay && nominator.proxyDelay > 0
+                  ? "Time Delay Proxy"
+                  : "Proxy"}
               </p>
             )}
-            {nominator.proxyDelay && (
-              <p>
-                <FiClock className="icon" /> Proxy Delay: {nominator.proxyDelay}{" "}
-                seconds
-              </p>
-            )}
-            {nominator.lastNominationEra && (
+            {nominator.lastNominationEra > 0 && (
               <p>
                 <FiCalendar className="icon" /> Last Nomination Era:{" "}
                 {nominator.lastNominationEra}
@@ -428,7 +442,25 @@ const App = () => {
                   <FiTarget className="icon" /> Current Targets:
                   <ul>
                     {nominator.currentTargets.map((target, index) => (
-                      <li key={index}>{truncateAddress(target)}</li>
+                      <li key={index}>
+                        <a
+                          href={`https://www.subscan.io/account/${target}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "5px",
+                          }}
+                        >
+                          <Identicon
+                            value={target}
+                            size={20}
+                            theme="polkadot"
+                          />
+                          {truncateAddress(target)}
+                        </a>
+                      </li>
                     ))}
                   </ul>
                 </div>
@@ -439,13 +471,13 @@ const App = () => {
                 {new Date(nominator.updated).toLocaleString()}
               </p>
             )}
-            {nominator.stale !== undefined && (
+            {nominator.stale !== undefined && nominator.stale != false && (
               <p>
                 <FiAlertTriangle
                   className="icon"
                   style={{ color: nominator.stale ? "orange" : "grey" }}
                 />
-                Stale: {nominator.stale ? "Yes" : "No"}
+                Stale
               </p>
             )}
           </div>

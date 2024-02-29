@@ -320,7 +320,9 @@ h1 {
   flex-wrap: wrap;
   justify-content: center;
   gap: 20px; /* Space between nominator items */
+
 }
+
 
 .nominatorItem {
   background: rgba(0, 255, 0, 0.05);
@@ -331,6 +333,11 @@ h1 {
   width: 100%;
   max-width: 300px; /* Maximum width for each item */
   margin-bottom: 20px; /* Space below each item */
+  justify-items: center;
+  justify-content: center;
+  padding-left: 2%;
+  padding-right: 2%;
+
 }
 
 .nominatorTitle {
@@ -342,13 +349,37 @@ h1 {
 
 .nominatorInfo p {
   display: flex;
-  align-items: center;
-  gap: 10px; /* Space between icon and text */
+  align-items: center; /* Ensures vertical alignment with the icon */
   margin-bottom: 10px; /* Space between each piece of information */
   color: #0f0; /* Text color */
+  flex-wrap: nowrap; /* Prevents items from wrapping */
+  line-height: 1; /* Normalizes line-height to ensure alignment */
+  padding: 0; /* Removes padding to prevent misalignment */
 }
 
-.icon {
-  min-width: 24px; /* Ensure icons are aligned */
-  text-align: center;
+.icon, .nominatorInfo div svg {
+  margin-right: 10px; /* Adds space between the icon and the text */
+  height: 24px; /* Fixed height for the icon */
+  width: 24px; /* Fixed width for the icon */
+  align-self: center; /* Centers the icon vertically within the flex container */
+}
+
+/* For the paragraph containing the list of targets to prevent wrapping */
+.nominatorInfo > div {
+  display: flex;
+  align-items: center; /* Aligns the icon with the list */
+  /*gap: 10px; !* Space between the icon and the list *!*/
+}
+
+/* Ensures the list and its items do not break layout */
+.nominatorInfo ul {
+  display: flex;
+  flex-direction: column; /* Lists items vertically */
+  padding-left: 0; /* Removes default padding */
+  list-style-type: none; /* Removes default list styling */
+  margin: 0; /* Removes default margin */
+}
+
+.nominatorInfo ul li {
+  /* If needed, style list items here */
 }

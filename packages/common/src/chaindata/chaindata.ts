@@ -355,7 +355,9 @@ export class ChainData {
   };
 
   // TODO: add tests
-  getNominatorCurrentTargets = async (nominator: string): Promise<string[]> => {
+  getNominatorCurrentTargets = async (
+    nominator: string,
+  ): Promise<string[] | null> => {
     return await getNominatorCurrentTargets(this, nominator);
   };
 }

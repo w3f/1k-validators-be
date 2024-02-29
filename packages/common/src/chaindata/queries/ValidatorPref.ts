@@ -70,7 +70,11 @@ export const isBonded = async (
       return false;
     }
     const bonded = await chaindata?.api?.query.staking.bonded(bondedAddress);
-    return bonded.isSome;
+    if (bonded) {
+      return bonded.isSome;
+    } else {
+      return false;
+    }
   } catch (e) {
     logger.error(`Error getting bonded: ${e}`, chaindataLabel);
     return false;
@@ -98,9 +102,13 @@ export const getDenomBondedAmount = async (
       return [0, `Ledger is empty.`];
     }
     const denom = await chaindata.getDenom();
-    const denomBondedAmount = Number(ledger.toJSON().active) / denom;
+    if (denom) {
+      const denomBondedAmount = Number(ledger.toJSON().active) / denom;
 
-    return [denomBondedAmount, null];
+      return [denomBondedAmount, null];
+    } else {
+      return [0, null];
+    }
   } catch (e) {
     logger.error(`Error getting bonded amount: ${e}`, chaindataLabel);
     return [0, JSON.stringify(e)];

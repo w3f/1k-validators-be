@@ -83,7 +83,7 @@ export const getNominatorLastNominationEra = async (
     }
     const lastNominationEra =
       await chaindata.api?.query.staking.nominators(address);
-    return lastNominationEra?.unwrapOrDefault().submittedIn.toNumber();
+    return lastNominationEra?.unwrapOrDefault().submittedIn.toNumber() || null;
   } catch (e) {
     logger.error(`Error getting last nomination era: ${e}`, chaindataLabel);
     return null;

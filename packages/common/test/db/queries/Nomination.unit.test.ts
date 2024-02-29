@@ -29,7 +29,7 @@ describe("Nominations Database Functions", () => {
       const targets = ["validator1", "validator2"];
       const bonded = 100;
       const blockHash = "sampleBlockHash";
-      q;
+
       await setNomination(address, era, targets, bonded, blockHash);
 
       const newBlockHash = "newSampleBlockHash";

@@ -14,12 +14,10 @@ import {
   addKusamaCandidates,
   kusamaCandidates,
 } from "../../testUtils/candidate";
-import { deleteAllDb } from "../../testUtils/deleteAll";
 
 initTestServerBeforeAll();
 
 beforeEach(async () => {
-  await deleteAllDb();
   await addKusamaCandidates();
 });
 

@@ -45,12 +45,25 @@ export default class Nominator extends EventEmitter {
   // The amount of blocks for a time delay proxy
   private _proxyDelay: number;
 
-  private _canNominate: { candNominate: boolean; reason: string } = {
-    candNominate: false,
+  private _canNominate: { canNominate: boolean; reason: string } = {
+    canNominate: false,
     reason: "",
   };
 
-  private _status: NominatorStatus;
+  private _status: NominatorStatus = {
+    status: "Init",
+    bondedAddress: "",
+    stashAddress: "",
+    bondedAmount: 0,
+    isBonded: false,
+    isProxy: false,
+    proxyDelay: 0,
+    proxyAddress: "",
+    lastNominationEra: 0,
+    currentTargets: [],
+    proxyTxs: [],
+    updated: Date.now(),
+  };
 
   constructor(
     handler: ApiHandler,
@@ -110,16 +123,16 @@ export default class Nominator extends EventEmitter {
     const [bonded, err] = await this.chaindata.getDenomBondedAmount(stash);
 
     const lastNominationEra =
-      await this.chaindata.getNominatorLastNominationEra(stash);
+      (await this.chaindata.getNominatorLastNominationEra(stash)) || 0;
     const currentTargets =
-      await this.chaindata.getNominatorCurrentTargets(stash);
+      (await this.chaindata.getNominatorCurrentTargets(stash)) || [];
 
     const proxyAnnouncements = await this.chaindata.getProxyAnnouncements(
       this.signer.address,
     );
 
     const rewardDestination = await this.payee();
-    const currentEra = await this.chaindata.getCurrentEra();
+    const currentEra = (await this.chaindata.getCurrentEra()) || 0;
     const stale = isBonded && currentEra - lastNominationEra > 8;
     const status: NominatorStatus = {
       status: "Init",
@@ -138,6 +151,10 @@ export default class Nominator extends EventEmitter {
       updated: Date.now(),
     };
     this.updateNominatorStatus(status);
+    this._canNominate = {
+      canNominate: isBonded,
+      reason: isBonded ? "Bonded" : "Not bonded",
+    };
     return status;
   }
 
@@ -230,6 +247,7 @@ export default class Nominator extends EventEmitter {
     } catch (e) {
       logger.error(`Error sending tx: `, nominatorLabel);
       logger.error(JSON.stringify(e), nominatorLabel);
+      return false;
     }
   }
 

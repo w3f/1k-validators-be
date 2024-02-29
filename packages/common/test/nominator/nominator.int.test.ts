@@ -3,7 +3,8 @@ import ApiHandler from "../../src/ApiHandler/ApiHandler";
 import { NominatorConfig } from "../../src/types";
 
 describe("Nominator Integration Test", () => {
-  const nominators = [];
+  const nominators: Nominator[] = [];
+  let handler: ApiHandler;
 
   const nom1 = {
     stash: "G1rrUNQSk7CjjEmLSGcpNu72tVtyzbWdUvgmSer9eBitXWf",
@@ -82,112 +83,112 @@ describe("Nominator Integration Test", () => {
   const seed =
     "raw security lady smoke fit video flat miracle change hurdle potato apple";
 
+  const nominatorConfigs: NominatorConfig[] = [
+    {
+      seed: seed,
+      isProxy: true,
+      proxyFor: nom1.bondedAddress,
+    },
+    {
+      seed: seed,
+      isProxy: true,
+      proxyFor: nom2.bondedAddress,
+    },
+    {
+      seed: seed,
+      isProxy: true,
+      proxyFor: nom3.bondedAddress,
+    },
+    {
+      seed: seed,
+      isProxy: true,
+      proxyFor: nom4.bondedAddress,
+    },
+    {
+      seed: seed,
+      isProxy: true,
+      proxyFor: nom5.bondedAddress,
+    },
+    {
+      seed: seed,
+      isProxy: true,
+      proxyFor: nom6.bondedAddress,
+    },
+    {
+      seed: seed,
+      isProxy: true,
+      proxyFor: nom7.bondedAddress,
+    },
+    {
+      seed: seed,
+      isProxy: true,
+      proxyFor: nom8.bondedAddress,
+    },
+    {
+      seed: seed,
+      isProxy: true,
+      proxyFor: nom9.bondedAddress,
+    },
+    {
+      seed: seed,
+      isProxy: true,
+      proxyFor: nom11.bondedAddress,
+    },
+    {
+      seed: seed,
+      isProxy: true,
+      proxyFor: nom10.bondedAddress,
+    },
+    {
+      seed: seed,
+      isProxy: true,
+      proxyFor: nom12.bondedAddress,
+    },
+    {
+      seed: seed,
+      isProxy: true,
+      proxyFor: nom13.bondedAddress,
+    },
+    {
+      seed: seed,
+      isProxy: true,
+      proxyFor: nom14.bondedAddress,
+    },
+    {
+      seed: seed,
+      isProxy: true,
+      proxyFor: nom15.bondedAddress,
+    },
+    {
+      seed: seed,
+      isProxy: true,
+      proxyFor: nom16.bondedAddress,
+    },
+    {
+      seed: seed,
+      isProxy: true,
+      proxyFor: nom17.bondedAddress,
+    },
+    {
+      seed: seed,
+      isProxy: true,
+      proxyFor: nom18.bondedAddress,
+    },
+  ];
+
   beforeEach(async () => {
-    const handler = new ApiHandler(["wss://kusama-rpc.polkadot.io"]);
+    handler = new ApiHandler(["wss://kusama-rpc.polkadot.io"]);
     await handler.setAPI();
+  });
 
-    // Test seed phrases (they don't have any real value)
-    const nominatorConfigs: NominatorConfig[] = [
-      {
-        seed: seed,
-        isProxy: true,
-        proxyFor: nom1.bondedAddress,
-      },
-      {
-        seed: seed,
-        isProxy: true,
-        proxyFor: nom2.bondedAddress,
-      },
-      {
-        seed: seed,
-        isProxy: true,
-        proxyFor: nom3.bondedAddress,
-      },
-      {
-        seed: seed,
-        isProxy: true,
-        proxyFor: nom4.bondedAddress,
-      },
-      {
-        seed: seed,
-        isProxy: true,
-        proxyFor: nom5.bondedAddress,
-      },
-      {
-        seed: seed,
-        isProxy: true,
-        proxyFor: nom6.bondedAddress,
-      },
-      {
-        seed: seed,
-        isProxy: true,
-        proxyFor: nom7.bondedAddress,
-      },
-      {
-        seed: seed,
-        isProxy: true,
-        proxyFor: nom8.bondedAddress,
-      },
-      {
-        seed: seed,
-        isProxy: true,
-        proxyFor: nom9.bondedAddress,
-      },
-      {
-        seed: seed,
-        isProxy: true,
-        proxyFor: nom11.bondedAddress,
-      },
-      {
-        seed: seed,
-        isProxy: true,
-        proxyFor: nom10.bondedAddress,
-      },
-      {
-        seed: seed,
-        isProxy: true,
-        proxyFor: nom12.bondedAddress,
-      },
-      {
-        seed: seed,
-        isProxy: true,
-        proxyFor: nom13.bondedAddress,
-      },
-      {
-        seed: seed,
-        isProxy: true,
-        proxyFor: nom14.bondedAddress,
-      },
-      {
-        seed: seed,
-        isProxy: true,
-        proxyFor: nom15.bondedAddress,
-      },
-      {
-        seed: seed,
-        isProxy: true,
-        proxyFor: nom16.bondedAddress,
-      },
-      {
-        seed: seed,
-        isProxy: true,
-        proxyFor: nom17.bondedAddress,
-      },
-      {
-        seed: seed,
-        isProxy: true,
-        proxyFor: nom18.bondedAddress,
-      },
-    ];
-
+  it("should have a status defined", async () => {
     for (const config of nominatorConfigs) {
       nominators.push(new Nominator(handler, config, 2, null));
     }
-  });
-  it("should have a status defined", async () => {
+
     for (const nominator of nominators) {
       const status = await nominator.init();
       expect(nominator.status).toBeDefined();
     }
-  }, 30000);
+  }, 300000);
 });

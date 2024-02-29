@@ -40,5 +40,5 @@ export const setChainMetadata = async (
 };
 
 export const getChainMetadata = async (): Promise<ChainMetadata | null> => {
-  return ChainMetadataModel.findOne({ name: /.*/ }).lean<ChainMetadata>();
+  return ChainMetadataModel.findOne({}).lean<ChainMetadata>();
 };

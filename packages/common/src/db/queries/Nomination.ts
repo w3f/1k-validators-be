@@ -80,5 +80,5 @@ export const getLastNominations = async (
 };
 
 export const allNominations = async (): Promise<Nomination[]> => {
-  return NominationModel.find({ address: /.*/ }).lean<Nomination[]>();
+  return NominationModel.find({}).lean<Nomination[]>();
 };

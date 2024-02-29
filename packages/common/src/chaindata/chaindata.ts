@@ -32,12 +32,14 @@ import {
   getCommission,
   getCommissionInEra,
   getControllerFromStash,
+  getDenomBondedAmount,
   getExposure,
   getExposureAt,
   getNextKeys,
   getQueuedKeys,
   getRewardDestination,
   getRewardDestinationAt,
+  isBonded,
   NextKeys,
   QueuedKey,
 } from "./queries/ValidatorPref";
@@ -57,6 +59,8 @@ import {
 import { getProxyAnnouncements, ProxyAnnouncement } from "./queries/Proxy";
 import {
   getNominatorAddresses,
+  getNominatorCurrentTargets,
+  getNominatorLastNominationEra,
   getNominators,
   NominatorInfo,
 } from "./queries/Nomination";
@@ -221,6 +225,16 @@ export class ChainData {
     return await getBondedAmount(this, stash);
   };
 
+  // TODO: add tests
+  isBonded = async (bondedAddress: string): Promise<boolean> => {
+    return await isBonded(this, bondedAddress);
+  };
+
+  // TODO: Add tests
+  getDenomBondedAmount = async (stash: string): Promise<NumberResult> => {
+    return await getDenomBondedAmount(this, stash);
+  };
+
   getControllerFromStash = async (stash: string): Promise<string | null> => {
     return await getControllerFromStash(this, stash);
   };
@@ -331,6 +345,18 @@ export class ChainData {
 
   getNominators = async (): Promise<NominatorInfo[]> => {
     return await getNominators(this);
+  };
+
+  // TODO: add tests
+  getNominatorLastNominationEra = async (
+    nominator: string,
+  ): Promise<number | null> => {
+    return await getNominatorLastNominationEra(this, nominator);
+  };
+
+  // TODO: add tests
+  getNominatorCurrentTargets = async (nominator: string): Promise<string[]> => {
+    return await getNominatorCurrentTargets(this, nominator);
   };
 }
 

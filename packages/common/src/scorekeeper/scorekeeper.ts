@@ -36,6 +36,8 @@ export default class ScoreKeeper {
   public currentEra = 0;
   public currentTargets: { stash?: string; identity?: any }[] = [];
 
+  private _dryRun = false;
+
   // Set when the process is ending
   private ending = false;
   // Set when in the process of nominating
@@ -45,6 +47,8 @@ export default class ScoreKeeper {
 
   private _jobs: Job[] = [];
 
+  public upSince: number = Date.now();
+
   constructor(handler: ApiHandler, config: Config.ConfigSchema, bot: any) {
     this.handler = handler;
     this.chaindata = new ChainData(this.handler);
@@ -52,6 +56,8 @@ export default class ScoreKeeper {
     this.bot = bot || null;
     this.constraints = new Constraints.OTV(this.handler, this.config);
     this.nominatorGroups = [];
+    this._dryRun = this.config.scorekeeper.dryRun;
+    this.upSince = Date.now();
 
     registerAPIHandler(this.handler, this.config, this.chaindata, this.bot);
     registerEventEmitterHandler(this);
@@ -95,7 +101,13 @@ export default class ScoreKeeper {
     cfg: Config.NominatorConfig,
     networkPrefix = 2,
   ): Promise<Nominator> {
-    const nominator = new Nominator(this.handler, cfg, networkPrefix, this.bot);
+    const nominator = new Nominator(
+      this.handler,
+      cfg,
+      networkPrefix,
+      this.bot,
+      this._dryRun,
+    );
     await nominator.init();
     return nominator;
   }

@@ -10,6 +10,7 @@ import {
   FiRefreshCcw,
   FiShield,
   FiTarget,
+  FiTool,
   FiUserCheck,
   FiXCircle,
 } from "react-icons/fi";
@@ -21,6 +22,7 @@ import axios from "axios"; // Ensure the path to your CSS file is correct
 import { debounce } from "lodash";
 import HealthCheckBar from "./HealthCheckBar";
 import { Identicon } from "@polkadot/react-identicon";
+import EraStatsBar from "./EraStatsBar";
 
 interface Job {
   name: string;
@@ -31,6 +33,7 @@ interface Job {
   error?: string;
   iteration?: string;
   frequency: string; // Added frequency field
+  isOld?: boolean; // Added isOld field
 }
 
 const endpoints = {
@@ -43,9 +46,7 @@ const endpoints = {
 
 const OLD_JOB_THRESHOLD_SECONDS = 120;
 const App = () => {
-  const [currentEndpoint, setCurrentEndpoint] = useState(
-    endpoints.KusamaStaging,
-  );
+  const [currentEndpoint, setCurrentEndpoint] = useState(endpoints.Local);
   const [jobs, setJobs] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
@@ -61,6 +62,7 @@ const App = () => {
           Object.entries(response.data).map(([name, details]) => ({
             name,
             ...details,
+            isOld: isJobOld({ ...details, name }),
           })),
         );
         setHasError(false);
@@ -189,32 +191,30 @@ const App = () => {
     );
   };
 
-  const getCronFrequencyInSeconds = (cron: string): number => {
-    // Simple parsing for common cron patterns, returning frequency in seconds
+  const parseCronToMilliseconds = (cron) => {
+    // Simple parsing for common cron patterns
     if (cron.startsWith("*/")) {
-      const seconds = parseInt(cron.split("/")[1], 10);
-      return isNaN(seconds) ? 0 : seconds; // Every X seconds
-    } else if (cron.startsWith("0 */")) {
-      const minutes = parseInt(cron.split(" ")[1].split("/")[1], 10);
-      return isNaN(minutes) ? 0 : minutes * 60; // Every X minutes
+      // Every X minutes
+      const minutes = parseInt(cron.split("/")[1], 10);
+      return minutes * 60 * 1000; // Convert minutes to milliseconds
+    } else if (cron.match(/^\d+ \* \* \* \*$/)) {
+      // At minute X of every hour
+      return 60 * 60 * 1000; // One hour in milliseconds
     }
-    // Add more parsing logic as needed for hours, days, etc.
-
-    return 0; // Default to 0 for unhandled expressions or complex schedules
+    // Return null for unhandled or complex expressions
+    return null;
   };
 
   // Determines if a job is "old" based on its last updated time and cron frequency
-  const isJobOld = (job: Job): boolean => {
-    const currentTime = Date.now(); // Current time in milliseconds
-    const lastUpdated = job.updated; // Assuming 'updated' is in milliseconds
-    const cronFrequencySeconds = getCronFrequencyInSeconds(job.frequency);
-    const oldJobThreshold = cronFrequencySeconds * 1000; // Convert seconds to milliseconds
+  const isJobOld = (job) => {
+    const frequencyMs = parseCronToMilliseconds(job.frequency);
+    if (!frequencyMs) return false; // If cron parsing is not supported, consider job not old
 
-    // Calculate the time difference between now and the last update
-    const timeSinceLastUpdate = currentTime - lastUpdated;
+    const lastUpdatedMs = new Date(job.updated).getTime(); // Assuming 'updated' is in epoch ms
+    const currentTimeMs = Date.now();
+    const nextExpectedRunMs = lastUpdatedMs + frequencyMs;
 
-    // Determine if the job is old based on the cron frequency
-    return timeSinceLastUpdate > oldJobThreshold;
+    return currentTimeMs > nextExpectedRunMs;
   };
 
   const parseCronExpression = (cron: string) => {
@@ -231,14 +231,23 @@ const App = () => {
     return "at a specific time";
   };
 
-  function truncateAddress(address, length = 10) {
-    return `${address.slice(0, length / 2)}..${address.slice(-length / 2)}`;
+  function truncateAddress(address, length = 16) {
+    return `${address.slice(0, length / 2)}...${address.slice(-length / 2)}`;
+  }
+
+  function formatLastUpdate(updated: number): string {
+    const secondsSinceUpdate = (Date.now() - updated) / 1000;
+    if (secondsSinceUpdate < 60) {
+      return `${Math.floor(secondsSinceUpdate)} second${Math.floor(secondsSinceUpdate) !== 1 ? "s" : ""} ago`;
+    } else if (secondsSinceUpdate < 3600) {
+      return `${Math.floor(secondsSinceUpdate / 60)} minute${Math.floor(secondsSinceUpdate / 60) !== 1 ? "s" : ""} ago`;
+    } else {
+      return `${Math.floor(secondsSinceUpdate / 3600)} hour${Math.floor(secondsSinceUpdate / 3600) !== 1 ? "s" : ""} ago`;
+    }
   }
 
   return (
     <div className="App">
-      <HealthCheckBar currentEndpoint={currentEndpoint} />
-      <h1>Scorekeeper Status</h1>
       <select
         value={currentEndpoint}
         onChange={(e) => setCurrentEndpoint(e.target.value)}
@@ -251,10 +260,13 @@ const App = () => {
         ))}
       </select>
 
+      <HealthCheckBar currentEndpoint={currentEndpoint} />
+      <EraStatsBar currentEndpoint={currentEndpoint} />
+
       <div className="jobsContainer">
         {jobs.map((job: Job) => {
           const jobAgeInSeconds = (Date.now() - job.updated) / 1000; // Convert milliseconds to seconds
-          const isOld = jobAgeInSeconds > OLD_JOB_THRESHOLD_SECONDS;
+          // const isOld = jobAgeInSeconds > OLD_JOB_THRESHOLD_SECONDS;
           const isError = job.status === "errored";
 
           return (
@@ -263,18 +275,23 @@ const App = () => {
               initial={{ opacity: 0, x: -100 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5 }}
-              className={`jobItem ${job.status === "errored" ? "jobItemError" : job.status === "running" && (Date.now() - job.updated) / 1000 > OLD_JOB_THRESHOLD_SECONDS ? "jobItemOld" : ""}`}
+              className={`jobItem ${job.status === "errored" ? "jobItemError" : job.status === "running" && job.isOld ? "jobItemOld" : ""}`}
             >
               <div className="jobHeader">
                 {job.status === "errored" && (
                   <FiAlertTriangle color="red" size={20} />
                 )}
-                {job.status === "running" &&
-                  (Date.now() - job.updated) / 1000 >
-                    OLD_JOB_THRESHOLD_SECONDS && (
-                    <FiAlertTriangle color="yellow" size={20} />
-                  )}
-                <h2>{job.name}</h2>
+                {job.status === "running" && job.isOld && (
+                  <FiAlertTriangle color="yellow" size={20} />
+                )}
+                <div className="jobName">
+                  <div className="jobName">
+                    <h4>
+                      <FiTool className="icon" />
+                      {job.name}
+                    </h4>
+                  </div>
+                </div>
                 {renderStatusIcon(
                   job.status,
                   job.progress !== undefined
@@ -282,8 +299,14 @@ const App = () => {
                     : undefined,
                 )}
               </div>
-              <p>Run Count: {job.runCount}</p>
-              <p>{parseCronExpression(job.frequency)}</p>
+              <p>
+                <FiPlay className="icon" />
+                Run Count: {job.runCount}
+              </p>
+              <p>
+                <FiClock className="icon" />
+                {parseCronExpression(job.frequency)}
+              </p>
 
               <div className="progressBarContainer">
                 <div className="progressBarBackground">
@@ -317,15 +340,15 @@ const App = () => {
                   <div
                     className={`timeIcon ${(Date.now() - job.updated) / 1000 > OLD_JOB_THRESHOLD_SECONDS ? "oldTime" : ""}`}
                   >
-                    <FiClock />
+                    <FiRefreshCcw />
                   </div>
                   <p className="lastUpdatedText">
-                    Last Updated: {formatLastUpdate(job.updated)}
+                    {formatLastUpdate(job.updated)}
+                    {job.isOld}
                   </p>
                 </div>
               )}
-              {(Date.now() - job.updated) / 1000 >
-                OLD_JOB_THRESHOLD_SECONDS && (
+              {job.isOld && (
                 <div className="lastUpdateBox">
                   <div className="warningSymbol">
                     <FiAlertTriangle color="yellow" size={20} />
@@ -345,17 +368,6 @@ const App = () => {
               )}
             </motion.div>
           );
-
-          function formatLastUpdate(updated: number): string {
-            const secondsSinceUpdate = (Date.now() - updated) / 1000;
-            if (secondsSinceUpdate < 60) {
-              return `${Math.floor(secondsSinceUpdate)} second${Math.floor(secondsSinceUpdate) !== 1 ? "s" : ""} ago`;
-            } else if (secondsSinceUpdate < 3600) {
-              return `${Math.floor(secondsSinceUpdate / 60)} minute${Math.floor(secondsSinceUpdate / 60) !== 1 ? "s" : ""} ago`;
-            } else {
-              return `${Math.floor(secondsSinceUpdate / 3600)} hour${Math.floor(secondsSinceUpdate / 3600) !== 1 ? "s" : ""} ago`;
-            }
-          }
         })}
       </div>
 
@@ -364,36 +376,46 @@ const App = () => {
         {nominators.map((nominator, index) => (
           <div key={index} className="nominatorItem">
             {nominator.stashAddress && (
-              <h3>
-                Stash:
-                <a
-                  href={`https://www.subscan.io/account/${nominator.stashAddress}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ display: "flex", alignItems: "center", gap: "5px" }}
-                >
-                  <Identicon
-                    value={nominator.stashAddress}
-                    size={20}
-                    theme="polkadot"
-                  />
-                  {truncateAddress(nominator.stashAddress)}
-                </a>
-              </h3>
+              <a
+                href={`https://www.subscan.io/account/${nominator.stashAddress}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <div className="nominatorField">
+                  <h3>
+                    {" "}
+                    <FiUserCheck className="icon" />
+                    Stash
+                  </h3>
+                  <p>
+                    <Identicon
+                      className="identicon"
+                      value={nominator.stashAddress}
+                      size={20}
+                      theme="polkadot"
+                    />
+                    {truncateAddress(nominator.stashAddress)}
+                  </p>
+                </div>
+              </a>
             )}
             {nominator.status && (
-              <p>
-                <FiInfo className="icon" /> Status: {nominator.status}
-              </p>
+              <div>
+                <p>
+                  <FiInfo className="icon" /> Status: {nominator.status}
+                </p>
+              </div>
             )}
             {nominator.isBonded !== undefined && (
-              <p>
-                <FiCheckCircle
-                  className="icon"
-                  style={{ color: nominator.isBonded ? "green" : "red" }}
-                />
-                Bonded: {nominator.isBonded ? "Yes" : "No"}
-              </p>
+              <div>
+                <p>
+                  <FiCheckCircle
+                    className="icon"
+                    style={{ color: nominator.isBonded ? "green" : "red" }}
+                  />
+                  {nominator.isBonded ? "Bonded" : "Not Bonded"}
+                </p>
+              </div>
             )}
             {nominator.bondedAmount > 0 && (
               <p>
@@ -404,24 +426,7 @@ const App = () => {
                 {currentEndpoint.includes("kusama") ? "KSM" : "DOT"}
               </p>
             )}
-            {nominator.proxyAddress && (
-              <p>
-                <FiUserCheck className="icon" /> Proxy Address:
-                <a
-                  href={`https://www.subscan.io/account/${nominator.proxyAddress}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ display: "flex", alignItems: "center", gap: "5px" }}
-                >
-                  <Identicon
-                    value={nominator.proxyAddress}
-                    size={20}
-                    theme="polkadot"
-                  />
-                  {truncateAddress(nominator.proxyAddress)}
-                </a>
-              </p>
-            )}
+
             {nominator.isProxy && (
               <p>
                 <FiShield className="icon" style={{ color: "blue" }} />
@@ -430,10 +435,42 @@ const App = () => {
                   : "Proxy"}
               </p>
             )}
+            {nominator.proxyAddress && (
+              <a
+                href={`https://www.subscan.io/account/${nominator.proxyAddress}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ display: "flex", alignItems: "center", gap: "5px" }}
+              >
+                <div class="nominatorField">
+                  <p>
+                    <FiUserCheck className="icon" /> Proxy Address:
+                  </p>
+                  <p>
+                    <Identicon
+                      value={nominator.proxyAddress}
+                      size={20}
+                      theme="polkadot"
+                      className="identicon"
+                    />
+                    {truncateAddress(nominator.proxyAddress)}
+                  </p>
+                </div>
+              </a>
+            )}
             {nominator.lastNominationEra > 0 && (
               <p>
-                <FiCalendar className="icon" /> Last Nomination Era:{" "}
-                {nominator.lastNominationEra}
+                <FiCalendar className="icon" />
+                {"Last Nomination Era: "}
+                <span style={{ color: nominator.stale ? "red" : "inherit" }}>
+                  {nominator.lastNominationEra}
+                </span>
+                {nominator.stale && (
+                  <FiAlertTriangle
+                    className="icon"
+                    style={{ marginLeft: "5px", color: "red" }}
+                  />
+                )}
               </p>
             )}
             {nominator.currentTargets &&
@@ -442,42 +479,55 @@ const App = () => {
                   <FiTarget className="icon" /> Current Targets:
                   <ul>
                     {nominator.currentTargets.map((target, index) => (
-                      <li key={index}>
-                        <a
-                          href={`https://www.subscan.io/account/${target}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "5px",
-                          }}
-                        >
-                          <Identicon
-                            value={target}
-                            size={20}
-                            theme="polkadot"
-                          />
-                          {truncateAddress(target)}
-                        </a>
+                      <li key={index} className="targetItemWrapper">
+                        <div className="">
+                          <a
+                            href={`https://www.subscan.io/account/${target.stash}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "5px",
+                            }}
+                            className="targetField"
+                          >
+                            <Identicon
+                              value={target.stash}
+                              size={20}
+                              theme="polkadot"
+                            />
+                            {target.name
+                              ? `[${target.score}] ${target.name}`
+                              : `[${target.score}] ${truncateAddress(target.stash)}`}
+                            {target.kyc && (
+                              <FiCheckCircle
+                                style={{ color: "green", marginLeft: "5px" }}
+                                title="KYC Verified"
+                              />
+                            )}
+                          </a>
+                        </div>
                       </li>
                     ))}
                   </ul>
                 </div>
               )}
+            {nominator.stale !== undefined && nominator.stale != false && (
+              <div className="stale">
+                <h3>
+                  <FiAlertTriangle
+                    className="icon"
+                    style={{ color: nominator.stale ? "orange" : "grey" }}
+                  />
+                  Stale
+                </h3>
+              </div>
+            )}
             {nominator.updated && (
               <p>
-                <FiRefreshCcw className="icon" /> Last Updated:{" "}
-                {new Date(nominator.updated).toLocaleString()}
-              </p>
-            )}
-            {nominator.stale !== undefined && nominator.stale != false && (
-              <p>
-                <FiAlertTriangle
-                  className="icon"
-                  style={{ color: nominator.stale ? "orange" : "grey" }}
-                />
-                Stale
+                <FiRefreshCcw className="icon" />
+                {formatLastUpdate(nominator.updated)}
               </p>
             )}
           </div>

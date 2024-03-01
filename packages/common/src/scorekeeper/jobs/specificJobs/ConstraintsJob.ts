@@ -54,7 +54,7 @@ export const validityJob = async (
         name: JobNames.Validity,
         progress,
         updated: Date.now(),
-        iteration: `Candidate name: ${candidate.name}`,
+        iteration: `${isValid ? "✅ " : "❌ "} ${candidate.name}`,
       });
 
       logger.info(
@@ -150,7 +150,7 @@ export const scoreJob = async (
     for (const [index, candidate] of candidates.entries()) {
       const start = Date.now();
 
-      await constraints.scoreCandidate(candidate, scoreMetadata);
+      const score = await constraints.scoreCandidate(candidate, scoreMetadata);
 
       const end = Date.now();
       const time = `(${end - start}ms)`;
@@ -162,7 +162,7 @@ export const scoreJob = async (
         name: JobNames.Score,
         progress,
         updated: Date.now(),
-        iteration: `Scored candidate ${candidate.name}`,
+        iteration: `[${score}] - ${candidate.name}`,
       });
 
       logger.info(

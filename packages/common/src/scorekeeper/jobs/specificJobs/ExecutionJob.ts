@@ -1,7 +1,6 @@
 import { Job, JobConfig, JobRunnerMetadata } from "../JobsClass";
 import logger from "../../../logger";
 import { Constants, queries, Util } from "../../../index";
-import { CronJob } from "cron";
 import { cronLabel } from "../cron/StartCronJobs";
 import { jobStatusEmitter } from "../../../Events";
 import { JobNames } from "../JobConfigs";
@@ -14,31 +13,24 @@ export class ExecutionJob extends Job {
 
 export const executionJob = async (
   metadata: JobRunnerMetadata,
-): Promise<void> => {
-  const {
-    constraints,
-    ending,
-    config,
-    chaindata,
-    nominatorGroups,
-    nominating,
-    currentEra,
-    bot,
-    handler,
-  } = metadata;
+): Promise<boolean> => {
+  try {
+    const {
+      constraints,
+      ending,
+      config,
+      chaindata,
+      nominatorGroups,
+      nominating,
+      currentEra,
+      bot,
+      handler,
+    } = metadata;
 
-  const timeDelayBlocks = config.proxy?.timeDelayBlocks
-    ? Number(config.proxy?.timeDelayBlocks)
-    : Number(Constants.TIME_DELAY_BLOCKS);
-  const executionFrequency = config.cron?.execution
-    ? config.cron?.execution
-    : Constants.EXECUTION_CRON;
-  logger.info(
-    `Starting Execution Job with frequency ${executionFrequency} and time delay of ${timeDelayBlocks} blocks`,
-    cronLabel,
-  );
+    const timeDelayBlocks = config.proxy?.timeDelayBlocks
+      ? Number(config.proxy?.timeDelayBlocks)
+      : Number(Constants.TIME_DELAY_BLOCKS);
 
-  const executionCron = new CronJob(executionFrequency, async () => {
     logger.info(`Running execution cron`, cronLabel);
     const latestBlock = await chaindata.getLatestBlock();
     if (!latestBlock) {
@@ -153,7 +145,7 @@ export const executionJob = async (
           cronLabel,
         );
 
-        if (didSend) {
+        if (didSend || finalizedBlockHash == "dryRun") {
           // Create a Nomination Object
           jobStatusEmitter.emit("jobProgress", {
             name: JobNames.Execution,
@@ -230,6 +222,10 @@ export const executionJob = async (
       updated: Date.now(),
       message: "All transactions processed",
     });
-  });
-  executionCron.start();
+    return true;
+  } catch (e) {
+    logger.error(`Error executing executionJob:`);
+    logger.error(JSON.stringify(e));
+    return false;
+  }
 };

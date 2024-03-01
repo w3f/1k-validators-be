@@ -12,6 +12,8 @@ export class MainScorekeeperJob extends Job {
   }
 }
 
+const mainScoreKeeperLabel = { label: "MainScorekeeperJob" };
+
 export const mainScorekeeperJob = async (
   metadata: JobRunnerMetadata,
 ): Promise<void> => {
@@ -28,13 +30,13 @@ export const mainScorekeeperJob = async (
   } = metadata;
 
   if (ending) {
-    logger.info(`ROUND IS CURRENTLY ENDING.`, scorekeeperLabel);
+    logger.info(`ROUND IS CURRENTLY ENDING.`, mainScoreKeeperLabel);
     return;
   }
 
   const [activeEra, err] = await chaindata.getActiveEraIndex();
   if (err) {
-    logger.warn(`CRITICAL: ${err}`, scorekeeperLabel);
+    logger.warn(`CRITICAL: ${err}`, mainScoreKeeperLabel);
     const errorStatus: JobStatus = {
       status: "errored",
       name: JobNames.MainScorekeeper,
@@ -57,10 +59,10 @@ export const mainScorekeeperJob = async (
 
     // Process each nominator group
 
-    if (!config.scorekeeper.nominating) {
+    if (!config.scorekeeper.nominating && !config?.scorekeeper?.dryRun) {
       logger.info(
-        "Nominating is disabled in the settings. Skipping round.",
-        scorekeeperLabel,
+        "Nominating is disabled in the settings and Dry Run is false. Skipping round.",
+        mainScoreKeeperLabel,
       );
       const errorStatus: JobStatus = {
         status: "errored",
@@ -71,6 +73,11 @@ export const mainScorekeeperJob = async (
 
       jobStatusEmitter.emit("jobErrored", errorStatus);
       return;
+    } else {
+      logger.info(
+        `${config?.scorekeeper?.dryRun ? "DRY RUN: " : ""}Starting round.`,
+        mainScoreKeeperLabel,
+      );
     }
 
     const allCurrentTargets: {
@@ -88,7 +95,7 @@ export const mainScorekeeperJob = async (
     if (!allCurrentTargets.length) {
       logger.info(
         "Current Targets is empty. Starting round.",
-        scorekeeperLabel,
+        mainScoreKeeperLabel,
       );
       await startRound(
         nominating,

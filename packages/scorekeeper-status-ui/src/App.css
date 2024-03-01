@@ -21,6 +21,7 @@ body, html {
   font-family: 'Source Code Pro', monospace;
   padding: 20px;
   box-sizing: border-box;
+  /*display: block;*/
 }
 
 h1 {
@@ -331,12 +332,16 @@ h1 {
   padding: 15px;
   box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
   width: 100%;
-  max-width: 300px; /* Maximum width for each item */
+  max-width: 340px; /* Maximum width for each item */
   margin-bottom: 20px; /* Space below each item */
   justify-items: center;
   justify-content: center;
   padding-left: 2%;
   padding-right: 2%;
+  display: grid;
+  place-items: center; /* Shorthand for aligning and justifying items at the center */
+  height: 100%; /* Ensure the div takes up full container height, adjust as needed */
+  width: 100%;
 
 }
 
@@ -350,36 +355,91 @@ h1 {
 .nominatorInfo p {
   display: flex;
   align-items: center; /* Ensures vertical alignment with the icon */
-  margin-bottom: 10px; /* Space between each piece of information */
+  /*margin-bottom: 10px; !* Space between each piece of information *!*/
   color: #0f0; /* Text color */
-  flex-wrap: nowrap; /* Prevents items from wrapping */
+  /*flex-wrap: nowrap; !* Prevents items from wrapping *!*/
   line-height: 1; /* Normalizes line-height to ensure alignment */
   padding: 0; /* Removes padding to prevent misalignment */
 }
 
-.icon, .nominatorInfo div svg {
+.icon {
   margin-right: 10px; /* Adds space between the icon and the text */
-  height: 24px; /* Fixed height for the icon */
+  height: 20px; /* Fixed height for the icon */
   width: 24px; /* Fixed width for the icon */
   align-self: center; /* Centers the icon vertically within the flex container */
+  /*margin-top: 20px;*/
+  position: relative;
+  top: 5px;
 }
 
-/* For the paragraph containing the list of targets to prevent wrapping */
-.nominatorInfo > div {
-  display: flex;
-  align-items: center; /* Aligns the icon with the list */
-  /*gap: 10px; !* Space between the icon and the list *!*/
-}
 
-/* Ensures the list and its items do not break layout */
-.nominatorInfo ul {
-  display: flex;
-  flex-direction: column; /* Lists items vertically */
-  padding-left: 0; /* Removes default padding */
-  list-style-type: none; /* Removes default list styling */
-  margin: 0; /* Removes default margin */
-}
 
 .nominatorInfo ul li {
   /* If needed, style list items here */
 }
+
+.nominatorField {
+  flex-direction: column;
+  border: 1px solid #00d600;
+  border-radius: 5px;
+  width: 15vw;
+  justify-content: center;
+  display: flex;
+  align-items: center; /* Correct property for horizontal centering in a flex column */
+  background: rgba(0, 255, 0, 0.1);
+  cursor: pointer; /* Indicates clickability */
+  transition: background 0.3s, border-color 0.3s; /* Smooth transition for hover effects */
+}
+
+.nominatorField:hover {
+  background: rgba(0, 255, 0, 0.2); /* Slightly darken the background on hover */
+  border-color: #00ff00; /* Brighten the border color on hover */
+}
+
+.stale {
+  margin-top: 10%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid  rgba(255, 255, 0, 0.5);
+  background: linear-gradient(to right, rgba(255, 255, 0, 0.05), rgba(255, 255, 0, 0.1)); /* Gradient from transparent black to lighter */
+  border-radius: 3px;
+  width: 100%;
+  color: rgba(255, 255, 0, 1)
+}
+
+.identicon {
+  padding-left: 15px;
+  padding-right: 15px;
+  position: relative;
+  top: 5px;
+}
+.targetField {
+    /*transition: background 0.3s, border 0.3s; !* Smooth transition for hover effect *!*/
+    padding: 10px; /* Add some padding inside the div */
+    border-radius: 5px; /* Optional: match the border-radius if needed */
+    border: 1px solid transparent; /* Transparent border by default */
+  }
+
+.targetField:hover {
+    background: rgba(0, 255, 0, 0.05); /* Slightly darken the background on hover */
+    border-color:rgba(0, 255, 0, 0.4); /* Brighten the border color on hover */
+}
+
+.eraStatsBar {
+  width: 80%; /* Adjusted for better responsiveness */
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.5); /* Neon green glow */
+  background: rgba(0, 255, 0, 0.05);
+  border: 1px solid rgba(0, 255, 0, 0.5);
+  margin: 0 auto; /* Center the bar */
+  flex-wrap: wrap; /* Allows items to wrap if necessary */
+
+  display: flex;
+  align-items: center; /* Ensures vertical alignment is centered */
+  justify-content: center; /* Centers content horizontally */
+  gap: 10px; /* Space between items */
+  padding: 10px;
+  border-radius: 5px;
+  margin-top: 1%;
+}
+

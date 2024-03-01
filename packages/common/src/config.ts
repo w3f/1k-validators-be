@@ -145,6 +145,7 @@ export type ConfigSchema = {
     forceRound: boolean;
     nominating: boolean;
     nominators: NominatorConfig[][];
+    dryRun: boolean;
   };
   server: {
     enable: boolean;

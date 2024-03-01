@@ -22,12 +22,15 @@ export interface NominatorStatus {
   isNominating?: boolean;
   lastNominationEra?: number;
   lastNominationTime?: number;
-  currentTargets?: string[];
+  currentTargets?:
+    | string[]
+    | { stash?: string; name?: string; kyc?: boolean; score?: number }[];
   nextTargets?: string[];
   proxyTxs?: any[];
   updated: number;
   rewardDestination?: string;
   stale?: boolean;
+  dryRun?: boolean;
 }
 
 export default class Nominator extends EventEmitter {
@@ -38,6 +41,9 @@ export default class Nominator extends EventEmitter {
   private handler: ApiHandler;
   private chaindata: ChainData;
   private signer: KeyringPair;
+
+  // Set from config - if true nominations will be stubbed but not executed
+  private _dryRun = false;
 
   // Use proxy of controller instead of controller directly.
   private _isProxy: boolean;
@@ -69,13 +75,15 @@ export default class Nominator extends EventEmitter {
     handler: ApiHandler,
     cfg: Types.NominatorConfig,
     networkPrefix = 2,
-    bot: any,
+    bot?: any,
+    dryRun = false,
   ) {
     super();
     this.handler = handler;
     this.chaindata = new ChainData(handler);
     this.bot = bot;
     this._isProxy = cfg.isProxy || false;
+    this._dryRun = dryRun || false;
 
     // If the proxyDelay is not set in the config, default to TIME_DELAY_BLOCKS (~18 hours, 10800 blocks)
     this._proxyDelay =
@@ -118,44 +126,71 @@ export default class Nominator extends EventEmitter {
   };
 
   public async init(): Promise<NominatorStatus> {
-    const stash = await this.stash();
-    const isBonded = await this.chaindata.isBonded(stash);
-    const [bonded, err] = await this.chaindata.getDenomBondedAmount(stash);
+    try {
+      const stash = await this.stash();
+      const isBonded = await this.chaindata.isBonded(stash);
+      const [bonded, err] = await this.chaindata.getDenomBondedAmount(stash);
 
-    const lastNominationEra =
-      (await this.chaindata.getNominatorLastNominationEra(stash)) || 0;
-    const currentTargets =
-      (await this.chaindata.getNominatorCurrentTargets(stash)) || [];
+      const lastNominationEra =
+        (await this.chaindata.getNominatorLastNominationEra(stash)) || 0;
+      const currentTargets =
+        (await this.chaindata.getNominatorCurrentTargets(stash)) || [];
+      const currentNamedTargets = await Promise.all(
+        currentTargets.map(async (target) => {
+          const kyc = await queries.isKYC(target);
+          let name;
+          name = await queries.getIdentityName(target);
+          const score = await queries.getLatestValidatorScore(target);
+          if (!name) {
+            name = (await this.chaindata.getFormattedIdentity(target))?.name;
+          }
+          let totalScore;
+          if (score && score[0] && score[0].total) {
+            totalScore = score[0].total;
+          }
+          return {
+            stash: target,
+            name: name,
+            kyc: kyc,
+            score: totalScore || 0,
+          };
+        }),
+      );
 
-    const proxyAnnouncements = await this.chaindata.getProxyAnnouncements(
-      this.signer.address,
-    );
+      const proxyAnnouncements = await this.chaindata.getProxyAnnouncements(
+        this.signer.address,
+      );
 
-    const rewardDestination = await this.payee();
-    const currentEra = (await this.chaindata.getCurrentEra()) || 0;
-    const stale = isBonded && currentEra - lastNominationEra > 8;
-    const status: NominatorStatus = {
-      status: "Init",
-      bondedAddress: this.bondedAddress,
-      stashAddress: await this.stash(),
-      bondedAmount: Number(bonded),
-      isBonded: isBonded,
-      isProxy: this._isProxy,
-      proxyDelay: this._proxyDelay,
-      proxyAddress: this.signer.address,
-      rewardDestination: rewardDestination,
-      lastNominationEra: lastNominationEra,
-      currentTargets: currentTargets,
-      proxyTxs: proxyAnnouncements,
-      stale: stale,
-      updated: Date.now(),
-    };
-    this.updateNominatorStatus(status);
-    this._canNominate = {
-      canNominate: isBonded,
-      reason: isBonded ? "Bonded" : "Not bonded",
-    };
-    return status;
+      const rewardDestination = await this.payee();
+      const currentEra = (await this.chaindata.getCurrentEra()) || 0;
+      const stale = isBonded && currentEra - lastNominationEra > 8;
+      const status: NominatorStatus = {
+        status: "Init",
+        bondedAddress: this.bondedAddress,
+        stashAddress: await this.stash(),
+        bondedAmount: Number(bonded),
+        isBonded: isBonded,
+        isProxy: this._isProxy,
+        proxyDelay: this._proxyDelay,
+        proxyAddress: this.signer.address,
+        rewardDestination: rewardDestination,
+        lastNominationEra: lastNominationEra,
+        currentTargets: currentNamedTargets,
+        proxyTxs: proxyAnnouncements,
+        stale: stale,
+        dryRun: this._dryRun,
+        updated: Date.now(),
+      };
+      this.updateNominatorStatus(status);
+      this._canNominate = {
+        canNominate: isBonded,
+        reason: isBonded ? "Bonded" : "Not bonded",
+      };
+      return status;
+    } catch (e) {
+      logger.error(`Error getting status for ${this.bondedAddress}: ${e}`);
+      return null;
+    }
   }
 
   public get status(): NominatorStatus {
@@ -242,7 +277,14 @@ export default class Nominator extends EventEmitter {
     tx: SubmittableExtrinsic<"promise">,
   ): Promise<boolean> {
     try {
-      await tx.signAndSend(this.signer);
+      if (this._dryRun) {
+        logger.info(`DRY RUN ENABLED, SKIPPING TX`, nominatorLabel);
+        return false;
+      } else {
+        logger.info(`Sending tx: ${tx.method.toString()}`, nominatorLabel);
+        await tx.signAndSend(this.signer);
+      }
+
       return true;
     } catch (e) {
       logger.error(`Error sending tx: `, nominatorLabel);
@@ -328,15 +370,22 @@ export default class Nominator extends EventEmitter {
     tx: SubmittableExtrinsic<"promise">,
     targets: string[],
   ): Promise<Types.BooleanResult> => {
+    // If Dry Run is enabled in the config, nominations will be stubbed but not executed
+    if (this._dryRun) {
+      logger.info(`DRY RUN ENABLED, SKIPPING TX`, nominatorLabel);
+
+      // `dryRun` return as blockhash is checked elsewhere to finish the hook of writing db entries
+      return [false, "dryRun"];
+    }
     const now = new Date().getTime();
     const api = this.handler.getApi();
     if (!api) {
       logger.error(`Error getting API in sendStakingTx`, nominatorLabel);
-      return [false, "error getting api to send staking tx"]; // Change to return undefined
+      return [false, "error getting api to send staking tx"];
     }
 
     let didSend = true;
-    let finalizedBlockHash: string | undefined; // Corrected type declaration
+    let finalizedBlockHash: string | undefined;
 
     logger.info(
       `{Nominator::nominate} sending staking tx for ${this.bondedAddress}`,
@@ -365,7 +414,7 @@ export default class Nominator extends EventEmitter {
           unsub();
           break;
         case status.isFinalized:
-          finalizedBlockHash = status.asFinalized.toString(); // Convert to string
+          finalizedBlockHash = status.asFinalized.toString();
           didSend = true;
           logger.info(
             `{Nominator::nominate} tx is finalized in block ${finalizedBlockHash}`,

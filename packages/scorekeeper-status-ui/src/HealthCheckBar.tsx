@@ -64,8 +64,7 @@ const HealthCheckBar = ({ currentEndpoint }) => {
       </div>
       <div className="healthCheckItem">
         <FiWifi className="healthCheckIcon" />
-        <span>Endpoint: {currentEndpoint}</span>{" "}
-        {/* Changed to currentEndpoint for clarity */}
+        <span className="endpointText">Endpoint: {currentEndpoint}</span>
       </div>
       {healthData.connected && healthData.version && (
         <div className="healthCheckItem">

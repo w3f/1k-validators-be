@@ -24,7 +24,12 @@ export interface NominatorStatus {
   lastNominationTime?: number;
   currentTargets?:
     | string[]
-    | { stash?: string; name?: string; kyc?: boolean; score?: number }[];
+    | {
+        stash?: string;
+        name?: string;
+        kyc?: boolean;
+        score?: string | number;
+      }[];
   nextTargets?: string[];
   proxyTxs?: any[];
   updated: number;
@@ -138,21 +143,27 @@ export default class Nominator extends EventEmitter {
       const currentNamedTargets = await Promise.all(
         currentTargets.map(async (target) => {
           const kyc = await queries.isKYC(target);
-          let name;
-          name = await queries.getIdentityName(target);
-          const score = await queries.getLatestValidatorScore(target);
+          let name = await queries.getIdentityName(target);
           if (!name) {
             name = (await this.chaindata.getFormattedIdentity(target))?.name;
           }
-          let totalScore;
+
+          const score = await queries.getLatestValidatorScore(target);
+          let totalScore = 0;
+
           if (score && score[0] && score[0].total) {
-            totalScore = score[0].total;
+            totalScore = parseFloat(score[0].total);
           }
+
+          const formattedScore = !isNaN(totalScore)
+            ? totalScore.toFixed(1)
+            : "0";
+
           return {
             stash: target,
             name: name,
             kyc: kyc,
-            score: totalScore || 0,
+            score: formattedScore,
           };
         }),
       );

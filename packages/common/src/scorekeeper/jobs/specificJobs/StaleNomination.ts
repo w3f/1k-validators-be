@@ -12,16 +12,7 @@ export const staleNominationJob = async (
   metadata: JobRunnerMetadata,
 ): Promise<boolean> => {
   try {
-    const {
-      constraints,
-      ending,
-      config,
-      chaindata,
-      nominatorGroups,
-      nominating,
-      bot,
-      handler,
-    } = metadata;
+    const { config, chaindata, nominatorGroups, bot, handler } = metadata;
 
     const api = handler.getApi();
 
@@ -48,24 +39,6 @@ export const staleNominationJob = async (
 
       const lastNominatedEra =
         await chaindata.getNominatorLastNominationEra(stash);
-      // if (!nominatorsJson || nominatorsJson === null) continue;
-      //
-      // const submittedIn: number = nominatorsJson.submittedIn ?? 0;
-      // const targets: string[] = nominatorsJson.targets ?? [];
-
-      // for (const target of targets) {
-      //   const isCandidate = allCandidates.filter(
-      //     (candidate) => candidate.stash == target,
-      //   );
-      //
-      //   if (isCandidate.length === 0) {
-      //     const message = `Nominator ${stash} is nominating ${target}, which is not a 1kv candidate`;
-      //     logger.info(message);
-      //     if (bot) {
-      //       await bot.sendMessage(message);
-      //     }
-      //   }
-      // }
 
       if (lastNominatedEra < Number(currentEra) - threshold) {
         const message = `Nominator ${stash} has a stale nomination. Last nomination was in era ${nom.getStatus()?.lastNominationEra} (it is now era ${currentEra})`;

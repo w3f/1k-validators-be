@@ -233,7 +233,7 @@ const App = () => {
   };
 
   function truncateAddress(address, length = 16) {
-    return `${address.slice(0, length / 2)}...${address.slice(-length / 2)}`;
+    return `${address?.slice(0, length / 2)}...${address?.slice(-length / 2)}`;
   }
 
   function formatLastUpdate(updated: number): string {
@@ -403,7 +403,8 @@ const App = () => {
             {nominator.status && (
               <div>
                 <p>
-                  <FiInfo className="icon" /> Status: {nominator.status}
+                  <FiInfo className="icon" />
+                  {nominator.status}
                 </p>
               </div>
             )}

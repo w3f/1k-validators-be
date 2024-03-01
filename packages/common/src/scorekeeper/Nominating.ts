@@ -10,8 +10,9 @@ import { ChainData, queries, Util } from "../index";
 import ApiHandler from "../ApiHandler/ApiHandler";
 import MatrixBot from "../matrix";
 import { ConfigSchema } from "../config";
-import Nominator from "../nominator/nominator";
+import Nominator, { NominatorStatus } from "../nominator/nominator";
 
+// Takes in a list of valid Candidates, and will nominate them based on the nominator groups
 export const doNominations = async (
   candidates: { name: string; stash: string; total: number }[],
   nominatorGroups: Nominator[],
@@ -37,6 +38,12 @@ export const doNominations = async (
 
     // ensure the group is sorted by least avg stake
     for (const nominator of nominatorGroups) {
+      const nominatorStatus: NominatorStatus = {
+        status: `Nominating...`,
+        updated: Date.now(),
+        stale: false,
+      };
+      nominator.updateNominatorStatus(nominatorStatus);
       // The number of nominations to do per nominator account
       // This is either hard coded, or set to "auto", meaning it will find a dynamic amount of validators
       //    to nominate based on the lowest staked validator in the validator set
@@ -46,29 +53,34 @@ export const doNominations = async (
       const autoNom = await autoNumNominations(api, nominator);
       const { nominationNum } = autoNom;
       const stash = await nominator.stash();
-      // Planck Denominated Bonded Amount
-      const [currentBondedAmount, bondErr] =
-        await chaindata.getBondedAmount(stash);
 
-      // Check the free balance of the account. If it doesn't have a free balance, skip.
-      const balance = await chaindata.getBalance(nominator.address);
-      const metadata = await queries.getChainMetadata();
-      if (!metadata || !balance || !balance.free) return null;
-      const network = metadata?.name?.toLowerCase();
-      const free = Util.toDecimals(Number(balance.free), metadata.decimals);
-      // TODO Parameterize this as a constant
-      if (free < 0.1) {
-        logger.info(
-          `Nominator has low free balance: ${free}`,
-          scorekeeperLabel,
-        );
-        bot?.sendMessage(
-          `Nominator Account ${Util.addressUrl(
-            nominator.address,
-            config,
-          )} has low free balance: ${free}`,
-        );
-        continue;
+      logger.info(
+        `Nominator ${stash}  ${nominator.isProxy ? "Proxy" : "Non-Proxy"} with delay ${nominator.proxyDelay} blocks  nominate ${nominationNum} validators`,
+        scorekeeperLabel,
+      );
+
+      if (!config?.scorekeeper?.dryRun) {
+        // TODO: Move this check else where as a job
+        // Check the free balance of the account. If it doesn't have a free balance, skip.
+        const balance = await chaindata.getBalance(nominator.address);
+        const metadata = await queries.getChainMetadata();
+        if (!metadata || !balance || !balance.free) return null;
+        const network = metadata?.name?.toLowerCase();
+        const free = Util.toDecimals(Number(balance.free), metadata.decimals);
+        // TODO Parameterize this as a constant
+        if (free < 0.1) {
+          logger.info(
+            `Nominator has low free balance: ${free}`,
+            scorekeeperLabel,
+          );
+          bot?.sendMessage(
+            `Nominator Account ${Util.addressUrl(
+              nominator.address,
+              config,
+            )} has low free balance: ${free}`,
+          );
+          continue;
+        }
       }
 
       // Get the target slice based on the amount of nominations to do and increment the counter.
@@ -118,7 +130,7 @@ export const doNominations = async (
       logger.info(
         `Nominator ${stash} (${bal} ${sym}) / ${nominator.bondedAddress} nominated:\n${targetsString}`,
       );
-      bot?.sendMessage(
+      await bot?.sendMessage(
         `Nominator ${Util.addressUrl(stash, config)} (${bal} ${sym}) / 
           ${Util.addressUrl(
             nominator.bondedAddress,
@@ -131,7 +143,7 @@ export const doNominations = async (
       `Number of Validators nominated this round: ${counter}`,
       scorekeeperLabel,
     );
-    bot?.sendMessage(`${counter} Validators nominated this round`);
+    await bot?.sendMessage(`${counter} Validators nominated this round`);
 
     currentTargets = allTargets.slice(0, counter);
     const nextTargets = allTargets.slice(counter, allTargets.length);

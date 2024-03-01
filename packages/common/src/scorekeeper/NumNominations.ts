@@ -5,7 +5,7 @@
  */
 import { ApiPromise } from "@polkadot/api";
 import { scorekeeperLabel } from "./scorekeeper";
-import Nominator from "../nominator/nominator";
+import Nominator, { NominatorStatus } from "../nominator/nominator";
 import { Constants } from "../index";
 import logger from "../logger";
 
@@ -35,10 +35,14 @@ export const autoNumNominations = async (
   api: ApiPromise,
   nominator: Nominator,
 ): Promise<any> => {
-  // Get the denomination for the chain
-  const chainType = await api.rpc.system.chain();
-  const denom =
-    chainType.toString() == "Polkadot" ? 10000000000 : 1000000000000;
+  const nominatorStatus: NominatorStatus = {
+    status: `Calculating how many validators to nominate...`,
+    updated: Date.now(),
+    stale: false,
+  };
+  nominator.updateNominatorStatus(nominatorStatus);
+
+  const denom = (await nominator?.chaindata?.getDenom()) || 0;
 
   // Get the full nominator stash balance (free + reserved)
   const stash = await nominator.stash();
@@ -84,28 +88,27 @@ export const autoNumNominations = async (
   let amount = 1;
 
   // Loop until we find the amount of validators that the account can get in.
-  if (chainType.toString() != "Local Testnet") {
-    while (sum < bufferedBalance) {
-      // An offset so the slice isn't the immediate lowest validators in the set
-      const offset = 5;
+
+  while (sum < bufferedBalance) {
+    // An offset so the slice isn't the immediate lowest validators in the set
+    const offset = 5;
+    const lowestNum = sorted.slice(offset, offset + amount);
+    sum = lowestNum.reduce((a, b) => a + b, 0);
+
+    if (sum < bufferedBalance) {
+      amount++;
+    } else {
+      amount--;
       const lowestNum = sorted.slice(offset, offset + amount);
       sum = lowestNum.reduce((a, b) => a + b, 0);
-
-      if (sum < bufferedBalance) {
-        amount++;
-      } else {
-        amount--;
-        const lowestNum = sorted.slice(offset, offset + amount);
-        sum = lowestNum.reduce((a, b) => a + b, 0);
-        break;
-      }
+      break;
     }
   }
 
   // How many additional validator to nominate above the amount to get in the set
   const additional = 1;
 
-  const maxNominations = chainType.toString() == "Polkadot" ? 16 : 24;
+  const maxNominations = 24;
   // The total amount of validators to nominate
   const adjustedNominationAmount = Math.min(
     Math.ceil(amount * additional),

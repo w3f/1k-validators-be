@@ -11,17 +11,7 @@ export class CancelJob extends Job {
 }
 
 export const cancelJob = async (metadata: JobRunnerMetadata): Promise<void> => {
-  const {
-    constraints,
-    ending,
-    config,
-    chaindata,
-    nominatorGroups,
-    nominating,
-    currentEra,
-    bot,
-    handler,
-  } = metadata;
+  const { config, chaindata, nominatorGroups, bot } = metadata;
 
   const cancelFrequency = config.cron?.cancel
     ? config.cron?.cancel

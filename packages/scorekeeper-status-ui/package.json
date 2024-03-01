@@ -11,7 +11,7 @@
     "clean": "rm -rf dist build node_modules tsconfig.tsbuildinfo"
   },
   "dependencies": {
-    "@emotion/react": "^11.11.3",
+    "@emotion/react": "^11.11.4",
     "@polkadot/react-identicon": "^3.6.5",
     "@types/lodash.debounce": "^4.0.9",
     "axios": "^1.6.7",

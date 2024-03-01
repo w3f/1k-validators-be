@@ -40,24 +40,24 @@ const EraStatsBar = ({ currentEndpoint }) => {
     <div className="eraStatsBar">
       <div className="eraStatsItem">
         <FiCalendar className="icon" />
-        <span>Era: {eraStats.era}</span>
+        <span>Era: {eraStats?.era}</span>
       </div>
       <div className="eraStatsItem">
         <FiServer className="icon" />
-        <span>Total Nodes: {eraStats.totalNodes}</span>
+        <span>Total Nodes: {eraStats?.totalNodes}</span>
       </div>
       <div className="eraStatsItem">
         <FiCheckSquare className="icon" />
-        <span>Valid: {eraStats.valid}</span>
+        <span>Valid: {eraStats?.valid}</span>
       </div>
       <div className="eraStatsItem">
         <FiActivity className="icon" />
-        <span>Active: {eraStats.active}</span>
+        <span>Active: {eraStats?.active}</span>
       </div>
       <div className="eraStatsItem">
         <FiUserCheck className="icon" />
         <span>
-          KYC: {eraStats.kyc} ($
+          KYC: {eraStats?.kyc} ($
           {((eraStats?.kyc / eraStats?.totalNodes) * 100).toFixed(0)}%)
         </span>
       </div>

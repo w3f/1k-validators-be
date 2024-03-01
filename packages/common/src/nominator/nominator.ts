@@ -149,19 +149,12 @@ export default class Nominator extends EventEmitter {
           }
 
           const score = await queries.getLatestValidatorScore(target);
-          let totalScore = 0;
-
-          if (score && score[0] && score[0].total) {
-            totalScore = parseFloat(score[0].total);
-          }
-
-          const formattedScore = totalScore;
 
           return {
             stash: target,
             name: name,
             kyc: kyc,
-            score: formattedScore,
+            score: score && score[0] && score[0].total ? score[0].total : 0,
           };
         }),
       );
@@ -303,49 +296,54 @@ export default class Nominator extends EventEmitter {
   }
 
   public async nominate(targets: Types.Stash[]): Promise<boolean> {
-    const now = new Date().getTime();
-
-    const api = this.handler.getApi();
-    if (!api) {
-      logger.error(`Error getting API in nominate`, nominatorLabel);
-      return false;
-    }
-
     try {
-      const isBonded = await this.chaindata.isBonded(this.bondedAddress);
-      if (!isBonded) return false;
+      const now = new Date().getTime();
+
+      const api = this.handler.getApi();
+      if (!api) {
+        logger.error(`Error getting API in nominate`, nominatorLabel);
+        return false;
+      }
+
+      try {
+        const isBonded = await this.chaindata.isBonded(this.bondedAddress);
+        if (!isBonded) return false;
+      } catch (e) {
+        logger.error(`Error checking if ${this.bondedAddress} is bonded: ${e}`);
+        return false;
+      }
+
+      let tx: SubmittableExtrinsic<"promise">;
+
+      // Start an announcement for a delayed proxy tx
+      if (this._isProxy && this._proxyDelay > 0) {
+        logger.info(
+          `Starting a delayed proxy tx for ${this.bondedAddress}`,
+          nominatorLabel,
+        );
+        await sendProxyDelayTx(this, targets, this.chaindata, api);
+      } else if (this._isProxy && this._proxyDelay == 0) {
+        logger.info(
+          `Starting a non delayed proxy tx for ${this.bondedAddress}`,
+          nominatorLabel,
+        );
+        // Start a non delay proxy tx
+        await sendProxyTx(this, targets, this.chaindata, api, this.bot);
+      } else {
+        logger.info(
+          `Starting a non proxy tx for ${this.bondedAddress}`,
+          nominatorLabel,
+        );
+        // Do a non-proxy tx
+        tx = api.tx.staking.nominate(targets);
+        await this.sendStakingTx(tx, targets);
+      }
+
+      return true;
     } catch (e) {
-      logger.error(`Error checking if ${this.bondedAddress} is bonded: ${e}`);
+      logger.error(`Error nominating: ${e}`, nominatorLabel);
       return false;
     }
-
-    let tx: SubmittableExtrinsic<"promise">;
-
-    // Start an announcement for a delayed proxy tx
-    if (this._isProxy && this._proxyDelay > 0) {
-      logger.info(
-        `Starting a delayed proxy tx for ${this.bondedAddress}`,
-        nominatorLabel,
-      );
-      await sendProxyDelayTx(this, targets, this.chaindata, api);
-    } else if (this._isProxy && this._proxyDelay == 0) {
-      logger.info(
-        `Starting a non delayed proxy tx for ${this.bondedAddress}`,
-        nominatorLabel,
-      );
-      // Start a non delay proxy tx
-      await sendProxyTx(this, targets, this.chaindata, api, this.bot);
-    } else {
-      logger.info(
-        `Starting a non proxy tx for ${this.bondedAddress}`,
-        nominatorLabel,
-      );
-      // Do a non-proxy tx
-      tx = api.tx.staking.nominate(targets);
-      await this.sendStakingTx(tx, targets);
-    }
-
-    return true;
   }
 
   public async cancelTx(announcement: {
@@ -405,20 +403,11 @@ export default class Nominator extends EventEmitter {
               name = (await this.chaindata.getFormattedIdentity(target))?.name;
             }
 
-            const score = await queries.getLatestValidatorScore(target);
-            let totalScore = 0;
-
-            if (score && score[0] && score[0].total) {
-              totalScore = parseFloat(score[0].total);
-            }
-
-            const formattedScore = totalScore;
-
             return {
               stash: target,
-              name: namedTargets,
+              name: name,
               kyc: kyc,
-              score: formattedScore,
+              score: 0,
             };
           }),
         );
@@ -426,7 +415,7 @@ export default class Nominator extends EventEmitter {
           status: `Dry Run: Nominated ${targets.length} validators`,
           updated: Date.now(),
           stale: false,
-          currentTargets: targets,
+          currentTargets: namedTargets,
           lastNominationEra: currentEra,
         };
         this.updateNominatorStatus(nominatorStatus);
@@ -574,19 +563,12 @@ export default class Nominator extends EventEmitter {
           }
 
           const score = await queries.getLatestValidatorScore(target);
-          let totalScore = 0;
-
-          if (score && score[0] && score[0].total) {
-            totalScore = parseFloat(score[0].total);
-          }
-
-          const formattedScore = totalScore;
 
           return {
             stash: target,
             name: name,
             kyc: kyc,
-            score: formattedScore,
+            score: score && score[0] && score[0].total ? score[0].total : 0,
           };
         }),
       );

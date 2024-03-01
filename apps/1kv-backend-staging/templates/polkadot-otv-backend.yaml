@@ -82,7 +82,8 @@ spec:
                   "validatorPrefEnabled": true,
                   "nominatorEnabled": true,
                   "locationStatsEnabled": true,
-                  "blockEnabled": true
+                  "blockEnabled": true,
+                  "scorekeeperEnabled": true
                 },
                 "db": {
                   "mongo": {
@@ -104,7 +105,8 @@ spec:
                 "scorekeeper": {
                   "candidates": null,
                   "forceRound": false,
-                  "nominating": {{ .Values.polkadot.be.nominating }}
+                  "nominating": {{ .Values.polkadot.be.nominating }},
+                  "dryRun": true
                 },
                 "server": {
                   "port": 3300,

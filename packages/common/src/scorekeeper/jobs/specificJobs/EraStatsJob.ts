@@ -34,6 +34,18 @@ export const eraStatsJob = async (
       progress: 0,
       updated: Date.now(),
     });
+    const allCandidates = await queries.allCandidates();
+    const valid = allCandidates.filter((candidate) => candidate.valid);
+    const active = allCandidates.filter((candidate) => candidate.active);
+    const kyc = allCandidates.filter((candidate) => candidate.kyc);
+
+    await queries.setEraStats(
+      Number(currentEra),
+      allCandidates.length,
+      valid.length,
+      active.length,
+      kyc.length,
+    );
 
     // Try and store identities:
     for (const [index, validator] of validators.entries()) {
@@ -93,19 +105,6 @@ export const eraStatsJob = async (
     });
 
     await setValidatorRanks();
-
-    const allCandidates = await queries.allCandidates();
-    const valid = allCandidates.filter((candidate) => candidate.valid);
-    const active = allCandidates.filter((candidate) => candidate.active);
-    const kyc = allCandidates.filter((candidate) => candidate.kyc);
-
-    await queries.setEraStats(
-      Number(currentEra),
-      allCandidates.length,
-      valid.length,
-      active.length,
-      kyc.length,
-    );
 
     const finishedStatus: JobStatus = {
       status: "finished",

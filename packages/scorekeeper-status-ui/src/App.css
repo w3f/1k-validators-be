@@ -441,5 +441,37 @@ h1 {
   padding: 10px;
   border-radius: 5px;
   margin-top: 1%;
+  margin-bottom: 1%;
 }
 
+.targetItemWrapper {
+  list-style-type: none;
+}
+
+@media (max-width: 768px) {
+  .nominatorField {
+    flex-direction: column;
+    border: 1px solid #00d600;
+    border-radius: 5px;
+    width: 100%;
+    justify-content: center;
+    display: flex;
+    align-items: center; /* Correct property for horizontal centering in a flex column */
+    background: rgba(0, 255, 0, 0.1);
+    cursor: pointer; /* Indicates clickability */
+    transition: background 0.3s, border-color 0.3s; /* Smooth transition for hover effects */
+  }
+
+  .nominatorField:hover {
+    background: rgba(0, 255, 0, 0.2); /* Slightly darken the background on hover */
+    border-color: #00ff00; /* Brighten the border color on hover */
+  }
+}
+
+.endpointText {
+  display: block; /* Make span behave like a block element */
+  overflow: hidden; /* Hide overflow */
+  text-overflow: ellipsis; /* Add ellipsis for overflow */
+  white-space: nowrap; /* Keep the text on a single line */
+  max-width: 90%; /* Adjust this value based on your container's width */
+}

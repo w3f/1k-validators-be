@@ -105,6 +105,7 @@ spec:
                   "candidates": null,
                   "forceRound": false,
                   "nominating": {{ .Values.polkadot.be.nominating }}
+                  "dryRun": true
                 },
                 "server": {
                   "port": 3300,

@@ -59,7 +59,7 @@ export const activeValidatorJob = async (
         name: JobNames.ActiveValidator,
         progress,
         updated: Date.now(),
-        iteration: `[${isActive ? "✅ " : "❌ "}] ${candidate.name}`,
+        iteration: `${isActive ? "✅ " : "❌ "} ${candidate.name}`,
       });
     }
     return true;

@@ -9,7 +9,6 @@ import {
   FiPlay,
   FiRefreshCcw,
   FiShield,
-  FiTarget,
   FiTool,
   FiUserCheck,
   FiXCircle,
@@ -46,7 +45,9 @@ const endpoints = {
 
 const OLD_JOB_THRESHOLD_SECONDS = 120;
 const App = () => {
-  const [currentEndpoint, setCurrentEndpoint] = useState(endpoints.Local);
+  const [currentEndpoint, setCurrentEndpoint] = useState(
+    endpoints.KusamaStaging,
+  );
   const [jobs, setJobs] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
@@ -473,46 +474,39 @@ const App = () => {
                 )}
               </p>
             )}
-            {nominator.currentTargets &&
-              nominator.currentTargets.length > 0 && (
-                <div>
-                  <FiTarget className="icon" /> Current Targets:
-                  <ul>
-                    {nominator.currentTargets.map((target, index) => (
-                      <li key={index} className="targetItemWrapper">
-                        <div className="">
-                          <a
-                            href={`https://www.subscan.io/account/${target.stash}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: "5px",
-                            }}
-                            className="targetField"
-                          >
-                            <Identicon
-                              value={target.stash}
-                              size={20}
-                              theme="polkadot"
-                            />
-                            {target.name
-                              ? `[${target.score}] ${target.name}`
-                              : `[${target.score}] ${truncateAddress(target.stash)}`}
-                            {target.kyc && (
-                              <FiCheckCircle
-                                style={{ color: "green", marginLeft: "5px" }}
-                                title="KYC Verified"
-                              />
-                            )}
-                          </a>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
+            {nominator.currentTargets.map((target, index) => (
+              <li key={index} className="targetItemWrapper">
+                <div className="">
+                  <a
+                    href={`https://www.subscan.io/account/${target.stash}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "5px",
+                    }}
+                    className="targetField"
+                  >
+                    <Identicon
+                      value={target.stash}
+                      size={20}
+                      theme="polkadot"
+                    />
+                    {target.name
+                      ? `${Number(target.score).toFixed(0)} ${target.name}`
+                      : `${Number(target.score).toFixed(0)} ${truncateAddress(target.stash)}`}{" "}
+                    {target.kyc && (
+                      <FiCheckCircle
+                        style={{ color: "green", marginLeft: "5px" }}
+                        title="KYC Verified"
+                      />
+                    )}
+                  </a>
                 </div>
-              )}
+              </li>
+            ))}
+
             {nominator.stale !== undefined && nominator.stale != false && (
               <div className="stale">
                 <h3>

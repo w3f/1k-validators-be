@@ -155,9 +155,7 @@ export default class Nominator extends EventEmitter {
             totalScore = parseFloat(score[0].total);
           }
 
-          const formattedScore = !isNaN(totalScore)
-            ? totalScore.toFixed(1)
-            : "0";
+          const formattedScore = totalScore.toFixed(1);
 
           return {
             stash: target,

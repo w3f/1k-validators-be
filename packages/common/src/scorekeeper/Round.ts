@@ -50,7 +50,7 @@ export const startRound = async (
 
   for (const nom of nominatorGroups) {
     const nominatorStatus: NominatorStatus = {
-      status: `Round Starteed`,
+      status: `Round Started`,
       updated: Date.now(),
       stale: false,
     };

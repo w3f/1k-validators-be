@@ -638,6 +638,8 @@ export const EraStatsSchema = new Schema({
   valid: Number,
   // the number of nodes active in the set
   active: Number,
+  //  the number of noddes that have passed kyc check
+  kyc: Number,
 });
 
 export const EraStatsModel = mongoose.model("EraStatsModel", EraStatsSchema);
@@ -686,6 +688,46 @@ export interface ValidatorScoreMetadata {
   updated?: number;
 }
 
+export interface ValidatorScore {
+  // The last time a score was updated
+  updated: number;
+  // The session a score was updated at
+  session: number;
+  // The validator stash
+  address: string;
+  // total score (including randomness)
+  total: number;
+  // aggregate score
+  aggregate: number;
+  // span inclusion score
+  spanInclusion: number;
+  // inclusion score
+  inclusion: number;
+  // discovered at score
+  discovered: number;
+  // nominated at score
+  nominated: number;
+  // rank score
+  rank: number;
+  // unclaimed eras score
+  unclaimed: number;
+  // bonded score
+  bonded: number;
+  // faults score
+  faults: number;
+  // offline score
+  offline: number;
+  // location score
+  location: number;
+  // Additional location-related scores
+  region: number;
+  country: number;
+  provider: number;
+  nominatorStake: number;
+  // The randomness factor used to buffer the total
+  randomness: number;
+}
+
 export const ValidatorScoreSchema = new Schema({
   // The last time a score was updated
   updated: Number,
@@ -720,10 +762,6 @@ export const ValidatorScoreSchema = new Schema({
   region: Number,
   country: Number,
   provider: Number,
-  // council backing score
-  councilStake: Number,
-  // democracy score
-  democracy: Number,
   nominatorStake: Number,
   // The randomness factor used to buffer the total
   randomness: Number,

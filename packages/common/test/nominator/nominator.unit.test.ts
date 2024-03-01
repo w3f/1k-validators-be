@@ -1,11 +1,15 @@
 import { Types } from "../../src";
 import Nominator from "../../src/nominator/nominator";
 import ApiHandler from "../../src/ApiHandler/ApiHandler";
+import { initTestServerBeforeAll } from "../testUtils/dbUtils";
 
 jest.mock("../../src/nominator/nominator");
+
 jest.mock("../../src/ApiHandler/ApiHandler");
 
-describe("Nominator Class Unit Tests", () => {
+initTestServerBeforeAll();
+
+describe("Nominator Mock Class Unit Tests", () => {
   let nominator: Nominator;
   let handler;
   let nominatorConfig: Types.NominatorConfig;

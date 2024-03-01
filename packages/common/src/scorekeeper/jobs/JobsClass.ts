@@ -10,11 +10,10 @@ export const jobsLabel = { label: "Jobs" };
 
 export type JobRunnerMetadata = {
   config: Config.ConfigSchema;
-  ending: boolean;
   chaindata: ChainData;
   nominatorGroups: Nominator[];
   nominating: boolean;
-  currentEra: number;
+  // currentEra: number;
   bot: MatrixBot;
   constraints: Constraints.OTV;
   handler: ApiHandler;

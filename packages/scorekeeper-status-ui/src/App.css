@@ -21,6 +21,7 @@ body, html {
   font-family: 'Source Code Pro', monospace;
   padding: 20px;
   box-sizing: border-box;
+  /*display: block;*/
 }
 
 h1 {
@@ -313,4 +314,165 @@ h1 {
 
 .card:hover {
   transform: scale(1.05); /* Slightly increase the size on hover */
+}
+
+.nominatorsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px; /* Space between nominator items */
+
+}
+
+
+.nominatorItem {
+  background: rgba(0, 255, 0, 0.05);
+  border: 1px solid #0f0;
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+  width: 100%;
+  max-width: 340px; /* Maximum width for each item */
+  margin-bottom: 20px; /* Space below each item */
+  justify-items: center;
+  justify-content: center;
+  padding-left: 2%;
+  padding-right: 2%;
+  display: grid;
+  place-items: center; /* Shorthand for aligning and justifying items at the center */
+  height: 100%; /* Ensure the div takes up full container height, adjust as needed */
+  width: 100%;
+
+}
+
+.nominatorTitle {
+  color: #0f0;
+  border-bottom: 1px solid #0f0;
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+}
+
+.nominatorInfo p {
+  display: flex;
+  align-items: center; /* Ensures vertical alignment with the icon */
+  /*margin-bottom: 10px; !* Space between each piece of information *!*/
+  color: #0f0; /* Text color */
+  /*flex-wrap: nowrap; !* Prevents items from wrapping *!*/
+  line-height: 1; /* Normalizes line-height to ensure alignment */
+  padding: 0; /* Removes padding to prevent misalignment */
+}
+
+.icon {
+  margin-right: 10px; /* Adds space between the icon and the text */
+  height: 20px; /* Fixed height for the icon */
+  width: 24px; /* Fixed width for the icon */
+  align-self: center; /* Centers the icon vertically within the flex container */
+  /*margin-top: 20px;*/
+  position: relative;
+  top: 5px;
+}
+
+
+
+.nominatorInfo ul li {
+  /* If needed, style list items here */
+}
+
+.nominatorField {
+  flex-direction: column;
+  border: 1px solid #00d600;
+  border-radius: 5px;
+  width: 15vw;
+  justify-content: center;
+  display: flex;
+  align-items: center; /* Correct property for horizontal centering in a flex column */
+  background: rgba(0, 255, 0, 0.1);
+  cursor: pointer; /* Indicates clickability */
+  transition: background 0.3s, border-color 0.3s; /* Smooth transition for hover effects */
+}
+
+.nominatorField:hover {
+  background: rgba(0, 255, 0, 0.2); /* Slightly darken the background on hover */
+  border-color: #00ff00; /* Brighten the border color on hover */
+}
+
+.stale {
+  margin-top: 10%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid  rgba(255, 255, 0, 0.5);
+  background: linear-gradient(to right, rgba(255, 255, 0, 0.05), rgba(255, 255, 0, 0.1)); /* Gradient from transparent black to lighter */
+  border-radius: 3px;
+  width: 100%;
+  color: rgba(255, 255, 0, 1)
+}
+
+.identicon {
+  padding-left: 15px;
+  padding-right: 15px;
+  position: relative;
+  top: 5px;
+}
+.targetField {
+  /*transition: background 0.3s, border 0.3s; !* Smooth transition for hover effect *!*/
+  padding: 10px; /* Add some padding inside the div */
+  border-radius: 5px; /* Optional: match the border-radius if needed */
+  border: 1px solid transparent; /* Transparent border by default */
+
+}
+
+.targetField:hover {
+    background: rgba(0, 255, 0, 0.05); /* Slightly darken the background on hover */
+    border-color:rgba(0, 255, 0, 0.4); /* Brighten the border color on hover */
+}
+
+.eraStatsBar {
+  width: 80%; /* Adjusted for better responsiveness */
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.5); /* Neon green glow */
+  background: rgba(0, 255, 0, 0.05);
+  border: 1px solid rgba(0, 255, 0, 0.5);
+  margin: 0 auto; /* Center the bar */
+  flex-wrap: wrap; /* Allows items to wrap if necessary */
+
+  display: flex;
+  align-items: center; /* Ensures vertical alignment is centered */
+  justify-content: center; /* Centers content horizontally */
+  gap: 10px; /* Space between items */
+  padding: 10px;
+  border-radius: 5px;
+  margin-top: 1%;
+  margin-bottom: 1%;
+}
+
+.targetItemWrapper {
+  list-style-type: none;
+}
+
+@media (max-width: 768px) {
+  .nominatorField {
+    flex-direction: column;
+    border: 1px solid #00d600;
+    border-radius: 5px;
+    width: 100%;
+    justify-content: center;
+    display: flex;
+    align-items: center; /* Correct property for horizontal centering in a flex column */
+    background: rgba(0, 255, 0, 0.1);
+    cursor: pointer; /* Indicates clickability */
+    transition: background 0.3s, border-color 0.3s; /* Smooth transition for hover effects */
+  }
+
+  .nominatorField:hover {
+    background: rgba(0, 255, 0, 0.2); /* Slightly darken the background on hover */
+    border-color: #00ff00; /* Brighten the border color on hover */
+  }
+}
+
+.endpointText {
+  display: block; /* Make span behave like a block element */
+  overflow: hidden; /* Hide overflow */
+  text-overflow: ellipsis; /* Add ellipsis for overflow */
+  white-space: nowrap; /* Keep the text on a single line */
+  max-width: 70%; /* Adjust this value based on your container's width */
 }

@@ -115,7 +115,7 @@ export class OTV implements Constraints {
   async scoreCandidate(
     candidate: Candidate,
     scoreMetadata: any,
-  ): Promise<boolean> {
+  ): Promise<number | null> {
     return await scoreCandidate(this, candidate, scoreMetadata);
   }
 

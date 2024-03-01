@@ -34,8 +34,6 @@ export const getProxyAnnouncements = async (
         height: announcement.height,
       }));
     } else {
-      // Log an error and return an empty array if the format is unexpected
-      logger.warn("Unexpected format for proxy announcements", chaindataLabel);
       return [];
     }
   } catch (e) {

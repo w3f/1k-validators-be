@@ -5,142 +5,15 @@
  */
 
 import { scorekeeperLabel } from "./scorekeeper";
-import { ChainData, logger, Models, queries, Types, Util } from "../index";
-import { dockPoints } from "./Rank";
+import { ChainData, logger, queries, Util } from "../index";
 import { doNominations } from "./Nominating";
 import { OTV } from "../constraints/constraints";
 import { ConfigSchema } from "../config";
 import MatrixBot from "../matrix";
 import ApiHandler from "../ApiHandler/ApiHandler";
-import Nominator from "../nominator/nominator";
-
-/**
- * Handles the ending of a Nomination round.
- */
-export const endRound = async (
-  ending: boolean,
-  nominatorGroups: Nominator[],
-  chaindata: ChainData,
-  constraints: OTV,
-
-  config: ConfigSchema,
-  bot?: MatrixBot,
-): Promise<void> => {
-  ending = true;
-  logger.info("Ending round", scorekeeperLabel);
-
-  // The targets that have already been processed for this round.
-  const toProcess: Map<Types.Stash, Models.Candidate> = new Map();
-
-  const { lastNominatedEraIndex: startEra } =
-    await queries.getLastNominatedEraIndex();
-
-  const [activeEra, err] = await chaindata.getActiveEraIndex();
-  if (err) {
-    throw new Error(`Error getting active era: ${err}`);
-  }
-
-  const chainType = await queries.getChainMetadata();
-  if (!chainType) {
-    throw new Error(`Error getting chain metadata`);
-  }
-
-  logger.info(
-    `finding validators that were active from era ${startEra} to ${activeEra}`,
-    scorekeeperLabel,
-  );
-  const [activeValidators, err2] = await chaindata.activeValidatorsInPeriod(
-    Number(startEra),
-    activeEra,
-    chainType?.name,
-  );
-  if (!activeValidators || err2) {
-    throw new Error(`Error getting active validators: ${err2}`);
-  }
-
-  // Get all the candidates we want to process this round
-  // This includes both the candidates we have nominated as well as all valid candidates
-
-  // Gets adds candidates we nominated to the list
-  for (const nominator of nominatorGroups) {
-    const current = await queries.getCurrentTargets(nominator.bondedAddress);
-
-    // If not nominating any... then return.
-    if (!current.length) {
-      logger.info(
-        `${nominator.bondedAddress} is not nominating any targets.`,
-        scorekeeperLabel,
-      );
-      continue;
-    }
-
-    for (const val of current) {
-      if (val?.stash) {
-        const candidate = await queries.getCandidate(val?.stash);
-        if (!candidate) {
-          logger.warn(
-            `Ending round - cannot find candidate for ${val} stash: ${val.stash}`,
-            scorekeeperLabel,
-          );
-          continue;
-        }
-        // if we already have, don't add it again
-        if (toProcess.has(candidate.stash)) continue;
-        toProcess.set(candidate.stash, candidate);
-      }
-    }
-  }
-
-  // Adds all other valid candidates to the list
-  const allCandidates = await queries.allCandidates();
-
-  const validCandidates = allCandidates.filter((candidate) => candidate.valid);
-
-  for (const candidate of validCandidates) {
-    if (toProcess.has(candidate.stash)) continue;
-    toProcess.set(candidate.stash, candidate);
-  }
-
-  // Get the set of Good Validators and get the set of Bad validators
-  const [good, bad] = await constraints.processCandidates(
-    new Set(toProcess.values()),
-  );
-
-  logger.info(
-    `Done processing Candidates. ${good.size} good ${bad.size} bad`,
-    scorekeeperLabel,
-  );
-
-  // For all the good validators, check if they were active in the set for the time period
-  //     - If they were active, increase their rank
-  for (const goodOne of good.values()) {
-    const { stash } = goodOne;
-    const wasActive =
-      activeValidators.indexOf(Util.formatAddress(stash, config)) !== -1;
-
-    // if it wasn't active we will not increase the point
-    if (!wasActive) {
-      logger.info(
-        `${stash} was not active during eras ${startEra} to ${activeEra}`,
-        scorekeeperLabel,
-      );
-      continue;
-    }
-
-    // They were active - increase their rank and add a rank event
-    const didRank = await queries.pushRankEvent(stash, startEra, activeEra);
-  }
-
-  // For all bad validators, dock their points and create a "Fault Event"
-  for (const badOne of bad.values()) {
-    const { candidate, reason } = badOne;
-    const { stash } = candidate;
-    const didFault = await queries.pushFaultEvent(stash, reason);
-    if (didFault) await dockPoints(stash, bot);
-  }
-
-  ending = false;
-};
+import Nominator, { NominatorStatus } from "../nominator/nominator";
+import { jobStatusEmitter } from "../Events";
+import { JobNames } from "./jobs/JobConfigs";
 
 /// Handles the beginning of a new round.
 // - Gets the current era
@@ -149,7 +22,6 @@ export const endRound = async (
 // - Sets this current era to the era a nomination round took place in.
 export const startRound = async (
   nominating: boolean,
-  currentEra: number,
   bot: MatrixBot,
   constraints: OTV,
   nominatorGroups: Nominator[],
@@ -169,12 +41,21 @@ export const startRound = async (
   if (!newEra) return [];
 
   logger.info(
-    `New round starting at ${now} for next Era ${currentEra + 1}`,
+    `New round starting at ${now} for next Era ${newEra + 1}`,
     scorekeeperLabel,
   );
-  bot?.sendMessage(
+  await bot?.sendMessage(
     `New round is starting! Era ${newEra} will begin new nominations.`,
   );
+
+  for (const nom of nominatorGroups) {
+    const nominatorStatus: NominatorStatus = {
+      status: `Round Started`,
+      updated: Date.now(),
+      stale: false,
+    };
+    nom.updateNominatorStatus(nominatorStatus);
+  }
 
   const proxyTxs = await queries.getAllDelayedTxs();
 
@@ -192,11 +73,37 @@ export const startRound = async (
 
   // Set Validity
   for (const [index, candidate] of allCandidates.entries()) {
+    const isValid = await constraints.checkCandidate(candidate);
+
+    const progress = Math.floor((index / allCandidates.length) * 100);
+    jobStatusEmitter.emit("jobProgress", {
+      name: JobNames.MainScorekeeper,
+      progress,
+      updated: Date.now(),
+      iteration: `${isValid ? "✅ " : "❌ "} ${candidate.name}`,
+    });
+
     logger.info(
-      `checking candidate ${candidate.name} [${index}/${allCandidates.length}]`,
+      `[${index}/${allCandidates.length}] checked ${candidate.name} ${isValid ? "Valid" : "Invalid"} [${index}/${allCandidates.length}]`,
       scorekeeperLabel,
     );
-    await constraints.checkCandidate(candidate);
+    for (const nom of nominatorGroups) {
+      const nominatorStatus: NominatorStatus = {
+        status: `[${index}/${allCandidates.length}] Checked Candidate ${candidate.name} ${isValid ? "✅ " : "❌"}`,
+        updated: Date.now(),
+        stale: false,
+      };
+      nom.updateNominatorStatus(nominatorStatus);
+    }
+  }
+
+  for (const nom of nominatorGroups) {
+    const nominatorStatus: NominatorStatus = {
+      status: `Scoring Candidates...`,
+      updated: Date.now(),
+      stale: false,
+    };
+    nom.updateNominatorStatus(nominatorStatus);
   }
 
   // Score all candidates
@@ -225,6 +132,7 @@ export const startRound = async (
     scorekeeperLabel,
   );
 
+  // TODO unit test that assets this  value
   const numValidatorsNominated = await doNominations(
     sortedCandidates,
     nominatorGroups,
@@ -241,6 +149,15 @@ export const startRound = async (
       scorekeeperLabel,
     );
     await queries.setLastNominatedEraIndex(newEra);
+    for (const nom of nominatorGroups) {
+      const nominatorStatus: NominatorStatus = {
+        status: `Nominated!`,
+        updated: Date.now(),
+        stale: false,
+        lastNominationEra: newEra,
+      };
+      nom.updateNominatorStatus(nominatorStatus);
+    }
   } else {
     logger.info(
       `${numValidatorsNominated} nominated this round, lastNominatedEra not set...`,

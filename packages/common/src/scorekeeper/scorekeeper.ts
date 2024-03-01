@@ -9,7 +9,7 @@ import {
   Util,
 } from "../index";
 
-import Nominator from "../nominator/nominator";
+import Nominator, { NominatorStatus } from "../nominator/nominator";
 import {
   registerAPIHandler,
   registerEventEmitterHandler,
@@ -36,6 +36,8 @@ export default class ScoreKeeper {
   public currentEra = 0;
   public currentTargets: { stash?: string; identity?: any }[] = [];
 
+  private _dryRun = false;
+
   // Set when the process is ending
   private ending = false;
   // Set when in the process of nominating
@@ -45,6 +47,8 @@ export default class ScoreKeeper {
 
   private _jobs: Job[] = [];
 
+  public upSince: number = Date.now();
+
   constructor(handler: ApiHandler, config: Config.ConfigSchema, bot: any) {
     this.handler = handler;
     this.chaindata = new ChainData(this.handler);
@@ -52,6 +56,8 @@ export default class ScoreKeeper {
     this.bot = bot || null;
     this.constraints = new Constraints.OTV(this.handler, this.config);
     this.nominatorGroups = [];
+    this._dryRun = this.config.scorekeeper.dryRun;
+    this.upSince = Date.now();
 
     registerAPIHandler(this.handler, this.config, this.chaindata, this.bot);
     registerEventEmitterHandler(this);
@@ -78,9 +84,32 @@ export default class ScoreKeeper {
     }
   }
 
+  getAllNominatorStatus(): NominatorStatus[] {
+    const statuses = [];
+    for (const nom of this.nominatorGroups) {
+      statuses.push(nom.getStatus());
+    }
+    return statuses;
+  }
+
+  getAllNominatorStatusJson() {
+    return JSON.stringify(this.getAllNominatorStatus());
+  }
+
   /// Spawns a new nominator.
-  _spawn(cfg: Config.NominatorConfig, networkPrefix = 2): Nominator {
-    return new Nominator(this.handler, cfg, networkPrefix, this.bot);
+  async _spawn(
+    cfg: Config.NominatorConfig,
+    networkPrefix = 2,
+  ): Promise<Nominator> {
+    const nominator = new Nominator(
+      this.handler,
+      cfg,
+      networkPrefix,
+      this.bot,
+      this._dryRun,
+    );
+    await nominator.init();
+    return nominator;
   }
 
   // Adds nominators from the config
@@ -89,7 +118,7 @@ export default class ScoreKeeper {
     const now = Util.getNow();
     for (const nomCfg of nominatorGroup) {
       // Create a new Nominator instance from the nominator in the config
-      const nom = this._spawn(nomCfg, this.config.global.networkPrefix);
+      const nom = await this._spawn(nomCfg, this.config.global.networkPrefix);
 
       // try and get the ledger for the nominator - this means it is bonded. If not then don't add it.
       const api = this.handler.getApi();
@@ -207,7 +236,13 @@ export default class ScoreKeeper {
 
   // Begin the main workflow of the scorekeeper
   async begin(): Promise<void> {
-    logger.info(`Starting Scorekeeper.`, scorekeeperLabel);
+    logger.info(
+      `Starting Scorekeeper. Dry run: ${this._dryRun}`,
+      scorekeeperLabel,
+    );
+
+    const currentEra = await this.chaindata.getCurrentEra();
+    this.currentEra = currentEra;
 
     await setAllIdentities(this.chaindata, scorekeeperLabel);
 
@@ -219,7 +254,6 @@ export default class ScoreKeeper {
       );
       await startRound(
         this.nominating,
-        this.currentEra,
         this.bot,
         this.constraints,
         this.nominatorGroups,
@@ -233,11 +267,10 @@ export default class ScoreKeeper {
     // Start all Cron Jobs
     const metadata: JobRunnerMetadata = {
       config: this.config,
-      ending: this.ending,
       chaindata: this.chaindata,
       nominatorGroups: this.nominatorGroups || [],
       nominating: this.nominating,
-      currentEra: this.currentEra,
+      // currentEra: this.currentEra,
       bot: this.bot,
       constraints: this.constraints,
       handler: this.handler,

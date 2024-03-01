@@ -15,7 +15,7 @@ export class ActiveValidatorJob extends Job {
 export const individualActiveValidatorJob = async (
   chaindata: ChainData,
   candidate: Models.Candidate,
-) => {
+): Promise<boolean> => {
   try {
     const latestValidatorSet = await queries.getLatestValidatorSet();
     if (latestValidatorSet) {
@@ -25,9 +25,12 @@ export const individualActiveValidatorJob = async (
       if (changed) {
       }
       await queries.setActive(candidate.stash, active);
+      return active;
     }
+    return false;
   } catch (e) {
     logger.error(`Error setting active: ${e}`, activeLabel);
+    return false;
   }
 };
 
@@ -43,7 +46,7 @@ export const activeValidatorJob = async (
     let processedCandidates = 0;
 
     for (const candidate of candidates) {
-      await individualActiveValidatorJob(chaindata, candidate);
+      const isActive = await individualActiveValidatorJob(chaindata, candidate);
 
       // Increment processed candidates count
       processedCandidates++;
@@ -56,7 +59,7 @@ export const activeValidatorJob = async (
         name: JobNames.ActiveValidator,
         progress,
         updated: Date.now(),
-        iteration: `Processed candidate: ${candidate.name}`,
+        iteration: `${isActive ? "✅ " : "❌ "} ${candidate.name}`,
       });
     }
     return true;

@@ -16,7 +16,7 @@ export const scoreCandidate = async (
   constraints: OTV,
   candidate: Candidate,
   scoreMetadata: ValidatorScoreMetadata,
-): Promise<boolean> => {
+): Promise<number | null> => {
   try {
     const {
       session,
@@ -264,14 +264,14 @@ export const scoreCandidate = async (
       logger.info(`Can't set validator score....`);
       logger.info(JSON.stringify(e));
     }
-    return true;
+    return total;
   } catch (e) {
     logger.error(
       `Error scoring candidate ${candidate.name}`,
       e,
       constraintsLabel,
     );
-    return false;
+    return null;
   }
 };
 export const scoreCandidates = async (

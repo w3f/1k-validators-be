@@ -18,47 +18,59 @@ class ApiHandler extends EventEmitter {
   static isConnected = false;
   private healthCheckInProgress = false;
   private _currentEndpoint?: string;
-
+  public upSince: number = Date.now();
   constructor(endpoints: string[]) {
     super();
     this._endpoints = endpoints.sort(() => Math.random() - 0.5);
+    this.upSince = Date.now();
   }
 
-  async healthCheck() {
-    try {
-      logger.info(
-        `Performing health check for WS Provider for rpc: ${this._currentEndpoint}`,
-        apiLabel,
-      );
-      this.healthCheckInProgress = true;
+  async healthCheck(retries = 0): Promise<boolean> {
+    if (retries < 50) {
+      try {
+        // logger.info(
+        //   `Performing health check for WS Provider for rpc: ${this._currentEndpoint} try: ${retries}`,
+        //   apiLabel,
+        // );
+        this.healthCheckInProgress = true;
+        let chain;
 
-      const chain = await this._api?.rpc.system.chain();
+        const isConnected = this._wsProvider?.isConnected;
+        if (isConnected) {
+          try {
+            chain = await this._api?.rpc.system.chain();
+          } catch (e) {
+            logger.error(`Cannot query chain in health check. ${e}`, apiLabel);
+          }
+        }
 
-      if (this._wsProvider?.isConnected && chain) {
-        logger.info(
-          `All good. Connected to ${this._currentEndpoint}`,
+        if (isConnected && chain) {
+          // logger.info(
+          //   `All good. Connected to ${this._currentEndpoint}`,
+          //   apiLabel,
+          // );
+          this.healthCheckInProgress = false;
+          return true;
+        } else {
+          await sleep(API_PROVIDER_TIMEOUT);
+          logger.info(`api still disconnected, disconnecting.`, apiLabel);
+          await this._wsProvider?.disconnect();
+          await this.getProvider(this._endpoints);
+          await this.getAPI();
+          return false;
+        }
+      } catch (e: unknown) {
+        const errorMessage =
+          e instanceof Error ? e.message : "An unknown error occurred";
+        logger.error(
+          `Error in health check for WS Provider for rpc. ${errorMessage}`,
           apiLabel,
         );
         this.healthCheckInProgress = false;
-        return true;
-      } else {
-        await sleep(API_PROVIDER_TIMEOUT);
-        logger.info(`api still disconnected, disconnecting.`, apiLabel);
-        await this._wsProvider?.disconnect();
-        throw new Error(
-          `ERROR: rpc endpoint still disconnected after ${API_PROVIDER_TIMEOUT} seconds.`,
-        );
+        return await this.healthCheck(retries++);
       }
-    } catch (e: unknown) {
-      const errorMessage =
-        e instanceof Error ? e.message : "An unknown error occurred";
-      logger.error(
-        `Error in health check for WS Provider for rpc. ${errorMessage}`,
-        apiLabel,
-      );
-      this.healthCheckInProgress = false;
-      throw e;
     }
+    return false;
   }
 
   public currentEndpoint() {
@@ -115,7 +127,7 @@ class ApiHandler extends EventEmitter {
     });
   }
 
-  async getAPI(retries: number): Promise<ApiPromise> {
+  async getAPI(retries = 0): Promise<ApiPromise> {
     if (this._wsProvider && this._api && this._api?.isConnected) {
       return this._api;
     }

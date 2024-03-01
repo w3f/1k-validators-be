@@ -7,10 +7,6 @@ import { initTestServerBeforeAll } from "../../testUtils/dbUtils";
 
 initTestServerBeforeAll();
 
-beforeEach(async () => {
-  await ChainMetadataModel.deleteMany({});
-});
-
 describe("setChainMetadata", () => {
   it("should create chain metadata if none exists", async () => {
     await setChainMetadata(2); // Example call with networkPrefix = 2

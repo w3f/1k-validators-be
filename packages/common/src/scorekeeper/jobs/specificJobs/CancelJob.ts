@@ -1,7 +1,6 @@
 import { Job, JobConfig, JobRunnerMetadata } from "../JobsClass";
 import logger from "../../../logger";
-import { Constants, Util } from "../../../index";
-import { CronJob } from "cron";
+import { Util } from "../../../index";
 import { cronLabel } from "../cron/StartCronJobs";
 
 export class CancelJob extends Job {
@@ -10,29 +9,12 @@ export class CancelJob extends Job {
   }
 }
 
-export const cancelJob = async (metadata: JobRunnerMetadata): Promise<void> => {
-  const {
-    constraints,
-    ending,
-    config,
-    chaindata,
-    nominatorGroups,
-    nominating,
-    currentEra,
-    bot,
-    handler,
-  } = metadata;
+export const cancelJob = async (
+  metadata: JobRunnerMetadata,
+): Promise<boolean> => {
+  try {
+    const { config, chaindata, nominatorGroups, bot } = metadata;
 
-  const cancelFrequency = config.cron?.cancel
-    ? config.cron?.cancel
-    : Constants.CANCEL_CRON;
-
-  logger.info(
-    `Running cancel cron with frequency: ${cancelFrequency}`,
-    cronLabel,
-  );
-
-  const cancelCron = new CronJob(cancelFrequency, async () => {
     logger.info(`running cancel cron....`, cronLabel);
 
     const latestBlock = await chaindata.getLatestBlock();
@@ -114,6 +96,9 @@ export const cancelJob = async (metadata: JobRunnerMetadata): Promise<void> => {
         }
       }
     }
-  });
-  cancelCron.start();
+    return true;
+  } catch (e) {
+    logger.error(`cancelJob error: ${e}`, cronLabel);
+    return false;
+  }
 };

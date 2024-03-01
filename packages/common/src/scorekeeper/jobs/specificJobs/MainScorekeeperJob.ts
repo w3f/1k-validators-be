@@ -1,8 +1,7 @@
 import { Job, JobConfig, JobRunnerMetadata, JobStatus } from "../JobsClass";
 import logger from "../../../logger";
-import { scorekeeperLabel } from "../../scorekeeper";
 import { queries } from "../../../index";
-import { endRound, startRound } from "../../Round";
+import { startRound } from "../../Round";
 import { jobStatusEmitter } from "../../../Events";
 import { JobNames } from "../JobConfigs";
 
@@ -12,29 +11,25 @@ export class MainScorekeeperJob extends Job {
   }
 }
 
+const mainScoreKeeperLabel = { label: "MainScorekeeperJob" };
+
 export const mainScorekeeperJob = async (
   metadata: JobRunnerMetadata,
 ): Promise<void> => {
   const {
     constraints,
-    ending,
     config,
     chaindata,
     nominatorGroups,
     nominating,
-    currentEra,
     bot,
     handler,
   } = metadata;
-
-  if (ending) {
-    logger.info(`ROUND IS CURRENTLY ENDING.`, scorekeeperLabel);
-    return;
-  }
+  logger.info(`Running Main Scorekeeper`, mainScoreKeeperLabel);
 
   const [activeEra, err] = await chaindata.getActiveEraIndex();
   if (err) {
-    logger.warn(`CRITICAL: ${err}`, scorekeeperLabel);
+    logger.warn(`CRITICAL: ${err}`, mainScoreKeeperLabel);
     const errorStatus: JobStatus = {
       status: "errored",
       name: JobNames.MainScorekeeper,
@@ -51,16 +46,34 @@ export const mainScorekeeperJob = async (
   const isNominationRound =
     Number(lastNominatedEraIndex) <= activeEra - eraBuffer;
 
-  if (isNominationRound) {
+  logger.info(
+    `last era: ${lastNominatedEraIndex} is nomination round: ${isNominationRound}`,
+    mainScoreKeeperLabel,
+  );
+  const hasOld = await Promise.all(
+    nominatorGroups.map(async (nom) => {
+      const stash = await nom.stash();
+      if (!stash || stash === "0x") return false;
+      const lastNominatedEra =
+        await chaindata.getNominatorLastNominationEra(stash);
+      return lastNominatedEra < activeEra - eraBuffer;
+    }),
+  );
+
+  if (isNominationRound || hasOld) {
+    logger.info(
+      `${activeEra} is nomination round, starting....`,
+      mainScoreKeeperLabel,
+    );
     let processedNominatorGroups = 0;
     const totalNominatorGroups = nominatorGroups ? nominatorGroups.length : 0;
 
     // Process each nominator group
 
-    if (!config.scorekeeper.nominating) {
+    if (!config.scorekeeper.nominating && !config?.scorekeeper?.dryRun) {
       logger.info(
-        "Nominating is disabled in the settings. Skipping round.",
-        scorekeeperLabel,
+        "Nominating is disabled in the settings and Dry Run is false. Skipping round.",
+        mainScoreKeeperLabel,
       );
       const errorStatus: JobStatus = {
         status: "errored",
@@ -71,6 +84,11 @@ export const mainScorekeeperJob = async (
 
       jobStatusEmitter.emit("jobErrored", errorStatus);
       return;
+    } else {
+      logger.info(
+        `${config?.scorekeeper?.dryRun ? "DRY RUN: " : ""}Starting round.`,
+        mainScoreKeeperLabel,
+      );
     }
 
     const allCurrentTargets: {
@@ -85,45 +103,21 @@ export const mainScorekeeperJob = async (
       allCurrentTargets.push(...currentTargets); // Flatten the array
     }
 
-    if (!allCurrentTargets.length) {
-      logger.info(
-        "Current Targets is empty. Starting round.",
-        scorekeeperLabel,
-      );
-      await startRound(
-        nominating,
-        currentEra,
-        bot,
-        constraints,
-        nominatorGroups,
-        chaindata,
-        handler,
-        config,
-        allCurrentTargets,
-      );
-    } else {
-      logger.info(`Ending round.`, scorekeeperLabel);
-      await endRound(
-        ending,
-        nominatorGroups,
-        chaindata,
-        constraints,
+    logger.info(
+      `Starting round -  ${allCurrentTargets.length} current targets`,
+      mainScoreKeeperLabel,
+    );
 
-        config,
-        bot,
-      );
-      await startRound(
-        nominating,
-        currentEra,
-        bot,
-        constraints,
-        nominatorGroups,
-        chaindata,
-        handler,
-        config,
-        allCurrentTargets,
-      );
-    }
+    await startRound(
+      nominating,
+      bot,
+      constraints,
+      nominatorGroups,
+      chaindata,
+      handler,
+      config,
+      allCurrentTargets,
+    );
 
     processedNominatorGroups++;
 

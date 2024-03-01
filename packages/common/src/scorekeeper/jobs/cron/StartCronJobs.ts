@@ -15,7 +15,7 @@ export const startJob = async (
     jobKey, // Use jobKey instead of separate scheduleKey and enabledKey
     jobFunction,
     name,
-    preventOverlap = false,
+    preventOverlap = true,
     defaultFrequency,
   } = jobConfig;
 

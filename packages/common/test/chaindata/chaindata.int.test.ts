@@ -8,13 +8,13 @@ describe("ChainData Integration Tests", () => {
   let apiHandler: ApiHandler;
   let chainData: ChainData;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     apiHandler = new ApiHandler(KusamaEndpoints);
     await apiHandler.setAPI();
     chainData = new ChainData(apiHandler);
   }, TIMEOUT_DURATION);
 
-  afterAll(async () => {
+  afterEach(async () => {
     await apiHandler.getApi()?.disconnect();
   }, TIMEOUT_DURATION);
 

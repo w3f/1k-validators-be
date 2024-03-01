@@ -71,3 +71,38 @@ export const getNominators = async (
     return [];
   }
 };
+
+// TODO: Add tests
+export const getNominatorLastNominationEra = async (
+  chaindata: Chaindata,
+  address: string,
+): Promise<number | null> => {
+  try {
+    if (!(await chaindata.checkApiConnection())) {
+      return null;
+    }
+    const lastNominationEra =
+      await chaindata.api?.query.staking.nominators(address);
+    return lastNominationEra?.unwrapOrDefault().submittedIn.toNumber() || null;
+  } catch (e) {
+    logger.error(`Error getting last nomination era: ${e}`, chaindataLabel);
+    return null;
+  }
+};
+
+// TODO: add tests
+export const getNominatorCurrentTargets = async (
+  chaindata: Chaindata,
+  address: string,
+): Promise<string[] | null> => {
+  try {
+    if (!(await chaindata.checkApiConnection())) {
+      return null;
+    }
+    const targets = await chaindata.api?.query.staking.nominators(address);
+    return targets?.unwrapOrDefault().targets.toJSON() as string[];
+  } catch (e) {
+    logger.error(`Error getting current targets: ${e}`, chaindataLabel);
+    return null;
+  }
+};

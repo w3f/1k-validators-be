@@ -32,6 +32,7 @@ export const setupHealthCheckRoute = (
       version,
       connected: isConnected,
       currentEndpoint,
+      upSince: handler?.upSince,
     };
 
     routerInstance.get("/healthcheck", async (ctx) => {
@@ -68,8 +69,13 @@ export const setupScorekeeperRoutes = (
   try {
     // Scorekeeper Jobs Status
     if (scorekeeper) {
+      // TODO update swagger
       router.get("/scorekeeper/jobs", async (ctx) => {
         response(ctx, 200, scorekeeper.getJobsStatusAsJson());
+      });
+      // TODO update swagger
+      router.get("/nominators/status", async (ctx) => {
+        response(ctx, 200, scorekeeper.getAllNominatorStatusJson());
       });
     }
 
@@ -78,6 +84,7 @@ export const setupScorekeeperRoutes = (
       __dirname,
       "../../../scorekeeper-status-ui/dist",
     );
+    // TODO update swagger
     app.use(mount("/status", serve(viteBuildPath)));
 
     const assetsPath = path.resolve(
@@ -101,6 +108,7 @@ export const setupDocs = (app: Koa, config: Config.ConfigSchema): boolean => {
     const serveDocs = config?.server?.serveDocs || true;
     if (serveDocs) {
       const docsPath = path.join(__dirname, "../../../../docs/build");
+      // TODO update swagger
       app.use(mount("/docs", serve(docsPath)));
     }
 

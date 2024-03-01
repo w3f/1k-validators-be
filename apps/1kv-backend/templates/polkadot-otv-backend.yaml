@@ -80,7 +80,8 @@ spec:
                   "validatorPrefEnabled": true,
                   "nominatorEnabled": true,
                   "locationStatsEnabled": true,
-                  "blockEnabled": false
+                  "blockEnabled": false,
+                  "scorekeeperEnabled": true
                 },
                 "db": {
                   "mongo": {

@@ -169,7 +169,7 @@ export const executionJob = async (
         // `dryRun` is a special value for the returned block hash that is used to test the execution job without actually sending the transaction
         if (didSend || finalizedBlockHash == "dryRun") {
           const nominatorStatus: NominatorStatus = {
-            status: `Executed Proxy Tx: ${didSend} - ${finalizedBlockHash}`,
+            status: `Executed Proxy Tx: ${finalizedBlockHash == "dryRun" ? "" : didSend} ${finalizedBlockHash}`,
             updated: Date.now(),
             stale: false,
           };

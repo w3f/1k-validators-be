@@ -318,22 +318,23 @@ export const getAllIdentities = async (): Promise<Identity[]> => {
   return await IdentityModel.find({}).lean<Identity[]>();
 };
 
-export const getIdentityName = async (address: string) => {
-  if (!address) return;
+export const getIdentityName = async (
+  address: string,
+): Promise<string | null> => {
+  if (!address) return null;
   const superIdentity = await IdentityModel.findOne({ address: address })
-    .lean()
-    .select({ name: 1 })
-    .exec();
+    .lean<Identity>()
+    .select({ name: 1 });
   if (superIdentity) {
-    return superIdentity;
+    return superIdentity.name;
   } else {
     const identity = await IdentityModel.findOne({
       "subIdentities.address": address,
     })
-      .lean()
-      .select({ name: 1 })
-      .exec();
-    return identity;
+      .lean<Identity>()
+      .select({ name: 1 });
+
+    return identity?.name;
   }
 };
 
@@ -1704,4 +1705,12 @@ export const getUniqueStashSet = async (): Promise<any> => {
     stashSet.add(node.stash);
   }
   return Array.from(stashSet);
+};
+
+export const isKYC = async (stash: string): Promise<boolean | null> => {
+  const candidate = await getCandidate(stash);
+  if (candidate) {
+    return candidate.kyc;
+  }
+  return null;
 };

@@ -18,10 +18,11 @@ class ApiHandler extends EventEmitter {
   static isConnected = false;
   private healthCheckInProgress = false;
   private _currentEndpoint?: string;
-
+  public upSince: number = Date.now();
   constructor(endpoints: string[]) {
     super();
     this._endpoints = endpoints.sort(() => Math.random() - 0.5);
+    this.upSince = Date.now();
   }
 
   async healthCheck(retries = 0): Promise<boolean> {
@@ -56,7 +57,7 @@ class ApiHandler extends EventEmitter {
           await this._wsProvider?.disconnect();
           await this.getProvider(this._endpoints);
           await this.getAPI();
-          return await this.healthCheck(retries++);
+          return false;
         }
       } catch (e: unknown) {
         const errorMessage =

@@ -122,9 +122,21 @@ export const sendProxyTx = async (
       );
     }
 
+    const namedTargets = await Promise.all(
+      targets.map(async (val) => {
+        const name = await queries.getIdentityName(val);
+        const kyc = await queries.isKYC(val);
+        return {
+          address: val,
+          name: name,
+          kyc: kyc,
+        };
+      }),
+    );
+
     nominator.updateNominatorStatus({
       status: "Submitted Proxy Tx",
-      currentTargets: targets,
+      currentTargets: namedTargets,
       updated: Date.now(),
       stale: false,
     });

@@ -32,6 +32,7 @@ export const setupHealthCheckRoute = (
       version,
       connected: isConnected,
       currentEndpoint,
+      upSince: handler?.upSince,
     };
 
     routerInstance.get("/healthcheck", async (ctx) => {

@@ -638,6 +638,8 @@ export const EraStatsSchema = new Schema({
   valid: Number,
   // the number of nodes active in the set
   active: Number,
+  //  the number of noddes that have passed kyc check
+  kyc: Number,
 });
 
 export const EraStatsModel = mongoose.model("EraStatsModel", EraStatsSchema);

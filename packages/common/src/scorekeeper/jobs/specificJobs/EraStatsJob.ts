@@ -97,12 +97,14 @@ export const eraStatsJob = async (
     const allCandidates = await queries.allCandidates();
     const valid = allCandidates.filter((candidate) => candidate.valid);
     const active = allCandidates.filter((candidate) => candidate.active);
+    const kyc = allCandidates.filter((candidate) => candidate.kyc);
 
     await queries.setEraStats(
       Number(currentEra),
       allCandidates.length,
       valid.length,
       active.length,
+      kyc.length,
     );
 
     const finishedStatus: JobStatus = {

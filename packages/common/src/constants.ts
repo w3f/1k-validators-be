@@ -85,10 +85,10 @@ export const DEFAULT_TELEMETRY_ENDPONT =
 // List of log labels that are omitted from logging
 export const defaultExcludeLabels = [
   "Telemetry",
-  // "Location",
+  "Location",
   // "ValidatorPrefJob",
   // "Block",
-  // "Gateway",
+  "Gateway",
 ];
 
 /// Endpoint of the Kusama Thousand Validators backend. Used for the Polkadot program.
@@ -108,13 +108,13 @@ export const MONITOR_CRON = "0 */15 * * * *";
 export const CLEAR_OFFLINE_CRON = "0 0 * * * *";
 
 // Validity Cron Job. This runs every 20 minutes by default
-export const VALIDITY_CRON = "0 0-59/8 * * * *";
+export const VALIDITY_CRON = "0 0-59/5 * * * *";
 
 // Execution Cron Job. This runs every 15 minutes by default
-export const EXECUTION_CRON = "0 0-59/15 * * * *";
+export const EXECUTION_CRON = "0 0-59/3 * * * *";
 
 // Scorekeeper Cron Job. This runs every 30 minutes by default
-export const SCOREKEEPER_CRON = "0 0-59/30 * * * *";
+export const SCOREKEEPER_CRON = "0 0-59/5 * * * *";
 
 // Reward claiming frequency. This runs every 45 minutes by default
 export const REWARD_CLAIMING_CRON = "0 0-59/45 * * * *";
@@ -123,7 +123,7 @@ export const REWARD_CLAIMING_CRON = "0 0-59/45 * * * *";
 export const CANCEL_CRON = "0 0-59/25 * * * *";
 
 // Stale Nomination Frequency. This runs every 45 minutes by default
-export const STALE_CRON = "0 0-59/45 * * * *";
+export const STALE_CRON = "0 0-59/5 * * * *";
 
 // Score Cron Job. This runs every 5 minutes by default
 export const SCORE_CRON = "0 0-59/5 * * * *";
@@ -140,10 +140,10 @@ export const LOCATION_STATS_CRON = "0 0-59/5 * * * *";
 export const ERA_POINTS_CRON = "0 0-59/15 * * * *";
 
 // Active Validator Cron Job. This runs ever 12 minutes by default
-export const ACTIVE_VALIDATOR_CRON = "0 0-59/12 * * * *";
+export const ACTIVE_VALIDATOR_CRON = "0 0-59/5 * * * *";
 
 // Inclusion Cron Job
-export const INCLUSION_CRON = "0 0-59/15 * * * *";
+export const INCLUSION_CRON = "0 0-59/5 * * * *";
 
 // Unclaimed Era Cron Job. This runs every hour by default
 export const UNCLAIMED_ERAS_CRON = "0 0 0-23/1 * * *";
@@ -152,10 +152,10 @@ export const UNCLAIMED_ERAS_CRON = "0 0 0-23/1 * * *";
 export const VALIDATOR_PREF_CRON = "0 0-59/3 * * * *";
 
 // Sesion Key Cron Job. This runs every 15 minutes by default
-export const SESSION_KEY_CRON = "0 0-59/15 * * * *";
+export const SESSION_KEY_CRON = "0 0-59/5 * * * *";
 
 // Nominator Cron Job. This runs every 15 minutes by default
-export const NOMINATOR_CRON = "0 0-59/17 * * * *";
+export const NOMINATOR_CRON = "0 0-59/5 * * * *";
 
 export const BLOCK_CRON = "0 0-59/1 * * * *";
 

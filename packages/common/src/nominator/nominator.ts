@@ -155,7 +155,7 @@ export default class Nominator extends EventEmitter {
             totalScore = parseFloat(score[0].total);
           }
 
-          const formattedScore = totalScore.toFixed(1);
+          const formattedScore = totalScore;
 
           return {
             stash: target,

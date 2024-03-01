@@ -95,11 +95,11 @@ export const doNominations = async (
         return null;
       }
 
-      await Util.sleep(10000);
+      await Util.sleep(1000);
       await nominator.nominate(targets.map((t) => t.stash));
 
       // Wait some time between each transaction to avoid nonce issues.
-      await Util.sleep(16000);
+      await Util.sleep(1000);
 
       const targetsString = (
         await Promise.all(

@@ -119,6 +119,12 @@ export const autoNumNominations = async (
     `Auto Nominations - stash: ${stash} with balance ${stashBal} can elect ${adjustedNominationAmount} validators`,
     scorekeeperLabel,
   );
+  const nominatorStatus: NominatorStatus = {
+    status: `Going to nominate ${adjustedNominationAmount} validators`,
+    updated: Date.now(),
+    stale: false,
+  };
+  nominator.updateNominatorStatus(nominatorStatus);
 
   return {
     nominationNum: adjustedNominationAmount || 1,

@@ -162,7 +162,7 @@ export const scoreJob = async (
         name: JobNames.Score,
         progress,
         updated: Date.now(),
-        iteration: `[${score}] - ${candidate.name}`,
+        iteration: `[${score.toFixed(1)}]  ${candidate.name}`,
       });
 
       logger.info(

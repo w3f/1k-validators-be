@@ -23,13 +23,17 @@ const EraStatsBar = ({ currentEndpoint }) => {
       try {
         const eraStatsEndpoint = new URL("/erastats", currentEndpoint).href;
         const { data } = await axios.get(eraStatsEndpoint);
-        setEraStats(data);
+        // console.log("Era Stats Data:", JSON.stringify(data));
+        setEraStats(data[0]);
+        console.log(`era stats`);
+        console.log(JSON.stringify(eraStats));
       } catch (error) {
         console.error("Error fetching era stats data:", error);
       }
     };
 
-    fetchEraStats();
+    const interval = setInterval(fetchEraStats, 500);
+    return () => clearInterval(interval);
   }, [currentEndpoint]);
 
   return (
@@ -53,7 +57,8 @@ const EraStatsBar = ({ currentEndpoint }) => {
       <div className="eraStatsItem">
         <FiUserCheck className="icon" />
         <span>
-          KYC: {eraStats.kyc} (${(eraStats?.kyc / eraStats?.totalNodes) * 100}%)
+          KYC: {eraStats.kyc} ($
+          {((eraStats?.kyc / eraStats?.totalNodes) * 100).toFixed(0)}%)
         </span>
       </div>
     </div>

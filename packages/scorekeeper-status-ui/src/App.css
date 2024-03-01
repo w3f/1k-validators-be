@@ -415,11 +415,12 @@ h1 {
   top: 5px;
 }
 .targetField {
-    /*transition: background 0.3s, border 0.3s; !* Smooth transition for hover effect *!*/
-    padding: 10px; /* Add some padding inside the div */
-    border-radius: 5px; /* Optional: match the border-radius if needed */
-    border: 1px solid transparent; /* Transparent border by default */
-  }
+  /*transition: background 0.3s, border 0.3s; !* Smooth transition for hover effect *!*/
+  padding: 10px; /* Add some padding inside the div */
+  border-radius: 5px; /* Optional: match the border-radius if needed */
+  border: 1px solid transparent; /* Transparent border by default */
+
+}
 
 .targetField:hover {
     background: rgba(0, 255, 0, 0.05); /* Slightly darken the background on hover */
@@ -473,5 +474,5 @@ h1 {
   overflow: hidden; /* Hide overflow */
   text-overflow: ellipsis; /* Add ellipsis for overflow */
   white-space: nowrap; /* Keep the text on a single line */
-  max-width: 90%; /* Adjust this value based on your container's width */
+  max-width: 70%; /* Adjust this value based on your container's width */
 }

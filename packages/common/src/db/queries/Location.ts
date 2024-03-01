@@ -37,15 +37,7 @@ export const getLocation = async (
 export const getCandidateLocation = async (
   name: string,
 ): Promise<Location | null> => {
-  const data = await LocationModel.findOne({ name })
-    .sort({ updated: -1 })
-    .lean<Location>();
-
-  if (!data) {
-    logger.warn(`Location: can't find location for ${name}`, dbLabel);
-  }
-
-  return data;
+  return LocationModel.findOne({ name }).sort({ updated: -1 }).lean<Location>();
 };
 
 export const setLocation = async (

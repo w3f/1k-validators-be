@@ -44,7 +44,7 @@ export default class Nominator extends EventEmitter {
   private _bondedAddress: string;
   private bot: any;
   private handler: ApiHandler;
-  private chaindata: ChainData;
+  public chaindata: ChainData;
   private signer: KeyringPair;
 
   // Set from config - if true nominations will be stubbed but not executed
@@ -323,11 +323,23 @@ export default class Nominator extends EventEmitter {
 
     // Start an announcement for a delayed proxy tx
     if (this._isProxy && this._proxyDelay > 0) {
+      logger.info(
+        `Starting a delayed proxy tx for ${this.bondedAddress}`,
+        nominatorLabel,
+      );
       await sendProxyDelayTx(this, targets, this.chaindata, api);
     } else if (this._isProxy && this._proxyDelay == 0) {
+      logger.info(
+        `Starting a non delayed proxy tx for ${this.bondedAddress}`,
+        nominatorLabel,
+      );
       // Start a non delay proxy tx
       await sendProxyTx(this, targets, this.chaindata, api, this.bot);
     } else {
+      logger.info(
+        `Starting a non proxy tx for ${this.bondedAddress}`,
+        nominatorLabel,
+      );
       // Do a non-proxy tx
       tx = api.tx.staking.nominate(targets);
       await this.sendStakingTx(tx, targets);
@@ -382,7 +394,15 @@ export default class Nominator extends EventEmitter {
     // If Dry Run is enabled in the config, nominations will be stubbed but not executed
     if (this._dryRun) {
       logger.info(`DRY RUN ENABLED, SKIPPING TX`, nominatorLabel);
-
+      const currentEra = await this.chaindata.getCurrentEra();
+      const nominatorStatus: NominatorStatus = {
+        status: `Dry Run: Nominated ${targets.length} validators`,
+        updated: Date.now(),
+        stale: false,
+        currentTargets: targets,
+        lastNominationEra: currentEra,
+      };
+      this.updateNominatorStatus(nominatorStatus);
       // `dryRun` return as blockhash is checked elsewhere to finish the hook of writing db entries
       return [false, "dryRun"];
     }
@@ -517,6 +537,40 @@ export default class Nominator extends EventEmitter {
           break;
       }
     });
+    const currentEra = await this.chaindata.getCurrentEra();
+    const namedTargets = await Promise.all(
+      targets.map(async (target) => {
+        const kyc = await queries.isKYC(target);
+        let name = await queries.getIdentityName(target);
+        if (!name) {
+          name = (await this.chaindata.getFormattedIdentity(target))?.name;
+        }
+
+        const score = await queries.getLatestValidatorScore(target);
+        let totalScore = 0;
+
+        if (score && score[0] && score[0].total) {
+          totalScore = parseFloat(score[0].total);
+        }
+
+        const formattedScore = totalScore;
+
+        return {
+          stash: target,
+          name: name,
+          kyc: kyc,
+          score: formattedScore,
+        };
+      }),
+    );
+    const nominatorStatus: NominatorStatus = {
+      status: `Nominated ${targets.length} validators: ${didSend} ${finalizedBlockHash}`,
+      updated: Date.now(),
+      stale: false,
+      currentTargets: namedTargets,
+      lastNominationEra: currentEra,
+    };
+    this.updateNominatorStatus(nominatorStatus);
     return [didSend, finalizedBlockHash || null]; // Change to return undefined
   };
 }

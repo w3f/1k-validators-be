@@ -1,4 +1,4 @@
-import { ValidatorScoreModel } from "../models";
+import { ValidatorScore, ValidatorScoreModel } from "../models";
 
 export const setValidatorScore = async (
   address: string,
@@ -107,13 +107,11 @@ export const getValidatorScore = async (
 
 export const getLatestValidatorScore = async (
   address: string,
-): Promise<any> => {
-  return (
-    await ValidatorScoreModel.find({ address: address }, { _id: 0, __v: 0 })
-      .sort({ session: -1 })
-      .limit(1)
-      .lean()
-  )[0];
+): Promise<ValidatorScore> => {
+  return ValidatorScoreModel.findOne({ address: address }, { _id: 0, __v: 0 })
+    .sort({ session: -1 })
+    .limit(1)
+    .lean<ValidatorScore>();
 };
 
 export const deleteOldValidatorScores = async (): Promise<any> => {

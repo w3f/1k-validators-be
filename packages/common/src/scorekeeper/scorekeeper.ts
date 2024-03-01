@@ -236,7 +236,13 @@ export default class ScoreKeeper {
 
   // Begin the main workflow of the scorekeeper
   async begin(): Promise<void> {
-    logger.info(`Starting Scorekeeper.`, scorekeeperLabel);
+    logger.info(
+      `Starting Scorekeeper. Dry run: ${this._dryRun}`,
+      scorekeeperLabel,
+    );
+
+    const currentEra = await this.chaindata.getCurrentEra();
+    this.currentEra = currentEra;
 
     await setAllIdentities(this.chaindata, scorekeeperLabel);
 
@@ -248,7 +254,6 @@ export default class ScoreKeeper {
       );
       await startRound(
         this.nominating,
-        this.currentEra,
         this.bot,
         this.constraints,
         this.nominatorGroups,
@@ -262,11 +267,10 @@ export default class ScoreKeeper {
     // Start all Cron Jobs
     const metadata: JobRunnerMetadata = {
       config: this.config,
-      ending: this.ending,
       chaindata: this.chaindata,
       nominatorGroups: this.nominatorGroups || [],
       nominating: this.nominating,
-      currentEra: this.currentEra,
+      // currentEra: this.currentEra,
       bot: this.bot,
       constraints: this.constraints,
       handler: this.handler,

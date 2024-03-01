@@ -1,8 +1,7 @@
 import { Job, JobConfig, JobRunnerMetadata, JobStatus } from "../JobsClass";
 import logger from "../../../logger";
-import { scorekeeperLabel } from "../../scorekeeper";
 import { queries } from "../../../index";
-import { endRound, startRound } from "../../Round";
+import { startRound } from "../../Round";
 import { jobStatusEmitter } from "../../../Events";
 import { JobNames } from "../JobConfigs";
 
@@ -19,20 +18,14 @@ export const mainScorekeeperJob = async (
 ): Promise<void> => {
   const {
     constraints,
-    ending,
     config,
     chaindata,
     nominatorGroups,
     nominating,
-    currentEra,
     bot,
     handler,
   } = metadata;
-
-  if (ending) {
-    logger.info(`ROUND IS CURRENTLY ENDING.`, mainScoreKeeperLabel);
-    return;
-  }
+  logger.info(`Running Main Scorekeeper`, mainScoreKeeperLabel);
 
   const [activeEra, err] = await chaindata.getActiveEraIndex();
   if (err) {
@@ -53,7 +46,16 @@ export const mainScorekeeperJob = async (
   const isNominationRound =
     Number(lastNominatedEraIndex) <= activeEra - eraBuffer;
 
+  logger.info(
+    `last era: ${lastNominatedEraIndex} is nomination round: ${isNominationRound}`,
+    mainScoreKeeperLabel,
+  );
+
   if (isNominationRound) {
+    logger.info(
+      `${activeEra} is nomination round, starting....`,
+      mainScoreKeeperLabel,
+    );
     let processedNominatorGroups = 0;
     const totalNominatorGroups = nominatorGroups ? nominatorGroups.length : 0;
 
@@ -92,45 +94,21 @@ export const mainScorekeeperJob = async (
       allCurrentTargets.push(...currentTargets); // Flatten the array
     }
 
-    if (!allCurrentTargets.length) {
-      logger.info(
-        "Current Targets is empty. Starting round.",
-        mainScoreKeeperLabel,
-      );
-      await startRound(
-        nominating,
-        currentEra,
-        bot,
-        constraints,
-        nominatorGroups,
-        chaindata,
-        handler,
-        config,
-        allCurrentTargets,
-      );
-    } else {
-      logger.info(`Ending round.`, scorekeeperLabel);
-      await endRound(
-        ending,
-        nominatorGroups,
-        chaindata,
-        constraints,
+    logger.info(
+      `Starting round -  ${allCurrentTargets.length} current targets`,
+      mainScoreKeeperLabel,
+    );
 
-        config,
-        bot,
-      );
-      await startRound(
-        nominating,
-        currentEra,
-        bot,
-        constraints,
-        nominatorGroups,
-        chaindata,
-        handler,
-        config,
-        allCurrentTargets,
-      );
-    }
+    await startRound(
+      nominating,
+      bot,
+      constraints,
+      nominatorGroups,
+      chaindata,
+      handler,
+      config,
+      allCurrentTargets,
+    );
 
     processedNominatorGroups++;
 

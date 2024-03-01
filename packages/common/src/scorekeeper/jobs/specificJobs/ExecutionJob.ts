@@ -4,6 +4,7 @@ import { Constants, queries, Util } from "../../../index";
 import { cronLabel } from "../cron/StartCronJobs";
 import { jobStatusEmitter } from "../../../Events";
 import { JobNames } from "../JobConfigs";
+import { NominatorStatus } from "../../../nominator/nominator";
 
 export class ExecutionJob extends Job {
   constructor(jobConfig: JobConfig, jobRunnerMetadata: JobRunnerMetadata) {
@@ -15,17 +16,9 @@ export const executionJob = async (
   metadata: JobRunnerMetadata,
 ): Promise<boolean> => {
   try {
-    const {
-      constraints,
-      ending,
-      config,
-      chaindata,
-      nominatorGroups,
-      nominating,
-      currentEra,
-      bot,
-      handler,
-    } = metadata;
+    const { config, chaindata, nominatorGroups, bot, handler } = metadata;
+
+    const isDryRun = config?.scorekeeper?.dryRun;
 
     const timeDelayBlocks = config.proxy?.timeDelayBlocks
       ? Number(config.proxy?.timeDelayBlocks)
@@ -83,6 +76,13 @@ export const executionJob = async (
         logger.error(`nominator not found for controller: ${controller}`);
         continue;
       }
+      const nominatorStatus: NominatorStatus = {
+        status: `Starting Delayed Execution for ${callHash} - ${dataNum}`,
+        updated: Date.now(),
+        stale: false,
+      };
+      nominator.updateNominatorStatus(nominatorStatus);
+
       const [bonded, err] = await chaindata.getBondedAmount(nominator.address);
 
       for (const target of targets) {
@@ -93,6 +93,13 @@ export const executionJob = async (
             `${target} has invalid commission: ${commission}`,
             cronLabel,
           );
+
+          const nominatorStatus: NominatorStatus = {
+            status: `Cancelling Proxy tx: ${target} has invalid commission: ${commission}`,
+            updated: Date.now(),
+            stale: false,
+          };
+          nominator.updateNominatorStatus(nominatorStatus);
           if (bot) {
             await bot.sendMessage(
               `@room ${target} has invalid commission: ${commission}`,
@@ -111,19 +118,33 @@ export const executionJob = async (
             if (bot) {
               await bot.sendMessage(`Cancelling call with hash: ${callHash}`);
             }
+            const nominatorStatus: NominatorStatus = {
+              status: `Cancelling Proxy tx: ${callHash} -  invalid commission`,
+              updated: Date.now(),
+              stale: false,
+            };
+            nominator.updateNominatorStatus(nominatorStatus);
             await nominator.cancelTx(announcement);
           }
         }
       }
 
       const shouldExecute =
-        validCommission && dataNum + Number(timeDelayBlocks) <= latestBlock;
+        isDryRun ||
+        (validCommission && dataNum + Number(timeDelayBlocks) <= latestBlock);
 
       if (shouldExecute) {
         logger.info(
           `tx first announced at block ${dataNum} is ready to execute. Executing....`,
           cronLabel,
         );
+
+        const nominatorStatus: NominatorStatus = {
+          status: `${isDryRun ? "DRY RUN: " : ""} Executing Valid Proxy Tx: ${data.callHash}`,
+          updated: Date.now(),
+          stale: false,
+        };
+        nominator.updateNominatorStatus(nominatorStatus);
 
         // time to execute
 
@@ -145,7 +166,15 @@ export const executionJob = async (
           cronLabel,
         );
 
+        // `dryRun` is a special value for the returned block hash that is used to test the execution job without actually sending the transaction
         if (didSend || finalizedBlockHash == "dryRun") {
+          const nominatorStatus: NominatorStatus = {
+            status: `Executed Proxy Tx: ${didSend} - ${finalizedBlockHash}`,
+            updated: Date.now(),
+            stale: false,
+          };
+          nominator.updateNominatorStatus(nominatorStatus);
+
           // Create a Nomination Object
           jobStatusEmitter.emit("jobProgress", {
             name: JobNames.Execution,

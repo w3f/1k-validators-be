@@ -21,6 +21,13 @@ export const getAllDelayedTxs = async (): Promise<DelayedTx[]> => {
   return DelayedTxModel.find({}).lean<DelayedTx[]>();
 };
 
+// TODO: Add tests
+export const getAccountDelayedTx = async (
+  bondedAddress: string,
+): Promise<DelayedTx[]> => {
+  return DelayedTxModel.find({ controller: bondedAddress }).lean<DelayedTx[]>();
+};
+
 export const deleteDelayedTx = async (
   number: number,
   controller: string,

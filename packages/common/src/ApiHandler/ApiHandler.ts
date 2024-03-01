@@ -28,10 +28,10 @@ class ApiHandler extends EventEmitter {
   async healthCheck(retries = 0): Promise<boolean> {
     if (retries < 50) {
       try {
-        logger.info(
-          `Performing health check for WS Provider for rpc: ${this._currentEndpoint} try: ${retries}`,
-          apiLabel,
-        );
+        // logger.info(
+        //   `Performing health check for WS Provider for rpc: ${this._currentEndpoint} try: ${retries}`,
+        //   apiLabel,
+        // );
         this.healthCheckInProgress = true;
         let chain;
 
@@ -45,10 +45,10 @@ class ApiHandler extends EventEmitter {
         }
 
         if (isConnected && chain) {
-          logger.info(
-            `All good. Connected to ${this._currentEndpoint}`,
-            apiLabel,
-          );
+          // logger.info(
+          //   `All good. Connected to ${this._currentEndpoint}`,
+          //   apiLabel,
+          // );
           this.healthCheckInProgress = false;
           return true;
         } else {

@@ -46,12 +46,15 @@ export const sendProxyDelayTx = async (
     };
     await queries.addDelayedTx(delayedTx);
 
-    await nominator.signAndSendTx(tx);
+    const allProxyTxs = await queries.getAllDelayedTxs();
+
+    const didSend = await nominator.signAndSendTx(tx);
     nominator.updateNominatorStatus({
       status: "Announced New Tx",
       nextTargets: targets,
       updated: Date.now(),
       stale: false,
+      proxyTxs: allProxyTxs,
     });
 
     return true;
@@ -133,12 +136,14 @@ export const sendProxyTx = async (
         };
       }),
     );
+    const currentEra = await chaindata.getCurrentEra();
 
     nominator.updateNominatorStatus({
       status: "Submitted Proxy Tx",
       currentTargets: namedTargets,
       updated: Date.now(),
       stale: false,
+      lastNominationEra: currentEra,
     });
     nominator.currentlyNominating = targets;
 

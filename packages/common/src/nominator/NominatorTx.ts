@@ -156,7 +156,7 @@ export const sendProxyTx = async (
       `{Nominator::nominate} there was an error sending the tx`,
       nominatorLabel,
     );
-    logger.error(JSON.stringify(e));
+    logger.error(JSON.stringify(e), nominatorLabel);
     nominator.updateNominatorStatus({
       status: `Proxy Error: ${JSON.stringify(e)}`,
       updated: Date.now(),

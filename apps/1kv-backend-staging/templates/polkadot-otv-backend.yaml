@@ -83,7 +83,7 @@ spec:
                   "nominatorEnabled": true,
                   "locationStatsEnabled": true,
                   "blockEnabled": true,
-                  "scorekeeprEnabled": true,
+                  "scorekeeperEnabled": true
                 },
                 "db": {
                   "mongo": {
@@ -105,7 +105,7 @@ spec:
                 "scorekeeper": {
                   "candidates": null,
                   "forceRound": false,
-                  "nominating": {{ .Values.polkadot.be.nominating }}
+                  "nominating": {{ .Values.polkadot.be.nominating }},
                   "dryRun": true
                 },
                 "server": {

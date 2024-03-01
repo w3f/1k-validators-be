@@ -50,7 +50,7 @@ export const startRound = async (
 
   for (const nom of nominatorGroups) {
     const nominatorStatus: NominatorStatus = {
-      status: `Round Starteed`,
+      status: `Round Started`,
       updated: Date.now(),
       stale: false,
     };
@@ -149,6 +149,15 @@ export const startRound = async (
       scorekeeperLabel,
     );
     await queries.setLastNominatedEraIndex(newEra);
+    for (const nom of nominatorGroups) {
+      const nominatorStatus: NominatorStatus = {
+        status: `Nominated!`,
+        updated: Date.now(),
+        stale: false,
+        lastNominationEra: newEra,
+      };
+      nom.updateNominatorStatus(nominatorStatus);
+    }
   } else {
     logger.info(
       `${numValidatorsNominated} nominated this round, lastNominatedEra not set...`,

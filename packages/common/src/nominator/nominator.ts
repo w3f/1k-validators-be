@@ -391,11 +391,180 @@ export default class Nominator extends EventEmitter {
     tx: SubmittableExtrinsic<"promise">,
     targets: string[],
   ): Promise<Types.BooleanResult> => {
-    // If Dry Run is enabled in the config, nominations will be stubbed but not executed
-    if (this._dryRun) {
-      logger.info(`DRY RUN ENABLED, SKIPPING TX`, nominatorLabel);
-      const currentEra = await this.chaindata.getCurrentEra();
+    try {
+      // If Dry Run is enabled in the config, nominations will be stubbed but not executed
+      if (this._dryRun) {
+        logger.info(`DRY RUN ENABLED, SKIPPING TX`, nominatorLabel);
+        const currentEra = await this.chaindata.getCurrentEra();
 
+        const namedTargets = await Promise.all(
+          targets.map(async (target) => {
+            const kyc = await queries.isKYC(target);
+            let name = await queries.getIdentityName(target);
+            if (!name) {
+              name = (await this.chaindata.getFormattedIdentity(target))?.name;
+            }
+
+            const score = await queries.getLatestValidatorScore(target);
+            let totalScore = 0;
+
+            if (score && score[0] && score[0].total) {
+              totalScore = parseFloat(score[0].total);
+            }
+
+            const formattedScore = totalScore;
+
+            return {
+              stash: target,
+              name: namedTargets,
+              kyc: kyc,
+              score: formattedScore,
+            };
+          }),
+        );
+        const nominatorStatus: NominatorStatus = {
+          status: `Dry Run: Nominated ${targets.length} validators`,
+          updated: Date.now(),
+          stale: false,
+          currentTargets: targets,
+          lastNominationEra: currentEra,
+        };
+        this.updateNominatorStatus(nominatorStatus);
+        // `dryRun` return as blockhash is checked elsewhere to finish the hook of writing db entries
+        return [false, "dryRun"];
+      }
+      const now = new Date().getTime();
+      const api = this.handler.getApi();
+      if (!api) {
+        logger.error(`Error getting API in sendStakingTx`, nominatorLabel);
+        return [false, "error getting api to send staking tx"];
+      }
+
+      let didSend = true;
+      let finalizedBlockHash: string | undefined;
+
+      logger.info(
+        `{Nominator::nominate} sending staking tx for ${this.bondedAddress}`,
+      );
+
+      const unsub = await tx.signAndSend(this.signer, async (result: any) => {
+        const { status, events } = result;
+
+        // Handle tx lifecycle
+        switch (true) {
+          case status.isBroadcast:
+            logger.info(
+              `{Nominator::nominate} tx for ${this.bondedAddress} has been broadcasted`,
+            );
+            break;
+          case status.isInBlock:
+            logger.info(
+              `{Nominator::nominate} tx for ${this.bondedAddress} in block`,
+            );
+            break;
+          case status.isUsurped:
+            logger.info(
+              `{Nominator::nominate} tx for ${this.bondedAddress} has been usurped: ${status.asUsurped}`,
+            );
+            didSend = false;
+            unsub();
+            break;
+          case status.isFinalized:
+            finalizedBlockHash = status.asFinalized.toString();
+            didSend = true;
+            logger.info(
+              `{Nominator::nominate} tx is finalized in block ${finalizedBlockHash}`,
+            );
+
+            for (const event of events) {
+              if (
+                event.event &&
+                api.events.system.ExtrinsicFailed.is(event.event)
+              ) {
+                const {
+                  data: [error, info],
+                } = event.event;
+
+                if (error.isModule) {
+                  const decoded = api.registry.findMetaError(error.asModule);
+                  const { docs, method, section } = decoded;
+
+                  const errorMsg = `{Nominator::nominate} tx error:  [${section}.${method}] ${docs.join(
+                    " ",
+                  )}`;
+                  logger.info(errorMsg);
+                  if (this.bot) await this.bot?.sendMessage(errorMsg);
+                  didSend = false;
+                  unsub();
+                } else {
+                  // Other, CannotLookup, BadOrigin, no extra info
+                  logger.info(
+                    `{Nominator::nominate} has an error: ${error.toString()}`,
+                  );
+                  didSend = false;
+                  unsub();
+                }
+              }
+            }
+
+            // The tx was otherwise successful
+
+            this.currentlyNominating = targets;
+
+            // Get the current nominations of an address
+            const currentTargets = await queries.getCurrentTargets(
+              this.bondedAddress,
+            );
+
+            // if the current targets is populated, clear it
+            if (!!currentTargets.length) {
+              logger.info("(Nominator::nominate) Wiping old targets");
+              await queries.clearCurrent(this.bondedAddress);
+            }
+
+            // Update the nomination record in the db
+            const era = await this.chaindata.getCurrentEra();
+            if (!era) {
+              logger.error(
+                `{Nominator::nominate} error getting era for ${this.bondedAddress}`,
+              );
+              return;
+            }
+
+            const decimals = await this.chaindata.getDenom();
+            if (!decimals) {
+              logger.error(
+                `{Nominator::nominate} error getting decimals for ${this.bondedAddress}`,
+              );
+              return;
+            }
+            const bonded = await this.chaindata.getBondedAmount(
+              this.bondedAddress,
+            );
+
+            if (!bonded) {
+              logger.error(
+                `{Nominator::nominate} error getting bonded for ${this.bondedAddress}`,
+              );
+              return;
+            }
+
+            // update both the list of nominator for the nominator account as well as the time period of the nomination
+            for (const stash of targets) {
+              await queries.setTarget(this.bondedAddress, stash, era);
+              await queries.setLastNomination(this.bondedAddress, now);
+            }
+
+            unsub();
+            break;
+          default:
+            logger.info(
+              `{Nominator::nominate} tx from ${this.bondedAddress} has another status: ${status}`,
+            );
+            break;
+        }
+      });
+      const currentEra = await this.chaindata.getCurrentEra();
       const namedTargets = await Promise.all(
         targets.map(async (target) => {
           const kyc = await queries.isKYC(target);
@@ -415,188 +584,24 @@ export default class Nominator extends EventEmitter {
 
           return {
             stash: target,
-            name: namedTargets,
+            name: name,
             kyc: kyc,
             score: formattedScore,
           };
         }),
       );
       const nominatorStatus: NominatorStatus = {
-        status: `Dry Run: Nominated ${targets.length} validators`,
+        status: `Nominated ${targets.length} validators: ${didSend} ${finalizedBlockHash}`,
         updated: Date.now(),
         stale: false,
-        currentTargets: targets,
+        currentTargets: namedTargets,
         lastNominationEra: currentEra,
       };
       this.updateNominatorStatus(nominatorStatus);
-      // `dryRun` return as blockhash is checked elsewhere to finish the hook of writing db entries
-      return [false, "dryRun"];
+      return [didSend, finalizedBlockHash || null]; // Change to return undefined
+    } catch (e) {
+      logger.error(`Error sending tx: ${JSON.stringify(e)}`, nominatorLabel);
+      return [false, e];
     }
-    const now = new Date().getTime();
-    const api = this.handler.getApi();
-    if (!api) {
-      logger.error(`Error getting API in sendStakingTx`, nominatorLabel);
-      return [false, "error getting api to send staking tx"];
-    }
-
-    let didSend = true;
-    let finalizedBlockHash: string | undefined;
-
-    logger.info(
-      `{Nominator::nominate} sending staking tx for ${this.bondedAddress}`,
-    );
-
-    const unsub = await tx.signAndSend(this.signer, async (result: any) => {
-      const { status, events } = result;
-
-      // Handle tx lifecycle
-      switch (true) {
-        case status.isBroadcast:
-          logger.info(
-            `{Nominator::nominate} tx for ${this.bondedAddress} has been broadcasted`,
-          );
-          break;
-        case status.isInBlock:
-          logger.info(
-            `{Nominator::nominate} tx for ${this.bondedAddress} in block`,
-          );
-          break;
-        case status.isUsurped:
-          logger.info(
-            `{Nominator::nominate} tx for ${this.bondedAddress} has been usurped: ${status.asUsurped}`,
-          );
-          didSend = false;
-          unsub();
-          break;
-        case status.isFinalized:
-          finalizedBlockHash = status.asFinalized.toString();
-          didSend = true;
-          logger.info(
-            `{Nominator::nominate} tx is finalized in block ${finalizedBlockHash}`,
-          );
-
-          for (const event of events) {
-            if (
-              event.event &&
-              api.events.system.ExtrinsicFailed.is(event.event)
-            ) {
-              const {
-                data: [error, info],
-              } = event.event;
-
-              if (error.isModule) {
-                const decoded = api.registry.findMetaError(error.asModule);
-                const { docs, method, section } = decoded;
-
-                const errorMsg = `{Nominator::nominate} tx error:  [${section}.${method}] ${docs.join(
-                  " ",
-                )}`;
-                logger.info(errorMsg);
-                if (this.bot) await this.bot?.sendMessage(errorMsg);
-                didSend = false;
-                unsub();
-              } else {
-                // Other, CannotLookup, BadOrigin, no extra info
-                logger.info(
-                  `{Nominator::nominate} has an error: ${error.toString()}`,
-                );
-                didSend = false;
-                unsub();
-              }
-            }
-          }
-
-          // The tx was otherwise successful
-
-          this.currentlyNominating = targets;
-
-          // Get the current nominations of an address
-          const currentTargets = await queries.getCurrentTargets(
-            this.bondedAddress,
-          );
-
-          // if the current targets is populated, clear it
-          if (!!currentTargets.length) {
-            logger.info("(Nominator::nominate) Wiping old targets");
-            await queries.clearCurrent(this.bondedAddress);
-          }
-
-          // Update the nomination record in the db
-          const era = await this.chaindata.getCurrentEra();
-          if (!era) {
-            logger.error(
-              `{Nominator::nominate} error getting era for ${this.bondedAddress}`,
-            );
-            return;
-          }
-
-          const decimals = await this.chaindata.getDenom();
-          if (!decimals) {
-            logger.error(
-              `{Nominator::nominate} error getting decimals for ${this.bondedAddress}`,
-            );
-            return;
-          }
-          const bonded = await this.chaindata.getBondedAmount(
-            this.bondedAddress,
-          );
-
-          if (!bonded) {
-            logger.error(
-              `{Nominator::nominate} error getting bonded for ${this.bondedAddress}`,
-            );
-            return;
-          }
-
-          // update both the list of nominator for the nominator account as well as the time period of the nomination
-          for (const stash of targets) {
-            await queries.setTarget(this.bondedAddress, stash, era);
-            await queries.setLastNomination(this.bondedAddress, now);
-          }
-
-          unsub();
-          break;
-        default:
-          logger.info(
-            `{Nominator::nominate} tx from ${this.bondedAddress} has another status: ${status}`,
-          );
-          break;
-      }
-    });
-    const currentEra = await this.chaindata.getCurrentEra();
-    const namedTargets = await Promise.all(
-      targets.map(async (target) => {
-        const kyc = await queries.isKYC(target);
-        let name = await queries.getIdentityName(target);
-        if (!name) {
-          name = (await this.chaindata.getFormattedIdentity(target))?.name;
-        }
-
-        const score = await queries.getLatestValidatorScore(target);
-        let totalScore = 0;
-
-        if (score && score[0] && score[0].total) {
-          totalScore = parseFloat(score[0].total);
-        }
-
-        const formattedScore = totalScore;
-
-        return {
-          stash: target,
-          name: name,
-          kyc: kyc,
-          score: formattedScore,
-        };
-      }),
-    );
-    const nominatorStatus: NominatorStatus = {
-      status: `Nominated ${targets.length} validators: ${didSend} ${finalizedBlockHash}`,
-      updated: Date.now(),
-      stale: false,
-      currentTargets: namedTargets,
-      lastNominationEra: currentEra,
-    };
-    this.updateNominatorStatus(nominatorStatus);
-    return [didSend, finalizedBlockHash || null]; // Change to return undefined
   };
 }

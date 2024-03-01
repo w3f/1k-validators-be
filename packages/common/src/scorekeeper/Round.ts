@@ -44,7 +44,7 @@ export const startRound = async (
     `New round starting at ${now} for next Era ${newEra + 1}`,
     scorekeeperLabel,
   );
-  bot?.sendMessage(
+  await bot?.sendMessage(
     `New round is starting! Era ${newEra} will begin new nominations.`,
   );
 

@@ -28,7 +28,8 @@ const HealthCheckBar = ({ currentEndpoint }) => {
       }
     };
 
-    fetchHealthData();
+    const interval = setInterval(fetchHealthData, 500);
+    return () => clearInterval(interval);
   }, [currentEndpoint]);
 
   // Utility function to calculate and format uptime
@@ -60,11 +61,11 @@ const HealthCheckBar = ({ currentEndpoint }) => {
         ) : (
           <FiAlertCircle className="healthCheckIcon disconnected" />
         )}
-        <span>Connected: {healthData.connected ? "Yes" : "No"}</span>
+        <span>{healthData.connected ? "Connected" : "Disconnected"}</span>
       </div>
       <div className="healthCheckItem">
         <FiWifi className="healthCheckIcon" />
-        <span className="endpointText">Endpoint: {currentEndpoint}</span>
+        <span className="endpointText">{currentEndpoint}</span>
       </div>
       {healthData.connected && healthData.version && (
         <div className="healthCheckItem">

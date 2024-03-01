@@ -50,8 +50,17 @@ export const mainScorekeeperJob = async (
     `last era: ${lastNominatedEraIndex} is nomination round: ${isNominationRound}`,
     mainScoreKeeperLabel,
   );
+  const hasOld = await Promise.all(
+    nominatorGroups.map(async (nom) => {
+      const stash = await nom.stash();
+      if (!stash || stash === "0x") return false;
+      const lastNominatedEra =
+        await chaindata.getNominatorLastNominationEra(stash);
+      return lastNominatedEra < activeEra - eraBuffer;
+    }),
+  );
 
-  if (isNominationRound) {
+  if (isNominationRound || hasOld) {
     logger.info(
       `${activeEra} is nomination round, starting....`,
       mainScoreKeeperLabel,

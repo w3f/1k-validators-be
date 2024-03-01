@@ -395,6 +395,32 @@ export default class Nominator extends EventEmitter {
     if (this._dryRun) {
       logger.info(`DRY RUN ENABLED, SKIPPING TX`, nominatorLabel);
       const currentEra = await this.chaindata.getCurrentEra();
+
+      const namedTargets = await Promise.all(
+        targets.map(async (target) => {
+          const kyc = await queries.isKYC(target);
+          let name = await queries.getIdentityName(target);
+          if (!name) {
+            name = (await this.chaindata.getFormattedIdentity(target))?.name;
+          }
+
+          const score = await queries.getLatestValidatorScore(target);
+          let totalScore = 0;
+
+          if (score && score[0] && score[0].total) {
+            totalScore = parseFloat(score[0].total);
+          }
+
+          const formattedScore = totalScore;
+
+          return {
+            stash: target,
+            name: namedTargets,
+            kyc: kyc,
+            score: formattedScore,
+          };
+        }),
+      );
       const nominatorStatus: NominatorStatus = {
         status: `Dry Run: Nominated ${targets.length} validators`,
         updated: Date.now(),

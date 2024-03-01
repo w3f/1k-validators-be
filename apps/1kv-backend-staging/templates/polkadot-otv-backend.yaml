@@ -83,7 +83,7 @@ spec:
                   "nominatorEnabled": true,
                   "locationStatsEnabled": true,
                   "blockEnabled": true,
-                  "scorekeeprEnabled": true,
+                  "scorekeeperEnabled": true,
                 },
                 "db": {
                   "mongo": {

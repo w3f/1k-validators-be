@@ -89,7 +89,7 @@ export const startRound = async (
     );
     for (const nom of nominatorGroups) {
       const nominatorStatus: NominatorStatus = {
-        status: `Checked Candidate ${candidate.name} ${isValid ? "Valid" : "Invalid"}`,
+        status: `[${index}/${allCandidates.length}] Checked Candidate ${candidate.name} ${isValid ? "✅ " : "❌"}`,
         updated: Date.now(),
         stale: false,
       };

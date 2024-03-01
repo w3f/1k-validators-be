@@ -494,8 +494,8 @@ const App = () => {
                       theme="polkadot"
                     />
                     {target.name
-                      ? `${Number(target.score).toFixed(0)} ${target.name}`
-                      : `${Number(target.score).toFixed(0)} ${truncateAddress(target.stash)}`}{" "}
+                      ? `${target.score} ${target.name}`
+                      : `${target.score} ${truncateAddress(target.stash)}`}{" "}
                     {target.kyc && (
                       <FiCheckCircle
                         style={{ color: "green", marginLeft: "5px" }}

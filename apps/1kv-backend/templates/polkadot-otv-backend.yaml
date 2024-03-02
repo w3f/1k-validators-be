@@ -17,7 +17,7 @@ spec:
   source:
     repoURL: https://w3f.github.io/helm-charts/
     chart: otv-backend
-    targetRevision: v3.0.23
+    targetRevision: v3.0.24
     plugin:
       env:
         - name: HELM_VALUES
@@ -80,7 +80,8 @@ spec:
                   "validatorPrefEnabled": true,
                   "nominatorEnabled": true,
                   "locationStatsEnabled": true,
-                  "blockEnabled": false
+                  "blockEnabled": false,
+                  "scorekeeperEnabled": true
                 },
                 "db": {
                   "mongo": {

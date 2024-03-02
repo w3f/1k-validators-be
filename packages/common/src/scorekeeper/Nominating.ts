@@ -36,8 +36,26 @@ export const doNominations = async (
     });
     let counter = 0;
 
+    const currentEra = await chaindata.getCurrentEra();
+    if (!currentEra) {
+      logger.error(
+        `Error getting current era. Skipping nominations`,
+        scorekeeperLabel,
+      );
+      return null;
+    }
+
     // ensure the group is sorted by least avg stake
     for (const nominator of nominatorGroups) {
+      const nomStash = await nominator.stash();
+      const nominatorLastNominated =
+        await chaindata.getNominatorLastNominationEra(nomStash);
+      if (nominatorLastNominated + 4 > currentEra) {
+        logger.info(
+          `Nominator ${nomStash} has already nominated this era: ${nominatorLastNominated}`,
+        );
+        continue;
+      }
       const nominatorStatus: NominatorStatus = {
         status: `Nominating...`,
         updated: Date.now(),

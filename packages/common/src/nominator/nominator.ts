@@ -209,8 +209,7 @@ export default class Nominator extends EventEmitter {
           );
 
           return {
-            targets: namedTargets,
-            ...announcement,
+            namedTargets,
           };
         }),
       );
@@ -235,7 +234,8 @@ export default class Nominator extends EventEmitter {
       const stale =
         isBonded &&
         currentEra - lastNominationEra > 8 &&
-        proxyAnnouncements.length == 0;
+        proxyAnnouncements.length == 0 &&
+        bonded > 50;
       const status: NominatorStatus = {
         status: nominationStatus,
         bondedAddress: this.bondedAddress,

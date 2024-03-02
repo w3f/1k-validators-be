@@ -5,7 +5,7 @@
  */
 
 import { scorekeeperLabel } from "./scorekeeper";
-import { ChainData, logger, queries, Util } from "../index";
+import { ChainData, logger, queries } from "../index";
 import { doNominations } from "./Nominating";
 import { OTV } from "../constraints/constraints";
 import { ConfigSchema } from "../config";
@@ -34,12 +34,16 @@ export const startRound = async (
   if (nominating) return [];
   nominating = true;
 
-  const filteredNominators = await Promise.all(
-    nominatorGroups.filter(async (nom) => {
-      return await nom.shouldNominate();
-    }),
-  );
-
+  const shouldNominatePromises = nominatorGroups.map(async (nom) => {
+    return {
+      nominator: nom,
+      shouldNominate: await nom.shouldNominate(),
+    };
+  });
+  const resolvedNominators = await Promise.all(shouldNominatePromises);
+  const filteredNominators = resolvedNominators
+    .filter((nom) => nom.shouldNominate)
+    .map((nom) => nom.nominator);
   const now = new Date().getTime();
 
   // The nominations sent now won't be active until the next era.
@@ -93,7 +97,7 @@ export const startRound = async (
       `[${index}/${allCandidates.length}] checked ${candidate.name} ${isValid ? "Valid" : "Invalid"} [${index}/${allCandidates.length}]`,
       scorekeeperLabel,
     );
-    for (const nom of nominatorGroups) {
+    for (const nom of filteredNominators) {
       const nominatorStatus: NominatorStatus = {
         status: `[${index}/${allCandidates.length}] Checked Candidate ${candidate.name} ${isValid ? "✅ " : "❌"}`,
         updated: Date.now(),
@@ -114,8 +118,6 @@ export const startRound = async (
 
   // Score all candidates
   await constraints.scoreAllCandidates();
-
-  await Util.sleep(6000);
 
   const validCandidates = allCandidates.filter((candidate) => candidate.valid);
   const scoredValidCandidates = await Promise.all(
@@ -155,7 +157,7 @@ export const startRound = async (
       scorekeeperLabel,
     );
     await queries.setLastNominatedEraIndex(newEra);
-    for (const nom of nominatorGroups) {
+    for (const nom of filteredNominators) {
       const nominatorStatus: NominatorStatus = {
         status: `Nominated!`,
         updated: Date.now(),
@@ -169,6 +171,15 @@ export const startRound = async (
       `${numValidatorsNominated} nominated this round, lastNominatedEra not set...`,
       scorekeeperLabel,
     );
+    for (const nom of filteredNominators) {
+      const nominatorStatus: NominatorStatus = {
+        status: `${numValidatorsNominated} nominated, era not set!`,
+        updated: Date.now(),
+        stale: false,
+        lastNominationEra: newEra,
+      };
+      nom.updateNominatorStatus(nominatorStatus);
+    }
   }
   nominating = false;
 

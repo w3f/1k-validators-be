@@ -20,6 +20,11 @@ export const sendProxyDelayTx = async (
       `{Nominator::nominate::proxy} starting tx for ${nominator.address} with proxy delay ${nominator.proxyDelay} blocks`,
       nominatorLabel,
     );
+    nominator.updateNominatorStatus({
+      status: `[noninate] starting proxy delay tx`,
+      updated: Date.now(),
+      stale: false,
+    });
 
     const innerTx = api?.tx.staking.nominate(targets);
 
@@ -29,6 +34,11 @@ export const sendProxyDelayTx = async (
         `{Nominator::nominate} there was an error getting the current block`,
         nominatorLabel,
       );
+      nominator.updateNominatorStatus({
+        status: `[noninate] err: no current block`,
+        updated: Date.now(),
+        stale: false,
+      });
       return false;
     }
     const callHash = innerTx.method.hash.toString();
@@ -45,12 +55,17 @@ export const sendProxyDelayTx = async (
       callHash,
     };
     await queries.addDelayedTx(delayedTx);
+    nominator.updateNominatorStatus({
+      status: `[noninate] tx: ${JSON.stringify(delayedTx)}`,
+      updated: Date.now(),
+      stale: false,
+    });
 
     const allProxyTxs = await queries.getAllDelayedTxs();
 
     const didSend = await nominator.signAndSendTx(tx);
     nominator.updateNominatorStatus({
-      status: "Announced New Tx",
+      status: `Announced Proxy Tx: ${didSend}`,
       nextTargets: targets,
       updated: Date.now(),
       stale: false,
@@ -63,7 +78,7 @@ export const sendProxyDelayTx = async (
       `{Nominator::nominate} there was an error sending the tx`,
       nominatorLabel,
     );
-    logger.error(JSON.stringify(e));
+    logger.error(JSON.stringify(e), nominatorLabel);
     nominator.updateNominatorStatus({
       status: `Proxy Delay Error: ${JSON.stringify(e)}`,
       updated: Date.now(),

@@ -87,21 +87,19 @@ class ApiHandler extends EventEmitter {
       );
 
       wsProvider.on("disconnected", async () => {
-        logger.warn(
-          `WS provider for rpc ${endpoints[0]} disconnected!`,
-          apiLabel,
-        );
-        if (!this.healthCheckInProgress) {
-          try {
-            const isHealthy = await this.healthCheck();
-            logger.info(
-              `[Disconnection] ${this._currentEndpoint}} Health check result: ${isHealthy}`,
-              apiLabel,
-            );
-            resolve(wsProvider);
-          } catch (error: any) {
-            reject(error);
-          }
+        try {
+          const isHealthy = await this.healthCheck();
+          logger.info(
+            `[Disconnection] ${this._currentEndpoint}} Health check result: ${isHealthy}`,
+            apiLabel,
+          );
+          resolve(wsProvider);
+        } catch (error: any) {
+          logger.warn(
+            `WS provider for rpc ${endpoints[0]} disconnected!`,
+            apiLabel,
+          );
+          reject(error);
         }
       });
       wsProvider.on("connected", () => {
@@ -110,18 +108,16 @@ class ApiHandler extends EventEmitter {
         resolve(wsProvider);
       });
       wsProvider.on("error", async () => {
-        logger.error(`Error thrown for rpc ${this._endpoints[0]}`, apiLabel);
-        if (!this.healthCheckInProgress) {
-          try {
-            const isHealthy = await this.healthCheck();
-            logger.info(
-              `[Error] ${this._currentEndpoint} Health check result: ${isHealthy}`,
-              apiLabel,
-            );
-            resolve(wsProvider);
-          } catch (error: any) {
-            reject(error);
-          }
+        try {
+          const isHealthy = await this.healthCheck();
+          logger.info(
+            `[Error] ${this._currentEndpoint} Health check result: ${isHealthy}`,
+            apiLabel,
+          );
+          resolve(wsProvider);
+        } catch (error: any) {
+          logger.error(`Error thrown for rpc ${this._endpoints[0]}`, apiLabel);
+          reject(error);
         }
       });
     });

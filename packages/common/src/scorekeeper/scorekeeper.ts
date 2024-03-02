@@ -16,7 +16,6 @@ import {
 } from "./RegisterHandler";
 import { Job, JobRunnerMetadata, JobStatus } from "./jobs/JobsClass";
 import { JobsRunnerFactory } from "./jobs/JobsRunnerFactory";
-import { setAllIdentities } from "../utils";
 import { startRound } from "./Round";
 // import { monitorJob } from "./jobs";
 
@@ -244,14 +243,17 @@ export default class ScoreKeeper {
     const currentEra = await this.chaindata.getCurrentEra();
     this.currentEra = currentEra;
 
-    await setAllIdentities(this.chaindata, scorekeeperLabel);
+    // await setAllIdentities(this.chaindata, scorekeeperLabel);
 
-    const filteredNominators = await Promise.all(
-      this.nominatorGroups.filter(async (nom) => {
-        return await nom.shouldNominate();
-      }),
+    const nominationPromises = this.nominatorGroups.map((nom) =>
+      nom.shouldNominate(),
     );
 
+    const nominationResults = await Promise.all(nominationPromises);
+
+    const filteredNominators = this.nominatorGroups.filter(
+      (_, index) => nominationResults[index],
+    );
     // If force round is set in the configs
     if (this.config.scorekeeper.forceRound || filteredNominators.length > 0) {
       logger.info(

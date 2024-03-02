@@ -63,13 +63,13 @@ export const getBlocked = async (
 // bondedAddress - formerly controller
 export const isBonded = async (
   chaindata: ChainData,
-  bondedAddress: string,
+  stash: string,
 ): Promise<boolean> => {
   try {
     if (!(await chaindata.checkApiConnection())) {
       return false;
     }
-    const bonded = await chaindata?.api?.query.staking.bonded(bondedAddress);
+    const bonded = await chaindata?.api?.query.staking.bonded(stash);
     if (bonded) {
       return bonded.isSome;
     } else {

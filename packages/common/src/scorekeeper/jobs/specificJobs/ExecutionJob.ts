@@ -174,6 +174,7 @@ export const executionJob = async (
             stale: false,
           };
           nominator.updateNominatorStatus(nominatorStatus);
+          nominator.lastEraNomination = era;
 
           // Create a Nomination Object
           jobStatusEmitter.emit("jobProgress", {

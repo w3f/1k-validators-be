@@ -31,6 +31,15 @@ export const doNominations = async (
       return null;
     }
 
+    for (const nom of nominatorGroups) {
+      const nominatorStatus: NominatorStatus = {
+        status: `Doing Nominations.....`,
+        updated: Date.now(),
+        stale: false,
+      };
+      nom.updateNominatorStatus(nominatorStatus);
+    }
+
     const allTargets = candidates.map((c) => {
       return { stash: c.stash };
     });

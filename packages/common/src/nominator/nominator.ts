@@ -155,6 +155,7 @@ export default class Nominator extends EventEmitter {
       const stash = await this.stash();
       const isBonded = await this.chaindata.isBonded(stash);
       const [bonded, err] = await this.chaindata.getDenomBondedAmount(stash);
+      const currentBlock = await this.chaindata.getLatestBlock();
 
       const currentEra = (await this.chaindata.getCurrentEra()) || 0;
       const lastNominationEra =
@@ -170,13 +171,15 @@ export default class Nominator extends EventEmitter {
             name = (await this.chaindata.getFormattedIdentity(target))?.name;
           }
 
-          const score = await queries.getLatestValidatorScore(target);
+          const scoreResult = await queries.getLatestValidatorScore(target);
+          const score =
+            scoreResult && scoreResult.total ? scoreResult.total : 0;
 
           return {
             stash: target,
             name: name,
             kyc: kyc,
-            score: score && score[0] && score[0].total ? score[0].total : 0,
+            score: score,
           };
         }),
       );
@@ -193,23 +196,29 @@ export default class Nominator extends EventEmitter {
               let name = await queries.getIdentityName(target);
 
               if (!name) {
-                name = (await this.chaindata.getFormattedIdentity(target))
-                  ?.name;
+                const formattedIdentity =
+                  await this.chaindata.getFormattedIdentity(target);
+                name = formattedIdentity?.name;
               }
 
-              const score = await queries.getLatestValidatorScore(target);
+              const scoreResult = await queries.getLatestValidatorScore(target);
+              const score =
+                scoreResult && scoreResult.total ? scoreResult.total : 0;
 
               return {
                 stash: target,
                 name: name,
                 kyc: kyc,
-                score: score && score.total ? score.total : 0,
+                score: score,
               };
             }),
           );
-
+          const executionMsTime =
+            (this._proxyDelay + currentBlock - announcement.number) * 6 * 1000;
           return {
-            namedTargets,
+            ...announcement,
+            targets: namedTargets,
+            executionTime: executionMsTime,
           };
         }),
       );

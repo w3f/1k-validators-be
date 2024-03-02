@@ -45,7 +45,6 @@ export const doNominations = async (
       return null;
     }
 
-    // ensure the group is sorted by least avg stake
     for (const nominator of nominatorGroups) {
       const nomStash = await nominator.stash();
       const nominatorLastNominated =

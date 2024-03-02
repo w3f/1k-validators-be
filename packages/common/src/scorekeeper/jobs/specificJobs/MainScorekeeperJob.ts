@@ -51,12 +51,12 @@ export const mainScorekeeperJob = async (
     mainScoreKeeperLabel,
   );
   const hasOld = await Promise.all(
-    nominatorGroups.map(async (nom) => {
+    nominatorGroups.filter(async (nom) => {
       const stash = await nom.stash();
       if (!stash || stash === "0x") return false;
       const lastNominatedEra =
         await chaindata.getNominatorLastNominationEra(stash);
-      return lastNominatedEra < activeEra - eraBuffer;
+      return lastNominatedEra <= activeEra - 1;
     }),
   );
 
@@ -112,7 +112,7 @@ export const mainScorekeeperJob = async (
       nominating,
       bot,
       constraints,
-      nominatorGroups,
+      hasOld,
       chaindata,
       handler,
       config,

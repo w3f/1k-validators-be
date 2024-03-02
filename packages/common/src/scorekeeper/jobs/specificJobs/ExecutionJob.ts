@@ -76,12 +76,6 @@ export const executionJob = async (
         logger.error(`nominator not found for controller: ${controller}`);
         continue;
       }
-      const nominatorStatus: NominatorStatus = {
-        status: `Starting Delayed Execution for ${callHash} - ${dataNum}`,
-        updated: Date.now(),
-        stale: false,
-      };
-      nominator.updateNominatorStatus(nominatorStatus);
 
       const [bonded, err] = await chaindata.getBondedAmount(nominator.address);
 
@@ -134,6 +128,11 @@ export const executionJob = async (
         (validCommission && dataNum + Number(timeDelayBlocks) <= latestBlock);
 
       if (shouldExecute) {
+        nominator.updateNominatorStatus({
+          status: `Starting Delayed Execution for ${callHash} - ${dataNum}`,
+          updated: Date.now(),
+          stale: false,
+        });
         logger.info(
           `tx first announced at block ${dataNum} is ready to execute. Executing....`,
           cronLabel,

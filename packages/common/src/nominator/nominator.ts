@@ -36,6 +36,7 @@ export interface NominatorStatus {
   rewardDestination?: string;
   stale?: boolean;
   dryRun?: boolean;
+  shouldNominate?: boolean;
 }
 
 export default class Nominator extends EventEmitter {
@@ -178,13 +179,13 @@ export default class Nominator extends EventEmitter {
         this.signer.address,
       );
 
-      this.shouldNominate = isBonded && currentEra - lastNominationEra >= 1;
+      this._shouldNominate = isBonded && currentEra - lastNominationEra >= 1;
 
       const rewardDestination = await this.payee();
 
       const stale = isBonded && currentEra - lastNominationEra > 8;
       const status: NominatorStatus = {
-        status: "Init",
+        status: this._shouldNominate ? "Initialized" : "Existing Nomination",
         bondedAddress: this.bondedAddress,
         stashAddress: await this.stash(),
         bondedAmount: Number(bonded),
@@ -199,6 +200,7 @@ export default class Nominator extends EventEmitter {
         stale: stale,
         dryRun: this._dryRun,
         updated: Date.now(),
+        shouldNominate: this._shouldNominate,
       };
       this.updateNominatorStatus(status);
       this._canNominate = {

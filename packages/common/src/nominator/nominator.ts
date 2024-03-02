@@ -181,18 +181,30 @@ export default class Nominator extends EventEmitter {
         }),
       );
 
-      const proxyAnnouncements = await this.chaindata.getProxyAnnouncements(
-        this.signer.address,
+      const proxyAnnouncements = await queries.getAccountDelayedTx(
+        this.bondedAddress,
       );
 
       this._shouldNominate =
-        bonded > 50 && isBonded && currentEra - lastNominationEra >= 1;
+        bonded > 50 &&
+        isBonded &&
+        currentEra - lastNominationEra >= 1 &&
+        proxyAnnouncements.length == 0;
 
       const rewardDestination = await this.payee();
 
+      let nominationStatus;
+      if (proxyAnnouncements.length > 0) {
+        nominationStatus = "Announced Proxy Tx";
+      } else if (this._shouldNominate) {
+        nominationStatus = "Initialized";
+      } else {
+        nominationStatus = "Existing Recent Nomination";
+      }
+
       const stale = isBonded && currentEra - lastNominationEra > 8;
       const status: NominatorStatus = {
-        status: this._shouldNominate ? "Initialized" : "Existing Nomination",
+        status: nominationStatus,
         bondedAddress: this.bondedAddress,
         stashAddress: await this.stash(),
         bondedAmount: Number(bonded),

@@ -250,6 +250,23 @@ const App = () => {
     }
   }
 
+  function formatDuration(ms: number): string {
+    const seconds = ms / 1000;
+    const minutes = seconds / 60;
+    const hours = minutes / 60;
+    const days = hours / 24;
+
+    if (days >= 1) {
+      return `${Math.floor(days)} days from now`;
+    } else if (hours >= 1) {
+      return `${Math.floor(hours)} hours from now`;
+    } else if (minutes >= 1) {
+      return `${Math.floor(minutes)} mins from now`;
+    } else {
+      return `${Math.floor(seconds)} secs from now`;
+    }
+  }
+
   return (
     <div className="App">
       <select
@@ -571,6 +588,10 @@ const App = () => {
                     <p>
                       <FiSquare className="icon" />
                       Block #{transaction.number}
+                    </p>
+                    <p>
+                      <FiCalendar className="icon" />
+                      {formatDuration(transaction.executionTime)}
                     </p>
                     <p>
                       <FiActivity className="icon" />

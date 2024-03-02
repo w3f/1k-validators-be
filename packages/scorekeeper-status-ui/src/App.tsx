@@ -532,7 +532,7 @@ const App = () => {
               <div className="proxyTransactions">
                 <h3>
                   <FiSend className="icon" />
-                  Proxy Transactions{" "}
+                  Proxy Txs{" "}
                   <span
                     style={{
                       border:

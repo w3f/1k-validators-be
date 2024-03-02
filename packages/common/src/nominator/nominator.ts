@@ -236,6 +236,7 @@ export default class Nominator extends EventEmitter {
         isBonded &&
         currentEra - lastNominationEra > 8 &&
         proxyAnnouncements.length == 0;
+
       const status: NominatorStatus = {
         status: nominationStatus,
         bondedAddress: this.bondedAddress,

@@ -2,7 +2,6 @@ import { ApiPromise } from "@polkadot/api";
 import ApiHandler from "../ApiHandler/ApiHandler";
 import logger from "../logger";
 import { NumberResult } from "../types";
-import { sleep } from "../utils/util";
 import {
   getApiAt,
   getApiAtBlockHash,
@@ -64,7 +63,7 @@ import {
   getNominators,
   NominatorInfo,
 } from "./queries/Nomination";
-import { CHAINDATA_RETRIES, CHAINDATA_SLEEP } from "../constants";
+import { CHAINDATA_RETRIES } from "../constants";
 import { Identity } from "../db";
 import { Block } from "@polkadot/types/interfaces";
 import { ApiDecoration } from "@polkadot/api/types";
@@ -85,12 +84,6 @@ export class ChainData {
   checkApiConnection = async (retries = 0): Promise<boolean> => {
     if (!this.handler.getApi()?.isConnected) {
       if (retries < CHAINDATA_RETRIES) {
-        // logger.warn(
-        //   `Retries: ${retries} - API is not connected, waiting...`,
-        //   chaindataLabel,
-        // );
-        await sleep(CHAINDATA_SLEEP);
-
         retries++;
         return await this.checkApiConnection(retries);
       } else {

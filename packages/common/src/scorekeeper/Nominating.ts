@@ -54,7 +54,7 @@ export const doNominations = async (
         logger.info(
           `Nominator ${nomStash} has already nominated this era: ${nominatorLastNominated}`,
         );
-        return null;
+        continue;
       }
       const nominatorStatus: NominatorStatus = {
         status: `Nominating...`,

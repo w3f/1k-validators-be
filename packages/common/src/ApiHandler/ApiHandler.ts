@@ -26,29 +26,22 @@ class ApiHandler extends EventEmitter {
   }
 
   async healthCheck(retries = 0): Promise<boolean> {
-    if (retries < 50) {
+    if (retries < 10) {
       try {
-        // logger.info(
-        //   `Performing health check for WS Provider for rpc: ${this._currentEndpoint} try: ${retries}`,
-        //   apiLabel,
-        // );
         this.healthCheckInProgress = true;
         let chain;
 
         const isConnected = this._wsProvider?.isConnected;
-        if (isConnected) {
+        if (isConnected && !this._api?.isConnected) {
           try {
             chain = await this._api?.rpc.system.chain();
           } catch (e) {
-            logger.error(`Cannot query chain in health check. ${e}`, apiLabel);
+            await sleep(API_PROVIDER_TIMEOUT);
           }
         }
+        chain = await this._api?.rpc.system.chain();
 
         if (isConnected && chain) {
-          // logger.info(
-          //   `All good. Connected to ${this._currentEndpoint}`,
-          //   apiLabel,
-          // );
           this.healthCheckInProgress = false;
           return true;
         } else {
@@ -67,7 +60,7 @@ class ApiHandler extends EventEmitter {
           apiLabel,
         );
         this.healthCheckInProgress = false;
-        return await this.healthCheck(retries++);
+        return false;
       }
     }
     return false;

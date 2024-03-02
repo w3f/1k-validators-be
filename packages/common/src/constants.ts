@@ -41,7 +41,7 @@ export const POLKADOT_API_TIMEOUT = 1000000;
 
 export const CHAINDATA_RETRIES = 20;
 
-export const CHAINDATA_SLEEP = 10000;
+export const CHAINDATA_SLEEP = 300;
 
 export const API_PROVIDER_TIMEOUT = 10000;
 

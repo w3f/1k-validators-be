@@ -34,6 +34,12 @@ export const startRound = async (
   if (nominating) return [];
   nominating = true;
 
+  const filteredNominators = await Promise.all(
+    nominatorGroups.filter(async (nom) => {
+      return await nom.shouldNominate();
+    }),
+  );
+
   const now = new Date().getTime();
 
   // The nominations sent now won't be active until the next era.
@@ -48,7 +54,7 @@ export const startRound = async (
     `New round is starting! Era ${newEra} will begin new nominations.`,
   );
 
-  for (const nom of nominatorGroups) {
+  for (const nom of filteredNominators) {
     const nominatorStatus: NominatorStatus = {
       status: `Round Started`,
       updated: Date.now(),
@@ -97,7 +103,7 @@ export const startRound = async (
     }
   }
 
-  for (const nom of nominatorGroups) {
+  for (const nom of filteredNominators) {
     const nominatorStatus: NominatorStatus = {
       status: `Scoring Candidates...`,
       updated: Date.now(),
@@ -135,7 +141,7 @@ export const startRound = async (
   // TODO unit test that assets this  value
   const numValidatorsNominated = await doNominations(
     sortedCandidates,
-    nominatorGroups,
+    filteredNominators,
     chaindata,
     handler,
     bot,

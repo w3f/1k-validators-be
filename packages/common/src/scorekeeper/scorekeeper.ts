@@ -246,17 +246,23 @@ export default class ScoreKeeper {
 
     await setAllIdentities(this.chaindata, scorekeeperLabel);
 
+    const filteredNominators = await Promise.all(
+      this.nominatorGroups.filter(async (nom) => {
+        return await nom.shouldNominate();
+      }),
+    );
+
     // If force round is set in the configs
-    if (this.config.scorekeeper.forceRound) {
+    if (this.config.scorekeeper.forceRound || filteredNominators.length > 0) {
       logger.info(
-        `Force Round: ${this.config.scorekeeper.forceRound} starting round....`,
+        `Force Round: ${this.config.scorekeeper.forceRound} ${filteredNominators.length} nominators old - starting round....`,
         scorekeeperLabel,
       );
       await startRound(
         this.nominating,
         this.bot,
         this.constraints,
-        this.nominatorGroups,
+        filteredNominators,
         this.chaindata,
         this.handler,
         this.config,

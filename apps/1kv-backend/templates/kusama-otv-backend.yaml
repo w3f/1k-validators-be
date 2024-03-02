@@ -18,6 +18,7 @@ spec:
     repoURL: https://w3f.github.io/helm-charts/
     chart: otv-backend
     targetRevision: v3.1.1
+
     plugin:
       env:
         - name: HELM_VALUES

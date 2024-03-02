@@ -171,13 +171,15 @@ export default class Nominator extends EventEmitter {
             name = (await this.chaindata.getFormattedIdentity(target))?.name;
           }
 
-          const score = await queries.getLatestValidatorScore(target);
+          const scoreResult = await queries.getLatestValidatorScore(target);
+          const score =
+            scoreResult && scoreResult.total ? scoreResult.total : 0;
 
           return {
             stash: target,
             name: name,
             kyc: kyc,
-            score: score && score[0] && score[0].total ? score[0].total : 0,
+            score: score,
           };
         }),
       );
@@ -212,7 +214,7 @@ export default class Nominator extends EventEmitter {
             }),
           );
           const executionMsTime =
-            (announcement.number - currentBlock) * 6 * 1000;
+            (this._proxyDelay + currentBlock - announcement.number) * 6 * 1000;
           return {
             ...announcement,
             targets: namedTargets,

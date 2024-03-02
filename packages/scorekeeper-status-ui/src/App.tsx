@@ -48,9 +48,7 @@ const endpoints = {
 
 const OLD_JOB_THRESHOLD_SECONDS = 120;
 const App = () => {
-  const [currentEndpoint, setCurrentEndpoint] = useState(
-    endpoints.KusamaStaging,
-  );
+  const [currentEndpoint, setCurrentEndpoint] = useState(endpoints.Polkadot);
   const [jobs, setJobs] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
@@ -515,8 +513,8 @@ const App = () => {
                       theme="polkadot"
                     />
                     {target.name
-                      ? `${target.name}`
-                      : `${truncateAddress(target.stash)}`}{" "}
+                      ? `[${target.score.toFixed(0)}] ${target.name}`
+                      : `[${target.score.toFixed(0)}] ${truncateAddress(target.stash)}`}{" "}
                     {target.kyc && (
                       <FiCheckCircle
                         style={{ color: "green", marginLeft: "5px" }}
@@ -547,30 +545,32 @@ const App = () => {
             )}
             {nominator.proxyTxs && nominator.proxyTxs.length > 0 && (
               <div className="proxyTransactions">
-                <h3>
-                  <FiSend className="icon" />
-                  Proxy Txs{" "}
-                  <span
-                    style={{
-                      border:
-                        nominator.proxyTxs.length === 1
-                          ? "1px solid #00d600"
-                          : "1px solid red",
-                      borderRadius: "5px",
-                      padding: "7px",
-                      color:
-                        nominator.proxyTxs.length === 1 ? "#00ff00" : "red",
-                    }}
-                  >
-                    {nominator.proxyTxs.length}
-                    {nominator.proxyTxs.length > 1 && (
-                      <FiAlertTriangle
-                        className="icon"
-                        style={{ marginLeft: "5%" }}
-                      />
-                    )}
-                  </span>
-                </h3>
+                <div className="proxyHeader">
+                  <h3>
+                    <FiSend className="icon" />
+                    Proxy Txs{" "}
+                    <span
+                      style={{
+                        border:
+                          nominator.proxyTxs.length === 1
+                            ? "1px solid #00d600"
+                            : "1px solid red",
+                        borderRadius: "5px",
+                        padding: "7px",
+                        color:
+                          nominator.proxyTxs.length === 1 ? "#00ff00" : "red",
+                      }}
+                    >
+                      {nominator.proxyTxs.length}
+                      {nominator.proxyTxs.length > 1 && (
+                        <FiAlertTriangle
+                          className="icon"
+                          style={{ marginLeft: "5%" }}
+                        />
+                      )}
+                    </span>
+                  </h3>
+                </div>
                 {nominator.proxyTxs.map((transaction, index) => (
                   <div key={index} className="proxyTransactionItem">
                     <a
@@ -615,6 +615,7 @@ const App = () => {
                               display: "flex",
                               alignItems: "center",
                               gap: "5px",
+                              justifyContent: "flex-start",
                             }}
                             className="targetField"
                           >

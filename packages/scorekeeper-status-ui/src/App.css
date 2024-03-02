@@ -1,10 +1,10 @@
 /* Global font style */
-body, html {
-  font-family: 'Source Code Pro', monospace;
+body,
+html {
+  font-family: "Source Code Pro", monospace;
   background-color: #0f0f0f; /* Dark background for contrast */
   color: #0f0; /* Hacker green text color */
 }
-
 
 .App {
   display: flex;
@@ -18,7 +18,7 @@ body, html {
   background-image: url("https://www.transparenttextures.com/patterns/nami.png");
   /* This is mostly intended for prototyping; please download the pattern and re-host for production environments. Thank you! */
   /*background-blend-mode: overlay; !* Blends the texture with the gradient *!*/
-  font-family: 'Source Code Pro', monospace;
+  font-family: "Source Code Pro", monospace;
   padding: 20px;
   box-sizing: border-box;
   /*display: block;*/
@@ -62,7 +62,11 @@ h1 {
 .progressBar {
   transition: width 0.5s ease-out;
   height: 20px; /* Set the height of the progress bar */
-  background: linear-gradient(to right, rgba(0, 0, 0, 0.6), rgba(0, 255, 0, 0.6)); /* Gradient from transparent black to lighter */
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0.6),
+    rgba(0, 255, 0, 0.6)
+  ); /* Gradient from transparent black to lighter */
   border-radius: 3px; /* Rounded corners for the progress bar */
   position: relative;
   overflow: hidden;
@@ -76,7 +80,7 @@ h1 {
 
 .progressItem {
   font-size: 11px; /* Adjust the font size as needed */
-  border: 1px solid #4CAF50; /* Green border */
+  border: 1px solid #4caf50; /* Green border */
   border-radius: 5px; /* Rounded border */
   padding: 5px; /* Add padding for better appearance */
   white-space: nowrap; /* Prevent wrapping of words */
@@ -86,7 +90,7 @@ h1 {
 }
 
 .progressBar::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -115,7 +119,7 @@ h1 {
   width: 100vw; /* Full viewport width */
   background-color: #0f0f0f; /* Dark background */
   color: #0f0; /* Hacker green text color */
-  font-family: 'Source Code Pro', monospace;
+  font-family: "Source Code Pro", monospace;
 }
 
 /* Centered container for error message */
@@ -157,7 +161,12 @@ h1 {
 .jobItemOld {
   border-color: yellow;
   color: yellow;
-  background-color: rgba(255, 255, 0, 0.1); /* Yellow background with transparency */
+  background-color: rgba(
+    255,
+    255,
+    0,
+    0.1
+  ); /* Yellow background with transparency */
 }
 
 .jobItemError {
@@ -170,8 +179,12 @@ h1 {
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid  rgba(255, 255, 0, 0.5); /* Neon green border */
-  background: linear-gradient(to right, rgba(255, 255, 0, 0.05), rgba(255, 255, 0, 0.1)); /* Gradient from transparent black to lighter */
+  border: 1px solid rgba(255, 255, 0, 0.5); /* Neon green border */
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 0, 0.05),
+    rgba(255, 255, 0, 0.1)
+  ); /* Gradient from transparent black to lighter */
   border-radius: 3px;
   padding: 10px;
 }
@@ -190,7 +203,7 @@ h1 {
 }
 
 .timeIcon {
-  color: #4CAF50; /* Default color for time icon */
+  color: #4caf50; /* Default color for time icon */
   margin-right: 5px; /* Add spacing between icon and text */
   display: flex;
   align-items: center; /* Vertically center the clock icon */
@@ -243,7 +256,8 @@ h1 {
   font-size: 20px; /* Icon size, adjust based on your design */
   /* If using an SVG or <img> for icons, set width and height instead */
 }
-.healthCheckBar, .healthCheckItem {
+.healthCheckBar,
+.healthCheckItem {
   display: flex;
   align-items: center; /* Ensures vertical alignment is centered */
   justify-content: center; /* Centers content horizontally */
@@ -278,16 +292,17 @@ h1 {
   font-size: 1.5rem; /* Larger icons */
 }
 
-.connected, .disconnected {
+.connected,
+.disconnected {
   flex-shrink: 0; /* Prevents icons from shrinking */
 }
 
 .connected {
-  color: #4CAF50; /* Green for connected */
+  color: #4caf50; /* Green for connected */
 }
 
 .disconnected {
-  color: #F44336; /* Red for disconnected */
+  color: #f44336; /* Red for disconnected */
 }
 
 @media (max-width: 768px) {
@@ -302,7 +317,8 @@ h1 {
   }
 }
 
-.healthCheckIcon, .jobHeader svg {
+.healthCheckIcon,
+.jobHeader svg {
   transition: color 0.3s ease-in-out; /* Smooth transition for color changes */
   /* Other styles remain the same */
 }
@@ -321,9 +337,7 @@ h1 {
   flex-wrap: wrap;
   justify-content: center;
   gap: 20px; /* Space between nominator items */
-
 }
-
 
 .nominatorItem {
   background: rgba(0, 255, 0, 0.05);
@@ -342,7 +356,6 @@ h1 {
   place-items: center; /* Shorthand for aligning and justifying items at the center */
   height: 100%; /* Ensure the div takes up full container height, adjust as needed */
   width: 100%;
-
 }
 
 .nominatorTitle {
@@ -372,8 +385,6 @@ h1 {
   top: 5px;
 }
 
-
-
 .nominatorInfo ul li {
   /* If needed, style list items here */
 }
@@ -388,11 +399,18 @@ h1 {
   align-items: center; /* Correct property for horizontal centering in a flex column */
   background: rgba(0, 255, 0, 0.1);
   cursor: pointer; /* Indicates clickability */
-  transition: background 0.3s, border-color 0.3s; /* Smooth transition for hover effects */
+  transition:
+    background 0.3s,
+    border-color 0.3s; /* Smooth transition for hover effects */
 }
 
 .nominatorField:hover {
-  background: rgba(0, 255, 0, 0.2); /* Slightly darken the background on hover */
+  background: rgba(
+    0,
+    255,
+    0,
+    0.2
+  ); /* Slightly darken the background on hover */
   border-color: #00ff00; /* Brighten the border color on hover */
 }
 
@@ -401,11 +419,15 @@ h1 {
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid  rgba(255, 255, 0, 0.5);
-  background: linear-gradient(to right, rgba(255, 255, 0, 0.05), rgba(255, 255, 0, 0.1)); /* Gradient from transparent black to lighter */
+  border: 1px solid rgba(255, 255, 0, 0.5);
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 0, 0.05),
+    rgba(255, 255, 0, 0.1)
+  ); /* Gradient from transparent black to lighter */
   border-radius: 3px;
   width: 100%;
-  color: rgba(255, 255, 0, 1)
+  color: rgba(255, 255, 0, 1);
 }
 
 .identicon {
@@ -415,16 +437,20 @@ h1 {
   top: 5px;
 }
 .targetField {
-  /*transition: background 0.3s, border 0.3s; !* Smooth transition for hover effect *!*/
-  padding: 10px; /* Add some padding inside the div */
-  border-radius: 5px; /* Optional: match the border-radius if needed */
-  border: 1px solid transparent; /* Transparent border by default */
-
+  padding: 1%;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  text-decoration: none;
+  color: inherit;
+  width: 100%;
+  border: 1px solid transparent;
 }
 
 .targetField:hover {
-    background: rgba(0, 255, 0, 0.05); /* Slightly darken the background on hover */
-    border-color:rgba(0, 255, 0, 0.4); /* Brighten the border color on hover */
+  background: rgba(0, 255, 0, 0.05);
+  border-color: rgba(0, 255, 0, 0.4); /* Changes border color on hover */
+  border-style: solid; /* Ensures the border style is solid */
 }
 
 .eraStatsBar {
@@ -446,8 +472,10 @@ h1 {
 }
 
 .targetItemWrapper {
-  list-style-type: none;
-
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  width: 100%;
 }
 
 .proxyTransactionItem {
@@ -474,19 +502,30 @@ h1 {
     align-items: center; /* Correct property for horizontal centering in a flex column */
     background: rgba(0, 255, 0, 0.1);
     cursor: pointer; /* Indicates clickability */
-    transition: background 0.3s, border-color 0.3s; /* Smooth transition for hover effects */
+    transition:
+      background 0.3s,
+      border-color 0.3s; /* Smooth transition for hover effects */
   }
 
   .nominatorField:hover {
-    background: rgba(0, 255, 0, 0.2); /* Slightly darken the background on hover */
+    background: rgba(
+      0,
+      255,
+      0,
+      0.2
+    ); /* Slightly darken the background on hover */
     border-color: #00ff00; /* Brighten the border color on hover */
   }
 
   .proxyTransactions {
-
+    color: rgba(
+      0,
+      0,
+      255,
+      0.5
+    ); /* This will style the text inside .proxyHeader */
     margin-top: 10px;
     width: 100%;
-
   }
 }
 
@@ -496,14 +535,4 @@ h1 {
   text-overflow: ellipsis; /* Add ellipsis for overflow */
   white-space: nowrap; /* Keep the text on a single line */
   max-width: 70%; /* Adjust this value based on your container's width */
-}
-
-
-
-
-
-.proxyTransactionItem p {
-  display: flex;
-  align-items: center;
-  gap: 5px;
 }

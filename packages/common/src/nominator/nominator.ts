@@ -61,6 +61,8 @@ export default class Nominator extends EventEmitter {
     reason: "",
   };
 
+  public _shouldNominate = false;
+
   private _status: NominatorStatus = {
     status: "Init",
     bondedAddress: "",
@@ -130,12 +132,25 @@ export default class Nominator extends EventEmitter {
     this._status = { ...this._status, ...newStatus };
   };
 
+  public async shouldNominate(): Promise<boolean> {
+    const stash = await this.stash();
+    const isBonded = await this.chaindata.isBonded(stash);
+    const [bonded, err] = await this.chaindata.getDenomBondedAmount(stash);
+
+    const currentEra = (await this.chaindata.getCurrentEra()) || 0;
+    const lastNominationEra =
+      (await this.chaindata.getNominatorLastNominationEra(stash)) || 0;
+    this._shouldNominate = isBonded && currentEra - lastNominationEra >= 1;
+    return this._shouldNominate;
+  }
+
   public async init(): Promise<NominatorStatus> {
     try {
       const stash = await this.stash();
       const isBonded = await this.chaindata.isBonded(stash);
       const [bonded, err] = await this.chaindata.getDenomBondedAmount(stash);
 
+      const currentEra = (await this.chaindata.getCurrentEra()) || 0;
       const lastNominationEra =
         (await this.chaindata.getNominatorLastNominationEra(stash)) || 0;
       const currentTargets =
@@ -163,8 +178,10 @@ export default class Nominator extends EventEmitter {
         this.signer.address,
       );
 
+      this.shouldNominate = isBonded && currentEra - lastNominationEra >= 1;
+
       const rewardDestination = await this.payee();
-      const currentEra = (await this.chaindata.getCurrentEra()) || 0;
+
       const stale = isBonded && currentEra - lastNominationEra > 8;
       const status: NominatorStatus = {
         status: "Init",

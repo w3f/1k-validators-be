@@ -83,19 +83,19 @@ export class ChainData {
   }
 
   checkApiConnection = async (retries = 0): Promise<boolean> => {
-    if (!this.api?.isConnected) {
+    if (!this.handler.getApi()?.isConnected) {
       if (retries < CHAINDATA_RETRIES) {
-        logger.warn(
-          `Retries: ${retries} - API is not connected, waiting...`,
-          chaindataLabel,
-        );
+        // logger.warn(
+        //   `Retries: ${retries} - API is not connected, waiting...`,
+        //   chaindataLabel,
+        // );
         await sleep(CHAINDATA_SLEEP);
 
         retries++;
         return await this.checkApiConnection(retries);
       } else {
         logger.warn(`Performing health check on api...`, chaindataLabel);
-        await this.api?.disconnect();
+        await this.handler.getApi()?.disconnect();
         const healthy = await this.handler.healthCheck();
         if (healthy) {
           this.api = this.handler.getApi();

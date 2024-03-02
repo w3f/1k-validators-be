@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import {
+  FiActivity,
   FiAlertTriangle,
   FiCalendar,
   FiCheckCircle,
@@ -8,7 +9,9 @@ import {
   FiInfo,
   FiPlay,
   FiRefreshCcw,
+  FiSend,
   FiShield,
+  FiSquare,
   FiTool,
   FiUserCheck,
   FiXCircle,
@@ -524,6 +527,97 @@ const App = () => {
                 <FiRefreshCcw className="icon" />
                 {formatLastUpdate(nominator.updated)}
               </p>
+            )}
+            {nominator.proxyTxs && nominator.proxyTxs.length > 0 && (
+              <div className="proxyTransactions">
+                <h3>
+                  <FiSend className="icon" />
+                  Proxy Transactions{" "}
+                  <span
+                    style={{
+                      border:
+                        nominator.proxyTxs.length === 1
+                          ? "1px solid #00d600"
+                          : "1px solid red",
+                      borderRadius: "5px",
+                      padding: "7px",
+                      color:
+                        nominator.proxyTxs.length === 1 ? "#00ff00" : "red",
+                    }}
+                  >
+                    {nominator.proxyTxs.length}
+                    {nominator.proxyTxs.length > 1 && (
+                      <FiAlertTriangle
+                        className="icon"
+                        style={{ marginLeft: "5%" }}
+                      />
+                    )}
+                  </span>
+                </h3>
+                {nominator.proxyTxs.map((transaction, index) => (
+                  <div key={index} className="proxyTransactionItem">
+                    <a
+                      href={`https://www.subscan.io/account/${nominator.stashAddress}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <div className="nominatorField">
+                        <p>
+                          <FiUserCheck className="icon" />
+                          {truncateAddress(transaction.controller)}
+                        </p>
+                      </div>
+                    </a>
+                    <p>
+                      <FiSquare className="icon" />
+                      Block #{transaction.number}
+                    </p>
+                    <p>
+                      <FiActivity className="icon" />
+                      {truncateAddress(transaction.callHash)}
+                    </p>
+                    {transaction.timestamp && (
+                      <p>
+                        <FiClock className="icon" />
+                        Timestamp:{" "}
+                        {new Date(transaction.timestamp).toLocaleString()}
+                      </p>
+                    )}
+                    {transaction.targets.map((target, index) => (
+                      <li key={index} className="targetItemWrapper">
+                        <div>
+                          <a
+                            href={`https://www.subscan.io/account/${target.stash}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "5px",
+                            }}
+                            className="targetField"
+                          >
+                            <Identicon
+                              value={target.stash}
+                              size={20}
+                              theme="polkadot"
+                            />
+                            {target.name
+                              ? `${target.name}`
+                              : `${truncateAddress(target.stash)}`}{" "}
+                            {target.kyc && (
+                              <FiCheckCircle
+                                style={{ color: "green", marginLeft: "5px" }}
+                                title="KYC Verified"
+                              />
+                            )}
+                          </a>
+                        </div>
+                      </li>
+                    ))}
+                  </div>
+                ))}
+              </div>
             )}
           </div>
         ))}

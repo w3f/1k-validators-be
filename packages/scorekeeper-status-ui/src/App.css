@@ -447,6 +447,7 @@ h1 {
 
 .targetItemWrapper {
   list-style-type: none;
+
 }
 
 @media (max-width: 768px) {
@@ -475,4 +476,30 @@ h1 {
   text-overflow: ellipsis; /* Add ellipsis for overflow */
   white-space: nowrap; /* Keep the text on a single line */
   max-width: 70%; /* Adjust this value based on your container's width */
+}
+
+.proxyTransactions {
+
+  margin-top: 10px;
+  width: 17vw;
+
+}
+
+.proxyTransactionItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 10px;
+  border: 1px solid rgba(0, 0, 255, 0.5); /* Blue border */
+  background: rgba(0, 0, 255, 0.09); /* Light blue background */
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 10%;
+}
+
+.proxyTransactionItem p {
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }

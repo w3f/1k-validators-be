@@ -99,7 +99,7 @@ export const startRound = async (
     );
     for (const nom of filteredNominators) {
       const nominatorStatus: NominatorStatus = {
-        status: `[${index}/${allCandidates.length}] Checked Candidate ${candidate.name} ${isValid ? "✅ " : "❌"}`,
+        status: `[${index}/${allCandidates.length}] ${candidate.name} ${isValid ? "✅ " : "❌"}`,
         updated: Date.now(),
         stale: false,
       };

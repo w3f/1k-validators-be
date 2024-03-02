@@ -48,9 +48,7 @@ const endpoints = {
 
 const OLD_JOB_THRESHOLD_SECONDS = 120;
 const App = () => {
-  const [currentEndpoint, setCurrentEndpoint] = useState(
-    endpoints.KusamaStaging,
-  );
+  const [currentEndpoint, setCurrentEndpoint] = useState(endpoints.Polkadot);
   const [jobs, setJobs] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
@@ -247,6 +245,23 @@ const App = () => {
       return `${Math.floor(secondsSinceUpdate / 60)} minute${Math.floor(secondsSinceUpdate / 60) !== 1 ? "s" : ""} ago`;
     } else {
       return `${Math.floor(secondsSinceUpdate / 3600)} hour${Math.floor(secondsSinceUpdate / 3600) !== 1 ? "s" : ""} ago`;
+    }
+  }
+
+  function formatDuration(ms: number): string {
+    const seconds = ms / 1000;
+    const minutes = seconds / 60;
+    const hours = minutes / 60;
+    const days = hours / 24;
+
+    if (days >= 1) {
+      return `${Math.floor(days)} days from now`;
+    } else if (hours >= 1) {
+      return `${Math.floor(hours)} hours from now`;
+    } else if (minutes >= 1) {
+      return `${Math.floor(minutes)} mins from now`;
+    } else {
+      return `${Math.floor(seconds)} secs from now`;
     }
   }
 
@@ -498,8 +513,8 @@ const App = () => {
                       theme="polkadot"
                     />
                     {target.name
-                      ? `${target.name}`
-                      : `${truncateAddress(target.stash)}`}{" "}
+                      ? `[${target.score.toFixed(0)}] ${target.name}`
+                      : `[${target.score.toFixed(0)}] ${truncateAddress(target.stash)}`}{" "}
                     {target.kyc && (
                       <FiCheckCircle
                         style={{ color: "green", marginLeft: "5px" }}
@@ -530,30 +545,32 @@ const App = () => {
             )}
             {nominator.proxyTxs && nominator.proxyTxs.length > 0 && (
               <div className="proxyTransactions">
-                <h3>
-                  <FiSend className="icon" />
-                  Proxy Txs{" "}
-                  <span
-                    style={{
-                      border:
-                        nominator.proxyTxs.length === 1
-                          ? "1px solid #00d600"
-                          : "1px solid red",
-                      borderRadius: "5px",
-                      padding: "7px",
-                      color:
-                        nominator.proxyTxs.length === 1 ? "#00ff00" : "red",
-                    }}
-                  >
-                    {nominator.proxyTxs.length}
-                    {nominator.proxyTxs.length > 1 && (
-                      <FiAlertTriangle
-                        className="icon"
-                        style={{ marginLeft: "5%" }}
-                      />
-                    )}
-                  </span>
-                </h3>
+                <div className="proxyHeader">
+                  <h3>
+                    <FiSend className="icon" />
+                    Proxy Txs{" "}
+                    <span
+                      style={{
+                        border:
+                          nominator.proxyTxs.length === 1
+                            ? "1px solid #00d600"
+                            : "1px solid red",
+                        borderRadius: "5px",
+                        padding: "7px",
+                        color:
+                          nominator.proxyTxs.length === 1 ? "#00ff00" : "red",
+                      }}
+                    >
+                      {nominator.proxyTxs.length}
+                      {nominator.proxyTxs.length > 1 && (
+                        <FiAlertTriangle
+                          className="icon"
+                          style={{ marginLeft: "5%" }}
+                        />
+                      )}
+                    </span>
+                  </h3>
+                </div>
                 {nominator.proxyTxs.map((transaction, index) => (
                   <div key={index} className="proxyTransactionItem">
                     <a
@@ -571,6 +588,10 @@ const App = () => {
                     <p>
                       <FiSquare className="icon" />
                       Block #{transaction.number}
+                    </p>
+                    <p>
+                      <FiCalendar className="icon" />
+                      {formatDuration(transaction.executionTime)}
                     </p>
                     <p>
                       <FiActivity className="icon" />
@@ -594,6 +615,7 @@ const App = () => {
                               display: "flex",
                               alignItems: "center",
                               gap: "5px",
+                              justifyContent: "flex-start",
                             }}
                             className="targetField"
                           >

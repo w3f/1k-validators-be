@@ -185,6 +185,37 @@ export default class Nominator extends EventEmitter {
         this.bondedAddress,
       );
 
+      const namedProxyTargets = await Promise.all(
+        (proxyAnnouncements || []).map(async (announcement) => {
+          // Use Promise.all to wait for all namedTargets to resolve
+          const namedTargets = await Promise.all(
+            announcement.targets.map(async (target) => {
+              const kyc = await queries.isKYC(target);
+              let name = await queries.getIdentityName(target);
+
+              if (!name) {
+                name = (await this.chaindata.getFormattedIdentity(target))
+                  ?.name;
+              }
+
+              const score = await queries.getLatestValidatorScore(target);
+
+              return {
+                stash: target,
+                name: name,
+                kyc: kyc,
+                score: score && score.total ? score.total : 0, // Simplified score extraction based on provided structure
+              };
+            }),
+          );
+
+          return {
+            targets: namedTargets,
+            ...announcement,
+          };
+        }),
+      );
+
       this._shouldNominate =
         bonded > 50 &&
         isBonded &&
@@ -202,7 +233,10 @@ export default class Nominator extends EventEmitter {
         nominationStatus = "Existing Recent Nomination";
       }
 
-      const stale = isBonded && currentEra - lastNominationEra > 8;
+      const stale =
+        isBonded &&
+        currentEra - lastNominationEra > 8 &&
+        proxyAnnouncements.length == 0;
       const status: NominatorStatus = {
         status: nominationStatus,
         bondedAddress: this.bondedAddress,
@@ -215,7 +249,7 @@ export default class Nominator extends EventEmitter {
         rewardDestination: rewardDestination,
         lastNominationEra: lastNominationEra,
         currentTargets: currentNamedTargets,
-        proxyTxs: proxyAnnouncements,
+        proxyTxs: namedProxyTargets,
         stale: stale,
         dryRun: this._dryRun,
         updated: Date.now(),

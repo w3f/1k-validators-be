@@ -187,7 +187,6 @@ export default class Nominator extends EventEmitter {
 
       const namedProxyTargets = await Promise.all(
         (proxyAnnouncements || []).map(async (announcement) => {
-          // Use Promise.all to wait for all namedTargets to resolve
           const namedTargets = await Promise.all(
             announcement.targets.map(async (target) => {
               const kyc = await queries.isKYC(target);
@@ -204,7 +203,7 @@ export default class Nominator extends EventEmitter {
                 stash: target,
                 name: name,
                 kyc: kyc,
-                score: score && score.total ? score.total : 0, // Simplified score extraction based on provided structure
+                score: score && score.total ? score.total : 0,
               };
             }),
           );

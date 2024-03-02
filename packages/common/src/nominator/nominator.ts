@@ -179,7 +179,8 @@ export default class Nominator extends EventEmitter {
         this.signer.address,
       );
 
-      this._shouldNominate = isBonded && currentEra - lastNominationEra >= 1;
+      this._shouldNominate =
+        bonded > 50 && isBonded && currentEra - lastNominationEra >= 1;
 
       const rewardDestination = await this.payee();
 

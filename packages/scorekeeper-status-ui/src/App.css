@@ -479,6 +479,7 @@ h1 {
 }
 
 .proxyTransactionItem {
+  color: #0f0;
   display: flex;
   flex-direction: column;
   align-items: center;

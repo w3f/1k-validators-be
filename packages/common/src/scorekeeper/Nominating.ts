@@ -40,20 +40,6 @@ export const doNominations = async (
       return null;
     }
 
-    // Update nominator status to start nominations
-    for (const nom of nominatorGroups) {
-      const shouldNominate = await nom.shouldNominate();
-      if (!shouldNominate) {
-        const nominatorStatus: NominatorStatus = {
-          state: "Nominating",
-          status: `Doing Nominations.....`,
-          updated: Date.now(),
-          stale: false,
-        };
-        await nom.updateNominatorStatus(nominatorStatus);
-      }
-    }
-
     // The list of all valid Validators to nominate
     const allTargets = candidates.map((c) => {
       return { stash: c.stash };

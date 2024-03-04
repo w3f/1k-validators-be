@@ -203,16 +203,18 @@ export const findEraBlockHash = async (
       if (!blockHash) {
         return ["", "Block hash is null"];
       }
-      const testEra =
-        await chaindata?.api?.query.staking.activeEra.at(blockHash);
-      if (testEra && testEra.isNone) {
-        logger.info(`Test era is none`);
+      const apiAt = await chaindata?.api?.at(blockHash);
+      if (!apiAt) {
+        return ["", "API at block hash is null"];
+      }
+
+      const testEra = await apiAt.query.staking.activeEra();
+      if (testEra && testEra.isEmpty) {
+        logger.info(`Test era is empty: ${JSON.stringify(testEra)}`);
         return ["", "Test era is none"];
       }
-      const testIndex =
-        testEra && testEra?.unwrap && testEra?.unwrap().index?.toNumber()
-          ? testEra?.unwrap().index.toNumber()
-          : 0;
+      const testEraJSON = testEra.toJSON() as { index: string; start: string };
+      const testIndex = testEraJSON.index ? Number(testEraJSON.index) : 0;
       if (era == testIndex) {
         return [blockHash.toString(), null];
       }

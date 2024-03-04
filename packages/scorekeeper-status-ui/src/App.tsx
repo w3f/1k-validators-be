@@ -4,6 +4,7 @@ import {
   FiAlertTriangle,
   FiCalendar,
   FiCheckCircle,
+  FiCircle,
   FiClock,
   FiDollarSign,
   FiInfo,
@@ -265,6 +266,25 @@ const App = () => {
     }
   }
 
+  const getStateColor = (state) => {
+    switch (state) {
+      case "Nominated":
+        return "green";
+      case "Ready to Nominate":
+        return "blue";
+      case "Nominating":
+        return "orange";
+      case "Awaiting Proxy Execution":
+        return "purple";
+      case "Not Nominating":
+        return "red";
+      case "Stale":
+        return "grey";
+      default:
+        return "black";
+    }
+  };
+
   return (
     <div className="App">
       <select
@@ -417,6 +437,18 @@ const App = () => {
                   </p>
                 </div>
               </a>
+            )}
+
+            {nominator.state && (
+              <div>
+                <p>
+                  <FiCircle
+                    className="icon"
+                    style={{ color: getStateColor(nominator.state) }}
+                  />
+                  {nominator.state}
+                </p>
+              </div>
             )}
             {nominator.status && (
               <div>

@@ -55,4 +55,17 @@ export default class ValidatorController {
     }
     response(context, 200, await ValidatorService.getBeefyDummy());
   }
+
+  public static async getValidatorsNumActiveEras(context: any): Promise<void> {
+    requestEmitter.emit("requestReceived");
+    if (await context.cashed()) {
+      logger.info(`getValidatorsNumActiveEras is cached`, gatewayLabel);
+      return;
+    }
+    response(
+      context,
+      200,
+      await ValidatorService.getValidatorsNumActiveEras(context.params.address),
+    );
+  }
 }

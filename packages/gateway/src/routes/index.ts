@@ -52,6 +52,7 @@ const API = {
   CurrentValidatorSet: "/validators/current",
   Validators: "/validators",
   Validator: "/validator/:address",
+  ValidatorsNumActiveEras: "/validators/activeeras/:address",
   ValidatorsBeefyStats: "/validators/beefy",
   ValidatorsBeefyDummy: "/validators/beefy/dummy",
   RewardsValidator: "/rewards/validator/:address",
@@ -97,6 +98,7 @@ router.get(API.ScoreMetadata, Score.getLatestScoreMetadata);
 router.get(API.SessionScoreMetadata, Score.getSessionScoreMetadata);
 
 router.get(API.CurrentValidatorSet, Validator.getLatestValidatorSet);
+router.get(API.ValidatorsNumActiveEras, Validator.getValidatorsNumActiveEras);
 
 router.get(
   API.LocationsCurrentValidatorSet,

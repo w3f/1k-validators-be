@@ -60,11 +60,12 @@ export const startRound = async (
 
   for (const nom of filteredNominators) {
     const nominatorStatus: NominatorStatus = {
+      state: "Nominating",
       status: `Round Started`,
       updated: Date.now(),
       stale: false,
     };
-    nom.updateNominatorStatus(nominatorStatus);
+    await nom.updateNominatorStatus(nominatorStatus);
   }
 
   const proxyTxs = await queries.getAllDelayedTxs();
@@ -99,21 +100,23 @@ export const startRound = async (
     );
     for (const nom of filteredNominators) {
       const nominatorStatus: NominatorStatus = {
+        state: "Nominating",
         status: `[${index}/${allCandidates.length}] ${candidate.name} ${isValid ? "✅ " : "❌"}`,
         updated: Date.now(),
         stale: false,
       };
-      nom.updateNominatorStatus(nominatorStatus);
+      await nom.updateNominatorStatus(nominatorStatus);
     }
   }
 
   for (const nom of filteredNominators) {
     const nominatorStatus: NominatorStatus = {
+      state: "Nominating",
       status: `Scoring Candidates...`,
       updated: Date.now(),
       stale: false,
     };
-    nom.updateNominatorStatus(nominatorStatus);
+    await nom.updateNominatorStatus(nominatorStatus);
   }
 
   // Score all candidates
@@ -159,27 +162,19 @@ export const startRound = async (
     await queries.setLastNominatedEraIndex(newEra);
     for (const nom of filteredNominators) {
       const nominatorStatus: NominatorStatus = {
+        state: "Nominated",
         status: `Nominated!`,
         updated: Date.now(),
         stale: false,
         lastNominationEra: newEra,
       };
-      nom.updateNominatorStatus(nominatorStatus);
+      await nom.updateNominatorStatus(nominatorStatus);
     }
   } else {
     logger.info(
       `${numValidatorsNominated} nominated this round, lastNominatedEra not set...`,
       scorekeeperLabel,
     );
-    for (const nom of filteredNominators) {
-      const nominatorStatus: NominatorStatus = {
-        status: `${numValidatorsNominated} nominated, era not set!`,
-        updated: Date.now(),
-        stale: false,
-        lastNominationEra: newEra,
-      };
-      nom.updateNominatorStatus(nominatorStatus);
-    }
   }
   nominating = false;
 

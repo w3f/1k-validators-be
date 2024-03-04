@@ -4,10 +4,8 @@ import {
   FiAlertTriangle,
   FiCalendar,
   FiCheckCircle,
-  FiCircle,
   FiClock,
   FiDollarSign,
-  FiInfo,
   FiPlay,
   FiRefreshCcw,
   FiSend,
@@ -285,6 +283,47 @@ const App = () => {
     }
   };
 
+  const renderNominatorStateIcon = (state: string) => {
+    let iconComponent;
+    const iconSize = 24;
+
+    switch (state) {
+      case "Nominated":
+        iconComponent = <FiCheckCircle color="#00FF00" size={iconSize} />;
+        break;
+      case "Nominating":
+        iconComponent = <BeatLoader color="orange" size={8} />;
+        break;
+      case "Stale":
+        iconComponent = <FiAlertTriangle color="#FFA500" size={iconSize} />;
+        break;
+      case "Not Nominating":
+        iconComponent = <FiXCircle color="#FF0000" size={iconSize} />;
+        break;
+      case "Ready to Nominate":
+      case "Awaiting Proxy Execution":
+        iconComponent = <FiClock color="#FFA500" size={iconSize} />;
+        break;
+      default:
+        iconComponent = <></>;
+        break;
+    }
+
+    return (
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: "5px",
+        }}
+      >
+        {iconComponent}
+        <span>{state}</span>
+      </div>
+    );
+  };
+
   return (
     <div className="App">
       <select
@@ -439,23 +478,15 @@ const App = () => {
               </a>
             )}
 
-            {nominator.state && (
-              <div>
-                <p>
-                  <FiCircle
-                    className="icon"
-                    style={{ color: getStateColor(nominator.state) }}
-                  />
-                  {nominator.state}
-                </p>
-              </div>
-            )}
             {nominator.status && (
-              <div>
-                <p>
-                  <FiInfo className="icon" />
-                  {nominator.status}
-                </p>
+              <div className="nominatorStateContainer">
+                <div className="parentContainer">
+                  <p>
+                    <div>{renderNominatorStateIcon(nominator.state)}</div>
+                    {nominator.state && <hr />}
+                    {nominator.status}
+                  </p>
+                </div>
               </div>
             )}
             {nominator.isBonded !== undefined && (

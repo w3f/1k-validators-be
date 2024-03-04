@@ -57,7 +57,7 @@ const EraStatsBar = ({ currentEndpoint }) => {
       <div className="eraStatsItem">
         <FiUserCheck className="icon" />
         <span>
-          KYC: {eraStats?.kyc} ($
+          KYC: {eraStats?.kyc} (
           {((eraStats?.kyc / eraStats?.totalNodes) * 100).toFixed(0)}%)
         </span>
       </div>

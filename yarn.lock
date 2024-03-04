@@ -42,7 +42,7 @@ __metadata:
     swagger2: ^4.0.3
     swagger2-koa: ^4.0.0
     ts-jest: latest
-    typedoc: ^0.25.9
+    typedoc: ^0.25.10
     typedoc-plugin-markdown: ^3.17.1
     ws: ^8.16.0
     yamljs: ^0.3.0
@@ -11593,9 +11593,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typedoc@npm:^0.25.9":
-  version: 0.25.9
-  resolution: "typedoc@npm:0.25.9"
+"typedoc@npm:^0.25.10":
+  version: 0.25.10
+  resolution: "typedoc@npm:0.25.10"
   dependencies:
     lunr: ^2.3.9
     marked: ^4.3.0
@@ -11605,7 +11605,7 @@ __metadata:
     typescript: 4.6.x || 4.7.x || 4.8.x || 4.9.x || 5.0.x || 5.1.x || 5.2.x || 5.3.x
   bin:
     typedoc: bin/typedoc
-  checksum: c2e7d81e19083bda9289b9d6984c8ce1978b46272d5189c1bdca1518050975ad8fe4d48b2994d3e2e0ee2ebedb57354079674bf8d1466f8d61d74fc810f77f62
+  checksum: 44c173dc1f2d8c55c9a17a3da882f20a06057c669fffb844dc2e337ff9f284706eef601f066809987ef1e937a6b93677e2490b9a555742013bde5d989f568b88
   languageName: node
   linkType: hard
 

@@ -93,7 +93,7 @@ export const executionJob = async (
             updated: Date.now(),
             stale: false,
           };
-          nominator.updateNominatorStatus(nominatorStatus);
+          await nominator.updateNominatorStatus(nominatorStatus);
           if (bot) {
             await bot.sendMessage(
               `@room ${target} has invalid commission: ${commission}`,
@@ -117,7 +117,7 @@ export const executionJob = async (
               updated: Date.now(),
               stale: false,
             };
-            nominator.updateNominatorStatus(nominatorStatus);
+            await nominator.updateNominatorStatus(nominatorStatus);
             await nominator.cancelTx(announcement);
           }
         }
@@ -128,7 +128,8 @@ export const executionJob = async (
         (validCommission && dataNum + Number(timeDelayBlocks) <= latestBlock);
 
       if (shouldExecute) {
-        nominator.updateNominatorStatus({
+        await nominator.updateNominatorStatus({
+          state: "Nominating",
           status: `Starting Delayed Execution for ${callHash} - ${dataNum}`,
           updated: Date.now(),
           stale: false,
@@ -139,11 +140,12 @@ export const executionJob = async (
         );
 
         const nominatorStatus: NominatorStatus = {
+          state: "Nominating",
           status: `${isDryRun ? "DRY RUN: " : ""} Executing Valid Proxy Tx: ${data.callHash}`,
           updated: Date.now(),
           stale: false,
         };
-        nominator.updateNominatorStatus(nominatorStatus);
+        await nominator.updateNominatorStatus(nominatorStatus);
 
         // time to execute
 
@@ -168,11 +170,12 @@ export const executionJob = async (
         // `dryRun` is a special value for the returned block hash that is used to test the execution job without actually sending the transaction
         if (didSend || finalizedBlockHash == "dryRun") {
           const nominatorStatus: NominatorStatus = {
+            state: "Nominated",
             status: `Executed Proxy Tx: ${finalizedBlockHash == "dryRun" ? "" : didSend} ${finalizedBlockHash}`,
             updated: Date.now(),
             stale: false,
           };
-          nominator.updateNominatorStatus(nominatorStatus);
+          await nominator.updateNominatorStatus(nominatorStatus);
           nominator.lastEraNomination = era;
 
           // Create a Nomination Object

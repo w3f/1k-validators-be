@@ -45,6 +45,9 @@ export const CHAINDATA_SLEEP = 300;
 
 export const API_PROVIDER_TIMEOUT = 10000;
 
+// The number of eras a nominator should wait until making a next nomination
+export const NOMINATOR_SHOULD_NOMINATE_ERAS_THRESHOLD = 1;
+
 /// List of Kusama endpoints we can switch between.
 export const KusamaEndpoints = [
   "wss://kusama-rpc-tn.dwellir.com",

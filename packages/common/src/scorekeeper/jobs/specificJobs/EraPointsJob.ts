@@ -16,18 +16,39 @@ export class EraPointsJob extends Job {
 export const individualEraPointsJob = async (
   chaindata: ChainData,
   eraIndex: number,
-) => {
-  const erapoints = await queries.getTotalEraPoints(eraIndex);
+): Promise<boolean> => {
+  try {
+    const erapoints = await queries.getTotalEraPoints(eraIndex);
 
-  // If Era Points for the era exist, and are what the total should be, skip
-  if (!!erapoints && erapoints.totalEraPoints >= 0 && erapoints.median) {
-    return;
-  } else {
-    const data = await chaindata.getTotalEraPoints(eraIndex);
-    if (data) {
-      const { era, total, validators } = data;
-      await queries.setTotalEraPoints(era, total, validators);
+    // If Era Points for the era exist, and are what the total should be, skip
+    if (!!erapoints && erapoints.totalEraPoints >= 0 && erapoints.median) {
+      return;
+    } else {
+      const data = await chaindata.getTotalEraPoints(eraIndex);
+      if (
+        data &&
+        data.era &&
+        data.total &&
+        data.validators &&
+        data.validators.length > 0
+      ) {
+        const { era, total, validators } = data;
+        await queries.setTotalEraPoints(era, total, validators);
+      } else {
+        logger.error(
+          `Error getting total era points for era: ${JSON.stringify(data)} is null`,
+          erapointsLabel,
+        );
+        return false;
+      }
     }
+    return true;
+  } catch (e) {
+    logger.error(
+      `Error running individual era points job: ${JSON.stringify(e)}`,
+      erapointsLabel,
+    );
+    return false;
   }
 };
 export const eraPointsJob = async (

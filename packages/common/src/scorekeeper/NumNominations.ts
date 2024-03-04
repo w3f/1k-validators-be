@@ -36,11 +36,12 @@ export const autoNumNominations = async (
   nominator: Nominator,
 ): Promise<any> => {
   const nominatorStatus: NominatorStatus = {
+    state: "Nominating",
     status: `Calculating how many validators to nominate...`,
     updated: Date.now(),
     stale: false,
   };
-  nominator.updateNominatorStatus(nominatorStatus);
+  await nominator.updateNominatorStatus(nominatorStatus);
 
   const denom = (await nominator?.chaindata?.getDenom()) || 0;
 

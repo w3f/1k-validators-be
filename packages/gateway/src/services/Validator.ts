@@ -24,3 +24,17 @@ export const getBeefyDummy = async (): Promise<any> => {
   const validators = await queries.getValidatorsBeefyDummy();
   return validators;
 };
+
+export const getValidatorsNumActiveEras = async (
+  stash: string,
+): Promise<any> => {
+  const eras = await queries.getValidatorActiveEras(stash);
+  return eras;
+};
+
+export const getIdentityValidatorNumActiveEras = async (
+  stash: string,
+): Promise<any> => {
+  const eras = await queries.getIdentityValidatorActiveEras(stash);
+  return eras;
+};

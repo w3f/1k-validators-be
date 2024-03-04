@@ -20,7 +20,8 @@ export const sendProxyDelayTx = async (
       `{Nominator::nominate::proxy} starting tx for ${nominator.address} with proxy delay ${nominator.proxyDelay} blocks`,
       nominatorLabel,
     );
-    nominator.updateNominatorStatus({
+    await nominator.updateNominatorStatus({
+      state: "Nominating",
       status: `[noninate] starting proxy delay tx`,
       updated: Date.now(),
       stale: false,
@@ -34,7 +35,7 @@ export const sendProxyDelayTx = async (
         `{Nominator::nominate} there was an error getting the current block`,
         nominatorLabel,
       );
-      nominator.updateNominatorStatus({
+      await nominator.updateNominatorStatus({
         status: `[noninate] err: no current block`,
         updated: Date.now(),
         stale: false,
@@ -55,7 +56,8 @@ export const sendProxyDelayTx = async (
       callHash,
     };
     await queries.addDelayedTx(delayedTx);
-    nominator.updateNominatorStatus({
+    await nominator.updateNominatorStatus({
+      state: "Nominating",
       status: `[noninate] tx: ${JSON.stringify(delayedTx)}`,
       updated: Date.now(),
       stale: false,
@@ -64,7 +66,8 @@ export const sendProxyDelayTx = async (
     const allProxyTxs = await queries.getAllDelayedTxs();
 
     const didSend = await nominator.signAndSendTx(tx);
-    nominator.updateNominatorStatus({
+    await nominator.updateNominatorStatus({
+      state: "Awaiting Proxy Execution",
       status: `Announced Proxy Tx: ${didSend}`,
       nextTargets: targets,
       updated: Date.now(),
@@ -79,7 +82,7 @@ export const sendProxyDelayTx = async (
       nominatorLabel,
     );
     logger.error(JSON.stringify(e), nominatorLabel);
-    nominator.updateNominatorStatus({
+    await nominator.updateNominatorStatus({
       status: `Proxy Delay Error: ${JSON.stringify(e)}`,
       updated: Date.now(),
     });
@@ -153,7 +156,8 @@ export const sendProxyTx = async (
     );
     const currentEra = await chaindata.getCurrentEra();
 
-    nominator.updateNominatorStatus({
+    await nominator.updateNominatorStatus({
+      state: "Awaiting Proxy Execution",
       status: "Submitted Proxy Tx",
       currentTargets: namedTargets,
       updated: Date.now(),
@@ -172,7 +176,7 @@ export const sendProxyTx = async (
       nominatorLabel,
     );
     logger.error(JSON.stringify(e), nominatorLabel);
-    nominator.updateNominatorStatus({
+    await nominator.updateNominatorStatus({
       status: `Proxy Error: ${JSON.stringify(e)}`,
       updated: Date.now(),
     });

@@ -120,6 +120,8 @@ export const clean = async (scorekeeper) => {
   try {
     // Clean locations with None
     await queries.cleanBlankLocations();
+    await queries.cleanOldLocations();
+    await queries.cleanOldNominatorStakes();
 
     // Delete all on-chain identities so they get fetched new on startup.
     await queries.deleteAllIdentities();

@@ -9,6 +9,7 @@ import { logger } from "../../index";
 import { getLatestSession } from "./Session";
 import { HardwareSpec } from "../../types";
 import { dbLabel } from "../index";
+import { TWO_DAYS_IN_MS } from "../../constants";
 
 export const getAllLocations = async (): Promise<Location[]> => {
   return LocationModel.find({}).lean<Location[]>();
@@ -129,6 +130,22 @@ export const cleanBlankLocations = async (): Promise<any> => {
   return await LocationModel.deleteMany({
     $or: [{ city: "None" }, { addr: "" }],
   }).exec();
+};
+
+// Remove all location data older than two days
+export const cleanOldLocations = async (): Promise<boolean> => {
+  const twoDaysAgo = Date.now() - TWO_DAYS_IN_MS;
+
+  try {
+    await LocationModel.deleteMany({ updated: { $lt: twoDaysAgo } }).exec();
+    return true;
+  } catch (error) {
+    logger.info(
+      `Error cleaning old locations: ${JSON.stringify(error)}`,
+      dbLabel,
+    );
+    return false;
+  }
 };
 
 // Sets a location from heartbeats

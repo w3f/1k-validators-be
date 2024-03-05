@@ -89,7 +89,7 @@ export const checkLatestClientVersion = async (
 ): Promise<boolean> => {
   try {
     const skipClientUpgrade = config.constraints?.skipClientUpgrade || false;
-    if (skipClientUpgrade!) {
+    if (!skipClientUpgrade) {
       if (candidate?.implementation == "Kagome Node") {
         await setLatestClientReleaseValidity(candidate.stash, true);
         return true;
@@ -126,7 +126,6 @@ export const checkLatestClientVersion = async (
       await setLatestClientReleaseValidity(candidate.stash, true);
       return true;
     }
-    return true;
   } catch (e) {
     logger.error(
       `Error checking latest client version: ${e}`,

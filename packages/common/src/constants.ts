@@ -103,8 +103,8 @@ export const TIME_DELAY_BLOCKS = 10850;
 // The number of blocks after a time delay proxy call was announced that we want to cancel the tx. Should be 36 hours
 export const CANCEL_THRESHOLD = 21700;
 
-// Monitor Cron job for checking if clients have upgraded. This runs ever 15 minutes by default
-export const MONITOR_CRON = "0 */15 * * * *";
+// Monitor Cron job for checking if clients have upgraded. This runs ever 3 minutes by default
+export const MONITOR_CRON = "0 */3 * * * *";
 
 // Clear Offline Time Cron Job. This runs once every sunday  by default
 // export const CLEAR_OFFLINE_CRON = "0 0 0 * * 0";

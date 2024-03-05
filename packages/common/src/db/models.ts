@@ -732,6 +732,7 @@ export interface ValidatorScore {
   nominatorStake: number;
   // The randomness factor used to buffer the total
   randomness: number;
+  client: number;
 }
 
 export const ValidatorScoreSchema = new Schema({
@@ -769,6 +770,7 @@ export const ValidatorScoreSchema = new Schema({
   country: Number,
   provider: Number,
   nominatorStake: Number,
+  client: Number,
   // The randomness factor used to buffer the total
   randomness: Number,
 });

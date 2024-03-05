@@ -25,6 +25,7 @@ export const setValidatorScore = async (
       nominatorStake,
       randomness,
       updated,
+      client,
     } = score;
 
     const data = await ValidatorScoreModel.findOne({
@@ -54,6 +55,7 @@ export const setValidatorScore = async (
         provider,
         nominatorStake,
         randomness,
+        client,
       });
       await score.save();
       return true;
@@ -82,6 +84,7 @@ export const setValidatorScore = async (
         country,
         provider,
         nominatorStake,
+        client,
         randomness,
       },
     ).exec();

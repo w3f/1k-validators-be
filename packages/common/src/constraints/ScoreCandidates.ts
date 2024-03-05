@@ -210,7 +210,9 @@ export const scoreCandidate = async (
     const nominatorStakeScore =
       scaledNominatorStake * constraints.WEIGHT_CONFIG.NOMINATIONS_WEIGHT;
 
-    const isAlternativeClient = candidate?.implementation != "Parity Polkadot";
+    const isAlternativeClient = candidate?.implementation
+      ? candidate?.implementation != "Parity Polkadot"
+      : false;
     const clientScore = isAlternativeClient
       ? constraints.WEIGHT_CONFIG.CLIENT_WEIGHT
       : 0;

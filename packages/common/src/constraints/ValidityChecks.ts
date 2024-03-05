@@ -132,6 +132,7 @@ export const checkLatestClientVersion = async (
       `Error checking latest client version: ${e}`,
       constraintsLabel,
     );
+    await setLatestClientReleaseValidity(candidate.stash, false);
     return false;
   }
 };

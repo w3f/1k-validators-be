@@ -373,7 +373,7 @@ const App = () => {
                 {renderStatusIcon(
                   job.status,
                   job.progress !== undefined
-                    ? job.progress.toFixed(1)
+                    ? job.progress?.toFixed(1)
                     : undefined,
                 )}
               </div>
@@ -391,7 +391,7 @@ const App = () => {
                   <div
                     className="progressBar"
                     style={{
-                      width: `${job.progress !== undefined ? job.progress.toFixed(1) : 0}%`,
+                      width: `${job.progress !== undefined ? job.progress?.toFixed(1) : 0}%`,
                     }}
                   ></div>
                 </div>
@@ -405,7 +405,7 @@ const App = () => {
                       border: `1px solid linear-gradient(to right, rgba(255, 0, 0, 0.1) ${job.progress}%, rgba(255, 255, 0, 0.1) ${job.progress}%, rgba(0, 255, 0, 0.1) ${job.progress}%)`,
                     }}
                   >
-                    {job.progress !== undefined ? job.progress.toFixed(1) : 0}%
+                    {job.progress !== undefined ? job.progress?.toFixed(1) : 0}%
                   </span>
                 </p>
                 {job.iteration && (
@@ -504,7 +504,7 @@ const App = () => {
               <p>
                 <FiDollarSign className="icon" /> Bonded Amount:{" "}
                 {new Intl.NumberFormat().format(
-                  nominator.bondedAmount.toFixed(2),
+                  nominator.bondedAmount?.toFixed(2),
                 )}{" "}
                 {currentEndpoint.includes("kusama") ? "KSM" : "DOT"}
               </p>
@@ -576,8 +576,8 @@ const App = () => {
                       theme="polkadot"
                     />
                     {target.name
-                      ? `[${target.score.toFixed(0)}] ${target.name}`
-                      : `[${target.score.toFixed(0)}] ${truncateAddress(target.stash)}`}{" "}
+                      ? `[${target.score?.toFixed(0)}] ${target.name}`
+                      : `[${target.score?.toFixed(0)}] ${truncateAddress(target.stash)}`}{" "}
                     {target.kyc && (
                       <FiCheckCircle
                         style={{ color: "green", marginLeft: "5px" }}

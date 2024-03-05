@@ -152,12 +152,15 @@ export default class Nominator extends EventEmitter {
     const isBonded = await this.chaindata.isBonded(stash);
     const [bonded, err] = await this.chaindata.getDenomBondedAmount(stash);
     const proxyTxs = await queries.getAccountDelayedTx(this.bondedAddress);
+    const lastNominationEra =
+      await this.chaindata.getNominatorLastNominationEra(stash);
+    this.lastEraNomination = lastNominationEra;
 
     const currentEra = (await this.chaindata.getCurrentEra()) || 0;
     this._shouldNominate =
       isBonded &&
       bonded > 50 &&
-      currentEra - this.lastEraNomination >= 1 &&
+      currentEra - lastNominationEra >= 1 &&
       proxyTxs.length == 0;
     return this._shouldNominate;
   }

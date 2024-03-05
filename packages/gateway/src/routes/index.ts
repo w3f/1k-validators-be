@@ -52,6 +52,7 @@ const API = {
   CurrentValidatorSet: "/validators/current",
   Validators: "/validators",
   Validator: "/validator/:address",
+  //TODO: add to swagger
   ValidatorsNumActiveEras: "/validators/activeeras/:address",
   ValidatorsBeefyStats: "/validators/beefy",
   ValidatorsBeefyDummy: "/validators/beefy/dummy",

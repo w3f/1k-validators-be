@@ -120,6 +120,7 @@ export const checkLatestClientVersion = async (
           return true;
         }
       } else {
+        await setLatestClientReleaseValidity(candidate.stash, false);
         return false;
       }
     } else {

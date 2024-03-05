@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
+import axios from "axios";
 import {
   FiActivity,
   FiAlertTriangle,
@@ -15,15 +16,13 @@ import {
   FiUserCheck,
   FiXCircle,
 } from "react-icons/fi";
-
 import { BeatLoader } from "react-spinners";
 import { motion } from "framer-motion";
 import "./App.css";
-import axios from "axios"; // Ensure the path to your CSS file is correct
-import { debounce } from "lodash";
 import HealthCheckBar from "./HealthCheckBar";
 import { Identicon } from "@polkadot/react-identicon";
 import EraStatsBar from "./EraStatsBar";
+import { debounce } from "lodash";
 
 interface Job {
   name: string;

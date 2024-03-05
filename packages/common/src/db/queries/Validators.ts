@@ -44,10 +44,7 @@ export const getLatestValidatorSet = async (): Promise<ValidatorSet | null> => {
 };
 
 export const getAllValidatorSets = async (): Promise<ValidatorSet[]> => {
-  return ValidatorSetModel.find({})
-    .sort({ era: -1 })
-    .lean<ValidatorSet[]>()
-    .exec();
+  return ValidatorSetModel.find({}).sort({ era: -1 }).lean<ValidatorSet[]>();
 };
 
 export const validatorSetExistsForEra = async (

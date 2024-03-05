@@ -10,7 +10,8 @@ import { ChainData, queries, Util } from "../index";
 import ApiHandler from "../ApiHandler/ApiHandler";
 import MatrixBot from "../matrix";
 import { ConfigSchema } from "../config";
-import Nominator, { NominatorStatus } from "../nominator/nominator";
+import Nominator from "../nominator/nominator";
+import { NominatorState, NominatorStatus } from "../types";
 
 // Takes in a list of valid Candidates, and will nominate them based on the nominator groups
 export const doNominations = async (
@@ -59,7 +60,7 @@ export const doNominations = async (
       }
 
       const nominatorStatus: NominatorStatus = {
-        state: "Nominating",
+        state: NominatorState.Nominating,
         status: `Nominating...`,
         updated: Date.now(),
         stale: false,

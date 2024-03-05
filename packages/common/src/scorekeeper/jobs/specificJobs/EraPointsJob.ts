@@ -22,7 +22,7 @@ export const individualEraPointsJob = async (
 
     // If Era Points for the era exist, and are what the total should be, skip
     if (!!erapoints && erapoints.totalEraPoints >= 0 && erapoints.median) {
-      return;
+      return false;
     } else {
       const data = await chaindata.getTotalEraPoints(eraIndex);
       if (

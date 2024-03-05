@@ -1,13 +1,14 @@
 import Nominator from "./nominator";
 import { queries } from "../index";
 import { NOMINATOR_SHOULD_NOMINATE_ERAS_THRESHOLD } from "../constants";
+import { NominatorState } from "../types";
 
 // Query on-chain info for a nominator
 export const getNominatorChainInfo = async (nominator: Nominator) => {
   const stash = await nominator.stash();
   const isBonded = await nominator.chaindata.isBonded(stash);
   const [bonded, err] = await nominator.chaindata.getDenomBondedAmount(stash);
-  const currentBlock = await nominator.chaindata.getLatestBlock();
+  const currentBlock = (await nominator.chaindata.getLatestBlock()) || 0;
 
   const currentEra = (await nominator.chaindata.getCurrentEra()) || 0;
   const lastNominationEra =
@@ -20,7 +21,8 @@ export const getNominatorChainInfo = async (nominator: Nominator) => {
       const kyc = await queries.isKYC(target);
       let name = await queries.getIdentityName(target);
       if (!name) {
-        name = (await nominator.chaindata.getFormattedIdentity(target))?.name;
+        name =
+          (await nominator.chaindata.getFormattedIdentity(target))?.name || "";
       }
 
       const scoreResult = await queries.getLatestValidatorScore(target);
@@ -28,8 +30,8 @@ export const getNominatorChainInfo = async (nominator: Nominator) => {
 
       return {
         stash: target,
-        name: name,
-        kyc: kyc,
+        name: name || "",
+        kyc: kyc || false,
         score: score,
       };
     }),
@@ -49,7 +51,7 @@ export const getNominatorChainInfo = async (nominator: Nominator) => {
           if (!name) {
             const formattedIdentity =
               await nominator.chaindata.getFormattedIdentity(target);
-            name = formattedIdentity?.name;
+            name = formattedIdentity?.name || "";
           }
 
           const scoreResult = await queries.getLatestValidatorScore(target);
@@ -58,8 +60,8 @@ export const getNominatorChainInfo = async (nominator: Nominator) => {
 
           return {
             stash: target,
-            name: name,
-            kyc: kyc,
+            name: name || "",
+            kyc: kyc || false,
             score: score,
           };
         }),
@@ -95,13 +97,13 @@ export const getNominatorChainInfo = async (nominator: Nominator) => {
 
   let state;
   if (shouldNominate) {
-    state = "Ready to Nominate";
+    state = NominatorState.ReadyToNominate;
   } else if (namedProxyTargets.length > 0) {
-    state = "Awaiting Proxy Execution";
+    state = NominatorState.AwaitingProxyExecution;
   } else if (lastNominationEra == 0) {
-    state = "Not Nominating";
+    state = NominatorState.NotNominating;
   } else if (namedProxyTargets.length == 0 && lastNominationEra > 0) {
-    status = "Nominated";
+    state = NominatorState.Nominated;
   }
 
   const stale =

@@ -2,9 +2,10 @@ import logger from "../logger";
 import { blake2AsHex } from "@polkadot/util-crypto";
 import { DelayedTx } from "../db";
 import { ChainData, queries } from "../index";
-import Nominator, { nominatorLabel } from "./nominator";
 import { ApiPromise } from "@polkadot/api";
 import MatrixBot from "../matrix";
+import Nominator, { nominatorLabel } from "./nominator";
+import { NominatorState } from "../types";
 
 // Sends a Proxy Delay Nominate Tx for a given nominator
 // TODO: unit tests
@@ -21,7 +22,7 @@ export const sendProxyDelayTx = async (
       nominatorLabel,
     );
     await nominator.updateNominatorStatus({
-      state: "Nominating",
+      state: NominatorState.Nominating,
       status: `[noninate] starting proxy delay tx`,
       updated: Date.now(),
       stale: false,
@@ -57,7 +58,7 @@ export const sendProxyDelayTx = async (
     };
     await queries.addDelayedTx(delayedTx);
     await nominator.updateNominatorStatus({
-      state: "Nominating",
+      state: NominatorState.Nominating,
       status: `[noninate] tx: ${JSON.stringify(delayedTx)}`,
       updated: Date.now(),
       stale: false,
@@ -67,7 +68,7 @@ export const sendProxyDelayTx = async (
 
     const didSend = await nominator.signAndSendTx(tx);
     await nominator.updateNominatorStatus({
-      state: "Awaiting Proxy Execution",
+      state: NominatorState.AwaitingProxyExecution,
       status: `Announced Proxy Tx: ${didSend}`,
       nextTargets: targets,
       updated: Date.now(),
@@ -147,17 +148,20 @@ export const sendProxyTx = async (
       targets.map(async (val) => {
         const name = await queries.getIdentityName(val);
         const kyc = await queries.isKYC(val);
+        const scoreResult = await queries.getLatestValidatorScore(val);
+        const score = scoreResult && scoreResult.total ? scoreResult.total : 0;
         return {
           address: val,
-          name: name,
-          kyc: kyc,
+          name: name || "",
+          kyc: kyc || false,
+          score: score,
         };
       }),
     );
-    const currentEra = await chaindata.getCurrentEra();
+    const currentEra = (await chaindata.getCurrentEra()) || 0;
 
     await nominator.updateNominatorStatus({
-      state: "Awaiting Proxy Execution",
+      state: NominatorState.AwaitingProxyExecution,
       status: "Submitted Proxy Tx",
       currentTargets: namedTargets,
       updated: Date.now(),

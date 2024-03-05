@@ -5,9 +5,10 @@
  */
 import { ApiPromise } from "@polkadot/api";
 import { scorekeeperLabel } from "./scorekeeper";
-import Nominator, { NominatorStatus } from "../nominator/nominator";
+import Nominator from "../nominator/nominator";
 import { Constants } from "../index";
 import logger from "../logger";
+import { NominatorState, NominatorStatus } from "../types";
 
 /**
  * Automatically determines the number of validators a nominator can nominate based on their available balance
@@ -36,7 +37,7 @@ export const autoNumNominations = async (
   nominator: Nominator,
 ): Promise<any> => {
   const nominatorStatus: NominatorStatus = {
-    state: "Nominating",
+    state: NominatorState.Nominating,
     status: `Calculating how many validators to nominate...`,
     updated: Date.now(),
     stale: false,

@@ -10,13 +10,15 @@ describe("setEraStats", () => {
     const totalNodes = 10;
     const valid = 8;
     const active = 6;
-    await setEraStats(era, totalNodes, valid, active);
+    const kyc = 3;
+    await setEraStats(era, totalNodes, valid, active, kyc);
 
     const eraStats = await EraStatsModel.findOne({ era }).lean();
     expect(eraStats).toBeDefined();
     expect(eraStats?.totalNodes).toBe(totalNodes);
     expect(eraStats?.valid).toBe(valid);
     expect(eraStats?.active).toBe(active);
+    expect(eraStats?.kyc).toBe(kyc);
   });
 
   it("should update existing era stats with different values", async () => {
@@ -24,6 +26,7 @@ describe("setEraStats", () => {
     const initialTotalNodes = 5;
     const initialValid = 4;
     const initialActive = 3;
+    const kyc = 2;
     await new EraStatsModel({
       era,
       totalNodes: initialTotalNodes,
@@ -34,13 +37,14 @@ describe("setEraStats", () => {
     const updatedTotalNodes = 12;
     const updatedValid = 10;
     const updatedActive = 8;
-    await setEraStats(era, updatedTotalNodes, updatedValid, updatedActive);
+    await setEraStats(era, updatedTotalNodes, updatedValid, updatedActive, kyc);
 
     const eraStats = await EraStatsModel.findOne({ era }).lean();
     expect(eraStats).toBeDefined();
     expect(eraStats?.totalNodes).toBe(updatedTotalNodes);
     expect(eraStats?.valid).toBe(updatedValid);
     expect(eraStats?.active).toBe(updatedActive);
+    expect(eraStats?.kyc).toBe(kyc);
   });
 
   it("should not update existing era stats if values are the same", async () => {
@@ -48,10 +52,11 @@ describe("setEraStats", () => {
     const totalNodes = 20;
     const valid = 15;
     const active = 10;
-    await new EraStatsModel({ era, totalNodes, valid, active }).save();
+    const kyc = 5;
+    await new EraStatsModel({ era, totalNodes, valid, active, kyc }).save();
 
     // Call setEraStats with the same values
-    await setEraStats(era, totalNodes, valid, active);
+    await setEraStats(era, totalNodes, valid, active, kyc);
 
     const eraStats = await EraStatsModel.findOne({ era }).lean();
     expect(eraStats).toBeDefined();
@@ -59,6 +64,7 @@ describe("setEraStats", () => {
     expect(eraStats?.totalNodes).toBe(totalNodes);
     expect(eraStats?.valid).toBe(valid);
     expect(eraStats?.active).toBe(active);
+    expect(eraStats?.kyc).toBe(kyc);
   });
 });
 
@@ -70,6 +76,7 @@ describe("getLatestEraStats", () => {
       totalNodes: era * 2,
       valid: era * 1.5,
       active: era,
+      kyc: 1,
     }));
     await EraStatsModel.create(eraStatsData);
 

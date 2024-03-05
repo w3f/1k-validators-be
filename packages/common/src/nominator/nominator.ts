@@ -8,44 +8,9 @@ import logger from "../logger";
 import EventEmitter from "eventemitter3";
 import { sendProxyDelayTx, sendProxyTx } from "./NominatorTx";
 import { getNominatorChainInfo } from "./NominatorChainInfo";
+import { NominatorState, NominatorStatus } from "../types";
 
 export const nominatorLabel = { label: "Nominator" };
-
-export interface NominatorStatus {
-  state?:
-    | "Nominated"
-    | "Ready to Nominate"
-    | "Nominating"
-    | "Awaiting Proxy Execution"
-    | "Not Nominating"
-    | "Stale";
-  status?: string;
-  isBonded?: boolean;
-  bondedAddress?: string;
-  bondedAmount?: number;
-  stashAddress?: string;
-  proxyAddress?: string;
-  isProxy?: boolean;
-  proxyDelay?: number;
-  isNominating?: boolean;
-  lastNominationEra?: number;
-  lastNominationTime?: number;
-  currentTargets?:
-    | string[]
-    | {
-        stash?: string;
-        name?: string;
-        kyc?: boolean;
-        score?: string | number;
-      }[];
-  nextTargets?: string[];
-  proxyTxs?: any[];
-  updated: number;
-  rewardDestination?: string;
-  stale?: boolean;
-  dryRun?: boolean;
-  shouldNominate?: boolean;
-}
 
 export default class Nominator extends EventEmitter {
   public currentlyNominating: Types.Stash[] = [];
@@ -65,7 +30,7 @@ export default class Nominator extends EventEmitter {
   // The amount of blocks for a time delay proxy
   private _proxyDelay: number;
 
-  public lastEraNomination: number;
+  public lastEraNomination = 0;
 
   public _shouldNominate = false;
 
@@ -153,7 +118,7 @@ export default class Nominator extends EventEmitter {
     const [bonded, err] = await this.chaindata.getDenomBondedAmount(stash);
     const proxyTxs = await queries.getAccountDelayedTx(this.bondedAddress);
     const lastNominationEra =
-      await this.chaindata.getNominatorLastNominationEra(stash);
+      (await this.chaindata.getNominatorLastNominationEra(stash)) || 0;
     this.lastEraNomination = lastNominationEra;
 
     const currentEra = (await this.chaindata.getCurrentEra()) || 0;
@@ -165,7 +130,7 @@ export default class Nominator extends EventEmitter {
     return this._shouldNominate;
   }
 
-  public async init(): Promise<NominatorStatus> {
+  public async init(): Promise<NominatorStatus | null> {
     try {
       const nominatorInfo = await getNominatorChainInfo(this);
       const {
@@ -294,7 +259,7 @@ export default class Nominator extends EventEmitter {
       if (this._dryRun) {
         logger.info(`DRY RUN ENABLED, SKIPPING TX`, nominatorLabel);
         await this.updateNominatorStatus({
-          state: "Nominating",
+          state: NominatorState.Nominating,
           status: `[signAndSend] DRY RUN TX`,
           updated: Date.now(),
           stale: false,
@@ -304,7 +269,7 @@ export default class Nominator extends EventEmitter {
         logger.info(`Sending tx: ${tx.method.toString()}`, nominatorLabel);
         await tx.signAndSend(this.signer);
         await this.updateNominatorStatus({
-          state: "Nominated",
+          state: NominatorState.Nominated,
           status: `[signAndSend] signed and sent tx`,
           updated: Date.now(),
           stale: false,
@@ -335,9 +300,9 @@ export default class Nominator extends EventEmitter {
         return false;
       }
 
-      const currentEra = await this.chaindata.getCurrentEra();
+      const currentEra = (await this.chaindata.getCurrentEra()) || 0;
       const nominatorStatus: NominatorStatus = {
-        state: "Nominating",
+        state: NominatorState.Nominating,
         status: `[nominate] start`,
         updated: Date.now(),
         stale: false,
@@ -356,7 +321,7 @@ export default class Nominator extends EventEmitter {
       logger.info(`nominator is bonded: ${isBonded}`, nominatorLabel);
 
       await this.updateNominatorStatus({
-        state: "Nominating",
+        state: NominatorState.Nominating,
         status: `[nominate] bonded; ${isBonded}`,
         updated: Date.now(),
         stale: false,
@@ -374,7 +339,7 @@ export default class Nominator extends EventEmitter {
       // Start an announcement for a delayed proxy tx
       if (this._isProxy && this._proxyDelay > 0) {
         await this.updateNominatorStatus({
-          state: "Nominating",
+          state: NominatorState.Nominating,
           status: `[nominate] proxy ${this._isProxy}; delay ${this._proxyDelay}`,
           updated: Date.now(),
           stale: false,
@@ -455,30 +420,30 @@ export default class Nominator extends EventEmitter {
       // If Dry Run is enabled in the config, nominations will be stubbed but not executed
       if (this._dryRun) {
         logger.info(`DRY RUN ENABLED, SKIPPING TX`, nominatorLabel);
-        const currentEra = await this.chaindata.getCurrentEra();
+        const currentEra = (await this.chaindata.getCurrentEra()) || 0;
 
         const namedTargets = await Promise.all(
           targets.map(async (target) => {
-            const kyc = await queries.isKYC(target);
-            let name = await queries.getIdentityName(target);
+            const kyc = (await queries.isKYC(target)) || false;
+            let name = (await queries.getIdentityName(target)) || "";
 
             // Fetch name using chaindata.getFormattedIdentity only if the name wasn't found initially
             if (!name) {
               const formattedIdentity =
                 await this.chaindata.getFormattedIdentity(target);
-              name = formattedIdentity?.name;
+              name = formattedIdentity?.name || "";
             }
 
             return {
               stash: target,
-              name, // shorthand for name: name
-              kyc, // shorthand for kyc: kyc
+              name: name || "",
+              kyc: kyc || false,
               score: 0,
             };
           }),
         );
         const nominatorStatus: NominatorStatus = {
-          state: "Nominating",
+          state: NominatorState.Nominating,
           status: `Dry Run: Nominated ${targets.length} validators`,
           updated: Date.now(),
           stale: false,
@@ -620,27 +585,28 @@ export default class Nominator extends EventEmitter {
             break;
         }
       });
-      const currentEra = await this.chaindata.getCurrentEra();
+      const currentEra = (await this.chaindata.getCurrentEra()) || 0;
       const namedTargets = await Promise.all(
         targets.map(async (target) => {
           const kyc = await queries.isKYC(target);
           let name = await queries.getIdentityName(target);
           if (!name) {
-            name = (await this.chaindata.getFormattedIdentity(target))?.name;
+            name =
+              (await this.chaindata.getFormattedIdentity(target))?.name || "";
           }
 
           const score = await queries.getLatestValidatorScore(target);
 
           return {
             stash: target,
-            name: name,
-            kyc: kyc,
-            score: score && score[0] && score[0].total ? score[0].total : 0,
+            name: name || "",
+            kyc: kyc || false,
+            score: score && score && score?.total ? score?.total : 0,
           };
         }),
       );
       const nominatorStatus: NominatorStatus = {
-        state: "Nominated",
+        state: NominatorState.Nominated,
         status: `Nominated ${targets.length} validators: ${didSend} ${finalizedBlockHash}`,
         updated: Date.now(),
         stale: false,
@@ -651,7 +617,7 @@ export default class Nominator extends EventEmitter {
       return [didSend, finalizedBlockHash || null]; // Change to return undefined
     } catch (e) {
       logger.error(`Error sending tx: ${JSON.stringify(e)}`, nominatorLabel);
-      return [false, e];
+      return [false, JSON.stringify(e)];
     }
   };
 }

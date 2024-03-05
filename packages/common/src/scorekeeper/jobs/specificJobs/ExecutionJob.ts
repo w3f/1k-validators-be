@@ -4,7 +4,7 @@ import { Constants, queries, Util } from "../../../index";
 import { cronLabel } from "../cron/StartCronJobs";
 import { jobStatusEmitter } from "../../../Events";
 import { JobNames } from "../JobConfigs";
-import { NominatorStatus } from "../../../nominator/nominator";
+import { NominatorState, NominatorStatus } from "../../../types";
 
 export class ExecutionJob extends Job {
   constructor(jobConfig: JobConfig, jobRunnerMetadata: JobRunnerMetadata) {
@@ -28,19 +28,19 @@ export const executionJob = async (
     const latestBlock = await chaindata.getLatestBlock();
     if (!latestBlock) {
       logger.error(`latest block is null`, cronLabel);
-      return;
+      return false;
     }
     const api = handler.getApi();
 
     if (!api) {
       logger.error(`api is null`, cronLabel);
-      return;
+      return false;
     }
 
     const era = await chaindata.getCurrentEra();
     if (!era) {
       logger.error(`current era is null`, cronLabel);
-      return;
+      return false;
     }
 
     const allDelayed = await queries.getAllDelayedTxs();
@@ -129,7 +129,7 @@ export const executionJob = async (
 
       if (shouldExecute) {
         await nominator.updateNominatorStatus({
-          state: "Nominating",
+          state: NominatorState.Nominating,
           status: `Starting Delayed Execution for ${callHash} - ${dataNum}`,
           updated: Date.now(),
           stale: false,
@@ -140,7 +140,7 @@ export const executionJob = async (
         );
 
         const nominatorStatus: NominatorStatus = {
-          state: "Nominating",
+          state: NominatorState.NotNominating,
           status: `${isDryRun ? "DRY RUN: " : ""} Executing Valid Proxy Tx: ${data.callHash}`,
           updated: Date.now(),
           stale: false,
@@ -170,7 +170,7 @@ export const executionJob = async (
         // `dryRun` is a special value for the returned block hash that is used to test the execution job without actually sending the transaction
         if (didSend || finalizedBlockHash == "dryRun") {
           const nominatorStatus: NominatorStatus = {
-            state: "Nominated",
+            state: NominatorState.Nominated,
             status: `Executed Proxy Tx: ${finalizedBlockHash == "dryRun" ? "" : didSend} ${finalizedBlockHash}`,
             updated: Date.now(),
             stale: false,

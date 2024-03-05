@@ -111,3 +111,42 @@ export interface TelemetryWsPayload extends Array<any> {
   6: any; // location
   7: any; // startupTime
 }
+
+export enum NominatorState {
+  Nominated = "Nominated",
+  ReadyToNominate = "Ready to Nominate",
+  Nominating = "Nominating",
+  AwaitingProxyExecution = "Awaiting Proxy Execution",
+  NotNominating = "Not Nominating",
+  Stale = "Stale",
+}
+
+export interface NominatorStatus {
+  state?: NominatorState;
+  status?: string;
+  isBonded?: boolean;
+  bondedAddress?: string;
+  bondedAmount?: number;
+  stashAddress?: string;
+  proxyAddress?: string;
+  isProxy?: boolean;
+  proxyDelay?: number;
+  isNominating?: boolean;
+  lastNominationEra?: number;
+  lastNominationTime?: number;
+  currentTargets?:
+    | string[]
+    | {
+        stash?: string;
+        name?: string;
+        kyc?: boolean;
+        score?: string | number;
+      }[];
+  nextTargets?: string[];
+  proxyTxs?: any[];
+  updated: number;
+  rewardDestination?: string;
+  stale?: boolean;
+  dryRun?: boolean;
+  shouldNominate?: boolean;
+}

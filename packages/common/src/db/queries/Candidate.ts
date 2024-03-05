@@ -334,7 +334,7 @@ export const getIdentityName = async (
       .lean<Identity>()
       .select({ name: 1 });
 
-    return identity?.name;
+    return identity?.name || null;
   }
 };
 

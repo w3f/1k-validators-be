@@ -52,7 +52,6 @@ const API = {
   CurrentValidatorSet: "/validators/current",
   Validators: "/validators",
   Validator: "/validator/:address",
-  //TODO: add to swagger
   ValidatorsNumActiveEras: "/validators/activeeras/:address",
   ValidatorsBeefyStats: "/validators/beefy",
   ValidatorsBeefyDummy: "/validators/beefy/dummy",
@@ -131,21 +130,5 @@ router.get(API.BlockIndex, Block.getBlockIndex);
 
 router.get(API.StatsTotalReqeusts, Stats.getTotalRequests);
 router.get(API.StatsEndpointCounts, Stats.getEndpointCounts);
-
-// router.get("/stats/totalRequests", (ctx) => {
-//   ctx.body = { totalRequests: requestEmitter.listenerCount("requestReceived") };
-// });
-//
-// // Endpoint to retrieve the count of requests per endpoint
-// router.get("/stats/endpointCounts", (ctx) => {
-//   const endpointCounts = {};
-//
-//   // Iterate over all registered endpoints
-//   requestEmitter.eventNames().forEach((endpoint) => {
-//     endpointCounts[endpoint] = requestEmitter.listenerCount(endpoint);
-//   });
-//
-//   ctx.body = { endpointCounts };
-// });
 
 export default router;

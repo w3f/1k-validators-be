@@ -9,7 +9,7 @@ import {
   Util,
 } from "../index";
 
-import Nominator, { NominatorStatus } from "../nominator/nominator";
+import Nominator from "../nominator/nominator";
 import {
   registerAPIHandler,
   registerEventEmitterHandler,
@@ -17,6 +17,7 @@ import {
 import { Job, JobRunnerMetadata, JobStatus } from "./jobs/JobsClass";
 import { JobsRunnerFactory } from "./jobs/JobsRunnerFactory";
 import { startRound } from "./Round";
+import { NominatorStatus } from "../types";
 // import { monitorJob } from "./jobs";
 
 export type NominatorGroup = Config.NominatorConfig[];
@@ -240,7 +241,7 @@ export default class ScoreKeeper {
       scorekeeperLabel,
     );
 
-    const currentEra = await this.chaindata.getCurrentEra();
+    const currentEra = (await this.chaindata.getCurrentEra()) || 0;
     this.currentEra = currentEra;
 
     // await setAllIdentities(this.chaindata, scorekeeperLabel);

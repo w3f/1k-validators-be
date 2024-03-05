@@ -1,4 +1,4 @@
-import { allCandidates, setRank } from "../db";
+import { allCandidates, setRank } from "../db/queries";
 import { queries } from "../index";
 
 // Sets all validators ranks

@@ -38,7 +38,7 @@ export const staleNominationJob = async (
       if (!stash || stash === "0x") continue;
 
       const lastNominatedEra =
-        await chaindata.getNominatorLastNominationEra(stash);
+        (await chaindata.getNominatorLastNominationEra(stash)) || 0;
 
       if (lastNominatedEra < Number(currentEra) - threshold) {
         const message = `Nominator ${stash} has a stale nomination. Last nomination was in era ${nom.getStatus()?.lastNominationEra} (it is now era ${currentEra})`;

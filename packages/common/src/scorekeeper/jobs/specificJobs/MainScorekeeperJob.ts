@@ -4,6 +4,7 @@ import { queries } from "../../../index";
 import { startRound } from "../../Round";
 import { jobStatusEmitter } from "../../../Events";
 import { JobNames } from "../JobConfigs";
+import { NOMINATOR_SHOULD_NOMINATE_ERAS_THRESHOLD } from "../../../constants";
 
 export class MainScorekeeperJob extends Job {
   constructor(jobConfig: JobConfig, jobRunnerMetadata: JobRunnerMetadata) {
@@ -41,7 +42,8 @@ export const mainScorekeeperJob = async (
     return;
   }
 
-  const { lastNominatedEraIndex } = await queries.getLastNominatedEraIndex();
+  const lastNominatedEra = await queries.getLastNominatedEraIndex();
+  const lastNominatedEraIndex = lastNominatedEra?.lastNominatedEraIndex || 0;
   const eraBuffer = config.global.networkPrefix == 0 ? 1 : 4;
   const isNominationRound =
     Number(lastNominatedEraIndex) <= activeEra - eraBuffer;
@@ -55,8 +57,10 @@ export const mainScorekeeperJob = async (
       const stash = await nom.stash();
       if (!stash || stash === "0x") return false;
       const lastNominatedEra =
-        await chaindata.getNominatorLastNominationEra(stash);
-      return lastNominatedEra <= activeEra - 1;
+        (await chaindata.getNominatorLastNominationEra(stash)) || 0;
+      return (
+        activeEra - lastNominatedEra >= NOMINATOR_SHOULD_NOMINATE_ERAS_THRESHOLD
+      );
     }),
   );
 

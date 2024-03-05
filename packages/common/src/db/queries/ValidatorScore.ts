@@ -107,7 +107,7 @@ export const getValidatorScore = async (
 
 export const getLatestValidatorScore = async (
   address: string,
-): Promise<ValidatorScore> => {
+): Promise<ValidatorScore | null> => {
   return ValidatorScoreModel.findOne({ address: address }, { _id: 0, __v: 0 })
     .sort({ session: -1 })
     .limit(1)

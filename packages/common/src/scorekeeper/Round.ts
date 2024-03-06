@@ -50,13 +50,17 @@ export const startRound = async (
   );
 
   for (const nom of nominatorGroups) {
-    const nominatorStatus: NominatorStatus = {
-      state: NominatorState.Nominating,
-      status: `Round Started`,
-      updated: Date.now(),
-      stale: false,
-    };
-    await nom.updateNominatorStatus(nominatorStatus);
+    const shouldNominate = await nom.shouldNominate();
+    if (shouldNominate) {
+      const nominatorStatus: NominatorStatus = {
+        state: NominatorState.Nominating,
+        status: `Round Started`,
+        updated: Date.now(),
+        stale: false,
+      };
+
+      await nom.updateNominatorStatus(nominatorStatus);
+    }
   }
 
   const proxyTxs = await queries.getAllDelayedTxs();
@@ -90,24 +94,30 @@ export const startRound = async (
       scorekeeperLabel,
     );
     for (const nom of nominatorGroups) {
+      const shouldNominate = await nom.shouldNominate();
+      if (!shouldNominate) {
+        const nominatorStatus: NominatorStatus = {
+          state: NominatorState.Nominating,
+          status: `[${index}/${allCandidates.length}] ${candidate.name} ${isValid ? "✅ " : "❌"}`,
+          updated: Date.now(),
+          stale: false,
+        };
+        await nom.updateNominatorStatus(nominatorStatus);
+      }
+    }
+  }
+
+  for (const nom of nominatorGroups) {
+    const shouldNominate = await nom.shouldNominate();
+    if (shouldNominate) {
       const nominatorStatus: NominatorStatus = {
         state: NominatorState.Nominating,
-        status: `[${index}/${allCandidates.length}] ${candidate.name} ${isValid ? "✅ " : "❌"}`,
+        status: `Scoring Candidates...`,
         updated: Date.now(),
         stale: false,
       };
       await nom.updateNominatorStatus(nominatorStatus);
     }
-  }
-
-  for (const nom of nominatorGroups) {
-    const nominatorStatus: NominatorStatus = {
-      state: NominatorState.Nominating,
-      status: `Scoring Candidates...`,
-      updated: Date.now(),
-      stale: false,
-    };
-    await nom.updateNominatorStatus(nominatorStatus);
   }
 
   // Score all candidates

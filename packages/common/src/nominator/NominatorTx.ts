@@ -145,13 +145,20 @@ export const sendProxyTx = async (
     }
 
     const namedTargets = await Promise.all(
-      targets.map(async (val) => {
-        const name = await queries.getIdentityName(val);
-        const kyc = await queries.isKYC(val);
-        const scoreResult = await queries.getLatestValidatorScore(val);
+      targets.map(async (target) => {
+        const kyc = await queries.isKYC(target);
+        let name = await queries.getIdentityName(target);
+        if (!name) {
+          name =
+            (await nominator.chaindata.getFormattedIdentity(target))?.name ||
+            "";
+        }
+
+        const scoreResult = await queries.getLatestValidatorScore(target);
         const score = scoreResult && scoreResult.total ? scoreResult.total : 0;
+
         return {
-          address: val,
+          stash: target,
           name: name || "",
           kyc: kyc || false,
           score: score,

@@ -1,7 +1,11 @@
 import { logger, queries } from "../../../index";
 import { Job, JobConfig, JobRunnerMetadata, JobStatus } from "../JobsClass";
 import { jobStatusEmitter } from "../../../Events";
-import { setValidatorRanks, withExecutionTimeLogging } from "../../../utils";
+import {
+  setAllIdentities,
+  setValidatorRanks,
+  withExecutionTimeLogging,
+} from "../../../utils";
 import { JobNames } from "../JobConfigs";
 
 export const erastatsLabel = { label: "EraStatsJob" };
@@ -18,6 +22,7 @@ export const eraStatsJob = async (
   try {
     const { chaindata } = metadata;
 
+    await setAllIdentities(chaindata, erastatsLabel);
     await setValidatorRanks();
 
     const currentSession = await chaindata.getSession();

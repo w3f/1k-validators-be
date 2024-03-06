@@ -18,6 +18,7 @@ import { Job, JobRunnerMetadata, JobStatus } from "./jobs/JobsClass";
 import { JobsRunnerFactory } from "./jobs/JobsRunnerFactory";
 import { startRound } from "./Round";
 import { NominatorStatus } from "../types";
+import { setAllIdentities } from "../utils";
 // import { monitorJob } from "./jobs";
 
 export type NominatorGroup = Config.NominatorConfig[];
@@ -244,7 +245,7 @@ export default class ScoreKeeper {
     const currentEra = (await this.chaindata.getCurrentEra()) || 0;
     this.currentEra = currentEra;
 
-    // await setAllIdentities(this.chaindata, scorekeeperLabel);
+    await setAllIdentities(this.chaindata, scorekeeperLabel);
 
     const nominationPromises = this.nominatorGroups.map((nom) =>
       nom.shouldNominate(),

@@ -88,6 +88,23 @@ export const getFormattedIdentity = async (
     const identityInfo = await chaindata.api?.derive.accounts.identity(addr);
     if (!identityInfo) return null;
 
+    const hasSubs = await chaindata.api?.query.identity.subsOf(addr);
+    if (hasSubs && hasSubs[1].length > 0) {
+      for (const subaccountAddress of hasSubs[1]) {
+        const subAccountIdentity =
+          await chaindata.api?.derive.accounts.identity(
+            subaccountAddress.toString(),
+          );
+        if (subAccountIdentity) {
+          const subAccount: { name: string; address: string } = {
+            name: subAccountIdentity.display || "",
+            address: subaccountAddress.toString(),
+          };
+          subAccounts.push(subAccount);
+        }
+      }
+    }
+
     const {
       display,
       email,

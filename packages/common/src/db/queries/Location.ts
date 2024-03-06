@@ -36,9 +36,22 @@ export const getLocation = async (
 };
 
 export const getCandidateLocation = async (
-  name: string,
+  name?: string,
+  address?: string,
 ): Promise<Location | null> => {
-  return LocationModel.findOne({ name }).sort({ updated: -1 }).lean<Location>();
+  const queryConditions = [];
+
+  if (name) {
+    queryConditions.push({ name: name });
+  }
+
+  if (address) {
+    queryConditions.push({ address: address });
+  }
+
+  return LocationModel.findOne({ $or: queryConditions })
+    .sort({ updated: -1 })
+    .lean<Location>();
 };
 
 export const setLocation = async (

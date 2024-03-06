@@ -89,10 +89,10 @@ export const DEFAULT_TELEMETRY_ENDPONT =
 
 // List of log labels that are omitted from logging
 export const defaultExcludeLabels = [
-  "Telemetry",
-  "Location",
+  // "Telemetry",
+  // "Location",
   // "ValidatorPrefJob",
-  // "Block",
+  "Block",
   "Gateway",
 ];
 

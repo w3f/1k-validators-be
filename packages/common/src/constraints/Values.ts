@@ -116,7 +116,10 @@ export const getLocationValues = async (
   const locationMap = new Map<string, number>();
   const locationArr: { name: string; numberOfNodes: number }[] = [];
   for (const candidate of validCandidates) {
-    const candidateLocation = await getCandidateLocation(candidate.name);
+    const candidateLocation = await getCandidateLocation(
+      candidate.name,
+      candidate.stash,
+    );
     const location = candidateLocation?.city || "No Location";
 
     const locationCount = locationMap.get(location);
@@ -150,7 +153,10 @@ export const getRegionValues = async (
   const regionMap = new Map<string, number>();
   const regionArr: { name: string; numberOfNodes: number }[] = [];
   for (const candidate of validCandidates) {
-    const candidateLocation = await getCandidateLocation(candidate.name);
+    const candidateLocation = await getCandidateLocation(
+      candidate.name,
+      candidate.stash,
+    );
     const region =
       candidateLocation && candidateLocation.region
         ? candidateLocation.region
@@ -187,7 +193,10 @@ export const getCountryValues = async (
   const countryMap = new Map<string, number>();
   const countryArr: { name: string; numberOfNodes: number }[] = [];
   for (const candidate of validCandidates) {
-    const candidateLocation = await getCandidateLocation(candidate.name);
+    const candidateLocation = await getCandidateLocation(
+      candidate.name,
+      candidate.stash,
+    );
     const country =
       candidateLocation && candidateLocation.country
         ? candidateLocation.country
@@ -222,7 +231,10 @@ export const getProviderValues = async (
   const providerMap = new Map<string, number>();
   const providerArr: { name: string; numberOfNodes: number }[] = [];
   for (const candidate of validCandidates) {
-    const candidateLocation = await getCandidateLocation(candidate.name);
+    const candidateLocation = await getCandidateLocation(
+      candidate.name,
+      candidate.stash,
+    );
     const provider =
       candidateLocation && candidateLocation.provider
         ? candidateLocation.provider

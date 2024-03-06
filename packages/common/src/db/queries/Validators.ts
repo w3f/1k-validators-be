@@ -5,7 +5,7 @@ import {
   ValidatorSet,
   ValidatorSetModel,
 } from "../models";
-import { allCandidates } from "./Candidate";
+import { allCandidates, getIdentityAddresses } from "./Candidate";
 import { NextKeys } from "../../chaindata/queries/ValidatorPref";
 
 export const setValidatorSet = async (
@@ -44,10 +44,7 @@ export const getLatestValidatorSet = async (): Promise<ValidatorSet | null> => {
 };
 
 export const getAllValidatorSets = async (): Promise<ValidatorSet[]> => {
-  return ValidatorSetModel.find({})
-    .sort({ era: -1 })
-    .lean<ValidatorSet[]>()
-    .exec();
+  return ValidatorSetModel.find({}).sort({ era: -1 }).lean<ValidatorSet[]>();
 };
 
 export const validatorSetExistsForEra = async (
@@ -169,4 +166,37 @@ export const getValidatorsBeefyDummy = async (): Promise<any> => {
 export const hasBeefyDummy = async (address: string): Promise<boolean> => {
   const validator = await getValidator(address);
   return validator?.keys?.beefy?.slice(0, 10) == "0x62656566";
+};
+
+// TODO: add tests
+// Returns the number of eras a validator stash has been active
+export const getValidatorActiveEras = async (
+  stash: string,
+): Promise<number> => {
+  let count = 0;
+  const validatorSets = await getAllValidatorSets();
+  for (const era of validatorSets) {
+    if (era.validators.includes(stash)) {
+      count++;
+    }
+  }
+  return count;
+};
+
+// TODO: add tests
+// return the number of eras
+export const getIdentityValidatorActiveEras = async (
+  address: string,
+): Promise<number> => {
+  const identityAddresses = await getIdentityAddresses(address);
+  let count = 0;
+  const validatorSets = await getAllValidatorSets();
+  for (const era of validatorSets) {
+    if (
+      era.validators.some((validator) => identityAddresses.includes(validator))
+    ) {
+      count++;
+    }
+  }
+  return count;
 };

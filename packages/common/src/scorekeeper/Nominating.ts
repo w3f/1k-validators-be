@@ -10,7 +10,8 @@ import { ChainData, queries, Util } from "../index";
 import ApiHandler from "../ApiHandler/ApiHandler";
 import MatrixBot from "../matrix";
 import { ConfigSchema } from "../config";
-import Nominator, { NominatorStatus } from "../nominator/nominator";
+import Nominator from "../nominator/nominator";
+import { NominatorState, NominatorStatus } from "../types";
 
 // Takes in a list of valid Candidates, and will nominate them based on the nominator groups
 export const doNominations = async (
@@ -31,20 +32,6 @@ export const doNominations = async (
       return null;
     }
 
-    for (const nom of nominatorGroups) {
-      const nominatorStatus: NominatorStatus = {
-        status: `Doing Nominations.....`,
-        updated: Date.now(),
-        stale: false,
-      };
-      nom.updateNominatorStatus(nominatorStatus);
-    }
-
-    const allTargets = candidates.map((c) => {
-      return { stash: c.stash };
-    });
-    let counter = 0;
-
     const currentEra = await chaindata.getCurrentEra();
     if (!currentEra) {
       logger.error(
@@ -54,22 +41,32 @@ export const doNominations = async (
       return null;
     }
 
+    // The list of all valid Validators to nominate
+    const allTargets = candidates.map((c) => {
+      return { stash: c.stash };
+    });
+
+    // A counter to keep track of the number of nominations
+    let counter = 0;
+
     for (const nominator of nominatorGroups) {
-      const nomStash = await nominator.stash();
-      const nominatorLastNominated =
-        await chaindata.getNominatorLastNominationEra(nomStash);
-      if (nominatorLastNominated + 4 > currentEra) {
+      const stash = await nominator.stash();
+      const shouldNominate = await nominator.shouldNominate();
+      if (!shouldNominate) {
         logger.info(
-          `Nominator ${nomStash} has already nominated this era: ${nominatorLastNominated}`,
+          `Nominator ${stash} has already nominated in era: ${nominator.lastEraNomination} (current era: ${currentEra}) - Skipping`,
         );
         continue;
       }
+
       const nominatorStatus: NominatorStatus = {
+        state: NominatorState.Nominating,
         status: `Nominating...`,
         updated: Date.now(),
         stale: false,
       };
-      nominator.updateNominatorStatus(nominatorStatus);
+      await nominator.updateNominatorStatus(nominatorStatus);
+
       // The number of nominations to do per nominator account
       // This is either hard coded, or set to "auto", meaning it will find a dynamic amount of validators
       //    to nominate based on the lowest staked validator in the validator set
@@ -78,7 +75,6 @@ export const doNominations = async (
       if (!api || !denom) return null;
       const autoNom = await autoNumNominations(api, nominator);
       const { nominationNum } = autoNom;
-      const stash = await nominator.stash();
 
       logger.info(
         `Nominator ${stash}  ${nominator.isProxy ? "Proxy" : "Non-Proxy"} with delay ${nominator.proxyDelay} blocks  nominate ${nominationNum} validators`,

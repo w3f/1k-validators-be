@@ -3,11 +3,15 @@ import { logger, queries } from "@1kv/common";
 const label = { label: "Gateway" };
 
 export const getCandidateData = async (candidate: any): Promise<any> => {
-  const metadata = await queries.getChainMetadata();
+  const [metadata, score, nominations, location] = await Promise.all([
+    queries.getChainMetadata(),
+    queries.getLatestValidatorScore(candidate.stash),
+    queries.getLatestNominatorStake(candidate.stash),
+    queries.getCandidateLocation(candidate.name),
+  ]);
+
   const denom = Math.pow(10, metadata.decimals);
-  const score = await queries.getLatestValidatorScore(candidate.stash);
-  const nominations = await queries.getLatestNominatorStake(candidate.stash);
-  const location = await queries.getCandidateLocation(candidate.name);
+
   return {
     slotId: candidate.slotId,
     kyc: candidate.kyc,

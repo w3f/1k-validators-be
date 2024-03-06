@@ -16,6 +16,7 @@ export const locationStatsJob = async (metadata: JobRunnerMetadata) => {
   try {
     const { chaindata } = metadata;
     await queries.cleanBlankLocations();
+    await queries.cleanOldLocations();
 
     jobStatusEmitter.emit("jobProgress", {
       name: JobNames.LocationStats,

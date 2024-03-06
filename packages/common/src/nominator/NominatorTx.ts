@@ -2,9 +2,10 @@ import logger from "../logger";
 import { blake2AsHex } from "@polkadot/util-crypto";
 import { DelayedTx } from "../db";
 import { ChainData, queries } from "../index";
-import Nominator, { nominatorLabel } from "./nominator";
 import { ApiPromise } from "@polkadot/api";
 import MatrixBot from "../matrix";
+import Nominator, { nominatorLabel } from "./nominator";
+import { NominatorState } from "../types";
 
 // Sends a Proxy Delay Nominate Tx for a given nominator
 // TODO: unit tests
@@ -20,7 +21,8 @@ export const sendProxyDelayTx = async (
       `{Nominator::nominate::proxy} starting tx for ${nominator.address} with proxy delay ${nominator.proxyDelay} blocks`,
       nominatorLabel,
     );
-    nominator.updateNominatorStatus({
+    await nominator.updateNominatorStatus({
+      state: NominatorState.Nominating,
       status: `[noninate] starting proxy delay tx`,
       updated: Date.now(),
       stale: false,
@@ -34,7 +36,7 @@ export const sendProxyDelayTx = async (
         `{Nominator::nominate} there was an error getting the current block`,
         nominatorLabel,
       );
-      nominator.updateNominatorStatus({
+      await nominator.updateNominatorStatus({
         status: `[noninate] err: no current block`,
         updated: Date.now(),
         stale: false,
@@ -55,7 +57,8 @@ export const sendProxyDelayTx = async (
       callHash,
     };
     await queries.addDelayedTx(delayedTx);
-    nominator.updateNominatorStatus({
+    await nominator.updateNominatorStatus({
+      state: NominatorState.Nominating,
       status: `[noninate] tx: ${JSON.stringify(delayedTx)}`,
       updated: Date.now(),
       stale: false,
@@ -64,7 +67,8 @@ export const sendProxyDelayTx = async (
     const allProxyTxs = await queries.getAllDelayedTxs();
 
     const didSend = await nominator.signAndSendTx(tx);
-    nominator.updateNominatorStatus({
+    await nominator.updateNominatorStatus({
+      state: NominatorState.AwaitingProxyExecution,
       status: `Announced Proxy Tx: ${didSend}`,
       nextTargets: targets,
       updated: Date.now(),
@@ -79,7 +83,7 @@ export const sendProxyDelayTx = async (
       nominatorLabel,
     );
     logger.error(JSON.stringify(e), nominatorLabel);
-    nominator.updateNominatorStatus({
+    await nominator.updateNominatorStatus({
       status: `Proxy Delay Error: ${JSON.stringify(e)}`,
       updated: Date.now(),
     });
@@ -144,16 +148,20 @@ export const sendProxyTx = async (
       targets.map(async (val) => {
         const name = await queries.getIdentityName(val);
         const kyc = await queries.isKYC(val);
+        const scoreResult = await queries.getLatestValidatorScore(val);
+        const score = scoreResult && scoreResult.total ? scoreResult.total : 0;
         return {
           address: val,
-          name: name,
-          kyc: kyc,
+          name: name || "",
+          kyc: kyc || false,
+          score: score,
         };
       }),
     );
-    const currentEra = await chaindata.getCurrentEra();
+    const currentEra = (await chaindata.getCurrentEra()) || 0;
 
-    nominator.updateNominatorStatus({
+    await nominator.updateNominatorStatus({
+      state: NominatorState.AwaitingProxyExecution,
       status: "Submitted Proxy Tx",
       currentTargets: namedTargets,
       updated: Date.now(),
@@ -172,7 +180,7 @@ export const sendProxyTx = async (
       nominatorLabel,
     );
     logger.error(JSON.stringify(e), nominatorLabel);
-    nominator.updateNominatorStatus({
+    await nominator.updateNominatorStatus({
       status: `Proxy Error: ${JSON.stringify(e)}`,
       updated: Date.now(),
     });

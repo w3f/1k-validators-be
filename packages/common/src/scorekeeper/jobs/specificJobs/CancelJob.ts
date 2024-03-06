@@ -20,7 +20,7 @@ export const cancelJob = async (
     const latestBlock = await chaindata.getLatestBlock();
     if (!latestBlock) {
       logger.error(`latest block is null`, cronLabel);
-      return;
+      return false;
     }
     const threshold = latestBlock - 1.2 * config?.proxy?.timeDelayBlocks;
 

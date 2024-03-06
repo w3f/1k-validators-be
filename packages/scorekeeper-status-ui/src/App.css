@@ -479,6 +479,7 @@ h1 {
 }
 
 .proxyTransactionItem {
+  color: #0f0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -535,4 +536,38 @@ h1 {
   text-overflow: ellipsis; /* Add ellipsis for overflow */
   white-space: nowrap; /* Keep the text on a single line */
   max-width: 70%; /* Adjust this value based on your container's width */
+}
+
+
+.nominatorStateContainer {
+  width: 80%;
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+  background: rgba(0, 255, 0, 0.05);
+  border: 1px solid rgba(0, 255, 0, 0.5);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column; /* Align children vertically */
+  align-items: center; /* Center children horizontally */
+  gap: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  margin-top: 7%;
+  margin-bottom: 4%;
+}
+
+.nominatorStateContainer hr {
+  width: 100%; /* Match the width of the container */
+  border-color: rgba(0, 255, 0, 0.5); /* Match the border color */
+  box-shadow: 0 0 5px rgba(0, 255, 0, 0.5); /* Softer glow for the line */
+}
+
+.nominatorStateContainer > div, .nominatorStateContainer > p {
+  width: 100%; /* Ensure full width for center alignment */
+  text-align: center; /* Center the text */
+}
+
+.parentContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

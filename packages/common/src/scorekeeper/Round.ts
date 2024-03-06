@@ -11,9 +11,10 @@ import { OTV } from "../constraints/constraints";
 import { ConfigSchema } from "../config";
 import MatrixBot from "../matrix";
 import ApiHandler from "../ApiHandler/ApiHandler";
-import Nominator, { NominatorStatus } from "../nominator/nominator";
+import Nominator from "../nominator/nominator";
 import { jobStatusEmitter } from "../Events";
 import { JobNames } from "./jobs/JobConfigs";
+import { NominatorState, NominatorStatus } from "../types";
 
 /// Handles the beginning of a new round.
 // - Gets the current era
@@ -34,16 +35,6 @@ export const startRound = async (
   if (nominating) return [];
   nominating = true;
 
-  const shouldNominatePromises = nominatorGroups.map(async (nom) => {
-    return {
-      nominator: nom,
-      shouldNominate: await nom.shouldNominate(),
-    };
-  });
-  const resolvedNominators = await Promise.all(shouldNominatePromises);
-  const filteredNominators = resolvedNominators
-    .filter((nom) => nom.shouldNominate)
-    .map((nom) => nom.nominator);
   const now = new Date().getTime();
 
   // The nominations sent now won't be active until the next era.
@@ -58,13 +49,14 @@ export const startRound = async (
     `New round is starting! Era ${newEra} will begin new nominations.`,
   );
 
-  for (const nom of filteredNominators) {
+  for (const nom of nominatorGroups) {
     const nominatorStatus: NominatorStatus = {
+      state: NominatorState.Nominating,
       status: `Round Started`,
       updated: Date.now(),
       stale: false,
     };
-    nom.updateNominatorStatus(nominatorStatus);
+    await nom.updateNominatorStatus(nominatorStatus);
   }
 
   const proxyTxs = await queries.getAllDelayedTxs();
@@ -97,23 +89,25 @@ export const startRound = async (
       `[${index}/${allCandidates.length}] checked ${candidate.name} ${isValid ? "Valid" : "Invalid"} [${index}/${allCandidates.length}]`,
       scorekeeperLabel,
     );
-    for (const nom of filteredNominators) {
+    for (const nom of nominatorGroups) {
       const nominatorStatus: NominatorStatus = {
+        state: NominatorState.Nominating,
         status: `[${index}/${allCandidates.length}] ${candidate.name} ${isValid ? "✅ " : "❌"}`,
         updated: Date.now(),
         stale: false,
       };
-      nom.updateNominatorStatus(nominatorStatus);
+      await nom.updateNominatorStatus(nominatorStatus);
     }
   }
 
-  for (const nom of filteredNominators) {
+  for (const nom of nominatorGroups) {
     const nominatorStatus: NominatorStatus = {
+      state: NominatorState.Nominating,
       status: `Scoring Candidates...`,
       updated: Date.now(),
       stale: false,
     };
-    nom.updateNominatorStatus(nominatorStatus);
+    await nom.updateNominatorStatus(nominatorStatus);
   }
 
   // Score all candidates
@@ -126,7 +120,7 @@ export const startRound = async (
       const scoredCandidate = {
         name: candidate.name,
         stash: candidate.stash,
-        total: score.total,
+        total: score?.total || 0,
       };
       return scoredCandidate;
     }),
@@ -143,7 +137,7 @@ export const startRound = async (
   // TODO unit test that assets this  value
   const numValidatorsNominated = await doNominations(
     sortedCandidates,
-    filteredNominators,
+    nominatorGroups,
     chaindata,
     handler,
     bot,
@@ -157,29 +151,21 @@ export const startRound = async (
       scorekeeperLabel,
     );
     await queries.setLastNominatedEraIndex(newEra);
-    for (const nom of filteredNominators) {
+    for (const nom of nominatorGroups) {
       const nominatorStatus: NominatorStatus = {
+        state: NominatorState.Nominated,
         status: `Nominated!`,
         updated: Date.now(),
         stale: false,
         lastNominationEra: newEra,
       };
-      nom.updateNominatorStatus(nominatorStatus);
+      await nom.updateNominatorStatus(nominatorStatus);
     }
   } else {
     logger.info(
       `${numValidatorsNominated} nominated this round, lastNominatedEra not set...`,
       scorekeeperLabel,
     );
-    for (const nom of filteredNominators) {
-      const nominatorStatus: NominatorStatus = {
-        status: `${numValidatorsNominated} nominated, era not set!`,
-        updated: Date.now(),
-        stale: false,
-        lastNominationEra: newEra,
-      };
-      nom.updateNominatorStatus(nominatorStatus);
-    }
   }
   nominating = false;
 

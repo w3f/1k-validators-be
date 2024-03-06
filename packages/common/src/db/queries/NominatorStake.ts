@@ -1,4 +1,7 @@
 import { NominatorStake, NominatorStakeModel } from "../models";
+import { TWO_DAYS_IN_MS } from "../../constants";
+import { logger } from "../../index";
+import { dbLabel } from "../index";
 
 export const setNominatorStake = async (
   validator: string,
@@ -83,4 +86,21 @@ export const getNominatorStake = async (
     .lean<NominatorStake[]>()
     .sort("-era")
     .limit(limit ? limit : 100);
+};
+
+export const cleanOldNominatorStakes = async (): Promise<boolean> => {
+  const twoDaysAgo = Date.now() - TWO_DAYS_IN_MS;
+
+  try {
+    await NominatorStakeModel.deleteMany({
+      updated: { $lt: twoDaysAgo },
+    }).exec();
+    return true;
+  } catch (error) {
+    logger.info(
+      `Error cleaning old nominator stakes: ${JSON.stringify(error)}`,
+      dbLabel,
+    );
+    return false;
+  }
 };

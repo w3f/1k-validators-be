@@ -1,4 +1,5 @@
 import { ValidatorScore, ValidatorScoreModel } from "../models";
+import { TWO_DAYS_IN_MS } from "../../constants";
 
 export const setValidatorScore = async (
   address: string,
@@ -25,6 +26,7 @@ export const setValidatorScore = async (
       nominatorStake,
       randomness,
       updated,
+      client,
     } = score;
 
     const data = await ValidatorScoreModel.findOne({
@@ -54,6 +56,7 @@ export const setValidatorScore = async (
         provider,
         nominatorStake,
         randomness,
+        client,
       });
       await score.save();
       return true;
@@ -82,6 +85,7 @@ export const setValidatorScore = async (
         country,
         provider,
         nominatorStake,
+        client,
         randomness,
       },
     ).exec();
@@ -107,7 +111,7 @@ export const getValidatorScore = async (
 
 export const getLatestValidatorScore = async (
   address: string,
-): Promise<ValidatorScore> => {
+): Promise<ValidatorScore | null> => {
   return ValidatorScoreModel.findOne({ address: address }, { _id: 0, __v: 0 })
     .sort({ session: -1 })
     .limit(1)
@@ -115,10 +119,7 @@ export const getLatestValidatorScore = async (
 };
 
 export const deleteOldValidatorScores = async (): Promise<any> => {
-  const FIVE_MINUTES = 300000;
-  const ONE_WEEK = 604800016.56;
-  const ONE_MONTH = 2629800000;
-  const timeWindow = Date.now() - ONE_WEEK;
+  const timeWindow = Date.now() - TWO_DAYS_IN_MS;
   const scoreToDelete = await ValidatorScoreModel.find({
     updated: { $lt: timeWindow },
   }).exec();

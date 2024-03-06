@@ -334,7 +334,7 @@ export const getIdentityName = async (
       .lean<Identity>()
       .select({ name: 1 });
 
-    return identity?.name;
+    return identity?.name || null;
   }
 };
 
@@ -516,6 +516,7 @@ export const updateCandidateOnlineTelemetryDetails = async (
             telemetryId: { $literal: telemetryNodeDetails.telemetryId },
             onlineSince: { $literal: Date.now() },
             offlineSince: { $literal: 0 },
+            version: telemetryNodeDetails.version,
             implementation: {
               $literal: telemetryNodeDetails.nodeImplementation,
             },

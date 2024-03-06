@@ -17,6 +17,9 @@ export const eraStatsJob = async (
 ): Promise<boolean> => {
   try {
     const { chaindata } = metadata;
+
+    await setValidatorRanks();
+
     const currentSession = await chaindata.getSession();
     const currentEra = await chaindata.getCurrentEra();
     const validators = await chaindata.currentValidators();

@@ -1,6 +1,8 @@
 /// One week in milliseconds.
 import WS from "ws";
 
+export const TWO_DAYS_IN_MS = 2 * 24 * 60 * 60 * 1000;
+
 export const FIVE_MINUTES = 5 * 60 * 1000;
 
 export const WEEK = 7 * 24 * 60 * 60 * 1000;
@@ -44,6 +46,9 @@ export const CHAINDATA_RETRIES = 20;
 export const CHAINDATA_SLEEP = 300;
 
 export const API_PROVIDER_TIMEOUT = 10000;
+
+// The number of eras a nominator should wait until making a next nomination
+export const NOMINATOR_SHOULD_NOMINATE_ERAS_THRESHOLD = 1;
 
 /// List of Kusama endpoints we can switch between.
 export const KusamaEndpoints = [
@@ -100,8 +105,8 @@ export const TIME_DELAY_BLOCKS = 10850;
 // The number of blocks after a time delay proxy call was announced that we want to cancel the tx. Should be 36 hours
 export const CANCEL_THRESHOLD = 21700;
 
-// Monitor Cron job for checking if clients have upgraded. This runs ever 15 minutes by default
-export const MONITOR_CRON = "0 */15 * * * *";
+// Monitor Cron job for checking if clients have upgraded. This runs ever 3 minutes by default
+export const MONITOR_CRON = "0 */3 * * * *";
 
 // Clear Offline Time Cron Job. This runs once every sunday  by default
 // export const CLEAR_OFFLINE_CRON = "0 0 0 * * 0";

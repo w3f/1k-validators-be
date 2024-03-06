@@ -100,6 +100,10 @@ class NominatorMock {
   async sendStakingTx(tx: any, targets: string[]): Promise<boolean> {
     return true;
   }
+
+  async updateNominatorStatus(): Promise<boolean> {
+    return true;
+  }
 }
 
 export default NominatorMock;

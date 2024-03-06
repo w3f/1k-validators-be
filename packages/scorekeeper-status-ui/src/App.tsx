@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
+import axios from "axios";
 import {
   FiActivity,
   FiAlertTriangle,
@@ -6,7 +7,6 @@ import {
   FiCheckCircle,
   FiClock,
   FiDollarSign,
-  FiInfo,
   FiPlay,
   FiRefreshCcw,
   FiSend,
@@ -16,15 +16,13 @@ import {
   FiUserCheck,
   FiXCircle,
 } from "react-icons/fi";
-
 import { BeatLoader } from "react-spinners";
 import { motion } from "framer-motion";
 import "./App.css";
-import axios from "axios"; // Ensure the path to your CSS file is correct
-import { debounce } from "lodash";
 import HealthCheckBar from "./HealthCheckBar";
 import { Identicon } from "@polkadot/react-identicon";
 import EraStatsBar from "./EraStatsBar";
+import { debounce } from "lodash";
 
 interface Job {
   name: string;
@@ -265,6 +263,66 @@ const App = () => {
     }
   }
 
+  const getStateColor = (state) => {
+    switch (state) {
+      case "Nominated":
+        return "green";
+      case "Ready to Nominate":
+        return "blue";
+      case "Nominating":
+        return "orange";
+      case "Awaiting Proxy Execution":
+        return "purple";
+      case "Not Nominating":
+        return "red";
+      case "Stale":
+        return "grey";
+      default:
+        return "black";
+    }
+  };
+
+  const renderNominatorStateIcon = (state: string) => {
+    let iconComponent;
+    const iconSize = 24;
+
+    switch (state) {
+      case "Nominated":
+        iconComponent = <FiCheckCircle color="#00FF00" size={iconSize} />;
+        break;
+      case "Nominating":
+        iconComponent = <BeatLoader color="orange" size={8} />;
+        break;
+      case "Stale":
+        iconComponent = <FiAlertTriangle color="#FFA500" size={iconSize} />;
+        break;
+      case "Not Nominating":
+        iconComponent = <FiXCircle color="#FF0000" size={iconSize} />;
+        break;
+      case "Ready to Nominate":
+      case "Awaiting Proxy Execution":
+        iconComponent = <FiClock color="#FFA500" size={iconSize} />;
+        break;
+      default:
+        iconComponent = <></>;
+        break;
+    }
+
+    return (
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: "5px",
+        }}
+      >
+        {iconComponent}
+        <span>{state}</span>
+      </div>
+    );
+  };
+
   return (
     <div className="App">
       <select
@@ -314,7 +372,7 @@ const App = () => {
                 {renderStatusIcon(
                   job.status,
                   job.progress !== undefined
-                    ? job.progress.toFixed(1)
+                    ? job.progress?.toFixed(1)
                     : undefined,
                 )}
               </div>
@@ -332,7 +390,7 @@ const App = () => {
                   <div
                     className="progressBar"
                     style={{
-                      width: `${job.progress !== undefined ? job.progress.toFixed(1) : 0}%`,
+                      width: `${job.progress !== undefined ? job.progress?.toFixed(1) : 0}%`,
                     }}
                   ></div>
                 </div>
@@ -346,7 +404,7 @@ const App = () => {
                       border: `1px solid linear-gradient(to right, rgba(255, 0, 0, 0.1) ${job.progress}%, rgba(255, 255, 0, 0.1) ${job.progress}%, rgba(0, 255, 0, 0.1) ${job.progress}%)`,
                     }}
                   >
-                    {job.progress !== undefined ? job.progress.toFixed(1) : 0}%
+                    {job.progress !== undefined ? job.progress?.toFixed(1) : 0}%
                   </span>
                 </p>
                 {job.iteration && (
@@ -418,12 +476,16 @@ const App = () => {
                 </div>
               </a>
             )}
+
             {nominator.status && (
-              <div>
-                <p>
-                  <FiInfo className="icon" />
-                  {nominator.status}
-                </p>
+              <div className="nominatorStateContainer">
+                <div className="parentContainer">
+                  <p>
+                    <div>{renderNominatorStateIcon(nominator.state)}</div>
+                    {nominator.state && <hr />}
+                    {nominator.status}
+                  </p>
+                </div>
               </div>
             )}
             {nominator.isBonded !== undefined && (
@@ -441,7 +503,7 @@ const App = () => {
               <p>
                 <FiDollarSign className="icon" /> Bonded Amount:{" "}
                 {new Intl.NumberFormat().format(
-                  nominator.bondedAmount.toFixed(2),
+                  nominator.bondedAmount?.toFixed(2),
                 )}{" "}
                 {currentEndpoint.includes("kusama") ? "KSM" : "DOT"}
               </p>
@@ -513,8 +575,8 @@ const App = () => {
                       theme="polkadot"
                     />
                     {target.name
-                      ? `[${target.score.toFixed(0)}] ${target.name}`
-                      : `[${target.score.toFixed(0)}] ${truncateAddress(target.stash)}`}{" "}
+                      ? `[${target.score?.toFixed(0)}] ${target.name}`
+                      : `[${target.score?.toFixed(0)}] ${truncateAddress(target.stash)}`}{" "}
                     {target.kyc && (
                       <FiCheckCircle
                         style={{ color: "green", marginLeft: "5px" }}

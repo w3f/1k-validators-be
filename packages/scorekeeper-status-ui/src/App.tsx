@@ -687,7 +687,7 @@ const App = () => {
                               theme="polkadot"
                             />
                             {target.name
-                              ? `${target.name}`
+                              ? `[${target.score?.toFixed(0)}] ${target.name}`
                               : `${truncateAddress(target.stash)}`}{" "}
                             {target.kyc && (
                               <FiCheckCircle

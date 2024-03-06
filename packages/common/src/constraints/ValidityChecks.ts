@@ -325,7 +325,10 @@ export const checkProvider = async (
   candidate: Candidate,
 ): Promise<boolean> => {
   try {
-    const location = await queries.getCandidateLocation(candidate.name);
+    const location = await queries.getCandidateLocation(
+      candidate.name,
+      candidate.stash,
+    );
     if (location && location.provider) {
       const bannedProviders = config.telemetry?.blacklistedProviders;
       if (bannedProviders?.includes(location.provider)) {

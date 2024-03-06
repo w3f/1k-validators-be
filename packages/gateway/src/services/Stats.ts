@@ -37,7 +37,10 @@ export const getValidLocationStats = async () => {
   const totalNodes = [];
 
   for (const candidate of candidates) {
-    const location = await queries.getCandidateLocation(candidate.name);
+    const location = await queries.getCandidateLocation(
+      candidate.name,
+      candidate.stash,
+    );
     if (
       location?.city != "None" &&
       location?.region != "None" &&

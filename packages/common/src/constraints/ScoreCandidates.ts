@@ -95,6 +95,7 @@ export const scoreCandidate = async (
 
     const latestCandidateLocation = await queries.getCandidateLocation(
       candidate.name,
+      candidate.stash,
     );
 
     const provider = latestCandidateLocation?.provider || "No Provider";
@@ -116,7 +117,9 @@ export const scoreCandidate = async (
       scaledDefined(candidateLocation, locationValues, 0, 1) || 0;
     const locationScore = bannedProvider
       ? 0
-      : latestCandidateLocation?.city == "No Location"
+      : latestCandidateLocation?.city == "No Location" ||
+          !latestCandidateLocation ||
+          !latestCandidateLocation?.city
         ? 0.25 * constraints.WEIGHT_CONFIG.LOCATION_WEIGHT
         : (1 - scaledLocation) * constraints.WEIGHT_CONFIG.LOCATION_WEIGHT || 0;
 
@@ -135,7 +138,9 @@ export const scoreCandidate = async (
       scaledDefined(candidateRegion, regionValues, 0, 1) || 0;
     const regionScore = bannedProvider
       ? 0
-      : latestCandidateLocation?.region == "No Location"
+      : latestCandidateLocation?.region == "No Location" ||
+          !latestCandidateLocation ||
+          !latestCandidateLocation?.region
         ? 0.25 * constraints.WEIGHT_CONFIG.REGION_WEIGHT
         : (1 - scaledRegion) * constraints.WEIGHT_CONFIG.REGION_WEIGHT || 0;
 
@@ -154,7 +159,9 @@ export const scoreCandidate = async (
       scaledDefined(candidateCountry, countryValues, 0, 1) || 0;
     const countryScore = bannedProvider
       ? 0
-      : latestCandidateLocation?.country == "No Location"
+      : latestCandidateLocation?.country == "No Location" ||
+          !latestCandidateLocation ||
+          !latestCandidateLocation?.country
         ? 0.25 * constraints.WEIGHT_CONFIG.COUNTRY_WEIGHT
         : (1 - scaledCountry) * constraints.WEIGHT_CONFIG.COUNTRY_WEIGHT || 0;
 
@@ -173,7 +180,9 @@ export const scoreCandidate = async (
       scaledDefined(candidateProvider, providerValues, 0, 1) || 0;
     const providerScore = bannedProvider
       ? 0
-      : latestCandidateLocation?.provider == "No Location"
+      : latestCandidateLocation?.provider == "No Location" ||
+          !latestCandidateLocation ||
+          !latestCandidateLocation?.provider
         ? 0.25 * constraints.WEIGHT_CONFIG.PROVIDER_WEIGHT
         : (1 - scaledProvider) * constraints.WEIGHT_CONFIG.PROVIDER_WEIGHT || 0;
 

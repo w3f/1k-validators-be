@@ -90,7 +90,7 @@ export default class Nominator extends EventEmitter {
     return this._status;
   };
 
-  public async updateNominatorStatus(newStatus: NominatorStatus) {
+  public async updateNominatorStatus(newStatus?: NominatorStatus) {
     // Always update on-chain data for status
     const nominatorInfo = await getNominatorChainInfo(this);
     const {
@@ -113,6 +113,9 @@ export default class Nominator extends EventEmitter {
   }
 
   public async shouldNominate(): Promise<boolean> {
+    // refresh the nominator status with the latest on-chain data
+    await this.updateNominatorStatus();
+
     const stash = await this.stash();
     const isBonded = await this.chaindata.isBonded(stash);
     const [bonded, err] = await this.chaindata.getDenomBondedAmount(stash);

@@ -340,7 +340,7 @@ describe("ChainData Integration Tests", () => {
     "should fetch identity",
     async () => {
       const getIdentity = await chainData.getIdentity(
-        "J4hAvZoHCviZSoPHoSwLida8cEkZR1NXJcGrcfx9saHTk7D",
+        "DBfT2GUqHX89afMhTzGCCbAc44zX33d4XySWX2qAPxZ35KE",
       );
       expect(getIdentity).toBeDefined();
     },
@@ -351,7 +351,7 @@ describe("ChainData Integration Tests", () => {
     "should fetch formatted identity",
     async () => {
       const identity = await chainData.getFormattedIdentity(
-        "J4hAvZoHCviZSoPHoSwLida8cEkZR1NXJcGrcfx9saHTk7D",
+        "CbaNLeJQ8e8aCJMTLa9euDKuTDmnT5oPmGFt4AmuvXmYFGN",
       );
       expect(identity).toBeDefined();
     },

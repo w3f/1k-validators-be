@@ -50,13 +50,17 @@ export const startRound = async (
   );
 
   for (const nom of nominatorGroups) {
-    const nominatorStatus: NominatorStatus = {
-      state: NominatorState.Nominating,
-      status: `Round Started`,
-      updated: Date.now(),
-      stale: false,
-    };
-    await nom.updateNominatorStatus(nominatorStatus);
+    const shouldNominate = await nom.shouldNominate();
+    if (shouldNominate) {
+      const nominatorStatus: NominatorStatus = {
+        state: NominatorState.Nominating,
+        status: `Round Started`,
+        updated: Date.now(),
+        stale: false,
+      };
+
+      await nom.updateNominatorStatus(nominatorStatus);
+    }
   }
 
   const proxyTxs = await queries.getAllDelayedTxs();

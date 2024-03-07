@@ -21,6 +21,7 @@ import axios from "axios";
 import semver from "semver";
 import logger from "../logger";
 import { constraintsLabel } from "./constraints";
+import { KUSAMA_RANK_REQUIREMENT } from "../constants";
 
 export const checkOnline = async (candidate: any): Promise<boolean> => {
   try {
@@ -371,7 +372,7 @@ export const checkKusamaRank = async (
         return false;
       }
 
-      if (Number(res.data.rank) < 25) {
+      if (Number(res.data.rank) < KUSAMA_RANK_REQUIREMENT) {
         const invalidityReason = `${candidate.name} has a Kusama stash with lower than 25 rank in the Kusama OTV programme: ${res.data.rank}.`;
         await setKusamaRankInvalidity(candidate.stash, false, invalidityReason);
         return false;

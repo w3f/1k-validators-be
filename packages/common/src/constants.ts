@@ -1,6 +1,8 @@
 /// One week in milliseconds.
 import WS from "ws";
 
+export const KUSAMA_RANK_REQUIREMENT = 100;
+
 export const TWO_DAYS_IN_MS = 2 * 24 * 60 * 60 * 1000;
 
 export const FIVE_MINUTES = 5 * 60 * 1000;

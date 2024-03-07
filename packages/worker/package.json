@@ -1,6 +1,7 @@
 {
   "name": "@1kv/worker",
-  "version": "3.1.5",
+  "version": "3.1.6",
+
   "description": "Services for running the Thousand Validator Program.",
   "main": "build/index.js",
   "types": "build/index.d.ts",

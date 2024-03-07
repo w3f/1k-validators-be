@@ -66,7 +66,7 @@ export const getCandidate = async (stash: any): Promise<any> => {
   let candidate;
 
   try {
-    candidate = await queries.getCandidate(stash);
+    candidate = await queries.getCandidateByStash(stash);
     if (candidate && candidate.stash) {
       return await getCandidateData(candidate);
     }

@@ -1320,7 +1320,7 @@
       "kusamaStash": "HyLisujX7Cr6D7xzb6qadFdedLt8hmArB6ZVGJ6xsCUHqmx",
       "riotHandle": "@metaspan:matrix.org",
       "skipSelfStake": true,
-      "kyc": false
+      "kyc": true
     },
     {
       "slotId": 162,

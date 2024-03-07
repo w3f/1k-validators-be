@@ -81,8 +81,8 @@ export const defaultWsOptions = {
   debug: true,
 };
 
-// 200 hours in milliseconds
-export const STALE_TELEMETRY_THRESHOLD = 720000000;
+// 2 days in milliseconds
+export const STALE_TELEMETRY_THRESHOLD = 172800000;
 
 export const DEFAULT_TELEMETRY_ENDPONT =
   "wss://telemetry.w3f.community/submit/";

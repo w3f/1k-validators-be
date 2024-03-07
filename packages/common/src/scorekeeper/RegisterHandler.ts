@@ -28,7 +28,7 @@ export const registerAPIHandler = (
     const { offlineVals } = data;
     const session = (await chaindata.getSession()) || 0;
     for (const val of offlineVals) {
-      const candidate = await queries.getCandidate(val);
+      const candidate = await queries.getCandidateByStash(val);
       if (!candidate) return;
       const reason = `${candidate.name} had an offline event in session ${
         session - 1

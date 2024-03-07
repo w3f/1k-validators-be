@@ -130,7 +130,7 @@ export const processValidatorPrefJob = async (
   try {
     // Process and individual Validator
     if (candidateAddress) {
-      const candidate = await queries.getCandidate(candidateAddress);
+      const candidate = await queries.getCandidateByStash(candidateAddress);
       if (!candidate) {
         return;
       }

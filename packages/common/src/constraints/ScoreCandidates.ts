@@ -11,6 +11,7 @@ import {
 } from "../db";
 import { constraintsLabel, OTV } from "./constraints";
 import { percentage, timeRemaining } from "../utils/util";
+import { NoLocation } from "../types";
 
 export const scoreCandidate = async (
   constraints: OTV,
@@ -94,6 +95,7 @@ export const scoreCandidate = async (
       (1 - scaledFaults) * constraints.WEIGHT_CONFIG.FAULTS_WEIGHT;
 
     const latestCandidateLocation = await queries.getCandidateLocation(
+      candidate.slotId,
       candidate.name,
       candidate.stash,
     );
@@ -117,7 +119,7 @@ export const scoreCandidate = async (
       scaledDefined(candidateLocation, locationValues, 0, 1) || 0;
     const locationScore = bannedProvider
       ? 0
-      : latestCandidateLocation?.city == "No Location" ||
+      : latestCandidateLocation?.city == NoLocation.NoLocation ||
           !latestCandidateLocation ||
           !latestCandidateLocation?.city
         ? 0.25 * constraints.WEIGHT_CONFIG.LOCATION_WEIGHT
@@ -138,7 +140,7 @@ export const scoreCandidate = async (
       scaledDefined(candidateRegion, regionValues, 0, 1) || 0;
     const regionScore = bannedProvider
       ? 0
-      : latestCandidateLocation?.region == "No Location" ||
+      : latestCandidateLocation?.region == NoLocation.NoLocation ||
           !latestCandidateLocation ||
           !latestCandidateLocation?.region
         ? 0.25 * constraints.WEIGHT_CONFIG.REGION_WEIGHT
@@ -159,7 +161,7 @@ export const scoreCandidate = async (
       scaledDefined(candidateCountry, countryValues, 0, 1) || 0;
     const countryScore = bannedProvider
       ? 0
-      : latestCandidateLocation?.country == "No Location" ||
+      : latestCandidateLocation?.country == NoLocation.NoLocation ||
           !latestCandidateLocation ||
           !latestCandidateLocation?.country
         ? 0.25 * constraints.WEIGHT_CONFIG.COUNTRY_WEIGHT

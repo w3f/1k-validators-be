@@ -126,7 +126,7 @@ export const doNominations = async (
       const targetsString = (
         await Promise.all(
           targets.map(async (target) => {
-            const candidate = await queries.getCandidate(target.stash);
+            const candidate = await queries.getCandidateByStash(target.stash);
             const name = candidate?.name || "";
             return `- ${name} (${target})`;
           }),
@@ -143,7 +143,8 @@ export const doNominations = async (
       const targetsHtml = (
         await Promise.all(
           targets.map(async (target) => {
-            const name = (await queries.getCandidate(target.stash))?.name || "";
+            const name =
+              (await queries.getCandidateByStash(target.stash))?.name || "";
             return `- ${name} (${Util.addressUrl(target.stash, config)})`;
           }),
         )
@@ -173,7 +174,8 @@ export const doNominations = async (
     const nextTargetsString = (
       await Promise.all(
         nextTargets.map(async (target) => {
-          const name = (await queries.getCandidate(target.stash))?.name || "";
+          const name =
+            (await queries.getCandidateByStash(target.stash))?.name || "";
           return `- ${name} (${target})`;
         }),
       )

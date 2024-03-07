@@ -189,8 +189,13 @@ export const ValidatorSetModel = mongoose.model(
 );
 
 export interface Location {
+  // The SlotId of the candidate
+  slotId: number;
+  // The Telemetry name of the candidate
   name: string;
+  // The stash address of the candidate
   address: string;
+  // The IP address of the candidate
   addr: string;
   port: number;
   city: string;
@@ -208,6 +213,7 @@ export interface Location {
 }
 
 export const LocationSchema = new Schema({
+  slotId: { type: Number, index: true }, // The Candidate SlotId
   name: { type: String, index: true }, // The Telemetry name of the node
   address: { type: String, index: true }, // The Validator Address
   addr: { type: String, index: true },

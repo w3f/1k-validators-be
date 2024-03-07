@@ -189,7 +189,7 @@ export const addCandidates = async (config) => {
           const { name, stash, riotHandle } = candidate;
           const kusamaStash = candidate.kusamaStash || "";
           const skipSelfStake = candidate.skipSelfStake || false;
-          const id = candidate.slotId || "";
+          const id = candidate.slotId;
           const kyc = candidate.kyc || false;
           await queries.addCandidate(
             id,

@@ -326,6 +326,7 @@ export const checkProvider = async (
 ): Promise<boolean> => {
   try {
     const location = await queries.getCandidateLocation(
+      candidate.slotId,
       candidate.name,
       candidate.stash,
     );

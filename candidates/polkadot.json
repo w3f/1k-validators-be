@@ -1289,9 +1289,9 @@
     },
     {
       "slotId": 158,
-      "name": "DOZENODES",
-      "stash": "167ShbHu769mP5jbtt7AHayJhzEied6s8M5kN5nBSAQewnRz",
-      "kusamaStash": "DDhVgn62SE2riWjS6U4AaYtfLNKuFxqTU32EnqAtAuxqM58",
+      "name": "DOZENODES2",
+      "stash": "1q5QgXCsasUtjvwq8ByT5QPivNgidUSR55c4kFJnjKSiF4q",
+      "kusamaStash": "HnGgDUuyT97UcSpHhPaxY1h2MPFAjE1qiS9oKRMx5md6464",
       "riotHandle": "@dozen:matrix.org",
       "skipSelfStake": true,
       "kyc": false

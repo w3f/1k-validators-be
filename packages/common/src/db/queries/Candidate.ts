@@ -887,22 +887,16 @@ export const invalidCandidates = async (): Promise<any[]> => {
   return CandidateModel.find({ valid: false }).lean<Candidate[]>();
 };
 
-/**
- * Gets a candidate by its stash address.
- * @param stashOrName The DOT / KSM address or the name of the validator.
- */
 export const getCandidate = async (
-  stashOrName: string,
+  slotId: number,
+  stash?: string,
+  address?: string,
 ): Promise<Candidate | null> => {
-  let data = await CandidateModel.findOne({
-    stash: stashOrName,
-  }).lean<Candidate>();
+  const query: any = { slotId };
+  if (stash) query.stash = stash;
+  if (address) query.address = address;
 
-  if (!data) {
-    data = await CandidateModel.findOne({
-      name: stashOrName,
-    }).lean<Candidate>();
-  }
+  const data = await CandidateModel.findOne(query).lean<Candidate>();
 
   return data;
 };
@@ -917,6 +911,12 @@ export const getCandidateBySlotId = async (
   id: number,
 ): Promise<Candidate | null> => {
   return CandidateModel.findOne({ slotId: id }).lean<Candidate>();
+};
+
+export const getCandidateByStash = async (
+  stash: string,
+): Promise<Candidate | null> => {
+  return CandidateModel.findOne({ stash: stash }).lean<Candidate>();
 };
 
 export const setInclusion = async (
@@ -1709,7 +1709,7 @@ export const getUniqueStashSet = async (): Promise<any> => {
 };
 
 export const isKYC = async (stash: string): Promise<boolean | null> => {
-  const candidate = await getCandidate(stash);
+  const candidate = await getCandidateByStash(stash);
   if (candidate) {
     return candidate.kyc;
   }

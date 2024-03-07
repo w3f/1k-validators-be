@@ -16,7 +16,6 @@ export const locationStatsJob = async (metadata: JobRunnerMetadata) => {
   try {
     const { chaindata } = metadata;
     await queries.cleanBlankLocations();
-    await queries.cleanOldLocations();
 
     jobStatusEmitter.emit("jobProgress", {
       name: JobNames.LocationStats,
@@ -45,7 +44,10 @@ export const locationStatsJob = async (metadata: JobRunnerMetadata) => {
 
     // Add all candidate entries to the list of nodes
     for (const [index, candidate] of candidates.entries()) {
-      const location = await queries.getCandidateLocation(candidate.name);
+      const location = await queries.getCandidateLocation(
+        candidate.slotId,
+        candidate.name,
+      );
       if (
         location?.city != "None" &&
         location?.region != "None" &&

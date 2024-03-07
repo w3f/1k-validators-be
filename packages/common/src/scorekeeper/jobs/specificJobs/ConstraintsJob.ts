@@ -89,7 +89,7 @@ export const candidateValidityJob = async (
   try {
     const start = Date.now();
 
-    const candidate = await queries.getCandidate(candidateAddress);
+    const candidate = await queries.getCandidateByStash(candidateAddress);
     if (candidate) {
       await constraints.checkCandidate(candidate);
 
@@ -112,7 +112,7 @@ export const individualScoreJob = async (
 ) => {
   try {
     const start = Date.now();
-    const candidate = await queries.getCandidate(candidateAddress);
+    const candidate = await queries.getCandidateByStash(candidateAddress);
     if (candidate) {
       let scoreMetadata = await queries.getLatestValidatorScoreMetadata();
       if (!scoreMetadata) {

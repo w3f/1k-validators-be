@@ -7,6 +7,7 @@ import {
   getLatestNominatorStake,
 } from "../db";
 import { constraintsLabel } from "./constraints";
+import { NoLocation } from "../types";
 
 export const getBondedValues = (
   validCandidates: Candidate[],
@@ -117,10 +118,11 @@ export const getLocationValues = async (
   const locationArr: { name: string; numberOfNodes: number }[] = [];
   for (const candidate of validCandidates) {
     const candidateLocation = await getCandidateLocation(
+      candidate.slotId,
       candidate.name,
       candidate.stash,
     );
-    const location = candidateLocation?.city || "No Location";
+    const location = candidateLocation?.city || NoLocation.NoLocation;
 
     const locationCount = locationMap.get(location);
     if (!locationCount) {
@@ -154,13 +156,14 @@ export const getRegionValues = async (
   const regionArr: { name: string; numberOfNodes: number }[] = [];
   for (const candidate of validCandidates) {
     const candidateLocation = await getCandidateLocation(
+      candidate.slotId,
       candidate.name,
       candidate.stash,
     );
     const region =
       candidateLocation && candidateLocation.region
         ? candidateLocation.region
-        : "No Location";
+        : NoLocation.NoLocation;
 
     const regionCount = regionMap.get(region);
     if (!regionCount) {
@@ -194,13 +197,14 @@ export const getCountryValues = async (
   const countryArr: { name: string; numberOfNodes: number }[] = [];
   for (const candidate of validCandidates) {
     const candidateLocation = await getCandidateLocation(
+      candidate.slotId,
       candidate.name,
       candidate.stash,
     );
     const country =
       candidateLocation && candidateLocation.country
         ? candidateLocation.country
-        : "No Location";
+        : NoLocation.NoLocation;
 
     const countryCount = countryMap.get(country);
     if (!countryCount) {
@@ -232,13 +236,14 @@ export const getProviderValues = async (
   const providerArr: { name: string; numberOfNodes: number }[] = [];
   for (const candidate of validCandidates) {
     const candidateLocation = await getCandidateLocation(
+      candidate.slotId,
       candidate.name,
       candidate.stash,
     );
     const provider =
       candidateLocation && candidateLocation.provider
         ? candidateLocation.provider
-        : "No Location";
+        : NoLocation.NoProvider;
 
     const providerCount = providerMap.get(provider);
     if (!providerCount) {

@@ -38,6 +38,7 @@ export const getValidLocationStats = async () => {
 
   for (const candidate of candidates) {
     const location = await queries.getCandidateLocation(
+      candidate.slotId,
       candidate.name,
       candidate.stash,
     );

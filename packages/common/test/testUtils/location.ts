@@ -4,6 +4,7 @@ import { addKusamaCandidates } from "./candidate";
 export const kusamaLocations = [
   {
     name: "Blockshard",
+    slotId: 0,
     address: "Cp4U5UYg2FaVUpyEtQgfBm9aqge6EEPkJxEFVZFYy7L1AZF",
     addr: "185.101.157.119",
     city: "Zürich",
@@ -20,9 +21,10 @@ export const kusamaLocations = [
     vm: false,
   },
   {
-    name: "Blockshard",
-    address: "Cp4U5UYg2FaVUpyEtQgfBm9aqge6EEPkJxEFVZFYy7L1AZF",
-    addr: "185.101.157.119",
+    name: "🎠 Forbole GP01 🇭🇰",
+    slotId: 1,
+    address: "D9rwRxuG8xm8TZf5tgkbPxhhTJK5frCJU9wvp59VRjcMkUf",
+    addr: "185.101.157.118",
     city: "Zürich",
     region: "Zurich",
     country: "CH",
@@ -37,9 +39,10 @@ export const kusamaLocations = [
     vm: false,
   },
   {
-    name: "Blockshard",
-    address: "Cp4U5UYg2FaVUpyEtQgfBm9aqge6EEPkJxEFVZFYy7L1AZF",
-    addr: "185.101.157.119",
+    name: "🔱-Masternode24-🔱",
+    slotId: 2,
+    address: "Cp4U5UYg2FaVUpyEtQgfBm9aqge6EEPkJxEFVZFYy7L1AZb",
+    addr: "185.101.157.117",
     city: "Zürich",
     region: "Zurich",
     country: "CH",
@@ -54,9 +57,10 @@ export const kusamaLocations = [
     vm: false,
   },
   {
-    name: "Blockshard",
-    address: "Cp4U5UYg2FaVUpyEtQgfBm9aqge6EEPkJxEFVZFYy7L1AZF",
-    addr: "185.101.157.119",
+    name: "🔱-Masternode25-🔱",
+    slotId: 3,
+    address: "FNztLLstrnThEEctuH2C9Kw1d73xVVxm2crji2mkb4ioXsn",
+    addr: "185.101.157.116",
     city: "Zürich",
     region: "Zurich",
     country: "CH",
@@ -77,6 +81,8 @@ export const addKusamaLocations = async () => {
   for (const location of kusamaLocations) {
     await setLatestSession(location.session);
     const didSet = await setLocation(
+      location.slotId,
+      location.address,
       location.name,
       location.addr,
       location.city,

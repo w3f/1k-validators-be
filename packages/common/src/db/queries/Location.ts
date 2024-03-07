@@ -1,5 +1,4 @@
 import {
-  CandidateModel,
   IITModel,
   IITRequestCounterModel,
   Location,
@@ -36,12 +35,20 @@ export const getLocation = async (
 };
 
 export const getCandidateLocation = async (
-  name: string,
+  slotId: number,
+  stash?: string,
+  name?: string,
 ): Promise<Location | null> => {
-  return LocationModel.findOne({ name }).sort({ updated: -1 }).lean<Location>();
+  const query = [{ slotId: slotId }, { stash: stash }, { name: name }];
+
+  return LocationModel.findOne({ $or: query })
+    .sort({ updated: -1 })
+    .lean<Location>();
 };
 
 export const setLocation = async (
+  slotId: number,
+  stash: string,
   name: string,
   addr: string,
   city: string,
@@ -53,36 +60,28 @@ export const setLocation = async (
   port?: number,
 ): Promise<boolean> => {
   try {
-    // Try and find an existing record
-    let data;
-    data = await LocationModel.findOne({
-      name,
-    }).lean();
-    if (!data) {
-      data = await LocationModel.findOne({
-        addr,
-      }).lean();
+    if (slotId == undefined || !stash) {
+      logger.error(`No slotId  or stash found for ${name}`, {
+        label: "Telemetry",
+      });
+      return false;
     }
+    // Try and find an existing record
+    const query = {
+      $or: [{ addr }, { name }, { slotId }],
+    };
+    const data = await LocationModel.findOne(query).lean<Location>();
 
     const session = (await getLatestSession())?.session;
     if (session && session == 0) {
       return false;
     }
 
-    const candidate = await CandidateModel.findOne({ name: name })
-      .select({ name: 1, stash: 1 })
-      .lean();
-
-    const candidateAddress = candidate?.stash ? candidate?.stash : "";
-
-    if (
-      !data ||
-      data?.addr != addr ||
-      data?.city != city ||
-      data?.session != session
-    ) {
+    // Create a new Location record if there is no existing record, or there is a different ip address
+    if (!data || data?.addr != addr) {
       const location = new LocationModel({
-        address: candidateAddress,
+        slotId: slotId,
+        address: stash,
         name,
         addr,
         city,
@@ -100,11 +99,12 @@ export const setLocation = async (
         source: "Telemetry",
       });
       await location.save();
-    } else if (data.session != session || data.address != candidateAddress) {
+    } else {
       await LocationModel.findOneAndUpdate(
         { addr, name },
         {
-          address: candidateAddress,
+          slotId: slotId,
+          address: stash,
           addr,
           city,
           region,

@@ -3,7 +3,7 @@ import { addKusamaCandidates } from "../testUtils/candidate";
 import { Identity } from "../../src/types";
 import {
   addCandidate,
-  getCandidate,
+  getCandidateByStash,
   getIdentityValidatorActiveEras,
   getValidatorActiveEras,
   setCandidateIdentity,
@@ -90,10 +90,10 @@ describe("setValidatorRanks", () => {
     expect(subNumEras).toBe(5);
 
     await setValidatorRanks();
-    const candidate = await getCandidate(identity1?.address);
+    const candidate = await getCandidateByStash(identity1?.address);
     expect(candidate?.rank).toBe(5);
 
-    const secondNode = await getCandidate(
+    const secondNode = await getCandidateByStash(
       "HkJjBkX8fPBFJvTtAbUDKWZSsMrNFuMc7TrT8BqVS5YhZXg",
     );
     expect(secondNode?.rank).toBe(5);

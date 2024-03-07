@@ -1,6 +1,6 @@
 import { CandidateModel, Nominator, NominatorModel } from "../models";
 import logger from "../../logger";
-import { getCandidate } from "./Candidate";
+import { getCandidateByStash } from "./Candidate";
 
 /**
  * Removes any stale nominator data from the database.
@@ -89,7 +89,7 @@ export const setTarget = async (
     },
   ).exec();
 
-  const candidate = await getCandidate(target);
+  const candidate = await getCandidateByStash(target);
   if (!candidate) {
     logger.info(
       `(Db::setTarget) getCandidate returned null for ${target}. Deleted candidate?`,

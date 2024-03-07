@@ -43,12 +43,7 @@ describe("Location queries", () => {
     it("should return all locations when locations are found", async () => {
       const candidate = kusamaCandidates[0];
       const testData = sortByKey(
-        kusamaLocations
-          .filter((location) => {
-            return location.name === candidate.name;
-          })
-          .map(omitId)
-          .map(omitUpdated),
+        kusamaLocations.map(omitId).map(omitUpdated),
         "session",
       );
 
@@ -166,7 +161,11 @@ describe("Location queries", () => {
         "session",
       )[0];
 
-      const location = await getCandidateLocation(candidate.name);
+      const location = await getCandidateLocation(
+        candidate.slotId,
+        candidate.stash,
+        candidate.name,
+      );
       let result;
       if (location) {
         result = omitFields(location, ["_id", "__v", "updated", "session"]);
@@ -180,6 +179,8 @@ describe("Location queries", () => {
     it("should create a new location if no matching location found", async () => {
       await deleteLocations();
       const result = await setLocation(
+        0,
+        "stash",
         "NewLocation",
         "newAddr",
         "NewCity",

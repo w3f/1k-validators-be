@@ -1,4 +1,5 @@
 import {
+  getCandidateByName,
   getIIT,
   getLocation,
   removeIIT,
@@ -101,15 +102,23 @@ export const nodeDetailsFromTelemetryMessage = (
 export const fetchAndSetCandidateLocation = async (
   telemetryNodeDetails: TelemetryNodeDetails,
 ) => {
+  // See if there's an existing location for the given telemetry data
   const existingLocation = await getLocation(
     telemetryNodeDetails.name,
     telemetryNodeDetails.ipAddress,
   );
+
+  // Fetch and set a new location if:
+  // - There's no existing location
+  // - The ip address is different
+  // - There isn't a stash address associated with the location
+  // - There isn't a slotId associated with the location
+  // - The location data is older than 2 days
   const shouldFetch =
     !existingLocation ||
     existingLocation?.addr != telemetryNodeDetails.ipAddress ||
     !existingLocation?.address ||
-    !existingLocation?.session ||
+    !existingLocation?.slotId ||
     Date.now() - existingLocation?.updated > STALE_TELEMETRY_THRESHOLD; // The location data is older than 200 hours
   if (shouldFetch) {
     const iit = await getIIT();
@@ -118,16 +127,35 @@ export const fetchAndSetCandidateLocation = async (
       iit && iit.iit ? iit.iit : null,
     );
     await updateIITRequestCount();
-    await setLocation(
-      telemetryNodeDetails.name,
-      telemetryNodeDetails.ipAddress,
-      city,
-      region,
-      country,
-      provider,
-      telemetryNodeDetails.hardwareSpec,
-      v,
-    );
+    const candidate = await getCandidateByName(telemetryNodeDetails.name);
+    const slotId = candidate?.slotId;
+    const stash = candidate?.stash;
+    if (slotId == undefined || !stash) {
+      logger.error(
+        `No slotId or stash found for ${telemetryNodeDetails.name}`,
+        {
+          label: "Telemetry",
+        },
+      );
+      logger.error(JSON.stringify(telemetryNodeDetails), {
+        label: "Telemetry",
+      });
+      logger.error(JSON.stringify(candidate), { label: "Telemetry" });
+      return;
+    } else {
+      await setLocation(
+        slotId,
+        stash,
+        telemetryNodeDetails.name,
+        telemetryNodeDetails.ipAddress,
+        city,
+        region,
+        country,
+        provider,
+        telemetryNodeDetails.hardwareSpec,
+        v,
+      );
+    }
   }
 };
 

@@ -150,3 +150,8 @@ export interface NominatorStatus {
   dryRun?: boolean;
   shouldNominate?: boolean;
 }
+
+export enum NoLocation {
+  NoLocation = "No Location",
+  NoProvider = "No Provider",
+}

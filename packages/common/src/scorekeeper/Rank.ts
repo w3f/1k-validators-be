@@ -16,7 +16,7 @@ export const dockPoints = async (
 
   await queries.dockPoints(stash);
 
-  const candidate = await queries.getCandidate(stash);
+  const candidate = await queries.getCandidateByStash(stash);
   bot?.sendMessage(
     `${candidate?.name} docked points. New rank: ${candidate?.rank}`,
   );
@@ -33,7 +33,7 @@ export const addPoint = async (
 
   await queries.addPoint(stash);
 
-  const candidate = await queries.getCandidate(stash);
+  const candidate = await queries.getCandidateByStash(stash);
   bot?.sendMessage(
     `${candidate?.name} did GOOD! Adding a point. New rank: ${candidate?.rank}`,
   );

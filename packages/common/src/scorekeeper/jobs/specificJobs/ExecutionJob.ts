@@ -197,7 +197,7 @@ export const executionJob = async (
           const validatorsMessage = (
             await Promise.all(
               targets.map(async (n) => {
-                const name = await queries.getCandidate(n);
+                const name = await queries.getCandidateByStash(n);
                 if (!name) {
                   logger.info(`did send: no entry for :${n}`, cronLabel);
                 }
@@ -218,7 +218,7 @@ export const executionJob = async (
           const validatorsHtml = (
             await Promise.all(
               targets.map(async (n) => {
-                const name = await queries.getCandidate(n);
+                const name = await queries.getCandidateByStash(n);
                 if (name) {
                   return `- ${name.name} (${Util.addressUrl(n, config)})`;
                 } else {

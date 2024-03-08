@@ -56,22 +56,28 @@ jobs:
           name: Setup MongoDB Memory Server Environment
           command: |
             echo 'export MONGOMS_DOWNLOAD_DIR="/tmp/mongodb-binaries"' >> $BASH_ENV
-            echo 'export MONGOMS_VERSION="4.4.6"' >> $BASH_ENV
             echo 'export MONGOMS_DISABLE_POSTINSTALL="1"' >> $BASH_ENV
+      - run:
+          name: Pre-download MongoDB Binary
+          command: |
+            mkdir -p /tmp/mongodb-binaries
+            curl -L https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2204-7.0.3.tgz -o /tmp/mongodb-binaries/mongodb-linux-x86_64-ubuntu2204-7.0.3.tgz
+      - restore_cache:
+          keys:
+            - yarn-packages-{{ checksum "yarn.lock" }}
+      - run:
+          name: Install Dependencies
+          command: yarn install --frozen-lockfile
+      - save_cache:
+          paths:
+            - node_modules
+          key: yarn-packages-{{ checksum "yarn.lock" }}
+      - run:
+          name: Run Unit Tests
+          command: yarn workspace @1kv/common test:unit
       - run:
           name: Clear MongoDB lock files
           command: rm -f /tmp/mongodb-binaries/*.lock
-      - run:
-          environment:
-            YARN_ENABLE_IMMUTABLE_INSTALLS: false
-          command: |
-            yarn set version 3.2.2
-            yarn install
-            yarn build
-            if ! yarn workspace @1kv/common test:unit --testTimeout=60000; then
-              echo "Unit tests failed, but not failing the job."
-              echo 'export TESTS_FAILED=true' >> $BASH_ENV
-            fi
       - run:
           name: "Handle Test Failures"
           command: |
@@ -90,22 +96,28 @@ jobs:
           name: Setup MongoDB Memory Server Environment
           command: |
             echo 'export MONGOMS_DOWNLOAD_DIR="/tmp/mongodb-binaries"' >> $BASH_ENV
-            echo 'export MONGOMS_VERSION="4.4.6"' >> $BASH_ENV
             echo 'export MONGOMS_DISABLE_POSTINSTALL="1"' >> $BASH_ENV
+      - run:
+          name: Pre-download MongoDB Binary
+          command: |
+            mkdir -p /tmp/mongodb-binaries
+            curl -L https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2204-7.0.3.tgz -o /tmp/mongodb-binaries/mongodb-linux-x86_64-ubuntu2204-7.0.3.tgz
+      - restore_cache:
+          keys:
+            - yarn-packages-{{ checksum "yarn.lock" }}
+      - run:
+          name: Install Dependencies
+          command: yarn install --frozen-lockfile
+      - save_cache:
+          paths:
+            - node_modules
+          key: yarn-packages-{{ checksum "yarn.lock" }}
+      - run:
+          name: Run Unit Tests
+          command: yarn workspace @1kv/common test:int
       - run:
           name: Clear MongoDB lock files
           command: rm -f /tmp/mongodb-binaries/*.lock
-      - run:
-          environment:
-            YARN_ENABLE_IMMUTABLE_INSTALLS: false
-          command: |
-            yarn set version 3.2.2
-            yarn install
-            yarn build
-            if ! yarn workspace @1kv/common test:int --testTimeout=60000; then
-              echo "Integration tests failed, but not failing the job."
-              echo 'export TESTS_FAILED=true' >> $BASH_ENV
-            fi
       - run:
           name: "Handle Test Failures"
           command: |

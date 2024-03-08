@@ -54,7 +54,7 @@ jobs:
       - image: node:18-bullseye
       - image: mongo:4.4.6
         name: mongodb
-        command: ["--config", "/etc/mongo/mongod.conf"]
+        command: ["--config", "/etc/mongod.conf"]
         environment:
           MONGO_INITDB_ROOT_USERNAME: root
           MONGO_INITDB_ROOT_PASSWORD: example
@@ -62,23 +62,13 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Create Mongo Configuration
+          name: Debug: List Files in Container
           command: |
-            echo 'setParameter:
-                    maxIndexBuildMemoryUsageMegabytes=1024
-                  storage:
-                    dbPath: /data/db
-                    journal:
-                      enabled: true
-                  net:
-                    bindIp: 0.0.0.0
-                    port: 27017' > ./mongod.conf
+            docker exec mongodb ls -la /etc
       - run:
-          name: List Running Containers
-          command: docker ps
-      - run:
-          name: Copy Mongo Configuration to Container
-          command: docker cp mongod.conf $(docker ps -qf "name=mongodb"):/etc/mongod.conf
+          name: Debug: Print mongod.conf
+          command: |
+            docker exec mongodb cat /etc/mongod.conf
       - restore_cache:
           keys:
             - yarn-packages-{{ checksum "yarn.lock" }}

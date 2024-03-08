@@ -2,7 +2,7 @@ import ApiHandler from "../../src/ApiHandler/ApiHandler";
 import { ChainData } from "../../src/chaindata/chaindata";
 import { KusamaEndpoints } from "../../src/constants";
 import { Block } from "@polkadot/types/interfaces";
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 
 process.on("unhandledRejection", (reason, promise) => {
   console.warn("Ignored Unhandled Rejection:", reason);

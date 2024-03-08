@@ -51,28 +51,33 @@ jobs:
       test_command:
         type: string
     docker:
-      - image: node:18-bullseye
+      - image: cimg/node:18.10
       - image: mongo:4.4.6
         name: mongodb
-        command: ["--config", "/etc/mongo/mongod.conf"]
-        environment:
-          MONGO_INITDB_ROOT_USERNAME: root
-          MONGO_INITDB_ROOT_PASSWORD: example
     resource_class: xlarge
     steps:
       - checkout
+      - setup_remote_docker
       - run:
           name: Create Mongo Configuration
           command: |
             echo 'setParameter:
-                    maxIndexBuildMemoryUsageMegabytes=1024
+                    maxIndexBuildMemoryUsageMegabytes: 1024
                   storage:
                     dbPath: /data/db
                     journal:
                       enabled: true
                   net:
                     bindIp: 0.0.0.0
-                    port: 27017' > ./mongod.conf
+                    port: 27017' > mongod.conf
+      - run:
+          name: Copy Config to MongoDB Container
+          command: |
+            docker cp mongod.conf mongodb:/etc/mongod.conf
+      - run:
+          name: Restart MongoDB with Custom Config
+          command: |
+            docker exec mongodb mongod --config /etc/mongod.conf
       - restore_cache:
           keys:
             - yarn-packages-{{ checksum "yarn.lock" }}
@@ -88,6 +93,7 @@ jobs:
           command: |
             export MONGODB_URI=mongodb://mongodb:27017/testdb
             yarn workspace @1kv/common << parameters.test_command >>
+
 
   #  testCore:
   #    docker:

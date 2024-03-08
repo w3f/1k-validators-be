@@ -53,6 +53,9 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Clear MongoDB lock files
+          command: rm -f /root/.cache/mongodb-binaries/*.lock
+      - run:
           environment:
             YARN_ENABLE_IMMUTABLE_INSTALLS: false
           command: |
@@ -77,6 +80,9 @@ jobs:
     resource_class: xlarge
     steps:
       - checkout
+      - run:
+          name: Clear MongoDB lock files
+          command: rm -f /root/.cache/mongodb-binaries/*.lock
       - run:
           environment:
             YARN_ENABLE_IMMUTABLE_INSTALLS: false

@@ -148,6 +148,19 @@ export const cleanOldLocations = async (): Promise<boolean> => {
   }
 };
 
+export const cleanLocationsWithoutSlotId = async (): Promise<boolean> => {
+  try {
+    await LocationModel.deleteMany({ slotId: { $exists: false } }).exec();
+    return true;
+  } catch (error) {
+    logger.error(
+      `Error deleting locations without 'slotId': ${JSON.stringify(error)}`,
+      dbLabel,
+    );
+    return false;
+  }
+};
+
 // Sets a location from heartbeats
 
 export const iitExists = async (): Promise<any> => {

@@ -163,8 +163,6 @@ export default class ScoreKeeper {
           );
         }
 
-        // Create a new accounting record in case one doesn't exist.
-        await queries.newAccountingRecord(stash, nom.bondedAddress);
         group.push(nom);
       }
     }

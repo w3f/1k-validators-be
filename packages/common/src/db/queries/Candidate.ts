@@ -1,12 +1,7 @@
 // Adds a new candidate from the configuration file data.
 import { Keyring } from "@polkadot/keyring";
 import logger from "../../logger";
-import {
-  Candidate,
-  CandidateModel,
-  IdentityModel,
-  RankEventModel,
-} from "../models";
+import { Candidate, CandidateModel, IdentityModel } from "../models";
 import { dbLabel, NodeDetails } from "../index";
 import { getChainMetadata } from "./ChainMetadata";
 import { Identity, TelemetryNodeDetails } from "../../types";
@@ -687,30 +682,6 @@ export const reportNotUpdated = async (name: string): Promise<boolean> => {
   return true;
 };
 
-export const pushRankEvent = async (
-  stash: string,
-  startEra: number,
-  activeEra: number,
-): Promise<boolean> => {
-  const record = await RankEventModel.findOne({
-    address: stash,
-    startEra: startEra,
-    activeEra: activeEra,
-  }).lean();
-  if (record) {
-    return false;
-  } else {
-    const record = await new RankEventModel({
-      address: stash,
-      when: Date.now(),
-      startEra: startEra,
-      activeEra: activeEra,
-    });
-    await record.save();
-    return true;
-  }
-};
-
 export const pushFaultEvent = async (
   stash: string,
   reason: string,
@@ -765,66 +736,6 @@ export const setRank = async (
   return true;
 };
 
-export const addPoint = async (stash: string): Promise<boolean> => {
-  logger.info(`Adding a point to ${stash}.`);
-
-  const data = await CandidateModel.findOne({ stash }).lean();
-  if (data) {
-    await CandidateModel.findOneAndUpdate(
-      {
-        stash,
-      },
-      {
-        rank: data?.rank + 1,
-      },
-    ).exec();
-  }
-
-  return true;
-};
-
-export const dockPoints = async (stash: string): Promise<boolean> => {
-  logger.info(`Docking points for ${stash}.`);
-
-  const data = await CandidateModel.findOne({ stash }).lean();
-  if (data) {
-    await CandidateModel.findOneAndUpdate(
-      {
-        stash,
-      },
-      {
-        rank: data.rank - Math.floor(data.rank / 6),
-        faults: data.faults + 1,
-      },
-    ).exec();
-  }
-
-  return true;
-};
-
-// Dock rank when an unclaimed reward is claimed by the bot
-export const dockPointsUnclaimedReward = async (
-  stash: string,
-): Promise<boolean> => {
-  logger.info(`Docking points for ${stash}.`);
-
-  const data = await CandidateModel.findOne({ stash }).lean();
-  if (data) {
-    await CandidateModel.findOneAndUpdate(
-      {
-        stash,
-      },
-      {
-        rank: data.rank - 3,
-      },
-    ).exec();
-  }
-
-  return true;
-};
-
-/** Storage GETTERS and SETTERS */
-
 export const clearAccumulated = async (): Promise<boolean> => {
   logger.info(`(Db::clearAccumulated) Clearing offline accumulated time.`);
 
@@ -850,8 +761,9 @@ export const clearAccumulated = async (): Promise<boolean> => {
   return true;
 };
 
+// Sets the stash of candidates to null - run initially before adding candidates from the config so that any candidate in the db that is not in the config is removed
 export const clearCandidates = async (): Promise<boolean> => {
-  const candidates = await allCandidates();
+  const candidates = await allCandidatesWithAnyFields();
   if (!candidates.length) {
     // nothing to do
     return true;
@@ -875,6 +787,11 @@ export const clearCandidates = async (): Promise<boolean> => {
   return true;
 };
 
+export const allCandidatesWithAnyFields = async (): Promise<Candidate[]> => {
+  return CandidateModel.find({}).lean<Candidate[]>();
+};
+
+// Retrieve all candidates that have a stash and slotId set
 export const allCandidates = async (): Promise<Candidate[]> => {
   return CandidateModel.find({ stash: /.*/ }).lean<Candidate[]>();
 };
@@ -1714,4 +1631,26 @@ export const isKYC = async (stash: string): Promise<boolean | null> => {
     return candidate.kyc;
   }
   return null;
+};
+
+// Deletes candidates without a `slotId` or `stash` set
+export const deleteCandidatesWithMissingFields = async (): Promise<boolean> => {
+  try {
+    const result = await CandidateModel.deleteMany({
+      $or: [
+        { stash: { $exists: false } },
+        { stash: "" },
+        { slotId: { $exists: false } },
+      ],
+    });
+
+    logger.info(
+      `${result.deletedCount} candidates with missing 'stash' or 'slotId' deleted.`,
+      dbLabel,
+    );
+    return true;
+  } catch (error) {
+    logger.error(`Error deleting candidates with missing fields: ${error}`);
+    return false;
+  }
 };

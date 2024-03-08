@@ -52,23 +52,14 @@ jobs:
         type: string
     docker:
       - image: cimg/node:18.10
-      - image: mongo:4.4.6
-        name: mongodb
-        command: ["--config", "/etc/mongod.conf"]
         environment:
           MONGO_INITDB_ROOT_USERNAME: root
           MONGO_INITDB_ROOT_PASSWORD: example
+          MONGO_INITDB_STORAGE_ENGINE: "wiredTiger"
+          MONGO_INITDB_INDEX_MEMORY_PERCENT: 50
     resource_class: xlarge
     steps:
       - checkout
-      - run:
-          name: Debug List Files in Container
-          command: |
-            docker exec mongodb ls -la /etc
-      - run:
-          name: Debug Print mongod.conf
-          command: |
-            docker exec mongodb cat /etc/mongod.conf
       - restore_cache:
           keys:
             - yarn-packages-{{ checksum "yarn.lock" }}

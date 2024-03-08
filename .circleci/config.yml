@@ -1,5 +1,21 @@
 version: 2
 
+commands:
+  setup_mongodb_memory_server:
+    description: "Setup MongoDB Memory Server Environment"
+    steps:
+      - run:
+          name: Setup MongoDB Memory Server Environment
+          command: |
+            echo 'export MONGOMS_DOWNLOAD_DIR="/tmp/mongodb-binaries"' >> $BASH_ENV
+            echo 'export MONGOMS_DISABLE_POSTINSTALL="1"' >> $BASH_ENV
+      - run:
+          name: Pre-download MongoDB Binary
+          command: |
+            mkdir -p /tmp/mongodb-binaries
+            curl -L https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2204-7.0.3.tgz -o /tmp/mongodb-binaries/mongodb-linux-x86_64-ubuntu2204-7.0.3.tgz
+
+
 jobs:
   checkDependencies:
     docker:
@@ -46,22 +62,16 @@ jobs:
   #          command: |
   #            yarn set version 3.2.2 && yarn install && yarn build && yarn workspace @1kv/common lint
 
-  testCommonUnit:
+  test_common:
+    parameters:
+      test_command:
+        type: string
     docker:
       - image: node:18
     resource_class: xlarge
     steps:
       - checkout
-      - run:
-          name: Setup MongoDB Memory Server Environment
-          command: |
-            echo 'export MONGOMS_DOWNLOAD_DIR="/tmp/mongodb-binaries"' >> $BASH_ENV
-            echo 'export MONGOMS_DISABLE_POSTINSTALL="1"' >> $BASH_ENV
-      - run:
-          name: Pre-download MongoDB Binary
-          command: |
-            mkdir -p /tmp/mongodb-binaries
-            curl -L https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2204-7.0.3.tgz -o /tmp/mongodb-binaries/mongodb-linux-x86_64-ubuntu2204-7.0.3.tgz
+      - setup_mongodb_memory_server
       - restore_cache:
           keys:
             - yarn-packages-{{ checksum "yarn.lock" }}
@@ -73,58 +83,11 @@ jobs:
             - node_modules
           key: yarn-packages-{{ checksum "yarn.lock" }}
       - run:
-          name: Run Unit Tests
-          command: yarn workspace @1kv/common test:unit
+          name: Run Tests
+          command: yarn workspace @1kv/common << parameters.test_command >>
       - run:
           name: Clear MongoDB lock files
           command: rm -f /tmp/mongodb-binaries/*.lock
-      - run:
-          name: "Handle Test Failures"
-          command: |
-            if [ "${TESTS_FAILED}" == "true" ]; then
-              echo "Tests failed."
-              exit 1
-            fi
-
-  testCommonInt:
-    docker:
-      - image: node:18
-    resource_class: xlarge
-    steps:
-      - checkout
-      - run:
-          name: Setup MongoDB Memory Server Environment
-          command: |
-            echo 'export MONGOMS_DOWNLOAD_DIR="/tmp/mongodb-binaries"' >> $BASH_ENV
-            echo 'export MONGOMS_DISABLE_POSTINSTALL="1"' >> $BASH_ENV
-      - run:
-          name: Pre-download MongoDB Binary
-          command: |
-            mkdir -p /tmp/mongodb-binaries
-            curl -L https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2204-7.0.3.tgz -o /tmp/mongodb-binaries/mongodb-linux-x86_64-ubuntu2204-7.0.3.tgz
-      - restore_cache:
-          keys:
-            - yarn-packages-{{ checksum "yarn.lock" }}
-      - run:
-          name: Install Dependencies
-          command: yarn install --frozen-lockfile
-      - save_cache:
-          paths:
-            - node_modules
-          key: yarn-packages-{{ checksum "yarn.lock" }}
-      - run:
-          name: Run Unit Tests
-          command: yarn workspace @1kv/common test:int
-      - run:
-          name: Clear MongoDB lock files
-          command: rm -f /tmp/mongodb-binaries/*.lock
-      - run:
-          name: "Handle Test Failures"
-          command: |
-            if [ "${TESTS_FAILED}" == "true" ]; then
-              echo "Tests failed."
-              exit 1
-            fi
 
   #  testCore:
   #    docker:
@@ -293,18 +256,16 @@ workflows:
           filters:
             tags:
               only: /.*/
-      - testCommonUnit:
+      - test_common:
+          test_command: test:unit
           filters:
             tags:
               only: /.*/
-      - testCommonInt:
+      - test_common:
+          test_command: test:int
           filters:
             tags:
-              only: /.*/
-      #      - testCore:
-      #          filters:
-      #            tags:
-      #              only: /.*/
+              only: /.*/git status
       - helmLint:
           filters:
             tags:

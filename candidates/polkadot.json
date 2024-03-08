@@ -2279,6 +2279,14 @@
       "kusamaStash": "FGHknsDq3UwZDgtvpGE6bK2Z1csVgrY5xCEA1H1kapZ8bxn",
       "riotHandle": "@tux_in_tuxedo:matrix.org",
       "kyc": true
+    },
+    {
+      "slotId": 278,
+      "name": "Colossus | polkadot-node1",
+      "stash": "1UXCHYkyDvKQArQfumvW3T587Bn9ZfpPgoHeRjEjkMDqd2J",
+      "kusamaStash": "FkGx1DCPF85BRjGZszZCXL7GSoWKHASy3jP7iuWV9pbHQVq",
+      "riotHandle": "@colossus.digital:matrix.org",
+      "kyc": true
     }
   ]
 }

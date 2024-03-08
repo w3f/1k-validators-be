@@ -3,8 +3,7 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 import { Db } from "../../src";
 import mongoose from "mongoose";
 import { deleteAllDb } from "./deleteAll";
-import * as Util from "../../src/utils/util";
-import { afterAll, afterEach, beforeAll } from "vitest";
+import { afterAll, afterEach, beforeAll, beforeEach } from "vitest";
 
 interface ObjectWithId {
   _id: any;
@@ -89,21 +88,14 @@ export const sortByKey = (obj: any[], key: string) => {
   return obj;
 };
 
-let mongoServer: MongoMemoryServer | null = null;
+const mongoServer: MongoMemoryServer | null = null;
 
 export const createTestServer = async () => {
-  if (mongoServer) {
-    await mongoServer.stop();
-    await Util.sleep(300);
-  }
-
-  mongoServer = await MongoMemoryServer.create();
-  const dbName = `testdb_${Math.random().toString().replace(".", "")}`;
-  console.log("Creating new MongoDB instance for dbName:", dbName);
-  const mongoUri = mongoServer.getUri(dbName);
-
+  // Use the Docker container's IP or 'host.docker.internal' if running Docker for Mac
+  const mongoUri = process.env.MONGO_URI || "mongodb://localhost:27017";
+  console.log("Connecting to MongoDB at URI:", mongoUri);
   await Db.create(mongoUri);
-  return mongoServer;
+  console.log("Connected to MongoDB");
 };
 
 export const initTestServerBeforeAll = () => {
@@ -111,14 +103,14 @@ export const initTestServerBeforeAll = () => {
     await createTestServer();
   });
 
+  beforeEach(async () => {
+    await deleteAllDb();
+  });
   afterEach(async () => {
     await deleteAllDb();
   });
 
   afterAll(async () => {
-    if (mongoServer) {
-      await mongoServer.stop();
-    }
     await mongoose.disconnect();
   });
 };

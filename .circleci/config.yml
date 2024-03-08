@@ -52,6 +52,8 @@ jobs:
         type: string
     docker:
       - image: node:18-bullseye
+      - image: mongo:4.4.6
+        name: mongodb
     resource_class: xlarge
     steps:
       - checkout
@@ -67,7 +69,9 @@ jobs:
           key: yarn-packages-{{ checksum "yarn.lock" }}
       - run:
           name: Run Tests
-          command: yarn workspace @1kv/common << parameters.test_command >>
+          command: |
+            export MONGODB_URI=mongodb://mongodb:27017/testdb
+            yarn workspace @1kv/common << parameters.test_command >>
       - run:
           name: Clear MongoDB lock files
           command: rm -f /tmp/mongodb-binaries/*.lock

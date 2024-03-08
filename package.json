@@ -58,7 +58,7 @@
     "test:common:unit": "yarn workspace @1kv/common run test:unit",
     "test:all": "yarn workspaces foreach run test",
     "test": "vitest",
-    "test:ui": "vitest --ui --config vitest.config.ts",
+    "test:ui": "vitest --ui --config vitest.config.mts",
     "test:watch": "jest --config jest.workspace.config.js --watch"
   },
   "devDependencies": {

@@ -62,11 +62,11 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Debug: List Files in Container
+          name: Debug List Files in Container
           command: |
             docker exec mongodb ls -la /etc
       - run:
-          name: Debug: Print mongod.conf
+          name: Debug Print mongod.conf
           command: |
             docker exec mongodb cat /etc/mongod.conf
       - restore_cache:

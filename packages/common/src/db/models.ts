@@ -1,6 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 import { LocationStats as LStats, Stats } from "../constraints/score";
 
+// TODO: delete
 const RewardRecordScheme = new Schema({
   // Era
   era: { type: String, index: true },
@@ -9,6 +10,7 @@ const RewardRecordScheme = new Schema({
   block: Number,
 });
 
+// TODO: delete
 export const AccountingSchema = new Schema({
   // The nominator's stash account.
   stash: { type: String, index: true },
@@ -20,6 +22,7 @@ export const AccountingSchema = new Schema({
   records: [RewardRecordScheme],
 });
 
+// TODO: delete
 export const AccountingModel = mongoose.model("Accounting", AccountingSchema);
 
 const FaultEventSchema = new Schema({
@@ -1153,7 +1156,7 @@ export const ElectionStatsModel = mongoose.model(
   ElectionStatsSchema,
 );
 
-// Era payout events that happen at the end of every era
+// TODO: delete
 export const EraPaidEventSchema = new Schema({
   // The era index
   era: Number,
@@ -1175,8 +1178,10 @@ export const EraPaidEventSchema = new Schema({
   updated: Number,
 });
 
+// TODO: delete
 export const EraPaidEventModel = mongoose.model("EraPaid", EraPaidEventSchema);
 
+// TODO: delete
 export const EraRewardSchema = new Schema({
   era: Number,
   stash: String,
@@ -1191,6 +1196,7 @@ export const EraRewardSchema = new Schema({
   updated: Number,
 });
 
+// TODO: delete
 export const EraRewardModel = mongoose.model("EraReward", EraRewardSchema);
 
 //TODO: delete
@@ -1566,20 +1572,24 @@ export const IITRequestCounterModel = mongoose.model(
   IITRequestCounter,
 );
 
+// TODO: delete
 export const EraInfo = new Schema({
   index: Number,
   startBlock: Number,
   endBlock: Number,
 });
 
+// TODO: delete
 export const EraInfoModel = mongoose.model("EraInfo", EraInfo);
 
+// TODO: delete
 export const Session = new Schema({
   index: Number,
   startBlock: Number,
   endBlock: Number,
 });
 
+// TODO: delete
 export const SessionModel = mongoose.model("Session", Session);
 
 export const HeartbeatIndex = new Schema({

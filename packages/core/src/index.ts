@@ -14,6 +14,7 @@ import {
 
 import { TelemetryClient } from "@1kv/telemetry";
 import { Server } from "@1kv/gateway";
+import { ConfigSchema } from "@1kv/common/build/config";
 
 const isCI = process.env.CI;
 
@@ -116,46 +117,9 @@ export const createMatrixBot = async (config) => {
   }
 };
 
-export const clean = async (scorekeeper) => {
+export const clean = async (scorekeeper: ScoreKeeper) => {
   try {
-    // Clean locations with None
-    await queries.cleanBlankLocations();
-    await queries.cleanOldLocations();
-    await queries.cleanOldNominatorStakes();
-
-    // Delete all on-chain identities so they get fetched new on startup.
-    await queries.deleteAllIdentities();
-
-    // Delete the old candidate fields.
-    await queries.deleteOldCandidateFields();
-
-    const allTelemetryNodes = await queries.allTelemetryNodes();
-
-    for (const node of allTelemetryNodes) {
-      await queries.clearTelemetryNodeNodeRefsFrom(node.name);
-    }
-
-    // Clear node refs and delete old fields from all nodes before starting new
-    // telemetry client.
-    const allCandidates = await queries.allCandidates();
-    for (const [index, node] of allCandidates.entries()) {
-      const { name } = node;
-      await queries.deleteOldFieldFrom(name);
-      await queries.clearCandidateNodeRefsFrom(name);
-    }
-
-    // Remove stale nominators.
-    const bondedAddresses = scorekeeper.getAllNominatorBondedAddresses();
-    await queries.removeStaleNominators(bondedAddresses);
-
-    // Wipe the candidates
-    logger.info(
-      "Wiping old candidates data and initializing latest candidates from config.",
-      winstonLabel,
-    );
-    await queries.clearCandidates();
-    await queries.deleteOldValidatorScores();
-
+    await Util.cleanDB(scorekeeper);
     await findDuplicates();
 
     logger.info(`Cleaning finished`, winstonLabel);
@@ -179,8 +143,13 @@ export const findDuplicates = async () => {
   }
 };
 
-export const addCandidates = async (config) => {
+// Adds candidates from the db, and removes all candidates that are not in the config
+export const addCleanCandidates = async (config: ConfigSchema) => {
   try {
+    // For all nodes, set their stash address to null
+    await queries.clearCandidates();
+
+    // Populate candidates and their stashes only from whats in the config files
     if (config.scorekeeper.candidates.length) {
       for (const candidate of config.scorekeeper.candidates) {
         if (candidate === null) {
@@ -203,6 +172,9 @@ export const addCandidates = async (config) => {
         }
       }
     }
+
+    // Remove any candidate in the db that doesn't have a stash or slotId
+    await queries.deleteCandidatesWithMissingFields();
   } catch (e) {
     logger.error(JSON.stringify(e));
     process.exit(1);
@@ -266,7 +238,7 @@ const start = async (cmd: { config: string }) => {
     await clean(scorekeeper);
 
     // Add the candidates
-    await addCandidates(config);
+    await addCleanCandidates(config);
 
     // Start the API server.
     await createServer(config, handler, scorekeeper);

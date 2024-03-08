@@ -11,7 +11,6 @@ import {
   queries,
   ScoreKeeper,
 } from "../index";
-import { dockPoints } from "./Rank";
 import { scorekeeperLabel } from "./scorekeeper";
 import { jobStatusEmitter } from "../Events";
 import { Job, JobStatus } from "./jobs/JobsClass";
@@ -45,7 +44,6 @@ export const registerAPIHandler = (
       await bot?.sendMessage(reason);
 
       await queries.pushFaultEvent(candidate.stash, reason);
-      await dockPoints(candidate.stash, bot);
     }
   });
 

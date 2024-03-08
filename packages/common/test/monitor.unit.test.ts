@@ -1,5 +1,6 @@
 import Monitor from "../src/monitor";
 import { queries } from "../src";
+import { describe, expect, it } from "vitest";
 
 describe("Monitor", () => {
   it("should retrieve the latest tagged release", async () => {

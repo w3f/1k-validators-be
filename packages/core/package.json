@@ -87,11 +87,6 @@
     "nodemon": "^3.0.3",
     "open-cli": "^8.0.0"
   },
-  "config": {
-    "mongodbMemoryServer": {
-      "debug": "on"
-    }
-  },
   "ava": {
     "failFast": false,
     "verbose": true,

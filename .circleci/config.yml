@@ -54,7 +54,6 @@ jobs:
       - image: node:18-bullseye
       - image: mongo:4.4.6
         name: mongodb
-        command: ["--config", "/etc/mongo/mongod.conf"]
         environment:
           MONGO_INITDB_ROOT_USERNAME: root
           MONGO_INITDB_ROOT_PASSWORD: example
@@ -63,18 +62,6 @@ jobs:
     resource_class: xlarge
     steps:
       - checkout
-      - run:
-          name: Create Mongo Configuration
-          command: |
-            echo 'setParameter:
-                    maxIndexBuildMemoryUsageMegabytes=1024
-                  storage:
-                    dbPath: /data/db
-                    journal:
-                      enabled: true
-                  net:
-                    bindIp: 0.0.0.0
-                    port: 27017' > ./mongod.conf
       - restore_cache:
           keys:
             - yarn-packages-{{ checksum "yarn.lock" }}

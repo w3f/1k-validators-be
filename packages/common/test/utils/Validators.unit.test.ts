@@ -9,12 +9,10 @@ import {
   setCandidateIdentity,
   setValidatorSet,
 } from "../../src/db/queries";
-import { initTestServerBeforeAll } from "../testUtils/dbUtils";
 import { ValidatorSetModel } from "../../src/db";
 import { setValidatorRanks } from "../../src/utils/Validators";
 import { describe, expect, it } from "vitest";
 
-initTestServerBeforeAll();
 describe("setValidatorRanks", () => {
   it("should set ranks for all candidates", async () => {
     await addKusamaCandidates();

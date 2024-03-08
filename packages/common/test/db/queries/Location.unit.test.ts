@@ -17,7 +17,6 @@ import {
   updateIITRequestCount,
 } from "../../../src/db/queries";
 import {
-  initTestServerBeforeAll,
   omitFields,
   omitId,
   omitUpdated,
@@ -30,8 +29,6 @@ import {
 import { addKusamaLocations, kusamaLocations } from "../../testUtils/location";
 import { deleteAllDb, deleteLocations } from "../../testUtils/deleteAll";
 import { beforeEach, describe, expect, it } from "vitest";
-
-initTestServerBeforeAll();
 
 describe("Location queries", () => {
   beforeEach(async () => {

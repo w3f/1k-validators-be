@@ -2,9 +2,7 @@ import Nominator from "../../src/nominator/nominator";
 import ApiHandler from "../../src/ApiHandler/ApiHandler";
 import { NominatorConfig } from "../../src/types";
 import { describe, expect, it } from "vitest";
-import { initTestServerBeforeAll } from "../testUtils/dbUtils";
 
-initTestServerBeforeAll();
 describe("Nominator Integration Test", () => {
   const nominators: Nominator[] = [];
   let handler: ApiHandler;

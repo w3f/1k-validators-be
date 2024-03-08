@@ -8,15 +8,13 @@ import {
   setLastNomination,
   setTarget,
 } from "../../../src/db/queries/";
-import { initTestServerBeforeAll, omitFields } from "../../testUtils/dbUtils";
+import { omitFields } from "../../testUtils/dbUtils";
 import { Nominator, NominatorModel } from "../../../src/db/models";
 import {
   addKusamaCandidates,
   kusamaCandidates,
 } from "../../testUtils/candidate";
 import { beforeEach, describe, expect, it } from "vitest";
-
-initTestServerBeforeAll();
 
 beforeEach(async () => {
   await addKusamaCandidates();

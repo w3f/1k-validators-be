@@ -14,10 +14,8 @@ import {
   setIdentity,
   setTotalEraPoints,
 } from "../../../src/db/queries";
-import { initTestServerBeforeAll } from "../../testUtils/dbUtils";
 import { describe, expect, it } from "vitest";
 
-initTestServerBeforeAll();
 describe("setEraPoints", () => {
   it("should set era points for a given era and address", async () => {
     const result = await setEraPoints(1, 100, "address");

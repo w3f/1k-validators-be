@@ -4,10 +4,7 @@ import {
   deleteDelayedTx,
   getAllDelayedTxs,
 } from "../../../src/db/queries/DelayedTx";
-import { initTestServerBeforeAll } from "../../testUtils/dbUtils";
 import { describe, expect, it } from "vitest";
-
-initTestServerBeforeAll();
 
 describe("addDelayedTx", () => {
   it("should add a delayed transaction", async () => {

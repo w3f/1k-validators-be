@@ -3,9 +3,7 @@ import { KusamaEndpoints } from "../../src/constants";
 import Nominator from "../../src/nominator/nominator";
 import ApiHandler from "../../src/ApiHandler/ApiHandler";
 import { describe, expect, it } from "vitest";
-import { initTestServerBeforeAll } from "../testUtils/dbUtils";
 
-initTestServerBeforeAll();
 describe("autoNumNominations Integration Test", () => {
   it("queries the real API and retrieves data", async () => {
     const handler = new ApiHandler(KusamaEndpoints);

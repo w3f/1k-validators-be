@@ -213,8 +213,8 @@ describe("ChainData Integration Tests", () => {
         getControllerFromStash = await chainData.getControllerFromStash(
           currentValidators[0],
         );
+        expect(getControllerFromStash).toBeDefined();
       }
-      expect(getControllerFromStash).toBeDefined();
     },
     TIMEOUT_DURATION,
   );
@@ -222,8 +222,6 @@ describe("ChainData Integration Tests", () => {
   it(
     "should fetch reward destination",
     async () => {
-      const currentValidators = await chainData.currentValidators();
-      console.log(JSON.stringify(currentValidators));
       const getRewardDestination = await chainData.getRewardDestination(
         "EXGbhMrQubm7pRkUSkTEGi2rmR764ZM7kStfCRo2cZYa8VE",
       );

@@ -3,10 +3,7 @@ import {
   getChainMetadata,
   setChainMetadata,
 } from "../../../src/db/queries/ChainMetadata";
-import { initTestServerBeforeAll } from "../../testUtils/dbUtils";
 import { describe, expect, it } from "vitest";
-
-initTestServerBeforeAll();
 
 describe("setChainMetadata", () => {
   it("should create chain metadata if none exists", async () => {

@@ -48,7 +48,7 @@ jobs:
 
   testCommonUnit:
     docker:
-      - image: node:bullseye
+      - image: node:18
     resource_class: xlarge
     steps:
       - checkout
@@ -76,7 +76,7 @@ jobs:
 
   testCommonInt:
     docker:
-      - image: node:bullseye
+      - image: node:18
     resource_class: xlarge
     steps:
       - checkout

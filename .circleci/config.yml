@@ -75,7 +75,7 @@ jobs:
       - run:
           name: Run Tests
           command: |
-            export MONGODB_URI="mongodb://mongodb:27017/testdb"
+            export MONGODB_URI="mongodb://mongodb:27017/testdb" &&
             yarn workspace @1kv/common << parameters.test_command >>
       - run:
           name: Clear MongoDB lock files

@@ -5829,6 +5829,20 @@
       "stash": "GvG8TntkK5Lsg7DCA86MKYNGyYnxktNk4cS1x115eiQfRpT",
       "riotHandle": "@lobis:matrix.org",
       "kyc": true
+    },
+    {
+      "slotId": 837,
+      "name": "Colossus | kusama-node1",
+      "stash": "FkGx1DCPF85BRjGZszZCXL7GSoWKHASy3jP7iuWV9pbHQVq",
+      "riotHandle": "@colossus.digital:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 838,
+      "name": "Colossus | kusama-node2",
+      "stash": "DwR67tvnyD59ux1cr9R8wcNXWKJFHabos9CCzVNr3cjXyCU",
+      "riotHandle": "@colossus.digital:matrix.org",
+      "kyc": true
     }
   ]
 }

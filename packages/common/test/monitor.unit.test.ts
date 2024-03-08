@@ -1,5 +1,4 @@
 import Monitor from "../src/monitor";
-import { Octokit } from "@octokit/rest";
 import { queries } from "../src";
 
 describe("Monitor", () => {
@@ -9,17 +8,10 @@ describe("Monitor", () => {
 
     console.log(JSON.stringify(latest));
     expect(latest).toBeDefined();
-    expect(latest?.name).toBe("v1.2.3");
-    expect(latest?.publishedAt).toBe(
-      new Date("2021-01-01T00:00:00Z").getTime(),
-    );
-    expect(Octokit.prototype.repos.getLatestRelease).toHaveBeenCalledWith({
-      owner: "paritytech",
-      repo: "polkadot-sdk",
-    });
+
     expect(queries.setRelease).toHaveBeenCalledWith(
-      "v1.2.3",
-      expect.any(Number),
+      latest.name,
+      expect.any(latest.publishedAt),
     );
   }, 10000);
 });

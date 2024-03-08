@@ -89,52 +89,36 @@ export const sortByKey = (obj: any[], key: string) => {
   return obj;
 };
 
-export const createTestServer = async (oldMongoServer?: MongoMemoryServer) => {
-  try {
-    await Util.sleep(500);
-    if (oldMongoServer) {
-      await oldMongoServer.stop();
-      await Util.sleep(300);
-    }
+let mongoServer: MongoMemoryServer | null = null;
 
-    const mongoServer = await MongoMemoryServer.create();
-    const dbName = `t${Math.random().toString().replace(".", "")}`;
-    console.log("dbName", dbName);
-    const mongoUri = mongoServer.getUri(dbName);
-    console.log("mongoUri", mongoUri);
-    await Db.create(mongoUri);
-    return mongoServer;
-  } catch (error) {
-    console.error("Error creating test server:", error);
-    throw error;
+export const createTestServer = async () => {
+  if (mongoServer) {
+    await mongoServer.stop();
+    await Util.sleep(300);
   }
+
+  mongoServer = await MongoMemoryServer.create();
+  const dbName = `testdb_${Math.random().toString().replace(".", "")}`;
+  console.log("Creating new MongoDB instance for dbName:", dbName);
+  const mongoUri = mongoServer.getUri(dbName);
+
+  await Db.create(mongoUri);
+  return mongoServer;
 };
 
 export const initTestServerBeforeAll = () => {
-  process.on("unhandledRejection", (reason, promise) => {
-    console.log("Ignored Unhandled Rejection:", reason);
+  beforeAll(async () => {
+    await createTestServer();
   });
 
-  let mongoServer: MongoMemoryServer;
-  beforeAll(async () => {
-    try {
-      // await sleep(300);
-      mongoServer = await createTestServer(mongoServer);
-    } catch (error) {
-      console.error("Error initializing test server before all tests:", error);
-      throw error;
-    }
-  });
   afterEach(async () => {
-    try {
-      // await sleep(300);
-      await deleteAllDb();
-    } catch (error) {
-      console.error("Error stopping test server after all tests:", error);
-      // throw error;
-    }
+    await deleteAllDb();
   });
+
   afterAll(async () => {
+    if (mongoServer) {
+      await mongoServer.stop();
+    }
     await mongoose.disconnect();
   });
 };

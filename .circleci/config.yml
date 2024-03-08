@@ -1,20 +1,5 @@
 version: 2.1
 
-commands:
-  setup_mongodb_memory_server:
-    description: "Setup MongoDB Memory Server Environment"
-    steps:
-      - run:
-          name: Setup MongoDB Memory Server Environment
-          command: |
-            echo 'export MONGOMS_DOWNLOAD_DIR="/tmp/mongodb-binaries"' >> $BASH_ENV
-            echo 'export MONGOMS_DISABLE_POSTINSTALL="1"' >> $BASH_ENV
-      - run:
-          name: Pre-download MongoDB Binary
-          command: |
-            mkdir -p /tmp/mongodb-binaries
-            curl -L https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2004-7.0.5.tgz -o /tmp/mongodb-binaries/mongodb-linux-x86_64-ubuntu2004-7.0.5.tgz
-
 jobs:
   checkDependencies:
     docker:
@@ -70,7 +55,6 @@ jobs:
     resource_class: xlarge
     steps:
       - checkout
-      - setup_mongodb_memory_server
       - restore_cache:
           keys:
             - yarn-packages-{{ checksum "yarn.lock" }}

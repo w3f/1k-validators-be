@@ -51,7 +51,7 @@ jobs:
       test_command:
         type: string
     docker:
-      - image: node:18-bullseye
+      - image: cimg/node:18.10
       - image: mongo:4.4.6
         name: mongodb
         command: ["--config", "/etc/mongod.conf"]

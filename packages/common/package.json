@@ -12,8 +12,8 @@
     "clean": "../../node_modules/.bin/rimraf ./build tsconfig.tsbuildinfo combined.log",
     "clean:build": "yarn clean && yarn build",
     "writeCandidatesFile": "ts-node src/scripts/writeCandidatesFile.ts && yarn lint:fix",
-    "test:unit": "vitest --config vitest.unit.config.ts",
-    "test:int": "vitest --config vitest.int.config.ts",
+    "test:unit": "SKIP_MD5=true vitest --config vitest.unit.config.ts",
+    "test:int": "SKIP_MD5=true vitest --config vitest.int.config.ts",
     "test": "yarn test:unit && yarn test:int",
     "ci:checkCandidatesFile": "ts-node src/scripts/ci/checkCandidatesFile.ts"
   },

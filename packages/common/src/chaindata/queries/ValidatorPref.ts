@@ -171,7 +171,6 @@ export const getRewardDestination = async (
     }
     const rewardDestination: any =
       await chaindata.api?.query.staking.payee(stash);
-    logger.info(JSON.stringify(rewardDestination));
     if (rewardDestination?.toJSON()?.account) {
       return rewardDestination?.toJSON()?.account;
     } else {

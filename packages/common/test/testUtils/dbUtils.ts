@@ -92,7 +92,7 @@ const mongoServer: MongoMemoryServer | null = null;
 
 export const createTestServer = async () => {
   // Use the Docker container's IP or 'host.docker.internal' if running Docker for Mac
-  const mongoUri = process.env.MONGO_URI || "mongodb://localhost:27017";
+  const mongoUri = process.env.MONGO_URI || "mongodb://mongodb:27017/testdb";
   console.log("Connecting to MongoDB at URI:", mongoUri);
   await Db.create(mongoUri);
   console.log("Connected to MongoDB");

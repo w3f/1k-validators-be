@@ -53,8 +53,14 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Setup MongoDB Memory Server Environment
+          command: |
+            echo 'export MONGOMS_DOWNLOAD_DIR="/tmp/mongodb-binaries"' >> $BASH_ENV
+            echo 'export MONGOMS_VERSION="4.4.6"' >> $BASH_ENV
+            echo 'export MONGOMS_DISABLE_POSTINSTALL="1"' >> $BASH_ENV
+      - run:
           name: Clear MongoDB lock files
-          command: rm -f /root/.cache/mongodb-binaries/*.lock
+          command: rm -f /tmp/mongodb-binaries/*.lock
       - run:
           environment:
             YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -81,8 +87,14 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Setup MongoDB Memory Server Environment
+          command: |
+            echo 'export MONGOMS_DOWNLOAD_DIR="/tmp/mongodb-binaries"' >> $BASH_ENV
+            echo 'export MONGOMS_VERSION="4.4.6"' >> $BASH_ENV
+            echo 'export MONGOMS_DISABLE_POSTINSTALL="1"' >> $BASH_ENV
+      - run:
           name: Clear MongoDB lock files
-          command: rm -f /root/.cache/mongodb-binaries/*.lock
+          command: rm -f /tmp/mongodb-binaries/*.lock
       - run:
           environment:
             YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -91,7 +103,7 @@ jobs:
             yarn install
             yarn build
             if ! yarn workspace @1kv/common test:int --testTimeout=60000; then
-              echo "Unit tests failed, but not failing the job."
+              echo "Integration tests failed, but not failing the job."
               echo 'export TESTS_FAILED=true' >> $BASH_ENV
             fi
       - run:

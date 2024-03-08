@@ -2996,7 +2996,7 @@
       "name": "METASPAN (also try POOL #50)",
       "stash": "HyLisujX7Cr6D7xzb6qadFdedLt8hmArB6ZVGJ6xsCUHqmx",
       "riotHandle": "@metaspan:matrix.org",
-      "kyc": false
+      "kyc": true
     },
     {
       "slotId": 428,
@@ -3542,7 +3542,7 @@
       "name": "METASPAN3 (also try POOL #50)",
       "stash": "JKhBBSWkr8BJKh5eFBtRux4hsDq4sAxvvmMU426qUA9aqEQ",
       "riotHandle": "@metaspan:matrix.org",
-      "kyc": false
+      "kyc": true
     },
     {
       "slotId": 507,

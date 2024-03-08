@@ -68,7 +68,7 @@ jobs:
           command: |
             if [ "${TESTS_FAILED}" == "true" ]; then
               echo "Tests failed."
-              exit 0
+              exit 1
             fi
 
   testCommonInt:

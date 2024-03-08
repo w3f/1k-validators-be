@@ -10,8 +10,8 @@ describe("Monitor", () => {
     expect(latest).toBeDefined();
 
     expect(queries.setRelease).toHaveBeenCalledWith(
-      latest.name,
-      expect.any(latest.publishedAt),
+      latest?.name,
+      expect.any(latest?.publishedAt),
     );
   }, 10000);
 });

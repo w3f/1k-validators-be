@@ -1,4 +1,4 @@
-version: 2
+version: 2.1
 
 commands:
   setup_mongodb_memory_server:
@@ -256,15 +256,17 @@ workflows:
             tags:
               only: /.*/
       - test_common:
+          name: testCommonUnit
           test_command: test:unit
           filters:
             tags:
-              only: /.*/
+              ignore: /.*/
       - test_common:
+          name: testCommonInt
           test_command: test:int
           filters:
             tags:
-              only: /.*/git status
+              ignore: /.*/
       - helmLint:
           filters:
             tags:

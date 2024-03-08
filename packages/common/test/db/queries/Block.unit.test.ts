@@ -1,6 +1,7 @@
 import { BlockIndexModel } from "../../../src/db/models";
 import { getBlockIndex, setBlockIndex } from "../../../src/db/queries/Block";
 import { initTestServerBeforeAll } from "../../testUtils/dbUtils";
+import { describe, expect, it } from "vitest";
 
 initTestServerBeforeAll();
 

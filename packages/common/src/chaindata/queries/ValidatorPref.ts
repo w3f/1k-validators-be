@@ -171,10 +171,11 @@ export const getRewardDestination = async (
     }
     const rewardDestination: any =
       await chaindata.api?.query.staking.payee(stash);
-    if (rewardDestination.toJSON().account) {
-      return rewardDestination.toJSON().account;
+    logger.info(JSON.stringify(rewardDestination));
+    if (rewardDestination?.toJSON()?.account) {
+      return rewardDestination?.toJSON()?.account;
     } else {
-      return rewardDestination.toString();
+      return rewardDestination?.toString();
     }
   } catch (e) {
     logger.error(`Error getting reward destination: ${e}`, chaindataLabel);

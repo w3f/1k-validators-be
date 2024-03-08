@@ -29,6 +29,7 @@ import {
 } from "../../testUtils/candidate";
 import { addKusamaLocations, kusamaLocations } from "../../testUtils/location";
 import { deleteAllDb, deleteLocations } from "../../testUtils/deleteAll";
+import { beforeEach, describe, expect, it } from "vitest";
 
 initTestServerBeforeAll();
 

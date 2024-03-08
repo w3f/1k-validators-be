@@ -1,30 +1,31 @@
 import Monitor from "../src/monitor";
 import { Octokit } from "@octokit/rest";
 import { queries } from "../src";
+import { beforeEach, describe, expect, it, Mock, vi } from "vitest";
 
-jest.mock("../src/index", () => ({
+vi.mock("../src/index", () => ({
   logger: {
-    info: jest.fn(),
-    debug: jest.fn(),
+    info: vi.fn(),
+    debug: vi.fn(),
   },
   queries: {
-    setRelease: jest.fn(),
+    setRelease: vi.fn(),
   },
 }));
-jest.mock("@octokit/rest");
+vi.mock("@octokit/rest");
 
 describe("Monitor", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     Octokit.prototype.repos = {
-      getLatestRelease: jest.fn().mockResolvedValue({
+      getLatestRelease: vi.fn().mockResolvedValue({
         data: {
           tag_name: "v1.2.3",
           published_at: "2021-01-01T00:00:00Z",
         },
       }),
     };
-    (queries.setRelease as jest.Mock).mockResolvedValue({});
+    (queries.setRelease as Mock).mockResolvedValue({});
   });
 
   it("should retrieve the latest tagged release", async () => {

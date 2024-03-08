@@ -45,7 +45,7 @@ export const CHAINDATA_RETRIES = 20;
 
 export const CHAINDATA_SLEEP = 300;
 
-export const API_PROVIDER_TIMEOUT = 10000;
+export const API_PROVIDER_TIMEOUT = 4000;
 
 // The number of eras a nominator should wait until making a next nomination
 export const NOMINATOR_SHOULD_NOMINATE_ERAS_THRESHOLD = 1;

@@ -1,18 +1,17 @@
-import { ApiPromise, WsProvider } from "@polkadot/api";
-
 import { autoNumNominations } from "../../src/scorekeeper/NumNominations";
 import { KusamaEndpoints } from "../../src/constants";
 import Nominator from "../../src/nominator/nominator";
 import ApiHandler from "../../src/ApiHandler/ApiHandler";
+import { describe, expect, it } from "vitest";
+import { initTestServerBeforeAll } from "../testUtils/dbUtils";
 
+initTestServerBeforeAll();
 describe("autoNumNominations Integration Test", () => {
   it("queries the real API and retrieves data", async () => {
-    const api = await ApiPromise.create({
-      provider: new WsProvider(KusamaEndpoints, 5000, undefined, 100000000),
-    });
-    await api.isReadyOrError;
-
     const handler = new ApiHandler(KusamaEndpoints);
+    await handler.initiateConnection();
+    await new Promise((resolve) => setTimeout(resolve, 5000));
+    const api = handler.getApi();
 
     const nominatorConfig = {
       isProxy: false,

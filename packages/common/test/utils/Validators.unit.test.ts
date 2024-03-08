@@ -12,6 +12,7 @@ import {
 import { initTestServerBeforeAll } from "../testUtils/dbUtils";
 import { ValidatorSetModel } from "../../src/db";
 import { setValidatorRanks } from "../../src/utils/Validators";
+import { describe, expect, it } from "vitest";
 
 initTestServerBeforeAll();
 describe("setValidatorRanks", () => {

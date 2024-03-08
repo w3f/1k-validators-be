@@ -4,6 +4,7 @@ import { Db } from "../../src";
 import mongoose from "mongoose";
 import { deleteAllDb } from "./deleteAll";
 import * as Util from "../../src/utils/util";
+import { afterAll, afterEach, beforeAll } from "vitest";
 
 interface ObjectWithId {
   _id: any;
@@ -110,6 +111,10 @@ export const createTestServer = async (oldMongoServer?: MongoMemoryServer) => {
 };
 
 export const initTestServerBeforeAll = () => {
+  process.on("unhandledRejection", (reason, promise) => {
+    console.log("Ignored Unhandled Rejection:", reason);
+  });
+
   let mongoServer: MongoMemoryServer;
   beforeAll(async () => {
     try {

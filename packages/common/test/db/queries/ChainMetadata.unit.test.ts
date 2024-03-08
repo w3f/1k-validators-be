@@ -4,6 +4,7 @@ import {
   setChainMetadata,
 } from "../../../src/db/queries/ChainMetadata";
 import { initTestServerBeforeAll } from "../../testUtils/dbUtils";
+import { describe, expect, it } from "vitest";
 
 initTestServerBeforeAll();
 

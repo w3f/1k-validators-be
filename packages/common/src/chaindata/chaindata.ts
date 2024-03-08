@@ -82,25 +82,36 @@ export class ChainData {
   }
 
   checkApiConnection = async (retries = 0): Promise<boolean> => {
-    if (!this.handler.getApi()?.isConnected) {
-      if (retries < CHAINDATA_RETRIES) {
-        retries++;
-        return await this.checkApiConnection(retries);
-      } else {
-        logger.warn(`Performing health check on api...`, chaindataLabel);
-        await this.handler.getApi()?.disconnect();
-        const healthy = await this.handler.healthCheck();
-        if (healthy) {
-          this.api = this.handler.getApi();
-          return true;
-        }
-      }
-    } else {
+    // Check if the API is already connected
+    if (this.handler.getApi()?.isConnected) {
       return true; // API is connected
     }
 
-    return false; // Exceeded retries without connecting
+    // If not connected and retries are available
+    if (retries < CHAINDATA_RETRIES) {
+      await this.delay(1000); // Wait before retrying
+      return await this.checkApiConnection(retries + 1); // Recursive call with incremented retries
+    }
+
+    // If no retries left, perform health check
+    logger.warn("Performing health check on api...", chaindataLabel);
+    const api = this.handler.getApi();
+    if (api) {
+      await api.disconnect(); // Ensure disconnect is called on an existing API instance
+    }
+    const healthy = await this.handler.healthCheck();
+
+    if (healthy) {
+      this.api = this.handler.getApi();
+      return true; // Health check passed, API is healthy
+    }
+
+    // Exceeded retries without connecting and health check failed
+    return false;
   };
+
+  // Helper function to introduce delay
+  delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
   getChainType = async (): Promise<string | null> => {
     return getChainType(this);

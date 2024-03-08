@@ -7,223 +7,133 @@ import { API_PROVIDER_TIMEOUT, POLKADOT_API_TIMEOUT } from "../constants";
 
 export const apiLabel = { label: "ApiHandler" };
 
-/**
- * A higher level handler for the Polkadot-Js API that can handle reconnecting
- * to a different provider if one proves troublesome.
- */
 class ApiHandler extends EventEmitter {
   private _wsProvider?: WsProvider;
   private _api: ApiPromise | null = null;
-  private readonly _endpoints: string[] = [];
-  static isConnected = false;
+  private readonly _endpoints: string[];
+  private _currentEndpointIndex = 0;
+  private readonly _maxRetries = 25;
+  private _connectionAttemptInProgress = false;
   private healthCheckInProgress = false;
-  private _currentEndpoint?: string;
   public upSince: number = Date.now();
+
   constructor(endpoints: string[]) {
     super();
-    this._endpoints = endpoints.sort(() => Math.random() - 0.5);
-    this.upSince = Date.now();
+    this._endpoints = endpoints;
+    this.initiateConnection().catch(this.handleError);
   }
 
-  async healthCheck(retries = 0): Promise<boolean> {
-    if (retries < 10) {
-      try {
-        this.healthCheckInProgress = true;
-        let chain;
-
-        const isConnected = this._wsProvider?.isConnected;
-        if (isConnected && !this._api?.isConnected) {
-          try {
-            chain = await this._api?.rpc.system.chain();
-          } catch (e) {
-            await sleep(API_PROVIDER_TIMEOUT);
-          }
-        }
-        chain = await this._api?.rpc.system.chain();
-
-        if (isConnected && chain) {
-          this.healthCheckInProgress = false;
-          return true;
-        } else {
-          await sleep(API_PROVIDER_TIMEOUT);
-          logger.info(`api still disconnected, disconnecting.`, apiLabel);
-          await this._wsProvider?.disconnect();
-          await this.getProvider(this._endpoints);
-          await this.getAPI();
-          return false;
-        }
-      } catch (e: unknown) {
-        const errorMessage =
-          e instanceof Error ? e.message : "An unknown error occurred";
-        logger.error(
-          `Error in health check for WS Provider for rpc. ${errorMessage}`,
-          apiLabel,
-        );
-        this.healthCheckInProgress = false;
-        return false;
-      }
-    }
-    return false;
-  }
-
-  public currentEndpoint() {
-    return this._currentEndpoint;
-  }
-
-  async getProvider(endpoints: string[]): Promise<WsProvider> {
-    return await new Promise<WsProvider>((resolve, reject) => {
-      const wsProvider = new WsProvider(
-        endpoints,
-        5000,
-        undefined,
-        POLKADOT_API_TIMEOUT,
-      );
-
-      wsProvider.on("disconnected", async () => {
-        try {
-          const isHealthy = await this.healthCheck();
-          logger.info(
-            `[Disconnection] ${this._currentEndpoint}} Health check result: ${isHealthy}`,
-            apiLabel,
-          );
-          resolve(wsProvider);
-        } catch (error: any) {
-          logger.warn(
-            `WS provider for rpc ${endpoints[0]} disconnected!`,
-            apiLabel,
-          );
-          reject(error);
-        }
-      });
-      wsProvider.on("connected", () => {
-        logger.info(`WS provider for rpc ${endpoints[0]} connected`, apiLabel);
-        this._currentEndpoint = endpoints[0];
-        resolve(wsProvider);
-      });
-      wsProvider.on("error", async () => {
-        try {
-          const isHealthy = await this.healthCheck();
-          logger.info(
-            `[Error] ${this._currentEndpoint} Health check result: ${isHealthy}`,
-            apiLabel,
-          );
-          resolve(wsProvider);
-        } catch (error: any) {
-          logger.error(`Error thrown for rpc ${this._endpoints[0]}`, apiLabel);
-          reject(error);
-        }
-      });
-    });
-  }
-
-  async getAPI(retries = 0): Promise<ApiPromise> {
-    if (this._wsProvider && this._api && this._api?.isConnected) {
-      return this._api;
-    }
-    const endpoints = this._endpoints.sort(() => Math.random() - 0.5);
-
-    try {
+  public async initiateConnection(retryCount = 0): Promise<void> {
+    if (this._connectionAttemptInProgress) {
       logger.info(
-        `[getAPI]: try ${retries} creating provider with endpoint ${endpoints[0]}`,
+        "Connection attempt already in progress, skipping new attempt.",
         apiLabel,
       );
-      const provider = await this.getProvider(endpoints);
-      this._wsProvider = provider;
-      logger.info(
-        `[getAPI]: provider created with endpoint: ${endpoints[0]}`,
-        apiLabel,
-      );
-      const api = await ApiPromise.create({
-        provider: provider,
-        noInitWarn: true,
-      });
-      await api.isReadyOrError;
-      logger.info(`[getApi] Api is ready`, apiLabel);
-      return api;
-    } catch (e) {
-      if (retries < 15) {
-        return await this.getAPI(retries + 1);
-      } else {
-        const provider = await this.getProvider(endpoints);
-        return await ApiPromise.create({
-          provider: provider,
-          noInitWarn: true,
-        });
-      }
-    }
-  }
-
-  async setAPI() {
-    const api = await this.getAPI(0);
-    this._api = api;
-    this._registerEventHandlers(this._api);
-    return api;
-  }
-
-  isConnected(): boolean {
-    return this._wsProvider?.isConnected || false;
-  }
-
-  getApi(): ApiPromise | null {
-    if (!this._api) {
-      return null;
-    } else {
-      return this._api;
-    }
-  }
-
-  _registerEventHandlers(api: ApiPromise): void {
-    if (!api) {
-      logger.warn(`API is null, cannot register event handlers.`, apiLabel);
       return;
     }
 
-    logger.info(`Registering event handlers...`, apiLabel);
+    this._connectionAttemptInProgress = true;
+    const endpoint = this._endpoints[this._currentEndpointIndex];
+    logger.info(`Attempting to connect to endpoint: ${endpoint}`, apiLabel);
 
+    this._wsProvider = new WsProvider(endpoint, POLKADOT_API_TIMEOUT);
+
+    this._wsProvider.on("error", (error) => {
+      logger.error(
+        `WS provider error at ${endpoint}: ${error.message}`,
+        apiLabel,
+      );
+    });
+
+    this._wsProvider.on("disconnected", () => {
+      logger.info(`WS provider disconnected from ${endpoint}`, apiLabel);
+    });
+
+    try {
+      const api = await ApiPromise.create({ provider: this._wsProvider });
+      await api.isReadyOrError;
+      this._api = api;
+      this._registerEventHandlers(api);
+      logger.info(`Successfully connected to ${endpoint}`, apiLabel);
+      this.emit("connected", { endpoint: endpoint });
+      this.upSince = Date.now();
+    } catch (error) {
+      logger.error(
+        `Connection failed to endpoint ${endpoint}: ${error}`,
+        apiLabel,
+      );
+
+      if (retryCount < this._maxRetries) {
+        await this.cleanupConnection();
+        await sleep(API_PROVIDER_TIMEOUT);
+        await this.initiateConnection(retryCount + 1);
+      } else {
+        throw new Error(`Unable to connect after ${this._maxRetries} retries.`);
+      }
+    } finally {
+      this._connectionAttemptInProgress = false;
+    }
+  }
+
+  private async cleanupConnection(): Promise<void> {
+    try {
+      if (this._wsProvider) {
+        await this._wsProvider.disconnect();
+        this._wsProvider = undefined;
+      }
+      this._api = null;
+    } catch (error) {
+      logger.error(`Error cleaning up connection: ${error}`, apiLabel);
+      throw error;
+    }
+  }
+
+  async healthCheck(): Promise<boolean> {
+    if (this.healthCheckInProgress) return false;
+    this.healthCheckInProgress = true;
+
+    try {
+      const wsConnected = this._wsProvider?.isConnected || false;
+      const apiConnected = this._api?.isConnected || false;
+      const chain = await this._api?.rpc.system.chain();
+
+      this.healthCheckInProgress = false;
+      return wsConnected && apiConnected && !!chain;
+    } catch (error) {
+      logger.error(`Health check failed: ${error}`, apiLabel);
+      this.healthCheckInProgress = false;
+      await this.cleanupConnection();
+      await this.initiateConnection().catch(this.handleError);
+      return false;
+    }
+  }
+
+  currentEndpoint(): string {
+    return this._endpoints[this._currentEndpointIndex];
+  }
+
+  getApi(): ApiPromise | null {
+    return this._api;
+  }
+
+  isConnected(): boolean {
+    return !!this._wsProvider?.isConnected && !!this._api?.isConnected;
+  }
+
+  _registerEventHandlers(api: ApiPromise): void {
     api.query.system.events((events) => {
       events.forEach((record) => {
         const { event } = record;
-
         if (event.section === "session" && event.method === "NewSession") {
           const sessionIndex = Number(event?.data[0]?.toString()) || 0;
-          this.handleNewSessionEvent(sessionIndex);
-        }
-
-        if (
-          event.section === "staking" &&
-          (event.method === "Reward" || event.method === "Rewarded")
-        ) {
-          const [stash, amount] = event.data;
-          this.handleRewardEvent(stash.toString(), amount.toString());
-        }
-
-        if (event.section === "imOnline" && event.method === "SomeOffline") {
-          const data = event.data.toJSON();
-          const offlineVals =
-            Array.isArray(data) && Array.isArray(data[0])
-              ? data[0].reduce((acc: string[], val) => {
-                  if (Array.isArray(val) && typeof val[0] === "string") {
-                    acc.push(val[0]);
-                  }
-                  return acc;
-                }, [])
-              : [];
-          this.handleSomeOfflineEvent(offlineVals as string[]);
+          this.emit("newSession", sessionIndex);
         }
       });
     });
   }
 
-  handleNewSessionEvent(sessionIndex: number): void {
-    this.emit("newSession", { sessionIndex });
-  }
-
-  handleRewardEvent(stash: string, amount: string): void {
-    this.emit("reward", { stash, amount });
-  }
-
-  handleSomeOfflineEvent(offlineVals: string[]): void {
-    this.emit("someOffline", { offlineVals });
+  private handleError(error): void {
+    logger.error(`Unhandled exception in ApiHandler: ${error}`, apiLabel);
   }
 }
 

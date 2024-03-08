@@ -15,6 +15,7 @@ import {
   setTotalEraPoints,
 } from "../../../src/db/queries";
 import { initTestServerBeforeAll } from "../../testUtils/dbUtils";
+import { describe, expect, it } from "vitest";
 
 initTestServerBeforeAll();
 describe("setEraPoints", () => {

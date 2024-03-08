@@ -4,14 +4,11 @@ import {
   setLocationStats,
 } from "../../../src/db/queries";
 import { initTestServerBeforeAll, omitId } from "../../testUtils/dbUtils";
+import { describe, expect, it } from "vitest";
 
 initTestServerBeforeAll();
 
 describe("setLocationStats", () => {
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
   it("should set location stats", async () => {
     const totalNodes = 100;
     const session = 1;

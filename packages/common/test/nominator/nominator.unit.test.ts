@@ -2,10 +2,11 @@ import { Types } from "../../src";
 import Nominator from "../../src/nominator/nominator";
 import ApiHandler from "../../src/ApiHandler/ApiHandler";
 import { initTestServerBeforeAll } from "../testUtils/dbUtils";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 
-jest.mock("../../src/nominator/nominator");
+vi.mock("../../src/nominator/nominator");
 
-jest.mock("../../src/ApiHandler/ApiHandler");
+vi.mock("../../src/ApiHandler/ApiHandler");
 
 initTestServerBeforeAll();
 

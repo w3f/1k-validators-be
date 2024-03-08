@@ -4,10 +4,6 @@ import { KusamaEndpoints } from "../../src/constants";
 import { Block } from "@polkadot/types/interfaces";
 import { beforeAll, describe, expect, it } from "vitest";
 
-process.on("unhandledRejection", (reason, promise) => {
-  console.warn("Ignored Unhandled Rejection:", reason);
-});
-
 const TIMEOUT_DURATION = 1200000; // 120 seconds
 describe("ChainData Integration Tests", () => {
   let apiHandler: ApiHandler;

@@ -61,6 +61,16 @@ jobs:
     resource_class: xlarge
     steps:
       - checkout
+      - run:
+          name: Start MongoDB with custom options
+          command: |
+            docker run -d \
+              --name mongodb \
+              -e MONGO_INITDB_ROOT_USERNAME=root \
+              -e MONGO_INITDB_ROOT_PASSWORD=example \
+              mongo:4.4.6 \
+              mongod --setParameter maxNumActiveUserIndexBuilds=15
+            sleep 10
       - restore_cache:
           keys:
             - yarn-packages-{{ checksum "yarn.lock" }}

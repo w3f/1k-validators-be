@@ -71,10 +71,6 @@ jobs:
             - node_modules
           key: yarn-packages-{{ checksum "yarn.lock" }}
       - run:
-          name: Wait for MongoDB
-          command: |
-            ./wait-for-it.sh mongodb:27017 --timeout=30
-      - run:
           name: Run Tests
           command: |
             export MONGO_URI="mongodb://mongodb:27017/testdb"

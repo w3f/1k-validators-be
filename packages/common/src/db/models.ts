@@ -4,7 +4,7 @@ import { LocationStats as LStats, Stats } from "../constraints/score";
 // TODO: delete
 const RewardRecordScheme = new Schema({
   // Era
-  era: { type: String, index: true },
+  era: { type: String },
   // reward for era
   reward: Number,
   block: Number,
@@ -13,7 +13,7 @@ const RewardRecordScheme = new Schema({
 // TODO: delete
 export const AccountingSchema = new Schema({
   // The nominator's stash account.
-  stash: { type: String, index: true },
+  stash: { type: String },
   // The nominator's controller account.
   controller: String,
   // Total rewards since starting the service.
@@ -27,7 +27,7 @@ export const AccountingModel = mongoose.model("Accounting", AccountingSchema);
 
 const FaultEventSchema = new Schema({
   // Timestamp when the fault happened.
-  when: { type: Number, index: true },
+  when: { type: Number },
   // The reason the fault took place.
   reason: String,
   // The previous rank before the deduction takes place
@@ -38,7 +38,7 @@ const FaultEventSchema = new Schema({
 const RankEventSchema = new Schema({
   address: String,
   // Timestamp when this event happened.
-  when: { type: Number, index: true },
+  when: { type: Number },
   // Start era for this rank event.
   startEra: Number,
   // Active era (end era) for this rank event.
@@ -311,8 +311,8 @@ export const DelegationSchema = new Schema({
 export const DelegationModel = mongoose.model("Delegation", DelegationSchema);
 //TODO: delete
 export const OpenGovDelegationSchema = new Schema({
-  delegate: { type: String, index: true },
-  track: { type: Number, index: true },
+  delegate: { type: String },
+  track: { type: Number },
   totalBalance: Number,
   delegatorCount: Number,
   delegators: [
@@ -1244,9 +1244,9 @@ export const ReferendumModel = mongoose.model("Referendum", ReferendumSchema);
 //TODO: delete
 export const ReferendumVoteSchema = new Schema({
   // The unique index of the proposal, used to identity and query by
-  referendumIndex: { type: Number, index: true },
+  referendumIndex: { type: Number },
   // The account the vote is from
-  accountId: { type: String, index: true },
+  accountId: { type: String },
   // Whether or not the vote was delegated
   isDelegating: Boolean,
   // the human denominated amount of tokens voting
@@ -1272,9 +1272,9 @@ export const ConvictionVote = new Schema({
   // The particular governance track
   track: Number,
   // The account that is voting
-  address: { type: String, index: true },
+  address: { type: String },
   // The index of the referendum
-  referendumIndex: { type: Number, index: true },
+  referendumIndex: { type: Number },
   // The conviction being voted with, ie `None`, `Locked1x`, `Locked5x`, etc
   conviction: String,
   // The balance they are voting with themselves, sans delegated balance
@@ -1303,7 +1303,7 @@ export const ConvictionVoteModel = mongoose.model(
 );
 //TODO: delete
 export const OpenGovReferendum = new Schema({
-  index: { type: Number, index: true },
+  index: { type: Number },
   title: String,
   content: String,
   section: String,
@@ -1338,7 +1338,7 @@ export const OpenGovReferendumModel = mongoose.model(
 );
 //TODO: delete
 export const OpenGovReferendumStats = new Schema({
-  index: { type: Number, index: true },
+  index: { type: Number },
   track: Number,
   origin: String,
   currentStatus: String,
@@ -1482,7 +1482,7 @@ export const OpenGovReferendumStatsModel = mongoose.model(
 );
 //TODO: delete
 export const OpenGovVoter = new Schema({
-  address: { type: String, index: true },
+  address: { type: String },
   score: {
     baseDemocracyScore: Number,
     totalConsistencyMultiplier: Number,
@@ -1506,7 +1506,7 @@ export const OpenGovVoter = new Schema({
 export const OpenGovVoterModel = mongoose.model("OpenGovVoter", OpenGovVoter);
 //TODO: delete
 export const OpenGovDelegate = new Schema({
-  address: { type: String, index: true },
+  address: { type: String },
   identity: String,
   score: {
     baseDemocracyScore: Number,
@@ -1538,7 +1538,7 @@ export const OpenGovDelegateModel = mongoose.model(
 );
 //TODO: delete
 export const OpenGovTrack = new Schema({
-  index: { type: Number, index: true },
+  index: { type: Number },
   name: String,
   maxDeciding: Number,
   decisionDeposit: Number,

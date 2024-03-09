@@ -46,17 +46,47 @@ jobs:
     #          command: |
     #            yarn set version 3.2.2 && yarn install && yarn build && yarn workspace @1kv/common lint
 
-  test_common:
-    parameters:
-      test_command:
-        type: string
+  testCommonUnit:
+      docker:
+        - image: node:18-bullseye
+        - image: mongo:4.4.6
+          name: mongodb
+          environment:
+#            MONGO_INITDB_ROOT_USERNAME: root
+#            MONGO_INITDB_ROOT_PASSWORD: example
+            MONGO_INITDB_STORAGE_ENGINE: wiredTiger
+            MONGO_INITDB_INDEX_MEMORY_PERCENT: 50
+            MONGO_INITDB_MAX_NUM_ACTIVE_USER_INDEX_BUILDS: 15
+      resource_class: xlarge
+      steps:
+        - checkout
+        - restore_cache:
+            keys:
+              - yarn-packages-{{ checksum "yarn.lock" }}
+        - run:
+            name: Install Dependencies
+            command: yarn install --immutable
+#        - save_cache:
+#            paths:
+#              - node_modules
+#            key: yarn-packages-{{ checksum "yarn.lock" }}
+        - run:
+            name: Run Tests
+            command: |
+              export MONGO_URI="mongodb://mongodb:27017/testdb"
+              yarn workspace @1kv/common test:unit
+#        - run:
+#            name: Clear MongoDB lock files
+#            command: rm -f /tmp/mongodb-binaries/*.lock
+
+  testCommonInt:
     docker:
       - image: node:18-bullseye
       - image: mongo:4.4.6
         name: mongodb
         environment:
-          MONGO_INITDB_ROOT_USERNAME: root
-          MONGO_INITDB_ROOT_PASSWORD: example
+#          MONGO_INITDB_ROOT_USERNAME: root
+#          MONGO_INITDB_ROOT_PASSWORD: example
           MONGO_INITDB_STORAGE_ENGINE: wiredTiger
           MONGO_INITDB_INDEX_MEMORY_PERCENT: 50
           MONGO_INITDB_MAX_NUM_ACTIVE_USER_INDEX_BUILDS: 15
@@ -77,7 +107,7 @@ jobs:
           name: Run Tests
           command: |
             export MONGO_URI="mongodb://mongodb:27017/testdb"
-            yarn workspace @1kv/common << parameters.test_command >>
+            yarn workspace @1kv/common test:int
       - run:
           name: Clear MongoDB lock files
           command: rm -f /tmp/mongodb-binaries/*.lock
@@ -249,15 +279,11 @@ workflows:
           filters:
             tags:
               only: /.*/
-      - test_common:
-          name: testCommonUnit
-          test_command: test:unit
+      - testCommonUnit:
           filters:
             tags:
               ignore: /.*/
-      - test_common:
-          name: testCommonInt
-          test_command: test:int
+      - testCommonInt:
           filters:
             tags:
               ignore: /.*/

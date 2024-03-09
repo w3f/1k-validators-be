@@ -14,7 +14,6 @@ import {
 
 import { TelemetryClient } from "@1kv/telemetry";
 import { Server } from "@1kv/gateway";
-import { ConfigSchema } from "@1kv/common/build/config";
 
 const isCI = process.env.CI;
 
@@ -153,7 +152,7 @@ export const findDuplicates = async () => {
 };
 
 // Adds candidates from the db, and removes all candidates that are not in the config
-export const addCleanCandidates = async (config: ConfigSchema) => {
+export const addCleanCandidates = async (config: Config.ConfigSchema) => {
   try {
     // For all nodes, set their stash address to null
     await queries.clearCandidates();

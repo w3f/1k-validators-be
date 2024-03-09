@@ -6,7 +6,7 @@
   "scripts": {
     "open:polkadot-apps": "open-cli https://polkadot.js.org/apps/?rpc=ws%3A%2F%2F127.0.0.1%3A9944#/staking",
     "open:telemetry": "open-cli http://localhost:3000",
-    "build": "tsc",
+    "build": "node esbuild.js",
     "docker": "docker-compose rm -f; docker-compose build --no-cache; docker-compose up -d",
     "clean": "../../node_modules/.bin/rimraf ./build tsconfig.tsbuildinfo combined.log",
     "clean:build": "yarn clean && yarn build",
@@ -22,7 +22,7 @@
     "lint:fix": "tsc --noEmit && eslint 'src/**/*.{js,ts,tsx}' --quiet --fix",
     "start": "NODE_OPTIONS='--max-old-space-size=8096' ts-node src/index.ts start",
     "start:watch": "nodemon --watch build --exec  node  --max-old-space-size=8024 build/index.js",
-    "start:dev": "concurrently \"tsc -w\"  \"yarn start:watch\"",
+    "start:dev": "node esbuild.js --watch & nodemon --watch build --exec node --max-old-space-size=8024 build/index.js",
     "js:start": "NODE_OPTIONS='--max-old-space-size=10096' node build/index.js start",
     "test": "yarn test:unit && yarn test:int",
     "test:unit": "jest --config=jest.unit.config.js --verbose",

@@ -5,7 +5,7 @@
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
-    "build": "tsc --build tsconfig.json",
+    "build": "node esbuild.js",
     "clean": "../../node_modules/.bin/rimraf ./build tsconfig.tsbuildinfo combined.log",
     "clean:build": "yarn clean && yarn build",
     "create-config-kusama-microservice": "cp config/kusama.sample.json ./config/main.json",

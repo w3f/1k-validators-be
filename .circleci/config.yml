@@ -55,22 +55,14 @@ jobs:
       - image: mongo:4.4.6
         name: mongodb
         environment:
-          MONGO_INITDB_STORAGE_ENGINE: "wiredTiger"
+          MONGO_INITDB_ROOT_USERNAME: root
+          MONGO_INITDB_ROOT_PASSWORD: example
+          MONGO_INITDB_STORAGE_ENGINE: wiredTiger
           MONGO_INITDB_INDEX_MEMORY_PERCENT: 50
           MONGO_INITDB_MAX_NUM_ACTIVE_USER_INDEX_BUILDS: 15
     resource_class: xlarge
     steps:
       - checkout
-      - run:
-          name: Start MongoDB with custom options
-          command: |
-            docker run -d \
-              --name mongodb \
-              -e MONGO_INITDB_ROOT_USERNAME=root \
-              -e MONGO_INITDB_ROOT_PASSWORD=example \
-              mongo:4.4.6 \
-              mongod --setParameter maxNumActiveUserIndexBuilds=15
-            sleep 10
       - restore_cache:
           keys:
             - yarn-packages-{{ checksum "yarn.lock" }}

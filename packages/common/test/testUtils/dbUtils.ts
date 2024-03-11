@@ -88,11 +88,21 @@ export const sortByKey = (obj: any[], key: string) => {
   return obj;
 };
 
-const mongoServer: MongoMemoryServer | null = null;
+let mongoServer: MongoMemoryServer | null = null;
+let mongoUri: string | null = null;
 
 export const createTestServer = async () => {
-  // Use the Docker container's IP or 'host.docker.internal' if running Docker for Mac
-  const mongoUri = process.env.MONGO_URI || "mongodb://localhost:27017";
+  const isCI = process.env.CI === "true";
+
+  // If the environment is CI, run the tests in a Docker container with a mongo container
+  if (isCI) {
+    mongoUri = process.env.MONGO_URI || "mongodb://mongodb:27017";
+  } else {
+    // Run tests with a mongo memory server
+    mongoServer = await MongoMemoryServer.create();
+    mongoUri = mongoServer.getUri();
+  }
+
   console.log("Connecting to MongoDB at URI:", mongoUri);
   await Db.create(mongoUri);
   console.log("Connected to MongoDB");

@@ -13,6 +13,12 @@ describe("ChainData Integration Tests", () => {
     apiHandler = new ApiHandler(KusamaEndpoints);
     await apiHandler.initiateConnection();
     await apiHandler.getApi()?.isReady;
+    let health = await apiHandler.healthCheck();
+    while (!health) {
+      console.log("API is not ready, retrying in 5 seconds");
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+      health = await apiHandler.healthCheck();
+    }
     chainData = new ChainData(apiHandler);
   }, TIMEOUT_DURATION);
 

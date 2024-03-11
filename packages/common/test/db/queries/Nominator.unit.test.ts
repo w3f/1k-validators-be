@@ -2,6 +2,7 @@ import {
   addNominator,
   allNominators,
   clearCurrent,
+  getCandidateByStash,
   getCurrentTargets,
   getNominator,
   removeStaleNominators,
@@ -14,9 +15,9 @@ import {
   addKusamaCandidates,
   kusamaCandidates,
 } from "../../testUtils/candidate";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 
-beforeEach(async () => {
+beforeAll(async () => {
   await addKusamaCandidates();
 });
 
@@ -98,6 +99,7 @@ describe("Nominator Database Functions", () => {
 
   describe("setTarget", () => {
     it("should set a new target for the specified nominator", async () => {
+      await addKusamaCandidates();
       const nominatorData: Nominator = {
         address: "nominator1",
         stash: "stash1",
@@ -111,6 +113,8 @@ describe("Nominator Database Functions", () => {
       await addNominator(nominatorData);
 
       const candidate = kusamaCandidates[0];
+      const candidate2 = await getCandidateByStash(candidate.stash);
+      console.log(JSON.stringify(candidate2));
 
       const address = "nominator1";
       const target = candidate.stash;
@@ -204,6 +208,7 @@ describe("Nominator Database Functions", () => {
 
   describe("getCurrentTargets", () => {
     it("should return the current targets of the specified nominator", async () => {
+      await addKusamaCandidates();
       const nominatorData: Nominator = {
         address: "nominator1",
         stash: "stash1",

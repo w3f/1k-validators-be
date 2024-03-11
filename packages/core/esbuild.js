@@ -1,6 +1,5 @@
 const esbuild = require("esbuild");
 
-// Add all the dynamically required packages to the external array
 const externalPackages = [
   "@polkadot/api-augment",
   "velocityjs",
@@ -38,21 +37,26 @@ const externalPackages = [
   "squirrelly",
   "twing",
   "matris-js-sdk",
+  "@1kv/telemetry",
+  "@1kv/gateway",
 ];
+
+const isProduction = process.argv.includes("--prod");
 
 const buildOptions = {
   entryPoints: ["src/index.ts"],
   bundle: true,
-  minify: true,
+  minify: isProduction,
   platform: "node",
   target: "node18",
-  outdir: "build",
   external: externalPackages,
+  outdir: "build",
+  entryNames: "[dir]/[name].mjs",
   tsconfig: "tsconfig.json",
   splitting: true,
   format: "esm",
-  chunkNames: "chunks/[name]-[hash]",
-  sourcemap: false,
+  outExtension: { ".js": ".mjs" },
+  sourcemap: !isProduction,
   logLevel: "error",
 };
 
@@ -68,6 +72,12 @@ if (process.argv.includes("--watch")) {
     },
   };
   console.log("watch mode enabled");
+}
+
+if (isProduction) {
+  buildOptions.define = {
+    "process.env.NODE_ENV": "'production'",
+  };
 }
 
 esbuild.build(buildOptions).catch((error) => {

@@ -49,7 +49,7 @@ jobs:
   testCommonUnit:
       docker:
         - image: node:18-bullseye
-        - image: mongo:4.4.6
+        - image: mongo:7.0.6
           name: mongodb
           environment:
 #            MONGO_INITDB_ROOT_USERNAME: root
@@ -60,29 +60,19 @@ jobs:
       resource_class: xlarge
       steps:
         - checkout
-        - restore_cache:
-            keys:
-              - yarn-packages-{{ checksum "yarn.lock" }}
         - run:
             name: Install Dependencies
             command: yarn install --immutable
-#        - save_cache:
-#            paths:
-#              - node_modules
-#            key: yarn-packages-{{ checksum "yarn.lock" }}
         - run:
             name: Run Tests
             command: |
               export MONGO_URI="mongodb://mongodb:27017/testdb"
               yarn workspace @1kv/common test:unit
-#        - run:
-#            name: Clear MongoDB lock files
-#            command: rm -f /tmp/mongodb-binaries/*.lock
 
   testCommonInt:
     docker:
       - image: node:18-bullseye
-      - image: mongo:4.4.6
+      - image: mongo:7.0.6
         name: mongodb
         environment:
 #          MONGO_INITDB_ROOT_USERNAME: root
@@ -93,24 +83,14 @@ jobs:
     resource_class: xlarge
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - yarn-packages-{{ checksum "yarn.lock" }}
       - run:
           name: Install Dependencies
-          command: yarn install --frozen-lockfile
-      - save_cache:
-          paths:
-            - node_modules
-          key: yarn-packages-{{ checksum "yarn.lock" }}
+          command: yarn install --immutable
       - run:
           name: Run Tests
           command: |
             export MONGO_URI="mongodb://mongodb:27017/testdb"
             yarn workspace @1kv/common test:int
-      - run:
-          name: Clear MongoDB lock files
-          command: rm -f /tmp/mongodb-binaries/*.lock
 
   #  testCore:
   #    docker:

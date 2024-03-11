@@ -36,21 +36,26 @@ const externalPackages = [
   "coffee-script",
   "squirrelly",
   "twing",
+  "matris-js-sdk",
+  "@1kv/telemetry",
+  "@1kv/gateway",
 ];
+
+const isProduction = process.argv.includes("--prod");
 
 const buildOptions = {
   entryPoints: ["src/index.ts"],
   bundle: true,
-  minify: true,
+  minify: isProduction,
   platform: "node",
   target: "node18",
-  outdir: "build",
   external: externalPackages,
+  outdir: "build",
   tsconfig: "tsconfig.json",
   splitting: true,
   format: "esm",
   chunkNames: "chunks/[name]-[hash]",
-  sourcemap: false,
+  sourcemap: !isProduction,
   logLevel: "error",
 };
 
@@ -66,6 +71,12 @@ if (process.argv.includes("--watch")) {
     },
   };
   console.log("watch mode enabled");
+}
+
+if (isProduction) {
+  buildOptions.define = {
+    "process.env.NODE_ENV": "'production'",
+  };
 }
 
 esbuild.build(buildOptions).catch((error) => {

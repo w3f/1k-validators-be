@@ -1,16 +1,22 @@
 FROM node:18-slim AS builder
-RUN apt-get update && apt-get install -y curl
-ARG MATRIX_TOKEN
-ARG PACKAGE
-ENV PACKAGE ${PACKAGE}
-COPY . /code
+RUN apt-get update && apt-get install -y curl libssl-dev && apt-get clean && rm -rf /var/lib/apt/lists/*
 WORKDIR /code
-RUN echo "building ${PACKAGE}... "; \
-    yarn install; \
-    echo "yarn install done. Building...." ; \
-    yarn build; \
-    echo "building ${PACKAGE} done."; \
-    apt-get update && \
-    apt-get install -y libssl-dev && \
-    apt-get clean
-CMD yarn run start:dev:${PACKAGE}
+COPY .yarn/ .yarn/
+COPY .yarnrc.yml package.json yarn.lock /code/
+COPY packages /code/packages/
+RUN yarn install
+
+ARG PACKAGE
+ENV PACKAGE=${PACKAGE}
+COPY . /code/
+RUN yarn build:prod
+
+FROM node:18-slim
+WORKDIR /code
+COPY --from=builder /code/packages ./packages
+COPY --from=builder /code/node_modules ./node_modules
+COPY --from=builder /code/.yarn ./.yarn
+ENV NODE_ENV=production
+ARG PACKAGE
+ENV PACKAGE=$PACKAGE
+CMD yarn run start:dev:$PACKAGE

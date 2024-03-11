@@ -13,8 +13,8 @@
     "clean": "../../node_modules/.bin/rimraf ./build tsconfig.tsbuildinfo combined.log",
     "clean:build": "yarn clean && yarn build",
     "writeCandidatesFile": "ts-node src/scripts/writeCandidatesFile.ts && yarn lint:fix",
-    "test:unit": "SKIP_MD5=true vitest --config vitest.unit.config.mts",
-    "test:int": "SKIP_MD5=true vitest --config vitest.int.config.mts",
+    "test:unit": "SKIP_MD5=true vitest --config vitest.unit.config.mts --no-file-parallelism",
+    "test:int": "SKIP_MD5=true vitest --config vitest.int.config.mts --no-file-parallelism",
     "test": "yarn test:unit && yarn test:int",
     "ci:checkCandidatesFile": "ts-node src/scripts/ci/checkCandidatesFile.ts"
   },

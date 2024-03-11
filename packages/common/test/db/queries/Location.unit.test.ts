@@ -46,7 +46,7 @@ describe("Location queries", () => {
         "session",
       );
 
-      await sleep(2000);
+      await sleep(10000);
 
       const locations = await getAllLocations();
 

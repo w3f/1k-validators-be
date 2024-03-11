@@ -60,6 +60,7 @@
     "test:common:int:ci": "circleci local execute testCommonInt",
     "test:common:unit": "yarn workspace @1kv/common run test:unit",
     "test:common:unit:ci": "circleci local execute testCommonUnit",
+    "test:common:ci": "circleci local execute testCommonInt testCommonUnit",
     "test:all": "yarn workspaces foreach run test",
     "test": "vitest",
     "test:ui": "vitest --ui --config vitest.config.mts",

@@ -2,9 +2,9 @@
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { Db } from "../../src";
 import mongoose from "mongoose";
-import { deleteAllDb } from "./deleteAll";
 import { afterAll, afterEach, beforeAll, beforeEach } from "vitest";
 import logger from "../../src/logger";
+import { deleteAllDb } from "./deleteAll";
 
 interface ObjectWithId {
   _id: any;
@@ -115,10 +115,13 @@ export const initTestServerBeforeAll = () => {
   });
 
   beforeEach(async () => {
+    const dbName = `testdb_${Date.now()}`; // Unique database name for each test
+    await mongoose.connection.useDb(dbName); // Switch to the new database for each test
+    // await mongoose.connection.dropDatabase(); // Drop the database to ensure isolation
     await deleteAllDb();
   });
   afterEach(async () => {
-    await deleteAllDb();
+    // await deleteAllDb();
   });
 
   afterAll(async () => {

@@ -23,7 +23,8 @@ describe("Block Index Database Functions", () => {
 
   describe("setBlockIndex", () => {
     it("should create a new block index if none exists", async () => {
-      await setBlockIndex(0, 100);
+      const didSet = await setBlockIndex(0, 100);
+      expect(didSet).toBe(true);
       await sleep(2000);
       const result = await BlockIndexModel.findOne({});
       expect(result).toBeDefined();

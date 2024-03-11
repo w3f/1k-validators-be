@@ -149,7 +149,7 @@ describe("setLocationStats", () => {
         totalNodes: session * 100,
         session,
       }));
-      await LocationStatsModel.create(locationStatsData);
+      const didSet = await LocationStatsModel.create(locationStatsData);
 
       const latestLocationStats = await getLatestLocationStats();
       expect(latestLocationStats).toBeDefined();

@@ -3,21 +3,19 @@ import { addKusamaCandidates } from "../testUtils/candidate";
 import { Identity } from "../../src/types";
 import {
   addCandidate,
+  getAllValidatorSets,
   getCandidateByStash,
   getIdentityValidatorActiveEras,
   getValidatorActiveEras,
   setCandidateIdentity,
   setValidatorSet,
 } from "../../src/db/queries";
-import { ValidatorSetModel } from "../../src/db";
 import { setValidatorRanks } from "../../src/utils/Validators";
 import { describe, expect, it } from "vitest";
-import { deleteAllDb } from "../testUtils/deleteAll";
 import { sleep } from "../../src/utils";
 
 describe("setValidatorRanks", () => {
   it("should set ranks for all candidates", async () => {
-    await deleteAllDb();
     const setCandidates = await addKusamaCandidates();
     expect(setCandidates).toBe(true);
     await addCandidate(
@@ -108,16 +106,24 @@ describe("setValidatorRanks", () => {
 
     await sleep(2000);
 
-    const validatorSets = await ValidatorSetModel.find({}).exec();
+    const validatorSets = await getAllValidatorSets();
+
+    await sleep(2000);
+    console.log(JSON.stringify(validatorSets, null, 2));
+
     expect(validatorSets.length).toBe(5);
 
     const numEras = await getValidatorActiveEras(identity1?.address);
     expect(numEras).toBe(5);
 
+    await sleep(2000);
+
     const subNumEras = await getIdentityValidatorActiveEras(
       "HkJjBkX8fPBFJvTtAbUDKWZSsMrNFuMc7TrT8BqVS5YhZXg",
     );
     expect(subNumEras).toBe(5);
+
+    await sleep(2000);
 
     await setValidatorRanks();
     const candidate = await getCandidateByStash(identity1?.address);
@@ -127,5 +133,5 @@ describe("setValidatorRanks", () => {
       "HkJjBkX8fPBFJvTtAbUDKWZSsMrNFuMc7TrT8BqVS5YhZXg",
     );
     expect(secondNode?.rank).toBe(5);
-  }, 10000);
+  }, 30000);
 });

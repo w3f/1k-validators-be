@@ -37,7 +37,7 @@ export default logger;
 
 export const createLogger = (customFilters: string[]) => {
   const logger = winston.createLogger({
-    level: getLogLevel(),
+    // level: getLogLevel(),
     format: winston.format.combine(
       winston.format.colorize(),
       winston.format.timestamp(),

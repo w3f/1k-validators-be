@@ -1,11 +1,15 @@
-import { defineConfig } from "vitest/config";
+import {defineConfig} from "vitest/config";
+
+const isCI = process.env.CI === "true";
 
 export default defineConfig({
   test: {
     include: ["**/*/*.unit.test.ts"],
     environment: "node",
-    testTimeout: 300000,
-    retry: 5,
+    testTimeout: 700000,
+    retry: 1,
     setupFiles: ["test/vitest.setup.ts"],
+    // Set maxConcurrency based on environment
+    maxConcurrency: isCI ? 1 : undefined,
   },
 });

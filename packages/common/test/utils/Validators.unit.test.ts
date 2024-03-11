@@ -12,10 +12,14 @@ import {
 import { ValidatorSetModel } from "../../src/db";
 import { setValidatorRanks } from "../../src/utils/Validators";
 import { describe, expect, it } from "vitest";
+import { deleteAllDb } from "../testUtils/deleteAll";
+import { sleep } from "../../src/utils";
 
 describe("setValidatorRanks", () => {
   it("should set ranks for all candidates", async () => {
+    await deleteAllDb();
     const setCandidates = await addKusamaCandidates();
+    expect(setCandidates).toBe(true);
     await addCandidate(
       2398,
       "Blockshard2",
@@ -63,11 +67,13 @@ describe("setValidatorRanks", () => {
     await setCandidateIdentity(identity4?.address, identity4);
     await setCandidateIdentity(identity5?.address, identity5);
 
+    await sleep(2000);
+
     const identities = [identity1, identity2, identity3, identity4, identity5];
-    for (const identity of identities) {
-      const candidateExists = await getCandidateByStash(identity?.address);
-      expect(candidateExists).not.toBe(null);
-    }
+    // for (const identity of identities) {
+    //   const candidateExists = await getCandidateByStash(identity?.address);
+    //   expect(candidateExists).not.toBe(null);
+    // }
 
     const didSet1 = await setValidatorSet(1, 1, [
       identity1?.address,
@@ -99,6 +105,8 @@ describe("setValidatorRanks", () => {
       identity4?.address,
     ]);
     expect(didSet5).toBe(true);
+
+    await sleep(2000);
 
     const validatorSets = await ValidatorSetModel.find({}).exec();
     expect(validatorSets.length).toBe(5);

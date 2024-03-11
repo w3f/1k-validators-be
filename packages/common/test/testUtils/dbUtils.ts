@@ -4,6 +4,7 @@ import { Db } from "../../src";
 import mongoose from "mongoose";
 import { deleteAllDb } from "./deleteAll";
 import { afterAll, afterEach, beforeAll, beforeEach } from "vitest";
+import logger from "../../src/logger";
 
 interface ObjectWithId {
   _id: any;
@@ -103,9 +104,9 @@ export const createTestServer = async () => {
     mongoUri = mongoServer.getUri();
   }
 
-  console.log("Connecting to MongoDB at URI:", mongoUri);
+  logger.info("Connecting to MongoDB at URI:", mongoUri);
   await Db.create(mongoUri);
-  console.log("Connected to MongoDB");
+  logger.info("Connected to MongoDB");
 };
 
 export const initTestServerBeforeAll = () => {

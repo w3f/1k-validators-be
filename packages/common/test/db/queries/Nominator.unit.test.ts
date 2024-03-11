@@ -16,11 +16,10 @@ import {
 } from "../../testUtils/candidate";
 import { beforeAll, describe, expect, it } from "vitest";
 
-beforeAll(async () => {
-  await addKusamaCandidates();
-});
-
 describe("Nominator Database Functions", () => {
+  beforeAll(async () => {
+    await addKusamaCandidates();
+  });
   describe("removeStaleNominators", () => {
     it("should remove stale nominators from the database", async () => {
       await addNominator({

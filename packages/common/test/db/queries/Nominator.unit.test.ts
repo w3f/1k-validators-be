@@ -2,7 +2,6 @@ import {
   addNominator,
   allNominators,
   clearCurrent,
-  getCandidateByStash,
   getCurrentTargets,
   getNominator,
   removeStaleNominators,
@@ -113,8 +112,6 @@ describe("Nominator Database Functions", () => {
       await addNominator(nominatorData);
 
       const candidate = kusamaCandidates[0];
-      const candidate2 = await getCandidateByStash(candidate.stash);
-      console.log(JSON.stringify(candidate2));
 
       const address = "nominator1";
       const target = candidate.stash;

@@ -15,8 +15,7 @@ import { describe, expect, it } from "vitest";
 
 describe("setValidatorRanks", () => {
   it("should set ranks for all candidates", async () => {
-    await addKusamaCandidates();
-
+    const setCandidates = await addKusamaCandidates();
     await addCandidate(
       2398,
       "Blockshard2",
@@ -59,23 +58,47 @@ describe("setValidatorRanks", () => {
       display: "KIRA Staking",
     };
     await setCandidateIdentity(identity1?.address, identity1);
+    await setCandidateIdentity(identity2?.address, identity2);
+    await setCandidateIdentity(identity3?.address, identity3);
+    await setCandidateIdentity(identity4?.address, identity4);
+    await setCandidateIdentity(identity5?.address, identity5);
 
-    await setValidatorSet(1, 1, [identity1?.address, identity2?.address]);
-    await setValidatorSet(5, 2, [identity1?.address, identity2?.address]);
-    await setValidatorSet(8, 3, [
+    const identities = [identity1, identity2, identity3, identity4, identity5];
+    for (const identity of identities) {
+      const candidateExists = await getCandidateByStash(identity?.address);
+      expect(candidateExists).not.toBe(null);
+    }
+
+    const didSet1 = await setValidatorSet(1, 1, [
+      identity1?.address,
+      identity2?.address,
+    ]);
+    expect(didSet1).toBe(true);
+    const didSet2 = await setValidatorSet(5, 2, [
+      identity1?.address,
+      identity2?.address,
+    ]);
+    expect(didSet2).toBe(true);
+    const didSet3 = await setValidatorSet(8, 3, [
       identity1?.address,
       identity3?.address,
       identity5?.address,
       "HkJjBkX8fPBFJvTtAbUDKWZSsMrNFuMc7TrT8BqVS5YhZXg",
     ]);
-    await setValidatorSet(16, 4, [
+    expect(didSet3).toBe(true);
+    const didSet4 = await setValidatorSet(16, 4, [
       identity1?.address,
       identity3?.address,
       identity4?.address,
       "HkJjBkX8fPBFJvTtAbUDKWZSsMrNFuMc7TrT8BqVS5YhZXg",
       identity5?.address,
     ]);
-    await setValidatorSet(100, 5, [identity1?.address, identity4?.address]);
+    expect(didSet4).toBe(true);
+    const didSet5 = await setValidatorSet(100, 5, [
+      identity1?.address,
+      identity4?.address,
+    ]);
+    expect(didSet5).toBe(true);
 
     const validatorSets = await ValidatorSetModel.find({}).exec();
     expect(validatorSets.length).toBe(5);

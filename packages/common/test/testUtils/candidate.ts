@@ -106,18 +106,24 @@ export const polkadotCandidates = [
   },
 ];
 
-export const addKusamaCandidates = async () => {
-  await setChainMetadata(2);
-  for (const candidate of kusamaCandidates) {
-    await addCandidate(
-      candidate.slotId,
-      candidate.name,
-      candidate.stash,
-      "",
-      false,
-      candidate.riotHandle,
-      candidate.kyc,
-    );
+export const addKusamaCandidates = async (): Promise<boolean> => {
+  try {
+    await setChainMetadata(2);
+    for (const candidate of kusamaCandidates) {
+      await addCandidate(
+        candidate.slotId,
+        candidate.name,
+        candidate.stash,
+        "",
+        false,
+        candidate.riotHandle,
+        candidate.kyc,
+      );
+    }
+    return true;
+  } catch (error) {
+    console.error("Error adding Kusama candidates", error);
+    return false;
   }
 };
 

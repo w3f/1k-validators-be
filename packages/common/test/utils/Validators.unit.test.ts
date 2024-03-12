@@ -68,10 +68,10 @@ describe("setValidatorRanks", () => {
     await sleep(2000);
 
     const identities = [identity1, identity2, identity3, identity4, identity5];
-    // for (const identity of identities) {
-    //   const candidateExists = await getCandidateByStash(identity?.address);
-    //   expect(candidateExists).not.toBe(null);
-    // }
+    for (const identity of identities) {
+      const candidateExists = await getCandidateByStash(identity?.address);
+      expect(candidateExists).not.toBe(null);
+    }
 
     const didSet1 = await setValidatorSet(1, 1, [
       identity1?.address,

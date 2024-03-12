@@ -91,7 +91,6 @@ export const getErasMinStakeAt = async (
 
     const denom: number | null = await chaindata.getDenom();
     if (denom === null) {
-      await handleError(chaindata, e, "getErasMinStakeAt");
       return null;
     }
 
@@ -107,7 +106,6 @@ export const getErasMinStakeAt = async (
       .sort((a: { total: number }, b: { total: number }) => a.total - b.total);
 
     if (minStake.length === 0) {
-      await handleError(chaindata, e, "getErasMinStakeAt");
       return 0;
     } else {
       return minStake[0]?.total;

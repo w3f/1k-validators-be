@@ -47,6 +47,7 @@ jobs:
     #            yarn set version 3.2.2 && yarn install && yarn build && yarn workspace @1kv/common lint
 
   testCommonUnit:
+    description: "Common Unit Tests"
     docker:
       - image: node:18-bullseye
       - image: mongo:6.0.9
@@ -68,7 +69,7 @@ jobs:
             yarn workspace @1kv/common test:unit
 
   testCommonChaindataInt:
-    name: Chaindata Integration Tests
+    description: "Chaindata Integration Tests"
     docker:
       - image: node:18-bullseye
       - image: mongo:6.0.9
@@ -86,7 +87,7 @@ jobs:
             yarn workspace @1kv/common test:chaindata:int
 
   testCommonApiHandlerInt:
-    name: ApiHandler Integration Tests
+    description: "ApiHandler Integration Tests"
     docker:
       - image: node:18-bullseye
       - image: mongo:6.0.9
@@ -104,7 +105,7 @@ jobs:
             yarn workspace @1kv/common test:apihandler:int
 
   testCommonNominatorInt:
-    name: Nominator Integration Tests
+    description: "Nominator Integration Tests"
     docker:
       - image: node:18-bullseye
       - image: mongo:6.0.9
@@ -122,7 +123,7 @@ jobs:
             yarn workspace @1kv/common test:nominator:int
 
   testCommonScorekeeperInt:
-    name: Scorekeeper Integration Tests
+    description: "Scorekeeper Integration Tests"
     docker:
       - image: node:18-bullseye
       - image: mongo:6.0.9

@@ -34,17 +34,17 @@ jobs:
           command: |
             yarn set version 3.2.2 && yarn install && yarn build && yarn workspace @1kv/core lint
 
-    #  checkCommonESLint:
-    #    docker:
-    #      - image: node:18
-    #    resource_class: large
-    #    steps:
-    #      - checkout
-    #      - run:
-    #          environment:
-    #            YARN_ENABLE_IMMUTABLE_INSTALLS: false
-    #          command: |
-    #            yarn set version 3.2.2 && yarn install && yarn build && yarn workspace @1kv/common lint
+  checkCommonESLint:
+    docker:
+      - image: node:18
+    resource_class: large
+    steps:
+      - checkout
+      - run:
+          environment:
+            YARN_ENABLE_IMMUTABLE_INSTALLS: false
+          command: |
+            yarn set version 3.2.2 && yarn install && yarn build && yarn workspace @1kv/common lint
 
   CommonUnitTests:
     description: "Common Unit Tests"
@@ -136,18 +136,6 @@ jobs:
           command: |
             export MONGO_URI="mongodb://mongodb:27017/testdb"
             yarn workspace @1kv/common test:scorekeeper:int
-
-  #  testCore:
-  #    docker:
-  #      - image: node:18
-  #    resource_class: large
-  #    steps:
-  #      - checkout
-  #      - run:
-  #          environment:
-  #            YARN_ENABLE_IMMUTABLE_INSTALLS: false
-  #          command: |
-  #            yarn set version 3.2.2 && yarn install && yarn build && yarn workspace @1kv/core test
 
   helmLint:
     docker:
@@ -296,10 +284,10 @@ workflows:
           filters:
             tags:
               ignore: /pull\/[0-9]+/
-      #      - checkCommonESLint:
-      #          filters:
-      #            tags:
-      #              only: /.*/
+      - checkCommonESLint:
+          filters:
+            tags:
+              only: /.*/
       - checkCoreESLint:
           filters:
             tags:

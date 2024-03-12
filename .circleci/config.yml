@@ -359,12 +359,6 @@ workflows:
           requires:
             - helmLint
             - buildCoreImage
-            - buildGatewayImage
-            - CommonUnitTests
-            - ChaindataIntegrationTests
-            - ApiHandlerIntegrationTests
-            - NominatorIntegrationTests
-            - ScorekeeperIntegrationTests
 
       - publishCoreImage:
           context: dockerhub-bot

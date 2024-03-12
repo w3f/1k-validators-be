@@ -11,5 +11,6 @@ export default defineConfig({
     setupFiles: ["test/vitest.setup.ts"],
     // Set maxConcurrency based on environment
     maxConcurrency: isCI ? 1 : undefined,
+    exclude: ["node_modules/**"]
   },
 });

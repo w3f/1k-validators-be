@@ -65,9 +65,8 @@
     "test:common:int:nominator:ci": "circleci local execute NominatorIntegrationTests",
     "test:common:int:ci": "yarn test:common:int:scorekeeper:ci && yarn test:common:int:chaindata:ci && yarn test:common:int:apihandler:ci && yarn test:common:int:nominator:ci",
     "test:all": "yarn workspaces foreach run test",
-    "test": "yarn build:prod && vitest run --coverage",
-    "test:ui": "vitest --ui --config vitest.config.mts",
-    "test:watch": "jest --config jest.workspace.config.js --watch"
+    "test": "LOG_LEVEL=warn yarn build:prod && vitest run --coverage",
+    "test:ui": "LOG_LEVEL=warn vitest --ui --config vitest.config.mts --coverage"
   },
   "devDependencies": {
     "@ava/typescript": "^4.1.0",

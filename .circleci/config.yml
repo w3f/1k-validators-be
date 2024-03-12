@@ -46,16 +46,12 @@ jobs:
     #          command: |
     #            yarn set version 3.2.2 && yarn install && yarn build && yarn workspace @1kv/common lint
 
-  testCommonUnit:
+  CommonUnitTests:
     description: "Common Unit Tests"
     docker:
       - image: node:18-bullseye
       - image: mongo:6.0.9
         name: mongodb
-    #          environment:
-    #            MONGO_INITDB_STORAGE_ENGINE: wiredTiger
-    #            MONGO_INITDB_INDEX_MEMORY_PERCENT: 50
-    #            MONGO_INITDB_MAX_NUM_ACTIVE_USER_INDEX_BUILDS: 15
     resource_class: xlarge
     steps:
       - checkout
@@ -68,7 +64,7 @@ jobs:
             export MONGO_URI="mongodb://mongodb:27017/testdb"
             yarn workspace @1kv/common test:unit
 
-  testCommonChaindataInt:
+  ChaindataIntegrationTests:
     description: "Chaindata Integration Tests"
     docker:
       - image: node:18-bullseye
@@ -86,7 +82,7 @@ jobs:
             export MONGO_URI="mongodb://mongodb:27017/testdb"
             yarn workspace @1kv/common test:chaindata:int
 
-  testCommonApiHandlerInt:
+  ApiHandlerIntegrationTests:
     description: "ApiHandler Integration Tests"
     docker:
       - image: node:18-bullseye
@@ -104,7 +100,7 @@ jobs:
             export MONGO_URI="mongodb://mongodb:27017/testdb"
             yarn workspace @1kv/common test:apihandler:int
 
-  testCommonNominatorInt:
+  NominatorIntegrationTests:
     description: "Nominator Integration Tests"
     docker:
       - image: node:18-bullseye
@@ -122,7 +118,7 @@ jobs:
             export MONGO_URI="mongodb://mongodb:27017/testdb"
             yarn workspace @1kv/common test:nominator:int
 
-  testCommonScorekeeperInt:
+  ScorekeeperIntegrationTests:
     description: "Scorekeeper Integration Tests"
     docker:
       - image: node:18-bullseye
@@ -308,27 +304,27 @@ workflows:
           filters:
             tags:
               only: /.*/
-      - testCommonUnit:
+      - CommonUnitTests:
           filters:
             tags:
               ignore: /.*/
 
-      - testCommonChaindataInt:
-        filters:
-          tags:
-            ignore: /.*/
-
-      - testCommonApiHandlerInt:
+      - ChaindataIntegrationTests:
           filters:
             tags:
               ignore: /.*/
 
-      - testCommonNominatorInt:
+      - ApiHandlerIntegrationTests:
           filters:
             tags:
               ignore: /.*/
 
-      - testCommonScorekeeperInt:
+      - NominatorIntegrationTests:
+          filters:
+            tags:
+              ignore: /.*/
+
+      - ScorekeeperIntegrationTests:
           filters:
             tags:
               ignore: /.*/
@@ -364,11 +360,11 @@ workflows:
             - helmLint
             - buildCoreImage
             - buildGatewayImage
-            - testCommonUnit
-            - testCommonChaindataInt
-            - testCommonApiHandlerInt
-            - testCommonNominatorInt
-            - testCommonScorekeeperInt
+            - CommonUnitTests
+            - ChaindataIntegrationTests
+            - ApiHandlerIntegrationTests
+            - NominatorIntegrationTests
+            - ScorekeeperIntegrationTests
 
       - publishCoreImage:
           context: dockerhub-bot

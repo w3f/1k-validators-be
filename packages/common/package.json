@@ -22,7 +22,7 @@
     "test:nominator:int": "../../node_modules/.bin/vitest Nominator.int.test.ts -c vitest.int.config.mts",
     "test:scorekeeper:int": "../../node_modules/.bin/vitest scorekeeper.int.test.ts NumNominations.int.test.ts -c vitest.int.config.mts",
     "test": "yarn test:unit && yarn test:int",
-    "ci:checkCandidatesFile": "ts-node src/scripts/ci/checkCandidatesFile.ts"
+    "ci:checkCandidatesFile": "esbuild src/scripts/ci/checkCandidatesFile.ts --platform=node --target=node14.16 --outfile=dist/scripts/ci/checkCandidatesFile.js && node dist/scripts/ci/checkCandidatesFile.js"
   },
   "author": "Web3 Foundation <teched@web3.foundation>",
   "license": "GPL-3.0"

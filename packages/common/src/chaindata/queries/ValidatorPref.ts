@@ -1,5 +1,5 @@
 import { NumberResult } from "../../types";
-import ChainData, { chaindataLabel } from "../chaindata";
+import ChainData, { chaindataLabel, handleError } from "../chaindata";
 import logger from "../../logger";
 import { ApiDecoration } from "@polkadot/api/types";
 
@@ -17,7 +17,7 @@ export const getCommission = async (
     }
     return [prefs.commission.toNumber(), null];
   } catch (e) {
-    logger.error(`Error getting commission: ${e}`, chaindataLabel);
+    await handleError(chaindata, e, "getCommission");
     return [0, JSON.stringify(e)];
   }
 };
@@ -38,7 +38,7 @@ export const getCommissionInEra = async (
     );
     return prefs?.commission?.toNumber();
   } catch (e) {
-    logger.error(`Error getting commission in era: ${e}`, chaindataLabel);
+    await handleError(chaindata, e, "getCommissionInEra");
     return null;
   }
 };
@@ -54,7 +54,7 @@ export const getBlocked = async (
     const rawPrefs = await chaindata?.api?.query.staking.validators(validator);
     return rawPrefs?.blocked?.toString() === "true";
   } catch (e) {
-    logger.error(`Error getting blocked: ${e}`, chaindataLabel);
+    await handleError(chaindata, e, "getBlocked");
     return false;
   }
 };
@@ -76,7 +76,7 @@ export const isBonded = async (
       return false;
     }
   } catch (e) {
-    logger.error(`Error getting bonded: ${e}`, chaindataLabel);
+    await handleError(chaindata, e, "isBonded");
     return false;
   }
 };
@@ -110,7 +110,7 @@ export const getDenomBondedAmount = async (
       return [0, null];
     }
   } catch (e) {
-    logger.error(`Error getting bonded amount: ${e}`, chaindataLabel);
+    await handleError(chaindata, e, "getDenomBondedAmount");
     return [0, JSON.stringify(e)];
   }
 };
@@ -156,7 +156,7 @@ export const getControllerFromStash = async (
     }
     return controller.toString();
   } catch (e) {
-    logger.error(`Error getting controller from stash: ${e}`, chaindataLabel);
+    await handleError(chaindata, e, "getControllerFromStash");
     return null;
   }
 };
@@ -177,7 +177,7 @@ export const getRewardDestination = async (
       return rewardDestination?.toString();
     }
   } catch (e) {
-    logger.error(`Error getting reward destination: ${e}`, chaindataLabel);
+    await handleError(chaindata, e, "getRewardDestination");
     return null;
   }
 };
@@ -227,7 +227,7 @@ export const getQueuedKeys = async (
     });
     return keys;
   } catch (e) {
-    logger.error(`Error getting queued keys: ${e}`, chaindataLabel);
+    await handleError(chaindata, e, "getQueuedKeys");
     return [];
   }
 };
@@ -267,7 +267,7 @@ export const getNextKeys = async (
       }
     }
   } catch (e) {
-    logger.error(`Error getting next keys: ${e}`, chaindataLabel);
+    await handleError(chaindata, e, "getNextKeys");
   }
   return null;
 };
@@ -346,7 +346,7 @@ export const getExposure = async (
 
     return null;
   } catch (e) {
-    logger.error(`Error getting exposure: ${e}`, chaindataLabel);
+    await handleError(chaindata, e, "getExposure");
     return null;
   }
 };
@@ -384,7 +384,7 @@ export const getExposureAt = async (
     }
     return null;
   } catch (e) {
-    logger.error(`Error getting exposure: ${e}`, chaindataLabel);
+    await handleError(chaindata, e, "getExposureAt");
     return null;
   }
 };

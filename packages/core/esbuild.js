@@ -57,7 +57,7 @@ const buildOptions = {
   format: "esm",
   outExtension: { ".js": ".mjs" },
   sourcemap: !isProduction,
-  logLevel: "error",
+  // logLevel: "error",
 };
 
 if (process.argv.includes("--watch")) {

@@ -1,4 +1,4 @@
-import { defineConfig } from "vitest/config";
+import {defineConfig} from "vitest/config";
 
 export default defineConfig({
   test: {
@@ -7,5 +7,14 @@ export default defineConfig({
     testTimeout: 300000,
     retry: 5,
     setupFiles: ["packages/common/test/vitest.setup.ts"],
+    coverage: {
+      provider: 'istanbul' // or 'v8'
+    },
+
+    include: ["src/**/*.ts"],
+
+    exclude: ["node_modules/**", "dist/**", "packages/scorekeeper-status-ui/**"],
+
+
   },
 });

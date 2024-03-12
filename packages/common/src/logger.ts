@@ -13,7 +13,7 @@ const logFilter = (labelsToExclude: string[]) => {
 };
 
 const getLogLevel = () => {
-  return process.env.NODE_ENV === "test" ? "warn" : "info";
+  return process.env.LOG_LEVEL || "info";
 };
 
 const logger = winston.createLogger({
@@ -37,7 +37,7 @@ export default logger;
 
 export const createLogger = (customFilters: string[]) => {
   const logger = winston.createLogger({
-    // level: getLogLevel(),
+    level: getLogLevel(),
     format: winston.format.combine(
       winston.format.colorize(),
       winston.format.timestamp(),

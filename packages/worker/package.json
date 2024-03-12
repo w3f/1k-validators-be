@@ -27,30 +27,5 @@
     "mongodbMemoryServer": {
       "debug": "on"
     }
-  },
-  "dependencies": {
-    "@1kv/common": "workspace:*",
-    "@polkadot/api": "^10.12.1",
-    "bullmq": "^5.1.5",
-    "typescript": "^5.3.3"
-  },
-  "devDependencies": {
-    "@ava/typescript": "^4.1.0",
-    "@typescript-eslint/eslint-plugin": "^5.59.9",
-    "@typescript-eslint/parser": "^5.59.9",
-    "ava": "^6.1.1",
-    "concurrently": "^8.2.2",
-    "eslint": "8.42.0",
-    "nodemon": "^3.0.3"
-  },
-  "ava": {
-    "failFast": false,
-    "verbose": true,
-    "extensions": [
-      "ts"
-    ],
-    "require": [
-      "ts-node/register"
-    ]
   }
 }

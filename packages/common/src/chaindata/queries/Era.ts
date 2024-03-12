@@ -1,4 +1,4 @@
-import ChainData, { chaindataLabel } from "../chaindata";
+import ChainData, { handleError } from "../chaindata";
 import logger from "../../logger";
 import { NumberResult, StringResult } from "../../types";
 import {
@@ -20,7 +20,7 @@ export const getEraAt = async (
     return ((await apiAt.query.staking.activeEra()).toJSON() as any)
       .index as number;
   } catch (e) {
-    logger.error(`Error getting era: ${e}`, chaindataLabel);
+    await handleError(chaindata, e, "getEraAt");
     return null;
   }
 };
@@ -74,7 +74,7 @@ export const getTotalEraPoints = async (
     }
     return {} as EraPointsInfo;
   } catch (e) {
-    logger.error(`Error getting total era points: ${e}`, chaindataLabel);
+    await handleError(chaindata, e, "getTotalEraPoints");
     return {} as EraPointsInfo;
   }
 };
@@ -91,7 +91,7 @@ export const getErasMinStakeAt = async (
 
     const denom: number | null = await chaindata.getDenom();
     if (denom === null) {
-      logger.error(`Denomination is null`);
+      await handleError(chaindata, e, "getErasMinStakeAt");
       return null;
     }
 
@@ -107,15 +107,13 @@ export const getErasMinStakeAt = async (
       .sort((a: { total: number }, b: { total: number }) => a.total - b.total);
 
     if (minStake.length === 0) {
-      logger.error(
-        `{Chaindata::getErasMinStakeAt} No min stake found for era ${era}`,
-      );
+      await handleError(chaindata, e, "getErasMinStakeAt");
       return 0;
     } else {
       return minStake[0]?.total;
     }
   } catch (e) {
-    logger.error(`Error getting era min stake: ${e}`, chaindataLabel);
+    await handleError(chaindata, e, "getErasMinStakeAt");
     return null;
   }
 };
@@ -138,7 +136,7 @@ export const getActiveEraIndex = async (
     const activeEraNumber = activeEra.unwrap().index.toNumber();
     return [activeEraNumber, null];
   } catch (e) {
-    logger.error(`Error getting active era index: ${e}`, chaindataLabel);
+    await handleError(chaindata, e, "getActiveEraIndex");
     return [0, JSON.stringify(e)];
   }
 };
@@ -153,7 +151,7 @@ export const getCurrentEra = async (
     const currentEra = await chaindata?.api?.query.staking.currentEra();
     return Number(currentEra);
   } catch (e) {
-    logger.error(`Error getting current era: ${e}`, chaindataLabel);
+    await handleError(chaindata, e, "getCurrentEra");
     return null;
   }
 };
@@ -228,7 +226,7 @@ export const findEraBlockHash = async (
     }
     return ["", "Not Found!"];
   } catch (e) {
-    logger.error(`Error finding block hash for era: ${e}`, chaindataLabel);
+    await handleError(chaindata, e, "findEraBlockHash");
     return ["", JSON.stringify(e)];
   }
 };
@@ -304,7 +302,7 @@ export const findEraBlockNumber = async (
     }
     return [0, "Not Found!"];
   } catch (e) {
-    logger.error(`Error finding block hash for era: ${e}`, chaindataLabel);
+    await handleError(chaindata, e, "findEraBlockNumber");
     return [0, JSON.stringify(e)];
   }
 };

@@ -19,37 +19,10 @@
     "start": "NODE_OPTIONS='--max-old-space-size=4096' ts-node src/run.ts start",
     "start:watch": "NODE_OPTIONS='--max-old-space-size=6096' nodemon --watch build --exec node build/run.js",
     "start:dev": "concurrently \"tsc -w\"  \"yarn start:watch\"",
-    "js:start": "NODE_OPTIONS='--max-old-space-size=6096' node build/run.js start"
+    "js:start": "NODE_OPTIONS='--max-old-space-size=6096' node build/run.js start",
+    "test:int": "SKIP_MD5=true LOG_LEVEL=info ../../node_modules/.bin/vitest --config vitest.int.config.mts --no-file-parallelism",
+    "test:int:silent": "SKIP_MD5=true LOG_LEVEL=warn ../../node_modules/.bin/vitest --config vitest.int.config.mts --no-file-parallelism"
   },
   "author": "Web3 Foundation <teched@web3.foundation>",
-  "license": "GPL-3.0",
-  "config": {
-    "mongodbMemoryServer": {
-      "debug": "on"
-    }
-  },
-  "dependencies": {
-    "@1kv/common": "workspace:*",
-    "typescript": "^5.3.3"
-  },
-  "devDependencies": {
-    "@ava/typescript": "^4.1.0",
-    "@typescript-eslint/eslint-plugin": "^5.59.9",
-    "@typescript-eslint/parser": "^5.59.9",
-    "ava": "^6.1.1",
-    "concurrently": "^8.2.2",
-    "eslint": "8.42.0",
-    "eslint-plugin-security": "^1.7.1",
-    "nodemon": "^3.0.3"
-  },
-  "ava": {
-    "failFast": false,
-    "verbose": true,
-    "extensions": [
-      "ts"
-    ],
-    "require": [
-      "ts-node/register"
-    ]
-  }
+  "license": "GPL-3.0"
 }

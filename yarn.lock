@@ -9,72 +9,13 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "1k-validators-be@workspace:."
   dependencies:
-    "@polkadot/api": ^10.12.1
-    "@typescript-eslint/eslint-plugin": ^5.59.9
-    "@typescript-eslint/parser": ^5.59.9
-    "@vitest/ui": ^1.3.1
-    axios: ^1.6.7
-    chalk: 4.1.2
-    esbuild: ^0.20.1
-    eslint: 8.42.0
-    eslint-config-prettier: ^8.8.0
-    eslint-plugin-prettier: 5.0.0
-    koa-mount: ^4.0.0
-    koa-send: ^5.0.1
-    koa-static: ^5.0.0
-    koa-swagger-decorator: ^1.8.7
-    lru-cache: latest
-    mongodb-memory-server: ^9.1.6
-    node-fetch: 3.3.2
-    prettier: ^3.2.4
-    request: ^2.88.2
-    swagger-jsdoc: ^6.2.8
-    swagger2: ^4.0.3
-    swagger2-koa: ^4.0.0
-    ts-jest: latest
-    typedoc: ^0.25.9
-    typedoc-plugin-markdown: ^3.17.1
-    vite: ^5.1.5
-    vite-plugin-node: ^3.1.0
-    vite-tsconfig-paths: ^4.3.1
-    vitest: ^1.3.1
-    ws: ^8.16.0
-    yamljs: ^0.3.0
-  languageName: unknown
-  linkType: soft
-
-"@1kv/common@workspace:*, @1kv/common@workspace:packages/common":
-  version: 0.0.0-use.local
-  resolution: "@1kv/common@workspace:packages/common"
-  dependencies:
-    "@types/jest": ^29.5.12
-    "@types/mongoose": ^5.11.97
-    "@types/node": ^20.11.25
-    coingecko-api-v3: ^0.0.29
-    hash.js: ^1.1.7
-    jest: ^29.7.0
-    mongoose: ^8.1.1
-    ts-jest: ^29.1.2
-    ts-node: ^10.9.2
-    typescript: ^5.3.3
-    vite: ^5.1.5
-    vite-plugin-dts: ^3.7.3
-    vite-plugin-node: ^3.1.0
-    vite-tsconfig-paths: ^4.3.1
-    vitest: ^1.3.1
-    winston: ^3.11.0
-  languageName: unknown
-  linkType: soft
-
-"@1kv/core@workspace:packages/core":
-  version: 0.0.0-use.local
-  resolution: "@1kv/core@workspace:packages/core"
-  dependencies:
     "@1kv/common": "workspace:*"
     "@1kv/gateway": "workspace:*"
     "@1kv/telemetry": "workspace:*"
     "@1kv/worker": "workspace:*"
     "@ava/typescript": ^4.1.0
+    "@bull-board/api": ^5.14.0
+    "@bull-board/koa": ^5.14.0
     "@koa/router": ^12.0.1
     "@octokit/rest": ^20.0.2
     "@polkadot/api": ^10.12.1
@@ -83,21 +24,29 @@ __metadata:
     "@types/jest": ^29.5.12
     "@types/koa": ^2.14.0
     "@types/koa-bodyparser": ^4.3.12
+    "@types/mongoose": ^5.11.97
     "@types/node": ^20.11.5
     "@types/semver": ^7.5.6
     "@types/ws": ^8.5.10
     "@typescript-eslint/eslint-plugin": ^5.59.9
     "@typescript-eslint/parser": ^5.59.9
+    "@vitest/coverage-istanbul": ^1.3.1
+    "@vitest/coverage-v8": ^1.3.1
+    "@vitest/ui": ^1.3.1
     ava: ^6.1.1
     axios: ^1.6.7
     bree: ^9.2.2
     bs58: ^5.0.0
+    bullmq: ^5.4.2
+    chalk: 4.1.2
+    coingecko-api-v3: ^0.0.29
     commander: ^11.1.0
     concurrently: ^8.2.2
     cron: ^3.1.6
+    esbuild: ^0.20.1
     eslint: 8.42.0
     eslint-config-prettier: ^8.8.0
-    eslint-plugin-prettier: ^5.0.0
+    eslint-plugin-prettier: 5.0.0
     eslint-plugin-security: ^1.7.1
     eventemitter3: ^5.0.1
     hash.js: ^1.1.7
@@ -105,42 +54,57 @@ __metadata:
     koa: ^2.15.0
     koa-bodyparser: ^4.4.1
     koa-cash: ^4.1.1
+    koa-mount: ^4.0.0
+    koa-send: ^5.0.1
+    koa-static: ^5.0.0
+    koa-swagger-decorator: ^1.8.7
     koa2-cors: ^2.0.6
+    lru-cache: latest
     matrix-js-sdk: ^31.1.0
     mongodb: 6.3.0
     mongodb-memory-server: ^9.1.6
     mongoose: ^8.1.1
+    node-fetch: 3.3.2
     nodemon: ^3.0.3
     open-cli: ^8.0.0
     prettier: ^3.2.4
     reconnecting-websocket: ^4.4.0
+    request: ^2.88.2
     semver: ^7.5.4
+    swagger-jsdoc: ^6.2.8
+    swagger2: ^4.0.3
+    swagger2-koa: ^4.0.0
     ts-jest: ^29.1.2
     ts-node: ^10.9.2
+    typedoc: ^0.25.9
+    typedoc-plugin-markdown: ^3.17.1
     typescript: ^5.3.3
-    winston: ^3.11.0
+    vite: ^5.1.5
+    vite-plugin-dts: ^3.7.3
+    vite-plugin-node: ^3.1.0
+    vite-tsconfig-paths: ^4.3.1
+    vitest: ^1.3.1
+    winston: ^3.12.0
     ws: ^8.16.0
+    yamljs: ^0.3.0
+  languageName: unknown
+  linkType: soft
+
+"@1kv/common@workspace:*, @1kv/common@workspace:packages/common":
+  version: 0.0.0-use.local
+  resolution: "@1kv/common@workspace:packages/common"
+  languageName: unknown
+  linkType: soft
+
+"@1kv/core@workspace:packages/core":
+  version: 0.0.0-use.local
+  resolution: "@1kv/core@workspace:packages/core"
   languageName: unknown
   linkType: soft
 
 "@1kv/gateway@workspace:*, @1kv/gateway@workspace:packages/gateway":
   version: 0.0.0-use.local
   resolution: "@1kv/gateway@workspace:packages/gateway"
-  dependencies:
-    "@1kv/common": "workspace:*"
-    "@1kv/worker": "workspace:*"
-    "@ava/typescript": ^4.1.0
-    "@bull-board/api": ^5.14.0
-    "@bull-board/koa": ^5.14.0
-    "@typescript-eslint/eslint-plugin": ^5.59.9
-    "@typescript-eslint/parser": ^5.59.9
-    ava: ^6.1.1
-    concurrently: ^8.2.2
-    eslint: 8.42.0
-    eslint-plugin-security: ^2.1.0
-    koa-swagger-decorator: ^1.8.7
-    nodemon: ^3.0.3
-    typescript: ^5.3.3
   languageName: unknown
   linkType: soft
 
@@ -177,35 +141,12 @@ __metadata:
 "@1kv/telemetry@workspace:*, @1kv/telemetry@workspace:packages/telemetry":
   version: 0.0.0-use.local
   resolution: "@1kv/telemetry@workspace:packages/telemetry"
-  dependencies:
-    "@1kv/common": "workspace:*"
-    "@ava/typescript": ^4.1.0
-    "@typescript-eslint/eslint-plugin": ^5.59.9
-    "@typescript-eslint/parser": ^5.59.9
-    ava: ^6.1.1
-    concurrently: ^8.2.2
-    eslint: 8.42.0
-    eslint-plugin-security: ^1.7.1
-    nodemon: ^3.0.3
-    typescript: ^5.3.3
   languageName: unknown
   linkType: soft
 
 "@1kv/worker@workspace:*, @1kv/worker@workspace:packages/worker":
   version: 0.0.0-use.local
   resolution: "@1kv/worker@workspace:packages/worker"
-  dependencies:
-    "@1kv/common": "workspace:*"
-    "@ava/typescript": ^4.1.0
-    "@polkadot/api": ^10.12.1
-    "@typescript-eslint/eslint-plugin": ^5.59.9
-    "@typescript-eslint/parser": ^5.59.9
-    ava: ^6.1.1
-    bullmq: ^5.1.5
-    concurrently: ^8.2.2
-    eslint: 8.42.0
-    nodemon: ^3.0.3
-    typescript: ^5.3.3
   languageName: unknown
   linkType: soft
 
@@ -223,6 +164,16 @@ __metadata:
     "@jridgewell/gen-mapping": ^0.3.0
     "@jridgewell/trace-mapping": ^0.3.9
   checksum: 03c04fd526acc64a1f4df22651186f3e5ef0a9d6d6530ce4482ec9841269cf7a11dbb8af79237c282d721c5312024ff17529cd72cc4768c11e999b58e2302079
+  languageName: node
+  linkType: hard
+
+"@ampproject/remapping@npm:^2.2.1":
+  version: 2.3.0
+  resolution: "@ampproject/remapping@npm:2.3.0"
+  dependencies:
+    "@jridgewell/gen-mapping": ^0.3.5
+    "@jridgewell/trace-mapping": ^0.3.24
+  checksum: d3ad7b89d973df059c4e8e6d7c972cbeb1bb2f18f002a3bd04ae0707da214cb06cc06929b65aa2313b9347463df2914772298bae8b1d7973f246bb3f2ab3e8f0
   languageName: node
   linkType: hard
 
@@ -467,6 +418,15 @@ __metadata:
   bin:
     parser: ./bin/babel-parser.js
   checksum: e7cd4960ac8671774e13803349da88d512f9292d7baa952173260d3e8f15620a28a3701f14f709d769209022f9e7b79965256b8be204fc550cfe783cdcabe7c7
+  languageName: node
+  linkType: hard
+
+"@babel/parser@npm:^7.23.6":
+  version: 7.24.0
+  resolution: "@babel/parser@npm:7.24.0"
+  bin:
+    parser: ./bin/babel-parser.js
+  checksum: 4a6afec49487a212e7a27345b0c090b56905efb62c0b3a1499b0a57a5b3bf43d9d1e99e31b137080eacc24dee659a29699740d0a6289999117c0d8c5a04bd68f
   languageName: node
   linkType: hard
 
@@ -1599,6 +1559,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@jridgewell/gen-mapping@npm:^0.3.5":
+  version: 0.3.5
+  resolution: "@jridgewell/gen-mapping@npm:0.3.5"
+  dependencies:
+    "@jridgewell/set-array": ^1.2.1
+    "@jridgewell/sourcemap-codec": ^1.4.10
+    "@jridgewell/trace-mapping": ^0.3.24
+  checksum: ff7a1764ebd76a5e129c8890aa3e2f46045109dabde62b0b6c6a250152227647178ff2069ea234753a690d8f3c4ac8b5e7b267bbee272bffb7f3b0a370ab6e52
+  languageName: node
+  linkType: hard
+
 "@jridgewell/resolve-uri@npm:^3.0.3, @jridgewell/resolve-uri@npm:^3.1.0":
   version: 3.1.2
   resolution: "@jridgewell/resolve-uri@npm:3.1.2"
@@ -1610,6 +1581,13 @@ __metadata:
   version: 1.1.2
   resolution: "@jridgewell/set-array@npm:1.1.2"
   checksum: 69a84d5980385f396ff60a175f7177af0b8da4ddb81824cb7016a9ef914eee9806c72b6b65942003c63f7983d4f39a5c6c27185bbca88eb4690b62075602e28e
+  languageName: node
+  linkType: hard
+
+"@jridgewell/set-array@npm:^1.2.1":
+  version: 1.2.1
+  resolution: "@jridgewell/set-array@npm:1.2.1"
+  checksum: 832e513a85a588f8ed4f27d1279420d8547743cc37fcad5a5a76fc74bb895b013dfe614d0eed9cb860048e6546b798f8f2652020b4b2ba0561b05caa8c654b10
   languageName: node
   linkType: hard
 
@@ -1647,6 +1625,16 @@ __metadata:
     "@jridgewell/resolve-uri": ^3.1.0
     "@jridgewell/sourcemap-codec": ^1.4.14
   checksum: ac7dd2cfe0b479aa1b81776d40d789243131cc792dc8b6b6a028c70fcd6171958ae1a71bf67b618ffe3c0c3feead9870c095ee46a5e30319410d92976b28f498
+  languageName: node
+  linkType: hard
+
+"@jridgewell/trace-mapping@npm:^0.3.24":
+  version: 0.3.25
+  resolution: "@jridgewell/trace-mapping@npm:0.3.25"
+  dependencies:
+    "@jridgewell/resolve-uri": ^3.1.0
+    "@jridgewell/sourcemap-codec": ^1.4.14
+  checksum: 9d3c40d225e139987b50c48988f8717a54a8c994d8a948ee42e1412e08988761d0754d7d10b803061cc3aebf35f92a5dbbab493bd0e1a9ef9e89a2130e83ba34
   languageName: node
   linkType: hard
 
@@ -3249,15 +3237,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^20.11.25":
-  version: 20.11.25
-  resolution: "@types/node@npm:20.11.25"
-  dependencies:
-    undici-types: ~5.26.4
-  checksum: bdb29da3f3dc687a0104cb70e30b5277d9df8f22843a4ed94835762683a95a8a0ea0c2ed0cf96f6eeff348491dd50dd9b20307d08f71ba7cb489d54a81cbbfec
-  languageName: node
-  linkType: hard
-
 "@types/normalize-package-data@npm:^2.4.0":
   version: 2.4.4
   resolution: "@types/normalize-package-data@npm:2.4.4"
@@ -3726,6 +3705,48 @@ __metadata:
   peerDependencies:
     vite: ^4.2.0 || ^5.0.0
   checksum: 08d227d27ff2304e395e746bd2d4b5fee40587f69d7e2fcd6beb7d91163c1f1dc26d843bc48e2ffb8f38c6b8a1b9445fb07840e3dcc841f97b56bbb8205346aa
+  languageName: node
+  linkType: hard
+
+"@vitest/coverage-istanbul@npm:^1.3.1":
+  version: 1.3.1
+  resolution: "@vitest/coverage-istanbul@npm:1.3.1"
+  dependencies:
+    debug: ^4.3.4
+    istanbul-lib-coverage: ^3.2.2
+    istanbul-lib-instrument: ^6.0.1
+    istanbul-lib-report: ^3.0.1
+    istanbul-lib-source-maps: ^4.0.1
+    istanbul-reports: ^3.1.6
+    magicast: ^0.3.3
+    picocolors: ^1.0.0
+    test-exclude: ^6.0.0
+  peerDependencies:
+    vitest: 1.3.1
+  checksum: 0fa86544bf07539d14b18c59afd1072e0ab3dd2ac950043a08862581f2b28e2545bdd899a9459d94f6e27d53d990af78a0244a39864bc014cc0f61d24e2125fc
+  languageName: node
+  linkType: hard
+
+"@vitest/coverage-v8@npm:^1.3.1":
+  version: 1.3.1
+  resolution: "@vitest/coverage-v8@npm:1.3.1"
+  dependencies:
+    "@ampproject/remapping": ^2.2.1
+    "@bcoe/v8-coverage": ^0.2.3
+    debug: ^4.3.4
+    istanbul-lib-coverage: ^3.2.2
+    istanbul-lib-report: ^3.0.1
+    istanbul-lib-source-maps: ^4.0.1
+    istanbul-reports: ^3.1.6
+    magic-string: ^0.30.5
+    magicast: ^0.3.3
+    picocolors: ^1.0.0
+    std-env: ^3.5.0
+    test-exclude: ^6.0.0
+    v8-to-istanbul: ^9.2.0
+  peerDependencies:
+    vitest: 1.3.1
+  checksum: 506c5824d508fb11788c4260d316e91657d87fa0bbb06a8a2f990b5f236bd0db7dc6815515dbb83c1bcea081cd0b01e777b5a5e59e90a8b8298aeecd4f6d6064
   languageName: node
   linkType: hard
 
@@ -4555,12 +4576,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bullmq@npm:^5.1.5":
-  version: 5.3.2
-  resolution: "bullmq@npm:5.3.2"
+"bullmq@npm:^5.4.2":
+  version: 5.4.2
+  resolution: "bullmq@npm:5.4.2"
   dependencies:
     cron-parser: ^4.6.0
-    glob: ^8.0.3
     ioredis: ^5.3.2
     lodash: ^4.17.21
     msgpackr: ^1.10.1
@@ -4568,7 +4588,7 @@ __metadata:
     semver: ^7.5.4
     tslib: ^2.0.0
     uuid: ^9.0.0
-  checksum: 722313e435c7d2cd5f120946c625a9f3668e905ff60952afac2ebfcb4f2292ccfa2ad9ba98686281d442cb38aacf619b3d1ea62018bef59a6f4ca00ee49db756
+  checksum: 54def3402aa37f58c8adaf42c0b4b4ac49b8846912ded0bbe12e19f3b5a7bae29a0a171511100471e8b5092c00d0a9bd83521d299465c17d76416fc77d054b58
   languageName: node
   linkType: hard
 
@@ -6164,26 +6184,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-prettier@npm:^5.0.0":
-  version: 5.1.3
-  resolution: "eslint-plugin-prettier@npm:5.1.3"
-  dependencies:
-    prettier-linter-helpers: ^1.0.0
-    synckit: ^0.8.6
-  peerDependencies:
-    "@types/eslint": ">=8.0.0"
-    eslint: ">=8.0.0"
-    eslint-config-prettier: "*"
-    prettier: ">=3.0.0"
-  peerDependenciesMeta:
-    "@types/eslint":
-      optional: true
-    eslint-config-prettier:
-      optional: true
-  checksum: eb2a7d46a1887e1b93788ee8f8eb81e0b6b2a6f5a66a62bc6f375b033fc4e7ca16448da99380be800042786e76cf5c0df9c87a51a2c9b960ed47acbd7c0b9381
-  languageName: node
-  linkType: hard
-
 "eslint-plugin-react-hooks@npm:^4.6.0":
   version: 4.6.0
   resolution: "eslint-plugin-react-hooks@npm:4.6.0"
@@ -6208,15 +6208,6 @@ __metadata:
   dependencies:
     safe-regex: ^2.1.1
   checksum: 3a650e2482e108bb4b9c3b9ac64adefcf1dfda069cd43f89a7d3b84822da2417c9d1b764ec5e1acf4c193b48edc630c7ef2d0a5279a478a8672f9030bc78a8c0
-  languageName: node
-  linkType: hard
-
-"eslint-plugin-security@npm:^2.1.0":
-  version: 2.1.1
-  resolution: "eslint-plugin-security@npm:2.1.1"
-  dependencies:
-    safe-regex: ^2.1.1
-  checksum: 9ff8ba3aec548c1133db156b64214518ee953e3cb58f828c2f943bcc8d153238f2caf3c11a6ae45990795eb1c70076041f228842a0c77af20dc48ed8b3bca743
   languageName: node
   linkType: hard
 
@@ -7135,19 +7126,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob@npm:^8.0.3":
-  version: 8.1.0
-  resolution: "glob@npm:8.1.0"
-  dependencies:
-    fs.realpath: ^1.0.0
-    inflight: ^1.0.4
-    inherits: 2
-    minimatch: ^5.0.1
-    once: ^1.3.0
-  checksum: 92fbea3221a7d12075f26f0227abac435de868dd0736a17170663783296d0dd8d3d532a5672b4488a439bf5d7fb85cdd07c11185d6cd39184f0385cbdfb86a47
-  languageName: node
-  linkType: hard
-
 "globals@npm:^11.1.0":
   version: 11.12.0
   resolution: "globals@npm:11.12.0"
@@ -7976,7 +7954,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"istanbul-lib-coverage@npm:^3.0.0, istanbul-lib-coverage@npm:^3.2.0":
+"istanbul-lib-coverage@npm:^3.0.0, istanbul-lib-coverage@npm:^3.2.0, istanbul-lib-coverage@npm:^3.2.2":
   version: 3.2.2
   resolution: "istanbul-lib-coverage@npm:3.2.2"
   checksum: 2367407a8d13982d8f7a859a35e7f8dd5d8f75aae4bb5484ede3a9ea1b426dc245aff28b976a2af48ee759fdd9be374ce2bd2669b644f31e76c5f46a2e29a831
@@ -7996,7 +7974,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"istanbul-lib-instrument@npm:^6.0.0":
+"istanbul-lib-instrument@npm:^6.0.0, istanbul-lib-instrument@npm:^6.0.1":
   version: 6.0.2
   resolution: "istanbul-lib-instrument@npm:6.0.2"
   dependencies:
@@ -8009,7 +7987,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"istanbul-lib-report@npm:^3.0.0":
+"istanbul-lib-report@npm:^3.0.0, istanbul-lib-report@npm:^3.0.1":
   version: 3.0.1
   resolution: "istanbul-lib-report@npm:3.0.1"
   dependencies:
@@ -8020,7 +7998,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"istanbul-lib-source-maps@npm:^4.0.0":
+"istanbul-lib-source-maps@npm:^4.0.0, istanbul-lib-source-maps@npm:^4.0.1":
   version: 4.0.1
   resolution: "istanbul-lib-source-maps@npm:4.0.1"
   dependencies:
@@ -8031,7 +8009,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"istanbul-reports@npm:^3.1.3":
+"istanbul-reports@npm:^3.1.3, istanbul-reports@npm:^3.1.6":
   version: 3.1.7
   resolution: "istanbul-reports@npm:3.1.7"
   dependencies:
@@ -9232,6 +9210,17 @@ __metadata:
   dependencies:
     "@jridgewell/sourcemap-codec": ^1.4.15
   checksum: 79922f4500d3932bb587a04440d98d040170decf432edc0f91c0bf8d41db16d364189bf800e334170ac740918feda62cd39dcc170c337dc18050cfcf00a5f232
+  languageName: node
+  linkType: hard
+
+"magicast@npm:^0.3.3":
+  version: 0.3.3
+  resolution: "magicast@npm:0.3.3"
+  dependencies:
+    "@babel/parser": ^7.23.6
+    "@babel/types": ^7.23.6
+    source-map-js: ^1.0.2
+  checksum: de2bfca38cf4a20e598cf0e48598d183ebe2a846b80c5f4a71950b4e501f27492b3d21111a4da3dcff8aa85c2acdf3900126a8867a030a9f2fbb3c7a0a0c78bc
   languageName: node
   linkType: hard
 
@@ -12074,7 +12063,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"synckit@npm:^0.8.5, synckit@npm:^0.8.6":
+"synckit@npm:^0.8.5":
   version: 0.8.8
   resolution: "synckit@npm:0.8.8"
   dependencies:
@@ -12359,7 +12348,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-jest@npm:^29.1.2, ts-jest@npm:latest":
+"ts-jest@npm:^29.1.2":
   version: 29.1.2
   resolution: "ts-jest@npm:29.1.2"
   dependencies:
@@ -12768,7 +12757,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"v8-to-istanbul@npm:^9.0.1":
+"v8-to-istanbul@npm:^9.0.1, v8-to-istanbul@npm:^9.2.0":
   version: 9.2.0
   resolution: "v8-to-istanbul@npm:9.2.0"
   dependencies:
@@ -13190,7 +13179,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"winston-transport@npm:^4.5.0":
+"winston-transport@npm:^4.7.0":
   version: 4.7.0
   resolution: "winston-transport@npm:4.7.0"
   dependencies:
@@ -13201,9 +13190,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"winston@npm:^3.11.0":
-  version: 3.11.0
-  resolution: "winston@npm:3.11.0"
+"winston@npm:^3.12.0":
+  version: 3.12.0
+  resolution: "winston@npm:3.12.0"
   dependencies:
     "@colors/colors": ^1.6.0
     "@dabh/diagnostics": ^2.0.2
@@ -13215,8 +13204,8 @@ __metadata:
     safe-stable-stringify: ^2.3.1
     stack-trace: 0.0.x
     triple-beam: ^1.3.0
-    winston-transport: ^4.5.0
-  checksum: ca4454070f7a71b19f53c8c1765c59a013dab220edb49161b2e81917751d3e9edc3382430e4fb050feda04fb8463290ecab7cbc9240ec8d3d3b32a121849bbb0
+    winston-transport: ^4.7.0
+  checksum: 7549e90d471312f3678c86fc51c86da05717be0390ecc0dc1a312a57f4ab3eb22e4fae1829291a05334376db8caa5f118d1de019d8c67e5f031ed70678363703
   languageName: node
   linkType: hard
 

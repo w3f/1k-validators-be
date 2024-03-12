@@ -1,8 +1,8 @@
 import ApiHandler from "../../src/ApiHandler/ApiHandler";
 import { ChainData } from "../../src/chaindata/chaindata";
-import { KusamaEndpoints } from "../../src/constants";
 import { Block } from "@polkadot/types/interfaces";
 import { beforeAll, describe, expect, it } from "vitest";
+import { getKusamaHandler } from "../testUtils/apiHandler";
 
 const TIMEOUT_DURATION = 1200000; // 120 seconds
 describe("ChainData Integration Tests", () => {
@@ -10,15 +10,7 @@ describe("ChainData Integration Tests", () => {
   let chainData: ChainData;
 
   beforeAll(async () => {
-    apiHandler = new ApiHandler(KusamaEndpoints);
-    await apiHandler.initiateConnection();
-    await apiHandler.getApi()?.isReady;
-    let health = await apiHandler.healthCheck();
-    while (!health) {
-      console.log("API is not ready, retrying in 5 seconds");
-      await new Promise((resolve) => setTimeout(resolve, 5000));
-      health = await apiHandler.healthCheck();
-    }
+    apiHandler = await getKusamaHandler();
     chainData = new ChainData(apiHandler);
   }, TIMEOUT_DURATION);
 

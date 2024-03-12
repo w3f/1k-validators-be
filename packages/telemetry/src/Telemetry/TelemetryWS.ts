@@ -7,6 +7,7 @@ export const registerTelemetryWs = async (telemetryClient: TelemetryClient) => {
   try {
     telemetryClient.initializeWebSocket();
     telemetryClient.socket.on("open", () => {
+      telemetryClient.isConnected = true;
       logger.info("[Telemetry] Connection opened", { label: "Telemetry" });
       telemetryClient.chains.forEach((chain) =>
         subscribeWs(telemetryClient.socket, chain),
@@ -14,6 +15,7 @@ export const registerTelemetryWs = async (telemetryClient: TelemetryClient) => {
     });
 
     telemetryClient.socket.on("close", async () => {
+      telemetryClient.isConnected = false;
       logger.info(
         `Connection to substrate-telemetry on host ${telemetryClient.host} closed, retrying...`,
         { label: "Telemetry" },
@@ -22,6 +24,7 @@ export const registerTelemetryWs = async (telemetryClient: TelemetryClient) => {
     });
 
     telemetryClient.socket.on("error", async (error) => {
+      telemetryClient.isConnected = false;
       logger.error(
         `WebSocket error on host ${telemetryClient.host}: ${error.message}`,
         { label: "Telemetry" },
@@ -30,6 +33,7 @@ export const registerTelemetryWs = async (telemetryClient: TelemetryClient) => {
     });
 
     telemetryClient.socket.on("message", (msg) => {
+      telemetryClient.isConnected = true;
       try {
         const messages = deserialize(msg);
         messages.forEach((message) =>

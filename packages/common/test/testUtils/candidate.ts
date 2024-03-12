@@ -1,4 +1,7 @@
 import { addCandidate, setChainMetadata } from "../../src/db/queries";
+import path from "path";
+import fs from "fs";
+import { queries } from "../../src";
 
 export const kusamaCandidates = [
   {
@@ -140,4 +143,44 @@ export const addPolkadotCandidates = async () => {
       candidate.kyc,
     );
   }
+};
+
+export const addProdKusamaCandidates = async () => {
+  const jsonPath = path.resolve(
+    __dirname,
+    "../../../../candidates/kusama.json",
+  );
+  const jsonData = fs.readFileSync(jsonPath, "utf-8");
+  const candidatesJSON = JSON.parse(jsonData);
+
+  for (const candidate of candidatesJSON.candidates) {
+    if (candidate === null) {
+      continue;
+    } else {
+      const { name, stash, riotHandle } = candidate;
+      const kusamaStash = candidate.kusamaStash || "";
+      const skipSelfStake = candidate.skipSelfStake || false;
+      const id = candidate.slotId;
+      const kyc = candidate.kyc || false;
+      await queries.addCandidate(
+        id,
+        name,
+        stash,
+        kusamaStash,
+        skipSelfStake,
+        riotHandle,
+        kyc,
+      );
+    }
+  }
+};
+
+export const getProdCandidateJSON = () => {
+  const jsonPath = path.resolve(
+    __dirname,
+    "../../../../candidates/kusama.json",
+  );
+  const jsonData = fs.readFileSync(jsonPath, "utf-8");
+  const candidatesJSON = JSON.parse(jsonData);
+  return candidatesJSON;
 };

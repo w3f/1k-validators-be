@@ -47,35 +47,14 @@ jobs:
     #            yarn set version 3.2.2 && yarn install && yarn build && yarn workspace @1kv/common lint
 
   testCommonUnit:
-      docker:
-        - image: node:18-bullseye
-        - image: mongo:6.0.9
-          name: mongodb
-#          environment:
-#            MONGO_INITDB_STORAGE_ENGINE: wiredTiger
-#            MONGO_INITDB_INDEX_MEMORY_PERCENT: 50
-#            MONGO_INITDB_MAX_NUM_ACTIVE_USER_INDEX_BUILDS: 15
-      resource_class: xlarge
-      steps:
-        - checkout
-        - run:
-            name: Install Dependencies
-            command: yarn install --immutable
-        - run:
-            name: Run Tests
-            command: |
-              export MONGO_URI="mongodb://mongodb:27017/testdb"
-              yarn workspace @1kv/common test:unit
-
-  testCommonInt:
     docker:
       - image: node:18-bullseye
       - image: mongo:6.0.9
         name: mongodb
-        environment:
-          MONGO_INITDB_STORAGE_ENGINE: wiredTiger
-          MONGO_INITDB_INDEX_MEMORY_PERCENT: 50
-          MONGO_INITDB_MAX_NUM_ACTIVE_USER_INDEX_BUILDS: 15
+    #          environment:
+    #            MONGO_INITDB_STORAGE_ENGINE: wiredTiger
+    #            MONGO_INITDB_INDEX_MEMORY_PERCENT: 50
+    #            MONGO_INITDB_MAX_NUM_ACTIVE_USER_INDEX_BUILDS: 15
     resource_class: xlarge
     steps:
       - checkout
@@ -86,7 +65,91 @@ jobs:
           name: Run Tests
           command: |
             export MONGO_URI="mongodb://mongodb:27017/testdb"
-            yarn workspace @1kv/common test:int
+            yarn workspace @1kv/common test:unit
+
+  testCommonChaindataInt:
+    docker:
+      - image: node:18-bullseye
+      - image: mongo:6.0.9
+        name: mongodb
+    #        environment:
+    #          MONGO_INITDB_STORAGE_ENGINE: wiredTiger
+    #          MONGO_INITDB_INDEX_MEMORY_PERCENT: 50
+    #          MONGO_INITDB_MAX_NUM_ACTIVE_USER_INDEX_BUILDS: 15
+    resource_class: xlarge
+    steps:
+      - checkout
+      - run:
+          name: Install Dependencies
+          command: yarn install --immutable
+      - run:
+          name: Run Tests
+          command: |
+            export MONGO_URI="mongodb://mongodb:27017/testdb"
+            yarn workspace @1kv/common test:chaindata:int
+
+  testCommonApiHandlerInt:
+    docker:
+      - image: node:18-bullseye
+      - image: mongo:6.0.9
+        name: mongodb
+    #        environment:
+    #          MONGO_INITDB_STORAGE_ENGINE: wiredTiger
+    #          MONGO_INITDB_INDEX_MEMORY_PERCENT: 50
+    #          MONGO_INITDB_MAX_NUM_ACTIVE_USER_INDEX_BUILDS: 15
+    resource_class: xlarge
+    steps:
+      - checkout
+      - run:
+          name: Install Dependencies
+          command: yarn install --immutable
+      - run:
+          name: Run Tests
+          command: |
+            export MONGO_URI="mongodb://mongodb:27017/testdb"
+            yarn workspace @1kv/common test:apihandler:int
+
+  testCommonNominatorInt:
+    docker:
+      - image: node:18-bullseye
+      - image: mongo:6.0.9
+        name: mongodb
+    #        environment:
+    #          MONGO_INITDB_STORAGE_ENGINE: wiredTiger
+    #          MONGO_INITDB_INDEX_MEMORY_PERCENT: 50
+    #          MONGO_INITDB_MAX_NUM_ACTIVE_USER_INDEX_BUILDS: 15
+    resource_class: xlarge
+    steps:
+      - checkout
+      - run:
+          name: Install Dependencies
+          command: yarn install --immutable
+      - run:
+          name: Run Tests
+          command: |
+            export MONGO_URI="mongodb://mongodb:27017/testdb"
+            yarn workspace @1kv/common test:nominator:int
+
+  testCommonScorekeeperInt:
+    docker:
+      - image: node:18-bullseye
+      - image: mongo:6.0.9
+        name: mongodb
+    #        environment:
+    #          MONGO_INITDB_STORAGE_ENGINE: wiredTiger
+    #          MONGO_INITDB_INDEX_MEMORY_PERCENT: 50
+    #          MONGO_INITDB_MAX_NUM_ACTIVE_USER_INDEX_BUILDS: 15
+    resource_class: xlarge
+    steps:
+      - checkout
+      - run:
+          name: Install Dependencies
+          command: yarn install --immutable
+      - run:
+          name: Run Tests
+          command: |
+            export MONGO_URI="mongodb://mongodb:27017/testdb"
+            yarn workspace @1kv/common test:scorekeeper:int
 
   #  testCore:
   #    docker:
@@ -259,7 +322,23 @@ workflows:
           filters:
             tags:
               ignore: /.*/
-      - testCommonInt:
+
+      - testCommonChaindataInt:
+        filters:
+          tags:
+            ignore: /.*/
+
+      - testCommonApiHandlerInt:
+          filters:
+            tags:
+              ignore: /.*/
+
+      - testCommonNominatorInt:
+          filters:
+            tags:
+              ignore: /.*/
+
+      - testCommonScorekeeperInt:
           filters:
             tags:
               ignore: /.*/
@@ -296,7 +375,11 @@ workflows:
             - buildCoreImage
             - buildGatewayImage
             - testCommonUnit
-            - testCommonInt
+            - testCommonChaindataInt
+            - testCommonApiHandlerInt
+            - testCommonNominatorInt
+            - testCommonScorekeeperInt
+
       - publishCoreImage:
           context: dockerhub-bot
           filters:

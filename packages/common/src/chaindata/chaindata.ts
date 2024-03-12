@@ -1,5 +1,5 @@
 import { ApiPromise } from "@polkadot/api";
-import ApiHandler from "../ApiHandler/ApiHandler";
+import ApiHandler, { apiLabel } from "../ApiHandler/ApiHandler";
 import logger from "../logger";
 import { NumberResult } from "../types";
 import {
@@ -365,5 +365,25 @@ export class ChainData {
     return await getNominatorCurrentTargets(this, nominator);
   };
 }
+
+export const handleError = async (chaindata, e, functionName: string) => {
+  const errorMessage = e instanceof Error ? e.message : String(e);
+  if (errorMessage.includes("RPC rate limit exceeded")) {
+    logger.warn(
+      `RPC rate limit exceeded from ${chaindata.handler.currentEndpoint()}. Switching to a different endpoint.`,
+      apiLabel,
+    );
+    try {
+      await chaindata.handler.initiateConnection();
+    } catch (error) {
+      logger.error(
+        `Error while switching to a different endpoint: ${error}`,
+        chaindataLabel,
+      );
+    }
+  } else {
+    logger.error(`Error in ${functionName}: ${errorMessage}`, chaindataLabel);
+  }
+};
 
 export default ChainData;

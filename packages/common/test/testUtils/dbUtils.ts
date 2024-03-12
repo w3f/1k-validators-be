@@ -115,14 +115,11 @@ export const initTestServerBeforeAll = () => {
   });
 
   beforeEach(async () => {
-    const dbName = `testdb_${Date.now()}`; // Unique database name for each test
-    await mongoose.connection.useDb(dbName); // Switch to the new database for each test
-    // await mongoose.connection.dropDatabase(); // Drop the database to ensure isolation
+    const dbName = `testdb_${Date.now()}`;
+    await mongoose.connection.useDb(dbName);
     await deleteAllDb();
   });
-  afterEach(async () => {
-    // await deleteAllDb();
-  });
+  afterEach(async () => {});
 
   afterAll(async () => {
     await mongoose.disconnect();

@@ -1,6 +1,8 @@
 /// One week in milliseconds.
 import WS from "ws";
 
+export const KUSAMA_RANK_VALID_THRESHOLD = 100;
+
 export const TWO_DAYS_IN_MS = 2 * 24 * 60 * 60 * 1000;
 
 export const FIVE_MINUTES = 5 * 60 * 1000;
@@ -45,7 +47,7 @@ export const CHAINDATA_RETRIES = 20;
 
 export const CHAINDATA_SLEEP = 300;
 
-export const API_PROVIDER_TIMEOUT = 10000;
+export const API_PROVIDER_TIMEOUT = 4000;
 
 // The number of eras a nominator should wait until making a next nomination
 export const NOMINATOR_SHOULD_NOMINATE_ERAS_THRESHOLD = 1;
@@ -89,8 +91,8 @@ export const DEFAULT_TELEMETRY_ENDPONT =
 
 // List of log labels that are omitted from logging
 export const defaultExcludeLabels = [
-  // "Telemetry",
-  // "Location",
+  "Telemetry",
+  "Location",
   // "ValidatorPrefJob",
   "Block",
   "Gateway",

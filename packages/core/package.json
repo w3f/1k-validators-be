@@ -6,7 +6,8 @@
   "scripts": {
     "open:polkadot-apps": "open-cli https://polkadot.js.org/apps/?rpc=ws%3A%2F%2F127.0.0.1%3A9944#/staking",
     "open:telemetry": "open-cli http://localhost:3000",
-    "build": "tsc",
+    "build": "node esbuild.js",
+    "build:prod": "node esbuild.js --prod",
     "docker": "docker-compose rm -f; docker-compose build --no-cache; docker-compose up -d",
     "clean": "../../node_modules/.bin/rimraf ./build tsconfig.tsbuildinfo combined.log",
     "clean:build": "yarn clean && yarn build",
@@ -18,11 +19,11 @@
     "create-config-polkadot-current": "cp ./config/polkadot.current.sample.json ./config/main.json && cp ./config/secret.sample.json ./config/secret.json",
     "create-config-kusama-microservice": "cp ./config/kusama.microservice.sample.json ./config/main.json && cp ./config/secret.sample.json ./config/secret.json",
     "create-config-polkadot-microservice": "cp ./config/polkadot.microservice.sample.json ./config/main.json && cp ./config/secret.sample.json ./config/secret.json",
-    "lint": "tsc --noEmit && eslint 'src/**/*.{js,ts,tsx}' --quiet",
-    "lint:fix": "tsc --noEmit && eslint 'src/**/*.{js,ts,tsx}' --quiet --fix",
+    "lint": "../../node_modules/.bin/eslint 'src/**/*.{js,ts,tsx}' --quiet",
+    "lint:fix": "../../node_modules/.bin/eslint 'src/**/*.{js,ts,tsx, json}' --quiet --fix",
     "start": "NODE_OPTIONS='--max-old-space-size=8096' ts-node src/index.ts start",
     "start:watch": "nodemon --watch build --exec  node  --max-old-space-size=8024 build/index.js",
-    "start:dev": "concurrently \"tsc -w\"  \"yarn start:watch\"",
+    "start:dev": "node esbuild.js --watch & nodemon --watch build --exec node --max-old-space-size=8024 build/index.mjs",
     "js:start": "NODE_OPTIONS='--max-old-space-size=10096' node build/index.js start",
     "test": "yarn test:unit && yarn test:int",
     "test:unit": "jest --config=jest.unit.config.js --verbose",
@@ -32,74 +33,5 @@
     "writeMatrix": "ts-node test/candidatesMatrix.ts"
   },
   "author": "Web3 Foundation <teched@web3.foundation>",
-  "license": "GPL-3.0",
-  "dependencies": {
-    "@1kv/common": "workspace:^",
-    "@1kv/gateway": "workspace:^",
-    "@1kv/telemetry": "workspace:^",
-    "@1kv/worker": "workspace:^",
-    "@koa/router": "^12.0.1",
-    "@octokit/rest": "^20.0.2",
-    "@polkadot/api": "^10.12.1",
-    "@polkadot/keyring": "^12.6.2",
-    "@types/cron": "^2.4.0",
-    "@types/jest": "^29.5.12",
-    "@types/koa": "^2.14.0",
-    "@types/koa-bodyparser": "^4.3.12",
-    "@types/node": "^20.11.5",
-    "@types/semver": "^7.5.6",
-    "@types/ws": "^8.5.10",
-    "axios": "^1.6.7",
-    "bree": "^9.2.2",
-    "bs58": "^5.0.0",
-    "commander": "^11.1.0",
-    "cron": "^3.1.6",
-    "eslint-config-prettier": "^8.8.0",
-    "eslint-plugin-prettier": "^5.0.0",
-    "eventemitter3": "^5.0.1",
-    "hash.js": "^1.1.7",
-    "jest": "^29.7.0",
-    "koa": "^2.15.0",
-    "koa-bodyparser": "^4.4.1",
-    "koa-cash": "^4.1.1",
-    "koa2-cors": "^2.0.6",
-    "matrix-js-sdk": "^31.1.0",
-    "mongodb": "6.3.0",
-    "mongodb-memory-server": "^9.1.6",
-    "mongoose": "^8.1.1",
-    "prettier": "^3.2.4",
-    "reconnecting-websocket": "^4.4.0",
-    "semver": "^7.5.4",
-    "ts-jest": "^29.1.2",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.3.3",
-    "winston": "^3.11.0",
-    "ws": "^8.16.0"
-  },
-  "devDependencies": {
-    "@ava/typescript": "^4.1.0",
-    "@typescript-eslint/eslint-plugin": "^5.59.9",
-    "@typescript-eslint/parser": "^5.59.9",
-    "ava": "^6.1.1",
-    "concurrently": "^8.2.2",
-    "eslint": "8.42.0",
-    "eslint-plugin-security": "^1.7.1",
-    "nodemon": "^3.0.3",
-    "open-cli": "^8.0.0"
-  },
-  "config": {
-    "mongodbMemoryServer": {
-      "debug": "on"
-    }
-  },
-  "ava": {
-    "failFast": false,
-    "verbose": true,
-    "extensions": [
-      "ts"
-    ],
-    "require": [
-      "ts-node/register"
-    ]
-  }
+  "license": "GPL-3.0"
 }

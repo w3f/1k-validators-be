@@ -1,5 +1,4 @@
-import Chaindata, { chaindataLabel } from "../chaindata";
-import logger from "../../logger";
+import Chaindata, { handleError } from "../chaindata";
 import { Identity } from "../../types";
 
 export const hasIdentity = async (
@@ -32,7 +31,7 @@ export const hasIdentity = async (
 
     return [identity ? identity.isSome : false, verified];
   } catch (e) {
-    logger.error(`Error getting identity: ${e}`, chaindataLabel);
+    await handleError(chaindata, e, "hasIdentity");
     return [false, true];
   }
 };
@@ -66,7 +65,7 @@ export const getIdentity = async (
 
     return null;
   } catch (e) {
-    logger.error(`Error getting identity: ${e}`, chaindataLabel);
+    await handleError(chaindata, e, "getIdentity");
   }
 };
 
@@ -190,7 +189,7 @@ export const getFormattedIdentity = async (
 
     return identity;
   } catch (e) {
-    logger.error(`Error getting identity: ${e}`, chaindataLabel);
+    await handleError(chaindata, e, "getFormattedIdentity");
     return null;
   }
 };

@@ -28,7 +28,8 @@ export default class Monitor {
         owner: "paritytech",
         repo: "polkadot-sdk",
       });
-    } catch {
+    } catch (e) {
+      logger.info(JSON.stringify(e));
       logger.info(
         "{Monitor::getLatestTaggedRelease} Could not get latest release.",
       );
@@ -49,7 +50,7 @@ export default class Monitor {
     }
 
     this.latestTaggedRelease = {
-      name: tag_name.split(`-`)[0],
+      name: tag_name.split(`-`)[1],
       publishedAt,
     };
 

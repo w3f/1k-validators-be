@@ -4,8 +4,7 @@
  * @function ChainMeta
  */
 
-import { ChainData, chaindataLabel } from "../chaindata";
-import { logger } from "../../index";
+import { ChainData, handleError } from "../chaindata";
 import { ApiDecoration } from "@polkadot/api/types";
 
 import { Block } from "@polkadot/types/interfaces";
@@ -24,7 +23,7 @@ export const getChainType = async (
     }
     return null;
   } catch (e) {
-    logger.error(`Error getting chain type: ${e}`, chaindataLabel);
+    await handleError(chaindata, e, "getChainType");
     return null;
   }
 };
@@ -45,7 +44,7 @@ export const getDenom = async (
       chainType.toString() == "Polkadot" ? 10000000000 : 1000000000000;
     return denom;
   } catch (e) {
-    logger.error(`Error getting chain denom: ${e}`, chaindataLabel);
+    await handleError(chaindata, e, "getDenom");
     return null;
   }
 };
@@ -66,7 +65,7 @@ export const getApiAt = async (
       return null;
     }
   } catch (e) {
-    logger.error(`Error getting api at block: ${e}`, chaindataLabel);
+    await handleError(chaindata, e, "getApiAt");
     return null;
   }
 };
@@ -86,10 +85,7 @@ export const getApiAtBlockHash = async (
       return null;
     }
   } catch (e) {
-    logger.error(
-      `Error getting api at block hash ${blockHash}: ${e}`,
-      chaindataLabel,
-    );
+    await handleError(chaindata, e, "getApiAtBlockHash");
     return null;
   }
 };
@@ -109,7 +105,7 @@ export const getBlockHash = async (
     }
     return null;
   } catch (e) {
-    logger.error(`Error getting block hash: ${e}`, chaindataLabel);
+    await handleError(chaindata, e, "getBlockHash");
     return null;
   }
 };
@@ -130,7 +126,7 @@ export const getBlock = async (
       return null;
     }
   } catch (e) {
-    logger.error(`Error getting block: ${e}`, chaindataLabel);
+    await handleError(chaindata, e, "getBlock");
     return null;
   }
 };
@@ -145,7 +141,7 @@ export const getLatestBlock = async (
     const block = await chaindata?.api?.rpc.chain.getBlock();
     return block?.block.header.number.toNumber() ?? null;
   } catch (e) {
-    logger.error(`Error getting latest block: ${e}`, chaindataLabel);
+    await handleError(chaindata, e, "getLatestBlock");
     return null;
   }
 };
@@ -162,7 +158,7 @@ export const getLatestBlockHash = async (
     }
     return null;
   } catch (e) {
-    logger.error(`Error getting latest block hash: ${e}`, chaindataLabel);
+    await handleError(chaindata, e, "getLatestBlockHash");
     return null;
   }
 };

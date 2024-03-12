@@ -1,7 +1,6 @@
 import {
   AccountingModel,
   allTelemetryNodes,
-  BotClaimEventModel,
   cleanBlankLocations,
   cleanLocationsWithoutSlotId,
   cleanOldLocations,
@@ -15,6 +14,7 @@ import {
   deleteOldCandidateFields,
   EraPaidEventModel,
   OpenGovDelegateModel,
+  OpenGovDelegationModel,
   OpenGovReferendumModel,
   OpenGovReferendumStatsModel,
   OpenGovTrackModel,
@@ -159,13 +159,16 @@ export const deleteAllDelegationsModelRecords = async (): Promise<boolean> => {
 // TODO: delete after deleting model
 export const deleteAllOpenGovDelegationRecords = async (): Promise<boolean> => {
   try {
-    const result = await BotClaimEventModel.deleteMany({});
+    const result = await OpenGovDelegationModel.deleteMany({});
 
-    logger.info(`${result.deletedCount} bot claim records deleted.`, dbLabel);
+    logger.info(
+      `${result.deletedCount} open gov delegation records deleted.`,
+      dbLabel,
+    );
     return true;
   } catch (error) {
     logger.error(
-      `Error deleting bot claim records: ${JSON.stringify(error)}`,
+      `Error deleting open gov delegation records: ${JSON.stringify(error)}`,
       dbLabel,
     );
     return false;

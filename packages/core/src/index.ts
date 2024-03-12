@@ -14,7 +14,6 @@ import {
 
 import { TelemetryClient } from "@1kv/telemetry";
 import { Server } from "@1kv/gateway";
-import { ConfigSchema } from "@1kv/common/build/config";
 
 const isCI = process.env.CI;
 
@@ -33,25 +32,34 @@ const catchAndQuit = async (fn: any) => {
 
 export const createAPIHandler = async (config, retries = 0) => {
   try {
-    logger.info(`Creating API Handler`, winstonLabel);
-    // Create the API handler.
+    logger.info("Creating API Handler", winstonLabel);
+    // Determine the correct set of endpoints based on the network prefix.
     const endpoints =
-      config.global.networkPrefix == 2
+      config.global.networkPrefix === 2 || config.global.networkPrefix === 0
         ? config.global.apiEndpoints
-        : config.global.networkPrefix == 0
-          ? config.global.apiEndpoints
-          : Constants.LocalEndpoints;
+        : Constants.LocalEndpoints;
+
     const handler = new ApiHandler(endpoints);
-    await handler.setAPI();
+    await handler.initiateConnection();
+
+    // Check API health before proceeding.
+    let health = await handler.healthCheck();
+    while (!health) {
+      logger.info("Waiting for API to connect...", winstonLabel);
+      await Util.sleep(1000);
+      health = await handler.healthCheck();
+    }
+
     return handler;
   } catch (e) {
-    logger.error(JSON.stringify(e), winstonLabel);
+    logger.error(`Error: ${e.message || e.toString()}`, winstonLabel);
+
     if (retries < 20) {
       logger.info(`Retrying... attempt: ${retries}`, winstonLabel);
       return await createAPIHandler(config, retries + 1);
     } else {
-      logger.error(`Retries exceeded`, winstonLabel);
-      process.exit(1);
+      logger.error("Retries exceeded", winstonLabel);
+      throw new Error("Unable to create API Handler after multiple retries.");
     }
   }
 };
@@ -144,7 +152,7 @@ export const findDuplicates = async () => {
 };
 
 // Adds candidates from the db, and removes all candidates that are not in the config
-export const addCleanCandidates = async (config: ConfigSchema) => {
+export const addCleanCandidates = async (config: Config.ConfigSchema) => {
   try {
     // For all nodes, set their stash address to null
     await queries.clearCandidates();

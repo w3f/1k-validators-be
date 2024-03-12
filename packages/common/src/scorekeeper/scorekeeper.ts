@@ -50,6 +50,8 @@ export default class ScoreKeeper {
 
   public upSince: number = Date.now();
 
+  public isStarted = false;
+
   constructor(handler: ApiHandler, config: Config.ConfigSchema, bot: any) {
     this.handler = handler;
     this.chaindata = new ChainData(this.handler);
@@ -234,59 +236,72 @@ export default class ScoreKeeper {
   }
 
   // Begin the main workflow of the scorekeeper
-  async begin(): Promise<void> {
-    logger.info(
-      `Starting Scorekeeper. Dry run: ${this._dryRun}`,
-      scorekeeperLabel,
-    );
-
-    const currentEra = (await this.chaindata.getCurrentEra()) || 0;
-    this.currentEra = currentEra;
-
-    await setAllIdentities(this.chaindata, scorekeeperLabel);
-
-    const nominationPromises = this.nominatorGroups.map((nom) =>
-      nom.shouldNominate(),
-    );
-
-    const nominationResults = await Promise.all(nominationPromises);
-
-    const filteredNominators = this.nominatorGroups.filter(
-      (_, index) => nominationResults[index],
-    );
-    // If force round is set in the configs
-    if (this.config.scorekeeper.forceRound || filteredNominators.length > 0) {
+  async begin(): Promise<boolean> {
+    try {
+      const isTest = process.env.NODE_ENV === "test";
       logger.info(
-        `Force Round: ${this.config.scorekeeper.forceRound} ${filteredNominators.length} nominators old - starting round....`,
+        `Starting Scorekeeper. Dry run: ${this._dryRun} test: ${isTest}`,
         scorekeeperLabel,
       );
-      await startRound(
-        this.nominating,
-        this.bot,
-        this.constraints,
-        filteredNominators,
-        this.chaindata,
-        this.handler,
-        this.config,
-        this.currentTargets,
+
+      const currentEra = (await this.chaindata.getCurrentEra()) || 0;
+      this.currentEra = currentEra;
+
+      if (!isTest) {
+        await setAllIdentities(this.chaindata, scorekeeperLabel);
+      }
+
+      const nominationPromises = this.nominatorGroups.map((nom) =>
+        nom.shouldNominate(),
       );
+
+      const nominationResults = await Promise.all(nominationPromises);
+
+      const filteredNominators = this.nominatorGroups.filter(
+        (_, index) => nominationResults[index],
+      );
+      // If force round is set in the configs
+      if (
+        !isTest &&
+        (this.config.scorekeeper.forceRound || filteredNominators.length > 0)
+      ) {
+        logger.info(
+          `Force Round: ${this.config.scorekeeper.forceRound} test: ${isTest} - ${filteredNominators.length} nominators old - starting round....`,
+          scorekeeperLabel,
+        );
+        await startRound(
+          this.nominating,
+          this.bot,
+          this.constraints,
+          filteredNominators,
+          this.chaindata,
+          this.handler,
+          this.config,
+          this.currentTargets,
+        );
+      }
+
+      // Start all Cron Jobs
+      const metadata: JobRunnerMetadata = {
+        config: this.config,
+        chaindata: this.chaindata,
+        nominatorGroups: this.nominatorGroups || [],
+        nominating: this.nominating,
+        // currentEra: this.currentEra,
+        bot: this.bot,
+        constraints: this.constraints,
+        handler: this.handler,
+        currentTargets: this.currentTargets,
+      };
+
+      const jobRunner = await JobsRunnerFactory.makeJobs(metadata);
+
+      this._jobs = await jobRunner.startJobs();
+      this.isStarted = true;
+      return true;
+    } catch (e) {
+      logger.error(JSON.stringify(e), scorekeeperLabel);
+      return false;
     }
-
-    // Start all Cron Jobs
-    const metadata: JobRunnerMetadata = {
-      config: this.config,
-      chaindata: this.chaindata,
-      nominatorGroups: this.nominatorGroups || [],
-      nominating: this.nominating,
-      // currentEra: this.currentEra,
-      bot: this.bot,
-      constraints: this.constraints,
-      handler: this.handler,
-      currentTargets: this.currentTargets,
-    };
-
-    const jobRunner = await JobsRunnerFactory.makeJobs(metadata);
-
-    this._jobs = await jobRunner.startJobs();
   }
 }

@@ -9,6 +9,8 @@ combined.log
 scripts/test
 config.json*
 build
+dist
+**/dist
 
 # Yarn
 .yarn/*

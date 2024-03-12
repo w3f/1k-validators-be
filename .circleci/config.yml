@@ -1,4 +1,4 @@
-version: 2
+version: 2.1
 
 jobs:
   checkDependencies:
@@ -20,7 +20,7 @@ jobs:
           environment:
             YARN_ENABLE_IMMUTABLE_INSTALLS: false
           command: |
-            yarn set version 3.2.2 && yarn install && yarn build && yarn workspace @1kv/common ci:checkCandidatesFile
+            yarn set version 3.2.2 && yarn install && yarn build:core && yarn workspace @1kv/common ci:checkCandidatesFile
 
   checkCoreESLint:
     docker:
@@ -34,79 +34,108 @@ jobs:
           command: |
             yarn set version 3.2.2 && yarn install && yarn build && yarn workspace @1kv/core lint
 
-  #  checkCommonESLint:
-  #    docker:
-  #      - image: node:18
-  #    resource_class: large
-  #    steps:
-  #      - checkout
-  #      - run:
-  #          environment:
-  #            YARN_ENABLE_IMMUTABLE_INSTALLS: false
-  #          command: |
-  #            yarn set version 3.2.2 && yarn install && yarn build && yarn workspace @1kv/common lint
-
-  testCommonUnit:
+  checkCommonESLint:
     docker:
-      - image: node:bullseye
-    resource_class: xlarge
+      - image: node:18
+    resource_class: large
     steps:
       - checkout
       - run:
           environment:
             YARN_ENABLE_IMMUTABLE_INSTALLS: false
           command: |
-            yarn set version 3.2.2
-            yarn install
-            yarn build
-            if ! yarn workspace @1kv/common test:unit --testTimeout=60000; then
-              echo "Unit tests failed, but not failing the job."
-              echo 'export TESTS_FAILED=true' >> $BASH_ENV
-            fi
-      - run:
-          name: "Handle Test Failures"
-          command: |
-            if [ "${TESTS_FAILED}" == "true" ]; then
-              echo "Tests failed."
-              exit 0
-            fi
+            yarn set version 3.2.2 && yarn install && yarn build && yarn workspace @1kv/common lint
 
-  testCommonInt:
+  CommonUnitTests:
+    description: "Common Unit Tests"
     docker:
-      - image: node:bullseye
+      - image: node:18-bullseye
+      - image: mongo:6.0.9
+        name: mongodb
     resource_class: xlarge
     steps:
       - checkout
       - run:
-          environment:
-            YARN_ENABLE_IMMUTABLE_INSTALLS: false
-          command: |
-            yarn set version 3.2.2
-            yarn install
-            yarn build
-            if ! yarn workspace @1kv/common test:int --testTimeout=60000; then
-              echo "Unit tests failed, but not failing the job."
-              echo 'export TESTS_FAILED=true' >> $BASH_ENV
-            fi
+          name: Install Dependencies
+          command: yarn install --immutable
       - run:
-          name: "Handle Test Failures"
+          name: Run Tests
           command: |
-            if [ "${TESTS_FAILED}" == "true" ]; then
-              echo "Tests failed."
-              exit 0
-            fi
+            export MONGO_URI="mongodb://mongodb:27017/testdb"
+            yarn workspace @1kv/common test:unit
 
-  #  testCore:
-  #    docker:
-  #      - image: node:18
-  #    resource_class: large
-  #    steps:
-  #      - checkout
-  #      - run:
-  #          environment:
-  #            YARN_ENABLE_IMMUTABLE_INSTALLS: false
-  #          command: |
-  #            yarn set version 3.2.2 && yarn install && yarn build && yarn workspace @1kv/core test
+  ChaindataIntegrationTests:
+    description: "Chaindata Integration Tests"
+    docker:
+      - image: node:18-bullseye
+      - image: mongo:6.0.9
+        name: mongodb
+    resource_class: xlarge
+    steps:
+      - checkout
+      - run:
+          name: Install Dependencies
+          command: yarn install --immutable
+      - run:
+          name: Run Tests
+          command: |
+            export MONGO_URI="mongodb://mongodb:27017/testdb"
+            yarn workspace @1kv/common test:chaindata:int
+
+  ApiHandlerIntegrationTests:
+    description: "ApiHandler Integration Tests"
+    docker:
+      - image: node:18-bullseye
+      - image: mongo:6.0.9
+        name: mongodb
+    resource_class: xlarge
+    steps:
+      - checkout
+      - run:
+          name: Install Dependencies
+          command: yarn install --immutable
+      - run:
+          name: Run Tests
+          command: |
+            export MONGO_URI="mongodb://mongodb:27017/testdb"
+            yarn workspace @1kv/common test:apihandler:int
+
+  NominatorIntegrationTests:
+    description: "Nominator Integration Tests"
+    docker:
+      - image: node:18-bullseye
+      - image: mongo:6.0.9
+        name: mongodb
+    resource_class: xlarge
+    steps:
+      - checkout
+      - run:
+          name: Install Dependencies
+          command: yarn install --immutable
+      - run:
+          name: Run Tests
+          command: |
+            export MONGO_URI="mongodb://mongodb:27017/testdb"
+            yarn workspace @1kv/common test:nominator:int
+
+  ScorekeeperIntegrationTests:
+    description: "Scorekeeper Integration Tests"
+    docker:
+      - image: node:18-bullseye
+      - image: mongo:6.0.9
+        name: mongodb
+
+    resource_class: xlarge
+    steps:
+      - checkout
+      - run:
+          name: Install Dependencies
+          command: yarn install --immutable
+      - run:
+          name: Run Tests
+          command: |
+            export MONGO_URI="mongodb://mongodb:27017/testdb"
+            yarn workspace @1kv/common test:scorekeeper:int
 
   helmLint:
     docker:
@@ -255,26 +284,38 @@ workflows:
           filters:
             tags:
               ignore: /pull\/[0-9]+/
-      #      - checkCommonESLint:
-      #          filters:
-      #            tags:
-      #              only: /.*/
+      - checkCommonESLint:
+          filters:
+            tags:
+              only: /.*/
       - checkCoreESLint:
           filters:
             tags:
               only: /.*/
-      - testCommonUnit:
+      - CommonUnitTests:
           filters:
             tags:
-              only: /.*/
-      - testCommonInt:
+              ignore: /.*/
+
+      - ChaindataIntegrationTests:
           filters:
             tags:
-              only: /.*/
-      #      - testCore:
-      #          filters:
-      #            tags:
-      #              only: /.*/
+              ignore: /.*/
+
+      - ApiHandlerIntegrationTests:
+          filters:
+            tags:
+              ignore: /.*/
+
+      - NominatorIntegrationTests:
+          filters:
+            tags:
+              ignore: /.*/
+
+      - ScorekeeperIntegrationTests:
+          filters:
+            tags:
+              ignore: /.*/
       - helmLint:
           filters:
             tags:
@@ -306,9 +347,7 @@ workflows:
           requires:
             - helmLint
             - buildCoreImage
-            - buildGatewayImage
-            - testCommonUnit
-            - testCommonInt
+
       - publishCoreImage:
           context: dockerhub-bot
           filters:

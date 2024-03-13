@@ -151,7 +151,7 @@ __metadata:
     "@emotion/react": ^11.11.3
     "@polkadot/react-identicon": ^3.6.5
     "@types/lodash.debounce": ^4.0.9
-    "@types/react": ^18.2.56
+    "@types/react": ^18.2.65
     "@types/react-dom": ^18.2.19
     "@typescript-eslint/eslint-plugin": ^7.0.2
     "@typescript-eslint/parser": ^7.0.2
@@ -3037,7 +3037,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:*, @types/react@npm:^18.2.56":
+"@types/react@npm:*":
   version: 18.2.58
   resolution: "@types/react@npm:18.2.58"
   dependencies:
@@ -3045,6 +3045,17 @@ __metadata:
     "@types/scheduler": "*"
     csstype: ^3.0.2
   checksum: 42551e30c8a54161a11b2ecd11406782ddba4472a4471d45034c551295263d56f06234f283526d0c0420352ce9ce9675b2a6c65db7a287d9613643d3ceaaf1f0
+  languageName: node
+  linkType: hard
+
+"@types/react@npm:^18.2.65":
+  version: 18.2.65
+  resolution: "@types/react@npm:18.2.65"
+  dependencies:
+    "@types/prop-types": "*"
+    "@types/scheduler": "*"
+    csstype: ^3.0.2
+  checksum: 1931a8b36e3135f3058e988cfc0d4ffe4b75af10b8efcf8b7e5759934333922162394edff9ccf8aff838e8db62de014c015c9c094597fdf9ca1405ac1d040fdf
   languageName: node
   linkType: hard
 

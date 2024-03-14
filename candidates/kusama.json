@@ -3633,7 +3633,7 @@
       "name": "😻 Stake Kat 😻",
       "stash": "GefTiMd4roQrRkJzurdLdGsoAUkmMkiGoYd6Cvu5oqCgamX",
       "riotHandle": "@fmonza:matrix.org",
-      "kyc": false
+      "kyc": true
     },
     {
       "slotId": 521,
@@ -5842,6 +5842,13 @@
       "name": "Colossus | kusama-node2",
       "stash": "DwR67tvnyD59ux1cr9R8wcNXWKJFHabos9CCzVNr3cjXyCU",
       "riotHandle": "@colossus.digital:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 839,
+      "name": "🐱Stake Kitten 🐱",
+      "stash": "FeryNPnMius9WaSmMbcEFwrbU9UcTa8jnCgnx4oYNMoYc63",
+      "riotHandle": "@fmonza:matrix.org",
       "kyc": true
     }
   ]

@@ -5843,6 +5843,20 @@
       "stash": "DwR67tvnyD59ux1cr9R8wcNXWKJFHabos9CCzVNr3cjXyCU",
       "riotHandle": "@colossus.digital:matrix.org",
       "kyc": true
+    },
+    {
+      "slotId": 839,
+      "name": "Alntc",
+      "stash": "Ehd5WPDmd9HFhiSZ3Y2RsStRsaoyHQ23bEFUGx5PnCQ4pJN",
+      "riotHandle": "@skalablex:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 840,
+      "name": "Alntc.02",
+      "stash": "FvQau5sffdGLfDhzmjLajgSMDURVjDyDMG752BTyXr69Tdv",
+      "riotHandle": "@skalablex:matrix.org",
+      "kyc": true
     }
   ]
 }

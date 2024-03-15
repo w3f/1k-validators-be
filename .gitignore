@@ -36,3 +36,9 @@ docs/.DS_Store
 /packages/common/polkadot-slots.json
 /packages/core/coverage/
 /packages/common/coverage/
+
+
+.turbo
+build/**
+dist/**
+.next/**

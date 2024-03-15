@@ -2,16 +2,17 @@
   "extends": "../../tsconfig.json",
   "exclude": ["test", "node_modules"],
   "include": ["src/**/*.ts"],
-  "paths": {
-    "@1kv/common": ["../common/build"],
-    "@1kv/gateway": ["../gateway/build"]
-  },
+
   "files": [
     "src/run.ts",
     "src/index.ts",
     "src/worker.ts",
   ],
   "compilerOptions": {
+    "paths": {
+      "@1kv/common": ["../common/build"],
+      "@1kv/gateway": ["../gateway/build"]
+    },
     /* Basic Options */
     "target": "es2015",                          /* Specify ECMAScript target version: 'ES3' (default), 'ES5', 'ES2015', 'ES2016', 'ES2017','ES2018' or 'ESNEXT'. */
     "module": "commonjs",                     /* Specify module code generation: 'none', 'commonjs', 'amd', 'system', 'umd', 'es2015', or 'ESNext'. */

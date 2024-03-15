@@ -1,4 +1,8 @@
-const esbuild = require("esbuild");
+import esbuild from "esbuild";
+import packageJson from '../../package.json' assert {type: 'json'};
+
+const deps = Object.keys(packageJson.dependencies || {});
+
 
 const externalPackages = [
   "@polkadot/api-augment",
@@ -39,6 +43,14 @@ const externalPackages = [
   "matris-js-sdk",
   "@1kv/telemetry",
   "@1kv/gateway",
+  "tty",
+  "koa",
+  "coingecko-api-v3",
+    "node-mongodb-native",
+    "mongoose",
+    "events"
+    "@bull-board"
+    // "@1kv/common"
 ];
 
 const isProduction = process.argv.includes("--prod");
@@ -49,14 +61,14 @@ const buildOptions = {
   minify: isProduction,
   platform: "node",
   target: "node18",
-  external: externalPackages,
+  external: [...deps, ...externalPackages],
   outdir: "build",
   tsconfig: "tsconfig.json",
-  splitting: true,
+  splitting: false,
   format: "esm",
   chunkNames: "chunks/[name]-[hash]",
   sourcemap: !isProduction,
-  logLevel: "error",
+  logLevel: "info",
 };
 
 if (process.argv.includes("--watch")) {

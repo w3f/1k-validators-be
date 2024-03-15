@@ -1,4 +1,4 @@
-const esbuild = require("esbuild");
+import esbuild from "esbuild";
 
 const externalPackages = [
   "@polkadot/api-augment",
@@ -39,6 +39,7 @@ const externalPackages = [
   "matris-js-sdk",
   "@1kv/telemetry",
   "@1kv/gateway",
+  "@1kv/common",
 ];
 
 const isProduction = process.argv.includes("--prod");
@@ -51,13 +52,13 @@ const buildOptions = {
   target: "node18",
   external: externalPackages,
   outdir: "build",
-  entryNames: "[dir]/[name].mjs",
+  // entryNames: "[dir]/[name].mjs",
   tsconfig: "tsconfig.json",
   splitting: true,
   format: "esm",
-  outExtension: { ".js": ".mjs" },
+  // outExtension: { ".js": ".mjs" },
   sourcemap: !isProduction,
-  // logLevel: "error",
+  logLevel: "info",
 };
 
 if (process.argv.includes("--watch")) {

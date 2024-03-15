@@ -56,7 +56,7 @@ const buildOptions = {
   format: "esm",
   chunkNames: "chunks/[name]-[hash]",
   sourcemap: !isProduction,
-  logLevel: "error",
+  logLevel: "info",
 };
 
 if (process.argv.includes("--watch")) {

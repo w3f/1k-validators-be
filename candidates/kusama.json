@@ -627,8 +627,8 @@
       "slotId": 89,
       "name": "bolinas-201",
       "stash": "GCporqtiw7ybKYUqAftjvUAjZnp3x9gfrWsTy1GrvrGwmYT",
-      "riotHandle": "@zeke:matrix.parity.io",
-      "kyc": false
+      "riotHandle": "@zmost:matrix.org",
+      "kyc": true
     },
     {
       "slotId": 90,

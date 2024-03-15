@@ -5850,6 +5850,13 @@
       "stash": "FeryNPnMius9WaSmMbcEFwrbU9UcTa8jnCgnx4oYNMoYc63",
       "riotHandle": "@fmonza:matrix.org",
       "kyc": true
+    },
+    {
+      "slotId": 840,
+      "name": "Carpediem",
+      "stash": "DDdA9Zo4K6ey39nGPzuv3kzFMkyut2jQAQqoggLqQw71trB",
+      "riotHandle": "@jdiem:matrix.org",
+      "kyc": true
     }
   ]
 }

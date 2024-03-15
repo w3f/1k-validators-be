@@ -627,8 +627,8 @@
       "slotId": 89,
       "name": "bolinas-201",
       "stash": "GCporqtiw7ybKYUqAftjvUAjZnp3x9gfrWsTy1GrvrGwmYT",
-      "riotHandle": "@zeke:matrix.parity.io",
-      "kyc": false
+      "riotHandle": "@zmost:matrix.org",
+      "kyc": true
     },
     {
       "slotId": 90,
@@ -3633,7 +3633,7 @@
       "name": "😻 Stake Kat 😻",
       "stash": "GefTiMd4roQrRkJzurdLdGsoAUkmMkiGoYd6Cvu5oqCgamX",
       "riotHandle": "@fmonza:matrix.org",
-      "kyc": false
+      "kyc": true
     },
     {
       "slotId": 521,
@@ -5846,13 +5846,41 @@
     },
     {
       "slotId": 839,
+      "name": "🐱Stake Kitten 🐱",
+      "stash": "FeryNPnMius9WaSmMbcEFwrbU9UcTa8jnCgnx4oYNMoYc63",
+      "riotHandle": "@fmonza:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 840,
+      "name": "Carpediem",
+      "stash": "DDdA9Zo4K6ey39nGPzuv3kzFMkyut2jQAQqoggLqQw71trB",
+      "riotHandle": "@jdiem:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 841,
+      "name": "AlChain",
+      "stash": "FAcNSqYA896uzGy4eVEwbz2vog6FL5gucX9Hggq6s5AyzBw",
+      "riotHandle": "@keithalambrukos:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 842,
+      "name": "AlChain*1",
+      "stash": "GTw5VkH7RqVHDJwPz45AEnVtt6MRuR5oRZxzQzBzoQB7EsR",
+      "riotHandle": "@keithalambrukos:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 843,
       "name": "Alntc",
       "stash": "Ehd5WPDmd9HFhiSZ3Y2RsStRsaoyHQ23bEFUGx5PnCQ4pJN",
       "riotHandle": "@skalablex:matrix.org",
       "kyc": true
     },
     {
-      "slotId": 840,
+      "slotId": 844,
       "name": "Alntc.02",
       "stash": "FvQau5sffdGLfDhzmjLajgSMDURVjDyDMG752BTyXr69Tdv",
       "riotHandle": "@skalablex:matrix.org",

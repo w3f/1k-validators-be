@@ -65,7 +65,7 @@
     "test:common:int:nominator:ci": "circleci local execute NominatorIntegrationTests",
     "test:common:int:ci": "yarn test:common:int:scorekeeper:ci && yarn test:common:int:chaindata:ci && yarn test:common:int:apihandler:ci && yarn test:common:int:nominator:ci",
     "test:all": "yarn workspaces foreach run test",
-    "test": "LOG_LEVEL=warn yarn build:prod && vitest run --coverage",
+    "test": "LOG_LEVEL=warn yarn build && vitest run --coverage",
     "test:ui": "LOG_LEVEL=warn vitest --ui --config vitest.config.mts --coverage",
     "turbo": "turbo build"
   },

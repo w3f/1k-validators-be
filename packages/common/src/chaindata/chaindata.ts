@@ -50,11 +50,7 @@ import {
   getValidatorsAt,
   getValidatorsAtEra,
 } from "./queries/Validators";
-import {
-  getFormattedIdentity,
-  getIdentity,
-  hasIdentity,
-} from "./queries/Identity";
+import { getFormattedIdentity, hasIdentity } from "./queries/Identity";
 import { getProxyAnnouncements, ProxyAnnouncement } from "./queries/Proxy";
 import {
   getNominatorAddresses,
@@ -329,9 +325,9 @@ export class ChainData {
    * @param account The account to check.
    * @returns The identity root string.
    */
-  getIdentity = async (account: string): Promise<string | null> => {
-    return await getIdentity(this, account);
-  };
+  // getIdentity = async (account: string): Promise<string | null> => {
+  //   return await getIdentity(this, account);
+  // };
 
   getFormattedIdentity = async (addr: string): Promise<Identity | null> => {
     return await getFormattedIdentity(this, addr);

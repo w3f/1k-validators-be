@@ -11,9 +11,8 @@ import {
   ScoreKeeper,
   Util,
 } from "@1kv/common";
-
-import { TelemetryClient } from "@1kv/telemetry";
 import { Server } from "@1kv/gateway";
+import { TelemetryClient } from "@1kv/telemetry";
 
 const isCI = process.env.CI;
 

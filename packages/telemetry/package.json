@@ -5,8 +5,8 @@
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
-    "build": "node esbuild.js",
-    "build:prod": "node esbuild.js --prod",
+    "build": "tsc --build tsconfig.json",
+    "build:prod": "node esbuild.mjs --prod",
     "clean": "../../node_modules/.bin/rimraf ./build tsconfig.tsbuildinfo combined.log",
     "clean:build": "yarn clean && yarn build",
     "create-config-kusama-microservice": "cp config/kusama.sample.json ./config/main.json",

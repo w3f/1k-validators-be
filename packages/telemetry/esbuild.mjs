@@ -1,4 +1,4 @@
-const esbuild = require("esbuild");
+import esbuild from "esbuild";
 
 const externalPackages = [
   "@polkadot/api-augment",

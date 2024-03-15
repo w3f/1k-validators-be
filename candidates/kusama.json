@@ -5857,6 +5857,20 @@
       "stash": "DDdA9Zo4K6ey39nGPzuv3kzFMkyut2jQAQqoggLqQw71trB",
       "riotHandle": "@jdiem:matrix.org",
       "kyc": true
+    },
+    {
+      "slotId": 841,
+      "name": "AlChain",
+      "stash": "FAcNSqYA896uzGy4eVEwbz2vog6FL5gucX9Hggq6s5AyzBw",
+      "riotHandle": "@keithalambrukos:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 842,
+      "name": "AlChain*1",
+      "stash": "GTw5VkH7RqVHDJwPz45AEnVtt6MRuR5oRZxzQzBzoQB7EsR",
+      "riotHandle": "@keithalambrukos:matrix.org",
+      "kyc": true
     }
   ]
 }

@@ -5871,6 +5871,20 @@
       "stash": "GTw5VkH7RqVHDJwPz45AEnVtt6MRuR5oRZxzQzBzoQB7EsR",
       "riotHandle": "@keithalambrukos:matrix.org",
       "kyc": true
+    },
+    {
+      "slotId": 843,
+      "name": "Alntc",
+      "stash": "Ehd5WPDmd9HFhiSZ3Y2RsStRsaoyHQ23bEFUGx5PnCQ4pJN",
+      "riotHandle": "@skalablex:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 844,
+      "name": "Alntc.02",
+      "stash": "FvQau5sffdGLfDhzmjLajgSMDURVjDyDMG752BTyXr69Tdv",
+      "riotHandle": "@skalablex:matrix.org",
+      "kyc": true
     }
   ]
 }

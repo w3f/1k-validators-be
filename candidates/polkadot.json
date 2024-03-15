@@ -449,8 +449,8 @@
       "name": "nicasio-201",
       "stash": "13zBFyK97dg4hWjXwEpigeVdu69sHa4fc8JYegpB369PAafq",
       "kusamaStash": "GCporqtiw7ybKYUqAftjvUAjZnp3x9gfrWsTy1GrvrGwmYT",
-      "riotHandle": "@zeke:matrix.parity.io",
-      "kyc": false
+      "riotHandle": "@zmost:matrix.org",
+      "kyc": true
     },
     {
       "slotId": 56,

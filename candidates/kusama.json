@@ -5885,6 +5885,13 @@
       "stash": "FvQau5sffdGLfDhzmjLajgSMDURVjDyDMG752BTyXr69Tdv",
       "riotHandle": "@skalablex:matrix.org",
       "kyc": true
+    },
+    {
+      "slotId": 845,
+      "name": "Pura Vida",
+      "stash": "GyND5n2RxCDdmzcfSqEhgc5G76tXkUN1pGRXBv3sbGvnXVA",
+      "riotHandle": "@pura.vida.nodes:matrix.org",
+      "kyc": true
     }
   ]
 }

@@ -328,17 +328,6 @@ describe("ChainData Integration Tests", () => {
     TIMEOUT_DURATION,
   );
 
-  // it(
-  //   "should fetch identity",
-  //   async () => {
-  //     const getIdentity = await chainData.getIdentity(
-  //       "DBfT2GUqHX89afMhTzGCCbAc44zX33d4XySWX2qAPxZ35KE",
-  //     );
-  //     expect(getIdentity).toBeDefined();
-  //   },
-  //   TIMEOUT_DURATION,
-  // );
-
   it(
     "should fetch formatted identity",
     async () => {

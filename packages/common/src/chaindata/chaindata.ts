@@ -320,15 +320,6 @@ export class ChainData {
     return await hasIdentity(this, account);
   };
 
-  /**
-   * Gets the identity root for an account.
-   * @param account The account to check.
-   * @returns The identity root string.
-   */
-  // getIdentity = async (account: string): Promise<string | null> => {
-  //   return await getIdentity(this, account);
-  // };
-
   getFormattedIdentity = async (addr: string): Promise<Identity | null> => {
     return await getFormattedIdentity(this, addr);
   };

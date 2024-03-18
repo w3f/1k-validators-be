@@ -196,6 +196,7 @@ describe("Location queries", () => {
           core_count: 4,
           is_virtual_machine: false,
         },
+        "1k2j08",
         true,
         8080,
       );

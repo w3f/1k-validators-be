@@ -38,39 +38,6 @@ export const hasIdentity = async (
   }
 };
 
-// export const getIdentity = async (
-//   chaindata: Chaindata,
-//   account: string,
-// ): Promise<any> => {
-//   try {
-//     if (!(await chaindata.checkApiConnection())) {
-//       return null;
-//     }
-//     const identity = await chaindata.api?.query.identity.identityOf(account);
-//     if (identity && !identity.isSome) {
-//       const superOf = await chaindata.api?.query.identity.superOf(account);
-//       if (superOf && superOf.isSome) {
-//         const id = await chaindata.api?.query.identity.identityOf(
-//           superOf.unwrap()[0],
-//         );
-//         if (id && id.isNone) {
-//           return null;
-//         }
-//         return id && id.isSome && id.unwrapOr({ info: "" }).info.toString()
-//           ? id.unwrap().info.toString()
-//           : null;
-//       }
-//     }
-//     if (identity && identity.isSome) {
-//       return identity.unwrap().info.toString();
-//     }
-//
-//     return null;
-//   } catch (e) {
-//     await handleError(chaindata, e, "getIdentity");
-//   }
-// };
-
 export const getFormattedIdentity = async (
   chaindata: Chaindata,
   addr: string,

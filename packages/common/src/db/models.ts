@@ -213,6 +213,7 @@ export interface Location {
   memory: string;
   coreCount: string;
   vm: boolean;
+  networkId?: string;
 }
 
 export const LocationSchema = new Schema({
@@ -233,6 +234,7 @@ export const LocationSchema = new Schema({
   memory: String,
   coreCount: String,
   vm: Boolean,
+  networkId: String,
 });
 
 export const LocationModel = mongoose.model("Location", LocationSchema);

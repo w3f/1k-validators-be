@@ -58,7 +58,7 @@ __metadata:
     "@types/node": ^20.11.5
     hash.js: ^1.1.7
     jest: ^29.7.0
-    mongoose: ^8.1.1
+    mongoose: ^8.2.2
     ts-jest: ^29.1.2
     ts-node: ^10.9.2
     typescript: ^5.3.3
@@ -109,7 +109,7 @@ __metadata:
     matrix-js-sdk: ^31.1.0
     mongodb: 6.3.0
     mongodb-memory-server: ^9.1.6
-    mongoose: ^8.1.1
+    mongoose: ^8.2.2
     nodemon: ^3.0.3
     open-cli: ^8.0.0
     prettier: ^3.2.4
@@ -9053,7 +9053,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mongoose@npm:*, mongoose@npm:^8.1.1":
+"mongoose@npm:*":
   version: 8.2.0
   resolution: "mongoose@npm:8.2.0"
   dependencies:
@@ -9065,6 +9065,21 @@ __metadata:
     ms: 2.1.3
     sift: 16.0.1
   checksum: 5402c1d05ab5e1c2f9736b81f2d827bd9774201f7b6e40d5fb7f9c645b56c8c2538b7dfe2a8e761e29e48b164e6c56efe9802a3a5dabbc68578258ed31cec53b
+  languageName: node
+  linkType: hard
+
+"mongoose@npm:^8.2.2":
+  version: 8.2.2
+  resolution: "mongoose@npm:8.2.2"
+  dependencies:
+    bson: ^6.2.0
+    kareem: 2.5.1
+    mongodb: 6.3.0
+    mpath: 0.9.0
+    mquery: 5.0.0
+    ms: 2.1.3
+    sift: 16.0.1
+  checksum: 98ea8ba825ee3acd3b83b24d92320c28d432d53a33636009092f0c25160f8b1d3a57d6722c40b8a2c207ecb964bf6a9567d3ddff248e62ca48e49b8d3252926a
   languageName: node
   linkType: hard
 

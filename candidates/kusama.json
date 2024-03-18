@@ -5906,6 +5906,20 @@
       "stash": "GyND5n2RxCDdmzcfSqEhgc5G76tXkUN1pGRXBv3sbGvnXVA",
       "riotHandle": "@pura.vida.nodes:matrix.org",
       "kyc": true
+    },
+    {
+      "slotId": 848,
+      "name": "Pulsemiss",
+      "stash": "GPPVEk4xXHjFmUYEzjF7FkGVpvLQXHQKNjuuWdHoRkmbcNt",
+      "riotHandle": "@dufaultraquildis:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 849,
+      "name": "Pulsemiss.1",
+      "stash": "HFiVyL8h8mTXcJGmm5MiftWFvHjDi3y3rHa7fSaKzhTvfiT",
+      "riotHandle": "@dufaultraquildis:matrix.org",
+      "kyc": true
     }
   ]
 }

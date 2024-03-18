@@ -5888,6 +5888,20 @@
     },
     {
       "slotId": 845,
+      "name": "Delega Pro",
+      "stash": "Fk8MEHkk1rsZ4bSNeikxvLryFJr8Sk8Zhf62D6CNWVnKDNV",
+      "riotHandle": "@paulettevanhoesen:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 846,
+      "name": "Delega Pro/2",
+      "stash": "Gyd4K4pih29KULYhXt8EB8g1WeZFVqsEGBzW8FxatXbg6SP",
+      "riotHandle": "@paulettevanhoesen:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 847,
       "name": "Pura Vida",
       "stash": "GyND5n2RxCDdmzcfSqEhgc5G76tXkUN1pGRXBv3sbGvnXVA",
       "riotHandle": "@pura.vida.nodes:matrix.org",

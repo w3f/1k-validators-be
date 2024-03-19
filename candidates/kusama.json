@@ -5948,6 +5948,13 @@
       "stash": "HFiVyL8h8mTXcJGmm5MiftWFvHjDi3y3rHa7fSaKzhTvfiT",
       "riotHandle": "@dufaultraquildis:matrix.org",
       "kyc": true
+    },
+    {
+      "slotId": 854,
+      "name": "⚡️ DigitalGhost ⚡️",
+      "stash": "FkqSqeRVr4VceTBKFXzwdSAjmB1QuhhVTdN1CXhRFvtPRZa",
+      "riotHandle": "@pos.digitalghost:matrix.org",
+      "kyc": true
     }
   ]
 }

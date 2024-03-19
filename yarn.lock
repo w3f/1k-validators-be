@@ -34,7 +34,7 @@ __metadata:
     koa-static: ^5.0.0
     koa-swagger-decorator: ^1.8.7
     lru-cache: latest
-    mongodb-memory-server: ^9.1.6
+    mongodb-memory-server: ^9.1.7
     node-fetch: 3.3.2
     prettier: ^3.2.4
     request: ^2.88.2
@@ -108,7 +108,7 @@ __metadata:
     koa2-cors: ^2.0.6
     matrix-js-sdk: ^31.1.0
     mongodb: 6.3.0
-    mongodb-memory-server: ^9.1.6
+    mongodb-memory-server: ^9.1.7
     mongoose: ^8.1.1
     nodemon: ^3.0.3
     open-cli: ^8.0.0
@@ -8957,9 +8957,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mongodb-memory-server-core@npm:9.1.6":
-  version: 9.1.6
-  resolution: "mongodb-memory-server-core@npm:9.1.6"
+"mongodb-memory-server-core@npm:9.1.7":
+  version: 9.1.7
+  resolution: "mongodb-memory-server-core@npm:9.1.7"
   dependencies:
     async-mutex: ^0.4.0
     camelcase: ^6.3.0
@@ -8973,17 +8973,17 @@ __metadata:
     tar-stream: ^3.0.0
     tslib: ^2.6.2
     yauzl: ^2.10.0
-  checksum: afb1c91ab8fb2a26c80dd4f2eda49e4a9552ed2a4657af20edd8deee35aadbbad3fefa359f7457895b34c7c8fc8357649d63c69dba7ad02b8c6dae71def42390
+  checksum: b92902d51750cd9810cb758b4c384d8e3fe282d41a6531ba2141621920347a33bb2211503a2ebea099b930f2d8d680aad56f97b1e866b073bbe0240a1aba4fd6
   languageName: node
   linkType: hard
 
-"mongodb-memory-server@npm:^9.1.6":
-  version: 9.1.6
-  resolution: "mongodb-memory-server@npm:9.1.6"
+"mongodb-memory-server@npm:^9.1.7":
+  version: 9.1.7
+  resolution: "mongodb-memory-server@npm:9.1.7"
   dependencies:
-    mongodb-memory-server-core: 9.1.6
+    mongodb-memory-server-core: 9.1.7
     tslib: ^2.6.2
-  checksum: bba087cf63d7fe4d8de58f2a4c925018f57bebf5e94952413f1ddcac7d1afdd50f679844d657473feb578269bf8147c5134df5cea896c92486f64ec5b8e24a14
+  checksum: 3d7e6de6dcb7a9f24720f541ee6a29b93db5c212ffb370b9af648ea4a9b0d9dd90e32d97d32fe0bf7b3b5900a54f3b0f13dfbce2621854024e201ae6b89ea34c
   languageName: node
   linkType: hard
 

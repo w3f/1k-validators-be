@@ -92,7 +92,7 @@
     "koa-static": "^5.0.0",
     "koa-swagger-decorator": "^1.8.7",
     "lru-cache": "latest",
-    "mongodb-memory-server": "^9.1.6",
+    "mongodb-memory-server": "^9.1.7",
     "node-fetch": "3.3.2",
     "request": "^2.88.2",
     "swagger-jsdoc": "^6.2.8",

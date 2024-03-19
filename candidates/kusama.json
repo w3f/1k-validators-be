@@ -5934,6 +5934,20 @@
       "stash": "Gw9ykxzaaDVk7Wnb16Xoj48VonhRpBupos1Uw48JegD5UHS",
       "riotHandle": "@geronimoboulanger:matrix.org",
       "kyc": true
-    }  
+    },
+    {
+      "slotId": 852,
+      "name": "Pulsemiss",
+      "stash": "GPPVEk4xXHjFmUYEzjF7FkGVpvLQXHQKNjuuWdHoRkmbcNt",
+      "riotHandle": "@dufaultraquildis:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 853,
+      "name": "Pulsemiss1",
+      "stash": "HFiVyL8h8mTXcJGmm5MiftWFvHjDi3y3rHa7fSaKzhTvfiT",
+      "riotHandle": "@dufaultraquildis:matrix.org",
+      "kyc": true
+    }
   ]
 }

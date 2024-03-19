@@ -5881,7 +5881,7 @@
     },
     {
       "slotId": 844,
-      "name": "Alntc.02",
+      "name": "Alntc02",
       "stash": "FvQau5sffdGLfDhzmjLajgSMDURVjDyDMG752BTyXr69Tdv",
       "riotHandle": "@skalablex:matrix.org",
       "kyc": true
@@ -5906,6 +5906,34 @@
       "stash": "GyND5n2RxCDdmzcfSqEhgc5G76tXkUN1pGRXBv3sbGvnXVA",
       "riotHandle": "@pura.vida.nodes:matrix.org",
       "kyc": true
-    }
+    },
+    {
+      "slotId": 848,
+      "name": "Hubnet",
+      "stash": "EkXhD7y4gFeNJeLw5Wp3Y8xQGQPvS5Z1w24EvYwXEieMD6a",
+      "riotHandle": "@aukerinca:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 849,
+      "name": "Hubnet_two",
+      "stash": "FSSErjHBDqG6UDHizeL4KpBsmUicqDDC9zvyzmpR5vET2Jy",
+      "riotHandle": "@aukerinca:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 850,
+      "name": "Tokengear",
+      "stash": "HEz8XSfuhcZ4u8XPqGYqodRfrix6EAsas24iRyvaMNE3uX6",
+      "riotHandle": "@geronimoboulanger:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 851,
+      "name": "Tokengear*2",
+      "stash": "Gw9ykxzaaDVk7Wnb16Xoj48VonhRpBupos1Uw48JegD5UHS",
+      "riotHandle": "@geronimoboulanger:matrix.org",
+      "kyc": true
+    }  
   ]
 }

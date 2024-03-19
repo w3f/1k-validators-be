@@ -1,5 +1,4 @@
-import Chaindata, { chaindataLabel } from "../chaindata";
-import logger from "../../logger";
+import Chaindata, { handleError } from "../chaindata";
 
 export const getNominatorAddresses = async (
   chaindata: Chaindata,
@@ -23,7 +22,7 @@ export const getNominatorAddresses = async (
       .filter((address) => address !== undefined) as string[];
     return nominatorMap;
   } catch (e) {
-    logger.error(`Error getting nominators: ${e}`, chaindataLabel);
+    await handleError(chaindata, e, "getNominatorAddresses");
     return [];
   }
 };
@@ -67,7 +66,7 @@ export const getNominators = async (
       }),
     );
   } catch (e) {
-    logger.error(`Error getting nominators: ${e}`, chaindataLabel);
+    await handleError(chaindata, e, "getNominators");
     return [];
   }
 };
@@ -85,7 +84,7 @@ export const getNominatorLastNominationEra = async (
       await chaindata.api?.query.staking.nominators(address);
     return lastNominationEra?.unwrapOrDefault().submittedIn.toNumber() || null;
   } catch (e) {
-    logger.error(`Error getting last nomination era: ${e}`, chaindataLabel);
+    await handleError(chaindata, e, "getNominatorLastNominationEra");
     return null;
   }
 };
@@ -102,7 +101,7 @@ export const getNominatorCurrentTargets = async (
     const targets = await chaindata.api?.query.staking.nominators(address);
     return targets?.unwrapOrDefault().targets.toJSON() as string[];
   } catch (e) {
-    logger.error(`Error getting current targets: ${e}`, chaindataLabel);
+    await handleError(chaindata, e, "getNominatorCurrentTargets");
     return null;
   }
 };

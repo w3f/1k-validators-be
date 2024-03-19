@@ -1,6 +1,7 @@
 import Nominator from "../../src/nominator/nominator";
 import ApiHandler from "../../src/ApiHandler/ApiHandler";
 import { NominatorConfig } from "../../src/types";
+import { beforeEach, describe, expect, it } from "vitest";
 
 describe("Nominator Integration Test", () => {
   const nominators: Nominator[] = [];
@@ -178,7 +179,7 @@ describe("Nominator Integration Test", () => {
 
   beforeEach(async () => {
     handler = new ApiHandler(["wss://kusama-rpc.polkadot.io"]);
-    await handler.setAPI();
+    await handler.initiateConnection();
   });
 
   it("should have a status defined", async () => {

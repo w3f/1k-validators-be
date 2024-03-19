@@ -2,8 +2,9 @@
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { Db } from "../../src";
 import mongoose from "mongoose";
+import { afterAll, afterEach, beforeAll, beforeEach } from "vitest";
+import logger from "../../src/logger";
 import { deleteAllDb } from "./deleteAll";
-import * as Util from "../../src/utils/util";
 
 interface ObjectWithId {
   _id: any;
@@ -88,47 +89,38 @@ export const sortByKey = (obj: any[], key: string) => {
   return obj;
 };
 
-export const createTestServer = async (oldMongoServer?: MongoMemoryServer) => {
-  try {
-    await Util.sleep(500);
-    if (oldMongoServer) {
-      await oldMongoServer.stop();
-      await Util.sleep(300);
-    }
+let mongoServer: MongoMemoryServer | null = null;
+let mongoUri: string | null = null;
 
-    const mongoServer = await MongoMemoryServer.create();
-    const dbName = `t${Math.random().toString().replace(".", "")}`;
-    console.log("dbName", dbName);
-    const mongoUri = mongoServer.getUri(dbName);
-    console.log("mongoUri", mongoUri);
-    await Db.create(mongoUri);
-    return mongoServer;
-  } catch (error) {
-    console.error("Error creating test server:", error);
-    throw error;
+export const createTestServer = async () => {
+  const isCI = process.env.CI === "true";
+
+  // If the environment is CI, run the tests in a Docker container with a mongo container
+  if (isCI) {
+    mongoUri = process.env.MONGO_URI || "mongodb://mongodb:27017";
+  } else {
+    // Run tests with a mongo memory server
+    mongoServer = await MongoMemoryServer.create();
+    mongoUri = mongoServer.getUri();
   }
+
+  logger.info("Connecting to MongoDB at URI:", mongoUri);
+  await Db.create(mongoUri);
+  logger.info("Connected to MongoDB");
 };
 
 export const initTestServerBeforeAll = () => {
-  let mongoServer: MongoMemoryServer;
   beforeAll(async () => {
-    try {
-      // await sleep(300);
-      mongoServer = await createTestServer(mongoServer);
-    } catch (error) {
-      console.error("Error initializing test server before all tests:", error);
-      throw error;
-    }
+    await createTestServer();
   });
-  afterEach(async () => {
-    try {
-      // await sleep(300);
-      await deleteAllDb();
-    } catch (error) {
-      console.error("Error stopping test server after all tests:", error);
-      // throw error;
-    }
+
+  beforeEach(async () => {
+    const dbName = `testdb_${Date.now()}`;
+    await mongoose.connection.useDb(dbName);
+    await deleteAllDb();
   });
+  afterEach(async () => {});
+
   afterAll(async () => {
     await mongoose.disconnect();
   });

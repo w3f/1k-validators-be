@@ -17,7 +17,6 @@ import {
   updateIITRequestCount,
 } from "../../../src/db/queries";
 import {
-  initTestServerBeforeAll,
   omitFields,
   omitId,
   omitUpdated,
@@ -29,8 +28,8 @@ import {
 } from "../../testUtils/candidate";
 import { addKusamaLocations, kusamaLocations } from "../../testUtils/location";
 import { deleteAllDb, deleteLocations } from "../../testUtils/deleteAll";
-
-initTestServerBeforeAll();
+import { beforeEach, describe, expect, it } from "vitest";
+import { sleep } from "../../../src/utils";
 
 describe("Location queries", () => {
   beforeEach(async () => {
@@ -46,6 +45,8 @@ describe("Location queries", () => {
         kusamaLocations.map(omitId).map(omitUpdated),
         "session",
       );
+
+      await sleep(10000);
 
       const locations = await getAllLocations();
 
@@ -195,6 +196,7 @@ describe("Location queries", () => {
           core_count: 4,
           is_virtual_machine: false,
         },
+        "1k2j08",
         true,
         8080,
       );

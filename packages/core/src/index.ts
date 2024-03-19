@@ -11,9 +11,8 @@ import {
   ScoreKeeper,
   Util,
 } from "@1kv/common";
-
-import { TelemetryClient } from "@1kv/telemetry";
 import { Server } from "@1kv/gateway";
+import { TelemetryClient } from "@1kv/telemetry";
 
 const isCI = process.env.CI;
 
@@ -32,25 +31,34 @@ const catchAndQuit = async (fn: any) => {
 
 export const createAPIHandler = async (config, retries = 0) => {
   try {
-    logger.info(`Creating API Handler`, winstonLabel);
-    // Create the API handler.
+    logger.info("Creating API Handler", winstonLabel);
+    // Determine the correct set of endpoints based on the network prefix.
     const endpoints =
-      config.global.networkPrefix == 2
+      config.global.networkPrefix === 2 || config.global.networkPrefix === 0
         ? config.global.apiEndpoints
-        : config.global.networkPrefix == 0
-          ? config.global.apiEndpoints
-          : Constants.LocalEndpoints;
+        : Constants.LocalEndpoints;
+
     const handler = new ApiHandler(endpoints);
-    await handler.setAPI();
+    await handler.initiateConnection();
+
+    // Check API health before proceeding.
+    let health = await handler.healthCheck();
+    while (!health) {
+      logger.info("Waiting for API to connect...", winstonLabel);
+      await Util.sleep(1000);
+      health = await handler.healthCheck();
+    }
+
     return handler;
   } catch (e) {
-    logger.error(JSON.stringify(e), winstonLabel);
+    logger.error(`Error: ${e.message || e.toString()}`, winstonLabel);
+
     if (retries < 20) {
       logger.info(`Retrying... attempt: ${retries}`, winstonLabel);
       return await createAPIHandler(config, retries + 1);
     } else {
-      logger.error(`Retries exceeded`, winstonLabel);
-      process.exit(1);
+      logger.error("Retries exceeded", winstonLabel);
+      throw new Error("Unable to create API Handler after multiple retries.");
     }
   }
 };
@@ -116,46 +124,9 @@ export const createMatrixBot = async (config) => {
   }
 };
 
-export const clean = async (scorekeeper) => {
+export const clean = async (scorekeeper: ScoreKeeper) => {
   try {
-    // Clean locations with None
-    await queries.cleanBlankLocations();
-    await queries.cleanOldLocations();
-    await queries.cleanOldNominatorStakes();
-
-    // Delete all on-chain identities so they get fetched new on startup.
-    await queries.deleteAllIdentities();
-
-    // Delete the old candidate fields.
-    await queries.deleteOldCandidateFields();
-
-    const allTelemetryNodes = await queries.allTelemetryNodes();
-
-    for (const node of allTelemetryNodes) {
-      await queries.clearTelemetryNodeNodeRefsFrom(node.name);
-    }
-
-    // Clear node refs and delete old fields from all nodes before starting new
-    // telemetry client.
-    const allCandidates = await queries.allCandidates();
-    for (const [index, node] of allCandidates.entries()) {
-      const { name } = node;
-      await queries.deleteOldFieldFrom(name);
-      await queries.clearCandidateNodeRefsFrom(name);
-    }
-
-    // Remove stale nominators.
-    const bondedAddresses = scorekeeper.getAllNominatorBondedAddresses();
-    await queries.removeStaleNominators(bondedAddresses);
-
-    // Wipe the candidates
-    logger.info(
-      "Wiping old candidates data and initializing latest candidates from config.",
-      winstonLabel,
-    );
-    await queries.clearCandidates();
-    await queries.deleteOldValidatorScores();
-
+    await Util.cleanDB(scorekeeper);
     await findDuplicates();
 
     logger.info(`Cleaning finished`, winstonLabel);
@@ -179,8 +150,13 @@ export const findDuplicates = async () => {
   }
 };
 
-export const addCandidates = async (config) => {
+// Adds candidates from the db, and removes all candidates that are not in the config
+export const addCleanCandidates = async (config: Config.ConfigSchema) => {
   try {
+    // For all nodes, set their stash address to null
+    await queries.clearCandidates();
+
+    // Populate candidates and their stashes only from whats in the config files
     if (config.scorekeeper.candidates.length) {
       for (const candidate of config.scorekeeper.candidates) {
         if (candidate === null) {
@@ -203,6 +179,9 @@ export const addCandidates = async (config) => {
         }
       }
     }
+
+    // Remove any candidate in the db that doesn't have a stash or slotId
+    await queries.deleteCandidatesWithMissingFields();
   } catch (e) {
     logger.error(JSON.stringify(e));
     process.exit(1);
@@ -266,7 +245,7 @@ const start = async (cmd: { config: string }) => {
     await clean(scorekeeper);
 
     // Add the candidates
-    await addCandidates(config);
+    await addCleanCandidates(config);
 
     // Start the API server.
     await createServer(config, handler, scorekeeper);

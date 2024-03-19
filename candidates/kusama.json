@@ -5948,6 +5948,20 @@
       "stash": "HFiVyL8h8mTXcJGmm5MiftWFvHjDi3y3rHa7fSaKzhTvfiT",
       "riotHandle": "@dufaultraquildis:matrix.org",
       "kyc": true
+    },
+    {
+      "slotId": 854,
+      "name": "Polls coin",
+      "stash": "EMjeYgW69fCncEx5UQvbEbpmdZv5fwxbmABcSFmjbViYcjR",
+      "riotHandle": "@licerioshory:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 855,
+      "name": "Polls coin1",
+      "stash": "GRfoZq8fKyyaNufWsmkDvoeJ3ACVgCe7SANRpeFXew6DAXM",
+      "riotHandle": "@licerioshory:matrix.org",
+      "kyc": true
     }
   ]
 }

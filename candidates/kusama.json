@@ -5948,6 +5948,13 @@
       "stash": "HFiVyL8h8mTXcJGmm5MiftWFvHjDi3y3rHa7fSaKzhTvfiT",
       "riotHandle": "@dufaultraquildis:matrix.org",
       "kyc": true
+    },
+        {
+      "slotId": 854,
+      "name": "FLOWERSTAKE/02",
+      "stash": "J4qpdWn4UnBk1UG2SLQwaahrmgHgsgaQrJanMB6qmSCx3wH",
+      "riotHandle": "@flowerstake:matrix.org",
+      "kyc": true
     }
   ]
 }

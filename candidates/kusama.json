@@ -5948,6 +5948,20 @@
       "stash": "HFiVyL8h8mTXcJGmm5MiftWFvHjDi3y3rHa7fSaKzhTvfiT",
       "riotHandle": "@dufaultraquildis:matrix.org",
       "kyc": true
+    },
+    {
+      "slotId": 854,
+      "name": "MoonMission",
+      "stash": "GXmrkTtrPPPFxTQUfshKMtbpS5fuuwxy6uMocCk2Sqc24eN",
+      "riotHandle": "sangalliglenna:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 855,
+      "name": "MoonMission^01",
+      "stash": "E7bFzAqAyMDiG8eZKLfXFxtq7Pth3C6oRhKEwHXo1XdAjCy",
+      "riotHandle": "@sangalliglenna:matrix.org",
+      "kyc": true
     }
   ]
 }

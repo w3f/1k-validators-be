@@ -1,5 +1,6 @@
 import {defineConfig} from "vitest/config";
 
+
 export default defineConfig({
   test: {
     globals: true,
@@ -12,10 +13,20 @@ export default defineConfig({
       exclude: ['/docs/**', 'node_modules/**']
     },
 
-    include: ["src/**/*.ts"],
 
-    exclude: ["node_modules/**", "dist/**", "packages/scorekeeper-status-ui/**", "docs/**"],
+    // @ts-ignore
+    common: {
+      include: ["packages/common/**/*.test.ts"],
+      setupFiles: ["packages/common/test/vitest.setup.ts"],
+      exclude: ["node_modules/**", "dist/**", "packages/scorekeeper-status-ui/**", "docs/**"],
+    },
 
+    // @ts-ignore
+    telemetry: {
+      include: ["packages/telemetry/**/*.test.ts"],
+      setupFiles: ["packages/telemetry/test/vitest.setup.ts"],
+      exclude: ["node_modules/**", "dist/**", "packages/scorekeeper-status-ui/**", "docs/**"],
+    },
 
   },
 });

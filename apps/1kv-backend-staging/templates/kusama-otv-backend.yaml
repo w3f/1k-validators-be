@@ -57,7 +57,6 @@ spec:
                   "skipConnectionTime": true,
                   "skipIdentity": false,
                   "skipClientUpgrade": false,
-                  "forceClientVersion": "v0.9.39",
                   "skipUnclaimed": true,
                   "minSelfStake": 10000000000000,
                   "commission": 150000000,

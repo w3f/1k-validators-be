@@ -28,10 +28,14 @@ export const initTestServerBeforeAll = () => {
     await createTestServer();
   });
 
-  beforeEach(async () => {});
+  beforeEach(async () => {
+    const dbName = `testdb_${Date.now()}`;
+    await mongoose.connection.useDb(dbName);
+  });
   afterEach(async () => {});
 
   afterAll(async () => {
+    await mongoose.connection.dropDatabase();
     await mongoose.disconnect();
   });
 };

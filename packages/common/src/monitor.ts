@@ -39,23 +39,31 @@ export default class Monitor {
     const { tag_name, published_at } = latestRelease.data;
     const publishedAt = new Date(published_at).getTime();
 
-    await queries.setRelease(tag_name, publishedAt);
+    // Extract version number from the tag name
+    const versionMatch = tag_name.match(/v?(\d+\.\d+\.\d+)/);
+    if (!versionMatch) {
+      logger.warn(`Unable to extract version from tag name: ${tag_name}`);
+      return null;
+    }
+    const version = versionMatch[1]; // Extracted version number
+
+    await queries.setRelease(version, publishedAt);
 
     if (
       this.latestTaggedRelease &&
-      tag_name === this.latestTaggedRelease!.name
+      version === this.latestTaggedRelease!.name
     ) {
       logger.info("(Monitor::getLatestTaggedRelease) No new release found");
       return null;
     }
 
     this.latestTaggedRelease = {
-      name: tag_name.split(`-`)[1],
+      name: version,
       publishedAt,
     };
 
     logger.info(
-      `(Monitor::getLatestTaggedRelease) Latest release updated: ${tag_name} | Published at: ${publishedAt}`,
+      `(Monitor::getLatestTaggedRelease) Latest release updated: ${version} | Published at: ${publishedAt}`,
     );
 
     return this.latestTaggedRelease;

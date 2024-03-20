@@ -22,7 +22,6 @@ export const getLatestTaggedRelease = async () => {
     const ghApi = new Octokit();
 
     try {
-      // Assign the result of ghApi.repos.getLatestRelease() to latestRelease
       const release = await ghApi.repos.getLatestRelease({
         owner: "paritytech",
         repo: "polkadot-sdk",
@@ -32,7 +31,6 @@ export const getLatestTaggedRelease = async () => {
       logger.warn("Could not get latest release.", monitorLabel);
     }
 
-    // Check if latestRelease is null or if tag_name and published_at are not present
     if (
       !latestRelease ||
       !latestRelease.tag_name ||
@@ -44,20 +42,22 @@ export const getLatestTaggedRelease = async () => {
     const { tag_name, published_at } = latestRelease;
     const publishedAt = new Date(published_at).getTime();
 
-    await queries.setRelease(tag_name, publishedAt);
+    const version = tag_name.split("-")[1];
 
-    const taggedReleaseName = latestRelease ? latestRelease?.name : "";
-    if (latestRelease && tag_name === taggedReleaseName) {
+    await queries.setRelease(version, publishedAt);
+
+    const taggedReleaseName = latestRelease ? latestRelease.name : "";
+    if (latestRelease && version === taggedReleaseName) {
       logger.info("No new release found", monitorLabel);
     } else {
       latestRelease = {
-        name: tag_name.split(`-`)[0],
+        name: version,
         publishedAt,
       };
     }
 
     logger.info(
-      `Latest release updated: ${taggedReleaseName} | Published at: ${publishedAt}`,
+      `Latest release updated: ${version} | Published at: ${publishedAt}`,
       monitorLabel,
     );
 
@@ -76,6 +76,7 @@ export const getLatestTaggedRelease = async () => {
     jobStatusEmitter.emit("jobErrored", errorStatus);
   }
 };
+
 // Called by worker to process Job
 export const processReleaseMonitorJob = async (job: any) => {
   await getLatestTaggedRelease();

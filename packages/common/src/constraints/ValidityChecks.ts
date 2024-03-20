@@ -116,12 +116,20 @@ export const checkLatestClientVersion = async (
       );
     }
 
+    // Ensure latestRelease contains a valid name
+    if (!latestRelease || !latestRelease.name) {
+      logger.error(
+        `Latest release name is null or undefined: ${latestRelease}`,
+        constraintsLabel,
+      );
+      return false;
+    }
+
     // Check if there is a latest release and if the current time is past the grace window
     const isPastGraceWindow =
-      latestRelease &&
-      Date.now() > latestRelease.publishedAt + Constants.SIXTEEN_HOURS;
+      Date.now() > latestRelease.publishedAt + Constants.FORTY_EIGHT_HOURS;
 
-    if (latestRelease && isPastGraceWindow) {
+    if (isPastGraceWindow) {
       const nodeVersion = semver.coerce(candidate.version);
       const latestVersion = forceLatestRelease
         ? semver.clean(forceLatestRelease)
@@ -140,7 +148,7 @@ export const checkLatestClientVersion = async (
 
       const isUpgraded = semver.gte(nodeVersion, latestVersion);
 
-      // If they are not upgrade, set the validity as invalid
+      // If they are not upgraded, set the validity as invalid
       if (!isUpgraded) {
         await setLatestClientReleaseValidity(candidate.stash, false);
         return false;
@@ -150,7 +158,7 @@ export const checkLatestClientVersion = async (
       await setLatestClientReleaseValidity(candidate.stash, true);
       return true;
     } else {
-      // If there is no latest release or if not past the grace window, set the release as invalid
+      // If not past the grace window, set the release as invalid
       await setLatestClientReleaseValidity(candidate.stash, false);
       return false;
     }
@@ -182,7 +190,6 @@ export const checkConnectionTime = async (
       await setConnectionTimeInvalidity(candidate.stash, true);
       return true;
     }
-    return true;
   } catch (e) {
     logger.error(`Error checking connection time: ${e}`, constraintsLabel);
     return false;
@@ -254,7 +261,6 @@ export const checkCommission = async (
       await setCommissionInvalidity(candidate.stash, true);
       return true;
     }
-    return true;
   } catch (e) {
     logger.error(`Error checking commission: ${e}`, constraintsLabel);
     return false;
@@ -317,7 +323,6 @@ export const checkUnclaimed = async (
       await setUnclaimedInvalidity(candidate.stash, true);
       return true;
     }
-    return true;
   } catch (e) {
     logger.error(`Error checking unclaimed: ${e}`, constraintsLabel);
     return false;
@@ -339,7 +344,6 @@ export const checkBlocked = async (
       await setBlockedInvalidity(candidate.stash, true);
       return true;
     }
-    return true;
   } catch (e) {
     logger.error(`Error checking blocked: ${e}`, constraintsLabel);
     return false;
@@ -376,7 +380,6 @@ export const checkProvider = async (
       await setProviderInvalidity(candidate.stash, true);
       return true;
     }
-    return true;
   } catch (e) {
     logger.error(`Error checking provider: ${e}`, constraintsLabel);
     return false;

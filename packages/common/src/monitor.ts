@@ -39,8 +39,13 @@ export default class Monitor {
     const { tag_name, published_at } = latestRelease.data;
     const publishedAt = new Date(published_at).getTime();
 
-    const tagParts = tag_name.split("-");
-    const version = tagParts[tagParts.length - 1];
+    // Extract version number from the tag name
+    const versionMatch = tag_name.match(/v?(\d+\.\d+\.\d+)/);
+    if (!versionMatch) {
+      logger.warn(`Unable to extract version from tag name: ${tag_name}`);
+      return null;
+    }
+    const version = versionMatch[1]; // Extracted version number
 
     await queries.setRelease(version, publishedAt);
 

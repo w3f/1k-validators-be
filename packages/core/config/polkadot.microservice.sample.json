@@ -1,6 +1,5 @@
 {
   "global": {
-    "dryRun": false,
     "networkPrefix": 0,
     "apiEndpoints": [
       "wss://rpc.dotters.network/polkadot",
@@ -9,7 +8,6 @@
       "wss://rpc.ibp.network/polkadot",
       "wss://polkadot-rpc-tn.dwellir.com"
     ],
-    "bootstrap": false,
     "kusamaBootstrapEndpoint": "https://kusama.w3f.community",
     "polkadotBootstrapEndpoint": "https://polkadot.w3f.community",
     "candidatesUrl": "https://raw.githubusercontent.com/w3f/1k-validators-be/master/candidates/polkadot.json"

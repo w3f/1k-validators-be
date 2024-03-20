@@ -13,6 +13,7 @@ import {
 import { ProxyAnnouncement } from "../queries/Proxy";
 import { NominatorInfo } from "../queries/Nomination";
 import { Types } from "../../index";
+import { Mock, vi } from "vitest";
 
 export interface ChaindataValues {
   chainType: string;
@@ -73,111 +74,105 @@ export class ChainData {
       ...mockValues,
     };
 
-    this.getChainType = jest.fn().mockResolvedValue(mergedValues.chainType);
-    this.getDenom = jest.fn().mockResolvedValue(mergedValues.denom);
-    // this.getApiAt = jest.fn().mockResolvedValue(mergedValues.getApiAt);
-    this.getBlockHash = jest.fn().mockResolvedValue(mergedValues.blockHash);
-    this.getLatestBlockHash = jest
+    this.getChainType = vi.fn().mockResolvedValue(mergedValues.chainType);
+    this.getDenom = vi.fn().mockResolvedValue(mergedValues.denom);
+    // this.getApiAt = vi.fn().mockResolvedValue(mergedValues.getApiAt);
+    this.getBlockHash = vi.fn().mockResolvedValue(mergedValues.blockHash);
+    this.getLatestBlockHash = vi
       .fn()
       .mockResolvedValue(mergedValues.latestBlockHash);
-    this.getBlock = jest.fn().mockResolvedValue(mergedValues.block);
-    this.findEraBlockHash = jest
+    this.getBlock = vi.fn().mockResolvedValue(mergedValues.block);
+    this.findEraBlockHash = vi
       .fn()
       .mockResolvedValue(mergedValues.findEraBlockHash);
-    this.getLatestBlock = jest.fn().mockResolvedValue(mergedValues.latestBlock);
-    this.getSession = jest.fn().mockResolvedValue(mergedValues.session);
-    this.getSessionAtEra = jest
-      .fn()
-      .mockResolvedValue(mergedValues.sessionAtEra);
-    this.getActiveEraIndex = jest
-      .fn()
-      .mockResolvedValue(mergedValues.activeEra);
-    this.getCommission = jest
-      .fn()
-      .mockResolvedValue(mergedValues.getCommission);
-    this.getBlocked = jest.fn().mockResolvedValue(mergedValues.getBlocked);
-    this.getBalance = jest.fn().mockResolvedValue(mergedValues.balance);
-    this.getBondedAmount = jest
+    this.getLatestBlock = vi.fn().mockResolvedValue(mergedValues.latestBlock);
+    this.getSession = vi.fn().mockResolvedValue(mergedValues.session);
+    this.getSessionAtEra = vi.fn().mockResolvedValue(mergedValues.sessionAtEra);
+    this.getActiveEraIndex = vi.fn().mockResolvedValue(mergedValues.activeEra);
+    this.getCommission = vi.fn().mockResolvedValue(mergedValues.getCommission);
+    this.getBlocked = vi.fn().mockResolvedValue(mergedValues.getBlocked);
+    this.getBalance = vi.fn().mockResolvedValue(mergedValues.balance);
+    this.getBondedAmount = vi
       .fn()
       .mockResolvedValue(mergedValues.getBondedAmount);
-    this.getControllerFromStash = jest
+    this.getControllerFromStash = vi
       .fn()
       .mockResolvedValue(mergedValues.getControllerFromStash);
-    this.getRewardDestination = jest
+    this.getRewardDestination = vi
       .fn()
       .mockResolvedValue(mergedValues.getRewardDestination);
-    this.getExposure = jest.fn().mockResolvedValue(mergedValues.exposure);
-    this.getQueuedKeys = jest.fn().mockResolvedValue(mergedValues.queuedKeys);
-    this.getNextKeys = jest.fn().mockResolvedValue(mergedValues.nextKeys);
-    this.getCurrentEra = jest.fn().mockResolvedValue(mergedValues.currentEra);
-    this.getIdentity = jest.fn().mockResolvedValue(mergedValues.identity);
-    this.getNominators = jest.fn().mockResolvedValue(mergedValues.nominators);
-    // this.getExposureAt = jest
+    this.getExposure = vi.fn().mockResolvedValue(mergedValues.exposure);
+    this.getQueuedKeys = vi.fn().mockResolvedValue(mergedValues.queuedKeys);
+    this.getNextKeys = vi.fn().mockResolvedValue(mergedValues.nextKeys);
+    this.getCurrentEra = vi.fn().mockResolvedValue(mergedValues.currentEra);
+    this.getIdentity = vi.fn().mockResolvedValue(mergedValues.identity);
+    this.getNominators = vi.fn().mockResolvedValue(mergedValues.nominators);
+    // this.getExposureAt = vi
     //   .fn()
     //   .mockResolvedValue(mergedValues.exposureAt);
-    this.activeValidatorsInPeriod = jest
+    this.activeValidatorsInPeriod = vi
       .fn()
       .mockResolvedValue(mergedValues.activeValidatorsInPeriod);
-    this.currentValidators = jest
+    this.currentValidators = vi
       .fn()
       .mockResolvedValue(mergedValues.currentValidators);
-    // this.getValidatorsAt = jest
+    // this.getValidatorsAt = vi
     //   .fn()
     //   .mockResolvedValue(mergedValues.validatorsAt);
-    this.getValidatorsAtEra = jest
+    this.getValidatorsAtEra = vi
       .fn()
       .mockResolvedValue(mergedValues.validatorsAtEra);
-    this.getValidators = jest.fn().mockResolvedValue(mergedValues.validators);
-    this.getTotalEraPoints = jest
+    this.getValidators = vi.fn().mockResolvedValue(mergedValues.validators);
+    this.getTotalEraPoints = vi
       .fn()
       .mockResolvedValue(mergedValues.totalEraPoints);
-    // this.getAssociatedValidatorAddresses = jest
+    // this.getAssociatedValidatorAddresses = vi
     //   .fn()
     //   .mockResolvedValue(mergedValues.getAssociatedValidatorAddresses);
-    this.hasIdentity = jest.fn().mockResolvedValue(mergedValues.hasIdentity);
-    this.getIdentity = jest.fn().mockResolvedValue(mergedValues.getIdentity);
-    this.getFormattedIdentity = jest
+    this.hasIdentity = vi.fn().mockResolvedValue(mergedValues.hasIdentity);
+    this.getIdentity = vi.fn().mockResolvedValue(mergedValues.getIdentity);
+    this.getFormattedIdentity = vi
       .fn()
       .mockResolvedValue(mergedValues.identity);
-    this.getProxyAnnouncements = jest
+    this.getProxyAnnouncements = vi
       .fn()
       .mockResolvedValue(mergedValues.proxyAnnouncements);
     this.getNominators(mergedValues.nominators);
   }
 
-  getChainType: jest.Mock;
-  getDenom: jest.Mock;
-  // getApiAt: jest.Mock;
-  getBlockHash: jest.Mock;
-  getLatestBlockHash: jest.Mock;
-  getBlock: jest.Mock;
-  findEraBlockHash: jest.Mock;
-  getLatestBlock: jest.Mock;
-  getSession: jest.Mock;
-  getSessionAtEra: jest.Mock;
-  getActiveEraIndex: jest.Mock;
-  getCommission: jest.Mock;
-  getBlocked: jest.Mock;
-  getBalance: jest.Mock;
-  getBondedAmount: jest.Mock;
-  getControllerFromStash: jest.Mock;
-  getRewardDestination: jest.Mock;
-  getExposure: jest.Mock;
-  getQueuedKeys: jest.Mock;
-  getNextKeys: jest.Mock;
-  getCurrentEra: jest.Mock;
-  getIdentity: jest.Mock;
-  getNominators: jest.Mock;
-  // getExposureAt: jest.Mock;
-  activeValidatorsInPeriod: jest.Mock;
-  currentValidators: jest.Mock;
-  // getValidatorsAt: jest.Mock;
-  getValidatorsAtEra: jest.Mock;
-  getValidators: jest.Mock;
-  getTotalEraPoints: jest.Mock;
-  // getAssociatedValidatorAddresses: jest.Mock;
-  getProxyAnnouncements: jest.Mock;
-  hasIdentity: jest.Mock;
-  getFormattedIdentity: jest.Mock;
-  // getNominatorAddresses: jest.Mock;
+  getChainType: Mock;
+  getDenom: Mock;
+  // getApiAt: Mock;
+  getBlockHash: Mock;
+  getLatestBlockHash: Mock;
+  getBlock: Mock;
+  findEraBlockHash: Mock;
+  getLatestBlock: Mock;
+  getSession: Mock;
+  getSessionAtEra: Mock;
+  getActiveEraIndex: Mock;
+  getCommission: Mock;
+  getBlocked: Mock;
+  getBalance: Mock;
+  getBondedAmount: Mock;
+  getControllerFromStash: Mock;
+  getRewardDestination: Mock;
+  getExposure: Mock;
+  getQueuedKeys: Mock;
+  getNextKeys: Mock;
+  getCurrentEra: Mock;
+  getIdentity: Mock;
+  getNominators: Mock;
+  // getExposureAt: Mock;
+  activeValidatorsInPeriod: Mock;
+  currentValidators: Mock;
+  // getValidatorsAt: Mock;
+  getValidatorsAtEra: Mock;
+  getValidators: Mock;
+  getTotalEraPoints: Mock;
+  // getAssociatedValidatorAddresses: Mock;
+  getProxyAnnouncements: Mock;
+  hasIdentity: Mock;
+  getFormattedIdentity: Mock;
+  // getNominatorAddresses: Mock;
 }

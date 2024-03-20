@@ -19,6 +19,7 @@ export const kusamaLocations = [
     memory: "33683795968",
     coreCount: "8",
     vm: false,
+    networkId: "1d2302",
   },
   {
     name: "🎠 Forbole GP01 🇭🇰",
@@ -37,6 +38,7 @@ export const kusamaLocations = [
     memory: "33683795968",
     coreCount: "8",
     vm: false,
+    networkId: "1d2302",
   },
   {
     name: "🔱-Masternode24-🔱",
@@ -55,6 +57,7 @@ export const kusamaLocations = [
     memory: "33683795968",
     coreCount: "8",
     vm: false,
+    networkId: "1d2309",
   },
   {
     name: "🔱-Masternode25-🔱",
@@ -73,6 +76,7 @@ export const kusamaLocations = [
     memory: "33683795968",
     coreCount: "8",
     vm: false,
+    networkId: "1d2308",
   },
 ];
 
@@ -97,6 +101,7 @@ export const addKusamaLocations = async () => {
         core_count: location.coreCount,
         is_virtual_machine: location.vm,
       },
+      location.networkId,
       location.vpn,
     );
   }

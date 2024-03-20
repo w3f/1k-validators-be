@@ -1,5 +1,4 @@
-import Chaindata, { chaindataLabel } from "../chaindata";
-import logger from "../../logger";
+import Chaindata, { handleError } from "../chaindata";
 import { Identity } from "../../types";
 
 export const hasIdentity = async (
@@ -20,9 +19,11 @@ export const hasIdentity = async (
         );
       }
     }
+    const identityInfo = await chaindata.api?.derive.accounts.identity(account);
+    if (!identityInfo) return null;
     let verified = false;
     if (identity && identity.isSome) {
-      const { judgements } = identity.unwrap();
+      const { judgements } = identityInfo;
       for (const judgement of judgements) {
         const status = judgement[1];
         verified = status.isReasonable || status.isKnownGood;
@@ -32,41 +33,8 @@ export const hasIdentity = async (
 
     return [identity ? identity.isSome : false, verified];
   } catch (e) {
-    logger.error(`Error getting identity: ${e}`, chaindataLabel);
+    await handleError(chaindata, e, "hasIdentity");
     return [false, true];
-  }
-};
-
-export const getIdentity = async (
-  chaindata: Chaindata,
-  account: string,
-): Promise<any> => {
-  try {
-    if (!(await chaindata.checkApiConnection())) {
-      return null;
-    }
-    const identity = await chaindata.api?.query.identity.identityOf(account);
-    if (identity && !identity.isSome) {
-      const superOf = await chaindata.api?.query.identity.superOf(account);
-      if (superOf && superOf.isSome) {
-        const id = await chaindata.api?.query.identity.identityOf(
-          superOf.unwrap()[0],
-        );
-        if (id && id.isNone) {
-          return null;
-        }
-        return id && id.unwrap().info.toString()
-          ? id.unwrap().info.toString()
-          : null;
-      }
-    }
-    if (identity && identity.isSome) {
-      return identity.unwrap().info.toString();
-    }
-
-    return null;
-  } catch (e) {
-    logger.error(`Error getting identity: ${e}`, chaindataLabel);
   }
 };
 
@@ -190,7 +158,7 @@ export const getFormattedIdentity = async (
 
     return identity;
   } catch (e) {
-    logger.error(`Error getting identity: ${e}`, chaindataLabel);
+    await handleError(chaindata, e, "getFormattedIdentity");
     return null;
   }
 };

@@ -3,15 +3,10 @@ import {
   getLatestLocationStats,
   setLocationStats,
 } from "../../../src/db/queries";
-import { initTestServerBeforeAll, omitId } from "../../testUtils/dbUtils";
-
-initTestServerBeforeAll();
+import { omitId } from "../../testUtils/dbUtils";
+import { describe, expect, it } from "vitest";
 
 describe("setLocationStats", () => {
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
   it("should set location stats", async () => {
     const totalNodes = 100;
     const session = 1;
@@ -154,7 +149,7 @@ describe("setLocationStats", () => {
         totalNodes: session * 100,
         session,
       }));
-      await LocationStatsModel.create(locationStatsData);
+      const didSet = await LocationStatsModel.create(locationStatsData);
 
       const latestLocationStats = await getLatestLocationStats();
       expect(latestLocationStats).toBeDefined();

@@ -2,8 +2,9 @@ import { ChainData } from "../../src/chaindata/chaindata";
 import fs from "fs";
 import ApiHandler from "../../src/ApiHandler/ApiHandler";
 import path from "path";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
-jest.mock("../../src/chaindata/chaindata");
+vi.mock("../../src/chaindata/chaindata");
 
 describe("ChainData Mock Unit Tests", () => {
   let mockValues: any;

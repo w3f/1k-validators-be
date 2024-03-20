@@ -1,5 +1,4 @@
-import { ChainData, chaindataLabel } from "../chaindata";
-import logger from "../../logger";
+import { ChainData, handleError } from "../chaindata";
 
 export interface ProxyAnnouncement {
   real: string;
@@ -37,8 +36,7 @@ export const getProxyAnnouncements = async (
       return [];
     }
   } catch (e) {
-    // Log an error and return an empty array if an error occurs
-    logger.error(`Error getting proxy announcements: ${e}`, chaindataLabel);
+    await handleError(chaindata, e, "getProxyAnnouncements");
     return [];
   }
 };

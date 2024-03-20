@@ -293,7 +293,6 @@ export default class Nominator extends EventEmitter {
   }
 
   public async nominate(targets: Types.Stash[]): Promise<boolean> {
-    logger.info(`noninate start top of noninate`, nominatorLabel);
     try {
       const now = new Date().getTime();
 

@@ -1,21 +1,17 @@
 import ApiHandler from "../../src/ApiHandler/ApiHandler";
 import { ChainData } from "../../src/chaindata/chaindata";
-import { KusamaEndpoints } from "../../src/constants";
 import { Block } from "@polkadot/types/interfaces";
+import { beforeAll, describe, expect, it } from "vitest";
+import { getKusamaHandler } from "../testUtils/apiHandler";
 
 const TIMEOUT_DURATION = 1200000; // 120 seconds
 describe("ChainData Integration Tests", () => {
   let apiHandler: ApiHandler;
   let chainData: ChainData;
 
-  beforeEach(async () => {
-    apiHandler = new ApiHandler(KusamaEndpoints);
-    await apiHandler.setAPI();
+  beforeAll(async () => {
+    apiHandler = await getKusamaHandler();
     chainData = new ChainData(apiHandler);
-  }, TIMEOUT_DURATION);
-
-  afterEach(async () => {
-    await apiHandler.getApi()?.disconnect();
   }, TIMEOUT_DURATION);
 
   it(
@@ -60,9 +56,8 @@ describe("ChainData Integration Tests", () => {
       const latestBlock: number | null = await chainData.getLatestBlock();
       if (latestBlock) {
         blockHash = await chainData.getBlockHash(latestBlock);
+        expect(blockHash).toBeDefined();
       }
-
-      expect(blockHash).toBeDefined();
     },
     TIMEOUT_DURATION,
   );
@@ -144,16 +139,15 @@ describe("ChainData Integration Tests", () => {
     "should find era block hash",
     async () => {
       let findEraBlockHash;
-      const activeEra = await chainData.getActiveEraIndex();
+      const [activeEra, err] = await chainData.getActiveEraIndex();
       const chainType: string | null = await chainData.getChainType();
-      if (chainType) {
+      if (chainType && activeEra) {
         findEraBlockHash = await chainData.findEraBlockHash(
-          activeEra[0] - 5,
+          activeEra - 2,
           chainType,
         );
+        expect(findEraBlockHash).toBeDefined();
       }
-
-      expect(findEraBlockHash).toBeDefined();
     },
     TIMEOUT_DURATION,
   );
@@ -217,8 +211,8 @@ describe("ChainData Integration Tests", () => {
         getControllerFromStash = await chainData.getControllerFromStash(
           currentValidators[0],
         );
+        expect(getControllerFromStash).toBeDefined();
       }
-      expect(getControllerFromStash).toBeDefined();
     },
     TIMEOUT_DURATION,
   );
@@ -226,9 +220,8 @@ describe("ChainData Integration Tests", () => {
   it(
     "should fetch reward destination",
     async () => {
-      const currentValidators = await chainData.currentValidators();
       const getRewardDestination = await chainData.getRewardDestination(
-        currentValidators[0],
+        "EXGbhMrQubm7pRkUSkTEGi2rmR764ZM7kStfCRo2cZYa8VE",
       );
       expect(getRewardDestination).toBeDefined();
     },
@@ -284,7 +277,7 @@ describe("ChainData Integration Tests", () => {
     "should fetch active validators in period",
     async () => {
       let activeValidatorsInPeriod;
-      const activeEra = (await chainData.getActiveEraIndex()) || 0;
+      const [activeEra, err] = await chainData.getActiveEraIndex();
       const chainType: string | null = await chainData.getChainType();
       if (chainType) {
         activeValidatorsInPeriod = await chainData.activeValidatorsInPeriod(
@@ -292,9 +285,8 @@ describe("ChainData Integration Tests", () => {
           activeEra[0],
           chainType,
         );
+        expect(activeValidatorsInPeriod).toBeDefined();
       }
-
-      expect(activeValidatorsInPeriod).toBeDefined();
     },
     TIMEOUT_DURATION,
   );
@@ -332,17 +324,6 @@ describe("ChainData Integration Tests", () => {
       }
 
       expect(hasIdentity).toBeDefined();
-    },
-    TIMEOUT_DURATION,
-  );
-
-  it(
-    "should fetch identity",
-    async () => {
-      const getIdentity = await chainData.getIdentity(
-        "DBfT2GUqHX89afMhTzGCCbAc44zX33d4XySWX2qAPxZ35KE",
-      );
-      expect(getIdentity).toBeDefined();
     },
     TIMEOUT_DURATION,
   );

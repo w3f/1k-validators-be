@@ -17,3 +17,6 @@ build
 .idea
 combined.log
 docker-compose.yml
+node_modules/
+
+*/**/node_modules/

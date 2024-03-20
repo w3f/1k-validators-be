@@ -106,7 +106,10 @@ export const checkLatestClientVersion = async (
         `No latest release found, fetching from GitHub`,
         constraintsLabel,
       );
-      latestRelease = await getLatestTaggedRelease();
+      // fetch from github and set in the db
+      await getLatestTaggedRelease();
+      // get the record from the db
+      latestRelease = await getLatestRelease();
       logger.info(
         `Latest release fetched from GitHub: ${latestRelease}`,
         constraintsLabel,

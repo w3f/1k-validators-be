@@ -154,7 +154,7 @@ jobs:
           name: Run Tests
           command: |
             export MONGO_URI="mongodb://mongodb:27017/testdb"
-            yarn workspace @1kv/telemetry test:int
+            yarn build && yarn workspace @1kv/telemetry test:int
 
   helmLint:
     docker:

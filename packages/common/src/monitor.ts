@@ -39,10 +39,10 @@ export default class Monitor {
     const { tag_name, published_at } = latestRelease.data;
     const publishedAt = new Date(published_at).getTime();
 
-    await queries.setRelease(tag_name, publishedAt);
-
     const tagParts = tag_name.split("-");
     const version = tagParts[tagParts.length - 1];
+
+    await queries.setRelease(version, publishedAt);
 
     if (
       this.latestTaggedRelease &&

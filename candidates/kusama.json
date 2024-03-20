@@ -5990,6 +5990,13 @@
       "stash": "J4qpdWn4UnBk1UG2SLQwaahrmgHgsgaQrJanMB6qmSCx3wH",
       "riotHandle": "@flowerstake:matrix.org",
       "kyc": true
+    },
+    {
+      "slotId": 860,
+      "name": "ToTheMars|2",
+      "stash": "H9XELombQp2mSDakzZ4pXe5mwA8RqkFF5vKE4hhXyg7ko8Y",
+      "riotHandle": "@tothemars1:matrix.org",
+      "kyc": true
     }
   ]
 }

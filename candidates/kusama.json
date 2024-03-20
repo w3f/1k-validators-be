@@ -5962,6 +5962,20 @@
       "stash": "GRfoZq8fKyyaNufWsmkDvoeJ3ACVgCe7SANRpeFXew6DAXM",
       "riotHandle": "@licerioshory:matrix.org",
       "kyc": true
+    },
+    {
+      "slotId": 856,
+      "name": "RTI solution",
+      "stash": "J11jfzJQAkxKJTZozq3SDRAsjZkSQjzoRCUQ5oVBxWsecJT",
+      "riotHandle": "@jonasmondal194:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 857,
+      "name": "RTI solution02",
+      "stash": "HvptNWtnEFSz9qn8XjtMg8sg4aZPcrDnsnBPZkbDJehj6Lg",
+      "riotHandle": "@jonasmondal194:matrix.org",
+      "kyc": true
     }
   ]
 }

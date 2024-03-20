@@ -41,21 +41,24 @@ export default class Monitor {
 
     await queries.setRelease(tag_name, publishedAt);
 
+    const tagParts = tag_name.split("-");
+    const version = tagParts[tagParts.length - 1];
+
     if (
       this.latestTaggedRelease &&
-      tag_name === this.latestTaggedRelease!.name
+      version === this.latestTaggedRelease!.name
     ) {
       logger.info("(Monitor::getLatestTaggedRelease) No new release found");
       return null;
     }
 
     this.latestTaggedRelease = {
-      name: tag_name.split(`-`)[1],
+      name: version,
       publishedAt,
     };
 
     logger.info(
-      `(Monitor::getLatestTaggedRelease) Latest release updated: ${tag_name} | Published at: ${publishedAt}`,
+      `(Monitor::getLatestTaggedRelease) Latest release updated: ${version} | Published at: ${publishedAt}`,
     );
 
     return this.latestTaggedRelease;

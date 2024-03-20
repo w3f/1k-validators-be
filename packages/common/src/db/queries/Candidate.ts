@@ -636,7 +636,7 @@ export const reportOffline = async (name: string): Promise<boolean> => {
           {
             offlineSince: Date.now(),
             onlineSince: 0,
-            $inc: { nodeRefs: -1 },
+            nodeRefs: 0,
           },
         ).exec();
         await updateCandidateOfflineValidity(name);

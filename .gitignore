@@ -42,3 +42,4 @@ docs/.DS_Store
 build/**
 dist/**
 .next/**
+coverage/**

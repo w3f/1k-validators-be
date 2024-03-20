@@ -21,6 +21,7 @@ import axios from "axios";
 import semver from "semver";
 import logger from "../logger";
 import { constraintsLabel } from "./constraints";
+import { getLatestTaggedRelease } from "../scorekeeper/jobs/specificJobs";
 
 export const checkOnline = async (candidate: any): Promise<boolean> => {
   try {
@@ -89,43 +90,66 @@ export const checkLatestClientVersion = async (
 ): Promise<boolean> => {
   try {
     const skipClientUpgrade = config.constraints?.skipClientUpgrade || false;
-    if (!skipClientUpgrade) {
-      if (candidate?.implementation == "Kagome Node") {
-        await setLatestClientReleaseValidity(candidate.stash, true);
-        return true;
-      }
+    if (skipClientUpgrade || candidate?.implementation === "Kagome Node") {
+      // Skip the check if the node is a Kagome Client or if skipping client upgrade is enabled
+      await setLatestClientReleaseValidity(candidate.stash, true);
+      return true;
+    }
 
-      const forceLatestRelease = config.constraints.forceClientVersion;
-      const latestRelease = await getLatestRelease();
-      if (
-        candidate.version &&
-        latestRelease &&
-        Date.now() > latestRelease.publishedAt + Constants.SIXTEEN_HOURS
-      ) {
-        const nodeVersion = semver.coerce(candidate.version);
-        const latestVersion = forceLatestRelease
-          ? semver.clean(forceLatestRelease)
-          : semver.clean(latestRelease.name);
-        if (!nodeVersion || !latestVersion) {
-          await setLatestClientReleaseValidity(candidate.stash, false);
-          return false;
-        }
+    // The latest release that is manually set in the config (set if there's reasons for people to downgrade)
+    const forceLatestRelease = config.constraints.forceClientVersion;
 
-        const isUpgraded = semver.gte(nodeVersion, latestVersion);
-        if (!isUpgraded) {
-          await setLatestClientReleaseValidity(candidate.stash, false);
-          return false;
-        } else {
-          await setLatestClientReleaseValidity(candidate.stash, true);
-          return true;
-        }
-      } else {
+    // Get the latest release from the db or github
+    let latestRelease = await getLatestRelease();
+    if (!latestRelease) {
+      logger.info(
+        `No latest release found, fetching from GitHub`,
+        constraintsLabel,
+      );
+      latestRelease = await getLatestTaggedRelease();
+      logger.info(
+        `Latest release fetched from GitHub: ${latestRelease}`,
+        constraintsLabel,
+      );
+    }
+
+    // Check if there is a latest release and if the current time is past the grace window
+    const isPastGraceWindow =
+      latestRelease &&
+      Date.now() > latestRelease.publishedAt + Constants.SIXTEEN_HOURS;
+
+    if (latestRelease && isPastGraceWindow) {
+      const nodeVersion = semver.coerce(candidate.version);
+      const latestVersion = forceLatestRelease
+        ? semver.clean(forceLatestRelease)
+        : semver.clean(latestRelease.name);
+
+      logger.info(
+        `Checking latest client version: ${nodeVersion} >= ${latestVersion}`,
+        constraintsLabel,
+      );
+
+      // If cannot parse the version, set the release as invalid
+      if (!nodeVersion || !latestVersion) {
         await setLatestClientReleaseValidity(candidate.stash, false);
         return false;
       }
-    } else {
+
+      const isUpgraded = semver.gte(nodeVersion, latestVersion);
+
+      // If they are not upgrade, set the validity as invalid
+      if (!isUpgraded) {
+        await setLatestClientReleaseValidity(candidate.stash, false);
+        return false;
+      }
+
+      // If the current version is the latest release, set the release as valid
       await setLatestClientReleaseValidity(candidate.stash, true);
       return true;
+    } else {
+      // If there is no latest release or if not past the grace window, set the release as invalid
+      await setLatestClientReleaseValidity(candidate.stash, false);
+      return false;
     }
   } catch (e) {
     logger.error(

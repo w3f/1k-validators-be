@@ -817,7 +817,7 @@
       "name": "Good Karma",
       "stash": "JKbJoCsgUEgjbGmGq7VdSNgSVQt8k43e3WWAYGCpiNP9r6D",
       "riotHandle": "@themarcus:matrix.org",
-      "kyc": false
+      "kyc": true
     },
     {
       "slotId": 117,
@@ -5898,13 +5898,6 @@
       "name": "snail-2",
       "stash": "HWb4f3AXUomEQN7xBeAc6thRjgxKKgmFFdM3ZCwCsWRdo5w",
       "riotHandle": "@snail773:matrix.org",
-      "kyc": true
-    },
-    {
-      "slotId": 847,
-      "name": "Good Karma",
-      "stash": "JKbJoCsgUEgjbGmGq7VdSNgSVQt8k43e3WWAYGCpiNP9r6D",
-      "riotHandle": "@themarcus:matrix.org",
       "kyc": true
     }
   ]

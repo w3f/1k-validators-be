@@ -1,6 +1,5 @@
 {
   "global": {
-    "dryRun": false,
     "networkPrefix": 0,
     "apiEndpoints": [
       "wss://rpc.dotters.network/polkadot",

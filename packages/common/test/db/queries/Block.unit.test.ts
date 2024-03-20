@@ -1,8 +1,7 @@
 import { BlockIndexModel } from "../../../src/db/models";
 import { getBlockIndex, setBlockIndex } from "../../../src/db/queries/Block";
-import { initTestServerBeforeAll } from "../../testUtils/dbUtils";
-
-initTestServerBeforeAll();
+import { describe, expect, it } from "vitest";
+import { sleep } from "../../../src/utils";
 
 describe("Block Index Database Functions", () => {
   describe("getBlockIndex", () => {
@@ -24,8 +23,9 @@ describe("Block Index Database Functions", () => {
 
   describe("setBlockIndex", () => {
     it("should create a new block index if none exists", async () => {
-      await setBlockIndex(0, 100);
-
+      const didSet = await setBlockIndex(0, 100);
+      expect(didSet).toBe(true);
+      await sleep(2000);
       const result = await BlockIndexModel.findOne({});
       expect(result).toBeDefined();
       expect(result?.earliest).toBe(0);
@@ -38,7 +38,7 @@ describe("Block Index Database Functions", () => {
       expect(index).toBeDefined();
 
       await setBlockIndex(5, 100);
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await sleep(2000);
       const blocks = await BlockIndexModel.find({});
       const result = await BlockIndexModel.findOne({});
 
@@ -52,7 +52,7 @@ describe("Block Index Database Functions", () => {
       await setBlockIndex(0, 150);
 
       const result = await BlockIndexModel.findOne({});
-
+      await sleep(2000);
       expect(result).toBeDefined();
       expect(result?.earliest).toBe(0);
       expect(result?.latest).toBe(150);
@@ -61,9 +61,9 @@ describe("Block Index Database Functions", () => {
     it("should not update anything if the existing block index covers the range", async () => {
       await new BlockIndexModel({ earliest: 0, latest: 100 }).save();
       await setBlockIndex(10, 90);
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await sleep(2000);
       const result = await BlockIndexModel.findOne({});
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await sleep(2000);
       expect(result).toBeDefined();
       expect(result?.earliest).toBe(0);
       expect(result?.latest).toBe(100);

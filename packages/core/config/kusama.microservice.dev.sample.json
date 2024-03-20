@@ -10,7 +10,6 @@
       "wss://rpc.dotters.network/kusama",
       "wss://ksm-rpc.stakeworld.io"
     ],
-    "bootstrap": true,
     "kusamaBootstrapEndpoint": "https://kusama.w3f.community",
     "polkadotBootstrapEndpoint": "https://polkadot.w3f.community",
     "candidatesUrl": "https://raw.githubusercontent.com/w3f/1k-validators-be/master/candidates/kusama.json"

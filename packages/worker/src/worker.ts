@@ -22,7 +22,7 @@ class Worker {
     const endpoints = this.apiEndpoints.sort(() => Math.random() - 0.5);
     logger.info(`ApiHandler connecting to ${endpoints[0]}`, workerLabel);
     this.api = new ApiHandler(endpoints);
-    await this.api.setAPI();
+    await this.api.initiateConnection();
   }
 
   async initializeConstraints(): Promise<any> {

@@ -56,6 +56,7 @@ export const setLocation = async (
   country: string,
   provider: string,
   hardwareSpec: HardwareSpec,
+  networkId?: string,
   v?: boolean,
   port?: number,
 ): Promise<boolean> => {
@@ -97,6 +98,7 @@ export const setLocation = async (
         session: session || 0,
         updated: Date.now(),
         source: "Telemetry",
+        networkId: networkId,
       });
       await location.save();
     } else {
@@ -115,6 +117,7 @@ export const setLocation = async (
           session: session || 0,
           updated: Date.now(),
           source: "Telemetry",
+          networkId: networkId,
         },
       ).exec();
     }
@@ -142,6 +145,19 @@ export const cleanOldLocations = async (): Promise<boolean> => {
   } catch (error) {
     logger.info(
       `Error cleaning old locations: ${JSON.stringify(error)}`,
+      dbLabel,
+    );
+    return false;
+  }
+};
+
+export const cleanLocationsWithoutSlotId = async (): Promise<boolean> => {
+  try {
+    await LocationModel.deleteMany({ slotId: { $exists: false } }).exec();
+    return true;
+  } catch (error) {
+    logger.error(
+      `Error deleting locations without 'slotId': ${JSON.stringify(error)}`,
       dbLabel,
     );
     return false;

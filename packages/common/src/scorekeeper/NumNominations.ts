@@ -65,7 +65,7 @@ export const autoNumNominations = async (
     );
 
   // Query the staking info of the validator set
-  const query = await api.derive.staking.electedInfo();
+  const query = await api?.derive.staking.electedInfo();
   const { info } = query;
 
   const totalStakeAmounts = [];

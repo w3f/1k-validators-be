@@ -79,7 +79,7 @@
     "concurrently": "^8.2.2",
     "esbuild": "^0.20.1",
     "esbuild-plugin-node-polyfill": "^0.0.1",
-    "eslint": "8.42.0",
+    "eslint": "8.57.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-prettier": "5.0.0",
     "eslint-plugin-security": "^1.7.1",

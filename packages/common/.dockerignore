@@ -8,3 +8,4 @@ zero
 charts
 helmfile.d
 build
+dist/*

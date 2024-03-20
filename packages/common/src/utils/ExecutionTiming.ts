@@ -1,4 +1,3 @@
-import chalk from "chalk";
 import logger from "../logger";
 
 export const withExecutionTimeLogging = <T extends any[], R>(
@@ -11,7 +10,7 @@ export const withExecutionTimeLogging = <T extends any[], R>(
     const result = await func(...args); // Execute the original function
     const end = Date.now();
     const executionTime = (end - start) / 1000;
-    const coloredExecutionTime = chalk.bgGreen(`(${executionTime}s)`);
+    const coloredExecutionTime = `(${executionTime}s)`;
     logger.info(`${text} ${coloredExecutionTime}`, label);
     return result;
   };

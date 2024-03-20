@@ -21,6 +21,7 @@ export default class TelemetryClient {
 
   private _memNodes = {};
 
+  public isConnected = false;
   constructor(config: Config.ConfigSchema) {
     this.config = config;
     this._host =
@@ -122,6 +123,23 @@ export default class TelemetryClient {
       logger.error(`Telemetry error on retry: ${e}`, { label: "Telemetry" });
       await this.reconnect(retries + 1);
     }
+  }
+
+  public async disconnect() {
+    if (this.socket) {
+      this.socket.close();
+    }
+  }
+
+  public async checkHealth(): Promise<boolean> {
+    // Check if the WebSocket connection is open
+    const isHealthy = this.socket && this.socket.readyState === WebSocket.OPEN;
+
+    if (!isHealthy) {
+      logger.warn("Telemetry service is unhealthy.", { label: "Telemetry" });
+    }
+
+    return isHealthy;
   }
 
   public async checkOffline() {

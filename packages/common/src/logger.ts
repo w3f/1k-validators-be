@@ -6,13 +6,18 @@ const filters = defaultExcludeLabels;
 const logFilter = (labelsToExclude: string[]) => {
   return winston.format((info) => {
     if (labelsToExclude.includes(info.label)) {
-      return false; // Exclude log messages with labels in the exclusion list
+      return false;
     }
     return info;
   });
 };
 
-export const logger = winston.createLogger({
+const getLogLevel = () => {
+  return process.env.LOG_LEVEL || "info";
+};
+
+const logger = winston.createLogger({
+  level: getLogLevel(),
   format: winston.format.combine(
     winston.format.colorize(),
     winston.format.timestamp(),
@@ -23,21 +28,21 @@ export const logger = winston.createLogger({
     }),
   ),
   transports: [
-    new winston.transports.Console({
-      format: winston.format.combine(winston.format.colorize()),
-    }),
+    new winston.transports.Console(),
     new winston.transports.File({ filename: "combined.log" }),
   ],
 });
 
-// Creates a logger with the given filters - any labels in the filters are excluded from logging
-export const createLogger = (filters: string[]) => {
+export default logger;
+
+export const createLogger = (customFilters: string[]) => {
   const logger = winston.createLogger({
+    level: getLogLevel(),
     format: winston.format.combine(
       winston.format.colorize(),
       winston.format.timestamp(),
       winston.format.align(),
-      logFilter(filters)(),
+      logFilter([...filters, ...customFilters])(),
       winston.format.printf(({ level, message, timestamp, label }) => {
         return `${level}: ${label ? `[${label}]` : ""} ${message}`;
       }),
@@ -49,5 +54,3 @@ export const createLogger = (filters: string[]) => {
   });
   return logger;
 };
-
-export default logger;

@@ -1,4 +1,4 @@
-import Chaindata, { chaindataLabel } from "../chaindata";
+import Chaindata, { handleError } from "../chaindata";
 import logger from "../../logger";
 
 export const getActiveValidatorsInPeriod = async (
@@ -39,7 +39,7 @@ export const getActiveValidatorsInPeriod = async (
 
     return [Array.from(allValidators), null];
   } catch (e) {
-    console.error(`Error getting active validators: ${JSON.stringify(e)}`);
+    await handleError(chaindata, e, "getActiveValidatorsInPeriod");
     return [[], JSON.stringify(e)];
   }
 };
@@ -58,7 +58,7 @@ export const currentValidators = async (
     }
     return validators.toJSON() as string[];
   } catch (e) {
-    logger.error(`Error getting current validators: ${e}`, chaindataLabel);
+    await handleError(chaindata, e, "currentValidators");
     return [];
   }
 };
@@ -78,7 +78,7 @@ export const getValidators = async (
 
     return validators;
   } catch (e) {
-    logger.error(`Error getting validators: ${e}`, chaindataLabel);
+    await handleError(chaindata, e, "getValidators");
     return [];
   }
 };
@@ -93,7 +93,7 @@ export const getValidatorsAt = async (
     }
     return (await apiAt.query.session.validators()).toJSON();
   } catch (e) {
-    logger.error(`Error getting validators at: ${e}`, chaindataLabel);
+    await handleError(chaindata, e, "getValidatorsAt");
     return [];
   }
 };
@@ -102,18 +102,23 @@ export const getValidatorsAtEra = async (
   chaindata: Chaindata,
   era: number,
 ): Promise<string[]> => {
-  if (!(await chaindata.checkApiConnection())) {
+  try {
+    if (!(await chaindata.checkApiConnection())) {
+      return [];
+    }
+    const chainType = await chaindata.getChainType();
+    if (chainType) {
+      const [blockHash, err] = await chaindata.findEraBlockHash(era, chainType);
+      if (blockHash) {
+        const apiAt = await chaindata.api?.at(blockHash);
+        return getValidatorsAt(chaindata, apiAt);
+      }
+    }
+    return [];
+  } catch (e) {
+    await handleError(chaindata, e, "getValidatorsAtEra");
     return [];
   }
-  const chainType = await chaindata.getChainType();
-  if (chainType) {
-    const [blockHash, err] = await chaindata.findEraBlockHash(era, chainType);
-    if (blockHash) {
-      const apiAt = await chaindata.api?.at(blockHash);
-      return getValidatorsAt(chaindata, apiAt);
-    }
-  }
-  return [];
 };
 
 export const getAssociatedValidatorAddresses = async (
@@ -144,7 +149,7 @@ export const getAssociatedValidatorAddresses = async (
 
     return addresses;
   } catch (e) {
-    logger.error(`Error getting validators: ${e}`, chaindataLabel);
+    await handleError(chaindata, e, "getAssociatedValidatorAddresses");
     return [];
   }
 };

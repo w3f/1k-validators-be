@@ -90,6 +90,7 @@ export const nodeDetailsFromTelemetryMessage = (
           benchmarkScore?.disk_sequential_write_score || 0,
         disk_random_write_score: benchmarkScore?.disk_random_write_score || 0,
       },
+      networkId: networkId,
     };
   } catch (e) {
     logger.error(JSON.stringify(e));
@@ -153,6 +154,7 @@ export const fetchAndSetCandidateLocation = async (
         country,
         provider,
         telemetryNodeDetails.hardwareSpec,
+        telemetryNodeDetails.networkId,
         v,
       );
     }

@@ -10,6 +10,8 @@ services:
         - /var/run/docker.sock:/var/run/docker.sock
 
     1kv-core:
+      environment:
+        - PACKAGE=core
       image: 1kv-core:latest
       build:
         context: .
@@ -45,6 +47,8 @@ services:
           max-size: "50m"
 
     1kv-gateway:
+      environment:
+        - PACKAGE=gateway
       image: 1kv-gateway:latest
       build:
         context: .
@@ -80,6 +84,8 @@ services:
           max-size: "50m"
 
     1kv-telemetry:
+      environment:
+        - PACKAGE=telemetry
       image: 1kv-telemetry:latest
       build:
         context: .
@@ -115,6 +121,8 @@ services:
           max-size: "50m"
 
     1kv-worker:
+      environment:
+        - PACKAGE=worker
       image: 1kv-worker:latest
       build:
         context: .

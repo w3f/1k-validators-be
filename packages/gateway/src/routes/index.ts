@@ -1,5 +1,4 @@
 import Router from "@koa/router";
-import Accounting from "../controllers/Accounting";
 import Candidate from "../controllers/Candidate";
 import Nominator from "../controllers/Nominator";
 import Nomination from "../controllers/Nomination";
@@ -16,7 +15,7 @@ const router: any = new Router();
 // Koa API Endpoints
 const API = {
   BullBoard: "/bull",
-  Accounting: "/accounting/:address",
+
   Candidate: "/candidate/:address",
   GetCandidates: "/candidates",
   GetRankCandidates: "/candidates/rank",
@@ -67,9 +66,6 @@ const API = {
   StatsTotalReqeusts: "/stats/totalRequests",
   StatsEndpointCounts: "/stats/endpointCounts",
 };
-
-// TODO remove
-router.get(API.Accounting, Accounting.getAccounting);
 
 router.get(API.Candidate, Candidate.getCandidate);
 router.get(API.GetCandidates, Candidate.getCandidates);

@@ -137,6 +137,25 @@ jobs:
             export MONGO_URI="mongodb://mongodb:27017/testdb"
             yarn workspace @1kv/common test:scorekeeper:int
 
+  TelemetryIntegrationTests:
+    description: "Telemetry Integration Tests"
+    docker:
+      - image: node:18-bullseye
+      - image: mongo:6.0.9
+        name: mongodb
+
+    resource_class: xlarge
+    steps:
+      - checkout
+      - run:
+          name: Install Dependencies
+          command: yarn install --immutable
+      - run:
+          name: Run Tests
+          command: |
+            export MONGO_URI="mongodb://mongodb:27017/testdb"
+            yarn build && yarn workspace @1kv/telemetry test:int
+
   helmLint:
     docker:
       - image: web3f/ci-commons:v3.2.3
@@ -296,23 +315,23 @@ workflows:
           filters:
             tags:
               ignore: /.*/
-
       - ChaindataIntegrationTests:
           filters:
             tags:
               ignore: /.*/
-
       - ApiHandlerIntegrationTests:
           filters:
             tags:
               ignore: /.*/
-
       - NominatorIntegrationTests:
           filters:
             tags:
               ignore: /.*/
-
       - ScorekeeperIntegrationTests:
+          filters:
+            tags:
+              ignore: /.*/
+      - TelemetryIntegrationTests:
           filters:
             tags:
               ignore: /.*/

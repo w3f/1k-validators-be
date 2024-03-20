@@ -122,6 +122,7 @@ export const initTestServerBeforeAll = () => {
   afterEach(async () => {});
 
   afterAll(async () => {
+    await mongoose.connection.dropDatabase();
     await mongoose.disconnect();
   });
 };

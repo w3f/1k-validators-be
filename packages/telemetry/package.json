@@ -1,6 +1,6 @@
 {
   "name": "@1kv/telemetry",
-  "version": "3.1.7",
+  "version": "3.1.8",
   "description": "Services for running the Thousand Validator Program.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -20,6 +20,7 @@
     "start:watch": "NODE_OPTIONS='--max-old-space-size=6096' nodemon --watch build --exec node build/run.js",
     "start:dev": "concurrently \"tsc -w\"  \"yarn start:watch\"",
     "js:start": "NODE_OPTIONS='--max-old-space-size=6096' node build/run.js start",
+    "test": "SKIP_MD5=true LOG_LEVEL=info ../../node_modules/.bin/vitest --config vitest.int.config.mts --no-file-parallelism",
     "test:int": "SKIP_MD5=true LOG_LEVEL=info ../../node_modules/.bin/vitest --config vitest.int.config.mts --no-file-parallelism",
     "test:int:silent": "SKIP_MD5=true LOG_LEVEL=warn ../../node_modules/.bin/vitest --config vitest.int.config.mts --no-file-parallelism"
   },

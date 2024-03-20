@@ -144,7 +144,7 @@ export const getTelemetryNode = async (
   return TelemetryNodeModel.findOne({ name }).lean<TelemetryNode>();
 };
 
-export const allTelemetryNodes = async (): Promise<TelemetryNode[] | null> => {
+export const allTelemetryNodes = async (): Promise<TelemetryNode[]> => {
   return TelemetryNodeModel.find({}).lean<TelemetryNode[]>();
 };
 

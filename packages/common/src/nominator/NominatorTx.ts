@@ -23,7 +23,7 @@ export const sendProxyDelayTx = async (
     );
     await nominator.updateNominatorStatus({
       state: NominatorState.Nominating,
-      status: `[noninate] starting proxy delay tx`,
+      status: `[nominate] starting proxy delay tx`,
       updated: Date.now(),
       stale: false,
     });
@@ -37,7 +37,7 @@ export const sendProxyDelayTx = async (
         nominatorLabel,
       );
       await nominator.updateNominatorStatus({
-        status: `[noninate] err: no current block`,
+        status: `[nominate] err: no current block`,
         updated: Date.now(),
         stale: false,
       });
@@ -59,7 +59,7 @@ export const sendProxyDelayTx = async (
     await queries.addDelayedTx(delayedTx);
     await nominator.updateNominatorStatus({
       state: NominatorState.Nominating,
-      status: `[noninate] tx: ${JSON.stringify(delayedTx)}`,
+      status: `[nominate] tx: ${JSON.stringify(delayedTx)}`,
       updated: Date.now(),
       stale: false,
     });

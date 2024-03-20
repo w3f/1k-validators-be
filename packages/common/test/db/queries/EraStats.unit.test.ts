@@ -1,8 +1,6 @@
 import { EraStatsModel } from "../../../src/db/models";
 import { getLatestEraStats, setEraStats } from "../../../src/db/queries";
-import { initTestServerBeforeAll } from "../../testUtils/dbUtils"; // Adjust the path as necessary
-
-initTestServerBeforeAll();
+import { describe, expect, it } from "vitest";
 
 describe("setEraStats", () => {
   it("should create new era stats if they don't exist", async () => {

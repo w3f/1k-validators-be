@@ -2,26 +2,26 @@ import {
   addNominator,
   allNominators,
   clearCurrent,
+  getCandidateByStash,
   getCurrentTargets,
   getNominator,
   removeStaleNominators,
   setLastNomination,
   setTarget,
 } from "../../../src/db/queries/";
-import { initTestServerBeforeAll, omitFields } from "../../testUtils/dbUtils";
+import { omitFields } from "../../testUtils/dbUtils";
 import { Nominator, NominatorModel } from "../../../src/db/models";
 import {
   addKusamaCandidates,
   kusamaCandidates,
 } from "../../testUtils/candidate";
-
-initTestServerBeforeAll();
-
-beforeEach(async () => {
-  await addKusamaCandidates();
-});
+import { beforeAll, describe, expect, it } from "vitest";
+import { sleep } from "../../../src/utils";
 
 describe("Nominator Database Functions", () => {
+  beforeAll(async () => {
+    await addKusamaCandidates();
+  });
   describe("removeStaleNominators", () => {
     it("should remove stale nominators from the database", async () => {
       await addNominator({
@@ -99,6 +99,10 @@ describe("Nominator Database Functions", () => {
 
   describe("setTarget", () => {
     it("should set a new target for the specified nominator", async () => {
+      const didSet = await addKusamaCandidates();
+      while (!didSet) {
+        console.log("didnt set");
+      }
       const nominatorData: Nominator = {
         address: "nominator1",
         stash: "stash1",
@@ -111,9 +115,10 @@ describe("Nominator Database Functions", () => {
 
       await addNominator(nominatorData);
 
-      const candidate = kusamaCandidates[0];
+      await sleep(3000);
 
-      const address = "nominator1";
+      const candidate = kusamaCandidates[0];
+      const address = nominatorData.address;
       const target = candidate.stash;
       const era = 123;
       const result = await setTarget(address, target, era);
@@ -121,6 +126,9 @@ describe("Nominator Database Functions", () => {
       const nominator = await NominatorModel.findOne({ address });
       expect(nominator?.current?.length).toBe(1);
       expect(nominator?.current[0].stash).toBe(target);
+
+      const candidateData = await getCandidateByStash(target);
+      expect(candidateData.nominatedAt).toEqual(era);
     });
     it("returns false if candidate is not found", async () => {
       const nominatorData: Nominator = {
@@ -205,6 +213,7 @@ describe("Nominator Database Functions", () => {
 
   describe("getCurrentTargets", () => {
     it("should return the current targets of the specified nominator", async () => {
+      await addKusamaCandidates();
       const nominatorData: Nominator = {
         address: "nominator1",
         stash: "stash1",

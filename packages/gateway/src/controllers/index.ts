@@ -1,6 +1,6 @@
 import { BaseContext } from "koa";
+
 export * from "./Candidate";
-export * from "./Accounting";
 export * from "./EraPoints";
 
 export const response = (

@@ -3,9 +3,7 @@ import {
   getLastNominatedEraIndex,
   setLastNominatedEraIndex,
 } from "../../../src/db/queries/Era";
-import { initTestServerBeforeAll } from "../../testUtils/dbUtils";
-
-initTestServerBeforeAll();
+import { describe, expect, it } from "vitest";
 
 describe("setLastNominatedEraIndex", () => {
   it("should create a new era index if none exists", async () => {

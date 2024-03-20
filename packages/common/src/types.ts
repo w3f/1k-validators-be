@@ -79,6 +79,7 @@ export interface TelemetryNodeDetails {
   startupTime: number;
   hardwareSpec: HardwareSpec;
   benchmarkSpec: BenchmarkSpec;
+  networkId?: string;
 }
 
 export interface HardwareSpec {

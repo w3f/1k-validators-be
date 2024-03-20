@@ -1,7 +1,5 @@
 import { getNomination, setNomination } from "./../../../src/db/queries";
-import { initTestServerBeforeAll } from "../../testUtils/dbUtils"; // Assuming the file name is nominations.ts
-
-initTestServerBeforeAll();
+import { describe, expect, it } from "vitest";
 
 describe("Nominations Database Functions", () => {
   describe("setNomination", () => {

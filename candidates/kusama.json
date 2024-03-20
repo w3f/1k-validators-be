@@ -6025,6 +6025,20 @@
       "stash": "E7bFzAqAyMDiG8eZKLfXFxtq7Pth3C6oRhKEwHXo1XdAjCy",
       "riotHandle": "@sangalliglenna:matrix.org",
       "kyc": true
+    },
+    {
+      "slotId": 865,
+      "name": "StormSpirit",
+      "stash": "DrznicXfvf1jXMJHkGeH1xbkB7pKVW6TRcCXrsfFMREcuuE",
+      "riotHandle": "@mildredaneymeyer:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 866,
+      "name": "StormSpirit*01",
+      "stash": "EfsE3uZyitCYPM1QwrkZ8AHVyFFxTRUKcMcJkUv7AqLgji6",
+      "riotHandle": "@mildredaneymeyer:matrix.org",
+      "kyc": true
     }
   ]
 }

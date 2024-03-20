@@ -2,15 +2,16 @@ import { ApiPromise } from "@polkadot/api";
 import Nominator from "../../src/nominator/nominator";
 import { ApiHandler } from "../../src";
 import { autoNumNominations } from "../../src/scorekeeper/NumNominations";
+import { beforeEach, describe, expect, it, Mock, vi } from "vitest";
 
-jest.mock("@polkadot/api", () => ({
+vi.mock("@polkadot/api", () => ({
   ApiPromise: {
-    create: jest.fn(),
+    create: vi.fn(),
   },
 }));
 
-jest.mock("../../src/nominator/nominator");
-jest.mock("../../src/ApiHandler/ApiHandler");
+vi.mock("../../src/nominator/nominator");
+vi.mock("../../src/ApiHandler/ApiHandler");
 
 const mockCompact = (value: bigint) => ({
   unwrap: () => ({
@@ -24,15 +25,15 @@ describe("autoNumNominations", () => {
   let handler: ApiHandler;
 
   beforeEach(async () => {
-    (ApiPromise.create as jest.Mock).mockResolvedValue({
+    (ApiPromise.create as Mock).mockResolvedValue({
       rpc: {
         system: {
-          chain: jest.fn().mockResolvedValue("Polkadot"),
+          chain: vi.fn().mockResolvedValue("Polkadot"),
         },
       },
       query: {
         system: {
-          account: jest.fn().mockResolvedValue({
+          account: vi.fn().mockResolvedValue({
             data: {
               free: mockCompact(BigInt(5000000000000)),
               reserved: mockCompact(BigInt(1000000000000)),
@@ -42,7 +43,7 @@ describe("autoNumNominations", () => {
       },
       derive: {
         staking: {
-          electedInfo: jest.fn().mockResolvedValue({
+          electedInfo: vi.fn().mockResolvedValue({
             info: [
               {
                 exposure: {
@@ -78,7 +79,7 @@ describe("autoNumNominations", () => {
   });
 
   it("should calculate the number of nominations correctly", async () => {
-    nominator.stash = jest.fn().mockResolvedValue("stashAddress");
+    nominator.stash = vi.fn().mockResolvedValue("stashAddress");
 
     const result = await autoNumNominations(api, nominator);
 

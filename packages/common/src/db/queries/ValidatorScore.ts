@@ -32,7 +32,7 @@ export const setValidatorScore = async (
     const data = await ValidatorScoreModel.findOne({
       address: address,
       session: session,
-    }).lean();
+    }).lean<ValidatorScore>();
 
     if (!data) {
       const score = new ValidatorScoreModel({
@@ -106,7 +106,7 @@ export const getValidatorScore = async (
       session: session,
     },
     { _id: 0, __v: 0 },
-  ).lean();
+  ).lean<ValidatorScore>();
 };
 
 export const getLatestValidatorScore = async (

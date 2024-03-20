@@ -817,7 +817,7 @@
       "name": "Good Karma",
       "stash": "JKbJoCsgUEgjbGmGq7VdSNgSVQt8k43e3WWAYGCpiNP9r6D",
       "riotHandle": "@themarcus:matrix.org",
-      "kyc": false
+      "kyc": true
     },
     {
       "slotId": 117,
@@ -5951,13 +5951,76 @@
     },
     {
       "slotId": 854,
+      "name": "Polls coin",
+      "stash": "EMjeYgW69fCncEx5UQvbEbpmdZv5fwxbmABcSFmjbViYcjR",
+      "riotHandle": "@licerioshory:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 855,
+      "name": "Polls coin1",
+      "stash": "GRfoZq8fKyyaNufWsmkDvoeJ3ACVgCe7SANRpeFXew6DAXM",
+      "riotHandle": "@licerioshory:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 856,
+      "name": "RTI solution",
+      "stash": "J11jfzJQAkxKJTZozq3SDRAsjZkSQjzoRCUQ5oVBxWsecJT",
+      "riotHandle": "@jonasmondal194:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 857,
+      "name": "RTI solution02",
+      "stash": "HvptNWtnEFSz9qn8XjtMg8sg4aZPcrDnsnBPZkbDJehj6Lg",
+      "riotHandle": "@jonasmondal194:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 858,
+      "name": "⚡️ DigitalGhost ⚡️",
+      "stash": "FkqSqeRVr4VceTBKFXzwdSAjmB1QuhhVTdN1CXhRFvtPRZa",
+      "riotHandle": "@pos.digitalghost:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 859,
+      "name": "FLOWERSTAKE/02",
+      "stash": "J4qpdWn4UnBk1UG2SLQwaahrmgHgsgaQrJanMB6qmSCx3wH",
+      "riotHandle": "@flowerstake:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 860,
+      "name": "ToTheMars|2",
+      "stash": "H9XELombQp2mSDakzZ4pXe5mwA8RqkFF5vKE4hhXyg7ko8Y",
+      "riotHandle": "@tothemars1:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 861,
+      "name": "snail",
+      "stash": "DGDpqWqFwQRkgPVc5JxBZ4ZyyGqcTQ7PNxLU6Kyi84RP5H4",
+      "riotHandle": "@snail773:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 862,
+      "name": "snail-2",
+      "stash": "HWb4f3AXUomEQN7xBeAc6thRjgxKKgmFFdM3ZCwCsWRdo5w",
+      "riotHandle": "@snail773:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 863,
       "name": "MoonMission",
       "stash": "GXmrkTtrPPPFxTQUfshKMtbpS5fuuwxy6uMocCk2Sqc24eN",
       "riotHandle": "@sangalliglenna:matrix.org",
       "kyc": true
     },
     {
-      "slotId": 855,
+      "slotId": 864,
       "name": "MoonMission^01",
       "stash": "E7bFzAqAyMDiG8eZKLfXFxtq7Pth3C6oRhKEwHXo1XdAjCy",
       "riotHandle": "@sangalliglenna:matrix.org",

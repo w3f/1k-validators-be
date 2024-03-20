@@ -5976,6 +5976,13 @@
       "stash": "HvptNWtnEFSz9qn8XjtMg8sg4aZPcrDnsnBPZkbDJehj6Lg",
       "riotHandle": "@jonasmondal194:matrix.org",
       "kyc": true
+    },
+    {
+      "slotId": 858,
+      "name": "⚡️ DigitalGhost ⚡️",
+      "stash": "FkqSqeRVr4VceTBKFXzwdSAjmB1QuhhVTdN1CXhRFvtPRZa",
+      "riotHandle": "@pos.digitalghost:matrix.org",
+      "kyc": true
     }
   ]
 }

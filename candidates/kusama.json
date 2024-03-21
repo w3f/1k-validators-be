@@ -6025,6 +6025,20 @@
       "stash": "E7bFzAqAyMDiG8eZKLfXFxtq7Pth3C6oRhKEwHXo1XdAjCy",
       "riotHandle": "@sangalliglenna:matrix.org",
       "kyc": true
+    },
+    {
+      "slotId": 865,
+      "name": "Infrapix",
+      "stash": "HvxduhJsgb4LXq8o3daPExA8B21NQWuL12yH4SNgbE3syn7",
+      "riotHandle": "@uyifazih:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 866,
+      "name": "Infrapix<2>",
+      "stash": "GU5vb54JbDdn69k2G8Wfnf7yJXFCR2MpFkgsXyrt37LPF1F",
+      "riotHandle": "@uyifazih:matrix.org",
+      "kyc": true
     }
   ]
 }

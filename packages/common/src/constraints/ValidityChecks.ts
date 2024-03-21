@@ -136,7 +136,7 @@ export const checkLatestClientVersion = async (
         : semver.clean(latestRelease.name);
 
       logger.info(
-        `Checking latest client version: ${nodeVersion} >= ${latestVersion}`,
+        `Past grace window of latest release, checking latest client version: ${nodeVersion} >= ${latestVersion}`,
         constraintsLabel,
       );
 
@@ -158,9 +158,11 @@ export const checkLatestClientVersion = async (
       await setLatestClientReleaseValidity(candidate.stash, true);
       return true;
     } else {
+      logger.info(`Still in grace window of latest release`, constraintsLabel);
+
       // If not past the grace window, set the release as invalid
-      await setLatestClientReleaseValidity(candidate.stash, false);
-      return false;
+      await setLatestClientReleaseValidity(candidate.stash, true);
+      return true;
     }
   } catch (e) {
     logger.error(

@@ -92,6 +92,7 @@ describe("getSpanEraPoints", () => {
 
 describe("getHistoryDepthEraPoints", () => {
   it("should return era points for a given address and current era with depth", async () => {
+    await EraPointsModel.deleteMany({});
     await EraPointsModel.create({
       address: "address1",
       era: 1,
@@ -115,6 +116,7 @@ describe("getHistoryDepthEraPoints", () => {
 
 describe("getHistoryDepthTotalEraPoints", () => {
   it("should return total era points with depth", async () => {
+    await TotalEraPointsModel.deleteMany({});
     await TotalEraPointsModel.create({ era: 1, totalEraPoints: 100 });
     await TotalEraPointsModel.create({ era: 2, totalEraPoints: 200 });
     await TotalEraPointsModel.create({ era: 3, totalEraPoints: 300 });

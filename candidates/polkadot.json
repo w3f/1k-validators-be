@@ -449,8 +449,8 @@
       "name": "nicasio-201",
       "stash": "13zBFyK97dg4hWjXwEpigeVdu69sHa4fc8JYegpB369PAafq",
       "kusamaStash": "GCporqtiw7ybKYUqAftjvUAjZnp3x9gfrWsTy1GrvrGwmYT",
-      "riotHandle": "@zeke:matrix.parity.io",
-      "kyc": false
+      "riotHandle": "@zmost:matrix.org",
+      "kyc": true
     },
     {
       "slotId": 56,
@@ -1067,7 +1067,7 @@
     {
       "slotId": 131,
       "name": "Sik | crifferent(dot)de",
-      "stash": "15wepZh1jWNqxBjsgErm8HmYiE21n79c5krQJeTsYAjHddeM",
+      "stash": "14m8CmDmksk4cQ5YtvQzRva7J7B2gLCSSD8dwPfyH6WUahrG",
       "kusamaStash": "HWyLYmpW68JGJYoVJcot6JQ1CJbtUQeTdxfY1kUTsvGCB1r",
       "riotHandle": "@dev0_sik:matrix.org",
       "skipSelfStake": true,
@@ -1320,7 +1320,7 @@
       "kusamaStash": "HyLisujX7Cr6D7xzb6qadFdedLt8hmArB6ZVGJ6xsCUHqmx",
       "riotHandle": "@metaspan:matrix.org",
       "skipSelfStake": true,
-      "kyc": false
+      "kyc": true
     },
     {
       "slotId": 162,
@@ -2278,6 +2278,14 @@
       "stash": "16cSiUTqGavZULqZStC6wvCxiFrtQmUafsDknoTmhAbMT6Jz",
       "kusamaStash": "FGHknsDq3UwZDgtvpGE6bK2Z1csVgrY5xCEA1H1kapZ8bxn",
       "riotHandle": "@tux_in_tuxedo:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 278,
+      "name": "Colossus | polkadot-node1",
+      "stash": "1UXCHYkyDvKQArQfumvW3T587Bn9ZfpPgoHeRjEjkMDqd2J",
+      "kusamaStash": "FkGx1DCPF85BRjGZszZCXL7GSoWKHASy3jP7iuWV9pbHQVq",
+      "riotHandle": "@colossus.digital:matrix.org",
       "kyc": true
     }
   ]

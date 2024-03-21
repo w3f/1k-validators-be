@@ -55,7 +55,7 @@ spec:
                 "constraints": {
                   "skipConnectionTime": false,
                   "skipIdentity": false,
-                  "skipClientUpgrade": true,
+                  "skipClientUpgrade": false,
                   "skipUnclaimed": true,
                   "minSelfStake": 50000000000000,
                   "commission": 50000000,
@@ -64,7 +64,7 @@ spec:
                 "cron": {
                   "monitor": "0 */15 * * * *",
                   "monitorEnabled": true,
-                  "clearOfflineEnabled": false,
+                  "clearOfflineEnabled": true,
                   "validityEnabled": true,
                   "scoreEnabled": true,
                   "executionEnabled": true,

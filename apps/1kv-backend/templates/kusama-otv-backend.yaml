@@ -54,7 +54,7 @@ spec:
                   "skipConnectionTime": false,
                   "skipIdentity": false,
                   "skipStakedDestination": true,
-                  "skipClientUpgrade": false,
+                  "skipClientUpgrade": true,
                   "skipUnclaimed": true,
                   "minSelfStake": 10000000000000,
                   "commission": 150000000,

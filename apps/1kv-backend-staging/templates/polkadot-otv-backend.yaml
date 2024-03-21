@@ -64,7 +64,7 @@ spec:
                 "cron": {
                   "monitor": "0 */15 * * * *",
                   "monitorEnabled": true,
-                  "clearOfflineEnabled": true,
+                  "clearOfflineEnabled": false,
                   "validityEnabled": true,
                   "scoreEnabled": true,
                   "executionEnabled": true,

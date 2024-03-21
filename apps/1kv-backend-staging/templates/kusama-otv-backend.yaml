@@ -56,7 +56,7 @@ spec:
                 "constraints": {
                   "skipConnectionTime": true,
                   "skipIdentity": false,
-                  "skipClientUpgrade": true,
+                  "skipClientUpgrade": false,
                   "skipUnclaimed": true,
                   "minSelfStake": 10000000000000,
                   "commission": 150000000,

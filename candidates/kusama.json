@@ -6025,6 +6025,20 @@
       "stash": "E7bFzAqAyMDiG8eZKLfXFxtq7Pth3C6oRhKEwHXo1XdAjCy",
       "riotHandle": "@sangalliglenna:matrix.org",
       "kyc": true
+    },
+    {
+      "slotId": 865,
+      "name": "Byte vista",
+      "stash": "FaNAro9FXxT11LHSC8seGZRYus66QsTN2fwGPZ22UhZiDmG",
+      "riotHandle": "@cardonajocabed:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 866,
+      "name": "Byte vista2",
+      "stash": "FtCUPi9W3Nsh1QQ7DdihpiAdxxnZ5dADVeHFwJNpWL44kEU",
+      "riotHandle": "@cardonajocabed:matrix.org",
+      "kyc": true
     }
   ]
 }

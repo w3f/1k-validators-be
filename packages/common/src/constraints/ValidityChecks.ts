@@ -47,14 +47,16 @@ export const checkValidateIntention = async (
 ): Promise<boolean> => {
   try {
     const validators = await chaindata.getValidators();
-    if (!validators.includes(Util.formatAddress(candidate?.stash, config))) {
-      await setValidateIntentionValidity(candidate.stash, false);
-      return false;
-    } else {
+    if (
+      !validators?.length ||
+      validators.includes(Util.formatAddress(candidate?.stash, config))
+    ) {
       await setValidateIntentionValidity(candidate.stash, true);
       return true;
     }
-    return true;
+
+    await setValidateIntentionValidity(candidate.stash, false);
+    return false;
   } catch (e) {
     logger.error(`Error checking validate intention: ${e}`, constraintsLabel);
     return false;

@@ -361,7 +361,7 @@ export const handleError = async (chaindata, e, functionName: string) => {
       apiLabel,
     );
     try {
-      await chaindata.handler.initiateConnection();
+      await chaindata.handler.setAPI();
     } catch (error) {
       logger.error(
         `Error while switching to a different endpoint: ${error}`,

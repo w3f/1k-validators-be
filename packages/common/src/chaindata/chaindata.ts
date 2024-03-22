@@ -371,6 +371,7 @@ export const handleError = async (chaindata, e, functionName: string) => {
   } else {
     logger.error(`Error in ${functionName}: ${errorMessage}`, chaindataLabel);
   }
+  throw new Error("Error in ChainData");
 };
 
 export default ChainData;

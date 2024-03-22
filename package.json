@@ -128,7 +128,7 @@
     "eventemitter3": "^5.0.1",
     "hash.js": "^1.1.7",
     "jest": "^29.7.0",
-    "koa": "^2.15.0",
+    "koa": "^2.15.2",
     "koa-bodyparser": "^4.4.1",
     "koa-cash": "^4.1.1",
     "koa-mount": "^4.0.0",

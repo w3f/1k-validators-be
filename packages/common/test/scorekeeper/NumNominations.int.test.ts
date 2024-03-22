@@ -7,7 +7,7 @@ import { describe, expect, it } from "vitest";
 describe("autoNumNominations Integration Test", () => {
   it("queries the real API and retrieves data", async () => {
     const handler = new ApiHandler(KusamaEndpoints);
-    await handler.initiateConnection();
+    await handler.setAPI();
     await new Promise((resolve) => setTimeout(resolve, 5000));
     const api = handler.getApi();
 

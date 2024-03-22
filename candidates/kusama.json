@@ -6025,6 +6025,20 @@
       "stash": "E7bFzAqAyMDiG8eZKLfXFxtq7Pth3C6oRhKEwHXo1XdAjCy",
       "riotHandle": "@sangalliglenna:matrix.org",
       "kyc": true
+    },
+    {
+      "slotId": 865,
+      "name": "Codeglow",
+      "stash": "FnmHaY5Qhd5yFKg7MnwJc71WWmjzWEGLmiNR2wpVrGbk7ik",
+      "riotHandle": "@trudiebakanauskas210:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 866,
+      "name": "Codeglow/1",
+      "stash": "Evnqha2ayRvDqCHSbxMQDpVarNeAL4p4byU91wyn9R9K7mZ",
+      "riotHandle": "@trudiebakanauskas210:matrix.org",
+      "kyc": true
     }
   ]
 }

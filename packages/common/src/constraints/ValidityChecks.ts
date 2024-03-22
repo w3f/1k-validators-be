@@ -47,7 +47,10 @@ export const checkValidateIntention = async (
 ): Promise<boolean> => {
   try {
     const validators = await chaindata.getValidators();
-    if(!validators?.length || validators.includes(Util.formatAddress(candidate?.stash, config))){
+    if (
+      !validators?.length ||
+      validators.includes(Util.formatAddress(candidate?.stash, config))
+    ) {
       await setValidateIntentionValidity(candidate.stash, true);
       return true;
     }

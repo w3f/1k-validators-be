@@ -35,7 +35,7 @@ export const checkOnline = async (candidate: any): Promise<boolean> => {
     return true;
   } catch (e) {
     logger.error(`Error checking online status: ${e}`, constraintsLabel);
-    return false;
+    throw new Error("could not make validity check");
   }
 };
 
@@ -57,7 +57,7 @@ export const checkValidateIntention = async (
     return true;
   } catch (e) {
     logger.error(`Error checking validate intention: ${e}`, constraintsLabel);
-    return false;
+    throw new Error("could not make validity check");
   }
 };
 
@@ -79,7 +79,7 @@ export const checkAllValidateIntentions = async (
     return true;
   } catch (e) {
     logger.error(`Error checking validate intentions: ${e}`, constraintsLabel);
-    return false;
+    throw new Error("could not make validity check");
   }
 };
 
@@ -170,7 +170,7 @@ export const checkLatestClientVersion = async (
       constraintsLabel,
     );
     await setLatestClientReleaseValidity(candidate.stash, false);
-    return false;
+    throw new Error("could not make validity check");
   }
 };
 
@@ -194,7 +194,7 @@ export const checkConnectionTime = async (
     }
   } catch (e) {
     logger.error(`Error checking connection time: ${e}`, constraintsLabel);
-    return false;
+    throw new Error("could not make validity check");
   }
 };
 
@@ -220,7 +220,7 @@ export const checkIdentity = async (
     return true;
   } catch (e) {
     logger.error(`Error checking identity: ${e}`, constraintsLabel);
-    return false;
+    throw new Error("could not make validity check");
   }
 };
 
@@ -237,7 +237,7 @@ export const checkOffline = async (candidate: Candidate): Promise<boolean> => {
     return true;
   } catch (e) {
     logger.error(`Error checking offline: ${e}`, constraintsLabel);
-    return false;
+    throw new Error("could not make validity check");
   }
 };
 export const checkCommission = async (
@@ -265,7 +265,7 @@ export const checkCommission = async (
     }
   } catch (e) {
     logger.error(`Error checking commission: ${e}`, constraintsLabel);
-    return false;
+    throw new Error("could not make validity check");
   }
 };
 
@@ -299,7 +299,7 @@ export const checkSelfStake = async (
     return true;
   } catch (e) {
     logger.error(`Error checking self stake: ${e}`, constraintsLabel);
-    return false;
+    throw new Error("could not make validity check");
   }
 };
 
@@ -327,7 +327,7 @@ export const checkUnclaimed = async (
     }
   } catch (e) {
     logger.error(`Error checking unclaimed: ${e}`, constraintsLabel);
-    return false;
+    throw new Error("could not make validity check");
   }
 };
 
@@ -348,7 +348,7 @@ export const checkBlocked = async (
     }
   } catch (e) {
     logger.error(`Error checking blocked: ${e}`, constraintsLabel);
-    return false;
+    throw new Error("could not make validity check");
   }
 };
 
@@ -384,7 +384,7 @@ export const checkProvider = async (
     }
   } catch (e) {
     logger.error(`Error checking provider: ${e}`, constraintsLabel);
-    return false;
+    throw new Error("could not make validity check");
   }
 };
 
@@ -413,7 +413,7 @@ export const checkKusamaRank = async (
     return true;
   } catch (e) {
     logger.warn(`Error trying to get kusama data...`);
-    return true;
+    throw new Error("could not make validity check");
   }
 };
 
@@ -432,6 +432,6 @@ export const checkBeefyKeys = async (
     }
   } catch (e) {
     logger.warn(`Error trying to get beefy keys...`, constraintsLabel);
-    return false;
+    throw new Error("could not make validity check");
   }
 };

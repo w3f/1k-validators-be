@@ -6067,6 +6067,20 @@
       "stash": "GU5vb54JbDdn69k2G8Wfnf7yJXFCR2MpFkgsXyrt37LPF1F",
       "riotHandle": "@uyifazih:matrix.org",
       "kyc": true
+    },
+    {
+      "slotId": 871,
+      "name": "🦾🤖 IvoryNode 🤖🦾",
+      "stash": "GUibN3wkgbXrE9bbrfDZzUQrdanEusMD4tfiEXAzYUT24rL",
+      "riotHandle": "@white_snowflake:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 872,
+      "name": "🦿🤖 WhiteNode 🤖🦿",
+      "stash": "DaS8Qc4fzpa7DVyV5NsvMUpLDHQzyFG3BNx7977qMUTbbeq",
+      "riotHandle": "@white_snowflake:matrix.org",
+      "kyc": true
     }
   ]
 }

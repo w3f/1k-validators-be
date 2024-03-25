@@ -21,6 +21,7 @@ import axios from "axios";
 import semver from "semver";
 import logger from "../logger";
 import { constraintsLabel } from "./constraints";
+import { getLatestTaggedRelease } from "../scorekeeper/jobs/specificJobs";
 
 export const checkOnline = async (candidate: any): Promise<boolean> => {
   try {
@@ -34,7 +35,7 @@ export const checkOnline = async (candidate: any): Promise<boolean> => {
     return true;
   } catch (e) {
     logger.error(`Error checking online status: ${e}`, constraintsLabel);
-    return false;
+    throw new Error("could not make validity check");
   }
 };
 
@@ -46,17 +47,19 @@ export const checkValidateIntention = async (
 ): Promise<boolean> => {
   try {
     const validators = await chaindata.getValidators();
-    if (!validators.includes(Util.formatAddress(candidate?.stash, config))) {
-      await setValidateIntentionValidity(candidate.stash, false);
-      return false;
-    } else {
+    if (
+      !validators?.length ||
+      validators.includes(Util.formatAddress(candidate?.stash, config))
+    ) {
       await setValidateIntentionValidity(candidate.stash, true);
       return true;
     }
-    return true;
+
+    await setValidateIntentionValidity(candidate.stash, false);
+    return false;
   } catch (e) {
     logger.error(`Error checking validate intention: ${e}`, constraintsLabel);
-    return false;
+    throw new Error("could not make validity check");
   }
 };
 
@@ -78,7 +81,7 @@ export const checkAllValidateIntentions = async (
     return true;
   } catch (e) {
     logger.error(`Error checking validate intentions: ${e}`, constraintsLabel);
-    return false;
+    throw new Error("could not make validity check");
   }
 };
 
@@ -89,41 +92,77 @@ export const checkLatestClientVersion = async (
 ): Promise<boolean> => {
   try {
     const skipClientUpgrade = config.constraints?.skipClientUpgrade || false;
-    if (!skipClientUpgrade) {
-      if (candidate?.implementation == "Kagome Node") {
-        await setLatestClientReleaseValidity(candidate.stash, true);
-        return true;
-      }
+    if (skipClientUpgrade || candidate?.implementation === "Kagome Node") {
+      // Skip the check if the node is a Kagome Client or if skipping client upgrade is enabled
+      await setLatestClientReleaseValidity(candidate.stash, true);
+      return true;
+    }
 
-      const forceLatestRelease = config.constraints.forceClientVersion;
-      const latestRelease = await getLatestRelease();
-      if (
-        candidate.version &&
-        latestRelease &&
-        Date.now() > latestRelease.publishedAt + Constants.SIXTEEN_HOURS
-      ) {
-        const nodeVersion = semver.coerce(candidate.version);
-        const latestVersion = forceLatestRelease
-          ? semver.clean(forceLatestRelease)
-          : semver.clean(latestRelease.name);
-        if (!nodeVersion || !latestVersion) {
-          await setLatestClientReleaseValidity(candidate.stash, false);
-          return false;
-        }
+    // The latest release that is manually set in the config (set if there's reasons for people to downgrade)
+    const forceLatestRelease = config.constraints.forceClientVersion;
 
-        const isUpgraded = semver.gte(nodeVersion, latestVersion);
-        if (!isUpgraded) {
-          await setLatestClientReleaseValidity(candidate.stash, false);
-          return false;
-        } else {
-          await setLatestClientReleaseValidity(candidate.stash, true);
-          return true;
-        }
-      } else {
+    // Get the latest release from the db or github
+    let latestRelease = await getLatestRelease();
+    if (!latestRelease) {
+      logger.info(
+        `No latest release found, fetching from GitHub`,
+        constraintsLabel,
+      );
+      // fetch from github and set in the db
+      await getLatestTaggedRelease();
+      // get the record from the db
+      latestRelease = await getLatestRelease();
+      logger.info(
+        `Latest release fetched from GitHub: ${latestRelease}`,
+        constraintsLabel,
+      );
+    }
+
+    // Ensure latestRelease contains a valid name
+    if (!latestRelease || !latestRelease.name) {
+      logger.error(
+        `Latest release name is null or undefined: ${latestRelease}`,
+        constraintsLabel,
+      );
+      return false;
+    }
+
+    // Check if there is a latest release and if the current time is past the grace window
+    const isPastGraceWindow =
+      Date.now() > latestRelease.publishedAt + Constants.FORTY_EIGHT_HOURS;
+
+    if (isPastGraceWindow) {
+      const nodeVersion = semver.coerce(candidate.version);
+      const latestVersion = forceLatestRelease
+        ? semver.clean(forceLatestRelease)
+        : semver.clean(latestRelease.name);
+
+      logger.info(
+        `Past grace window of latest release, checking latest client version: ${nodeVersion} >= ${latestVersion}`,
+        constraintsLabel,
+      );
+
+      // If cannot parse the version, set the release as invalid
+      if (!nodeVersion || !latestVersion) {
         await setLatestClientReleaseValidity(candidate.stash, false);
         return false;
       }
+
+      const isUpgraded = semver.gte(nodeVersion, latestVersion);
+
+      // If they are not upgraded, set the validity as invalid
+      if (!isUpgraded) {
+        await setLatestClientReleaseValidity(candidate.stash, false);
+        return false;
+      }
+
+      // If the current version is the latest release, set the release as valid
+      await setLatestClientReleaseValidity(candidate.stash, true);
+      return true;
     } else {
+      logger.info(`Still in grace window of latest release`, constraintsLabel);
+
+      // If not past the grace window, set the release as invalid
       await setLatestClientReleaseValidity(candidate.stash, true);
       return true;
     }
@@ -133,7 +172,7 @@ export const checkLatestClientVersion = async (
       constraintsLabel,
     );
     await setLatestClientReleaseValidity(candidate.stash, false);
-    return false;
+    throw new Error("could not make validity check");
   }
 };
 
@@ -155,10 +194,9 @@ export const checkConnectionTime = async (
       await setConnectionTimeInvalidity(candidate.stash, true);
       return true;
     }
-    return true;
   } catch (e) {
     logger.error(`Error checking connection time: ${e}`, constraintsLabel);
-    return false;
+    throw new Error("could not make validity check");
   }
 };
 
@@ -184,7 +222,7 @@ export const checkIdentity = async (
     return true;
   } catch (e) {
     logger.error(`Error checking identity: ${e}`, constraintsLabel);
-    return false;
+    throw new Error("could not make validity check");
   }
 };
 
@@ -201,7 +239,7 @@ export const checkOffline = async (candidate: Candidate): Promise<boolean> => {
     return true;
   } catch (e) {
     logger.error(`Error checking offline: ${e}`, constraintsLabel);
-    return false;
+    throw new Error("could not make validity check");
   }
 };
 export const checkCommission = async (
@@ -227,10 +265,9 @@ export const checkCommission = async (
       await setCommissionInvalidity(candidate.stash, true);
       return true;
     }
-    return true;
   } catch (e) {
     logger.error(`Error checking commission: ${e}`, constraintsLabel);
-    return false;
+    throw new Error("could not make validity check");
   }
 };
 
@@ -264,7 +301,7 @@ export const checkSelfStake = async (
     return true;
   } catch (e) {
     logger.error(`Error checking self stake: ${e}`, constraintsLabel);
-    return false;
+    throw new Error("could not make validity check");
   }
 };
 
@@ -290,10 +327,9 @@ export const checkUnclaimed = async (
       await setUnclaimedInvalidity(candidate.stash, true);
       return true;
     }
-    return true;
   } catch (e) {
     logger.error(`Error checking unclaimed: ${e}`, constraintsLabel);
-    return false;
+    throw new Error("could not make validity check");
   }
 };
 
@@ -312,10 +348,9 @@ export const checkBlocked = async (
       await setBlockedInvalidity(candidate.stash, true);
       return true;
     }
-    return true;
   } catch (e) {
     logger.error(`Error checking blocked: ${e}`, constraintsLabel);
-    return false;
+    throw new Error("could not make validity check");
   }
 };
 
@@ -349,10 +384,9 @@ export const checkProvider = async (
       await setProviderInvalidity(candidate.stash, true);
       return true;
     }
-    return true;
   } catch (e) {
     logger.error(`Error checking provider: ${e}`, constraintsLabel);
-    return false;
+    throw new Error("could not make validity check");
   }
 };
 
@@ -381,7 +415,7 @@ export const checkKusamaRank = async (
     return true;
   } catch (e) {
     logger.warn(`Error trying to get kusama data...`);
-    return true;
+    throw new Error("could not make validity check");
   }
 };
 
@@ -400,6 +434,6 @@ export const checkBeefyKeys = async (
     }
   } catch (e) {
     logger.warn(`Error trying to get beefy keys...`, constraintsLabel);
-    return false;
+    throw new Error("could not make validity check");
   }
 };

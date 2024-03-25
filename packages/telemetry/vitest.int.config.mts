@@ -7,5 +7,6 @@ export default defineConfig({
         testTimeout: 130000,
         retry: 1,
         setupFiles: ["test/vitest.setup.ts"],
+        maxConcurrency: 1,
     },
 });

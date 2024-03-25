@@ -17,5 +17,14 @@ export const setRelease = async (
 };
 
 export const getLatestRelease = async (): Promise<any> => {
-  return (await ReleaseModel.find({}).lean().sort("-publishedAt").limit(1))[0];
+  try {
+    const latestRelease = await ReleaseModel.findOne({})
+      .sort("-publishedAt")
+      .lean()
+      .limit(1);
+    return latestRelease;
+  } catch (error) {
+    console.error("Error while fetching latest release:", error);
+    throw error;
+  }
 };

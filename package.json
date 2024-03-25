@@ -64,6 +64,8 @@
     "test:common:int:apihandler:ci": "circleci local execute ApiHandlerIntegrationTests",
     "test:common:int:nominator:ci": "circleci local execute NominatorIntegrationTests",
     "test:common:int:ci": "yarn test:common:int:scorekeeper:ci && yarn test:common:int:chaindata:ci && yarn test:common:int:apihandler:ci && yarn test:common:int:nominator:ci",
+    "test:telemetry:int:ci": "circleci local execute TelemetryIntegrationTests",
+    "test:ci:all": "yarn test:common:int:ci && yarn test:telemetry:int:ci",
     "test:all": "yarn workspaces foreach run test",
     "test": "LOG_LEVEL=warn yarn build && vitest run --coverage --config vitest.config.mts",
     "test:ui": "LOG_LEVEL=warn vitest --ui --config vitest.config.mts --coverage",

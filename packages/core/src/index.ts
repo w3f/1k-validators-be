@@ -39,7 +39,7 @@ export const createAPIHandler = async (config, retries = 0) => {
         : Constants.LocalEndpoints;
 
     const handler = new ApiHandler(endpoints);
-    await handler.initiateConnection();
+    await handler.setAPI();
 
     // Check API health before proceeding.
     let health = await handler.healthCheck();

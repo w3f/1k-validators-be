@@ -9,6 +9,8 @@ import Location from "../controllers/Location";
 import Validator from "../controllers/Validators";
 import Rewards from "../controllers/Rewards";
 import Block from "../controllers/Block";
+import { response } from "../controllers";
+import { queries } from "@1kv/common";
 
 const router: any = new Router();
 
@@ -126,5 +128,9 @@ router.get(API.BlockIndex, Block.getBlockIndex);
 
 router.get(API.StatsTotalReqeusts, Stats.getTotalRequests);
 router.get(API.StatsEndpointCounts, Stats.getEndpointCounts);
+
+router.get(API.Release, async (ctx: any) => {
+  response(ctx, 200, await queries.getLatestRelease());
+});
 
 export default router;

@@ -12,6 +12,10 @@ export const WEEK = 7 * 24 * 60 * 60 * 1000;
 /// The time a node has to make an upgrade to the latest release.
 export const SIXTEEN_HOURS = 16 * 60 * 60 * 1000;
 
+export const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
+
+export const FORTY_EIGHT_HOURS = 48 * 60 * 60 * 1000;
+
 export const GATEWAY_CACHE_TTL = 18 * 1000;
 
 /// Number of Eras in 4 days that a validator should have claimed all previous rewards except

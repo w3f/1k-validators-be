@@ -1,6 +1,6 @@
 {
   "name": "@1kv/telemetry",
-  "version": "3.1.8",
+  "version": "3.1.11",
   "description": "Services for running the Thousand Validator Program.",
   "main": "build/index.js",
   "types": "build/index.d.ts",

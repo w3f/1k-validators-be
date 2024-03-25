@@ -2290,10 +2290,18 @@
     },
     {
       "slotId": 279,
+      "name": "BigBallz P1",
+      "stash": "14oaTVEjXK23ukZZqJ1cK5YQpewpeoy1aVpfPNigvmPSNHZF",
+      "kusamaStash": "HCcZdQVTGZdYUsySRtxS5dVPEsiL1H5yYRNnW3ftGcgqfeQ",
+      "riotHandle": "@bigballz:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 280,
       "name": "Satoyama-DOT-1",
       "stash": "1HoW4PrrgAXXMJ1rMWpE2Gf4w1ipLhsntDJqRS1Qv5fgnuF",
       "kusamaStash": "J2JVgCJuVy5r22YsqYZT2fR1q1NDNgM5f3b51DRUgH1Tw96",
-      "riotHandle": "@shawneng:matrix.org ",
+      "riotHandle": "@shawneng:matrix.org",
       "kyc": true
     }
   ]

@@ -2287,6 +2287,14 @@
       "kusamaStash": "FkGx1DCPF85BRjGZszZCXL7GSoWKHASy3jP7iuWV9pbHQVq",
       "riotHandle": "@colossus.digital:matrix.org",
       "kyc": true
+    },
+    {
+      "slotId": 279,
+      "name": "BigBallz P1",
+      "stash": "14oaTVEjXK23ukZZqJ1cK5YQpewpeoy1aVpfPNigvmPSNHZF",
+      "kusamaStash": "HCcZdQVTGZdYUsySRtxS5dVPEsiL1H5yYRNnW3ftGcgqfeQ",
+      "riotHandle": "@bigballz:matrix.org",
+      "kyc": true
     }
   ]
 }

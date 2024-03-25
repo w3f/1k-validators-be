@@ -4473,7 +4473,7 @@
       "name": "CARBONZERO3",
       "stash": "CmwjkPp55ZVoPjWz4uaLvsYY2xYE4PyVDJuPmmUiwCQijFm",
       "riotHandle": "@shawneng:matrix.org",
-      "kyc": false
+      "kyc": true
     },
     {
       "slotId": 642,
@@ -4761,7 +4761,7 @@
       "name": "Satoyama-1",
       "stash": "J2JVgCJuVy5r22YsqYZT2fR1q1NDNgM5f3b51DRUgH1Tw96",
       "riotHandle": "@shawneng:matrix.org",
-      "kyc": false
+      "kyc": true
     },
     {
       "slotId": 683,
@@ -6024,20 +6024,6 @@
       "name": "MoonMission^01",
       "stash": "E7bFzAqAyMDiG8eZKLfXFxtq7Pth3C6oRhKEwHXo1XdAjCy",
       "riotHandle": "@sangalliglenna:matrix.org",
-      "kyc": true
-    },
-    {
-      "slotId": 865,
-      "name": "CARBONZERO3",
-      "stash": "CmwjkPp55ZVoPjWz4uaLvsYY2xYE4PyVDJuPmmUiwCQijFm",
-      "riotHandle": "@shawneng:matrix.org",
-      "kyc": true
-    },
-    {
-      "slotId": 866,
-      "name": "Satoyama-1",
-      "stash": "J2JVgCJuVy5r22YsqYZT2fR1q1NDNgM5f3b51DRUgH1Tw96",
-      "riotHandle": "@shawneng:matrix.org",
       "kyc": true
     }
   ]

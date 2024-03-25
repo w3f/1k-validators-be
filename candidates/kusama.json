@@ -6039,6 +6039,20 @@
       "stash": "EfsE3uZyitCYPM1QwrkZ8AHVyFFxTRUKcMcJkUv7AqLgji6",
       "riotHandle": "@mildredaneymeyer:matrix.org",
       "kyc": true
+    },
+    {
+      "slotId": 867,
+      "name": "schmiatz",
+      "stash": "HvDGXc3twtF21iz2vWPPxZJDk7pX2KEnZQyNCQMhkHa2vQF",
+      "riotHandle": "@matthias91:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 868,
+      "name": "schmiatz-2",
+      "stash": "DchRVyJaSZFeuUph9QJ33A9N2ERMSQVz7EkdLZoN7AVQgfA",
+      "riotHandle": "@matthias91:matrix.org",
+      "kyc": true
     }
   ]
 }

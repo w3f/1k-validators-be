@@ -6109,6 +6109,55 @@
       "stash": "Evnqha2ayRvDqCHSbxMQDpVarNeAL4p4byU91wyn9R9K7mZ",
       "riotHandle": "@trudiebakanauskas210:matrix.org",
       "kyc": true
+    },
+    {
+      "slotId": 877,
+      "name": "lu191",
+      "stash": "GcS4vrQDVehpHW3poqZB5s8GzQqEJEFyoEm4AdqU3VwSGzu",
+      "riotHandle": "@lu191:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 878,
+      "name": "Carpediem/2",
+      "stash": "E3Q2oL2VUi9jUoe2cgACA5KWVkcnoGjCTJcTe6LhpvuxgVV",
+      "riotHandle": "@jdiem:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 879,
+      "name": "Goldmine",
+      "stash": "D6QYxEJ85XQnGQwAuNhDevniAxPC6RG4SyRmiJDjLeXv9oH",
+      "riotHandle": "@brendanvaca6:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 880,
+      "name": "Goldmine01",
+      "stash": "EM7spSRFxh4KrYoC9fjnaeS4ws9tjP663ssFjFzsVMXQgBM",
+      "riotHandle": "@brendanvaca6:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 881,
+      "name": "Edge",
+      "stash": "J2JHGJ5AUf9HaHW5S5xTokQ8vqtSpXKs1ymEpFwQVp8aSFh",
+      "riotHandle": "@jacksonsedge:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 882,
+      "name": "Edge2",
+      "stash": "GjoJCZh2CrZFtQTd3JUmacGq1L5mNokzSHKKoUL3kcFWChV",
+      "riotHandle": "@jacksonsedge:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 883,
+      "name": "grimface",
+      "stash": "GFEdjfCTxTPEuyUh3BuTT3Gi6bnUJnvd1XA4Rp28AdRgS1Z",
+      "riotHandle": "@grimface:matrix.org",
+      "kyc": true
     }
   ]
 }

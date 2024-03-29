@@ -130,7 +130,7 @@ __metadata:
     eslint: ^8.56.0
     eslint-plugin-react-hooks: ^4.6.0
     eslint-plugin-react-refresh: ^0.4.5
-    framer-motion: ^11.0.8
+    framer-motion: ^11.0.23
     lodash: ^4.17.21
     react: ^18.2.0
     react-dom: ^18.2.0
@@ -878,22 +878,6 @@ __metadata:
   dependencies:
     "@emotion/memoize": ^0.8.1
   checksum: 8f42dc573a3fad79b021479becb639b8fe3b60bdd1081a775d32388bca418ee53074c7602a4c845c5f75fa6831eb1cbdc4d208cc0299f57014ed3a02abcad16a
-  languageName: node
-  linkType: hard
-
-"@emotion/is-prop-valid@npm:^0.8.2":
-  version: 0.8.8
-  resolution: "@emotion/is-prop-valid@npm:0.8.8"
-  dependencies:
-    "@emotion/memoize": 0.7.4
-  checksum: bb7ec6d48c572c540e24e47cc94fc2f8dec2d6a342ae97bc9c8b6388d9b8d283862672172a1bb62d335c02662afe6291e10c71e9b8642664a8b43416cdceffac
-  languageName: node
-  linkType: hard
-
-"@emotion/memoize@npm:0.7.4":
-  version: 0.7.4
-  resolution: "@emotion/memoize@npm:0.7.4"
-  checksum: 4e3920d4ec95995657a37beb43d3f4b7d89fed6caa2b173a4c04d10482d089d5c3ea50bbc96618d918b020f26ed6e9c4026bbd45433566576c1f7b056c3271dc
   languageName: node
   linkType: hard
 
@@ -7324,24 +7308,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"framer-motion@npm:^11.0.8":
-  version: 11.0.8
-  resolution: "framer-motion@npm:11.0.8"
+"framer-motion@npm:^11.0.23":
+  version: 11.0.23
+  resolution: "framer-motion@npm:11.0.23"
   dependencies:
-    "@emotion/is-prop-valid": ^0.8.2
     tslib: ^2.4.0
   peerDependencies:
+    "@emotion/is-prop-valid": "*"
     react: ^18.0.0
     react-dom: ^18.0.0
-  dependenciesMeta:
+  peerDependenciesMeta:
     "@emotion/is-prop-valid":
       optional: true
-  peerDependenciesMeta:
     react:
       optional: true
     react-dom:
       optional: true
-  checksum: 5009b748045c3bd4e123925de493cee0e754269f5fc43fe1a6cba7e53f4024f286cbfba78b85b024bfcbbd3b87a777e70d09e7cafcefd8ada80743037e429c30
+  checksum: 01f1a70d4dd7262da096b9de674e0a930fac5f9675b41a700fcb41c1cdc52a3df0722f43a24e09bf68a9dcfa8b7fccbcf77bda152426f9c01b303f5bcc5f07a9
   languageName: node
   linkType: hard
 

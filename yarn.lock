@@ -63,7 +63,7 @@ __metadata:
     koa-swagger-decorator: ^1.8.7
     koa2-cors: ^2.0.6
     lru-cache: ^10.2.0
-    matrix-js-sdk: ^31.1.0
+    matrix-js-sdk: ^31.6.1
     mongodb: 6.5.0
     mongodb-memory-server: ^9.1.7
     mongoose: ^8.2.1
@@ -1800,10 +1800,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@matrix-org/matrix-sdk-crypto-wasm@npm:^4.3.0":
-  version: 4.6.0
-  resolution: "@matrix-org/matrix-sdk-crypto-wasm@npm:4.6.0"
-  checksum: f19c94d01556529ee8b68173d81a478b59e708f6529498489f5a317cfeeaa0eedef5a76b4b499cef71f33742833a65de8f02a13f8d9fa991ce4daa433f19ae0a
+"@matrix-org/matrix-sdk-crypto-wasm@npm:^4.6.0":
+  version: 4.9.0
+  resolution: "@matrix-org/matrix-sdk-crypto-wasm@npm:4.9.0"
+  checksum: e35b832d67fd4d7830af077392a881fd68fa563ea206fcaf36d39b59bf5ffb9947617ab8bccc1afb5d12af25e4430e048d22f59a964373fcdadd9913b0e68dfc
   languageName: node
   linkType: hard
 
@@ -5728,13 +5728,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"crypto-js@npm:^4.2.0":
-  version: 4.2.0
-  resolution: "crypto-js@npm:4.2.0"
-  checksum: f051666dbc077c8324777f44fbd3aaea2986f198fe85092535130d17026c7c2ccf2d23ee5b29b36f7a4a07312db2fae23c9094b644cc35f7858b1b4fcaf27774
-  languageName: node
-  linkType: hard
-
 "crypto-random-string@npm:^4.0.0":
   version: 4.0.0
   resolution: "crypto-random-string@npm:4.0.0"
@@ -9261,10 +9254,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jwt-decode@npm:^3.1.2":
-  version: 3.1.2
-  resolution: "jwt-decode@npm:3.1.2"
-  checksum: 20a4b072d44ce3479f42d0d2c8d3dabeb353081ba4982e40b83a779f2459a70be26441be6c160bfc8c3c6eadf9f6380a036fbb06ac5406b5674e35d8c4205eeb
+"jwt-decode@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "jwt-decode@npm:4.0.0"
+  checksum: 390e2edcb31a92e86c8cbdd1edeea4c0d62acd371f8a8f0a8878e499390c0ecf4c658b365c4e941e4ef37d0170e4ca650aaa49f99a45c0b9695a235b210154b0
   languageName: node
   linkType: hard
 
@@ -9864,25 +9857,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"matrix-js-sdk@npm:^31.1.0":
-  version: 31.3.0
-  resolution: "matrix-js-sdk@npm:31.3.0"
+"matrix-js-sdk@npm:^31.6.1":
+  version: 31.6.1
+  resolution: "matrix-js-sdk@npm:31.6.1"
   dependencies:
     "@babel/runtime": ^7.12.5
-    "@matrix-org/matrix-sdk-crypto-wasm": ^4.3.0
+    "@matrix-org/matrix-sdk-crypto-wasm": ^4.6.0
     another-json: ^0.2.0
     bs58: ^5.0.0
     content-type: ^1.0.4
-    jwt-decode: ^3.1.2
+    jwt-decode: ^4.0.0
     loglevel: ^1.7.1
     matrix-events-sdk: 0.0.1
     matrix-widget-api: ^1.6.0
-    oidc-client-ts: ^2.2.4
+    oidc-client-ts: ^3.0.1
     p-retry: 4
     sdp-transform: ^2.14.1
     unhomoglyph: ^1.0.6
     uuid: 9
-  checksum: 1d5151e362a55c2677706f069111932d1068f71be5d43dc8bca559a0fcd4303e712a23e5e2a59a1b059e62bf49a5a85181e347baa81a289838a163c87b41406b
+  checksum: 3bc192684cc8c230f2c2b605e82111b7eb31d0b132b119b3832690933a01f6a4589e665e9d09b73676db2331b34d42e9b6138b63c078bed933e06a32cf7eca8c
   languageName: node
   linkType: hard
 
@@ -10816,13 +10809,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"oidc-client-ts@npm:^2.2.4":
-  version: 2.4.0
-  resolution: "oidc-client-ts@npm:2.4.0"
+"oidc-client-ts@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "oidc-client-ts@npm:3.0.1"
   dependencies:
-    crypto-js: ^4.2.0
-    jwt-decode: ^3.1.2
-  checksum: 8467db689298221f706d3358961efb0ddc789f6bd7d4765e71ae5fe62067999d2ce6e8e7584b9d991b8caa6f7fb383f75841e1cfa9e05808c34632de374f5e68
+    jwt-decode: ^4.0.0
+  checksum: 08a21a40304131642ffc6a4e9ecc3a51bf476967dfbf4b60dbdb84f79b42489fda2ba447d9276ecb575a4ca75d94f652deac38065553688bff614c9d763f6c03
   languageName: node
   linkType: hard
 

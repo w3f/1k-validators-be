@@ -137,7 +137,7 @@
     "koa-swagger-decorator": "^1.8.7",
     "koa2-cors": "^2.0.6",
     "lru-cache": "^10.2.0",
-    "matrix-js-sdk": "^31.1.0",
+    "matrix-js-sdk": "^31.6.1",
     "mongodb": "6.5.0",
     "mongodb-memory-server": "^9.1.7",
     "mongoose": "^8.2.1",

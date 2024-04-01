@@ -1423,7 +1423,7 @@ export const setBlockedInvalidity = async (
   }
 };
 
-// Set Blocked Validity Status
+// Set Provider Validity Status
 export const setProviderInvalidity = async (
   address: string,
   validity: boolean,
@@ -1460,6 +1460,52 @@ export const setProviderInvalidity = async (
               : details
                 ? details
                 : `${data.name} has banned infrastructure provider`,
+          },
+        ],
+      },
+    ).exec();
+  } catch (e) {
+    logger.info(`error setting provider validity`);
+  }
+};
+
+// Set Sanctions Validity Status
+export const setLocationValidity = async (
+  address: string,
+  validity: boolean,
+  details?: string,
+): Promise<any> => {
+  const data = await CandidateModel.findOne({
+    stash: address,
+  }).lean<Candidate>();
+
+  if (!data || !data?.invalidity) {
+    console.log(`{Self Stake} NO CANDIDATE DATA FOUND FOR ${address}`);
+    return;
+  }
+
+  const invalidityReasons = data?.invalidity?.filter((invalidityReason) => {
+    return invalidityReason.type !== "SANCTIONS";
+  });
+  if (!invalidityReasons || invalidityReasons.length == 0) return;
+
+  try {
+    await CandidateModel.findOneAndUpdate(
+      {
+        stash: address,
+      },
+      {
+        invalidity: [
+          ...invalidityReasons,
+          {
+            valid: validity,
+            type: "SANCTIONS",
+            updated: Date.now(),
+            details: validity
+              ? ""
+              : details
+                ? details
+                : `${data.name} is in a sanctioned location`,
           },
         ],
       },

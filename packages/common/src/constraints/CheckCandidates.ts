@@ -15,6 +15,7 @@ import {
   checkSelfStake,
   checkUnclaimed,
   checkValidateIntention,
+  checkLocation,
 } from "./ValidityChecks";
 import { percentage, timeRemaining } from "../utils/util";
 
@@ -124,6 +125,12 @@ export const checkCandidate = async (
       logger.info(`${candidate.name} provider not valid`, constraintsLabel);
     }
 
+    const locationValid =
+      (await checkLocation(constraints.config, candidate)) || false;
+    if (!locationValid) {
+      logger.info(`${candidate.name} location not valid`, constraintsLabel);
+    }
+
     const beefyValid = await checkBeefyKeys(candidate);
     if (!beefyValid) {
       logger.info(`${candidate.name} beefy keys not valid`, constraintsLabel);
@@ -142,7 +149,8 @@ export const checkCandidate = async (
       blockedValid &&
       kusamaValid &&
       providerValid &&
-      beefyValid;
+      beefyValid &&
+      locationValid;
 
     await setValid(candidate.stash, valid);
 

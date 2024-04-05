@@ -6158,6 +6158,27 @@
       "stash": "GFEdjfCTxTPEuyUh3BuTT3Gi6bnUJnvd1XA4Rp28AdRgS1Z",
       "riotHandle": "@grimface:matrix.org",
       "kyc": true
+    },
+    {
+      "slotId": 884,
+      "name": "Bendak",
+      "stash": "HTyDz5Mn1wyzP7sNkzX8Easz8TfvvuU6qzsHvqWtwjWuq47",
+      "riotHandle": "@bendak:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 885,
+      "name": "🧀 Cheesecake 🍰",
+      "stash": "DCs1XdLb5DANJFLqsas495XQziga836ERTLKJdgXuQaWRjR",
+      "riotHandle": "@cake.stake:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 886,
+      "name": "🍫 Chocolate Cake 🍰",
+      "stash": "Ee1NLHs5FtsCMJ2bgASoCLsyZ958PRJhfxXQfWJN4bNGfzi",
+      "riotHandle": "@cake.stake:matrix.org",
+      "kyc": true
     }
   ]
 }

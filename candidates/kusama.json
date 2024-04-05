@@ -4750,13 +4750,6 @@
       "kyc": false
     },
     {
-      "slotId": 681,
-      "name": "KeyValidate",
-      "stash": "FD9tqLqAXLYDDRcya1NjzQKgbYkrfLnDrn39cc6jmKgsbni",
-      "riotHandle": "@keyvalidator:matrix.org",
-      "kyc": false
-    },
-    {
       "slotId": 682,
       "name": "Satoyama-1",
       "stash": "J2JVgCJuVy5r22YsqYZT2fR1q1NDNgM5f3b51DRUgH1Tw96",

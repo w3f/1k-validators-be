@@ -4748,14 +4748,7 @@
       "stash": "GSHE7p88bE7pZQQvzqrDmwowAsnVB7hRsnTLc8casD25hCw",
       "riotHandle": "@havik:matrix.org",
       "kyc": false
-    },
-    {
-      "slotId": 681,
-      "name": "KeyValidate",
-      "stash": "FD9tqLqAXLYDDRcya1NjzQKgbYkrfLnDrn39cc6jmKgsbni",
-      "riotHandle": "@keyvalidator:matrix.org",
-      "kyc": false
-    },
+    }, 
     {
       "slotId": 682,
       "name": "Satoyama-1",

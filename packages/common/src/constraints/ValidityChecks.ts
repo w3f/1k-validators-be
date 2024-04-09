@@ -15,6 +15,7 @@ import {
   setSelfStakeInvalidity,
   setUnclaimedInvalidity,
   setValidateIntentionValidity,
+  setLocationValidity
 } from "../db";
 import { ChainData, Config, Constants, queries, Util } from "../index";
 import axios from "axios";
@@ -386,6 +387,44 @@ export const checkProvider = async (
     }
   } catch (e) {
     logger.error(`Error checking provider: ${e}`, constraintsLabel);
+    throw new Error("could not make validity check");
+  }
+};
+
+// Checks if the candidate is in a sanctioned location
+export const checkLocation = async (
+  config: Config.ConfigSchema,
+  candidate: Candidate,
+): Promise<boolean> => {
+  try {
+    const location = await queries.getCandidateLocation(
+      candidate.slotId,
+      candidate.name,
+      candidate.stash,
+    );
+    if (location && location.region && location.country) {
+      // const sanctionedLocations = config.telemetry?.sanctionedLocations;
+      const sanctionedCountries = ["RU", "IR", "CU", "KP", "SY"];
+      const sanctionedRegions = ["Crimea", "Luhansk", "Donetsk"];
+      if (sanctionedCountries.includes(location.country) || sanctionedRegions.includes(location.region)) {
+        logger.info(
+          `${candidate.name} is in a sanctioned location: Country: ${location.country}, Region: ${location.region}`,
+          {
+            label: "Constraints",
+          },
+        );
+        await setLocationValidity(candidate.stash, false);
+        return false;
+      } else {
+        await setLocationValidity(candidate.stash, true);
+        return true;
+      }
+    } else {
+      await setLocationValidity(candidate.stash, true);
+      return true;
+    }
+  } catch (e) {
+    logger.error(`Error checking location: ${e}`, constraintsLabel);
     throw new Error("could not make validity check");
   }
 };

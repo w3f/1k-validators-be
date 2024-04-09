@@ -15,7 +15,7 @@ import {
   setSelfStakeInvalidity,
   setUnclaimedInvalidity,
   setValidateIntentionValidity,
-  setLocationValidity
+  setLocationValidity,
 } from "../db";
 import { ChainData, Config, Constants, queries, Util } from "../index";
 import axios from "axios";
@@ -406,7 +406,10 @@ export const checkLocation = async (
       // const sanctionedLocations = config.telemetry?.sanctionedLocations;
       const sanctionedCountries = ["RU", "IR", "CU", "KP", "SY"];
       const sanctionedRegions = ["Crimea", "Luhansk", "Donetsk"];
-      if (sanctionedCountries.includes(location.country) || sanctionedRegions.includes(location.region)) {
+      if (
+        sanctionedCountries.includes(location.country) || 
+        sanctionedRegions.includes(location.region)
+      ) {
         logger.info(
           `${candidate.name} is in a sanctioned location: Country: ${location.country}, Region: ${location.region}`,
           {

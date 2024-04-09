@@ -106,39 +106,18 @@ class ApiHandler extends EventEmitter {
   }
 
   async healthCheck(): Promise<boolean> {
-    if (this.healthCheckInProgress) return false;
-    this.healthCheckInProgress = true;
+    logger.debug(
+      `Performing health check... endpoint: ${this.currentEndpoint()}`,
+      apiLabel,
+    );
+    const wsConnected = this._wsProvider?.isConnected || false;
+    const apiConnected = this._api?.isConnected || false;
+    const chain = await this._api?.rpc.system.chain();
 
-    try {
-      logger.info(
-        `Performing health check... endpoint: ${this.currentEndpoint()}`,
-        apiLabel,
-      );
-      const wsConnected = this._wsProvider?.isConnected || false;
-      const apiConnected = this._api?.isConnected || false;
-      const chain = await this._api?.rpc.system.chain();
-
-      this.healthCheckInProgress = false;
-      const healthy = wsConnected && apiConnected && !!chain;
-      logger.info(`Health: ${healthy}`, apiLabel);
-      if (!healthy) {
-        logger.info(
-          "Cleaning up connection and trying a different endpoint",
-          apiLabel,
-        );
-        this.cleanupConnection();
-        this.moveToNextEndpoint();
-        this.initiateConnection();
-      }
-      return healthy;
-    } catch (error) {
-      logger.error(`Health check failed: ${error}`, apiLabel);
-      this.healthCheckInProgress = false;
-      this.cleanupConnection();
-      this.moveToNextEndpoint();
-      this.initiateConnection();
-      return false;
-    }
+    this.healthCheckInProgress = false;
+    const healthy = wsConnected && apiConnected && !!chain;
+    logger.info(`Health: ${healthy}`, apiLabel);
+    return healthy;
   }
 
   currentEndpoint(): string {

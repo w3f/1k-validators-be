@@ -86,5 +86,14 @@ config: |
       ],
       "host": "wss://telemetry-backend.w3f.community/feed",
       "ipinfoToken": "token=xxx"
+    },
+    "logger": {
+      "level": "info",
+      "excludedLabels": [
+        "Telemetry",
+        "Location",
+        "Block",
+        "Gateway",
+      ]
     }
   }

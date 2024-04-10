@@ -1,5 +1,10 @@
 import { TelemetryNodeDetails } from "../../types";
-import { Candidate, CandidateModel, TelemetryNode, TelemetryNodeModel } from "../models";
+import {
+  Candidate,
+  CandidateModel,
+  TelemetryNode,
+  TelemetryNodeModel,
+} from "../models";
 import { dbLabel } from "../index";
 import logger from "../../logger";
 
@@ -13,7 +18,7 @@ export const deleteTelemetryNode = async (name: string): Promise<void> => {
     await TelemetryNodeModel.deleteOne({ name });
   } catch (e) {
     logger.error(JSON.stringify(e));
-    const m = `Error deleting telemetry node ${name}`
+    const m = `Error deleting telemetry node ${name}`;
     logger.error(m, dbLabel);
     throw new Error(m);
   }
@@ -152,8 +157,7 @@ export const allTelemetryNodes = async (): Promise<TelemetryNode[]> => {
 export const convertTelemetryNodeToCandidate = async (
   candidate: Candidate,
 ): Promise<void> => {
-  
-  const telemetryNode = await getTelemetryNode(candidate.name)
+  const telemetryNode = await getTelemetryNode(candidate.name);
   if (telemetryNode) {
     // update candidate with telemetry details
     await CandidateModel.findOneAndUpdate(

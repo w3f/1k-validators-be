@@ -1,8 +1,13 @@
 // Adds a new candidate from the configuration file data.
 import { Keyring } from "@polkadot/keyring";
 import logger from "../../logger";
-import { Candidate, CandidateModel, IdentityModel, InvalidityReason, InvalidityReasonType } from "../models";
-import { dbLabel, NodeDetails } from "../index";
+import {
+  Candidate,
+  CandidateModel,
+  IdentityModel,
+  InvalidityReasonType,
+} from "../models";
+import { dbLabel } from "../index";
 import { getChainMetadata } from "./ChainMetadata";
 import { Identity, TelemetryNodeDetails } from "../../types";
 import { fetchAndSetCandidateLocation } from "../../utils/Location";
@@ -25,16 +30,17 @@ export const candidateExists = async (
 };
 
 export const candidateExistsByName = async (name: string): Promise<boolean> => {
-  
   const exists = await CandidateModel.exists({ name });
 
-  if(name.includes("METASPAN")){
-    console.log(`METASPAN CHECK!!!! ${name}`)
-    console.log(exists)
+  if (name.includes("METASPAN")) {
+    console.log(`METASPAN CHECK!!!! ${name}`);
+    console.log(exists);
     const tmp = await CandidateModel.exists({ slotId: 427 });
-    const tmp2 = await CandidateModel.exists({ name: "METASPAN (also try POOL #50)" });
-    console.log(tmp)
-    console.log(tmp2)
+    const tmp2 = await CandidateModel.exists({
+      name: "METASPAN (also try POOL #50)",
+    });
+    console.log(tmp);
+    console.log(tmp2);
   }
   return !!exists;
 };
@@ -386,26 +392,28 @@ export const getIdentityAddresses = async (
 export const setCandidateOnlineValid = async (
   candidate: Candidate,
 ): Promise<void> => {
-
-  setCandidateInvalidity(candidate,InvalidityReasonType.ONLINE,true)
+  setCandidateInvalidity(candidate, InvalidityReasonType.ONLINE, true);
 
   await CandidateModel.findOneAndUpdate(
     {
       slotId: candidate.slotId,
     },
     {
-      onlineSince: Date.now()
+      onlineSince: Date.now(),
     },
   ).exec();
-
 };
 
 export const setCandidateOnlineNotValid = async (
   candidate: Candidate,
 ): Promise<void> => {
-
-  const invalidityMessage = `Candidate ${candidate.name} offline. Offline since ${Date.now()}.`
-  setCandidateInvalidity(candidate,InvalidityReasonType.ONLINE,false,invalidityMessage)
+  const invalidityMessage = `Candidate ${candidate.name} offline. Offline since ${Date.now()}.`;
+  setCandidateInvalidity(
+    candidate,
+    InvalidityReasonType.ONLINE,
+    false,
+    invalidityMessage,
+  );
 
   await CandidateModel.findOneAndUpdate(
     {
@@ -498,16 +506,12 @@ export const reportOnline = async (
   telemetryNodeDetails: TelemetryNodeDetails,
 ): Promise<boolean> => {
   try {
-    // console.log(`ONLINE REPORT TELEMETRY of ${telemetryNodeDetails.name}`)
-    const candidate = await getCandidateByName(
-      telemetryNodeDetails.name,
-    );
+    const candidate = await getCandidateByName(telemetryNodeDetails.name);
 
     if (!candidate) {
       // The node is not a Candidate, report telemetry node online
       await reportTelemetryNodeOnline(telemetryNodeDetails);
     } else {
-      console.log(`ONLINE REPORT TELEMETRY of ${telemetryNodeDetails.name}`)
       // The node is a Candidate
       await mergeTelemetryNodeToCandidate(candidate);
 
@@ -537,7 +541,7 @@ export const reportOnline = async (
 
 export const reportOffline = async (name: string): Promise<void> => {
   try {
-    const candidate = await getCandidateByName(name)
+    const candidate = await getCandidateByName(name);
 
     if (!candidate) {
       // The node is not a Candidate, report telemetry node offline
@@ -553,7 +557,7 @@ export const reportOffline = async (name: string): Promise<void> => {
         ).exec();
         await setCandidateOnlineValid(candidate);
       } else {
-        setCandidateOnlineNotValid(candidate)
+        setCandidateOnlineNotValid(candidate);
       }
     }
   } catch (e) {
@@ -871,11 +875,14 @@ export const setOnlineValidity = async (
   slotId: number,
   isValid: boolean,
 ): Promise<void> => {
-
-  const candidate = await getCandidateBySlotId(slotId)
-  const invalidityMessage = `${candidate.name} offline. Last seen online ${candidate.onlineSince}.`
-  setCandidateInvalidity(candidate,InvalidityReasonType.ONLINE,isValid,invalidityMessage)
-
+  const candidate = await getCandidateBySlotId(slotId);
+  const invalidityMessage = `${candidate.name} offline. Last seen online ${candidate.onlineSince}.`;
+  setCandidateInvalidity(
+    candidate,
+    InvalidityReasonType.ONLINE,
+    isValid,
+    invalidityMessage,
+  );
 };
 
 // Set Validate Intention Status

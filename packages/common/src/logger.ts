@@ -23,7 +23,7 @@ const loadConfig = (configPath: string): ConfigSchema => {
 
 const loadLoggerConfig = (): ConfigSchema["logger"] => {
   try {
-    const configDir = 'config'
+    const configDir = "config";
     const mainPath = path.join(configDir, "main.json");
     const mainConf = loadConfig(mainPath);
 

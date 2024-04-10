@@ -1,20 +1,38 @@
-import { Candidate, CandidateModel, InvalidityReason, InvalidityReasonType } from "../models";
+import {
+  Candidate,
+  CandidateModel,
+  InvalidityReason,
+  InvalidityReasonType,
+} from "../models";
 
-export const filterCandidateInvalidityFields = (candidate: Candidate, filter: InvalidityReasonType): InvalidityReason[] => {
-  if (!candidate || !candidate?.invalidity) throw new Error(`NO CANDIDATE DATA FOUND FOR CANDIDATE with slotId ${candidate.slotId}`)
+export const filterCandidateInvalidityFields = (
+  candidate: Candidate,
+  filter: InvalidityReasonType,
+): InvalidityReason[] => {
+  if (!candidate || !candidate?.invalidity)
+    throw new Error(
+      `NO CANDIDATE DATA FOUND FOR CANDIDATE with slotId ${candidate.slotId}`,
+    );
 
-  const invalidityReasons = candidate?.invalidity?.filter((invalidityReason) => {
-    return invalidityReason.type !== filter;
-  });
+  const invalidityReasons = candidate?.invalidity?.filter(
+    (invalidityReason) => {
+      return invalidityReason.type !== filter;
+    },
+  );
 
-  if (!invalidityReasons || invalidityReasons.length == 0) throw new Error("InvalidityReasons object not defined");
-  
-  return invalidityReasons
-}
+  return invalidityReasons;
+};
 
-export const setCandidateInvalidity = async (candidate: Candidate, invalidityType: InvalidityReasonType, isValid: boolean, invalidityMessage: string = "") => {
-
-  const invalidityReasons = filterCandidateInvalidityFields(candidate,invalidityType)
+export const setCandidateInvalidity = async (
+  candidate: Candidate,
+  invalidityType: InvalidityReasonType,
+  isValid: boolean,
+  invalidityMessage = "",
+) => {
+  const invalidityReasons = filterCandidateInvalidityFields(
+    candidate,
+    invalidityType,
+  );
 
   await CandidateModel.findOneAndUpdate(
     {
@@ -27,11 +45,9 @@ export const setCandidateInvalidity = async (candidate: Candidate, invalidityTyp
           valid: isValid,
           type: invalidityType,
           updated: Date.now(),
-          details: isValid
-            ? ""
-            : `${invalidityMessage}`,
+          details: isValid ? "" : `${invalidityMessage}`,
         },
       ],
     },
   ).exec();
-}
+};

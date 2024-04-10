@@ -26,7 +26,8 @@ import { getLatestTaggedRelease } from "../scorekeeper/jobs/specificJobs";
 export const checkOnline = async (candidate: Candidate): Promise<boolean> => {
   try {
     const now = new Date().getTime();
-    if (now - candidate.onlineSince > Constants.SIXTEEN_HOURS) { //TODO: reduce it after a first test
+    if (now - candidate.onlineSince > Constants.SIXTEEN_HOURS) {
+      //TODO: reduce it after a first test
       await setOnlineValidity(candidate.slotId, false);
       return false;
     } else {

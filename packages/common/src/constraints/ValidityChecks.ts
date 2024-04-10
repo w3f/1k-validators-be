@@ -404,9 +404,8 @@ export const checkLocation = async (
       candidate.stash,
     );
     if (location && location.region && location.country) {
-      // const sanctionedLocations = config.telemetry?.sanctionedLocations;
-      const sanctionedCountries = ["RU", "IR", "CU", "KP", "SY"];
-      const sanctionedRegions = ["Crimea", "Luhansk", "Donetsk"];
+      const sanctionedCountries = config.constraints?.sanctionedCountries;
+      const sanctionedRegions = config.constraints?.sanctionedRegions;
       if (
         sanctionedCountries.includes(location.country) ||
         sanctionedRegions.includes(location.region)

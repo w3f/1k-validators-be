@@ -126,10 +126,12 @@ export const checkCandidate = async (
     }
 
     const geoAreaSanctionsValid =
-      (await checkLocation(constraints.config, candidate)) || false;
-    if (!geoAreaSanctionsValid) {
-      logger.info(`${candidate.name} location not valid`, constraintsLabel);
-    }
+      constraints.config?.constraints?.skipSanctionedCountries == true
+        ? true
+        : (await checkLocation(
+            constraints.config,
+            candidate,
+          )) || false;
 
     const beefyValid = await checkBeefyKeys(candidate);
     if (!beefyValid) {

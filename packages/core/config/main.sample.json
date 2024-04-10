@@ -21,12 +21,16 @@
   "constraints": {
     "skipConnectionTime": true,
     "skipIdentity": false,
-    "skipStakedDestination": true,
-    "skipClientUpgrade": true,
-    "skipUnclaimed": true,
-    "minSelfStake": 100000,
+    "skipClientUpgrade": false,
+    "skipUnclaimed": false,
+    "skipSanctionedCountries": false,
+    "skipSanctionedRegions": false,
+    "forceClientVersion": "v0.9.30",
+    "minSelfStake": 10000000000000,
     "commission": 150000000,
-    "unclaimedEraThreshold": 4
+    "unclaimedEraThreshold": 4,
+    "sanctionedCountries": ["RU", "IR", "CU", "KP", "SY"],
+    "sanctionedRegions": ["Crimea", "Luhansk", "Donetsk"]
   },
   "proxy": {
     "timeDelayBlocks": "35"

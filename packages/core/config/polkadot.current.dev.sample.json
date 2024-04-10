@@ -37,11 +37,15 @@
     "skipConnectionTime": true,
     "skipIdentity": false,
     "skipClientUpgrade": false,
-    "forceClientVersion": "v0.9.39",
-    "skipUnclaimed": true,
-    "minSelfStake": 50000000000000,
-    "commission": 50000000,
-    "unclaimedEraThreshold": 1
+    "skipUnclaimed": false,
+    "skipSanctionedCountries": false,
+    "skipSanctionedRegions": false,
+    "forceClientVersion": "v0.9.30",
+    "minSelfStake": 10000000000000,
+    "commission": 150000000,
+    "unclaimedEraThreshold": 4,
+    "sanctionedCountries": ["RU", "IR", "CU", "KP", "SY"],
+    "sanctionedRegions": ["Crimea", "Luhansk", "Donetsk"]
   },
   "db": {
     "mongo": {

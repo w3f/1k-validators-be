@@ -31,17 +31,6 @@ export const candidateExists = async (
 
 export const candidateExistsByName = async (name: string): Promise<boolean> => {
   const exists = await CandidateModel.exists({ name });
-
-  if (name.includes("METASPAN")) {
-    console.log(`METASPAN CHECK!!!! ${name}`);
-    console.log(exists);
-    const tmp = await CandidateModel.exists({ slotId: 427 });
-    const tmp2 = await CandidateModel.exists({
-      name: "METASPAN (also try POOL #50)",
-    });
-    console.log(tmp);
-    console.log(tmp2);
-  }
   return !!exists;
 };
 

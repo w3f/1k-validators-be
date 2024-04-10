@@ -125,9 +125,9 @@ export const checkCandidate = async (
       logger.info(`${candidate.name} provider not valid`, constraintsLabel);
     }
 
-    const locationValid =
+    const geoAreaSanctionsValid =
       (await checkLocation(constraints.config, candidate)) || false;
-    if (!locationValid) {
+    if (!geoAreaSanctionsValid) {
       logger.info(`${candidate.name} location not valid`, constraintsLabel);
     }
 
@@ -150,7 +150,7 @@ export const checkCandidate = async (
       kusamaValid &&
       providerValid &&
       beefyValid &&
-      locationValid;
+      geoAreaSanctionsValid;
 
     await setValid(candidate.stash, valid);
 

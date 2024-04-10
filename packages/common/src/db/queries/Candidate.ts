@@ -1352,48 +1352,17 @@ export const setProviderInvalidity = async (
 
 // Set Sanctions Validity Status
 export const setLocationValidity = async (
-  address: string,
-  validity: boolean,
-  details?: string,
-): Promise<any> => {
-  const data = await CandidateModel.findOne({
-    stash: address,
-  }).lean<Candidate>();
-
-  if (!data || !data?.invalidity) {
-    console.log(`{Self Stake} NO CANDIDATE DATA FOUND FOR ${address}`);
-    return;
-  }
-
-  const invalidityReasons = data?.invalidity?.filter((invalidityReason) => {
-    return invalidityReason.type !== "SANCTIONS";
-  });
-  if (!invalidityReasons || invalidityReasons.length == 0) return;
-
-  try {
-    await CandidateModel.findOneAndUpdate(
-      {
-        stash: address,
-      },
-      {
-        invalidity: [
-          ...invalidityReasons,
-          {
-            valid: validity,
-            type: "SANCTIONS",
-            updated: Date.now(),
-            details: validity
-              ? ""
-              : details
-                ? details
-                : `${data.name} is in a sanctioned location`,
-          },
-        ],
-      },
-    ).exec();
-  } catch (e) {
-    logger.info(`error setting provider validity`);
-  }
+  slotId: number,
+  isValid: boolean,
+): Promise<void> => {
+  const candidate = await getCandidateBySlotId(slotId);
+  const invalidityMessage = `${candidate.name} in sanctioned area.`;
+  setCandidateInvalidity(
+    candidate,
+    InvalidityReasonType.SANCTIONED_GEO_AREA,
+    isValid,
+    invalidityMessage,
+  );
 };
 
 // Set Kusama Rank Validity Status

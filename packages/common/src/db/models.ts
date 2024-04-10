@@ -88,7 +88,7 @@ export enum InvalidityReasonType {
   KUSAMA_RANK = "KUSAMA_RANK",
   PROVIDER = "PROVIDER",
   BEEFY = "BEEFY",
-  SANCTIONS = "SANCTIONS",
+  SANCTIONED_GEO_AREA = "SANCTIONED_GEO_AREA",
 }
 
 export interface InvalidityReason {
@@ -118,7 +118,7 @@ export const InvalidityReason = new Schema({
       "KUSAMA_RANK",
       "PROVIDER",
       "BEEFY",
-      "SANCTIONS",
+      "SANCTIONED_GEO_AREA",
     ],
     default: "NEW",
   },

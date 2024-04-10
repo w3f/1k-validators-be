@@ -408,7 +408,7 @@ export const checkLocation = async (
       const sanctionedCountries = ["RU", "IR", "CU", "KP", "SY"];
       const sanctionedRegions = ["Crimea", "Luhansk", "Donetsk"];
       if (
-        sanctionedCountries.includes(location.country) || 
+        sanctionedCountries.includes(location.country) ||
         sanctionedRegions.includes(location.region)
       ) {
         logger.info(
@@ -417,18 +417,21 @@ export const checkLocation = async (
             label: "Constraints",
           },
         );
-        await setLocationValidity(candidate.stash, false);
+        await setLocationValidity(candidate.slotId, false);
         return false;
       } else {
-        await setLocationValidity(candidate.stash, true);
+        await setLocationValidity(candidate.slotId, true);
         return true;
       }
     } else {
-      await setLocationValidity(candidate.stash, true);
+      await setLocationValidity(candidate.slotId, true);
       return true;
     }
   } catch (e) {
-    logger.error(`Error checking location: ${e}`, constraintsLabel);
+    logger.error(
+      `Error checking location for sanctions: ${e}`,
+      constraintsLabel,
+    );
     throw new Error("could not make validity check");
   }
 };

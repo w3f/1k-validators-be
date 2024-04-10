@@ -24,16 +24,17 @@ import logger from "../logger";
 import { constraintsLabel } from "./constraints";
 import { getLatestTaggedRelease } from "../scorekeeper/jobs/specificJobs";
 
-export const checkOnline = async (candidate: any): Promise<boolean> => {
+export const checkOnline = async (candidate: Candidate): Promise<boolean> => {
   try {
-    if (candidate && Number(candidate.onlineSince) === 0) {
-      await setOnlineValidity(candidate.stash, false);
+    const now = new Date().getTime();
+    if (now - candidate.onlineSince > Constants.SIXTEEN_HOURS) {
+      //TODO: reduce it after a first test
+      await setOnlineValidity(candidate.slotId, false);
       return false;
     } else {
-      await setOnlineValidity(candidate.stash, true);
+      await setOnlineValidity(candidate.slotId, true);
       return true;
     }
-    return true;
   } catch (e) {
     logger.error(`Error checking online status: ${e}`, constraintsLabel);
     throw new Error("could not make validity check");

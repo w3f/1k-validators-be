@@ -1,16 +1,22 @@
 // Adds a new candidate from the configuration file data.
 import { Keyring } from "@polkadot/keyring";
 import logger from "../../logger";
-import { Candidate, CandidateModel, IdentityModel } from "../models";
-import { dbLabel, NodeDetails } from "../index";
+import {
+  Candidate,
+  CandidateModel,
+  IdentityModel,
+  InvalidityReasonType,
+} from "../models";
+import { dbLabel } from "../index";
 import { getChainMetadata } from "./ChainMetadata";
 import { Identity, TelemetryNodeDetails } from "../../types";
 import { fetchAndSetCandidateLocation } from "../../utils/Location";
 import {
-  convertTelemetryNodeToCandidate,
+  mergeTelemetryNodeToCandidate,
   reportTelemetryNodeOffline,
   reportTelemetryNodeOnline,
 } from "./TelemetryNode";
+import { setCandidateInvalidity } from "./CandidateUtils";
 
 export const candidateExists = async (
   slotId: number,
@@ -372,125 +378,42 @@ export const getIdentityAddresses = async (
   return addresses;
 };
 
-export const reportBestBlock = async (
-  telemetryId: number,
-  details: NodeDetails,
-  now: number,
-): Promise<boolean> => {
-  const block = details[0];
-  const data = await CandidateModel.findOne({ telemetryId }).lean<Candidate>();
+export const setCandidateOnlineValid = async (
+  candidate: Candidate,
+): Promise<void> => {
+  setCandidateInvalidity(candidate, InvalidityReasonType.ONLINE, true);
 
-  if (!data) return false;
-
-  logger.info(`Reporting best block for ${data.name}: ${details}`, {
-    label: "Telemetry",
-  });
-
-  // If the node was previously deemed offline
-  if (data.offlineSince && data.offlineSince !== 0) {
-    // Get the list of all other validtity reasons besides online
-    const invalidityReasons = data?.invalidity?.filter((invalidityReason) => {
-      return invalidityReason.type !== "ONLINE";
-    });
-
-    const timeOffline = now - data.offlineSince;
-    const accumulated = (data.offlineAccumulated || 0) + timeOffline;
-
-    await CandidateModel.findOneAndUpdate(
-      { telemetryId },
-      {
-        offlineSince: 0,
-        onlineSince: now,
-        offlineAccumulated: accumulated,
-        invalidity: [
-          ...invalidityReasons,
-          {
-            valid: true,
-            type: "ONLINE",
-            updated: Date.now(),
-            details: ``,
-          },
-        ],
-      },
-    ).exec();
-  }
-  return true;
+  await CandidateModel.findOneAndUpdate(
+    {
+      slotId: candidate.slotId,
+    },
+    {
+      onlineSince: Date.now(),
+    },
+  ).exec();
 };
 
-export const updateCandidateOnlineValidity = async (
-  name: string,
-): Promise<boolean> => {
-  try {
-    const candidate = await getCandidateByName(name);
+export const setCandidateOnlineNotValid = async (
+  candidate: Candidate,
+): Promise<void> => {
+  const invalidityMessage = `Candidate ${candidate.name} offline. Offline since ${Date.now()}.`;
+  setCandidateInvalidity(
+    candidate,
+    InvalidityReasonType.ONLINE,
+    false,
+    invalidityMessage,
+  );
 
-    // Get the list of all other validtity reasons besides online
-    const invalidityReasons = candidate?.invalidity?.filter(
-      (invalidityReason) => {
-        return invalidityReason.type !== "ONLINE";
-      },
-    );
-    if (!invalidityReasons || invalidityReasons.length == 0) return false;
-
-    await CandidateModel.findOneAndUpdate(
-      {
-        name,
-      },
-      {
-        invalidity: [
-          ...invalidityReasons,
-          {
-            valid: true,
-            type: "ONLINE",
-            updated: Date.now(),
-            details: ``,
-          },
-        ],
-      },
-    ).exec();
-    return true;
-  } catch (e) {
-    logger.error(JSON.stringify(e));
-    logger.error(`Error updating online validity for ${name}`, dbLabel);
-    return false;
-  }
-};
-
-export const updateCandidateOfflineValidity = async (
-  name: string,
-): Promise<boolean> => {
-  try {
-    const candidate = await getCandidateByName(name);
-
-    // Get the list of all other validtity reasons besides online
-    const invalidityReasons = candidate?.invalidity?.filter(
-      (invalidityReason) => {
-        return invalidityReason.type !== "ONLINE";
-      },
-    );
-    if (!invalidityReasons || invalidityReasons.length == 0) return false;
-
-    await CandidateModel.findOneAndUpdate(
-      {
-        name,
-      },
-      {
-        invalidity: [
-          ...invalidityReasons,
-          {
-            valid: false,
-            type: "ONLINE",
-            updated: Date.now(),
-            details: `Candidate ${name} offline. Offline since ${Date.now()}.`,
-          },
-        ],
-      },
-    );
-    return true;
-  } catch (e) {
-    logger.error(JSON.stringify(e));
-    logger.error(`Error updating offline validity for ${name}`, dbLabel);
-    return false;
-  }
+  await CandidateModel.findOneAndUpdate(
+    {
+      slotId: candidate.slotId,
+    },
+    {
+      offlineSince: Date.now(),
+      onlineSince: 0, //TOCHECK: not necessary probably
+      nodeRefs: 0,
+    },
+  ).exec();
 };
 
 // A candidate node has an online message from telemetry, update the online telemetry details
@@ -504,8 +427,6 @@ export const updateCandidateOnlineTelemetryDetails = async (
         {
           $set: {
             telemetryId: { $literal: telemetryNodeDetails.telemetryId },
-            onlineSince: { $literal: Date.now() },
-            offlineSince: { $literal: 0 },
             version: telemetryNodeDetails.version,
             implementation: {
               $literal: telemetryNodeDetails.nodeImplementation,
@@ -574,22 +495,20 @@ export const reportOnline = async (
   telemetryNodeDetails: TelemetryNodeDetails,
 ): Promise<boolean> => {
   try {
-    const candidateExists = await candidateExistsByName(
-      telemetryNodeDetails.name,
-    );
+    const candidate = await getCandidateByName(telemetryNodeDetails.name);
 
-    if (!candidateExists) {
+    if (!candidate) {
       // The node is not a Candidate, report telemetry node online
       await reportTelemetryNodeOnline(telemetryNodeDetails);
     } else {
       // The node is a Candidate
-      await convertTelemetryNodeToCandidate(telemetryNodeDetails.name);
+      await mergeTelemetryNodeToCandidate(candidate);
 
       // Try and update or make a new Location record
       await fetchAndSetCandidateLocation(telemetryNodeDetails);
 
       // Update the candidate online validity
-      await updateCandidateOnlineValidity(telemetryNodeDetails.name);
+      await setCandidateOnlineValid(candidate);
 
       // Update any offline time
       await updateCandidateOfflineTime(telemetryNodeDetails.name);
@@ -609,47 +528,33 @@ export const reportOnline = async (
   }
 };
 
-export const reportOffline = async (name: string): Promise<boolean> => {
+export const reportOffline = async (name: string): Promise<void> => {
   try {
-    const candidateExists = await candidateExistsByName(name);
+    const candidate = await getCandidateByName(name);
 
-    if (!candidateExists) {
+    if (!candidate) {
       // The node is not a Candidate, report telemetry node offline
       await reportTelemetryNodeOffline(name);
     } else {
-      const candidate = await getCandidateByName(name);
-
       // There is more than one node online with that telemetry name - decrease it refs but don't make it invalid
-      if (candidate && candidate.nodeRefs > 1) {
+      if (candidate.nodeRefs > 1) {
         await CandidateModel.findOneAndUpdate(
           {
             name,
           },
           { $inc: { nodeRefs: -1 } },
         ).exec();
-        await updateCandidateOnlineValidity(name);
+        await setCandidateOnlineValid(candidate);
       } else {
-        await CandidateModel.findOneAndUpdate(
-          {
-            name,
-          },
-          {
-            offlineSince: Date.now(),
-            onlineSince: 0,
-            nodeRefs: 0,
-          },
-        ).exec();
-        await updateCandidateOfflineValidity(name);
+        setCandidateOnlineNotValid(candidate);
       }
     }
-    return true;
   } catch (e) {
     logger.error(JSON.stringify(e));
     logger.error(
       `Error reporting candidate or telemetry node offline ${name}`,
       dbLabel,
     );
-    return false;
   }
 };
 
@@ -956,41 +861,17 @@ export const setNominatedAtEra = async (
 
 // Set Online Validity Status
 export const setOnlineValidity = async (
-  address: string,
-  validity: boolean,
-): Promise<any> => {
-  const data = await CandidateModel.findOne({
-    stash: address,
-  }).lean<Candidate>();
-
-  if (!data || !data?.invalidity) {
-    console.log(`{Validate Intention} NO CANDIDATE DATA FOUND FOR ${address}`);
-    return;
-  }
-
-  const invalidityReasons = data?.invalidity?.filter((invalidityReason) => {
-    return invalidityReason.type !== "ONLINE";
-  });
-  if (!invalidityReasons || invalidityReasons.length == 0) return;
-
-  await CandidateModel.findOneAndUpdate(
-    {
-      stash: address,
-    },
-    {
-      invalidity: [
-        ...invalidityReasons,
-        {
-          valid: validity,
-          type: "ONLINE",
-          updated: Date.now(),
-          details: validity
-            ? ""
-            : `${data.name} offline. Offline since ${data.offlineSince}.`,
-        },
-      ],
-    },
-  ).exec();
+  slotId: number,
+  isValid: boolean,
+): Promise<void> => {
+  const candidate = await getCandidateBySlotId(slotId);
+  const invalidityMessage = `${candidate.name} offline. Last seen online ${candidate.onlineSince}.`;
+  setCandidateInvalidity(
+    candidate,
+    InvalidityReasonType.ONLINE,
+    isValid,
+    invalidityMessage,
+  );
 };
 
 // Set Validate Intention Status

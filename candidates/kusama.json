@@ -6172,6 +6172,13 @@
       "stash": "Ee1NLHs5FtsCMJ2bgASoCLsyZ958PRJhfxXQfWJN4bNGfzi",
       "riotHandle": "@cake.stake:matrix.org",
       "kyc": true
+    },
+    {
+      "slotId": 887,
+      "name": "1kNode",
+      "stash": "CddSbv4CbLDJWWCnKgtKh3dP29Y9jf4oJN8oGftr1hzL3VB",
+      "riotHandle": "@vlad1knode:matrix.org",
+      "kyc": true
     }
   ]
 }

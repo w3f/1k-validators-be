@@ -135,5 +135,12 @@
   "subscan": {
     "baseV1Url": "https://kusama.api.subscan.io/api/scan",
     "baseV2Url": "https://kusama.api.subscan.io/api/v2/scan"
+  },
+  "logger": {
+    "level": "info",
+    "excludedLabels": [
+      "Location",
+      "ValidatorPrefJob"
+    ]
   }
 }

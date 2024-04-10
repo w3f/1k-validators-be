@@ -48,7 +48,11 @@ config: |
     },
     "constraints": {
       "skipConnectionTime": false,
-      "skipIdentity": false
+      "skipIdentity": false,
+      "skipClientUpgrade": false,
+      "skipUnclaimed": false,
+      "skipSanctionedCountries": false,
+      "skipSanctionedRegions": false
     },
     "db": {
       "mongo": {

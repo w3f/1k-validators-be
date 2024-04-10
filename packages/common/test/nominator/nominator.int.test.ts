@@ -179,7 +179,7 @@ describe("Nominator Integration Test", () => {
 
   beforeEach(async () => {
     handler = new ApiHandler(["wss://kusama-rpc.polkadot.io"]);
-    await handler.initiateConnection();
+    await handler.setAPI();
   });
 
   it("should have a status defined", async () => {

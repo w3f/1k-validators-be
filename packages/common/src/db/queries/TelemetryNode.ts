@@ -154,7 +154,7 @@ export const allTelemetryNodes = async (): Promise<TelemetryNode[]> => {
 };
 
 // If there's a candidate online with the same name as the telemetry node, we transfer telemetry to a candidate and delete the telemetry node
-export const convertTelemetryNodeToCandidate = async (
+export const mergeTelemetryNodeToCandidate = async (
   candidate: Candidate,
 ): Promise<void> => {
   const telemetryNode = await getTelemetryNode(candidate.name);

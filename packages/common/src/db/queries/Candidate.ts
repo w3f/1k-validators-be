@@ -12,7 +12,7 @@ import { getChainMetadata } from "./ChainMetadata";
 import { Identity, TelemetryNodeDetails } from "../../types";
 import { fetchAndSetCandidateLocation } from "../../utils/Location";
 import {
-  convertTelemetryNodeToCandidate as mergeTelemetryNodeToCandidate,
+  mergeTelemetryNodeToCandidate,
   reportTelemetryNodeOffline,
   reportTelemetryNodeOnline,
 } from "./TelemetryNode";

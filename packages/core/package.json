@@ -1,6 +1,6 @@
 {
   "name": "@1kv/core",
-  "version": "3.1.12",
+  "version": "3.1.13",
   "description": "Services for running the Thousand Validator Program.",
   "main": "index.js",
   "scripts": {

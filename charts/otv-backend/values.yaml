@@ -48,7 +48,8 @@ config: |
     },
     "constraints": {
       "skipConnectionTime": false,
-      "skipIdentity": false
+      "skipIdentity": false,
+      "skipSanctionedGeoArea": false
     },
     "db": {
       "mongo": {

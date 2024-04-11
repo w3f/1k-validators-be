@@ -23,10 +23,13 @@
     "skipIdentity": false,
     "skipStakedDestination": true,
     "skipClientUpgrade": true,
+    "skipSanctionedGeoArea": false,
     "skipUnclaimed": true,
     "minSelfStake": 100000,
     "commission": 150000000,
-    "unclaimedEraThreshold": 4
+    "unclaimedEraThreshold": 4,
+    "sanctionedCountries": ["RU", "IR", "CU", "KP", "SY"],
+    "sanctionedRegions": ["Crimea", "Luhansk", "Donetsk"]
   },
   "proxy": {
     "timeDelayBlocks": "35"

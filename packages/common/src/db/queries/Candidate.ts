@@ -1435,6 +1435,21 @@ export const setBeefyKeysInvalidity = async (
   ).exec();
 };
 
+// Set Sanctions Validity Status
+export const setSanctionedGeoAreaValidity = async (
+  slotId: number,
+  isValid: boolean,
+): Promise<void> => {
+  const candidate = await getCandidateBySlotId(slotId);
+  const invalidityMessage = `${candidate.name} in sanctioned area.`;
+  setCandidateInvalidity(
+    candidate,
+    InvalidityReasonType.SANCTIONED_GEO_AREA,
+    isValid,
+    invalidityMessage,
+  );
+};
+
 // Sets valid boolean for node
 export const setValid = async (
   address: string,

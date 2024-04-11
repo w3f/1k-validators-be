@@ -15,6 +15,7 @@ import {
   checkSelfStake,
   checkUnclaimed,
   checkValidateIntention,
+  checkSanctionedGeoArea,
 } from "./ValidityChecks";
 import { percentage, timeRemaining } from "../utils/util";
 
@@ -129,6 +130,12 @@ export const checkCandidate = async (
       logger.info(`${candidate.name} beefy keys not valid`, constraintsLabel);
     }
 
+    const sanctionedGeoAreaValid =
+      constraints.config?.constraints?.skipSanctionedGeoArea == true
+        ? true
+        : (await checkSanctionedGeoArea(constraints.config, candidate)) ||
+          false;
+
     valid =
       onlineValid &&
       validateValid &&
@@ -142,7 +149,8 @@ export const checkCandidate = async (
       blockedValid &&
       kusamaValid &&
       providerValid &&
-      beefyValid;
+      beefyValid &&
+      sanctionedGeoAreaValid;
 
     await setValid(candidate.stash, valid);
 

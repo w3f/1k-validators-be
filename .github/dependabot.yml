@@ -2,6 +2,7 @@ version: 2
 updates:
 - package-ecosystem: npm
   directory: "/"
+  target-branch: "staging"
   schedule:
     interval: daily
   open-pull-requests-limit: 10
@@ -13,6 +14,7 @@ updates:
 
 - package-ecosystem: docker
   directory: "/"
+  target-branch: "staging"
   schedule:
     interval: daily
   open-pull-requests-limit: 10     

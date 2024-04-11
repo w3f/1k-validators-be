@@ -454,8 +454,11 @@ export const checkSanctionedGeoArea = async (
       const sanctionedCountries = config.constraints?.sanctionedCountries;
       const sanctionedRegions = config.constraints?.sanctionedRegions;
       if (
-        sanctionedCountries.includes(location.country) ||
-        sanctionedRegions.includes(location.region)
+        sanctionedCountries.includes(location.country.trim().toUpperCase()) ||
+        sanctionedRegions.includes(
+          location.region.trim().charAt(0).toUpperCase() +
+            location.region.trim().slice(1).toLowerCase(),
+        )
       ) {
         logger.info(
           `${candidate.name} is in a sanctioned location: Country: ${location.country}, Region: ${location.region}`,

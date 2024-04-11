@@ -121,5 +121,14 @@ spec:
                   ],
                   "host": "wss://telemetry-backend.w3f.community/feed",
                   "ipinfoToken": "token=<path:vaults/k8s-community-secrets/items/otv-kusama#ipinfo-token>"
+                },
+                "logger": {
+                  "level": "info",
+                  "excludedLabels": [
+                    "Telemetry",
+                    "Location",
+                    "Block",
+                    "Gateway",
+                  ]
                 }
               }

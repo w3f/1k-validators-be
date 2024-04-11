@@ -123,5 +123,14 @@ spec:
                     "Contabo GmbH"
                   ],
                   "host": "wss://telemetry-backend.w3f.community/feed"
+                },
+                "logger": {
+                  "level": "info",
+                  "excludedLabels": [
+                    "Telemetry",
+                    "Location",
+                    "Block",
+                    "Gateway",
+                  ]
                 }
               }

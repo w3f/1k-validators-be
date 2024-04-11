@@ -162,6 +162,10 @@ export type ConfigSchema = {
     host: string;
     ipinfoToken: string;
   };
+  logger: {
+    level: string;
+    excludedLabels: string[];
+  };
 };
 
 export const loadConfig = (configPath: string): ConfigSchema => {

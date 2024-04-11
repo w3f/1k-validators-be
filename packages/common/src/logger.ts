@@ -1,7 +1,8 @@
 import * as winston from "winston";
 import { defaultExcludeLabels } from "./constants";
-
-const filters = defaultExcludeLabels;
+import { ConfigSchema } from "./config";
+import * as fs from "fs";
+import path from "path";
 
 const logFilter = (labelsToExclude: string[]) => {
   return winston.format((info) => {
@@ -12,8 +13,31 @@ const logFilter = (labelsToExclude: string[]) => {
   });
 };
 
+const loadConfig = (configPath: string): ConfigSchema => {
+  let conf = fs.readFileSync(configPath, { encoding: "utf-8" });
+  if (conf.startsWith("'")) {
+    conf = conf.slice(1).slice(0, -1);
+  }
+  return JSON.parse(conf);
+};
+
+const loadLoggerConfig = (): ConfigSchema["logger"] => {
+  try {
+    const configDir = "config";
+    const mainPath = path.join(configDir, "main.json");
+    const mainConf = loadConfig(mainPath);
+
+    return mainConf.logger;
+  } catch (e) {
+    console.log(`Error loading config: ${JSON.stringify(e)}`);
+    // logger.error(`Error loading config: ${JSON.stringify(e)}`);
+  }
+};
+
+const filters = loadLoggerConfig()?.excludedLabels || defaultExcludeLabels;
+
 const getLogLevel = () => {
-  return process.env.LOG_LEVEL || "info";
+  return loadLoggerConfig()?.level || process.env.LOG_LEVEL || "info";
 };
 
 const logger = winston.createLogger({

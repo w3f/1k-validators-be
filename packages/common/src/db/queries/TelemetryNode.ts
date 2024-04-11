@@ -1,6 +1,11 @@
 import { TelemetryNodeDetails } from "../../types";
-import { CandidateModel, TelemetryNode, TelemetryNodeModel } from "../models";
-import { candidateExistsByName, dbLabel } from "../index";
+import {
+  Candidate,
+  CandidateModel,
+  TelemetryNode,
+  TelemetryNodeModel,
+} from "../models";
+import { dbLabel } from "../index";
 import logger from "../../logger";
 
 export const telemetryNodeExists = async (name: string): Promise<boolean> => {
@@ -8,14 +13,14 @@ export const telemetryNodeExists = async (name: string): Promise<boolean> => {
   return !!exists;
 };
 
-export const deleteTelemetryNode = async (name: string): Promise<boolean> => {
+export const deleteTelemetryNode = async (name: string): Promise<void> => {
   try {
     await TelemetryNodeModel.deleteOne({ name });
-    return true;
   } catch (e) {
     logger.error(JSON.stringify(e));
-    logger.error(`Error deleting telemetry node ${name}`, dbLabel);
-    return false;
+    const m = `Error deleting telemetry node ${name}`;
+    logger.error(m, dbLabel);
+    throw new Error(m);
   }
 };
 
@@ -149,38 +154,25 @@ export const allTelemetryNodes = async (): Promise<TelemetryNode[]> => {
 };
 
 // If there's a candidate online with the same name as the telemetry node, we transfer telemetry to a candidate and delete the telemetry node
-export const convertTelemetryNodeToCandidate = async (
-  name: string,
-): Promise<boolean> => {
-  try {
-    const candidateExists = await candidateExistsByName(name);
-    const telemetryExists = await telemetryNodeExists(name);
-    if (candidateExists && telemetryExists) {
-      const telemetryNode = await getTelemetryNode(name);
+export const mergeTelemetryNodeToCandidate = async (
+  candidate: Candidate,
+): Promise<void> => {
+  const telemetryNode = await getTelemetryNode(candidate.name);
+  if (telemetryNode) {
+    // update candidate with telemetry details
+    await CandidateModel.findOneAndUpdate(
+      { slotId: candidate.slotId },
+      {
+        telemetryId: telemetryNode?.telemetryId,
+        version: telemetryNode?.version,
+        // onlineSince: telemetryNode?.onlineSince,
+        discoveredAt: telemetryNode?.discoveredAt,
+        offlineAccumulated: telemetryNode?.offlineAccumulated,
+        nodeRefs: telemetryNode?.nodeRefs,
+      },
+    ).exec();
 
-      // update candidate with telemetry details
-      await CandidateModel.findOneAndUpdate(
-        { name: name },
-        {
-          telemetryId: telemetryNode?.telemetryId,
-          version: telemetryNode?.version,
-          onlineSince: telemetryNode?.onlineSince,
-          discoveredAt: telemetryNode?.discoveredAt,
-          offlineAccumulated: telemetryNode?.offlineAccumulated,
-          nodeRefs: telemetryNode?.nodeRefs,
-        },
-      ).exec();
-
-      await deleteTelemetryNode(name);
-    }
-    return true;
-  } catch (e) {
-    logger.error(JSON.stringify(e));
-    logger.error(
-      `Error converting telemetry node to candidate ${name}`,
-      dbLabel,
-    );
-    return false;
+    await deleteTelemetryNode(candidate.name);
   }
 };
 

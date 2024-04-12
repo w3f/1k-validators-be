@@ -17,7 +17,7 @@ spec:
   source:
     repoURL: https://w3f.github.io/helm-charts/
     chart: otv-backend
-    targetRevision: v3.1.11
+    targetRevision: v3.1.14
     plugin:
       env:
         - name: HELM_VALUES
@@ -121,5 +121,14 @@ spec:
                   ],
                   "host": "wss://telemetry-backend.w3f.community/feed",
                   "ipinfoToken": "token=<path:vaults/k8s-community-secrets/items/otv-kusama#ipinfo-token>"
+                },
+                "logger": {
+                  "level": "info",
+                  "excludedLabels": [
+                    "Telemetry",
+                    "Location",
+                    "Block",
+                    "Gateway"
+                  ]
                 }
               }

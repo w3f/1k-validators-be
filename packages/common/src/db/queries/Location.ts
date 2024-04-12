@@ -36,10 +36,8 @@ export const getLocation = async (
 
 export const getCandidateLocation = async (
   slotId: number,
-  stash?: string,
-  name?: string,
 ): Promise<Location | null> => {
-  const query = [{ slotId: slotId }, { stash: stash }, { name: name }];
+  const query = [{ slotId: slotId }];
 
   return LocationModel.findOne({ $or: query })
     .sort({ updated: -1 })
@@ -69,7 +67,7 @@ export const setLocation = async (
     }
     // Try and find an existing record
     const query = {
-      $or: [{ addr }, { name }, { slotId }],
+      $or: [{ slotId }],
     };
     const data = await LocationModel.findOne(query).lean<Location>();
 
@@ -79,6 +77,7 @@ export const setLocation = async (
     }
 
     // Create a new Location record if there is no existing record, or there is a different ip address
+    // TODO: check if we need multiple addresses to be stored
     if (!data || data?.addr != addr) {
       const location = new LocationModel({
         slotId: slotId,
@@ -103,7 +102,7 @@ export const setLocation = async (
       await location.save();
     } else {
       await LocationModel.findOneAndUpdate(
-        { addr, name },
+        { slotId },
         {
           slotId: slotId,
           address: stash,

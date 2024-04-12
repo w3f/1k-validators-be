@@ -19,7 +19,13 @@ config: |
       "test": false,
       "retroactive": false,
       "historicalNominations": false,
-      "apiEndpoints": [],
+      "apiEndpoints": [
+        "wss://rpc.dotters.network/polkadot",
+        "wss://dot-rpc.stakeworld.io",
+        "wss://polkadot.public.curie.radiumblock.co/ws",
+        "wss://rpc.ibp.network/polkadot",
+        "wss://polkadot-rpc-tn.dwellir.com"
+      ],
       "candidatesUrl": "https://raw.githubusercontent.com/w3f/1k-validators-be/master/candidates/polkadot.json"
     },
     "constraints": {

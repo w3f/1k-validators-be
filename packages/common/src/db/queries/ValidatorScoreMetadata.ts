@@ -34,10 +34,6 @@ export const setValidatorScoreMetadata = async (
       providerWeight,
       nominatorStakeStats,
       nominatorStakeWeight,
-      openGovStats,
-      openGovWeight,
-      openGovDelegationStats,
-      openGovDelegationWeight,
     } = scoreMetadata;
 
     const data = await ValidatorScoreMetadataModel.findOne({
@@ -77,10 +73,6 @@ export const setValidatorScoreMetadata = async (
           providerWeight,
           nominatorStakeStats,
           nominatorStakeWeight,
-          openGovStats,
-          openGovWeight,
-          openGovDelegationStats,
-          openGovDelegationWeight,
           updated,
         });
         await validatorScoreMetadata.save();
@@ -122,10 +114,6 @@ export const setValidatorScoreMetadata = async (
         providerWeight,
         nominatorStakeStats,
         nominatorStakeWeight,
-        openGovStats,
-        openGovWeight,
-        openGovDelegationStats,
-        openGovDelegationWeight,
         updated,
       },
     ).exec();

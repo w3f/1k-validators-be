@@ -593,7 +593,6 @@ export interface ValidatorScoreMetadata {
   openGovDelegationWeight?: number;
   openGovDelegationStats?: Stats;
   faultsWeight?: number;
-  openGovWeight?: number;
   rpcWeight?: number;
   clientWeight?: number;
   updated?: number;

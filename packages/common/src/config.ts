@@ -115,9 +115,6 @@ export type ConfigSchema = {
     country: number | 0;
     provider: number | 0;
     nominations: number | 0;
-    delegations: number | 0;
-    openGov: number | 0;
-    openGovDelegation: number | 0;
     rpc: number | 0;
     client: number | 0;
     useInclusion: boolean;
@@ -134,9 +131,6 @@ export type ConfigSchema = {
     useCountry: boolean;
     useProvider: boolean;
     useNominations: boolean;
-    useDelegations: boolean;
-    useOpenGov: boolean;
-    useOpenGovDelegation: boolean;
     useRpc: boolean;
     useClient: boolean;
   };

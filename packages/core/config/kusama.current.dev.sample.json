@@ -106,9 +106,6 @@
     "useCountry": true,
     "useProvider": true,
     "useNominations": true,
-    "useDelegations": true,
-    "useOpenGov": true,
-    "useOpenGovDelegation": true,
     "useRpc": true,
     "useClient": true
   },

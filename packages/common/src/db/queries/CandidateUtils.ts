@@ -9,18 +9,11 @@ export const filterCandidateInvalidityFields = (
   candidate: Candidate,
   filter: InvalidityReasonType,
 ): InvalidityReason[] => {
-  if (!candidate || !candidate?.invalidity)
-    throw new Error(
-      `NO CANDIDATE DATA FOUND FOR CANDIDATE with slotId ${candidate.slotId}`,
-    );
-
-  const invalidityReasons = candidate?.invalidity?.filter(
-    (invalidityReason) => {
-      return invalidityReason.type !== filter;
-    },
+  return (
+    candidate?.invalidity?.filter(
+      (invalidityReason) => invalidityReason.type !== filter,
+    ) || []
   );
-
-  return invalidityReasons;
 };
 
 export const setCandidateInvalidity = async (

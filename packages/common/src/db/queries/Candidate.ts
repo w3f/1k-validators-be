@@ -505,7 +505,7 @@ export const reportOnline = async (
       await mergeTelemetryNodeToCandidate(candidate);
 
       // Try and update or make a new Location record
-      await fetchAndSetCandidateLocation(telemetryNodeDetails);
+      await fetchAndSetCandidateLocation(candidate, telemetryNodeDetails);
 
       // Update the candidate online validity
       await setCandidateOnlineValid(candidate);

@@ -130,7 +130,7 @@ spec:
                     "Telemetry",
                     "Location",
                     "Block",
-                    "Gateway",
+                    "Gateway"
                   ]
                 }
               }

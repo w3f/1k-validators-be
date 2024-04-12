@@ -581,17 +581,8 @@ export interface ValidatorScoreMetadata {
   countryWeight: number;
   providerStats: LStats;
   providerWeight: number;
-  councilStakeWeight?: number;
-  councilStakeStats?: Stats;
-  democracyStats?: Stats;
-  democracyWeight?: number;
   nominatorStakeStats?: Stats;
   nominatorStakeWeight: number;
-  delegationStats?: Stats;
-  delegationWeight?: number;
-  openGovStats?: Stats;
-  openGovDelegationWeight?: number;
-  openGovDelegationStats?: Stats;
   faultsWeight?: number;
   rpcWeight?: number;
   clientWeight?: number;
@@ -853,32 +844,6 @@ export const ValidatorScoreMetadataSchema = new Schema({
     standardDeviation: Number,
   },
   providerWeight: Number,
-  councilStakeWeight: Number,
-  councilStakeStats: {
-    values: [Number],
-    absoluteMin: Number,
-    absoluteMax: Number,
-    q10: Number,
-    q25: Number,
-    q50: Number,
-    q75: Number,
-    q90: Number,
-    mean: Number,
-    standardDeviation: Number,
-  },
-  democracyStats: {
-    values: [Number],
-    absoluteMin: Number,
-    absoluteMax: Number,
-    q10: Number,
-    q25: Number,
-    q50: Number,
-    q75: Number,
-    q90: Number,
-    mean: Number,
-    standardDeviation: Number,
-  },
-  democracyWeight: Number,
   nominatorStakeStats: {
     values: [Number],
     absoluteMin: Number,
@@ -892,45 +857,6 @@ export const ValidatorScoreMetadataSchema = new Schema({
     standardDeviation: Number,
   },
   nominatorStakeWeight: Number,
-  delegationStats: {
-    values: [Number],
-    absoluteMin: Number,
-    absoluteMax: Number,
-    q10: Number,
-    q25: Number,
-    q50: Number,
-    q75: Number,
-    q90: Number,
-    mean: Number,
-    standardDeviation: Number,
-  },
-  delegationWeight: Number,
-  openGovStats: {
-    values: [Number],
-    absoluteMin: Number,
-    absoluteMax: Number,
-    q10: Number,
-    q25: Number,
-    q50: Number,
-    q75: Number,
-    q90: Number,
-    mean: Number,
-    standardDeviation: Number,
-  },
-  openGovDelegationWeight: Number,
-  openGovDelegationStats: {
-    values: [Number],
-    absoluteMin: Number,
-    absoluteMax: Number,
-    q10: Number,
-    q25: Number,
-    q50: Number,
-    q75: Number,
-    q90: Number,
-    mean: Number,
-    standardDeviation: Number,
-  },
-  openGovWeight: Number,
   // The last time one was updated
   updated: Number,
 });

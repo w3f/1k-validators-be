@@ -21,11 +21,14 @@ export const setCandidateInvalidity = async (
   invalidityType: InvalidityReasonType,
   isValid: boolean,
   invalidityMessage = "",
+  skipIfNoData = false, //TODO: understand if it's needed or not, for now it just doesn't break the current logic
 ) => {
   const invalidityReasons = filterCandidateInvalidityFields(
     candidate,
     invalidityType,
   );
+
+  if (skipIfNoData && invalidityReasons.length == 0) return;
 
   await CandidateModel.findOneAndUpdate(
     {

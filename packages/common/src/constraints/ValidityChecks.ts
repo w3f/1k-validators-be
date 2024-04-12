@@ -52,11 +52,11 @@ export const checkValidateIntention = async (
       !validators?.length ||
       validators.includes(Util.formatAddress(candidate?.stash, config))
     ) {
-      await setValidateIntentionValidity(candidate.stash, true);
+      await setValidateIntentionValidity(candidate, true);
       return true;
     }
 
-    await setValidateIntentionValidity(candidate.stash, false);
+    await setValidateIntentionValidity(candidate, false);
     return false;
   } catch (e) {
     logger.error(`Error checking validate intention: ${e}`, constraintsLabel);
@@ -74,9 +74,9 @@ export const checkAllValidateIntentions = async (
     const validators = await chaindata.getValidators();
     for (const candidate of candidates) {
       if (!validators.includes(Util.formatAddress(candidate.stash, config))) {
-        await setValidateIntentionValidity(candidate.stash, false);
+        await setValidateIntentionValidity(candidate, false);
       } else {
-        await setValidateIntentionValidity(candidate.stash, true);
+        await setValidateIntentionValidity(candidate, true);
       }
     }
     return true;
@@ -95,7 +95,7 @@ export const checkLatestClientVersion = async (
     const skipClientUpgrade = config.constraints?.skipClientUpgrade || false;
     if (skipClientUpgrade || candidate?.implementation === "Kagome Node") {
       // Skip the check if the node is a Kagome Client or if skipping client upgrade is enabled
-      await setLatestClientReleaseValidity(candidate.stash, true);
+      await setLatestClientReleaseValidity(candidate, true);
       return true;
     }
 
@@ -145,7 +145,7 @@ export const checkLatestClientVersion = async (
 
       // If cannot parse the version, set the release as invalid
       if (!nodeVersion || !latestVersion) {
-        await setLatestClientReleaseValidity(candidate.stash, false);
+        await setLatestClientReleaseValidity(candidate, false);
         return false;
       }
 
@@ -153,18 +153,18 @@ export const checkLatestClientVersion = async (
 
       // If they are not upgraded, set the validity as invalid
       if (!isUpgraded) {
-        await setLatestClientReleaseValidity(candidate.stash, false);
+        await setLatestClientReleaseValidity(candidate, false);
         return false;
       }
 
       // If the current version is the latest release, set the release as valid
-      await setLatestClientReleaseValidity(candidate.stash, true);
+      await setLatestClientReleaseValidity(candidate, true);
       return true;
     } else {
       logger.info(`Still in grace window of latest release`, constraintsLabel);
 
       // If not past the grace window, set the release as invalid
-      await setLatestClientReleaseValidity(candidate.stash, true);
+      await setLatestClientReleaseValidity(candidate, true);
       return true;
     }
   } catch (e) {
@@ -172,7 +172,7 @@ export const checkLatestClientVersion = async (
       `Error checking latest client version: ${e}`,
       constraintsLabel,
     );
-    await setLatestClientReleaseValidity(candidate.stash, false);
+    await setLatestClientReleaseValidity(candidate, false);
     throw new Error("could not make validity check");
   }
 };
@@ -185,14 +185,14 @@ export const checkConnectionTime = async (
     if (!config?.constraints?.skipConnectionTime) {
       const now = new Date().getTime();
       if (now - candidate.discoveredAt < Constants.WEEK) {
-        await setConnectionTimeInvalidity(candidate.stash, false);
+        await setConnectionTimeInvalidity(candidate, false);
         return false;
       } else {
-        await setConnectionTimeInvalidity(candidate.stash, true);
+        await setConnectionTimeInvalidity(candidate, true);
         return true;
       }
     } else {
-      await setConnectionTimeInvalidity(candidate.stash, true);
+      await setConnectionTimeInvalidity(candidate, true);
       return true;
     }
   } catch (e) {
@@ -211,15 +211,15 @@ export const checkIdentity = async (
     );
     if (!hasIdentity) {
       const invalidityString = `${candidate.name} does not have an identity set.`;
-      await setIdentityInvalidity(candidate.stash, false, invalidityString);
+      await setIdentityInvalidity(candidate, false, invalidityString);
       return false;
     }
     if (!verified) {
       const invalidityString = `${candidate.name} has an identity but is not verified by the registrar.`;
-      await setIdentityInvalidity(candidate.stash, false, invalidityString);
+      await setIdentityInvalidity(candidate, false, invalidityString);
       return false;
     }
-    await setIdentityInvalidity(candidate.stash, true);
+    await setIdentityInvalidity(candidate, true);
     return true;
   } catch (e) {
     logger.error(`Error checking identity: ${e}`, constraintsLabel);
@@ -231,10 +231,10 @@ export const checkOffline = async (candidate: Candidate): Promise<boolean> => {
   try {
     const totalOffline = candidate.offlineAccumulated / Constants.WEEK;
     if (totalOffline > 0.02) {
-      await setOfflineAccumulatedInvalidity(candidate.stash, false);
+      await setOfflineAccumulatedInvalidity(candidate, false);
       return false;
     } else {
-      await setOfflineAccumulatedInvalidity(candidate.stash, true);
+      await setOfflineAccumulatedInvalidity(candidate, true);
       return true;
     }
     return true;

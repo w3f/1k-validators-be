@@ -876,221 +876,79 @@ export const setOnlineValidity = async (
 
 // Set Validate Intention Status
 export const setValidateIntentionValidity = async (
-  address: string,
-  validity: boolean,
-): Promise<any> => {
-  const data = await CandidateModel.findOne({
-    stash: address,
-  }).lean<Candidate>();
-
-  if (!data || !data?.invalidity) {
-    console.log(`{Validate Intention} NO CANDIDATE DATA FOUND FOR ${address}`);
-    return;
-  }
-
-  const invalidityReasons = data?.invalidity?.filter((invalidityReason) => {
-    return invalidityReason.type !== "VALIDATE_INTENTION";
-  });
-  if (!invalidityReasons || invalidityReasons.length == 0) {
-    await CandidateModel.findOneAndUpdate(
-      {
-        stash: address,
-      },
-      {
-        invalidity: [
-          {
-            valid: validity,
-            type: "VALIDATE_INTENTION",
-            updated: Date.now(),
-            details: validity
-              ? ""
-              : `${data.name} does not have a validate intention.`,
-          },
-        ],
-      },
-    ).exec();
-    return;
-  }
-
-  await CandidateModel.findOneAndUpdate(
-    {
-      stash: address,
-    },
-    {
-      invalidity: [
-        ...invalidityReasons,
-        {
-          valid: validity,
-          type: "VALIDATE_INTENTION",
-          updated: Date.now(),
-          details: validity
-            ? ""
-            : `${data.name} does not have a validate intention.`,
-        },
-      ],
-    },
-  ).exec();
+  candidate: Candidate,
+  isValid: boolean,
+): Promise<void> => {
+  const invalidityMessage = `${candidate.name} does not have a validate intention.`;
+  setCandidateInvalidity(
+    candidate,
+    InvalidityReasonType.VALIDATE_INTENTION,
+    isValid,
+    invalidityMessage,
+  );
 };
 
 // Set Client Version Validity Status
 export const setLatestClientReleaseValidity = async (
-  address: string,
-  validity: boolean,
-): Promise<any> => {
-  const data = await CandidateModel.findOne({
-    stash: address,
-  }).lean<Candidate>();
-
-  if (!data || !data?.invalidity) {
-    console.log(`{Latest Client} NO CANDIDATE DATA FOUND FOR ${address}`);
-    return;
-  }
-
-  const invalidityReasons = data?.invalidity?.filter((invalidityReason) => {
-    return invalidityReason.type !== "CLIENT_UPGRADE";
-  });
-  if (!invalidityReasons || invalidityReasons.length == 0) return;
-
-  await CandidateModel.findOneAndUpdate(
-    {
-      stash: address,
-    },
-    {
-      invalidity: [
-        ...invalidityReasons,
-        {
-          valid: validity,
-          type: "CLIENT_UPGRADE",
-          updated: Date.now(),
-          details: validity
-            ? ""
-            : `${data.name} is not on the latest client version`,
-        },
-      ],
-    },
-  ).exec();
+  candidate: Candidate,
+  isValid: boolean,
+): Promise<void> => {
+  const invalidityMessage = `${candidate.name} is not on the latest client version`;
+  setCandidateInvalidity(
+    candidate,
+    InvalidityReasonType.CLIENT_UPGRADE,
+    isValid,
+    invalidityMessage,
+    true,
+  );
 };
 
 // Set Connection Time Validity Status
 export const setConnectionTimeInvalidity = async (
-  address: string,
-  validity: boolean,
-): Promise<any> => {
-  const data = await CandidateModel.findOne({
-    stash: address,
-  }).lean<Candidate>();
-
-  if (!data || !data?.invalidity) {
-    console.log(`{Connection Time} NO CANDIDATE DATA FOUND FOR ${address}`);
-    return;
-  }
-
-  const invalidityReasons = data?.invalidity?.filter((invalidityReason) => {
-    return invalidityReason.type !== "CONNECTION_TIME";
-  });
-  if (!invalidityReasons || invalidityReasons.length == 0) return;
-
-  await CandidateModel.findOneAndUpdate(
-    {
-      stash: address,
-    },
-    {
-      invalidity: [
-        ...invalidityReasons,
-        {
-          valid: validity,
-          type: "CONNECTION_TIME",
-          updated: Date.now(),
-          details: validity
-            ? ""
-            : `${data.name} has not been connected for minimum length`,
-        },
-      ],
-    },
-  ).exec();
+  candidate: Candidate,
+  isValid: boolean,
+): Promise<void> => {
+  const invalidityMessage = `${candidate.name} has not been connected for minimum length`;
+  setCandidateInvalidity(
+    candidate,
+    InvalidityReasonType.CONNECTION_TIME,
+    isValid,
+    invalidityMessage,
+    true,
+  );
 };
 
 // Set Identity Validity Status
 export const setIdentityInvalidity = async (
-  address: string,
-  validity: boolean,
-  details?: string,
-): Promise<any> => {
-  const data = await CandidateModel.findOne({
-    stash: address,
-  }).lean<Candidate>();
-
-  if (!data || !data?.invalidity) {
-    console.log(`{Identity} NO CANDIDATE DATA FOUND FOR ${address}`);
-    return;
-  }
-
-  const invalidityReasons = data?.invalidity?.filter((invalidityReason) => {
-    return invalidityReason.type !== "IDENTITY";
-  });
-  if (!invalidityReasons || invalidityReasons.length == 0) return;
-
-  await CandidateModel.findOneAndUpdate(
-    {
-      stash: address,
-    },
-    {
-      invalidity: [
-        ...invalidityReasons,
-        {
-          valid: validity,
-          type: "IDENTITY",
-          updated: Date.now(),
-          details: validity
-            ? ""
-            : details
-              ? details
-              : `${data.name} has not properly set their identity`,
-        },
-      ],
-    },
-  ).exec();
+  candidate: Candidate,
+  isValid: boolean,
+  message?: string,
+): Promise<void> => {
+  const invalidityMessage = message
+    ? message
+    : `${candidate.name} has not properly set their identity`;
+  setCandidateInvalidity(
+    candidate,
+    InvalidityReasonType.IDENTITY,
+    isValid,
+    invalidityMessage,
+    true,
+  );
 };
 
 // Set Identity Validity Status
 export const setOfflineAccumulatedInvalidity = async (
-  address: string,
-  validity: boolean,
-): Promise<any> => {
-  const data = await CandidateModel.findOne({
-    stash: address,
-  }).lean<Candidate>();
-
-  if (!data || !data?.invalidity) {
-    console.log(`{Offline Accumulated} NO CANDIDATE DATA FOUND FOR ${address}`);
-    return;
-  }
-
-  const invalidityReasons = data?.invalidity?.filter((invalidityReason) => {
-    return invalidityReason.type !== "ACCUMULATED_OFFLINE_TIME";
-  });
-  if (!invalidityReasons || invalidityReasons.length == 0) return;
-
-  await CandidateModel.findOneAndUpdate(
-    {
-      stash: address,
-    },
-    {
-      invalidity: [
-        ...invalidityReasons,
-        {
-          valid: validity,
-          type: "ACCUMULATED_OFFLINE_TIME",
-          updated: Date.now(),
-          details: validity
-            ? ""
-            : `${data.name} has been offline ${
-                data.offlineAccumulated / 1000 / 60
-              } minutes this week.`,
-        },
-      ],
-    },
-  ).exec();
+  candidate: Candidate,
+  isValid: boolean,
+): Promise<void> => {
+  const invalidityMessage = `${candidate.name} has been offline ${candidate.offlineAccumulated / 1000 / 60} minutes this week.`;
+  setCandidateInvalidity(
+    candidate,
+    InvalidityReasonType.ACCUMULATED_OFFLINE_TIME,
+    isValid,
+    invalidityMessage,
+    true,
+  );
 };
 
 // Set Identity Validity Status
@@ -1098,6 +956,7 @@ export const setRewardDestinationInvalidity = async (
   address: string,
   validity: boolean,
 ): Promise<any> => {
+  //TODO
   const data = await CandidateModel.findOne({
     stash: address,
   }).lean<Candidate>();

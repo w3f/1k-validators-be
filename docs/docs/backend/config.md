@@ -494,12 +494,7 @@ An example `core` config run as microservices may look something like:
     "region": "10",
     "country": "10",
     "provider": "100",
-    "council": "50",
-    "democracy": "100",
-    "nominations": "100",
-    "delegations": "60",
-    "openGov": "100",
-    "openGovDelegation": "100"
+    "nominations": "100"
   },
   "scorekeeper": {
     "forceRound": false,

@@ -127,7 +127,6 @@ export const fetchAndSetCandidateLocation = async (
       iit && iit.iit ? iit.iit : null,
     );
     await updateIITRequestCount();
-    const candidate = await getCandidateByName(telemetryNodeDetails.name);
     const slotId = candidate?.slotId;
     const stash = candidate?.stash;
     if (slotId == undefined || !stash) {

@@ -7,11 +7,7 @@ export const getCandidateData = async (candidate: any): Promise<any> => {
     queries.getChainMetadata(),
     queries.getLatestValidatorScore(candidate.stash),
     queries.getLatestNominatorStake(candidate.stash),
-    queries.getCandidateLocation(
-      candidate.slotId,
-      candidate.name,
-      candidate.stash,
-    ),
+    queries.getCandidateLocation(candidate.slotId),
   ]);
 
   const denom = Math.pow(10, metadata.decimals);

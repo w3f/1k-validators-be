@@ -260,10 +260,10 @@ export const checkCommission = async (
       } commission is set higher than the maximum allowed. Set: ${
         commission / Math.pow(10, 7)
       }% Allowed: ${targetCommission / Math.pow(10, 7)}%`;
-      await setCommissionInvalidity(candidate.stash, false, invalidityString);
+      await setCommissionInvalidity(candidate, false, invalidityString);
       return false;
     } else {
-      await setCommissionInvalidity(candidate.stash, true);
+      await setCommissionInvalidity(candidate, true);
       return true;
     }
   } catch (e) {
@@ -285,7 +285,7 @@ export const checkSelfStake = async (
       let invalidityString;
       if (err2) {
         invalidityString = `${candidate.name} ${err2}`;
-        await setSelfStakeInvalidity(candidate.stash, false, invalidityString);
+        await setSelfStakeInvalidity(candidate, false, invalidityString);
         return false;
       }
       if (parseInt(bondedAmt.toString()) < targetSelfStake) {
@@ -294,11 +294,11 @@ export const checkSelfStake = async (
         } has less than the minimum amount bonded: ${parseInt(
           bondedAmt.toString(),
         )} is bonded.`;
-        await setSelfStakeInvalidity(candidate.stash, false, invalidityString);
+        await setSelfStakeInvalidity(candidate, false, invalidityString);
         return false;
       }
     }
-    await setSelfStakeInvalidity(candidate.stash, true);
+    await setSelfStakeInvalidity(candidate, true);
     return true;
   } catch (e) {
     logger.error(`Error checking self stake: ${e}`, constraintsLabel);
@@ -322,10 +322,10 @@ export const checkUnclaimed = async (
       const invalidityString = `${candidate.name} has unclaimed eras: ${
         candidate.unclaimedEras
       } prior to era: ${threshold + 1}`;
-      await setUnclaimedInvalidity(candidate.stash, false, invalidityString);
+      await setUnclaimedInvalidity(candidate, false, invalidityString);
       return false;
     } else {
-      await setUnclaimedInvalidity(candidate.stash, true);
+      await setUnclaimedInvalidity(candidate, true);
       return true;
     }
   } catch (e) {
@@ -343,10 +343,10 @@ export const checkBlocked = async (
     const isBlocked = await chaindata.getBlocked(candidate.stash);
     if (isBlocked) {
       const invalidityString = `${candidate.name} blocks external nominations`;
-      await setBlockedInvalidity(candidate.stash, false, invalidityString);
+      await setBlockedInvalidity(candidate, false, invalidityString);
       return false;
     } else {
-      await setBlockedInvalidity(candidate.stash, true);
+      await setBlockedInvalidity(candidate, true);
       return true;
     }
   } catch (e) {
@@ -375,14 +375,14 @@ export const checkProvider = async (
             label: "Constraints",
           },
         );
-        await setProviderInvalidity(candidate.stash, false);
+        await setProviderInvalidity(candidate, false);
         return false;
       } else {
-        await setProviderInvalidity(candidate.stash, true);
+        await setProviderInvalidity(candidate, true);
         return true;
       }
     } else {
-      await setProviderInvalidity(candidate.stash, true);
+      await setProviderInvalidity(candidate, true);
       return true;
     }
   } catch (e) {
@@ -402,17 +402,17 @@ export const checkKusamaRank = async (
 
       if (!!res.data.invalidityReasons) {
         const invalidityReason = `${candidate.name} has a kusama node that is invalid: ${res.data.invalidityReasons}`;
-        await setKusamaRankInvalidity(candidate.stash, false, invalidityReason);
+        await setKusamaRankInvalidity(candidate, false, invalidityReason);
         return false;
       }
 
       if (Number(res.data.rank) < Constants.KUSAMA_RANK_VALID_THRESHOLD) {
         const invalidityReason = `${candidate.name} has a Kusama stash with lower than 25 rank in the Kusama OTV programme: ${res.data.rank}.`;
-        await setKusamaRankInvalidity(candidate.stash, false, invalidityReason);
+        await setKusamaRankInvalidity(candidate, false, invalidityReason);
         return false;
       }
     }
-    await setKusamaRankInvalidity(candidate.stash, true);
+    await setKusamaRankInvalidity(candidate, true);
     return true;
   } catch (e) {
     logger.warn(`Error trying to get kusama data...`);
@@ -427,10 +427,10 @@ export const checkBeefyKeys = async (
     const isDummy = await queries.hasBeefyDummy(candidate.stash);
     if (isDummy) {
       const invalidityString = `${candidate.name} has not set beefy keys`;
-      await setBeefyKeysInvalidity(candidate.stash, false, invalidityString);
+      await setBeefyKeysInvalidity(candidate, false, invalidityString);
       return false;
     } else {
-      await setBeefyKeysInvalidity(candidate.stash, true);
+      await setBeefyKeysInvalidity(candidate, true);
       return true;
     }
   } catch (e) {

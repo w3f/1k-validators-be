@@ -144,10 +144,10 @@ export const checkCandidate = async (
       providerValid &&
       beefyValid;
 
-    await setValid(candidate.stash, valid);
+    await setValid(candidate, valid);
 
     if (valid) {
-      await setLastValid(candidate.stash);
+      await setLastValid(candidate);
     }
     return valid;
   } catch (e) {

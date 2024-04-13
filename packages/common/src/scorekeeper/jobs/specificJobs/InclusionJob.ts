@@ -36,7 +36,7 @@ export const inclusionJob = async (
       );
       const filteredEras = erasActive.filter((era) => era.eraPoints > 0);
       const inclusion = Number(filteredEras.length / 84);
-      await queries.setInclusion(candidate.stash, inclusion);
+      await queries.setInclusion(candidate, inclusion);
 
       // Set span inclusion Rate
       const spanErasActive = await queries.getSpanEraPoints(
@@ -47,13 +47,13 @@ export const inclusionJob = async (
         (era: any) => era.eraPoints > 0,
       );
       const spanInclusion = Number(filteredSpanEras.length / 28);
-      await queries.setSpanInclusion(candidate.stash, spanInclusion);
+      await queries.setSpanInclusion(candidate, spanInclusion);
 
       const lastActiveEraPoints = await queries.getValidatorLastEraPoints(
         candidate.stash,
       );
       const lastActiveEra = lastActiveEraPoints?.era || 0;
-      await queries.setNominatedAtEra(candidate.stash, lastActiveEra);
+      await queries.setNominatedAtEra(candidate, lastActiveEra);
 
       // Emit progress update for each candidate processed, including the candidate's name
       const progressPercentage =

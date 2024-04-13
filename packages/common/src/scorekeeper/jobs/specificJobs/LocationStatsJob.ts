@@ -44,10 +44,7 @@ export const locationStatsJob = async (metadata: JobRunnerMetadata) => {
 
     // Add all candidate entries to the list of nodes
     for (const [index, candidate] of candidates.entries()) {
-      const location = await queries.getCandidateLocation(
-        candidate.slotId,
-        candidate.name,
-      );
+      const location = await queries.getCandidateLocation(candidate.slotId);
       if (
         location?.city != "None" &&
         location?.region != "None" &&

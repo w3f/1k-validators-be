@@ -93,7 +93,7 @@ config: |
         "Telemetry",
         "Location",
         "Block",
-        "Gateway",
+        "Gateway"
       ]
     }
   }

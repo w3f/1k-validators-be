@@ -96,8 +96,6 @@ export const scoreCandidate = async (
 
     const latestCandidateLocation = await queries.getCandidateLocation(
       candidate.slotId,
-      candidate.name,
-      candidate.stash,
     );
 
     const provider = latestCandidateLocation?.provider || "No Provider";

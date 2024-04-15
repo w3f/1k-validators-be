@@ -19,7 +19,7 @@ export const filterCandidateInvalidityFields = (
 };
 
 export const isCandidateInvaliditySet = (candidate: Candidate): boolean => {
-  if (candidate.invalidityReasons.length == 0) {
+  if (!candidate.invalidity?.length) {
     logger.warn(`No Candidate Invalidity data found for ${candidate.name}`);
     return false;
   }
@@ -33,12 +33,12 @@ export const setCandidateInvalidity = async (
   invalidityMessage = "",
   skipIfNoData = false, //TODO: understand if it's needed or not. Will says not necessary anymore, to be double checked. For now it maintains the previus behaviour.
 ) => {
+  if (skipIfNoData && !isCandidateInvaliditySet(candidate)) return;
+
   const invalidityReasons = filterCandidateInvalidityFields(
     candidate,
     invalidityType,
   );
-
-  if (skipIfNoData && !isCandidateInvaliditySet(candidate)) return;
 
   await CandidateModel.findOneAndUpdate(
     {

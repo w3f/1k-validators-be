@@ -67,7 +67,7 @@ export const eraPointsJob = async (
     const totalEras = activeEra;
     let processedEras = 0;
 
-    for (let i = activeEra - 1; i >= 0; i--) {
+    for (let i = activeEra - 1; i >= activeEra - 85; i--) {
       await individualEraPointsJob(chaindata, i);
 
       // Calculate progress percentage

@@ -27,13 +27,15 @@ export type ConfigSchema = {
     skipClientUpgrade: boolean;
     skipUnclaimed: boolean;
     skipClaiming: boolean;
-    skipSanctionedGeoArea: boolean;
     forceClientVersion: string;
     minSelfStake: number;
     commission: number;
     unclaimedEraThreshold: number;
-    sanctionedCountries: string[];
-    sanctionedRegions: string[];
+    sanctionedGeoArea?: {
+      skip: boolean;
+      sanctionedCountries: string[];
+      sanctionedRegions: string[];
+    };
   };
   cron: {
     monitor: string;

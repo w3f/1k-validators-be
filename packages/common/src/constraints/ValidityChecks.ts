@@ -442,38 +442,49 @@ export const checkSanctionedGeoArea = async (
   candidate: Candidate,
 ): Promise<boolean> => {
   try {
-    const location = await queries.getCandidateLocation(
-      candidate.slotId,
-      candidate.name,
-    );
-    if (location && location.region && location.country) {
-      const sanctionedCountries = config.constraints?.sanctionedCountries.map(
-        (x) => x.trim().toLowerCase(),
-      );
-      const sanctionedRegions = config.constraints?.sanctionedRegions.map((x) =>
-        x.trim().toLowerCase(),
-      );
-
-      if (
-        sanctionedCountries.includes(location.country.trim().toLowerCase()) ||
-        sanctionedRegions.includes(location.region.trim().toLowerCase())
-      ) {
-        logger.info(
-          `${candidate.name} is in a sanctioned location: Country: ${location.country}, Region: ${location.region}`,
-          {
-            label: "Constraints",
-          },
-        );
-        await setSanctionedGeoAreaValidity(candidate.slotId, false);
-        return false;
-      } else {
-        await setSanctionedGeoAreaValidity(candidate.slotId, true);
-        return true;
-      }
-    } else {
-      await setSanctionedGeoAreaValidity(candidate.slotId, true);
+    if (
+      !config.constraints?.sanctionedGeoArea?.sanctionedCountries?.length &&
+      !config.constraints?.sanctionedGeoArea?.sanctionedRegions?.length
+    ) {
+      setSanctionedGeoAreaValidity(candidate, true);
       return true;
     }
+
+    const location = await queries.getCandidateLocation(candidate.slotId);
+    if (!location?.region || !location?.country) {
+      setSanctionedGeoAreaValidity(candidate, true);
+      return true;
+    }
+
+    const sanctionedCountries = config.constraints?.sanctionedGeoArea
+      ?.sanctionedCountries
+      ? config.constraints.sanctionedGeoArea.sanctionedCountries.map((x) =>
+          x.trim().toLowerCase(),
+        )
+      : [];
+    const sanctionedRegions = config.constraints?.sanctionedGeoArea
+      ?.sanctionedRegions
+      ? config.constraints.sanctionedGeoArea.sanctionedRegions.map((x) =>
+          x.trim().toLowerCase(),
+        )
+      : [];
+
+    if (
+      sanctionedCountries.includes(location.country.trim().toLowerCase()) ||
+      sanctionedRegions.includes(location.region.trim().toLowerCase())
+    ) {
+      logger.info(
+        `${candidate.name} is in a sanctioned location: Country: ${location.country}, Region: ${location.region}`,
+        {
+          label: "Constraints",
+        },
+      );
+      await setSanctionedGeoAreaValidity(candidate, false);
+      return false;
+    }
+
+    await setSanctionedGeoAreaValidity(candidate, true);
+    return true;
   } catch (e) {
     logger.error(
       `Error checking location for sanctions: ${e}`,

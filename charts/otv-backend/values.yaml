@@ -49,7 +49,11 @@ config: |
     "constraints": {
       "skipConnectionTime": false,
       "skipIdentity": false,
-      "skipSanctionedGeoArea": false
+      "sanctionedGeoArea": {
+        "skip": false,
+        "sanctionedCountries": ["XXX"],
+        "sanctionedRegions": ["XXX" ]
+      }
     },
     "db": {
       "mongo": {

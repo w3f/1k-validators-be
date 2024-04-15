@@ -1055,10 +1055,9 @@ export const setBeefyKeysInvalidity = async (
 
 // Set Sanctions Validity Status
 export const setSanctionedGeoAreaValidity = async (
-  slotId: number,
+  candidate: Candidate,
   isValid: boolean,
 ): Promise<void> => {
-  const candidate = await getCandidateBySlotId(slotId);
   const invalidityMessage = `${candidate.name} in sanctioned area.`;
   setCandidateInvalidity(
     candidate,

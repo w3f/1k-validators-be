@@ -59,7 +59,12 @@ spec:
                   "skipUnclaimed": true,
                   "minSelfStake": 50000000000000,
                   "commission": 50000000,
-                  "unclaimedEraThreshold": 1
+                  "unclaimedEraThreshold": 1,
+                  "sanctionedGeoArea": {
+                    "skip": false,
+                    "sanctionedCountries": ["RU", "IR", "CU", "KP", "SY"],
+                    "sanctionedRegions": ["Crimea", "Autonomous Republic of Crimea", "Republic of Crimea", "Luhansk", "Luhanska Oblast", "Luhanska", "Luganskaya Oblast’", "Luganskaya", "Donetsk", "Donetska Oblast", "Donetskaya Oblast’", "Donetska", "Donetskaya", "Sevastopol City", "Sevastopol", "Gorod Sevastopol" ]
+                  }
                 },
                 "cron": {
                   "monitor": "0 */15 * * * *",

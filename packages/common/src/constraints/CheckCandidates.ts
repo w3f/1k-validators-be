@@ -131,7 +131,7 @@ export const checkCandidate = async (
     }
 
     const sanctionedGeoAreaValid =
-      constraints.config?.constraints?.skipSanctionedGeoArea == true
+      constraints.config?.constraints?.sanctionedGeoArea?.skip == true
         ? true
         : (await checkSanctionedGeoArea(constraints.config, candidate)) ||
           false;

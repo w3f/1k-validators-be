@@ -23,13 +23,15 @@
     "skipIdentity": false,
     "skipStakedDestination": true,
     "skipClientUpgrade": true,
-    "skipSanctionedGeoArea": false,
     "skipUnclaimed": true,
     "minSelfStake": 100000,
     "commission": 150000000,
     "unclaimedEraThreshold": 4,
-    "sanctionedCountries": ["RU", "IR", "CU", "KP", "SY"],
-    "sanctionedRegions": ["Crimea", "Autonomous Republic of Crimea", "Republic of Crimea", "Luhansk", "Luhanska Oblast", "Luhanska", "Luganskaya Oblast’", "Luganskaya", "Donetsk", "Donetska Oblast", "Donetskaya Oblast’", "Donetska", "Donetskaya", "Sevastopol City", "Sevastopol", "Gorod Sevastopol" ]
+    "sanctionedGeoArea": {
+      "skip": false,
+      "sanctionedCountries": ["XXX"],
+      "sanctionedRegions": ["XXX"]
+    }
   },
   "proxy": {
     "timeDelayBlocks": "35"

@@ -1,5 +1,6 @@
 export * from "./Block";
 export * from "./Candidate";
+export * from "./CandidateUtils";
 export * from "./ChainMetadata";
 export * from "./DelayedTx";
 export * from "./Era";

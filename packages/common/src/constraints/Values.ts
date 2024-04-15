@@ -117,11 +117,7 @@ export const getLocationValues = async (
   const locationMap = new Map<string, number>();
   const locationArr: { name: string; numberOfNodes: number }[] = [];
   for (const candidate of validCandidates) {
-    const candidateLocation = await getCandidateLocation(
-      candidate.slotId,
-      candidate.name,
-      candidate.stash,
-    );
+    const candidateLocation = await getCandidateLocation(candidate.slotId);
     const location = candidateLocation?.city || NoLocation.NoLocation;
 
     const locationCount = locationMap.get(location);
@@ -155,11 +151,7 @@ export const getRegionValues = async (
   const regionMap = new Map<string, number>();
   const regionArr: { name: string; numberOfNodes: number }[] = [];
   for (const candidate of validCandidates) {
-    const candidateLocation = await getCandidateLocation(
-      candidate.slotId,
-      candidate.name,
-      candidate.stash,
-    );
+    const candidateLocation = await getCandidateLocation(candidate.slotId);
     const region =
       candidateLocation && candidateLocation.region
         ? candidateLocation.region
@@ -196,11 +188,7 @@ export const getCountryValues = async (
   const countryMap = new Map<string, number>();
   const countryArr: { name: string; numberOfNodes: number }[] = [];
   for (const candidate of validCandidates) {
-    const candidateLocation = await getCandidateLocation(
-      candidate.slotId,
-      candidate.name,
-      candidate.stash,
-    );
+    const candidateLocation = await getCandidateLocation(candidate.slotId);
     const country =
       candidateLocation && candidateLocation.country
         ? candidateLocation.country
@@ -235,11 +223,7 @@ export const getProviderValues = async (
   const providerMap = new Map<string, number>();
   const providerArr: { name: string; numberOfNodes: number }[] = [];
   for (const candidate of validCandidates) {
-    const candidateLocation = await getCandidateLocation(
-      candidate.slotId,
-      candidate.name,
-      candidate.stash,
-    );
+    const candidateLocation = await getCandidateLocation(candidate.slotId);
     const provider =
       candidateLocation && candidateLocation.provider
         ? candidateLocation.provider

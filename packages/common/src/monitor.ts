@@ -24,10 +24,29 @@ export default class Monitor {
     let latestRelease;
 
     try {
-      latestRelease = await this.ghApi.repos.getLatestRelease({
+      const { data: releases } = await this.ghApi.rest.repos.listReleases({
         owner: "paritytech",
         repo: "polkadot-sdk",
       });
+
+      // Filter releases based on tag name
+      const filteredReleases = releases.filter((release) => {
+        // Check if the tag name matches the pattern 'polkadot-v*.*.*' (this is the polkadot client node version, as opposed to any kind of parachain node)
+        return release.tag_name.startsWith("polkadot-v");
+      });
+
+      // Sort filtered releases based on their version number
+      filteredReleases.sort((a, b) => {
+        // Extract version numbers from tag names
+        const versionA = a.tag_name.split("polkadot-v")[1];
+        const versionB = b.tag_name.split("polkadot-v")[1];
+
+        // Compare version numbers
+        return this.compareVersions(versionA, versionB);
+      });
+
+      // Get the last release
+      latestRelease = filteredReleases[filteredReleases.length - 1];
     } catch (e) {
       logger.info(JSON.stringify(e));
       logger.info(
@@ -36,7 +55,7 @@ export default class Monitor {
     }
 
     if (!latestRelease) return null;
-    const { tag_name, published_at } = latestRelease.data;
+    const { tag_name, published_at } = latestRelease;
     const publishedAt = new Date(published_at).getTime();
 
     // Extract version number from the tag name
@@ -45,7 +64,7 @@ export default class Monitor {
       logger.warn(`Unable to extract version from tag name: ${tag_name}`);
       return null;
     }
-    const version = versionMatch[1]; // Extracted version number
+    const version = versionMatch[1];
 
     await queries.setRelease(version, publishedAt);
 
@@ -67,6 +86,25 @@ export default class Monitor {
     );
 
     return this.latestTaggedRelease;
+  }
+
+  // Function to compare version numbers
+  public compareVersions(versionA, versionB) {
+    const partsA = versionA.split(".").map((part) => parseInt(part, 10));
+    const partsB = versionB.split(".").map((part) => parseInt(part, 10));
+
+    for (let i = 0; i < Math.max(partsA.length, partsB.length); i++) {
+      const partA = partsA[i] || 0;
+      const partB = partsB[i] || 0;
+
+      if (partA < partB) {
+        return -1;
+      } else if (partA > partB) {
+        return 1;
+      }
+    }
+
+    return 0; // Versions are equal
   }
 
   /// Ensures that nodes have upgraded within a `grace` period.

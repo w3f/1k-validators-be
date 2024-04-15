@@ -22,7 +22,7 @@
     "react-dom": "^18.2.0",
     "react-icons": "^5.0.1",
     "react-spinners": "^0.13.8",
-    "recharts": "^2.12.2",
+    "recharts": "^2.12.5",
     "terser": "^5.29.1"
   },
   "devDependencies": {

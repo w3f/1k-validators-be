@@ -207,3 +207,5 @@ export const USE_PROVIDER = true;
 export const USE_NOMINATIONS = true;
 export const USE_RPC = true;
 export const USE_CLIENT = true;
+
+export const MAX_ERAS_POINTS = 85;

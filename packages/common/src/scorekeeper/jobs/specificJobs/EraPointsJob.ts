@@ -1,4 +1,4 @@
-import { ChainData, logger, queries } from "../../../index";
+import { ChainData, Constants, logger, queries } from "../../../index";
 import { Job, JobConfig, JobRunnerMetadata, JobStatus } from "../JobsClass";
 import { jobStatusEmitter } from "../../../Events";
 import { withExecutionTimeLogging } from "../../../utils";
@@ -67,7 +67,11 @@ export const eraPointsJob = async (
     const totalEras = activeEra;
     let processedEras = 0;
 
-    for (let i = activeEra - 1; i >= activeEra - 85; i--) {
+    for (
+      let i = activeEra - 1;
+      i >= activeEra - Constants.MAX_ERAS_POINTS;
+      i--
+    ) {
       await individualEraPointsJob(chaindata, i);
 
       // Calculate progress percentage

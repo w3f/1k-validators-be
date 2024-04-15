@@ -28,7 +28,7 @@ const HealthCheckBar = ({ currentEndpoint }) => {
       }
     };
 
-    const interval = setInterval(fetchHealthData, 500);
+    const interval = setInterval(fetchHealthData, 5000);
     return () => clearInterval(interval);
   }, [currentEndpoint]);
 

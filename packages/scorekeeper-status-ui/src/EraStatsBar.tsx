@@ -29,7 +29,7 @@ const EraStatsBar = ({ currentEndpoint }) => {
       }
     };
 
-    const interval = setInterval(fetchEraStats, 500);
+    const interval = setInterval(fetchEraStats, 5000);
     return () => clearInterval(interval);
   }, [currentEndpoint]);
 

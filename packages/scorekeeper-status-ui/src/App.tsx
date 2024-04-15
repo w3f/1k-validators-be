@@ -50,7 +50,7 @@ const App = () => {
   const [jobs, setJobs] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
-  const [refreshInterval, setRefreshInterval] = useState(500); // Default refresh interval
+  const [refreshInterval, setRefreshInterval] = useState(5000); // Default refresh interval
   const [nominators, setNominators] = useState([]);
 
   const fetchData = useCallback(async () => {
@@ -66,7 +66,7 @@ const App = () => {
           })),
         );
         setHasError(false);
-        setRefreshInterval(800); // Reset to faster refresh rate on success
+        setRefreshInterval(5000); // Reset to faster refresh rate on success
       } else {
         // Handle empty response
         console.log("Received empty response");
@@ -122,12 +122,12 @@ const App = () => {
   }, [currentEndpoint]);
 
   useEffect(() => {
-    const interval = setInterval(fetchData, 500);
+    const interval = setInterval(fetchData, 5000);
     return () => clearInterval(interval);
   }, [fetchData]);
 
   useEffect(() => {
-    const interval = setInterval(fetchNominatorsData, 500);
+    const interval = setInterval(fetchNominatorsData, 5000);
     return () => clearInterval(interval);
   }, [fetchNominatorsData]);
 

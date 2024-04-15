@@ -120,7 +120,7 @@ __metadata:
     "@emotion/react": ^11.11.4
     "@polkadot/react-identicon": ^3.6.5
     "@types/lodash.debounce": ^4.0.9
-    "@types/react": ^18.2.65
+    "@types/react": ^18.2.78
     "@types/react-dom": ^18.2.21
     "@typescript-eslint/eslint-plugin": ^7.0.2
     "@typescript-eslint/parser": ^7.0.2
@@ -3409,14 +3409,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:^18.2.65":
-  version: 18.2.65
-  resolution: "@types/react@npm:18.2.65"
+"@types/react@npm:^18.2.78":
+  version: 18.2.78
+  resolution: "@types/react@npm:18.2.78"
   dependencies:
     "@types/prop-types": "*"
-    "@types/scheduler": "*"
     csstype: ^3.0.2
-  checksum: 1931a8b36e3135f3058e988cfc0d4ffe4b75af10b8efcf8b7e5759934333922162394edff9ccf8aff838e8db62de014c015c9c094597fdf9ca1405ac1d040fdf
+  checksum: f686d735707d46690d05ac76e8c8a619802ea6a4a8f2837981669f7dc13b6984751edc4994242afa3be279df15c67b72a5a658f02a7c5ca16f9a0b4878f1bf18
   languageName: node
   linkType: hard
 

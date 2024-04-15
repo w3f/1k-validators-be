@@ -7,7 +7,7 @@ COPY . .
 RUN echo "building ${PACKAGE}... "; \
     yarn install; \
     echo "yarn install done. Building...." ; \
-    yarn turbo; \
+    yarn build; \
     echo "building ${PACKAGE} done."; \
     apt-get update && \
     apt-get clean

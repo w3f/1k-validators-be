@@ -8,6 +8,7 @@ import {
   checkConnectionTime,
   checkIdentity,
   checkKusamaRank,
+  checkKYC,
   checkLatestClientVersion,
   checkOffline,
   checkOnline,
@@ -129,6 +130,14 @@ export const checkCandidate = async (
       logger.info(`${candidate.name} beefy keys not valid`, constraintsLabel);
     }
 
+    const kycValid =
+      constraints.config?.constraints?.enableKYC == true
+        ? await checkKYC(candidate)
+        : true;
+    if (!kycValid) {
+      logger.info(`${candidate.name} kyc not valid`, constraintsLabel);
+    }
+
     valid =
       onlineValid &&
       validateValid &&
@@ -142,7 +151,8 @@ export const checkCandidate = async (
       blockedValid &&
       kusamaValid &&
       providerValid &&
-      beefyValid;
+      beefyValid &&
+      kycValid;
 
     await setValid(candidate, valid);
 

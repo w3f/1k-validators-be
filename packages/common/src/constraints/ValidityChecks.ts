@@ -8,6 +8,7 @@ import {
   setConnectionTimeInvalidity,
   setIdentityInvalidity,
   setKusamaRankInvalidity,
+  setKYCInvalidity,
   setLatestClientReleaseValidity,
   setOfflineAccumulatedInvalidity,
   setOnlineValidity,
@@ -431,6 +432,23 @@ export const checkBeefyKeys = async (
     }
   } catch (e) {
     logger.warn(`Error trying to get beefy keys...`, constraintsLabel);
+    throw new Error("could not make validity check");
+  }
+};
+
+export const checkKYC = async (candidate: Candidate): Promise<boolean> => {
+  try {
+    const isKYC = await queries.isKYC(candidate.stash);
+    if (isKYC) {
+      const invalidityString = `${candidate.name} is not KYC`;
+      await setKYCInvalidity(candidate, false, invalidityString);
+      return false;
+    } else {
+      await setKYCInvalidity(candidate, true);
+      return true;
+    }
+  } catch (e) {
+    logger.warn(`Error trying to get kyc...`, constraintsLabel);
     throw new Error("could not make validity check");
   }
 };

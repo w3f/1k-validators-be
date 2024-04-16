@@ -17,7 +17,7 @@ spec:
   source:
     repoURL: https://w3f.github.io/helm-charts/
     chart: otv-backend
-    targetRevision: v3.1.12
+    targetRevision: v3.1.14
     plugin:
       env:
         - name: HELM_VALUES
@@ -57,7 +57,12 @@ spec:
                   "skipUnclaimed": true,
                   "minSelfStake": 50000000000000,
                   "commission": 50000000,
-                  "unclaimedEraThreshold": 1
+                  "unclaimedEraThreshold": 1,
+                  "sanctionedGeoArea": {
+                    "skip": true,
+                    "sanctionedCountries": ["XXX"],
+                    "sanctionedRegions": ["XXX" ]
+                  }
                 },
                 "cron": {
                   "monitor": "0 */15 * * * *",
@@ -120,5 +125,14 @@ spec:
                   ],
                   "host": "wss://telemetry-backend.w3f.community/feed",
                   "ipinfoToken": "token=<path:vaults/k8s-community-secrets/items/otv-polkadot#ipinfo-token>"
+                },
+                "logger": {
+                  "level": "info",
+                  "excludedLabels": [
+                    "Telemetry",
+                    "Location",
+                    "Block",
+                    "Gateway"
+                  ]
                 }
               }

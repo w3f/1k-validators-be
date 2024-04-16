@@ -33,7 +33,7 @@ export const individualValidatorPrefJob = async (
     const [commission, err] = await chaindata.getCommission(candidate.stash);
     const formattedCommission =
       commission == 0 ? 0 : commission / Math.pow(10, 7);
-    await queries.setCommission(candidate.stash, formattedCommission);
+    await queries.setCommission(candidate, formattedCommission);
 
     // Set Controller
     const controller = await chaindata.getControllerFromStash(candidate.stash);
@@ -49,14 +49,14 @@ export const individualValidatorPrefJob = async (
     if (!rewardDestination) {
       return;
     }
-    await queries.setRewardDestination(candidate.stash, rewardDestination);
+    await queries.setRewardDestination(candidate, rewardDestination);
 
     // set bonded amount
     const [bonded, err2] = await chaindata.getBondedAmount(candidate.stash);
     if (!bonded) {
       return;
     }
-    await queries.setBonded(candidate.stash, bonded);
+    await queries.setBonded(candidate, bonded);
 
     const end = Date.now();
     const executionTime = (end - start) / 1000;

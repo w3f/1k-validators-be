@@ -1,7 +1,8 @@
 import {
+  Candidate,
   getCandidateByName,
+  getCandidateLocation,
   getIIT,
-  getLocation,
   removeIIT,
   setIIT,
   setLocation,
@@ -101,13 +102,11 @@ export const nodeDetailsFromTelemetryMessage = (
 };
 
 export const fetchAndSetCandidateLocation = async (
+  candidate: Candidate,
   telemetryNodeDetails: TelemetryNodeDetails,
 ) => {
   // See if there's an existing location for the given telemetry data
-  const existingLocation = await getLocation(
-    telemetryNodeDetails.name,
-    telemetryNodeDetails.ipAddress,
-  );
+  const existingLocation = await getCandidateLocation(candidate.slotId);
 
   // Fetch and set a new location if:
   // - There's no existing location
@@ -128,7 +127,6 @@ export const fetchAndSetCandidateLocation = async (
       iit && iit.iit ? iit.iit : null,
     );
     await updateIITRequestCount();
-    const candidate = await getCandidateByName(telemetryNodeDetails.name);
     const slotId = candidate?.slotId;
     const stash = candidate?.stash;
     if (slotId == undefined || !stash) {

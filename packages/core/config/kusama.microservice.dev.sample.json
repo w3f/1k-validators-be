@@ -40,13 +40,15 @@
     "skipIdentity": false,
     "skipClientUpgrade": false,
     "skipUnclaimed": false,
-    "skipSanctionedGeoArea": false,
     "forceClientVersion": "v0.9.30",
     "minSelfStake": 10000000000000,
     "commission": 150000000,
     "unclaimedEraThreshold": 4,
-    "sanctionedCountries": ["RU", "IR", "CU", "KP", "SY"],
-    "sanctionedRegions": ["Crimea", "Autonomous Republic of Crimea", "Republic of Crimea", "Luhansk", "Luhanska Oblast", "Luhanska", "Luganskaya Oblast’", "Luganskaya", "Donetsk", "Donetska Oblast", "Donetskaya Oblast’", "Donetska", "Donetskaya", "Sevastopol City", "Sevastopol", "Gorod Sevastopol" ]
+    "sanctionedGeoArea": {
+      "skip": false,
+      "sanctionedCountries": ["XXX"],
+      "sanctionedRegions": ["XXX"]
+    }
   },
   "db": {
     "mongo": {

@@ -53,11 +53,11 @@ export const checkValidateIntention = async (
       !validators?.length ||
       validators.includes(Util.formatAddress(candidate?.stash, config))
     ) {
-      await setValidateIntentionValidity(candidate.stash, true);
+      await setValidateIntentionValidity(candidate, true);
       return true;
     }
 
-    await setValidateIntentionValidity(candidate.stash, false);
+    await setValidateIntentionValidity(candidate, false);
     return false;
   } catch (e) {
     logger.error(`Error checking validate intention: ${e}`, constraintsLabel);
@@ -75,9 +75,9 @@ export const checkAllValidateIntentions = async (
     const validators = await chaindata.getValidators();
     for (const candidate of candidates) {
       if (!validators.includes(Util.formatAddress(candidate.stash, config))) {
-        await setValidateIntentionValidity(candidate.stash, false);
+        await setValidateIntentionValidity(candidate, false);
       } else {
-        await setValidateIntentionValidity(candidate.stash, true);
+        await setValidateIntentionValidity(candidate, true);
       }
     }
     return true;
@@ -96,7 +96,7 @@ export const checkLatestClientVersion = async (
     const skipClientUpgrade = config.constraints?.skipClientUpgrade || false;
     if (skipClientUpgrade || candidate?.implementation === "Kagome Node") {
       // Skip the check if the node is a Kagome Client or if skipping client upgrade is enabled
-      await setLatestClientReleaseValidity(candidate.stash, true);
+      await setLatestClientReleaseValidity(candidate, true);
       return true;
     }
 
@@ -146,7 +146,7 @@ export const checkLatestClientVersion = async (
 
       // If cannot parse the version, set the release as invalid
       if (!nodeVersion || !latestVersion) {
-        await setLatestClientReleaseValidity(candidate.stash, false);
+        await setLatestClientReleaseValidity(candidate, false);
         return false;
       }
 
@@ -154,18 +154,18 @@ export const checkLatestClientVersion = async (
 
       // If they are not upgraded, set the validity as invalid
       if (!isUpgraded) {
-        await setLatestClientReleaseValidity(candidate.stash, false);
+        await setLatestClientReleaseValidity(candidate, false);
         return false;
       }
 
       // If the current version is the latest release, set the release as valid
-      await setLatestClientReleaseValidity(candidate.stash, true);
+      await setLatestClientReleaseValidity(candidate, true);
       return true;
     } else {
       logger.info(`Still in grace window of latest release`, constraintsLabel);
 
       // If not past the grace window, set the release as invalid
-      await setLatestClientReleaseValidity(candidate.stash, true);
+      await setLatestClientReleaseValidity(candidate, true);
       return true;
     }
   } catch (e) {
@@ -173,7 +173,7 @@ export const checkLatestClientVersion = async (
       `Error checking latest client version: ${e}`,
       constraintsLabel,
     );
-    await setLatestClientReleaseValidity(candidate.stash, false);
+    await setLatestClientReleaseValidity(candidate, false);
     throw new Error("could not make validity check");
   }
 };
@@ -186,14 +186,14 @@ export const checkConnectionTime = async (
     if (!config?.constraints?.skipConnectionTime) {
       const now = new Date().getTime();
       if (now - candidate.discoveredAt < Constants.WEEK) {
-        await setConnectionTimeInvalidity(candidate.stash, false);
+        await setConnectionTimeInvalidity(candidate, false);
         return false;
       } else {
-        await setConnectionTimeInvalidity(candidate.stash, true);
+        await setConnectionTimeInvalidity(candidate, true);
         return true;
       }
     } else {
-      await setConnectionTimeInvalidity(candidate.stash, true);
+      await setConnectionTimeInvalidity(candidate, true);
       return true;
     }
   } catch (e) {
@@ -212,15 +212,15 @@ export const checkIdentity = async (
     );
     if (!hasIdentity) {
       const invalidityString = `${candidate.name} does not have an identity set.`;
-      await setIdentityInvalidity(candidate.stash, false, invalidityString);
+      await setIdentityInvalidity(candidate, false, invalidityString);
       return false;
     }
     if (!verified) {
       const invalidityString = `${candidate.name} has an identity but is not verified by the registrar.`;
-      await setIdentityInvalidity(candidate.stash, false, invalidityString);
+      await setIdentityInvalidity(candidate, false, invalidityString);
       return false;
     }
-    await setIdentityInvalidity(candidate.stash, true);
+    await setIdentityInvalidity(candidate, true);
     return true;
   } catch (e) {
     logger.error(`Error checking identity: ${e}`, constraintsLabel);
@@ -232,10 +232,10 @@ export const checkOffline = async (candidate: Candidate): Promise<boolean> => {
   try {
     const totalOffline = candidate.offlineAccumulated / Constants.WEEK;
     if (totalOffline > 0.02) {
-      await setOfflineAccumulatedInvalidity(candidate.stash, false);
+      await setOfflineAccumulatedInvalidity(candidate, false);
       return false;
     } else {
-      await setOfflineAccumulatedInvalidity(candidate.stash, true);
+      await setOfflineAccumulatedInvalidity(candidate, true);
       return true;
     }
     return true;
@@ -261,10 +261,10 @@ export const checkCommission = async (
       } commission is set higher than the maximum allowed. Set: ${
         commission / Math.pow(10, 7)
       }% Allowed: ${targetCommission / Math.pow(10, 7)}%`;
-      await setCommissionInvalidity(candidate.stash, false, invalidityString);
+      await setCommissionInvalidity(candidate, false, invalidityString);
       return false;
     } else {
-      await setCommissionInvalidity(candidate.stash, true);
+      await setCommissionInvalidity(candidate, true);
       return true;
     }
   } catch (e) {
@@ -286,7 +286,7 @@ export const checkSelfStake = async (
       let invalidityString;
       if (err2) {
         invalidityString = `${candidate.name} ${err2}`;
-        await setSelfStakeInvalidity(candidate.stash, false, invalidityString);
+        await setSelfStakeInvalidity(candidate, false, invalidityString);
         return false;
       }
       if (parseInt(bondedAmt.toString()) < targetSelfStake) {
@@ -295,11 +295,11 @@ export const checkSelfStake = async (
         } has less than the minimum amount bonded: ${parseInt(
           bondedAmt.toString(),
         )} is bonded.`;
-        await setSelfStakeInvalidity(candidate.stash, false, invalidityString);
+        await setSelfStakeInvalidity(candidate, false, invalidityString);
         return false;
       }
     }
-    await setSelfStakeInvalidity(candidate.stash, true);
+    await setSelfStakeInvalidity(candidate, true);
     return true;
   } catch (e) {
     logger.error(`Error checking self stake: ${e}`, constraintsLabel);
@@ -323,10 +323,10 @@ export const checkUnclaimed = async (
       const invalidityString = `${candidate.name} has unclaimed eras: ${
         candidate.unclaimedEras
       } prior to era: ${threshold + 1}`;
-      await setUnclaimedInvalidity(candidate.stash, false, invalidityString);
+      await setUnclaimedInvalidity(candidate, false, invalidityString);
       return false;
     } else {
-      await setUnclaimedInvalidity(candidate.stash, true);
+      await setUnclaimedInvalidity(candidate, true);
       return true;
     }
   } catch (e) {
@@ -344,10 +344,10 @@ export const checkBlocked = async (
     const isBlocked = await chaindata.getBlocked(candidate.stash);
     if (isBlocked) {
       const invalidityString = `${candidate.name} blocks external nominations`;
-      await setBlockedInvalidity(candidate.stash, false, invalidityString);
+      await setBlockedInvalidity(candidate, false, invalidityString);
       return false;
     } else {
-      await setBlockedInvalidity(candidate.stash, true);
+      await setBlockedInvalidity(candidate, true);
       return true;
     }
   } catch (e) {
@@ -362,11 +362,7 @@ export const checkProvider = async (
   candidate: Candidate,
 ): Promise<boolean> => {
   try {
-    const location = await queries.getCandidateLocation(
-      candidate.slotId,
-      candidate.name,
-      candidate.stash,
-    );
+    const location = await queries.getCandidateLocation(candidate.slotId);
     if (location && location.provider) {
       const bannedProviders = config.telemetry?.blacklistedProviders;
       if (bannedProviders?.includes(location.provider)) {
@@ -376,14 +372,14 @@ export const checkProvider = async (
             label: "Constraints",
           },
         );
-        await setProviderInvalidity(candidate.stash, false);
+        await setProviderInvalidity(candidate, false);
         return false;
       } else {
-        await setProviderInvalidity(candidate.stash, true);
+        await setProviderInvalidity(candidate, true);
         return true;
       }
     } else {
-      await setProviderInvalidity(candidate.stash, true);
+      await setProviderInvalidity(candidate, true);
       return true;
     }
   } catch (e) {
@@ -403,17 +399,17 @@ export const checkKusamaRank = async (
 
       if (!!res.data.invalidityReasons) {
         const invalidityReason = `${candidate.name} has a kusama node that is invalid: ${res.data.invalidityReasons}`;
-        await setKusamaRankInvalidity(candidate.stash, false, invalidityReason);
+        await setKusamaRankInvalidity(candidate, false, invalidityReason);
         return false;
       }
 
       if (Number(res.data.rank) < Constants.KUSAMA_RANK_VALID_THRESHOLD) {
         const invalidityReason = `${candidate.name} has a Kusama stash with lower than 25 rank in the Kusama OTV programme: ${res.data.rank}.`;
-        await setKusamaRankInvalidity(candidate.stash, false, invalidityReason);
+        await setKusamaRankInvalidity(candidate, false, invalidityReason);
         return false;
       }
     }
-    await setKusamaRankInvalidity(candidate.stash, true);
+    await setKusamaRankInvalidity(candidate, true);
     return true;
   } catch (e) {
     logger.warn(`Error trying to get kusama data...`);
@@ -428,10 +424,10 @@ export const checkBeefyKeys = async (
     const isDummy = await queries.hasBeefyDummy(candidate.stash);
     if (isDummy) {
       const invalidityString = `${candidate.name} has not set beefy keys`;
-      await setBeefyKeysInvalidity(candidate.stash, false, invalidityString);
+      await setBeefyKeysInvalidity(candidate, false, invalidityString);
       return false;
     } else {
-      await setBeefyKeysInvalidity(candidate.stash, true);
+      await setBeefyKeysInvalidity(candidate, true);
       return true;
     }
   } catch (e) {
@@ -446,38 +442,49 @@ export const checkSanctionedGeoArea = async (
   candidate: Candidate,
 ): Promise<boolean> => {
   try {
-    const location = await queries.getCandidateLocation(
-      candidate.slotId,
-      candidate.name,
-    );
-    if (location && location.region && location.country) {
-      const sanctionedCountries = config.constraints?.sanctionedCountries.map(
-        (x) => x.trim().toLowerCase(),
-      );
-      const sanctionedRegions = config.constraints?.sanctionedRegions.map((x) =>
-        x.trim().toLowerCase(),
-      );
-
-      if (
-        sanctionedCountries.includes(location.country.trim().toLowerCase()) ||
-        sanctionedRegions.includes(location.region.trim().toLowerCase())
-      ) {
-        logger.info(
-          `${candidate.name} is in a sanctioned location: Country: ${location.country}, Region: ${location.region}`,
-          {
-            label: "Constraints",
-          },
-        );
-        await setSanctionedGeoAreaValidity(candidate.slotId, false);
-        return false;
-      } else {
-        await setSanctionedGeoAreaValidity(candidate.slotId, true);
-        return true;
-      }
-    } else {
-      await setSanctionedGeoAreaValidity(candidate.slotId, true);
+    if (
+      !config.constraints?.sanctionedGeoArea?.sanctionedCountries?.length &&
+      !config.constraints?.sanctionedGeoArea?.sanctionedRegions?.length
+    ) {
+      await setSanctionedGeoAreaValidity(candidate, true);
       return true;
     }
+
+    const location = await queries.getCandidateLocation(candidate.slotId);
+    if (!location?.region || !location?.country) {
+      await setSanctionedGeoAreaValidity(candidate, true);
+      return true;
+    }
+
+    const sanctionedCountries = config.constraints?.sanctionedGeoArea
+      ?.sanctionedCountries
+      ? config.constraints.sanctionedGeoArea.sanctionedCountries.map((x) =>
+          x.trim().toLowerCase(),
+        )
+      : [];
+    const sanctionedRegions = config.constraints?.sanctionedGeoArea
+      ?.sanctionedRegions
+      ? config.constraints.sanctionedGeoArea.sanctionedRegions.map((x) =>
+          x.trim().toLowerCase(),
+        )
+      : [];
+
+    if (
+      sanctionedCountries.includes(location.country.trim().toLowerCase()) ||
+      sanctionedRegions.includes(location.region.trim().toLowerCase())
+    ) {
+      logger.info(
+        `${candidate.name} is in a sanctioned location: Country: ${location.country}, Region: ${location.region}`,
+        {
+          label: "Constraints",
+        },
+      );
+      await setSanctionedGeoAreaValidity(candidate, false);
+      return false;
+    }
+
+    await setSanctionedGeoAreaValidity(candidate, true);
+    return true;
   } catch (e) {
     logger.error(
       `Error checking location for sanctions: ${e}`,

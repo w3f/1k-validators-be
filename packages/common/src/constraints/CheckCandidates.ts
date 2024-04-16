@@ -131,7 +131,7 @@ export const checkCandidate = async (
     }
 
     const sanctionedGeoAreaValid =
-      constraints.config?.constraints?.skipSanctionedGeoArea == true
+      constraints.config?.constraints?.sanctionedGeoArea?.skip == true
         ? true
         : (await checkSanctionedGeoArea(constraints.config, candidate)) ||
           false;
@@ -152,10 +152,10 @@ export const checkCandidate = async (
       beefyValid &&
       sanctionedGeoAreaValid;
 
-    await setValid(candidate.stash, valid);
+    await setValid(candidate, valid);
 
     if (valid) {
-      await setLastValid(candidate.stash);
+      await setLastValid(candidate);
     }
     return valid;
   } catch (e) {

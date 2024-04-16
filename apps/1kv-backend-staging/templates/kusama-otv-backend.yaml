@@ -60,7 +60,12 @@ spec:
                   "skipUnclaimed": true,
                   "minSelfStake": 10000000000000,
                   "commission": 150000000,
-                  "unclaimedEraThreshold": 4
+                  "unclaimedEraThreshold": 4,
+                  "sanctionedGeoArea": {
+                    "skip": true,
+                    "sanctionedCountries": ["XXX"],
+                    "sanctionedRegions": ["XXX" ]
+                  }
                 },
                 "cron": {
                   "monitor": "0 */15 * * * *",
@@ -123,5 +128,14 @@ spec:
                     "Contabo GmbH"
                   ],
                   "host": "wss://telemetry-backend.w3f.community/feed"
+                },
+                "logger": {
+                  "level": "info",
+                  "excludedLabels": [
+                    "Telemetry",
+                    "Location",
+                    "Block",
+                    "Gateway"
+                  ]
                 }
               }

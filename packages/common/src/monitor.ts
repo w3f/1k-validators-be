@@ -2,6 +2,7 @@ import { Octokit } from "@octokit/rest";
 import semver from "semver";
 
 import { logger, queries } from "./index";
+import { monitorLabel } from "./scorekeeper/jobs/specificJobs";
 
 type TaggedRelease = {
   name: string;
@@ -46,7 +47,7 @@ export default class Monitor {
       });
 
       // Get the last release
-      latestRelease = filteredReleases[filteredReleases.length - 1];
+      latestRelease = filteredReleases[filteredReleases?.length - 1];
     } catch (e) {
       logger.info(JSON.stringify(e));
       logger.info(
@@ -54,57 +55,67 @@ export default class Monitor {
       );
     }
 
-    if (!latestRelease) return null;
-    const { tag_name, published_at } = latestRelease;
-    const publishedAt = new Date(published_at).getTime();
+    try {
+      if (!latestRelease) return null;
+      const { tag_name, published_at } = latestRelease;
+      const publishedAt = new Date(published_at).getTime();
 
-    // Extract version number from the tag name
-    const versionMatch = tag_name.match(/v?(\d+\.\d+\.\d+)/);
-    if (!versionMatch) {
-      logger.warn(`Unable to extract version from tag name: ${tag_name}`);
+      // Extract version number from the tag name
+      const versionMatch = tag_name.match(/v?(\d+\.\d+\.\d+)/);
+      if (!versionMatch) {
+        logger.warn(`Unable to extract version from tag name: ${tag_name}`);
+        return null;
+      }
+      const version = versionMatch[1];
+
+      await queries.setRelease(version, publishedAt);
+
+      if (
+        this.latestTaggedRelease &&
+        version === this.latestTaggedRelease!.name
+      ) {
+        logger.info("(Monitor::getLatestTaggedRelease) No new release found");
+        return null;
+      }
+
+      this.latestTaggedRelease = {
+        name: version,
+        publishedAt,
+      };
+
+      logger.info(
+        `(Monitor::getLatestTaggedRelease) Latest release updated: ${version} | Published at: ${publishedAt}`,
+      );
+
+      return this.latestTaggedRelease;
+    } catch (e) {
+      logger.error(`(Monitor::getLatestTaggedRelease) Error: ${e}`);
       return null;
     }
-    const version = versionMatch[1];
-
-    await queries.setRelease(version, publishedAt);
-
-    if (
-      this.latestTaggedRelease &&
-      version === this.latestTaggedRelease!.name
-    ) {
-      logger.info("(Monitor::getLatestTaggedRelease) No new release found");
-      return null;
-    }
-
-    this.latestTaggedRelease = {
-      name: version,
-      publishedAt,
-    };
-
-    logger.info(
-      `(Monitor::getLatestTaggedRelease) Latest release updated: ${version} | Published at: ${publishedAt}`,
-    );
-
-    return this.latestTaggedRelease;
   }
 
   // Function to compare version numbers
   public compareVersions(versionA, versionB) {
-    const partsA = versionA.split(".").map((part) => parseInt(part, 10));
-    const partsB = versionB.split(".").map((part) => parseInt(part, 10));
+    try {
+      const partsA = versionA.split(".").map((part) => parseInt(part, 10));
+      const partsB = versionB.split(".").map((part) => parseInt(part, 10));
 
-    for (let i = 0; i < Math.max(partsA.length, partsB.length); i++) {
-      const partA = partsA[i] || 0;
-      const partB = partsB[i] || 0;
+      for (let i = 0; i < Math.max(partsA?.length, partsB?.length); i++) {
+        const partA = partsA[i] || 0;
+        const partB = partsB[i] || 0;
 
-      if (partA < partB) {
-        return -1;
-      } else if (partA > partB) {
-        return 1;
+        if (partA < partB) {
+          return -1;
+        } else if (partA > partB) {
+          return 1;
+        }
       }
-    }
 
-    return 0; // Versions are equal
+      return 0; // Versions are equal
+    } catch (e) {
+      logger.error(`Error comparing versions: ${e}`, monitorLabel);
+      return null;
+    }
   }
 
   /// Ensures that nodes have upgraded within a `grace` period.

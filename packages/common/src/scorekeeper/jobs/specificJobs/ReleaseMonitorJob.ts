@@ -1,4 +1,4 @@
-import { logger } from "../../../index";
+import { logger, queries } from "../../../index";
 import { Job, JobConfig, JobRunnerMetadata, JobStatus } from "../JobsClass";
 import { JobNames } from "../JobConfigs";
 import { jobStatusEmitter } from "../../../Events";
@@ -42,9 +42,12 @@ export const getLatestTaggedRelease = async () => {
         // Compare version numbers
         return compareVersions(versionA, versionB);
       });
+      // logger.info(JSON.stringify(filteredReleases[0]));
+      // logger.info(JSON.stringify(filteredReleases[0].tag_name));
 
       // Get the last release
-      latestRelease = filteredReleases[filteredReleases.length - 1];
+      latestRelease = filteredReleases[filteredReleases?.length - 1];
+      logger.info(JSON.stringify(latestRelease.tag_name));
     } catch (e) {
       logger.info(JSON.stringify(e));
       logger.info(
@@ -63,6 +66,7 @@ export const getLatestTaggedRelease = async () => {
       return null;
     }
     const version = versionMatch[1];
+    await queries.setRelease(version, publishedAt);
 
     const end = Date.now();
 
@@ -86,19 +90,24 @@ export const processReleaseMonitorJob = async (job: any) => {
 };
 
 export const compareVersions = (versionA, versionB) => {
-  const partsA = versionA.split(".").map((part) => parseInt(part, 10));
-  const partsB = versionB.split(".").map((part) => parseInt(part, 10));
+  try {
+    const partsA = versionA.split(".").map((part) => parseInt(part, 10));
+    const partsB = versionB.split(".").map((part) => parseInt(part, 10));
 
-  for (let i = 0; i < Math.max(partsA.length, partsB.length); i++) {
-    const partA = partsA[i] || 0;
-    const partB = partsB[i] || 0;
+    for (let i = 0; i < Math.max(partsA?.length, partsB?.length); i++) {
+      const partA = partsA[i] || 0;
+      const partB = partsB[i] || 0;
 
-    if (partA < partB) {
-      return -1;
-    } else if (partA > partB) {
-      return 1;
+      if (partA < partB) {
+        return -1;
+      } else if (partA > partB) {
+        return 1;
+      }
     }
-  }
 
-  return 0; // Versions are equal
+    return 0; // Versions are equal
+  } catch (e) {
+    logger.error(`Error comparing versions: ${e}`, monitorLabel);
+    return null;
+  }
 };

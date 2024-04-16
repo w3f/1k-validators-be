@@ -17,7 +17,7 @@ spec:
   source:
     repoURL: https://w3f.github.io/helm-charts/
     chart: otv-backend
-    targetRevision: v3.1.14
+    targetRevision: v3.1.15
     plugin:
       env:
         - name: HELM_VALUES
@@ -58,7 +58,8 @@ spec:
                   "skipUnclaimed": true,
                   "minSelfStake": 10000000000000,
                   "commission": 150000000,
-                  "unclaimedEraThreshold": 4
+                  "unclaimedEraThreshold": 4,
+                  "forceClientVersion": "v1.10.0"
                 },
                 "cron": {
                   "monitor": "0 */15 * * * *",

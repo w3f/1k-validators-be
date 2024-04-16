@@ -60,7 +60,8 @@ spec:
                   "skipUnclaimed": true,
                   "minSelfStake": 10000000000000,
                   "commission": 150000000,
-                  "unclaimedEraThreshold": 4
+                  "unclaimedEraThreshold": 4,
+                  "forceClientVersion": "v1.10.0"
                 },
                 "cron": {
                   "monitor": "0 */15 * * * *",

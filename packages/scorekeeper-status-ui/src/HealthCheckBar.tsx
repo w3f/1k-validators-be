@@ -6,7 +6,8 @@ import {
   FiClock,
   FiInfo,
   FiWifi,
-} from "react-icons/fi"; // Added FiClock for the uptime icon
+} from "react-icons/fi";
+import { REFRESH_INTERVAL } from "./Constants"; // Added FiClock for the uptime icon
 
 const HealthCheckBar = ({ currentEndpoint }) => {
   const [healthData, setHealthData] = useState({
@@ -28,7 +29,7 @@ const HealthCheckBar = ({ currentEndpoint }) => {
       }
     };
 
-    const interval = setInterval(fetchHealthData, 5000);
+    const interval = setInterval(fetchHealthData, REFRESH_INTERVAL);
     return () => clearInterval(interval);
   }, [currentEndpoint]);
 

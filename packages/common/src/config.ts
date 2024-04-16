@@ -31,6 +31,7 @@ export type ConfigSchema = {
     minSelfStake: number;
     commission: number;
     unclaimedEraThreshold: number;
+    enableKYC: boolean;
   };
   cron: {
     monitor: string;

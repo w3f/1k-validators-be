@@ -88,6 +88,7 @@ export enum InvalidityReasonType {
   KUSAMA_RANK = "KUSAMA_RANK",
   PROVIDER = "PROVIDER",
   BEEFY = "BEEFY",
+  KYC = "KYC",
 }
 
 export interface InvalidityReason {

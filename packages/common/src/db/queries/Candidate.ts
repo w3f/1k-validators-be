@@ -1053,6 +1053,21 @@ export const setBeefyKeysInvalidity = async (
   );
 };
 
+export const setKYCInvalidity = async (
+  candidate: Candidate,
+  isValid: boolean,
+  message?: string,
+): Promise<void> => {
+  const invalidityMessage = message ? message : `${candidate.name} is not KYC`;
+  setCandidateInvalidity(
+    candidate,
+    InvalidityReasonType.KYC,
+    isValid,
+    invalidityMessage,
+    true,
+  );
+};
+
 // Sets valid boolean for node
 export const setValid = async (
   candidate: Candidate,

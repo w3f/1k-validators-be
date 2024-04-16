@@ -35,25 +35,34 @@ export const setCandidateInvalidity = async (
 ) => {
   if (skipIfNoData && !isCandidateInvaliditySet(candidate)) return;
 
-  const invalidityReasons = filterCandidateInvalidityFields(
-    candidate,
-    invalidityType,
-  );
+  const invalidityReason: InvalidityReason = {
+    valid: isValid,
+    type: invalidityType,
+    updated: Date.now(),
+    details: isValid ? "" : `${invalidityMessage}`,
+  };
 
-  await CandidateModel.findOneAndUpdate(
+  await CandidateModel.updateOne(
     {
       slotId: candidate.slotId,
+      "invalidity.type": invalidityType,
     },
     {
-      invalidity: [
-        ...invalidityReasons,
-        {
-          valid: isValid,
-          type: invalidityType,
-          updated: Date.now(),
-          details: isValid ? "" : `${invalidityMessage}`,
-        },
-      ],
+      $set: {
+        "invalidity.$": invalidityReason,
+      },
+    },
+  ).exec();
+
+  await CandidateModel.updateOne(
+    {
+      slotId: candidate.slotId,
+      "invalidity.type": { $ne: invalidityType },
+    },
+    {
+      $push: {
+        invalidity: invalidityReason,
+      },
     },
   ).exec();
 };

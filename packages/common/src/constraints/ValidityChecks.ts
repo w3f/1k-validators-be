@@ -446,13 +446,13 @@ export const checkSanctionedGeoArea = async (
       !config.constraints?.sanctionedGeoArea?.sanctionedCountries?.length &&
       !config.constraints?.sanctionedGeoArea?.sanctionedRegions?.length
     ) {
-      setSanctionedGeoAreaValidity(candidate, true);
+      await setSanctionedGeoAreaValidity(candidate, true);
       return true;
     }
 
     const location = await queries.getCandidateLocation(candidate.slotId);
     if (!location?.region || !location?.country) {
-      setSanctionedGeoAreaValidity(candidate, true);
+      await setSanctionedGeoAreaValidity(candidate, true);
       return true;
     }
 

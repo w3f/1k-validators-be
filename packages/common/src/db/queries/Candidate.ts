@@ -339,7 +339,7 @@ export const getIdentityAddresses = async (
 export const setCandidateOnlineValid = async (
   candidate: Candidate,
 ): Promise<void> => {
-  setCandidateInvalidity(candidate, InvalidityReasonType.ONLINE, true);
+  await setCandidateInvalidity(candidate, InvalidityReasonType.ONLINE, true);
 
   await CandidateModel.findOneAndUpdate(
     {
@@ -355,7 +355,7 @@ export const setCandidateOnlineNotValid = async (
   candidate: Candidate,
 ): Promise<void> => {
   const invalidityMessage = `Candidate ${candidate.name} offline. Offline since ${Date.now()}.`;
-  setCandidateInvalidity(
+  await setCandidateInvalidity(
     candidate,
     InvalidityReasonType.ONLINE,
     false,
@@ -827,7 +827,7 @@ export const setOnlineValidity = async (
 ): Promise<void> => {
   const candidate = await getCandidateBySlotId(slotId);
   const invalidityMessage = `${candidate.name} offline. Last seen online ${candidate.onlineSince}.`;
-  setCandidateInvalidity(
+  await setCandidateInvalidity(
     candidate,
     InvalidityReasonType.ONLINE,
     isValid,
@@ -841,7 +841,7 @@ export const setValidateIntentionValidity = async (
   isValid: boolean,
 ): Promise<void> => {
   const invalidityMessage = `${candidate.name} does not have a validate intention.`;
-  setCandidateInvalidity(
+  await setCandidateInvalidity(
     candidate,
     InvalidityReasonType.VALIDATE_INTENTION,
     isValid,
@@ -855,7 +855,7 @@ export const setLatestClientReleaseValidity = async (
   isValid: boolean,
 ): Promise<void> => {
   const invalidityMessage = `${candidate.name} is not on the latest client version`;
-  setCandidateInvalidity(
+  await setCandidateInvalidity(
     candidate,
     InvalidityReasonType.CLIENT_UPGRADE,
     isValid,
@@ -870,7 +870,7 @@ export const setConnectionTimeInvalidity = async (
   isValid: boolean,
 ): Promise<void> => {
   const invalidityMessage = `${candidate.name} has not been connected for minimum length`;
-  setCandidateInvalidity(
+  await setCandidateInvalidity(
     candidate,
     InvalidityReasonType.CONNECTION_TIME,
     isValid,
@@ -888,7 +888,7 @@ export const setIdentityInvalidity = async (
   const invalidityMessage = message
     ? message
     : `${candidate.name} has not properly set their identity`;
-  setCandidateInvalidity(
+  await setCandidateInvalidity(
     candidate,
     InvalidityReasonType.IDENTITY,
     isValid,
@@ -903,7 +903,7 @@ export const setOfflineAccumulatedInvalidity = async (
   isValid: boolean,
 ): Promise<void> => {
   const invalidityMessage = `${candidate.name} has been offline ${candidate.offlineAccumulated / 1000 / 60} minutes this week.`;
-  setCandidateInvalidity(
+  await setCandidateInvalidity(
     candidate,
     InvalidityReasonType.ACCUMULATED_OFFLINE_TIME,
     isValid,
@@ -919,7 +919,7 @@ export const setRewardDestinationInvalidity = async (
   isValid: boolean,
 ): Promise<void> => {
   const invalidityMessage = `${candidate.name} does not have reward destination as Staked`;
-  setCandidateInvalidity(
+  await setCandidateInvalidity(
     candidate,
     InvalidityReasonType.REWARD_DESTINATION,
     isValid,
@@ -937,7 +937,7 @@ export const setCommissionInvalidity = async (
   const invalidityMessage = message
     ? message
     : `${candidate.name} has not properly set their commission`;
-  setCandidateInvalidity(
+  await setCandidateInvalidity(
     candidate,
     InvalidityReasonType.COMMISION,
     isValid,
@@ -955,7 +955,7 @@ export const setSelfStakeInvalidity = async (
   const invalidityMessage = message
     ? message
     : `${candidate.name} has not properly bonded enough self stake`;
-  setCandidateInvalidity(
+  await setCandidateInvalidity(
     candidate,
     InvalidityReasonType.SELF_STAKE,
     isValid,
@@ -973,7 +973,7 @@ export const setUnclaimedInvalidity = async (
   const invalidityMessage = message
     ? message
     : `${candidate.name} has not properly claimed era rewards`;
-  setCandidateInvalidity(
+  await setCandidateInvalidity(
     candidate,
     InvalidityReasonType.UNCLAIMED_REWARDS,
     isValid,
@@ -991,7 +991,7 @@ export const setBlockedInvalidity = async (
   const invalidityMessage = message
     ? message
     : `${candidate.name} blocks external nominations`;
-  setCandidateInvalidity(
+  await setCandidateInvalidity(
     candidate,
     InvalidityReasonType.BLOCKED,
     isValid,
@@ -1009,7 +1009,7 @@ export const setProviderInvalidity = async (
   const invalidityMessage = message
     ? message
     : `${candidate.name} has banned infrastructure provider`;
-  setCandidateInvalidity(
+  await setCandidateInvalidity(
     candidate,
     InvalidityReasonType.PROVIDER,
     isValid,
@@ -1027,7 +1027,7 @@ export const setKusamaRankInvalidity = async (
   const invalidityMessage = message
     ? message
     : `${candidate.name} has not properly claimed era rewards`;
-  setCandidateInvalidity(
+  await setCandidateInvalidity(
     candidate,
     InvalidityReasonType.KUSAMA_RANK,
     isValid,
@@ -1044,12 +1044,26 @@ export const setBeefyKeysInvalidity = async (
   const invalidityMessage = message
     ? message
     : `${candidate.name} does not have beefy keys`;
-  setCandidateInvalidity(
+  await setCandidateInvalidity(
     candidate,
     InvalidityReasonType.BEEFY,
     isValid,
     invalidityMessage,
     true,
+  );
+};
+
+// Set Sanctions Validity Status
+export const setSanctionedGeoAreaValidity = async (
+  candidate: Candidate,
+  isValid: boolean,
+): Promise<void> => {
+  const invalidityMessage = `${candidate.name} in sanctioned area.`;
+  await setCandidateInvalidity(
+    candidate,
+    InvalidityReasonType.SANCTIONED_GEO_AREA,
+    isValid,
+    invalidityMessage,
   );
 };
 

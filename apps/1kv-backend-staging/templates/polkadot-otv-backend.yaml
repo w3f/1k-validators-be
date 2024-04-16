@@ -64,7 +64,8 @@ spec:
                     "skip": true,
                     "sanctionedCountries": ["XXX"],
                     "sanctionedRegions": ["XXX" ]
-                  }
+                  },
+                  "forceClientVersion": "v1.10.0"
                 },
                 "cron": {
                   "monitor": "0 */15 * * * *",

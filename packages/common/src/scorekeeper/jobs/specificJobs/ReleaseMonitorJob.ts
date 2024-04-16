@@ -42,8 +42,6 @@ export const getLatestTaggedRelease = async () => {
         // Compare version numbers
         return compareVersions(versionA, versionB);
       });
-      // logger.info(JSON.stringify(filteredReleases[0]));
-      // logger.info(JSON.stringify(filteredReleases[0].tag_name));
 
       // Get the last release
       latestRelease = filteredReleases[filteredReleases?.length - 1];

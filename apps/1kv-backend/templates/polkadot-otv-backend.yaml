@@ -17,7 +17,7 @@ spec:
   source:
     repoURL: https://w3f.github.io/helm-charts/
     chart: otv-backend
-    targetRevision: v3.1.16
+    targetRevision: v3.2.0
     plugin:
       env:
         - name: HELM_VALUES
@@ -58,6 +58,11 @@ spec:
                   "minSelfStake": 50000000000000,
                   "commission": 50000000,
                   "unclaimedEraThreshold": 1,
+                  "sanctionedGeoArea": {
+                    "skip": true,
+                    "sanctionedCountries": ["XXX"],
+                    "sanctionedRegions": ["XXX" ]
+                  },
                   "forceClientVersion": "v1.10.0"
                 },
                 "cron": {

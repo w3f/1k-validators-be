@@ -18,7 +18,12 @@
     "skipUnclaimed": true,
     "minSelfStake": 50000000000000,
     "commission": 50000000,
-    "unclaimedEraThreshold": 1
+    "unclaimedEraThreshold": 1,
+    "sanctionedGeoArea": {
+      "skip": false,
+      "sanctionedCountries": ["XXX"],
+      "sanctionedRegions": ["XXX"]
+    }
   },
   "cron": {
     "monitorEnabled": true,

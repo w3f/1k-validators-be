@@ -61,6 +61,11 @@ spec:
                   "minSelfStake": 10000000000000,
                   "commission": 150000000,
                   "unclaimedEraThreshold": 4,
+                  "sanctionedGeoArea": {
+                    "skip": true,
+                    "sanctionedCountries": ["XXX"],
+                    "sanctionedRegions": ["XXX" ]
+                  },
                   "forceClientVersion": "v1.10.0"
                 },
                 "cron": {

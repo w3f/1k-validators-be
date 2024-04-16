@@ -15,6 +15,7 @@ import {
   setSelfStakeInvalidity,
   setUnclaimedInvalidity,
   setValidateIntentionValidity,
+  setSanctionedGeoAreaValidity,
 } from "../db";
 import { ChainData, Config, Constants, queries, Util } from "../index";
 import axios from "axios";
@@ -431,6 +432,64 @@ export const checkBeefyKeys = async (
     }
   } catch (e) {
     logger.warn(`Error trying to get beefy keys...`, constraintsLabel);
+    throw new Error("could not make validity check");
+  }
+};
+
+// Checks if the candidate is in a sanctioned location
+export const checkSanctionedGeoArea = async (
+  config: Config.ConfigSchema,
+  candidate: Candidate,
+): Promise<boolean> => {
+  try {
+    if (
+      !config.constraints?.sanctionedGeoArea?.sanctionedCountries?.length &&
+      !config.constraints?.sanctionedGeoArea?.sanctionedRegions?.length
+    ) {
+      await setSanctionedGeoAreaValidity(candidate, true);
+      return true;
+    }
+
+    const location = await queries.getCandidateLocation(candidate.slotId);
+    if (!location?.region || !location?.country) {
+      await setSanctionedGeoAreaValidity(candidate, true);
+      return true;
+    }
+
+    const sanctionedCountries = config.constraints?.sanctionedGeoArea
+      ?.sanctionedCountries
+      ? config.constraints.sanctionedGeoArea.sanctionedCountries.map((x) =>
+          x.trim().toLowerCase(),
+        )
+      : [];
+    const sanctionedRegions = config.constraints?.sanctionedGeoArea
+      ?.sanctionedRegions
+      ? config.constraints.sanctionedGeoArea.sanctionedRegions.map((x) =>
+          x.trim().toLowerCase(),
+        )
+      : [];
+
+    if (
+      sanctionedCountries.includes(location.country.trim().toLowerCase()) ||
+      sanctionedRegions.includes(location.region.trim().toLowerCase())
+    ) {
+      logger.info(
+        `${candidate.name} is in a sanctioned location: Country: ${location.country}, Region: ${location.region}`,
+        {
+          label: "Constraints",
+        },
+      );
+      await setSanctionedGeoAreaValidity(candidate, false);
+      return false;
+    }
+
+    await setSanctionedGeoAreaValidity(candidate, true);
+    return true;
+  } catch (e) {
+    logger.error(
+      `Error checking location for sanctions: ${e}`,
+      constraintsLabel,
+    );
     throw new Error("could not make validity check");
   }
 };

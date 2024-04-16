@@ -61,7 +61,7 @@ spec:
                   "commission": 50000000,
                   "unclaimedEraThreshold": 1,
                   "sanctionedGeoArea": {
-                    "skip": false,
+                    "skip": true,
                     "sanctionedCountries": ["XXX"],
                     "sanctionedRegions": ["XXX" ]
                   }

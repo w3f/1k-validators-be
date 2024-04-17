@@ -61,9 +61,9 @@ spec:
                   "commission": 50000000,
                   "unclaimedEraThreshold": 1,
                   "sanctionedGeoArea": {
-                    "skip": true,
-                    "sanctionedCountries": ["XXX"],
-                    "sanctionedRegions": ["XXX" ]
+                    "skip": false,
+                    "sanctionedCountries": ["RU", "IR", "CU", "KP", "SY"],
+                    "sanctionedRegions": ["Crimea", "Autonomous Republic of Crimea", "Republic of Crimea", "Luhansk", "Luhanska Oblast", "Luhanska", "Luganskaya Oblast’", "Luganskaya", "Donetsk", "Donetska Oblast", "Donetskaya Oblast’", "Donetska", "Donetskaya", "Sevastopol City", "Sevastopol", "Gorod Sevastopol"]
                   },
                   "forceClientVersion": "v1.10.0"
                 },

@@ -1,6 +1,7 @@
 node_modules
 yarn-error.log
 package-lock.json
+!/docs/package-lock.json
 config/main.json
 config/secret.json
 *.db

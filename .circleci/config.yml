@@ -24,7 +24,7 @@ jobs:
 
   checkCoreESLint:
     docker:
-      - image: node:18
+      - image: node:21
     resource_class: large
     steps:
       - checkout

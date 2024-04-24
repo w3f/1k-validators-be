@@ -3094,7 +3094,7 @@
       "name": "BlockAndWhite",
       "stash": "CwPFXLx7NmPRsQyAFTBscxK7Ph1sJ9Ngekc6rXMxTwdw5PZ",
       "riotHandle": "@cristi_an_m:matrix.org",
-      "kyc": false
+      "kyc": true
     },
     {
       "slotId": 442,

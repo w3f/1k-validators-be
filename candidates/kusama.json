@@ -6347,6 +6347,13 @@
       "stash": "Eyb4bzFYhDakodXRMe9YjdvBRRhSYvrkeGyWZebHxxaRvtU",
       "riotHandle": "@maxhodl:matrix.org",
       "kyc": true
+    },
+    {
+      "slotId": 910,
+      "name": "eagle",
+      "stash": "Ez8y1UdrjnPxaXKCAARhwzZuATxLYvjKJZjibeFq9rXQSWX",
+      "riotHandle": "@eagle-node:matrix.org",
+      "kyc": true
     }
   ]
 }

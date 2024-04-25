@@ -110,7 +110,7 @@
       "name": "🥩 Staking4All 🥩",
       "stash": "GTUi6r2LEsf71zEQDnBvBvKskQcWvK66KRqcRbdmcczaadr",
       "riotHandle": "@staking4all:matrix.org",
-      "kyc": false
+      "kyc": true
     },
     {
       "slotId": 16,

@@ -187,10 +187,10 @@ export const getValidatorActiveEras = async (
 // return the number of eras
 export const getIdentityValidatorActiveEras = async (
   address: string,
+  validatorSets: ValidatorSet[],
 ): Promise<number> => {
   const identityAddresses = await getIdentityAddresses(address);
   let count = 0;
-  const validatorSets = await getAllValidatorSets();
   for (const era of validatorSets) {
     if (
       era.validators.some((validator) => identityAddresses.includes(validator))

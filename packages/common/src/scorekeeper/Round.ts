@@ -76,10 +76,11 @@ export const startRound = async (
 
   // Get all Candidates and set validity
   const allCandidates = await queries.allCandidates();
+  const validators = await chaindata.getValidators();
 
   // Set Validity
   for (const [index, candidate] of allCandidates.entries()) {
-    const isValid = await constraints.checkCandidate(candidate);
+    const isValid = await constraints.checkCandidate(candidate, validators);
 
     const progress = Math.floor((index / allCandidates.length) * 100);
     jobStatusEmitter.emit("jobProgress", {

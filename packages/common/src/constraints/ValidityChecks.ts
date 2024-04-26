@@ -44,7 +44,6 @@ export const checkOnline = async (candidate: Candidate): Promise<boolean> => {
 // Check the validate intention for a single validator
 export const checkValidateIntention = async (
   config: Config.ConfigSchema,
-  chaindata: ChainData,
   candidate: Candidate,
   validators: string[],
 ): Promise<boolean> => {

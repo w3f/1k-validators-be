@@ -65,15 +65,17 @@ export const autoNumNominations = async (
     );
 
   // Query the staking info of the validator set
-  const query = await api?.derive.staking.electedInfo();
-  const { info } = query;
+  const { info } = await api?.derive.staking.electedInfo({
+    withExposureMeta: true,
+  });
 
   const totalStakeAmounts = [];
 
   // add formatted totals to list
   for (const validator of info) {
-    const { exposure } = validator;
-    const { total, own, others } = exposure;
+    const { exposureMeta } = validator;
+    if (!exposureMeta?.isSome) continue;
+    const { total } = exposureMeta.value;
 
     const totalValue = total.unwrap();
 

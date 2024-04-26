@@ -120,6 +120,7 @@ describe("setValidatorRanks", () => {
 
     const subNumEras = await getIdentityValidatorActiveEras(
       "HkJjBkX8fPBFJvTtAbUDKWZSsMrNFuMc7TrT8BqVS5YhZXg",
+      validatorSets,
     );
     expect(subNumEras).toBe(5);
 

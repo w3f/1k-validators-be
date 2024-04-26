@@ -34,7 +34,6 @@ export const checkCandidate = async (
 
     const validateValid = await checkValidateIntention(
       constraints.config,
-      constraints.chaindata,
       candidate,
       validators,
     );
@@ -64,7 +63,10 @@ export const checkCandidate = async (
       );
     }
 
-    const identityValid = await checkIdentity(constraints.chaindata, candidate);
+    const identityValid =
+      constraints.config?.constraints?.skipIdentity == true
+        ? true
+        : (await checkIdentity(constraints.chaindata, candidate)) || false;
     if (!identityValid) {
       logger.info(`${candidate.name} identity not valid`, constraintsLabel);
     }

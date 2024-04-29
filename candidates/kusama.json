@@ -183,27 +183,6 @@
       "kyc": false
     },
     {
-      "slotId": 26,
-      "name": "stakethat",
-      "stash": "DAUrb4UVvwpYxbx6jTVqMquCW2QuafKcFCkgEpnYBcbwaRQ",
-      "riotHandle": "@andreisid:matrix.org",
-      "kyc": false
-    },
-    {
-      "slotId": 27,
-      "name": "clockchain",
-      "stash": "GHiteLMW6qa4s1MU4pUNvxu2vWEpPJwqEpn1SVJCzEBSE7Y",
-      "riotHandle": "@clockchain:matrix.org",
-      "kyc": false
-    },
-    {
-      "slotId": 28,
-      "name": "StakeTomato",
-      "stash": "EkpjJUusZu4FZxzC1EyYxoyCxKVGKAd5aEygoF38tqSv3C3",
-      "riotHandle": "@ade007:matrix.org",
-      "kyc": false
-    },
-    {
       "slotId": 29,
       "name": "KUSAMAPROPHET",
       "stash": "HKnRS3RryHjzTHGu42u6BtVp2cNuYoRVnrUJGeRAKqagsKY",
@@ -330,13 +309,6 @@
       "kyc": false
     },
     {
-      "slotId": 47,
-      "name": "rocknode",
-      "stash": "EUviNVqJCsvWaKnSHdqyVQQaJB5zQv6szGKUdPKK1dsBvcn",
-      "riotHandle": "@rocknode:matrix.org",
-      "kyc": false
-    },
-    {
       "slotId": 48,
       "name": "🏢 Ministry Of Blocks 🏢",
       "stash": "D2r9AudNkHHpKfGtS5rpVHkchBoBhRsR6TmNcTuU4yiTp6w",
@@ -432,13 +404,6 @@
       "name": "Ethical Validators 0",
       "stash": "DbDAmhLFMhSQkZjnmAYjSktubPiSYKs6ubGtUmt5uC4eHzm",
       "riotHandle": "@evaluators:matrix.org",
-      "kyc": false
-    },
-    {
-      "slotId": 62,
-      "name": "blockzilla",
-      "stash": "EJi7cj4VsdyJvEXnyLptuh8pWQ2ycswHTsGui3AbfhStuyT",
-      "riotHandle": "@blockzilla.team:matrix.org",
       "kyc": false
     },
     {
@@ -3216,13 +3181,6 @@
       "kyc": false
     },
     {
-      "slotId": 459,
-      "name": "SIGNY9",
-      "stash": "E53UnBMiLVW2EABseyk3oAtXTJcq7zkrU8RbjEVRUTGLH9f",
-      "riotHandle": "@signy9:matrix.org",
-      "kyc": false
-    },
-    {
       "slotId": 460,
       "name": "BlockCtrl",
       "stash": "FALhH3XMMbXiKoG6u9XS8CJuxiA2eKA2HFn4oh3JpfwvBNF",
@@ -3332,13 +3290,6 @@
       "name": "yevhen Validator",
       "stash": "GaBaRT2R67TW8QxZtN7S4EUXMh5viYY2q6xiLoDcxodfzmq",
       "riotHandle": "@yevhenbasarab:matrix.org",
-      "kyc": false
-    },
-    {
-      "slotId": 477,
-      "name": "summerstake",
-      "stash": "Gh86VtoTd3c5fGvCjSRhymndg8AUpR4NZAit8XVGCv985Wf",
-      "riotHandle": "@summerstak3:matrix.org",
       "kyc": false
     },
     {
@@ -3976,13 +3927,6 @@
       "name": "STAVR",
       "stash": "GWXg67Kn4zo3PTwAf51n4oNdvHzjEAtfZLmbM2a8LairgQV",
       "riotHandle": "@STAVR:matrix.org",
-      "kyc": false
-    },
-    {
-      "slotId": 571,
-      "name": "S10_Validator",
-      "stash": "EtSjDd392rQQrq4AHuEFk7Mov36cSTypWycm7YAoHaMv42N",
-      "riotHandle": "@velana:matrix.org",
       "kyc": false
     },
     {
@@ -4998,13 +4942,6 @@
       "kyc": false
     },
     {
-      "slotId": 718,
-      "name": "Uvo technology",
-      "stash": "DrnTwdksJxzKQx3kb7NXuWYGy4o8Uama3hiNvzcNBnj9LkZ",
-      "riotHandle": "@uvotech:matrix.org",
-      "kyc": false
-    },
-    {
       "slotId": 719,
       "name": "wdmaster",
       "stash": "HZsquaFQ3rhBxBgEokxE4ea9gqpj2ZCyZGyXDojH8JYDuzS",
@@ -5495,13 +5432,6 @@
       "kyc": false
     },
     {
-      "slotId": 790,
-      "name": "Block shield",
-      "stash": "DJYUrEpahAbXjQbrz9fYTZRHxVEGRyBC5iu6UFXfwqdczxP",
-      "riotHandle": "@blockshield:matrix.org",
-      "kyc": true
-    },
-    {
       "slotId": 791,
       "name": "Aqupidhappy-K-1",
       "stash": "CrmeF1REyE6B5oWYBZnewb8FZ9QcwdvNwRQimLepCt6fuBn",
@@ -5733,62 +5663,6 @@
       "kyc": true
     },
     {
-      "slotId": 824,
-      "name": "Link swap-1",
-      "stash": "DgJcKVBc2RLwS3NYiSKRZjNCi1H8vMm7R6Kdaot5VXohK3n",
-      "riotHandle": "@dmitryevens:matrix.org",
-      "kyc": true
-    },
-    {
-      "slotId": 825,
-      "name": "Link swap",
-      "stash": "F9tiZuYF4Z6X1nC8ca5gv5xEzBRMzbRkC2wcfNRPmzcTBiu",
-      "riotHandle": "@dmitryevens:matrix.org",
-      "kyc": true
-    },
-    {
-      "slotId": 826,
-      "name": "Dot Plus",
-      "stash": "HsZAnvbJvdXuQg4GSToQPYrtVWKbpCutSRuHzZDmPFgYf2N",
-      "riotHandle": "@plussik:matrix.org",
-      "kyc": true
-    },
-    {
-      "slotId": 827,
-      "name": "Dot Plus/1",
-      "stash": "G9fk8vjk2eiy65mQjog8MgPuLAHjjnagv4ixVzY7zRiEu3Z",
-      "riotHandle": "@plussik:matrix.org",
-      "kyc": true
-    },
-    {
-      "slotId": 828,
-      "name": "Alscalable",
-      "stash": "HNUv11N4oKJrRQuj4pZsDMoBRUpRR8twv23wSjhdrwqRMLJ",
-      "riotHandle": "@alicebablle:matrix.org",
-      "kyc": true
-    },   
-    {
-      "slotId": 829,
-      "name": "Alscalable-02",
-      "stash": "ErJr4EedgdiHqTN8EjwAoMfXoCfESdfTnnUTzrHDJuNf5no",
-      "riotHandle": "@alicebablle:matrix.org",
-      "kyc": true
-    },   
-    {
-      "slotId": 830,
-      "name": "Block Breaker",
-      "stash": "EkjQQVVvvEDUqvcFU7VNn2tVGTL26HJtQMCCKinxsa9Fhkf",
-      "riotHandle": "@blockbreaker:matrix.org",
-      "kyc": true
-    },   
-    {
-      "slotId": 831,
-      "name": "Block Breaker-1",
-      "stash": "EMgS54i8ABLNwcGNXxrXHxyrhbWtmKXodGHHvw1o3ifUk4F",
-      "riotHandle": "@blockbreaker:matrix.org",
-      "kyc": true
-    },
-    {
       "slotId": 832,
       "name": "Coin collectors",
       "stash": "HjTtz2xV4T3z3HFJhrkgjy4Lafe1tufqZ4X9YzPiLzaUPtJ",
@@ -5807,13 +5681,6 @@
       "name": "ToTheMars",
       "stash": "HZJ2qAYW5LSsR4ixpKPNNCm4dbyC8Lv1zHAcqTVLvfz5779",
       "riotHandle": "@tothemars1:matrix.org",
-      "kyc": true
-    },
-    {
-      "slotId": 835,
-      "name": "Block shield-2",
-      "stash": "G28CD89C2iv7FiYDge4GMLQXGo1vNj4EAssVoWPLjCFJn47",
-      "riotHandle": "@blockshield:matrix.org",
       "kyc": true
     },
     {

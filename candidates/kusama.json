@@ -110,7 +110,7 @@
       "name": "🥩 Staking4All 🥩",
       "stash": "GTUi6r2LEsf71zEQDnBvBvKskQcWvK66KRqcRbdmcczaadr",
       "riotHandle": "@staking4all:matrix.org",
-      "kyc": false
+      "kyc": true
     },
     {
       "slotId": 16,
@@ -3059,7 +3059,7 @@
       "name": "BlockAndWhite",
       "stash": "CwPFXLx7NmPRsQyAFTBscxK7Ph1sJ9Ngekc6rXMxTwdw5PZ",
       "riotHandle": "@cristi_an_m:matrix.org",
-      "kyc": false
+      "kyc": true
     },
     {
       "slotId": 442,
@@ -6045,6 +6045,181 @@
       "name": "1kNode",
       "stash": "CddSbv4CbLDJWWCnKgtKh3dP29Y9jf4oJN8oGftr1hzL3VB",
       "riotHandle": "@vlad1knode:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 888,
+      "name": "tentbakers",
+      "stash": "GfECgQybYBKTcSC5VYdnJmUftzvvrQHRGTbsaCQgKz9WFNe",
+      "riotHandle": "@tentbakers:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 889,
+      "name": "🚀alko989🌛",
+      "stash": "CzZXUsi6QyWMpL2UQZf3sWh7piQ6ngTASAX5WoVNrHFtUmK",
+      "riotHandle": "@alko989:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 890,
+      "name": "Panda",
+      "stash": "HPandpXxDEa4urwbJKuGtAP6sDymnea5ZqAFWbDszCMpnC2",
+      "riotHandle": "@panda_warrior:matrix.org",
+      "kyc": true
+    },    
+    {
+      "slotId": 891,
+      "name": "Fialka",
+      "stash": "GNkUApzhV9JYiP3AjhTdKmSmaa48dZzwVkgbKAoWzUeztiS",
+      "riotHandle": "@s.stegno:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 892,
+      "name": "Profit link",
+      "stash": "Hhx2EoL2J4UYFSdGQZhnX2MFjKcvV5VLHya4cvYEVVErTv4",
+      "riotHandle": "@garciaprod:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 893,
+      "name": "Profit link#2",
+      "stash": "FFSNygB3BUXE9EhfuPvaD64RkHU3DwaxdkUUqi7wBuMbj2E",
+      "riotHandle": "@garciaprod:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 894,
+      "name": "BitDash",
+      "stash": "HUJhxL8s4QxZebKS8VV9sMAJocVrUd1GnB6qHbfpmjmfKba",
+      "riotHandle": "@bitdash:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 895,
+      "name": "BitDash-one",
+      "stash": "F835ej5eVaRobkeLk3RcbHHHzpe6HfqgnMCWAugjdzB1pTx",
+      "riotHandle": "@bitdash:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 896,
+      "name": "Pricelogic",
+      "stash": "Cx5NZV7VaFTBybbTeWHRqrc9AqyYg1eqU7qcXHLte3f6vuB",
+      "riotHandle": "@raidani:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 897,
+      "name": "Priceunlogic",
+      "stash": "CbUz4WyUwW2CRtDhNJQMsNmFmryq2NTUnevQUWf2hek1Y5g",
+      "riotHandle": "@raidani:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 898,
+      "name": "Winterspring/2",
+      "stash": "FLRVGoXh9jkybPVngzrydK3WcRqCUrQ9TMTSCu7adgAeU5a",
+      "riotHandle": "@winterspring:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 899,
+      "name": "Currencyx",
+      "stash": "CfaUrAbVqqirEByiXFhgmS34dZq3nJpy6sKYtFHvSr3uQuG",
+      "riotHandle": "@ksmkvnode:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 900,
+      "name": "Currencyx/1",
+      "stash": "JF48Ln5rYaNHwUWajfXzaazEPFUpa1sKpeVaugWPmrEZGwd",
+      "riotHandle": "@ksmkvnode:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 901,
+      "name": "Connectify",
+      "stash": "H7YMaxGnf7gaTBwSL2LPFSs4YwmfXh9RjavjmduGnfmD14q",
+      "riotHandle": "@connectify:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 902,
+      "name": "Connectify02",
+      "stash": "EM7zFxNYJzH2tvVy1xjwDkurEBaZ77g9zF6UbGTrSRN5equ",
+      "riotHandle": "@connectify:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 903,
+      "name": "VIXY",
+      "stash": "FPkHYKqHUCUsn7JEzVdxwt6Lwsg8qMNKxqXb1ec1BYoJk1B",
+      "riotHandle": "@vixy:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 904,
+      "name": "VIXYtwo",
+      "stash": "CdaBpYvD9KE5nhKqisR2xD5bjYZZTBojMdFm5TmAMfMMtyR",
+      "riotHandle": "@vixy:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 905,
+      "name": "Prima Labs",
+      "stash": "HCfj3XBhUrjEW24ywn1doYaz3aFQ6KtKRwW8oncfQkgZrfQ",
+      "riotHandle": "@primapolkadot:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 906,
+      "name": "Prima Labsxone",
+      "stash": "F5THWpAdZLpcHeiN2k3kuu3y4uZUek2HudXS5VMrcmQsbi3",
+      "riotHandle": "@primapolkadot:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 907,
+      "name": "vita567",
+      "stash": "HsVe9jQaNe32nuXsmuiJ8ZddoifhsHxQdNVpJDssQe6QZTE",
+      "riotHandle": "@vita567:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 908,
+      "name": "Unicombase",
+      "stash": "D6G4FtTLMUgkfukQWkrYdp9kYGftb8RqFuA9M8WUGz4WsYX",
+      "riotHandle": "@kusamabasedot:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 909,
+      "name": "Unicombasetop",
+      "stash": "GvWjHacawE8phxTfuxQYF1vcqduBCGs1YFPgdPxrNiAPFvo",
+      "riotHandle": "@kusamabasedot:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 910,
+      "name": "Hodloni",
+      "stash": "GS52seSoLyUJwv9ZuTeGpdMw9RnUhkP5oEscLrpZPHU79D3",
+      "riotHandle": "@maxhodl:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 911,
+      "name": "Hodloni#2",
+      "stash": "Eyb4bzFYhDakodXRMe9YjdvBRRhSYvrkeGyWZebHxxaRvtU",
+      "riotHandle": "@maxhodl:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 912,
+      "name": "eagle",
+      "stash": "Ez8y1UdrjnPxaXKCAARhwzZuATxLYvjKJZjibeFq9rXQSWX",
+      "riotHandle": "@eagle-node:matrix.org",
       "kyc": true
     }
   ]

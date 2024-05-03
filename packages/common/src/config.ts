@@ -85,7 +85,7 @@ export type ConfigSchema = {
   };
   global: {
     dryRun: boolean;
-    networkPrefix: 0 | 2 | 3;
+    networkPrefix: number;
     apiEndpoints: string[];
     apiPeopleEndpoints?: string[];
     bootstrap: boolean;

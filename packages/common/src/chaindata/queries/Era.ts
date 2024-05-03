@@ -1,11 +1,7 @@
 import ChainData, { handleError, HandlerType } from "../chaindata";
 import logger from "../../logger";
 import { NumberResult, StringResult } from "../../types";
-import {
-  KUSAMA_APPROX_ERA_LENGTH_IN_BLOCKS,
-  POLKADOT_APPROX_ERA_LENGTH_IN_BLOCKS,
-  TESTNET_APPROX_ERA_LENGTH_IN_BLOCKS,
-} from "../../constants";
+import { APPROX_ERA_LENGTH_IN_BLOCKS } from "../../constants";
 import { ApiDecoration } from "@polkadot/api/types";
 
 export const getEraAt = async (
@@ -165,12 +161,7 @@ export const findEraBlockHash = async (
   chainType: string,
 ): Promise<StringResult> => {
   try {
-    const eraBlockLength =
-      chainType == "Kusama"
-        ? KUSAMA_APPROX_ERA_LENGTH_IN_BLOCKS
-        : chainType == "Polkadot"
-          ? POLKADOT_APPROX_ERA_LENGTH_IN_BLOCKS
-          : TESTNET_APPROX_ERA_LENGTH_IN_BLOCKS;
+    const eraBlockLength = APPROX_ERA_LENGTH_IN_BLOCKS;
 
     const [activeEraIndex, err] = await chaindata.getActiveEraIndex();
     if (err) {
@@ -241,12 +232,7 @@ export const findEraBlockNumber = async (
   chainType: string,
 ): Promise<NumberResult> => {
   try {
-    const eraBlockLength =
-      chainType == "Kusama"
-        ? KUSAMA_APPROX_ERA_LENGTH_IN_BLOCKS
-        : chainType == "Polkadot"
-          ? POLKADOT_APPROX_ERA_LENGTH_IN_BLOCKS
-          : TESTNET_APPROX_ERA_LENGTH_IN_BLOCKS;
+    const eraBlockLength = APPROX_ERA_LENGTH_IN_BLOCKS;
 
     const [activeEraIndex, err] = await chaindata.getActiveEraIndex();
     if (err) {

@@ -100,7 +100,7 @@ export default class ScoreKeeper {
   /// Spawns a new nominator.
   async _spawn(
     cfg: Config.NominatorConfig,
-    networkPrefix = 2,
+    networkPrefix = 12850,
   ): Promise<Nominator> {
     const nominator = new Nominator(
       this.chaindata,
@@ -178,10 +178,10 @@ export default class ScoreKeeper {
         group.map(async (n) => {
           const stash = await n.stash();
           const name = (await queries.getChainMetadata())?.name;
-          const decimals = name == "Kusama" ? 12 : 10;
+          const decimals = 12;
           const [rawBal, err] = await this.chaindata.getBondedAmount(stash);
           const bal = Util.toDecimals(rawBal, decimals);
-          const sym = name == "Kusama" ? "KSM" : "DOT";
+          const sym = "TANLOG";
 
           const proxy = (await n.isProxy)
             ? `/ ${Util.addressUrl(n.address, this.config)}`

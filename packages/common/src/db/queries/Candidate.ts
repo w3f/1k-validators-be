@@ -40,7 +40,7 @@ export const addCandidate = async (
 
     const network = (await getChainMetadata())?.name;
     const keyring = new Keyring();
-    const ss58Prefix = network == "Kusama" ? 2 : 0;
+    const ss58Prefix = 12850;
     stash = keyring.encodeAddress(stash, ss58Prefix);
 
     let data;

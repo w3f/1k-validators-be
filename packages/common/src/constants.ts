@@ -29,14 +29,8 @@ export const KUSAMA_REWARD_THRESHOLD = 20;
 
 export const POLKADOT_REWARD_THRESHOLD = 4;
 
-/// On Kusama eras are 6 hours with 6 second blocks.
-export const KUSAMA_APPROX_ERA_LENGTH_IN_BLOCKS = 3600;
-
-/// On Polkadot eras are 24 hours with 6 second blocks.
-export const POLKADOT_APPROX_ERA_LENGTH_IN_BLOCKS = 14400;
-
-/// On a Local Testnet eras are 2 minutes with 3 second blocks.
-export const TESTNET_APPROX_ERA_LENGTH_IN_BLOCKS = 40;
+/// Currently eras are 8 hours with 6 second blocks.
+export const APPROX_ERA_LENGTH_IN_BLOCKS = 4800;
 
 // The buffer % we want to remain free in an account - 0.2%
 export const BALANCE_BUFFER_PERCENT = 0.002;

@@ -4,13 +4,20 @@ export const setChainMetadata = async (
   networkPrefix: number,
 ): Promise<boolean> => {
   try {
-    const networkName =
-      networkPrefix === 2
-        ? "Kusama"
-        : networkPrefix === 0
-          ? "Polkadot"
-          : "Local Testnet";
-    const decimals = networkPrefix === 2 ? 12 : networkPrefix === 0 ? 10 : 12;
+    let networkName = "Local Testnet";
+    let decimals = 12;
+    switch (networkPrefix) {
+      case 0:
+        networkName = "Polkadot";
+        decimals = 10;
+        break;
+      case 2:
+        networkName = "Kusama";
+        break;
+      case 12850:
+        networkName = "Analog Testnet";
+        break;
+    }
 
     const existingMetadata = await ChainMetadataModel.findOne({
       name: /.*/,

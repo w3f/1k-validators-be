@@ -37,10 +37,7 @@ export const createAPIHandlers = async (
 ): Promise<Types.ApiHandlers> => {
   logger.info("Creating API Handler", winstonLabel);
   // Determine the correct set of endpoints based on the network prefix.
-  const endpoints =
-    config.global.networkPrefix === 2 || config.global.networkPrefix === 0
-      ? config.global.apiEndpoints
-      : Constants.LocalEndpoints;
+  const endpoints = config.global.apiEndpoints;
 
   const relayHandler = new ApiHandler(endpoints);
 

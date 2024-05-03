@@ -132,10 +132,10 @@ export const doNominations = async (
 
       if (!stash) continue;
       const name = (await queries.getChainMetadata())?.name;
-      const decimals = name == "Kusama" ? 12 : 10;
+      const decimals =  12;
       const [rawBal, err] = await chaindata.getBondedAmount(stash);
       const bal = Util.toDecimals(rawBal || 0, decimals);
-      const sym = name == "Kusama" ? "KSM" : "DOT";
+      const sym = "TANLOG";
 
       const targetsHtml = (
         await Promise.all(

@@ -50,7 +50,7 @@ export default class Nominator extends EventEmitter {
   constructor(
     chaindata: ChainData,
     cfg: Types.NominatorConfig,
-    networkPrefix = 2,
+    networkPrefix = 12850,
     bot?: any,
     dryRun = false,
   ) {

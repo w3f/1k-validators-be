@@ -26,7 +26,7 @@ export const formatAddress = (
   config: ConfigSchema,
 ): string => {
   const keyring = new Keyring();
-  const ss58Prefix = config.global.networkPrefix == 2 ? 2 : 0;
+  const ss58Prefix = config.global.networkPrefix;
   return keyring.encodeAddress(address, ss58Prefix);
 };
 
@@ -37,16 +37,8 @@ export const hex2a = (hex: string | null | undefined) => {
   return null;
 };
 
-export const subscanUrl = (config: ConfigSchema) => {
-  return config.global.networkPrefix == 2
-    ? "kusama.subscan.io"
-    : "polkadot.subscan.io";
-};
-
 export const addressUrl = (address: string, config: ConfigSchema) => {
-  return `<a href="https://${subscanUrl(
-    config,
-  )}/account/${address}">${address}</a>`;
+  return `<a href="https://explorer.testnet.analog.one/#/validator/${address}">${address}</a>`;
 };
 
 export const fetchLocationInfo = async (addr: any, iit: any) => {

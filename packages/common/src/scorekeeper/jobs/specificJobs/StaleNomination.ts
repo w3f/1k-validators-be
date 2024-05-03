@@ -15,7 +15,7 @@ export const staleNominationJob = async (
     const { config, chaindata, nominatorGroups, bot } = metadata;
 
     // threshold for a stale nomination - 8 eras for kusama, 2 eras for polkadot
-    const threshold = config.global.networkPrefix == 2 ? 8 : 2;
+    const threshold = config.global.networkPrefix == 0 ? 2 : 8;
 
     logger.info(`running stale cron....`, cronLabel);
 

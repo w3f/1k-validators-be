@@ -62,7 +62,11 @@ export const checkCandidate = async (
       );
     }
 
-    const identityValid = await checkIdentity(constraints.chaindata, candidate);
+    const identityValid = await checkIdentity(
+      constraints.config,
+      constraints.chaindata,
+      candidate,
+    );
     if (!identityValid) {
       logger.info(`${candidate.name} identity not valid`, constraintsLabel);
     }

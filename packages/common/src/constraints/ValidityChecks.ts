@@ -203,10 +203,16 @@ export const checkConnectionTime = async (
 };
 
 export const checkIdentity = async (
+  config: Config.ConfigSchema,
   chaindata: ChainData,
   candidate: Candidate,
 ): Promise<boolean> => {
   try {
+    const skipIdentity = config.constraints?.skipIdentity || false;
+    if (skipIdentity) {
+      await setIdentityInvalidity(candidate, true);
+      return true;
+    }
     const [hasIdentity, verified] = await chaindata.hasIdentity(
       candidate.stash,
     );

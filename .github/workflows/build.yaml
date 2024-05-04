@@ -1,0 +1,61 @@
+name: Build and push core Docker image
+
+on:
+  push:
+    branches:
+      - master
+
+env:
+  DOCKER_REPO: analoglabs/otv-backend
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  set-tags:
+    name: Get & set tags
+    runs-on: ubuntu-latest
+    outputs:
+      commit_hash: ${{ steps.get-sha.outputs.sha }}
+      commit_hash8: ${{ steps.get-sha.outputs.sha8 }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Get SHA
+        id: get-sha
+        run: |
+          sha=$(git log -1 --format='%H')
+          echo "sha=$sha" >> $GITHUB_OUTPUT
+          echo "sha8=$(git log -1 --format='%H' | cut -c1-8)" >> $GITHUB_OUTPUT
+          echo "SHA commit:" $sha
+
+  # Analog Watch Server docker image job
+  # Builds the single backend image with `latest` and `{COMMIT}` tags
+  docker-server:
+    name: Build Docker Core image
+    runs-on: ubuntu-latest
+    needs: ['set-tags']
+    steps:
+      - name: Fetch latest code
+        uses: actions/checkout@v3
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and push server
+        uses: docker/build-push-action@v4
+        with:
+          push: true
+          context: .
+          file: Dockerfile
+          build-args: |
+            PACKAGE=core
+          tags: |
+            ${{ env.DOCKER_REPO }}:${{ needs.set-tags.outputs.commit_hash8 }}
+            ${{ env.DOCKER_REPO }}:latest

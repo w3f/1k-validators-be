@@ -46,7 +46,10 @@ export const getTotalEraPoints = async (
     if (!chainType) {
       return {} as EraPointsInfo;
     }
-    const [blockHash, err] = await chaindata.findEraBlockHash(era, chainType);
+    const [blockHash, err] = await chaindata.findEraBlockHash(
+      era + 1,
+      chainType,
+    );
 
     if (blockHash) {
       const apiAt = await chaindata?.api?.at(blockHash);

@@ -204,12 +204,12 @@ export const findEraBlockHash = async (
         return ["", "API at block hash is null"];
       }
 
-      const testEra = await apiAt.query.staking.currentEra();
+      const testEra = await apiAt.query.staking.activeEra();
       if (testEra && testEra.isEmpty) {
         logger.info(`Test era is empty: ${JSON.stringify(testEra)}`);
         return ["", "Test era is none"];
       }
-      const testIndex = testEra.unwrap().toNumber();
+      const testIndex = testEra.unwrap().index.toNumber();
       if (era == testIndex) {
         return [blockHash.toString(), null];
       }

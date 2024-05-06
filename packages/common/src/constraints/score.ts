@@ -99,7 +99,7 @@ export const getStats = (arr: number[]): Stats => {
   const arrQ75 = arr.length !== 0 ? q75(arr) : 0;
   const arrQ90 = arr.length !== 0 ? q90(arr) : 0;
   const arrMean = arr.length !== 0 ? mean(arr) : 0;
-  const arrStd = arr.length !== 0 ? std(arr) : 0;
+  const arrStd = arr.length > 1 ? std(arr) : 0;
 
   return {
     values: arr,

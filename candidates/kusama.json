@@ -5289,7 +5289,7 @@
       "name": "panvad",
       "stash": "CxaLLBqYFneSXx5vT4Mwe66paz8jae14BGY1xoucBj6De4G",
       "riotHandle": "@panvad:matrix.org",
-      "kyc": false
+      "kyc": true
     },
     {
       "slotId": 769,

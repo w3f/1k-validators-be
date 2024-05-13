@@ -66,7 +66,7 @@ export const eraPointsJob = async (
     for (
       let i = activeEra - 1, processedEras = 1;
       i >= activeEra - Constants.ERAPOINTS_JOB_MAX_ERAS;
-      i--, processedEras ++
+      i--, processedEras++
     ) {
       await individualEraPointsJob(chaindata, i);
 

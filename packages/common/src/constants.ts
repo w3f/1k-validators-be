@@ -207,3 +207,5 @@ export const USE_PROVIDER = true;
 export const USE_NOMINATIONS = true;
 export const USE_RPC = true;
 export const USE_CLIENT = true;
+
+export const ERAPOINTS_JOB_MAX_ERAS = 84;

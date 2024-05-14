@@ -2383,6 +2383,14 @@
       "kusamaStash": "DrKfoeBLqFUGWtq5C3aoKaYMP5kYn4gSuftUYYxnK8wQ9gu",
       "riotHandle": "@ka4ok1331:matrix.org",
       "kyc": true
+    },
+    {
+      "slotId": 292,
+      "name": "frogstakingnode#fplk#01",
+      "stash": "16PpE8pMFscQ34aCbFcCqGmmhj9HFyDJJxKqZNQse1kVjyXc",
+      "kusamaStash": "EoUT1KcbyPJr5tDQkejjzHsF9p6EGP2c5Q8bYonvhZ7giY7",
+      "riotHandle": "@frogstaking:matrix.org",
+      "kyc": true
     }
   ]
 }

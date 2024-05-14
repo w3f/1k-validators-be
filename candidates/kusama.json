@@ -6312,6 +6312,20 @@
       "stash": "F86u4y5nc89LiG51ee8Qc29qh75cDTa9AL5wD3iweNxdFWz",
       "riotHandle": "@siamless:matrix.org",
       "kyc": true
+    },
+    {
+      "slotId": 926,
+      "name": "Orbitaaltcoin",
+      "stash": "GhjzkKEHeJ8eaCQgy157yLbyWyJ33fgS6vikmmZgCFvYkCo",
+      "riotHandle": "@galofitzgerald:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 927,
+      "name": "Orbitaaltcoin-2",
+      "stash": "G1udSPpAQj3RgH8LxMHnnSmqteTdsWn1tzfTYpzbbUTWhvr",
+      "riotHandle": "@galofitzgerald:matrix.org",
+      "kyc": true
     }
   ]
 }

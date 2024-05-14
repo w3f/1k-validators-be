@@ -2346,14 +2346,6 @@
     },
     {
       "slotId": 286,
-      "name": "GoOpen",
-      "stash": "16VVNbc4m6aUxwaVwgRra6Ue7fMNGcRQHTFo1TqxmnCyuwwn",
-      "kusamaStash": "JJiV1xrj1814BVDDG2pFCsgzdbR7K29VcyXQGXEUhn7LWhK",
-      "riotHandle": "@alko89:matrix.org",
-      "kyc": true
-    },
-    {
-      "slotId": 288,
       "name": "🦾🤖 IvoryNode 🤖🦾",
       "stash": "13N38V93rRgrdvYbwHgCjRBoRQdDGL9iVzNfYbP8YVFN83QP",
       "kusamaStash": "GUibN3wkgbXrE9bbrfDZzUQrdanEusMD4tfiEXAzYUT24rL",
@@ -2361,7 +2353,7 @@
       "kyc": true
     },
     {
-      "slotId": 289,
+      "slotId": 287,
       "name": "Panda",
       "stash": "1panG5DQw43ZqsoLV41uYfdrufoPUiqo1xXPoDLs942hYbX",
       "kusamaStash": "HPandpXxDEa4urwbJKuGtAP6sDymnea5ZqAFWbDszCMpnC2",
@@ -2369,7 +2361,7 @@
       "kyc": true
     },
     {
-      "slotId": 290,
+      "slotId": 288,
       "name": "ENZORO",
       "stash": "1q14G2evG5w34dR6YdSuPbkjP5JAourGASmDXYN1Bzn1z9E",
       "kusamaStash": "Fw3GHC7YXT1MixGXbQWVbfT6ivmjDkeZDzY68ayjyg2B1Q8",
@@ -2377,7 +2369,7 @@
       "kyc": true
     },
     {
-      "slotId": 291,
+      "slotId": 289,
       "name": "StasRover",
       "stash": "14drsfc6hPPRhYPac9iv4yLdMo3MzBYgbDkJRcFkitWHr71M",
       "kusamaStash": "DrKfoeBLqFUGWtq5C3aoKaYMP5kYn4gSuftUYYxnK8wQ9gu",
@@ -2385,7 +2377,7 @@
       "kyc": true
     },
     {
-      "slotId": 292,
+      "slotId": 290,
       "name": "frogstakingnode#fplk#01",
       "stash": "16PpE8pMFscQ34aCbFcCqGmmhj9HFyDJJxKqZNQse1kVjyXc",
       "kusamaStash": "EoUT1KcbyPJr5tDQkejjzHsF9p6EGP2c5Q8bYonvhZ7giY7",

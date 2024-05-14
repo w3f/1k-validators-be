@@ -7,7 +7,7 @@ kusama:
     secret:  <path:vaults/k8s-community-secrets/items/otv-kusama#backend-secret>
     domain: kusama.w3f.community
     matrix:   
-      room: "!mdugGIKqSTweIOpTlA:web3.foundation"
+      room: "!NPPsWrRlXjfgWsVFiJ:web3.foundation"
       userId: "@1kvbot:web3.foundation"
     storage: "20Gi"
     resources:
@@ -28,7 +28,7 @@ polkadot:
     secret:  <path:vaults/k8s-community-secrets/items/otv-polkadot#backend-secret>
     domain: polkadot.w3f.community
     matrix:   
-      room: "!ccXWsugXuoiHnkEhKa:web3.foundation"
+      room: "!JKVQoCWEnKxeWOPsYR:web3.foundation"
       userId: "@1kvbot:web3.foundation"
     storage: "20Gi"
     resources:

@@ -110,7 +110,7 @@
       "name": "🥩 Staking4All 🥩",
       "stash": "GTUi6r2LEsf71zEQDnBvBvKskQcWvK66KRqcRbdmcczaadr",
       "riotHandle": "@staking4all:matrix.org",
-      "kyc": false
+      "kyc": true
     },
     {
       "slotId": 16,
@@ -180,27 +180,6 @@
       "name": "⛓  Novy Validator ⛓ ",
       "stash": "Cs7UFcNBsBV4Y65GsM3bDzpvinMKFQZyt6x9TrhVhc8ps4E",
       "riotHandle": "@novy4:matrix.org",
-      "kyc": false
-    },
-    {
-      "slotId": 26,
-      "name": "stakethat",
-      "stash": "DAUrb4UVvwpYxbx6jTVqMquCW2QuafKcFCkgEpnYBcbwaRQ",
-      "riotHandle": "@andreisid:matrix.org",
-      "kyc": false
-    },
-    {
-      "slotId": 27,
-      "name": "clockchain",
-      "stash": "GHiteLMW6qa4s1MU4pUNvxu2vWEpPJwqEpn1SVJCzEBSE7Y",
-      "riotHandle": "@clockchain:matrix.org",
-      "kyc": false
-    },
-    {
-      "slotId": 28,
-      "name": "StakeTomato",
-      "stash": "EkpjJUusZu4FZxzC1EyYxoyCxKVGKAd5aEygoF38tqSv3C3",
-      "riotHandle": "@ade007:matrix.org",
       "kyc": false
     },
     {
@@ -330,13 +309,6 @@
       "kyc": false
     },
     {
-      "slotId": 47,
-      "name": "rocknode",
-      "stash": "EUviNVqJCsvWaKnSHdqyVQQaJB5zQv6szGKUdPKK1dsBvcn",
-      "riotHandle": "@rocknode:matrix.org",
-      "kyc": false
-    },
-    {
       "slotId": 48,
       "name": "🏢 Ministry Of Blocks 🏢",
       "stash": "D2r9AudNkHHpKfGtS5rpVHkchBoBhRsR6TmNcTuU4yiTp6w",
@@ -432,13 +404,6 @@
       "name": "Ethical Validators 0",
       "stash": "DbDAmhLFMhSQkZjnmAYjSktubPiSYKs6ubGtUmt5uC4eHzm",
       "riotHandle": "@evaluators:matrix.org",
-      "kyc": false
-    },
-    {
-      "slotId": 62,
-      "name": "blockzilla",
-      "stash": "EJi7cj4VsdyJvEXnyLptuh8pWQ2ycswHTsGui3AbfhStuyT",
-      "riotHandle": "@blockzilla.team:matrix.org",
       "kyc": false
     },
     {
@@ -1052,7 +1017,7 @@
       "name": "GoOpen",
       "stash": "JJiV1xrj1814BVDDG2pFCsgzdbR7K29VcyXQGXEUhn7LWhK",
       "riotHandle": "@alko89:matrix.org",
-      "kyc": false
+      "kyc": true
     },
     {
       "slotId": 150,
@@ -1700,8 +1665,8 @@
     },
     {
       "slotId": 242,
-      "name": "Khastor-KVN01",
-      "stash": "D6NNbc18fTh4WVQtmrTyLRHGv8SKVtjKFY8uV34k5ydBMaV",
+      "name": "Khastor-KVN03",
+      "stash": "H4F8kJeJ8anTS1WUZATDaj6WfYzoxCvARaDFzQkN6pKzvvV",
       "riotHandle": "@khastor:matrix.org",
       "kyc": false
     },
@@ -2162,7 +2127,7 @@
     },
     {
       "slotId": 308,
-      "name": "GATOTECH😸KSM_1",
+      "name": "GATOTECH😸KSM_GB1",
       "stash": "DrRBkx2Qx4sXRGZDXz6d44QCXqV2eJhn8Rq79V88FpSqAr8",
       "riotHandle": "@gatotech:matrix.org",
       "kyc": false
@@ -2352,7 +2317,7 @@
     },
     {
       "slotId": 335,
-      "name": "GATOTECH😸KSM_2",
+      "name": "GATOTECH😸KSM_GB2",
       "stash": "EeFYYF8zrLXRpfFXLn2T5bMmgiFpDpmAhVzoh9hA3188wTc",
       "riotHandle": "@gatotech:matrix.org",
       "kyc": false
@@ -3094,7 +3059,7 @@
       "name": "BlockAndWhite",
       "stash": "CwPFXLx7NmPRsQyAFTBscxK7Ph1sJ9Ngekc6rXMxTwdw5PZ",
       "riotHandle": "@cristi_an_m:matrix.org",
-      "kyc": false
+      "kyc": true
     },
     {
       "slotId": 442,
@@ -3119,8 +3084,8 @@
     },
     {
       "slotId": 445,
-      "name": "Aperture Mining 🎂 0",
-      "stash": "FJcnsNkMjY8tgJrDVeq5CKoB1b4Au2xGQjaMv8Ax5QAiV6p",
+      "name": "Aperture Mining 🎂 3",
+      "stash": "DPeDbJbiZuo43JBcxdFVmf8nudDxhBqjF4VhSMkjhTa4To6",
       "riotHandle": "@aperture-exe:matrix.org",
       "kyc": false
     },
@@ -3182,7 +3147,7 @@
     },
     {
       "slotId": 454,
-      "name": "Aperture Mining 🎂 1",
+      "name": "Aperture Mining 🎂 2",
       "stash": "Hcbo6hyfVgExCKrjmJic9bg4gLWgYy6HLrjcXUYy2VgLG7a",
       "riotHandle": "@aperture-exe:matrix.org",
       "kyc": false
@@ -3213,13 +3178,6 @@
       "name": "Watermelon",
       "stash": "FPc6HXzVyCbsarcyLEN6UnHbhWxdUputwEe5saQxmMUj63X",
       "riotHandle": "@watermelonnode:matrix.org",
-      "kyc": false
-    },
-    {
-      "slotId": 459,
-      "name": "SIGNY9",
-      "stash": "E53UnBMiLVW2EABseyk3oAtXTJcq7zkrU8RbjEVRUTGLH9f",
-      "riotHandle": "@signy9:matrix.org",
       "kyc": false
     },
     {
@@ -3295,7 +3253,7 @@
     {
       "slotId": 471,
       "name": "STAKEWORLD/02",
-      "stash": "FZ1GFKR6tYx9gNGHV67h5aV6bfhAbh7ZRdU9ypVvXfseyfg",
+      "stash": "FNPCfXrsrA8775HGuRvK9seULKpcnxNTTKTGUL4h267YHvw",
       "riotHandle": "@stakeworld:matrix.org",
       "kyc": false
     },
@@ -3332,13 +3290,6 @@
       "name": "yevhen Validator",
       "stash": "GaBaRT2R67TW8QxZtN7S4EUXMh5viYY2q6xiLoDcxodfzmq",
       "riotHandle": "@yevhenbasarab:matrix.org",
-      "kyc": false
-    },
-    {
-      "slotId": 477,
-      "name": "summerstake",
-      "stash": "Gh86VtoTd3c5fGvCjSRhymndg8AUpR4NZAit8XVGCv985Wf",
-      "riotHandle": "@summerstak3:matrix.org",
       "kyc": false
     },
     {
@@ -3644,8 +3595,8 @@
     },
     {
       "slotId": 522,
-      "name": "LEGEND",
-      "stash": "GHewg8AxLL7JpRYDoqEyTk5bhGndhMvsDWo68St7D9YDH9Z",
+      "name": "LEGEND-3",
+      "stash": "Dz4kkGBhj8Z73rLetfignvS1k9VJspphWgBU3SgyYbd7wZJ",
       "riotHandle": "@legend7341216:matrix.org",
       "kyc": false
     },
@@ -3979,13 +3930,6 @@
       "kyc": false
     },
     {
-      "slotId": 571,
-      "name": "S10_Validator",
-      "stash": "EtSjDd392rQQrq4AHuEFk7Mov36cSTypWycm7YAoHaMv42N",
-      "riotHandle": "@velana:matrix.org",
-      "kyc": false
-    },
-    {
       "slotId": 572,
       "name": "SafeStake_IO_KSM01",
       "stash": "HnqvLipy4zndzJcJWAVJDpDWNMR6ygTVDRym5BeapXHLS2K",
@@ -4232,8 +4176,8 @@
     },
     {
       "slotId": 607,
-      "name": "LEGEND-2",
-      "stash": "Dr9QwogB1x5BH91L4ebVnW2c8ZV9oQDfCRk4RUja5bTQjtH",
+      "name": "LEGEND-4",
+      "stash": "EfGRcmd9Ew1NeKc6uMNjJm9gZJL5s91RTk6y3Z7YjMVRRqP",
       "riotHandle": "@legend7341216:matrix.org",
       "kyc": false
     },
@@ -4309,8 +4253,8 @@
     },
     {
       "slotId": 618,
-      "name": "ULTRA/N2",
-      "stash": "FFrG8RuDF5taxGp5RyhnsB9iHKvne2Ndw5nF777B3VZHCFR",
+      "name": "ULTRA/N3",
+      "stash": "EV7cTr9aED4ftWYLYrCjC17ortcdQq1SkZDG63yrff8W3ko",
       "riotHandle": "@ultranodes:matrix.org",
       "kyc": false
     },
@@ -4473,7 +4417,7 @@
       "name": "CARBONZERO3",
       "stash": "CmwjkPp55ZVoPjWz4uaLvsYY2xYE4PyVDJuPmmUiwCQijFm",
       "riotHandle": "@shawneng:matrix.org",
-      "kyc": false
+      "kyc": true
     },
     {
       "slotId": 642,
@@ -4748,20 +4692,13 @@
       "stash": "GSHE7p88bE7pZQQvzqrDmwowAsnVB7hRsnTLc8casD25hCw",
       "riotHandle": "@havik:matrix.org",
       "kyc": false
-    },
-    {
-      "slotId": 681,
-      "name": "KeyValidate",
-      "stash": "FD9tqLqAXLYDDRcya1NjzQKgbYkrfLnDrn39cc6jmKgsbni",
-      "riotHandle": "@keyvalidator:matrix.org",
-      "kyc": false
-    },
+    }, 
     {
       "slotId": 682,
       "name": "Satoyama-1",
       "stash": "J2JVgCJuVy5r22YsqYZT2fR1q1NDNgM5f3b51DRUgH1Tw96",
       "riotHandle": "@shawneng:matrix.org",
-      "kyc": false
+      "kyc": true
     },
     {
       "slotId": 683,
@@ -4992,7 +4929,7 @@
     },
     {
       "slotId": 715,
-      "name": "ADESERT-KSM1",
+      "name": "APPLEPIE-KSM-1",
       "stash": "FASKqqTFEvdMKyMKgTdhHQF3qpF7XtEifYnP1brBX1mCyuG",
       "riotHandle": "@kamelstaking:matrix.org",
       "kyc": false
@@ -5005,13 +4942,6 @@
       "kyc": false
     },
     {
-      "slotId": 718,
-      "name": "Uvo technology",
-      "stash": "DrnTwdksJxzKQx3kb7NXuWYGy4o8Uama3hiNvzcNBnj9LkZ",
-      "riotHandle": "@uvotech:matrix.org",
-      "kyc": false
-    },
-    {
       "slotId": 719,
       "name": "wdmaster",
       "stash": "HZsquaFQ3rhBxBgEokxE4ea9gqpj2ZCyZGyXDojH8JYDuzS",
@@ -5020,8 +4950,8 @@
     },
     {
       "slotId": 720,
-      "name": "validorange-ksm1",
-      "stash": "J47U9wGuwzccFPoz8bnMTKJt7WGpPp8ZNgvtXFDL9PHwpCt",
+      "name": "validorange-ksm3",
+      "stash": "EV6LtNrgjcPRYEoCnjbpVjzgLmkc77sttwoQycHsDFzBBnN",
       "riotHandle": "@validorange:matrix.org",
       "kyc": false
     },
@@ -5359,7 +5289,7 @@
       "name": "panvad",
       "stash": "CxaLLBqYFneSXx5vT4Mwe66paz8jae14BGY1xoucBj6De4G",
       "riotHandle": "@panvad:matrix.org",
-      "kyc": false
+      "kyc": true
     },
     {
       "slotId": 769,
@@ -5500,13 +5430,6 @@
       "stash": "E2a7yoiDXAtb7REBKzqwGSY9SvoXqWfn1cBxnDD47GyFkMC",
       "riotHandle": "@novasphere:matrix.org",
       "kyc": false
-    },
-    {
-      "slotId": 790,
-      "name": "Block shield",
-      "stash": "DJYUrEpahAbXjQbrz9fYTZRHxVEGRyBC5iu6UFXfwqdczxP",
-      "riotHandle": "@blockshield:matrix.org",
-      "kyc": true
     },
     {
       "slotId": 791,
@@ -5740,62 +5663,6 @@
       "kyc": true
     },
     {
-      "slotId": 824,
-      "name": "Link swap-1",
-      "stash": "DgJcKVBc2RLwS3NYiSKRZjNCi1H8vMm7R6Kdaot5VXohK3n",
-      "riotHandle": "@dmitryevens:matrix.org",
-      "kyc": true
-    },
-    {
-      "slotId": 825,
-      "name": "Link swap",
-      "stash": "F9tiZuYF4Z6X1nC8ca5gv5xEzBRMzbRkC2wcfNRPmzcTBiu",
-      "riotHandle": "@dmitryevens:matrix.org",
-      "kyc": true
-    },
-    {
-      "slotId": 826,
-      "name": "Dot Plus",
-      "stash": "HsZAnvbJvdXuQg4GSToQPYrtVWKbpCutSRuHzZDmPFgYf2N",
-      "riotHandle": "@plussik:matrix.org",
-      "kyc": true
-    },
-    {
-      "slotId": 827,
-      "name": "Dot Plus/1",
-      "stash": "G9fk8vjk2eiy65mQjog8MgPuLAHjjnagv4ixVzY7zRiEu3Z",
-      "riotHandle": "@plussik:matrix.org",
-      "kyc": true
-    },
-    {
-      "slotId": 828,
-      "name": "Alscalable",
-      "stash": "HNUv11N4oKJrRQuj4pZsDMoBRUpRR8twv23wSjhdrwqRMLJ",
-      "riotHandle": "@alicebablle:matrix.org",
-      "kyc": true
-    },   
-    {
-      "slotId": 829,
-      "name": "Alscalable-02",
-      "stash": "ErJr4EedgdiHqTN8EjwAoMfXoCfESdfTnnUTzrHDJuNf5no",
-      "riotHandle": "@alicebablle:matrix.org",
-      "kyc": true
-    },   
-    {
-      "slotId": 830,
-      "name": "Block Breaker",
-      "stash": "EkjQQVVvvEDUqvcFU7VNn2tVGTL26HJtQMCCKinxsa9Fhkf",
-      "riotHandle": "@blockbreaker:matrix.org",
-      "kyc": true
-    },   
-    {
-      "slotId": 831,
-      "name": "Block Breaker-1",
-      "stash": "EMgS54i8ABLNwcGNXxrXHxyrhbWtmKXodGHHvw1o3ifUk4F",
-      "riotHandle": "@blockbreaker:matrix.org",
-      "kyc": true
-    },
-    {
       "slotId": 832,
       "name": "Coin collectors",
       "stash": "HjTtz2xV4T3z3HFJhrkgjy4Lafe1tufqZ4X9YzPiLzaUPtJ",
@@ -5814,13 +5681,6 @@
       "name": "ToTheMars",
       "stash": "HZJ2qAYW5LSsR4ixpKPNNCm4dbyC8Lv1zHAcqTVLvfz5779",
       "riotHandle": "@tothemars1:matrix.org",
-      "kyc": true
-    },
-    {
-      "slotId": 835,
-      "name": "Block shield-2",
-      "stash": "G28CD89C2iv7FiYDge4GMLQXGo1vNj4EAssVoWPLjCFJn47",
-      "riotHandle": "@blockshield:matrix.org",
       "kyc": true
     },
     {
@@ -6024,6 +5884,454 @@
       "name": "MoonMission^01",
       "stash": "E7bFzAqAyMDiG8eZKLfXFxtq7Pth3C6oRhKEwHXo1XdAjCy",
       "riotHandle": "@sangalliglenna:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 865,
+      "name": "StormSpirit",
+      "stash": "DrznicXfvf1jXMJHkGeH1xbkB7pKVW6TRcCXrsfFMREcuuE",
+      "riotHandle": "@mildredaneymeyer:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 866,
+      "name": "StormSpirit*01",
+      "stash": "EfsE3uZyitCYPM1QwrkZ8AHVyFFxTRUKcMcJkUv7AqLgji6",
+      "riotHandle": "@mildredaneymeyer:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 867,
+      "name": "schmiatz",
+      "stash": "HvDGXc3twtF21iz2vWPPxZJDk7pX2KEnZQyNCQMhkHa2vQF",
+      "riotHandle": "@matthias91:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 868,
+      "name": "schmiatz-2",
+      "stash": "DchRVyJaSZFeuUph9QJ33A9N2ERMSQVz7EkdLZoN7AVQgfA",
+      "riotHandle": "@matthias91:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 869,
+      "name": "Infrapix",
+      "stash": "HvxduhJsgb4LXq8o3daPExA8B21NQWuL12yH4SNgbE3syn7",
+      "riotHandle": "@uyifazih:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 870,
+      "name": "Infrapix<2>",
+      "stash": "GU5vb54JbDdn69k2G8Wfnf7yJXFCR2MpFkgsXyrt37LPF1F",
+      "riotHandle": "@uyifazih:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 871,
+      "name": "🦾🤖 IvoryNode 🤖🦾",
+      "stash": "GUibN3wkgbXrE9bbrfDZzUQrdanEusMD4tfiEXAzYUT24rL",
+      "riotHandle": "@white_snowflake:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 872,
+      "name": "🦿🤖 WhiteNode 🤖🦿",
+      "stash": "DaS8Qc4fzpa7DVyV5NsvMUpLDHQzyFG3BNx7977qMUTbbeq",
+      "riotHandle": "@white_snowflake:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 873,
+      "name": "Byte vista",
+      "stash": "FaNAro9FXxT11LHSC8seGZRYus66QsTN2fwGPZ22UhZiDmG",
+      "riotHandle": "@cardonajocabed:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 874,
+      "name": "Byte vista2",
+      "stash": "FtCUPi9W3Nsh1QQ7DdihpiAdxxnZ5dADVeHFwJNpWL44kEU",
+      "riotHandle": "@cardonajocabed:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 875,
+      "name": "Codeglow",
+      "stash": "FnmHaY5Qhd5yFKg7MnwJc71WWmjzWEGLmiNR2wpVrGbk7ik",
+      "riotHandle": "@trudiebakanauskas210:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 876,
+      "name": "Codeglow/1",
+      "stash": "Evnqha2ayRvDqCHSbxMQDpVarNeAL4p4byU91wyn9R9K7mZ",
+      "riotHandle": "@trudiebakanauskas210:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 877,
+      "name": "lu191",
+      "stash": "GcS4vrQDVehpHW3poqZB5s8GzQqEJEFyoEm4AdqU3VwSGzu",
+      "riotHandle": "@lu191:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 878,
+      "name": "Carpediem/2",
+      "stash": "E3Q2oL2VUi9jUoe2cgACA5KWVkcnoGjCTJcTe6LhpvuxgVV",
+      "riotHandle": "@jdiem:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 879,
+      "name": "Goldmine",
+      "stash": "D6QYxEJ85XQnGQwAuNhDevniAxPC6RG4SyRmiJDjLeXv9oH",
+      "riotHandle": "@brendanvaca6:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 880,
+      "name": "Goldmine01",
+      "stash": "EM7spSRFxh4KrYoC9fjnaeS4ws9tjP663ssFjFzsVMXQgBM",
+      "riotHandle": "@brendanvaca6:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 881,
+      "name": "Edge",
+      "stash": "J2JHGJ5AUf9HaHW5S5xTokQ8vqtSpXKs1ymEpFwQVp8aSFh",
+      "riotHandle": "@jacksonsedge:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 882,
+      "name": "Edge2",
+      "stash": "GjoJCZh2CrZFtQTd3JUmacGq1L5mNokzSHKKoUL3kcFWChV",
+      "riotHandle": "@jacksonsedge:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 883,
+      "name": "grimface",
+      "stash": "GFEdjfCTxTPEuyUh3BuTT3Gi6bnUJnvd1XA4Rp28AdRgS1Z",
+      "riotHandle": "@grimface:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 884,
+      "name": "Bendak",
+      "stash": "HTyDz5Mn1wyzP7sNkzX8Easz8TfvvuU6qzsHvqWtwjWuq47",
+      "riotHandle": "@bendak:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 885,
+      "name": "🧀 Cheesecake 🍰",
+      "stash": "DCs1XdLb5DANJFLqsas495XQziga836ERTLKJdgXuQaWRjR",
+      "riotHandle": "@cake.stake:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 886,
+      "name": "🍫 Chocolate Cake 🍰",
+      "stash": "Ee1NLHs5FtsCMJ2bgASoCLsyZ958PRJhfxXQfWJN4bNGfzi",
+      "riotHandle": "@cake.stake:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 887,
+      "name": "1kNode",
+      "stash": "CddSbv4CbLDJWWCnKgtKh3dP29Y9jf4oJN8oGftr1hzL3VB",
+      "riotHandle": "@vlad1knode:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 888,
+      "name": "tentbakers",
+      "stash": "GfECgQybYBKTcSC5VYdnJmUftzvvrQHRGTbsaCQgKz9WFNe",
+      "riotHandle": "@tentbakers:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 889,
+      "name": "🚀alko989🌛",
+      "stash": "CzZXUsi6QyWMpL2UQZf3sWh7piQ6ngTASAX5WoVNrHFtUmK",
+      "riotHandle": "@alko989:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 890,
+      "name": "Panda",
+      "stash": "HPandpXxDEa4urwbJKuGtAP6sDymnea5ZqAFWbDszCMpnC2",
+      "riotHandle": "@panda_warrior:matrix.org",
+      "kyc": true
+    },    
+    {
+      "slotId": 891,
+      "name": "Fialka",
+      "stash": "GNkUApzhV9JYiP3AjhTdKmSmaa48dZzwVkgbKAoWzUeztiS",
+      "riotHandle": "@s.stegno:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 892,
+      "name": "Profit link",
+      "stash": "Hhx2EoL2J4UYFSdGQZhnX2MFjKcvV5VLHya4cvYEVVErTv4",
+      "riotHandle": "@garciaprod:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 893,
+      "name": "Profit link#2",
+      "stash": "FFSNygB3BUXE9EhfuPvaD64RkHU3DwaxdkUUqi7wBuMbj2E",
+      "riotHandle": "@garciaprod:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 894,
+      "name": "BitDash",
+      "stash": "HUJhxL8s4QxZebKS8VV9sMAJocVrUd1GnB6qHbfpmjmfKba",
+      "riotHandle": "@bitdash:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 895,
+      "name": "BitDash-one",
+      "stash": "F835ej5eVaRobkeLk3RcbHHHzpe6HfqgnMCWAugjdzB1pTx",
+      "riotHandle": "@bitdash:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 896,
+      "name": "Pricelogic",
+      "stash": "Cx5NZV7VaFTBybbTeWHRqrc9AqyYg1eqU7qcXHLte3f6vuB",
+      "riotHandle": "@raidani:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 897,
+      "name": "Priceunlogic",
+      "stash": "CbUz4WyUwW2CRtDhNJQMsNmFmryq2NTUnevQUWf2hek1Y5g",
+      "riotHandle": "@raidani:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 898,
+      "name": "Winterspring/2",
+      "stash": "FLRVGoXh9jkybPVngzrydK3WcRqCUrQ9TMTSCu7adgAeU5a",
+      "riotHandle": "@winterspring:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 899,
+      "name": "Currencyx",
+      "stash": "CfaUrAbVqqirEByiXFhgmS34dZq3nJpy6sKYtFHvSr3uQuG",
+      "riotHandle": "@ksmkvnode:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 900,
+      "name": "Currencyx/1",
+      "stash": "JF48Ln5rYaNHwUWajfXzaazEPFUpa1sKpeVaugWPmrEZGwd",
+      "riotHandle": "@ksmkvnode:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 901,
+      "name": "Connectify",
+      "stash": "H7YMaxGnf7gaTBwSL2LPFSs4YwmfXh9RjavjmduGnfmD14q",
+      "riotHandle": "@connectify:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 902,
+      "name": "Connectify02",
+      "stash": "EM7zFxNYJzH2tvVy1xjwDkurEBaZ77g9zF6UbGTrSRN5equ",
+      "riotHandle": "@connectify:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 903,
+      "name": "VIXY",
+      "stash": "FPkHYKqHUCUsn7JEzVdxwt6Lwsg8qMNKxqXb1ec1BYoJk1B",
+      "riotHandle": "@vixy:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 904,
+      "name": "VIXYtwo",
+      "stash": "CdaBpYvD9KE5nhKqisR2xD5bjYZZTBojMdFm5TmAMfMMtyR",
+      "riotHandle": "@vixy:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 905,
+      "name": "Prima Labs",
+      "stash": "HCfj3XBhUrjEW24ywn1doYaz3aFQ6KtKRwW8oncfQkgZrfQ",
+      "riotHandle": "@primapolkadot:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 906,
+      "name": "Prima Labsxone",
+      "stash": "F5THWpAdZLpcHeiN2k3kuu3y4uZUek2HudXS5VMrcmQsbi3",
+      "riotHandle": "@primapolkadot:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 907,
+      "name": "vita567",
+      "stash": "HsVe9jQaNe32nuXsmuiJ8ZddoifhsHxQdNVpJDssQe6QZTE",
+      "riotHandle": "@vita567:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 908,
+      "name": "Unicombase",
+      "stash": "D6G4FtTLMUgkfukQWkrYdp9kYGftb8RqFuA9M8WUGz4WsYX",
+      "riotHandle": "@kusamabasedot:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 909,
+      "name": "Unicombasetop",
+      "stash": "GvWjHacawE8phxTfuxQYF1vcqduBCGs1YFPgdPxrNiAPFvo",
+      "riotHandle": "@kusamabasedot:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 910,
+      "name": "Hodloni",
+      "stash": "GS52seSoLyUJwv9ZuTeGpdMw9RnUhkP5oEscLrpZPHU79D3",
+      "riotHandle": "@maxhodl:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 911,
+      "name": "Hodloni#2",
+      "stash": "Eyb4bzFYhDakodXRMe9YjdvBRRhSYvrkeGyWZebHxxaRvtU",
+      "riotHandle": "@maxhodl:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 912,
+      "name": "eagle",
+      "stash": "Ez8y1UdrjnPxaXKCAARhwzZuATxLYvjKJZjibeFq9rXQSWX",
+      "riotHandle": "@eagle-node:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 913,
+      "name": "hanzel",
+      "stash": "D8kBtp7x8KAHfxmiSx44kX4AUwZstWzQ3m25kcPBs8vEByL",
+      "riotHandle": "@henzel:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 914,
+      "name": "ARNOLDSMANGO",
+      "stash": "DG6egJCfrcNPMSFYihxxPxtWvMwq3GR5k3pUS4pHouamuTv",
+      "riotHandle": "@arnoldsmango:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 915,
+      "name": "AILand",
+      "stash": "FJUN4Z5fG9KpUGDMa8t54bf3CfNrmW9wQkdDBeTvw2ihFsi",
+      "riotHandle": "@ailandpolkadot:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 916,
+      "name": "AILand*01",
+      "stash": "D2pMeJDH3HV1pw85nab1XyWzjoXk5mAuAvbsNDaUe4wK4pp",
+      "riotHandle": "@ailandpolkadot:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 917,
+      "name": "Gardmillionaire",
+      "stash": "H9jhM1RZUdkH6YWYZ2mH2i7PLGVK8nUFd6vvyEC8NysfPms",
+      "riotHandle": "@gardmillionaire:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 918,
+      "name": "Gardbillionaire",
+      "stash": "GHtZcSn1zRxnHEwnTXP8CdQ3cJqRDiaHbVwgj2zsz8p4k2w",
+      "riotHandle": "@gardmillionaire:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 919,
+      "name": "Harvey Stacker | 1",
+      "stash": "EARoKtJsTUyCzgFvQyfQUxTSFZbujxbF2hh5KaK9tR7oXM8",
+      "riotHandle": "@harveystacker:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 920,
+      "name": "Harvey Stacker | 2",
+      "stash": "JH6SSmYRZGmF8P8q2NbDQJMqwYhUziWRona6gupwx7FU7yg",
+      "riotHandle": "@harveystacker:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 921,
+      "name": "Bendak-K2",
+      "stash": "FWuzh4tfs4t3EkxNjiCkrtqNtNGKNfrTEWwf8tPmiVzVJGe",
+      "riotHandle": "@bendak:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 922,
+      "name": "LightGiant-Kusama-01",
+      "stash": "H7tcRT8HQqJShsFH15qqJbBPEUu3z7rejKn7CRSgnGGyZv3",
+      "riotHandle": "@lightgiant:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 923,
+      "name": "Siamless",
+      "stash": "HqhG8w8VGyDC6ABM4deZ1y3eYZWbtWk9Src5AgeBAvAZJpx",
+      "riotHandle": "@siamless:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 924,
+      "name": "Siamless/2",
+      "stash": "F86u4y5nc89LiG51ee8Qc29qh75cDTa9AL5wD3iweNxdFWz",
+      "riotHandle": "@siamless:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 925,
+      "name": "Orbitaaltcoin",
+      "stash": "GhjzkKEHeJ8eaCQgy157yLbyWyJ33fgS6vikmmZgCFvYkCo",
+      "riotHandle": "@galofitzgerald:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 926,
+      "name": "Orbitaaltcoin-2",
+      "stash": "G1udSPpAQj3RgH8LxMHnnSmqteTdsWn1tzfTYpzbbUTWhvr",
+      "riotHandle": "@galofitzgerald:matrix.org",
+      "kyc": true
+    },    
+    {
+      "slotId": 927,
+      "name": "GEX44",
+      "stash": "Hjc2QCxoE3GdbropvgcuVKwf4MvQD5HB7nouvACA68RrTAf",
+      "riotHandle": "@gex44:matrix.org",
+      "kyc": true
+    },    
+    {
+      "slotId": 928,
+      "name": "GEX45",
+      "stash": "JEZcM4wdyWY7W7cewHEJ8Qsc2V9yQoyKRgYWUdCd8Jx6o1x",
+      "riotHandle": "@gex44:matrix.org",
       "kyc": true
     }
   ]

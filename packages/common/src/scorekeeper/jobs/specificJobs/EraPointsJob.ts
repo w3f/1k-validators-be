@@ -82,7 +82,7 @@ export const eraPointsJob = async (
       });
 
       logger.info(
-        `Processed Era Points for Era: ${i} (${activeEra - i}/${activeEra})`,
+        `Processed Era Points for Era: ${i} (${activeEra - i}/${Constants.ERAPOINTS_JOB_MAX_ERAS})`,
         erapointsLabel,
       );
     }

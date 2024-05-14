@@ -6326,6 +6326,20 @@
       "stash": "G1udSPpAQj3RgH8LxMHnnSmqteTdsWn1tzfTYpzbbUTWhvr",
       "riotHandle": "@galofitzgerald:matrix.org",
       "kyc": true
+    },    
+    {
+      "slotId": 928,
+      "name": "GEX44",
+      "stash": "Hjc2QCxoE3GdbropvgcuVKwf4MvQD5HB7nouvACA68RrTAf",
+      "riotHandle": "@gex44:matrix.org",
+      "kyc": true
+    },    
+    {
+      "slotId": 929,
+      "name": "GEX45",
+      "stash": "JEZcM4wdyWY7W7cewHEJ8Qsc2V9yQoyKRgYWUdCd8Jx6o1x",
+      "riotHandle": "@gex44:matrix.org",
+      "kyc": true
     }
   ]
 }

@@ -6298,6 +6298,20 @@
       "stash": "H7tcRT8HQqJShsFH15qqJbBPEUu3z7rejKn7CRSgnGGyZv3",
       "riotHandle": "@lightgiant:matrix.org",
       "kyc": true
+    },
+    {
+      "slotId": 924,
+      "name": "Siamless",
+      "stash": "HqhG8w8VGyDC6ABM4deZ1y3eYZWbtWk9Src5AgeBAvAZJpx",
+      "riotHandle": "@siamless:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 925,
+      "name": "Siamless/2",
+      "stash": "F86u4y5nc89LiG51ee8Qc29qh75cDTa9AL5wD3iweNxdFWz",
+      "riotHandle": "@siamless:matrix.org",
+      "kyc": true
     }
   ]
 }

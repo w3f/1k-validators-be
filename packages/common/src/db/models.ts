@@ -88,6 +88,7 @@ export enum InvalidityReasonType {
   KUSAMA_RANK = "KUSAMA_RANK",
   PROVIDER = "PROVIDER",
   BEEFY = "BEEFY",
+  SANCTIONED_GEO_AREA = "SANCTIONED_GEO_AREA",
 }
 
 export interface InvalidityReason {
@@ -117,6 +118,7 @@ export const InvalidityReason = new Schema({
       "KUSAMA_RANK",
       "PROVIDER",
       "BEEFY",
+      "SANCTIONED_GEO_AREA",
     ],
     default: "NEW",
   },
@@ -141,8 +143,8 @@ export interface ValidatorSet {
 }
 
 export const ValidatorSetSchema = new Schema({
-  session: Number,
-  era: Number,
+  session: { type: Number, index: true },
+  era: { type: Number, index: true },
   validators: [String],
 });
 

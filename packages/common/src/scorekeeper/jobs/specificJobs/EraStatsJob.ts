@@ -76,7 +76,7 @@ export const eraStatsJob = async (
       updated: Date.now(),
     });
 
-    for (let i = currentEra; i > 20; i--) {
+    for (let i = currentEra; i > currentEra - 20; i--) {
       if (await queries.validatorSetExistsForEra(i)) {
         continue;
       }

@@ -22,7 +22,7 @@ spec:
       env:
         - name: HELM_VALUES
           value: |
-            schedule: "0 12 * * *"
+            schedule: "0 */6 * * *"
 
 --- 
 
@@ -50,4 +50,4 @@ spec:
       env:
         - name: HELM_VALUES
           value: |
-            schedule: "0 12 * * *"
+            schedule: "0 */6 * * *"

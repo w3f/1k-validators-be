@@ -1,4 +1,4 @@
-import { logger } from "../index";
+import { ChainData, logger } from "../index";
 import { allCandidates, Candidate, setLastValid, setValid } from "../db";
 import { constraintsLabel, OTV } from "./constraints";
 import {
@@ -15,12 +15,14 @@ import {
   checkSelfStake,
   checkUnclaimed,
   checkValidateIntention,
+  checkSanctionedGeoArea,
 } from "./ValidityChecks";
 import { percentage, timeRemaining } from "../utils/util";
 
 export const checkCandidate = async (
   constraints: OTV,
   candidate: Candidate,
+  validators: string[],
 ): Promise<boolean> => {
   try {
     let valid = false;
@@ -32,8 +34,8 @@ export const checkCandidate = async (
 
     const validateValid = await checkValidateIntention(
       constraints.config,
-      constraints.chaindata,
       candidate,
+      validators,
     );
     if (!validateValid) {
       logger.info(
@@ -61,7 +63,10 @@ export const checkCandidate = async (
       );
     }
 
-    const identityValid = await checkIdentity(constraints.chaindata, candidate);
+    const identityValid =
+      constraints.config?.constraints?.skipIdentity == true
+        ? true
+        : (await checkIdentity(constraints.chaindata, candidate)) || false;
     if (!identityValid) {
       logger.info(`${candidate.name} identity not valid`, constraintsLabel);
     }
@@ -129,6 +134,12 @@ export const checkCandidate = async (
       logger.info(`${candidate.name} beefy keys not valid`, constraintsLabel);
     }
 
+    const sanctionedGeoAreaValid =
+      constraints.config?.constraints?.sanctionedGeoArea?.skip == true
+        ? true
+        : (await checkSanctionedGeoArea(constraints.config, candidate)) ||
+          false;
+
     valid =
       onlineValid &&
       validateValid &&
@@ -142,12 +153,13 @@ export const checkCandidate = async (
       blockedValid &&
       kusamaValid &&
       providerValid &&
-      beefyValid;
+      beefyValid &&
+      sanctionedGeoAreaValid;
 
-    await setValid(candidate.stash, valid);
+    await setValid(candidate, valid);
 
     if (valid) {
-      await setLastValid(candidate.stash);
+      await setLastValid(candidate);
     }
     return valid;
   } catch (e) {
@@ -158,14 +170,16 @@ export const checkCandidate = async (
 
 export const checkAllCandidates = async (
   constraints: OTV,
+  chaindata: ChainData,
 ): Promise<boolean> => {
   try {
     const candidates = await allCandidates();
+    const validators = await chaindata.getValidators();
     logger.info(`checking ${candidates.length} candidates`, constraintsLabel);
     for (const [index, candidate] of candidates.entries()) {
       const start = Date.now();
 
-      const isValid = await constraints.checkCandidate(candidate);
+      const isValid = await constraints.checkCandidate(candidate, validators);
       const end = Date.now();
       const time = `(${end - start}ms)`;
       const remaining = timeRemaining(

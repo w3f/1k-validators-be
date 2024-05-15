@@ -35,6 +35,7 @@ export const validityJob = async (
   try {
     const { constraints } = metadata;
     const candidates = await allCandidates();
+    const validators = await metadata.chaindata.getValidators();
     logger.info(`Checking ${candidates.length} candidates`, constraintsLabel);
 
     // Calculate total number of candidates
@@ -43,7 +44,7 @@ export const validityJob = async (
     for (const [index, candidate] of candidates.entries()) {
       const start = Date.now();
 
-      const isValid = await constraints.checkCandidate(candidate);
+      const isValid = await constraints.checkCandidate(candidate, validators);
       const end = Date.now();
       const time = `(${end - start}ms)`;
       const remaining = timeRemaining(index + 1, totalCandidates, end - start);
@@ -81,57 +82,6 @@ export const validityJobWithTiming = withExecutionTimeLogging(
   constraintsLabel,
   "Validity Job Done",
 );
-
-export const candidateValidityJob = async (
-  constraints: Constraints.OTV,
-  candidateAddress: string,
-) => {
-  try {
-    const start = Date.now();
-
-    const candidate = await queries.getCandidateByStash(candidateAddress);
-    if (candidate) {
-      await constraints.checkCandidate(candidate);
-
-      const end = Date.now();
-      const executionTime = (end - start) / 1000;
-
-      logger.info(
-        `validity for ${candidate.name} Done. (${executionTime}s)`,
-        constraintsLabel,
-      );
-    }
-  } catch (e) {
-    logger.error(`Error running validity job: ${e}`, constraintsLabel);
-  }
-};
-
-export const individualScoreJob = async (
-  constraints: Constraints.OTV,
-  candidateAddress: string,
-) => {
-  try {
-    const start = Date.now();
-    const candidate = await queries.getCandidateByStash(candidateAddress);
-    if (candidate) {
-      let scoreMetadata = await queries.getLatestValidatorScoreMetadata();
-      if (!scoreMetadata) {
-        logger.warn(
-          `no score metadata, cannot score candidates`,
-          constraintsLabel,
-        );
-        await constraints.setScoreMetadata();
-        scoreMetadata = await queries.getLatestValidatorScoreMetadata();
-      }
-      await constraints.scoreCandidate(candidate, scoreMetadata);
-
-      const end = Date.now();
-      const executionTime = (end - start) / 1000;
-    }
-  } catch (e) {
-    logger.error(`Error running individual score job: ${e}`, constraintsLabel);
-  }
-};
 
 export const scoreJob = async (
   metadata: JobRunnerMetadata,

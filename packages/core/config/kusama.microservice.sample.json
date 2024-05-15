@@ -16,13 +16,18 @@
   },
   "constraints": {
     "skipConnectionTime": true,
-    "skipIdentity": false,
+    "skipIdentity": true,
     "skipClientUpgrade": false,
     "skipUnclaimed": false,
     "forceClientVersion": "v0.9.30",
     "minSelfStake": 10000000000000,
     "commission": 150000000,
-    "unclaimedEraThreshold": 4
+    "unclaimedEraThreshold": 4,
+    "sanctionedGeoArea": {
+      "skip": false,
+      "sanctionedCountries": ["XXX"],
+      "sanctionedRegions": ["XXX"]
+    }
   },
   "db": {
     "mongo": {

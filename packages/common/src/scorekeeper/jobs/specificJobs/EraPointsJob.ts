@@ -1,4 +1,4 @@
-import { ChainData, logger, queries } from "../../../index";
+import { ChainData, Constants, logger, queries } from "../../../index";
 import { Job, JobConfig, JobRunnerMetadata, JobStatus } from "../JobsClass";
 import { jobStatusEmitter } from "../../../Events";
 import { withExecutionTimeLogging } from "../../../utils";
@@ -27,7 +27,7 @@ export const individualEraPointsJob = async (
       const data = await chaindata.getTotalEraPoints(eraIndex);
       if (
         data &&
-        data.era &&
+        data.era == eraIndex &&
         data.total &&
         data.validators &&
         data.validators.length > 0
@@ -63,16 +63,15 @@ export const eraPointsJob = async (
     //    - if a record doesn't exist, create it
     const [activeEra, err] = await chaindata.getActiveEraIndex();
 
-    // Calculate total number of eras to process
-    const totalEras = activeEra;
-    let processedEras = 0;
-
-    for (let i = activeEra - 1; i >= 0; i--) {
+    for (
+      let i = activeEra - 1, processedEras = 1;
+      i >= activeEra - Constants.ERAPOINTS_JOB_MAX_ERAS;
+      i--, processedEras++
+    ) {
       await individualEraPointsJob(chaindata, i);
 
       // Calculate progress percentage
-      processedEras++;
-      const progress = (processedEras / totalEras) * 100;
+      const progress = (processedEras / Constants.ERAPOINTS_JOB_MAX_ERAS) * 100;
 
       // Emit progress update with active era as iteration
       jobStatusEmitter.emit("jobProgress", {
@@ -83,7 +82,7 @@ export const eraPointsJob = async (
       });
 
       logger.info(
-        `Processed Era Points for Era: ${i} (${activeEra - i}/${activeEra})`,
+        `Processed Era Points for Era: ${i} (${activeEra - i}/${Constants.ERAPOINTS_JOB_MAX_ERAS})`,
         erapointsLabel,
       );
     }

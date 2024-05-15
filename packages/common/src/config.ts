@@ -31,6 +31,11 @@ export type ConfigSchema = {
     minSelfStake: number;
     commission: number;
     unclaimedEraThreshold: number;
+    sanctionedGeoArea?: {
+      skip: boolean;
+      sanctionedCountries: string[];
+      sanctionedRegions: string[];
+    };
   };
   cron: {
     monitor: string;

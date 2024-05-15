@@ -55,12 +55,18 @@ spec:
                 },
                 "constraints": {
                   "skipConnectionTime": true,
-                  "skipIdentity": false,
+                  "skipIdentity": true,
                   "skipClientUpgrade": false,
                   "skipUnclaimed": true,
                   "minSelfStake": 10000000000000,
                   "commission": 150000000,
-                  "unclaimedEraThreshold": 4
+                  "unclaimedEraThreshold": 4,
+                  "sanctionedGeoArea": {
+                    "skip": false,
+                    "sanctionedCountries": ["RU", "IR", "CU", "KP", "SY"],
+                    "sanctionedRegions": ["Crimea", "Autonomous Republic of Crimea", "Republic of Crimea", "Luhansk", "Luhanska Oblast", "Luhanska", "Luganskaya Oblast’", "Luganskaya", "Donetsk", "Donetska Oblast", "Donetskaya Oblast’", "Donetska", "Donetskaya", "Sevastopol City", "Sevastopol", "Gorod Sevastopol"]
+                  },
+                  "forceClientVersion": "v1.10.0"
                 },
                 "cron": {
                   "monitor": "0 */15 * * * *",

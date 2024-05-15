@@ -100,12 +100,15 @@ export class OTV implements Constraints {
 
   // Checks the validity of all candidates
   async checkAllCandidates(): Promise<boolean> {
-    return await checkAllCandidates(this);
+    return await checkAllCandidates(this, this.chaindata);
   }
 
   // Check the candidate and set any invalidity fields
-  async checkCandidate(candidate: Candidate): Promise<boolean> {
-    return await checkCandidate(this, candidate);
+  async checkCandidate(
+    candidate: Candidate,
+    validators: string[],
+  ): Promise<boolean> {
+    return await checkCandidate(this, candidate, validators);
   }
 
   async scoreAllCandidates(): Promise<boolean> {

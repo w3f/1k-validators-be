@@ -46,7 +46,10 @@ export const getTotalEraPoints = async (
     if (!chainType) {
       return {} as EraPointsInfo;
     }
-    const [blockHash, err] = await chaindata.findEraBlockHash(era, chainType);
+    const [blockHash, err] = await chaindata.findEraBlockHash(
+      era + 1,
+      chainType,
+    );
 
     if (blockHash) {
       const apiAt = await chaindata?.api?.at(blockHash);
@@ -204,12 +207,12 @@ export const findEraBlockHash = async (
         return ["", "API at block hash is null"];
       }
 
-      const testEra = await apiAt.query.staking.currentEra();
+      const testEra = await apiAt.query.staking.activeEra();
       if (testEra && testEra.isEmpty) {
         logger.info(`Test era is empty: ${JSON.stringify(testEra)}`);
         return ["", "Test era is none"];
       }
-      const testIndex = testEra.unwrap().toNumber();
+      const testIndex = testEra.unwrap().index.toNumber();
       if (era == testIndex) {
         return [blockHash.toString(), null];
       }

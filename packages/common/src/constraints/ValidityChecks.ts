@@ -44,11 +44,10 @@ export const checkOnline = async (candidate: Candidate): Promise<boolean> => {
 // Check the validate intention for a single validator
 export const checkValidateIntention = async (
   config: Config.ConfigSchema,
-  chaindata: ChainData,
   candidate: Candidate,
+  validators: string[],
 ): Promise<boolean> => {
   try {
-    const validators = await chaindata.getValidators();
     if (
       !validators?.length ||
       validators.includes(Util.formatAddress(candidate?.stash, config))
@@ -61,28 +60,6 @@ export const checkValidateIntention = async (
     return false;
   } catch (e) {
     logger.error(`Error checking validate intention: ${e}`, constraintsLabel);
-    throw new Error("could not make validity check");
-  }
-};
-
-// checks the validate intention for all validators
-export const checkAllValidateIntentions = async (
-  config: Config.ConfigSchema,
-  chaindata: ChainData,
-  candidates: Candidate[],
-): Promise<boolean> => {
-  try {
-    const validators = await chaindata.getValidators();
-    for (const candidate of candidates) {
-      if (!validators.includes(Util.formatAddress(candidate.stash, config))) {
-        await setValidateIntentionValidity(candidate, false);
-      } else {
-        await setValidateIntentionValidity(candidate, true);
-      }
-    }
-    return true;
-  } catch (e) {
-    logger.error(`Error checking validate intentions: ${e}`, constraintsLabel);
     throw new Error("could not make validity check");
   }
 };

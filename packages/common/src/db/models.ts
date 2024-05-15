@@ -143,8 +143,8 @@ export interface ValidatorSet {
 }
 
 export const ValidatorSetSchema = new Schema({
-  session: Number,
-  era: Number,
+  session: { type: Number, index: true },
+  era: { type: Number, index: true },
   validators: [String],
 });
 

@@ -27,7 +27,7 @@ export const individualEraPointsJob = async (
       const data = await chaindata.getTotalEraPoints(eraIndex);
       if (
         data &&
-        data.era &&
+        data.era == eraIndex &&
         data.total &&
         data.validators &&
         data.validators.length > 0

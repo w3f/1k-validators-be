@@ -55,7 +55,7 @@ spec:
                 },
                 "constraints": {
                   "skipConnectionTime": true,
-                  "skipIdentity": false,
+                  "skipIdentity": true,
                   "skipClientUpgrade": false,
                   "skipUnclaimed": true,
                   "minSelfStake": 10000000000000,

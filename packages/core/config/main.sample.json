@@ -20,7 +20,7 @@
   },
   "constraints": {
     "skipConnectionTime": true,
-    "skipIdentity": false,
+    "skipIdentity": true,
     "skipStakedDestination": true,
     "skipClientUpgrade": true,
     "skipUnclaimed": true,

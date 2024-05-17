@@ -9,7 +9,9 @@ export class ClearOfflineJob extends Job {
   }
 }
 
-export const clearOfflineJob = async (jobRunnerMetadata?: JobRunnerMetadata) => {
+export const clearOfflineJob = async (
+  jobRunnerMetadata?: JobRunnerMetadata,
+) => {
   jobStatusEmitter.emit("jobProgress", {
     name: JobNames.ClearOffline,
     progress: 0,

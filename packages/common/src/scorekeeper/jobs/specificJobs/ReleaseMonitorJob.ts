@@ -12,7 +12,9 @@ export class MonitorJob extends Job {
   }
 }
 
-export const getLatestTaggedRelease = async (jobRunnerMetadata?: JobRunnerMetadata) => {
+export const getLatestTaggedRelease = async (
+  jobRunnerMetadata?: JobRunnerMetadata,
+) => {
   try {
     const start = Date.now();
 

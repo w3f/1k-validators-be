@@ -21,6 +21,8 @@ import { staleNominationJob } from "./specificJobs/StaleNomination";
 import { clearOfflineJob } from "./specificJobs/ClearOfflineJob";
 import { JobConfig } from "./types";
 
+// TODO: remove this enum, generate name based on the jobKey instead,
+// store job name as a Job Class attribute
 export enum JobNames {
   ActiveValidator = "ActiveValidatorJob",
   Monitor = "MonitorJob",

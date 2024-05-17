@@ -1,4 +1,3 @@
-import { ConfigSchema } from "../../config";
 import { ApiHandler, ChainData, Config, Constraints } from "../../index";
 import MatrixBot from "../../matrix";
 import Nominator from "../../nominator/nominator";
@@ -22,14 +21,7 @@ export type JobConfig = {
   preventOverlap?: boolean;
 };
 
-// JobDefinition abstraction is an intermediate stage of refactoring
-// TODO: JobDefinition => JobConfig
-export type JobDefinition = {
-  jobKey: keyof ConfigSchema["cron"] | "";
-  defaultFrequency: string;
-  jobFunction: (metadata: JobRunnerMetadata) => Promise<any>;
-};
-
+// There is a dependency on status names in scorekeeper-status-ui
 type StatusName =
   | "running"
   | "finished"

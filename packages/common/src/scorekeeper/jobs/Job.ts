@@ -8,12 +8,14 @@ export class Job {
   protected jobConfig: JobConfig;
   protected jobRunnerMetadata: JobRunnerMetadata;
 
-  // TODO: remove this dependency injection during the next refactoring phases
+  // TODO: remove this dependency injection
   private startJobFunction: (
     metadata: JobRunnerMetadata,
     jobConfig: JobConfig,
   ) => Promise<void>;
 
+  // TODO: remove events and use db to handle the state
+  // then we can decouple scorekeeper and gateway
   static events: string[] = [
     "jobStarted",
     "jobRunning",
@@ -22,7 +24,6 @@ export class Job {
     "jobProgress",
   ];
 
-  // TODO: startJob as parameter
   constructor(jobConfig: JobConfig, jobRunnerMetadata: JobRunnerMetadata) {
     this.status = {
       name: jobConfig.name,
@@ -55,6 +56,7 @@ export class Job {
     await this.startJobFunction(this.jobRunnerMetadata, this.jobConfig);
   }
 
+  // TODO: remove this public interface after decoupling with the Gateway
   public getName(): string {
     return this.jobConfig.name;
   }

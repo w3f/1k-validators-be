@@ -10,16 +10,13 @@ import {
 } from "../index";
 
 import Nominator from "../nominator/nominator";
-import {
-  registerAPIHandler,
-  registerEventEmitterHandler,
-} from "./RegisterHandler";
-import { Job, JobRunnerMetadata, JobStatus } from "./jobs/JobsClass";
-import { JobsRunnerFactory } from "./jobs/JobsRunnerFactory";
+import { registerAPIHandler } from "./RegisterHandler";
+import { Job } from "./jobs/Job";
+import { JobRunnerMetadata, JobStatus } from "./jobs/types";
+import { jobConfigs } from "./jobs/JobConfigs";
 import { startRound } from "./Round";
 import { NominatorStatus } from "../types";
 import { setAllIdentities } from "../utils";
-// import { monitorJob } from "./jobs";
 
 export type NominatorGroup = Config.NominatorConfig[];
 
@@ -63,7 +60,6 @@ export default class ScoreKeeper {
     this.upSince = Date.now();
 
     registerAPIHandler(this.handler, this.config, this.chaindata, this.bot);
-    registerEventEmitterHandler(this);
   }
   public getJobsStatusAsJson() {
     const statuses: Record<string, JobStatus> = {};
@@ -74,25 +70,13 @@ export default class ScoreKeeper {
   }
 
   getAllNominatorBondedAddresses(): string[] {
-    const bondedAddresses = [];
-    const nomGroup = this.nominatorGroups;
-    if (nomGroup) {
-      for (const nom of nomGroup) {
-        bondedAddresses.push(nom?.bondedAddress);
-      }
-
-      return bondedAddresses;
-    } else {
-      return [];
-    }
+    return this.nominatorGroups
+      ? this.nominatorGroups.map((nom) => nom?.bondedAddress)
+      : [];
   }
 
   getAllNominatorStatus(): NominatorStatus[] {
-    const statuses = [];
-    for (const nom of this.nominatorGroups) {
-      statuses.push(nom.getStatus());
-    }
-    return statuses;
+    return this.nominatorGroups.map((nom) => nom.getStatus());
   }
 
   getAllNominatorStatusJson() {
@@ -235,6 +219,14 @@ export default class ScoreKeeper {
     return true;
   }
 
+  startJobs(metadata: JobRunnerMetadata) {
+    this._jobs = jobConfigs.map((config) => {
+      const job = new Job(config, metadata);
+      job.run();
+      return job;
+    });
+  }
+
   // Begin the main workflow of the scorekeeper
   async begin(): Promise<boolean> {
     try {
@@ -294,9 +286,7 @@ export default class ScoreKeeper {
         currentTargets: this.currentTargets,
       };
 
-      const jobRunner = await JobsRunnerFactory.makeJobs(metadata);
-
-      this._jobs = await jobRunner.startJobs();
+      this.startJobs(metadata);
       this.isStarted = true;
       return true;
     } catch (e) {

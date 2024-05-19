@@ -1,16 +1,10 @@
-import { Job, JobConfig, JobRunnerMetadata } from "../JobsClass";
+import { JobEvent, JobKey, JobRunnerMetadata } from "../types";
 import logger from "../../../logger";
 import { Constants, queries, Util } from "../../../index";
-import { cronLabel } from "../cron/StartCronJobs";
 import { jobStatusEmitter } from "../../../Events";
-import { JobNames } from "../JobConfigs";
 import { NominatorState, NominatorStatus } from "../../../types";
 
-export class ExecutionJob extends Job {
-  constructor(jobConfig: JobConfig, jobRunnerMetadata: JobRunnerMetadata) {
-    super(jobConfig, jobRunnerMetadata);
-  }
-}
+export const cronLabel = { label: "Cron" };
 
 export const executionJob = async (
   metadata: JobRunnerMetadata,
@@ -47,10 +41,9 @@ export const executionJob = async (
 
     for (const [index, data] of allDelayed.entries()) {
       const progressPercentage = ((index + 1) / allDelayed.length) * 100;
-      jobStatusEmitter.emit("jobProgress", {
-        name: JobNames.Execution,
+      jobStatusEmitter.emit(JobEvent.Progress, {
+        name: JobKey.Execution,
         progress: progressPercentage,
-        updated: Date.now(),
         iteration: `Processed transaction: ${data.callHash}`,
       });
 
@@ -179,10 +172,9 @@ export const executionJob = async (
           nominator.lastEraNomination = era;
 
           // Create a Nomination Object
-          jobStatusEmitter.emit("jobProgress", {
-            name: JobNames.Execution,
+          jobStatusEmitter.emit(JobEvent.Progress, {
+            name: JobKey.Execution,
             progress: progressPercentage, // You can adjust this if needed
-            updated: Date.now(),
             iteration: `Executed transaction: ${data.callHash}`,
           });
           await queries.setNomination(
@@ -248,11 +240,10 @@ export const executionJob = async (
         await Util.sleep(7000);
       }
     }
-    jobStatusEmitter.emit("jobProgress", {
-      name: JobNames.Execution,
+    jobStatusEmitter.emit(JobEvent.Progress, {
+      name: JobKey.Execution,
       progress: 100,
-      updated: Date.now(),
-      message: "All transactions processed",
+      iteration: "All transactions processed",
     });
     return true;
   } catch (e) {

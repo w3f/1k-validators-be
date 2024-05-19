@@ -1,16 +1,10 @@
-import { Job, JobConfig, JobRunnerMetadata, JobStatus } from "../JobsClass";
+import { JobEvent, JobRunnerMetadata, JobStatus } from "../types";
 import logger from "../../../logger";
 import { queries } from "../../../index";
 import { startRound } from "../../Round";
 import { jobStatusEmitter } from "../../../Events";
-import { JobNames } from "../JobConfigs";
+import { JobKey } from "../types";
 import { NOMINATOR_SHOULD_NOMINATE_ERAS_THRESHOLD } from "../../../constants";
-
-export class MainScorekeeperJob extends Job {
-  constructor(jobConfig: JobConfig, jobRunnerMetadata: JobRunnerMetadata) {
-    super(jobConfig, jobRunnerMetadata);
-  }
-}
 
 const mainScoreKeeperLabel = { label: "MainScorekeeperJob" };
 
@@ -31,14 +25,11 @@ export const mainScorekeeperJob = async (
   const [activeEra, err] = await chaindata.getActiveEraIndex();
   if (err) {
     logger.warn(`CRITICAL: ${err}`, mainScoreKeeperLabel);
-    const errorStatus: JobStatus = {
-      status: "errored",
-      name: JobNames.MainScorekeeper,
-      updated: Date.now(),
+    jobStatusEmitter.emit(JobEvent.Failed, {
+      status: JobStatus.Failed,
+      name: JobKey.MainScorekeeper,
       error: JSON.stringify(err),
-    };
-
-    jobStatusEmitter.emit("jobErrored", errorStatus);
+    });
     return;
   }
 
@@ -79,14 +70,11 @@ export const mainScorekeeperJob = async (
         "Nominating is disabled in the settings and Dry Run is false. Skipping round.",
         mainScoreKeeperLabel,
       );
-      const errorStatus: JobStatus = {
-        status: "errored",
-        name: JobNames.MainScorekeeper,
-        updated: Date.now(),
+      jobStatusEmitter.emit(JobEvent.Failed, {
+        status: JobStatus.Failed,
+        name: JobKey.MainScorekeeper,
         error: "Nominating Disabled",
-      };
-
-      jobStatusEmitter.emit("jobErrored", errorStatus);
+      });
       return;
     } else {
       logger.info(
@@ -131,10 +119,9 @@ export const mainScorekeeperJob = async (
     );
 
     // Emit progress update event with custom iteration name
-    jobStatusEmitter.emit("jobProgress", {
-      name: JobNames.MainScorekeeper,
+    jobStatusEmitter.emit(JobEvent.Progress, {
+      name: JobKey.MainScorekeeper,
       progress,
-      updated: Date.now(),
       iteration: `Processed nominator group ${processedNominatorGroups}`,
     });
   }

@@ -45,6 +45,7 @@ export type ConfigSchema = {
     validity: string;
     validityEnabled: boolean;
     execution: string;
+    // TODO: add executionEnabled?
     scorekeeper: string;
     scorekeeperEnabled: boolean;
     cancel: string;

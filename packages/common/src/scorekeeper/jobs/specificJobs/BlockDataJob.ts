@@ -1,21 +1,15 @@
 import { ChainData, logger, queries } from "../../../index";
 import { CoinGeckoClient } from "coingecko-api-v3";
-import { Job, JobConfig, JobRunnerMetadata } from "../JobsClass";
+import { JobEvent, JobRunnerMetadata } from "../types";
 import { jobStatusEmitter } from "../../../Events";
 import { formatDateFromUnix, withExecutionTimeLogging } from "../../../utils";
 import { ApiDecoration } from "@polkadot/api/types";
 import { Block, EventRecord, Phase } from "@polkadot/types/interfaces";
 import type { FrameSystemEventRecord } from "@polkadot/types/lookup";
 import { Exposure } from "../../../chaindata/queries/ValidatorPref";
-import { JobNames } from "../JobConfigs";
+import { JobKey } from "../types";
 
 export const blockdataLabel = { label: "Block" };
-
-export class BlockDataJob extends Job {
-  constructor(jobConfig: JobConfig, jobRunnerMetadata: JobRunnerMetadata) {
-    super(jobConfig, jobRunnerMetadata);
-  }
-}
 
 export const blockJob = async (
   metadata: JobRunnerMetadata,
@@ -65,10 +59,9 @@ export const blockJob = async (
             blockdataLabel,
           );
         }
-        jobStatusEmitter.emit("jobProgress", {
-          name: JobNames.BlockData,
+        jobStatusEmitter.emit(JobEvent.Progress, {
+          name: JobKey.BlockData,
           progress: (latestCount / latestTotal) * 100,
-          updated: Date.now(),
           iteration: `Block processed: #${i}`,
         });
       }
@@ -104,10 +97,9 @@ export const blockJob = async (
             blockdataLabel,
           );
         }
-        jobStatusEmitter.emit("jobProgress", {
-          name: JobNames.BlockData,
+        jobStatusEmitter.emit(JobEvent.Progress, {
+          name: JobKey.BlockData,
           progress: (earliestCount / earliestTotal) * 100,
-          updated: Date.now(),
           iteration: `Block processed: #${i}`,
         });
       }

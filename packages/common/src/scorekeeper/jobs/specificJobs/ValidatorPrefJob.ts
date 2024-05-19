@@ -1,16 +1,9 @@
 import { logger, Models, queries } from "../../../index";
-import { Job, JobConfig, JobRunnerMetadata, JobStatus } from "../JobsClass";
+import { JobEvent, JobKey, JobRunnerMetadata, JobStatus } from "../types";
 import { jobStatusEmitter } from "../../../Events";
 import { withExecutionTimeLogging } from "../../../utils";
-import { JobNames } from "../JobConfigs";
 
 export const validatorPrefLabel = { label: "ValidatorPrefJob" };
-
-export class ValidatorPrefJob extends Job {
-  constructor(jobConfig: JobConfig, jobRunnerMetadata: JobRunnerMetadata) {
-    super(jobConfig, jobRunnerMetadata);
-  }
-}
 
 export const individualValidatorPrefJob = async (
   metadata: JobRunnerMetadata,
@@ -90,10 +83,9 @@ export const validatorPrefJob = async (
       );
 
       // Emit progress update event with candidate's name
-      jobStatusEmitter.emit("jobProgress", {
-        name: JobNames.ValidatorPref,
+      jobStatusEmitter.emit(JobEvent.Progress, {
+        name: JobKey.ValidatorPref,
         progress,
-        updated: Date.now(),
         iteration: `Processed candidate ${candidate.name}`,
       });
     }
@@ -104,14 +96,11 @@ export const validatorPrefJob = async (
       validatorPrefLabel,
     );
 
-    const errorStatus: JobStatus = {
-      status: "errored",
-      name: JobNames.ValidatorPref,
-      updated: Date.now(),
+    jobStatusEmitter.emit(JobEvent.Failed, {
+      status: JobStatus.Failed,
+      name: JobKey.ValidatorPref,
       error: JSON.stringify(e),
-    };
-
-    jobStatusEmitter.emit("jobErrored", errorStatus);
+    });
     return false;
   }
 };

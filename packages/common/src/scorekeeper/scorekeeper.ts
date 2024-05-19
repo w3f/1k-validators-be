@@ -12,7 +12,7 @@ import {
 import Nominator from "../nominator/nominator";
 import { registerAPIHandler } from "./RegisterHandler";
 import { Job } from "./jobs/Job";
-import { JobRunnerMetadata, JobStatus } from "./jobs/types";
+import { JobInfo, JobRunnerMetadata } from "./jobs/types";
 import { jobConfigs } from "./jobs/JobConfigs";
 import { startRound } from "./Round";
 import { NominatorStatus } from "../types";
@@ -49,7 +49,7 @@ export default class ScoreKeeper {
 
   public isStarted = false;
 
-  constructor(handler: ApiHandler, config: Config.ConfigSchema, bot: any) {
+  constructor(handler: ApiHandler, config: Config.ConfigSchema, bot?: any) {
     this.handler = handler;
     this.chaindata = new ChainData(this.handler);
     this.config = config;
@@ -62,9 +62,10 @@ export default class ScoreKeeper {
     registerAPIHandler(this.handler, this.config, this.chaindata, this.bot);
   }
   public getJobsStatusAsJson() {
-    const statuses: Record<string, JobStatus> = {};
+    const statuses: Record<string, JobInfo> = {};
     for (const job of this._jobs) {
-      statuses[job.getName()] = job.getStatus();
+      const status = job.getStatus();
+      statuses[status.name] = status;
     }
     return statuses;
   }
@@ -221,8 +222,13 @@ export default class ScoreKeeper {
 
   startJobs(metadata: JobRunnerMetadata) {
     this._jobs = jobConfigs.map((config) => {
-      const job = new Job(config, metadata);
-      job.run();
+      const job = new Job(
+        config.jobKey,
+        config.jobFunction,
+        config.defaultFrequency,
+        metadata,
+      );
+      job.start();
       return job;
     });
   }

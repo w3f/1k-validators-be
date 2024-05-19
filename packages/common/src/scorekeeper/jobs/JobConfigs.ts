@@ -19,138 +19,97 @@ import { executionJob } from "./specificJobs/ExecutionJob";
 import { cancelJob } from "./specificJobs/CancelJob";
 import { staleNominationJob } from "./specificJobs/StaleNomination";
 import { clearOfflineJob } from "./specificJobs/ClearOfflineJob";
-import { JobConfig } from "./types";
-
-// TODO: remove this enum, generate name based on the jobKey instead,
-// store job name as a Job Class attribute
-export enum JobNames {
-  ActiveValidator = "ActiveValidatorJob",
-  Monitor = "MonitorJob",
-  ClearOffline = "ClearOfflineJob",
-  Validity = "ValidityJob",
-  Score = "ScoreJob",
-  EraStats = "EraStatsJob",
-  EraPoints = "EraPointsJob",
-  Inclusion = "InclusionJob",
-  SessionKey = "SessionKeyJob",
-  UnclaimedEras = "UnclaimedErasJob",
-  ValidatorPref = "ValidatorPrefJob",
-  LocationStats = "LocationStatsJob",
-  Nominator = "NominatorJob",
-  BlockData = "BlockDataJob",
-  MainScorekeeper = "MainScorekeeperJob",
-  Execution = "ExecutionJob",
-  Cancel = "CancelJob",
-  StaleNomination = "StaleNominationJob",
-}
+import { JobConfig, JobKey } from "./types";
 
 export const jobConfigs: JobConfig[] = [
   {
-    jobKey: "activeValidator",
+    jobKey: JobKey.ActiveValidator,
     defaultFrequency: Constants.ACTIVE_VALIDATOR_CRON,
     jobFunction: activeValidatorJobWithTiming,
-    name: JobNames.ActiveValidator,
   },
   {
-    jobKey: "monitor",
+    jobKey: JobKey.Monitor,
     defaultFrequency: Constants.MONITOR_CRON,
     jobFunction: getLatestTaggedRelease,
-    name: JobNames.Monitor,
   },
   {
-    jobKey: "clearOffline",
+    jobKey: JobKey.ClearOffline,
     defaultFrequency: Constants.CLEAR_OFFLINE_CRON,
     jobFunction: clearOfflineJob,
-    name: JobNames.ClearOffline,
   },
   {
-    jobKey: "validity",
+    jobKey: JobKey.Validity,
     defaultFrequency: Constants.VALIDITY_CRON,
     jobFunction: validityJobWithTiming,
-    name: JobNames.Validity,
   },
   {
-    jobKey: "score",
+    jobKey: JobKey.Score,
     defaultFrequency: Constants.SCORE_CRON,
     jobFunction: scoreJobWithTiming,
-    name: JobNames.Score,
   },
   {
-    jobKey: "eraStats",
+    jobKey: JobKey.EraStats,
     defaultFrequency: Constants.ERA_STATS_CRON,
     jobFunction: eraStatsJobWithTiming,
-    name: JobNames.EraStats,
   },
   {
-    jobKey: "eraPoints",
+    jobKey: JobKey.EraPoints,
     defaultFrequency: Constants.ERA_POINTS_CRON,
     jobFunction: eraPointsJobWithTiming,
-    name: JobNames.EraPoints,
   },
   {
-    jobKey: "inclusion",
+    jobKey: JobKey.EraPoints,
     defaultFrequency: Constants.INCLUSION_CRON,
     jobFunction: inclusionJobWithTiming,
-    name: JobNames.Inclusion,
   },
   {
-    jobKey: "sessionKey",
+    jobKey: JobKey.SessionKey,
     defaultFrequency: Constants.SESSION_KEY_CRON,
     jobFunction: sessionKeyJobWithTiming,
-    name: JobNames.SessionKey,
   },
   {
-    jobKey: "unclaimedEras",
+    jobKey: JobKey.UnclaimedEras,
     defaultFrequency: Constants.UNCLAIMED_ERAS_CRON,
     jobFunction: unclaimedEraJobWithTiming,
-    name: JobNames.UnclaimedEras,
   },
   {
-    jobKey: "validatorPref",
+    jobKey: JobKey.ValidatorPref,
     defaultFrequency: Constants.VALIDATOR_PREF_CRON,
     jobFunction: validatorPrefJobWithTiming,
-    name: JobNames.ValidatorPref,
   },
   {
-    jobKey: "locationStats",
+    jobKey: JobKey.LocationStats,
     defaultFrequency: Constants.LOCATION_STATS_CRON,
     jobFunction: locationStatsJobWithTiming,
-    name: JobNames.LocationStats,
   },
   {
-    jobKey: "nominator",
+    jobKey: JobKey.Nominator,
     defaultFrequency: Constants.NOMINATOR_CRON,
     jobFunction: nominatorJobWithTiming,
-    name: JobNames.Nominator,
   },
   {
-    jobKey: "block",
+    jobKey: JobKey.BlockData,
     defaultFrequency: Constants.BLOCK_CRON,
     jobFunction: blockJobWithTiming,
-    name: JobNames.BlockData,
   },
   {
-    jobKey: "scorekeeper",
+    jobKey: JobKey.MainScorekeeper,
     defaultFrequency: Constants.SCOREKEEPER_CRON,
     jobFunction: mainScorekeeperJob,
-    name: JobNames.MainScorekeeper,
   },
   {
-    jobKey: "execution",
+    jobKey: JobKey.Execution,
     defaultFrequency: Constants.EXECUTION_CRON,
     jobFunction: executionJob,
-    name: JobNames.Execution,
   },
   {
-    jobKey: "cancel",
+    jobKey: JobKey.Cancel,
     defaultFrequency: Constants.CANCEL_CRON,
     jobFunction: cancelJob,
-    name: JobNames.Cancel,
   },
   {
-    jobKey: "stale",
+    jobKey: JobKey.StaleNomination,
     defaultFrequency: Constants.STALE_CRON,
     jobFunction: staleNominationJob,
-    name: JobNames.StaleNomination,
   },
 ];

@@ -13,7 +13,7 @@ import MatrixBot from "../matrix";
 import ApiHandler from "../ApiHandler/ApiHandler";
 import Nominator from "../nominator/nominator";
 import { jobStatusEmitter } from "../Events";
-import { JobNames } from "./jobs/JobConfigs";
+import { JobEvent, JobKey } from "./jobs/types";
 import { NominatorState, NominatorStatus } from "../types";
 
 /// Handles the beginning of a new round.
@@ -83,10 +83,9 @@ export const startRound = async (
     const isValid = await constraints.checkCandidate(candidate, validators);
 
     const progress = Math.floor((index / allCandidates.length) * 100);
-    jobStatusEmitter.emit("jobProgress", {
-      name: JobNames.MainScorekeeper,
+    jobStatusEmitter.emit(JobEvent.Progress, {
+      name: JobKey.MainScorekeeper,
       progress,
-      updated: Date.now(),
       iteration: `${isValid ? "✅ " : "❌ "} ${candidate.name}`,
     });
 

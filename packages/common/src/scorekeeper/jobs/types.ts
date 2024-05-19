@@ -2,6 +2,28 @@ import { ApiHandler, ChainData, Config, Constraints } from "../../index";
 import MatrixBot from "../../matrix";
 import Nominator from "../../nominator/nominator";
 
+// Job keys used in the config
+export enum JobKey {
+  ActiveValidator = "activeValidator",
+  Monitor = "monitor",
+  ClearOffline = "clearOffline",
+  Validity = "validity",
+  Score = "score",
+  EraStats = "eraStats",
+  EraPoints = "eraPoints",
+  Inclusion = "inclusion",
+  SessionKey = "sessionKey",
+  UnclaimedEras = "unclaimedEras",
+  ValidatorPref = "validatorPref",
+  LocationStats = "locationStats",
+  Nominator = "nominator",
+  BlockData = "block",
+  MainScorekeeper = "scorekeeper",
+  Execution = "execution",
+  Cancel = "cancel",
+  StaleNomination = "stale",
+}
+
 export type JobRunnerMetadata = {
   config: Config.ConfigSchema;
   chaindata: ChainData;
@@ -14,27 +36,35 @@ export type JobRunnerMetadata = {
 };
 
 export type JobConfig = {
-  jobKey: keyof Config.ConfigSchema["cron"] | "";
+  jobKey: JobKey;
   defaultFrequency: string;
   jobFunction: (metadata: JobRunnerMetadata) => Promise<any>;
-  name: string;
   preventOverlap?: boolean;
 };
 
-// There is a dependency on status names in scorekeeper-status-ui
-type StatusName =
-  | "running"
-  | "finished"
-  | "errored"
-  | "started"
-  | "Not Running";
+export enum JobStatus {
+  Initialized = "Initialized",
+  Started = "Started",
+  Running = "Running", // This status is not used and seems redundant
+  Finished = "Finished",
+  Failed = "Failed",
+}
 
-export type JobStatus = {
+export enum JobEvent {
+  Started = "Started",
+  Running = "Running",
+  Finished = "Finished",
+  Failed = "Failed",
+  Progress = "Progress",
+}
+
+// Used to expose Job info to the Gateway
+export type JobInfo = {
   name: string;
-  updated: number;
+  updated?: number;
   enabled?: boolean;
   runCount?: number;
-  status: StatusName;
+  status: JobStatus;
   frequency?: string;
   error?: string;
   // Progress from 0 to 100

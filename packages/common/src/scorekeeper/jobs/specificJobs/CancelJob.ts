@@ -1,13 +1,8 @@
-import { Job, JobConfig, JobRunnerMetadata } from "../JobsClass";
+import { JobRunnerMetadata } from "../types";
 import logger from "../../../logger";
 import { Util } from "../../../index";
-import { cronLabel } from "../cron/StartCronJobs";
 
-export class CancelJob extends Job {
-  constructor(jobConfig: JobConfig, jobRunnerMetadata: JobRunnerMetadata) {
-    super(jobConfig, jobRunnerMetadata);
-  }
-}
+export const cronLabel = { label: "Cron" };
 
 export const cancelJob = async (
   metadata: JobRunnerMetadata,

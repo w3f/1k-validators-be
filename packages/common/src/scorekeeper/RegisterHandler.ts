@@ -4,7 +4,8 @@
  * @function RegisterHandler
  */
 import { ApiHandler, ChainData, Config, logger, queries } from "../index";
-import { scorekeeperLabel } from "./scorekeeper";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import ScoreKeeper, { scorekeeperLabel } from "./scorekeeper";
 
 export const registerAPIHandler = (
   handler: ApiHandler,

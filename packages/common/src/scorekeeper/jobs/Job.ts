@@ -9,7 +9,7 @@ export class Job {
   private status: JobStatus = JobStatus.Initialized;
   private name: string;
   private jobKey: string;
-  jobFunction: () => Promise<any>;
+  private jobFunction: () => Promise<any>;
   private frequency: string;
   private preventOverlap: boolean;
   private jobRunCount = 0;

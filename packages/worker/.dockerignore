@@ -1,10 +1,5 @@
-alice
-bob
-node_modules
-scripts
-test
-zero
-*.db
-charts
-helmfile.d
-build
+*
+!package.json
+!tsconfig.json
+!src
+!config

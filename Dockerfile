@@ -4,11 +4,9 @@ ARG PACKAGE
 ENV PACKAGE ${PACKAGE}
 WORKDIR /code
 COPY . .
-RUN echo "building ${PACKAGE}... "; \
-    yarn install; \
-    echo "yarn install done. Building...." ; \
-    yarn build; \
-    echo "building ${PACKAGE} done."; \
-    apt-get update && \
-    apt-get clean
+RUN echo "building ${PACKAGE}... " && \
+    yarn install && \
+    echo "yarn install done. Building...." && \
+    yarn turbo && \
+    echo "building ${PACKAGE} done."
 CMD yarn run start:js:${PACKAGE}

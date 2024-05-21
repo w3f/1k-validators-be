@@ -171,10 +171,12 @@ jobs:
     resource_class: xlarge
     steps:
       - checkout
-      - setup_remote_docker
+      - setup_remote_docker:
+          docker_layer_caching: true
       - run:
           command: |
             /scripts/build-image.sh web3f/otv-backend . --build-arg PACKAGE=core
+
 
   buildGatewayImage:
     docker:
@@ -182,7 +184,8 @@ jobs:
     resource_class: xlarge
     steps:
       - checkout
-      - setup_remote_docker
+      - setup_remote_docker:
+          docker_layer_caching: true
       - run:
           command: |
             /scripts/build-image.sh web3f/otv-gateway . --build-arg PACKAGE=gateway
@@ -193,7 +196,8 @@ jobs:
     resource_class: xlarge
     steps:
       - checkout
-      - setup_remote_docker
+      - setup_remote_docker:
+          docker_layer_caching: true
       - run:
           command: |
             /scripts/build-image.sh web3f/otv-telemetry . --build-arg PACKAGE=telemetry
@@ -204,7 +208,8 @@ jobs:
     resource_class: xlarge
     steps:
       - checkout
-      - setup_remote_docker
+      - setup_remote_docker:
+          docker_layer_caching: true
       - run:
           command: |
             /scripts/build-image.sh web3f/otv-worker . --build-arg PACKAGE=worker

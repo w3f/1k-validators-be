@@ -1,4 +1,4 @@
-import { ApiPromise } from "@polkadot/api";
+import { ApiPromise, WsProvider } from "@polkadot/api";
 import ApiHandler, { apiLabel } from "../ApiHandler/ApiHandler";
 import logger from "../logger";
 import { NumberResult } from "../types";
@@ -71,11 +71,44 @@ export const chaindataLabel = { label: "Chaindata" };
 export class ChainData {
   public handler: ApiHandler;
   public api: ApiPromise | null;
+  public apiPeople: ApiPromise | null;
 
   constructor(handler: ApiHandler) {
     this.handler = handler;
     this.api = handler.getApi();
+    this.setApiPeople();
   }
+
+  setApiPeople = async (): Promise<void> => {
+    if (!(await this.api.rpc.system.chain()).toLowerCase().includes("kusama"))
+      return;
+
+    const provider = new WsProvider("wss://kusama-people-rpc.polkadot.io");
+    this.apiPeople = await ApiPromise.create({ provider: provider });
+    if (this.apiPeople) {
+      this.apiPeople.on("error", (error) => {
+        if (
+          error.toString().includes("FATAL") ||
+          JSON.stringify(error).includes("FATAL")
+        ) {
+          logger.error("The API had a FATAL error... exiting!");
+          process.exit(1);
+        }
+      });
+    }
+    await this.apiPeople.isReadyOrError;
+
+    const [chain, nodeName, nodeVersion] = await Promise.all([
+      this.apiPeople.rpc.system.chain(),
+      this.apiPeople.rpc.system.name(),
+      this.apiPeople.rpc.system.version(),
+    ]);
+    logger.info(
+      `You are connected to chain ${chain} using ${nodeName} v${nodeVersion}`,
+      apiLabel,
+    );
+    return;
+  };
 
   checkApiConnection = async (retries = 0): Promise<boolean> => {
     // Check if the API is already connected

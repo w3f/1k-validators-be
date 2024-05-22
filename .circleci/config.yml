@@ -177,43 +177,6 @@ jobs:
           command: |
             /scripts/build-image.sh web3f/otv-backend . --build-arg PACKAGE=core
 
-
-  buildGatewayImage:
-    docker:
-      - image: web3f/ci-commons:v3.2.3
-    resource_class: xlarge
-    steps:
-      - checkout
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - run:
-          command: |
-            /scripts/build-image.sh web3f/otv-gateway . --build-arg PACKAGE=gateway
-
-  buildTelemetryImage:
-    docker:
-      - image: web3f/ci-commons:v3.2.3
-    resource_class: xlarge
-    steps:
-      - checkout
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - run:
-          command: |
-            /scripts/build-image.sh web3f/otv-telemetry . --build-arg PACKAGE=telemetry
-
-  buildWorkerImage:
-    docker:
-      - image: web3f/ci-commons:v3.2.3
-    resource_class: xlarge
-    steps:
-      - checkout
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - run:
-          command: |
-            /scripts/build-image.sh web3f/otv-worker . --build-arg PACKAGE=worker
-
   integrationTests:
     docker:
       - image: web3f/ci-commons:v3.2.3
@@ -345,21 +308,6 @@ workflows:
             tags:
               only: /.*/
       - buildCoreImage:
-          context: dockerhub-bot
-          filters:
-            tags:
-              only: /.*/
-      - buildGatewayImage:
-          context: dockerhub-bot
-          filters:
-            tags:
-              only: /.*/
-      - buildTelemetryImage:
-          context: dockerhub-bot
-          filters:
-            tags:
-              only: /.*/
-      - buildWorkerImage:
           context: dockerhub-bot
           filters:
             tags:

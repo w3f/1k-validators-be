@@ -21,13 +21,16 @@ dataPath: "/data"
 backendPort: 3300
 
 storageSize: 20Gi
-resources:
-  limits:
-    cpu: 600m
-    memory: 1Gi
-  requests:
-    cpu: 300m
-    memory: 400Mi
+# Uncomment the following resource to use
+# the default suggested resources
+# resources:
+#   limits:
+#     cpu: 600m
+#     memory: 1Gi
+#   requests:
+#     cpu: 300m
+#     memory: 400Mi
+resources: {}
 
 secret: |
   {

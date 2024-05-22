@@ -6,20 +6,20 @@ export const hasIdentity = async (
   account: string,
 ): Promise<[boolean, boolean]> => {
   try {
-    if (!(await chaindata.checkApiConnection())) {
+    const api = chaindata.apiPeople ? chaindata.apiPeople : chaindata.api;
+
+    if (!api?.isConnected) {
       return [false, false];
     }
-    let identity = await chaindata.api?.query.identity.identityOf(account);
+    let identity = await api.query.identity.identityOf(account);
     if (!identity || !identity.isSome) {
       // check if it's a sub
-      const superOf = await chaindata.api?.query.identity.superOf(account);
+      const superOf = await api.query.identity.superOf(account);
       if (superOf && superOf.isSome) {
-        identity = await chaindata.api?.query.identity.identityOf(
-          superOf.unwrap()[0],
-        );
+        identity = await api.query.identity.identityOf(superOf.unwrap()[0]);
       }
     }
-    const identityInfo = await chaindata.api?.derive.accounts.identity(account);
+    const identityInfo = await api.derive.accounts.identity(account);
     if (!identityInfo) return null;
     let verified = false;
     if (identity && identity.isSome) {
@@ -33,7 +33,7 @@ export const hasIdentity = async (
 
     return [identity ? identity.isSome : false, verified];
   } catch (e) {
-    await handleError(chaindata, e, "hasIdentity");
+    if (!chaindata.apiPeople) await handleError(chaindata, e, "hasIdentity");
     return [false, true];
   }
 };
@@ -43,26 +43,26 @@ export const getFormattedIdentity = async (
   addr: string,
 ): Promise<Identity | null> => {
   try {
-    if (!(await chaindata.checkApiConnection())) {
+    const api = chaindata.apiPeople ? chaindata.apiPeople : chaindata.api;
+    if (!api?.isConnected) {
       return null;
     }
     let identity: Identity | null = null;
     let verified = false;
     const subAccounts: { name: string; address: string }[] = [];
 
-    const hasId = await chaindata.api?.derive.accounts.hasIdentity(addr);
+    const hasId = await api.derive.accounts.hasIdentity(addr);
     if (!hasId || !hasId.hasIdentity) return null;
 
-    const identityInfo = await chaindata.api?.derive.accounts.identity(addr);
+    const identityInfo = await api.derive.accounts.identity(addr);
     if (!identityInfo) return null;
 
-    const hasSubs = await chaindata.api?.query.identity.subsOf(addr);
+    const hasSubs = await api.query.identity.subsOf(addr);
     if (hasSubs && hasSubs[1].length > 0) {
       for (const subaccountAddress of hasSubs[1]) {
-        const subAccountIdentity =
-          await chaindata.api?.derive.accounts.identity(
-            subaccountAddress.toString(),
-          );
+        const subAccountIdentity = await api.derive.accounts.identity(
+          subaccountAddress.toString(),
+        );
         if (subAccountIdentity) {
           const subAccount: { name: string; address: string } = {
             name: subAccountIdentity.display || "",
@@ -97,21 +97,18 @@ export const getFormattedIdentity = async (
     }
 
     if (parent) {
-      const superIdentity =
-        await chaindata.api?.derive.accounts.identity(parent);
+      const superIdentity = await api.derive.accounts.identity(parent);
       if (superIdentity) {
         const superAccount: { name: string; address: string } = {
           name: superIdentity.display || "",
           address: parent.toString(),
         };
-        const subIdentities =
-          await chaindata.api?.query.identity.subsOf(parent);
+        const subIdentities = await api.query.identity.subsOf(parent);
         if (subIdentities && subIdentities[1].length > 0) {
           for (const subaccountAddress of subIdentities[1]) {
-            const subAccountIdentity =
-              await chaindata.api?.derive.accounts.identity(
-                subaccountAddress.toString(),
-              );
+            const subAccountIdentity = await api.derive.accounts.identity(
+              subaccountAddress.toString(),
+            );
             if (subAccountIdentity) {
               const subAccount: { name: string; address: string } = {
                 name: subAccountIdentity.display || "",
@@ -158,7 +155,8 @@ export const getFormattedIdentity = async (
 
     return identity;
   } catch (e) {
-    await handleError(chaindata, e, "getFormattedIdentity");
+    if (!chaindata.apiPeople)
+      await handleError(chaindata, e, "getFormattedIdentity");
     return null;
   }
 };

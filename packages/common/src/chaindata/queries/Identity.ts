@@ -33,7 +33,7 @@ export const hasIdentity = async (
 
     return [identity ? identity.isSome : false, verified];
   } catch (e) {
-    await handleError(chaindata, e, "hasIdentity");
+    if (!chaindata.apiPeople) await handleError(chaindata, e, "hasIdentity");
     return [false, true];
   }
 };
@@ -155,7 +155,8 @@ export const getFormattedIdentity = async (
 
     return identity;
   } catch (e) {
-    await handleError(chaindata, e, "getFormattedIdentity");
+    if (!chaindata.apiPeople)
+      await handleError(chaindata, e, "getFormattedIdentity");
     return null;
   }
 };

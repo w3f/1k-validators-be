@@ -66,7 +66,7 @@ spec:
                     "sanctionedCountries": ["RU", "IR", "CU", "KP", "SY"],
                     "sanctionedRegions": ["Crimea", "Autonomous Republic of Crimea", "Republic of Crimea", "Luhansk", "Luhanska Oblast", "Luhanska", "Luganskaya Oblast’", "Luganskaya", "Donetsk", "Donetska Oblast", "Donetskaya Oblast’", "Donetska", "Donetskaya", "Sevastopol City", "Sevastopol", "Gorod Sevastopol"]
                   },
-                  "forceClientVersion": "v1.11.0"
+                  "forceClientVersion": "v1.12.0"
                 },
                 "cron": {
                   "monitor": "0 */15 * * * *",

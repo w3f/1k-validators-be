@@ -3,8 +3,9 @@ import { getKusamaProdConfig } from "./config";
 import { ScoreKeeper } from "../../src";
 import ApiHandler from "../../src/ApiHandler/ApiHandler";
 import { KusamaEndpoints } from "../../src/constants";
+import { ConfigSchema } from "../../src/config";
 
-export const getAndStartScorekeeper = async () => {
+export const getAndStartScorekeeper = async (defaultConfig?: ConfigSchema) => {
   const apiHandler = new ApiHandler(KusamaEndpoints);
   await apiHandler.setAPI();
   await apiHandler.getApi()?.isReady;
@@ -16,7 +17,7 @@ export const getAndStartScorekeeper = async () => {
 
   await addProdKusamaCandidates();
 
-  const config = getKusamaProdConfig();
+  const config = defaultConfig ? defaultConfig : getKusamaProdConfig();
 
   const scorekeeper = new ScoreKeeper(apiHandler, config);
   for (const nominatorGroup of config.scorekeeper.nominators) {

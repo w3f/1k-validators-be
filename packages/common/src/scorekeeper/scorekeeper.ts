@@ -10,16 +10,13 @@ import {
 } from "../index";
 
 import Nominator from "../nominator/nominator";
-import {
-  registerAPIHandler,
-  registerEventEmitterHandler,
-} from "./RegisterHandler";
-import { Job, JobRunnerMetadata, JobStatus } from "./jobs/JobsClass";
-import { JobsRunnerFactory } from "./jobs/JobsRunnerFactory";
+import { registerAPIHandler } from "./RegisterHandler";
+import { Job } from "./jobs/Job";
+import { JobInfo, JobRunnerMetadata } from "./jobs/types";
+import { jobConfigs } from "./jobs/JobConfigs";
 import { startRound } from "./Round";
 import { NominatorStatus } from "../types";
 import { setAllIdentities } from "../utils";
-// import { monitorJob } from "./jobs";
 
 export type NominatorGroup = Config.NominatorConfig[];
 
@@ -52,7 +49,7 @@ export default class ScoreKeeper {
 
   public isStarted = false;
 
-  constructor(handler: ApiHandler, config: Config.ConfigSchema, bot: any) {
+  constructor(handler: ApiHandler, config: Config.ConfigSchema, bot?: any) {
     this.handler = handler;
     this.chaindata = new ChainData(this.handler);
     this.config = config;
@@ -63,36 +60,24 @@ export default class ScoreKeeper {
     this.upSince = Date.now();
 
     registerAPIHandler(this.handler, this.config, this.chaindata, this.bot);
-    registerEventEmitterHandler(this);
   }
   public getJobsStatusAsJson() {
-    const statuses: Record<string, JobStatus> = {};
+    const statuses: Record<string, JobInfo> = {};
     for (const job of this._jobs) {
-      statuses[job.getName()] = job.getStatus();
+      const status = job.getStatus();
+      statuses[status.name] = status;
     }
     return statuses;
   }
 
   getAllNominatorBondedAddresses(): string[] {
-    const bondedAddresses = [];
-    const nomGroup = this.nominatorGroups;
-    if (nomGroup) {
-      for (const nom of nomGroup) {
-        bondedAddresses.push(nom?.bondedAddress);
-      }
-
-      return bondedAddresses;
-    } else {
-      return [];
-    }
+    return this.nominatorGroups
+      ? this.nominatorGroups.map((nom) => nom?.bondedAddress)
+      : [];
   }
 
   getAllNominatorStatus(): NominatorStatus[] {
-    const statuses = [];
-    for (const nom of this.nominatorGroups) {
-      statuses.push(nom.getStatus());
-    }
-    return statuses;
+    return this.nominatorGroups.map((nom) => nom.getStatus());
   }
 
   getAllNominatorStatusJson() {
@@ -235,6 +220,19 @@ export default class ScoreKeeper {
     return true;
   }
 
+  startJobs(metadata: JobRunnerMetadata) {
+    this._jobs = jobConfigs.map((config) => {
+      const job = new Job(
+        config.jobKey,
+        config.jobFunction,
+        config.defaultFrequency,
+        metadata,
+      );
+      job.start();
+      return job;
+    });
+  }
+
   // Begin the main workflow of the scorekeeper
   async begin(): Promise<boolean> {
     try {
@@ -294,9 +292,7 @@ export default class ScoreKeeper {
         currentTargets: this.currentTargets,
       };
 
-      const jobRunner = await JobsRunnerFactory.makeJobs(metadata);
-
-      this._jobs = await jobRunner.startJobs();
+      this.startJobs(metadata);
       this.isStarted = true;
       return true;
     } catch (e) {

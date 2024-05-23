@@ -24,11 +24,19 @@ import { Identicon } from "@polkadot/react-identicon";
 import EraStatsBar from "./EraStatsBar";
 import { debounce } from "lodash";
 
+export enum JobStatus {
+  Initialized = "Initialized",
+  Started = "Started",
+  Running = "Running",
+  Finished = "Finished",
+  Failed = "Failed",
+}
+
 interface Job {
   name: string;
   runCount: number;
   updated: number;
-  status: "running" | "finished" | "errored" | "started" | "Not Running";
+  status: JobStatus;
   progress?: number;
   error?: string;
   iteration?: string;
@@ -162,19 +170,19 @@ const App = () => {
     let iconComponent; // Initialize icon component
 
     switch (status) {
-      case "running":
+      case JobStatus.Running:
         iconComponent = <BeatLoader color={iconColor} size={8} />;
         statusText = "Running";
         break;
-      case "started":
+      case JobStatus.Started:
         iconComponent = <FiPlay color={iconColor} size={iconSize} />;
         statusText = "Started";
         break;
-      case "finished":
+      case JobStatus.Finished:
         iconComponent = <FiCheckCircle color="#0f0" size={iconSize} />;
         statusText = "Finished";
         break;
-      case "errored":
+      case JobStatus.Failed:
         iconComponent = <FiXCircle color="#f00" size={iconSize} />;
         statusText = "Errored";
         break;
@@ -344,7 +352,7 @@ const App = () => {
         {jobs.map((job: Job) => {
           const jobAgeInSeconds = (Date.now() - job.updated) / 1000; // Convert milliseconds to seconds
           // const isOld = jobAgeInSeconds > OLD_JOB_THRESHOLD_SECONDS;
-          const isError = job.status === "errored";
+          const isError = job.status === JobStatus.Failed;
 
           return (
             <motion.div
@@ -352,13 +360,13 @@ const App = () => {
               initial={{ opacity: 0, x: -100 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5 }}
-              className={`jobItem ${job.status === "errored" ? "jobItemError" : job.status === "running" && job.isOld ? "jobItemOld" : ""}`}
+              className={`jobItem ${job.status === JobStatus.Failed ? "jobItemError" : job.status === JobStatus.Running && job.isOld ? "jobItemOld" : ""}`}
             >
               <div className="jobHeader">
-                {job.status === "errored" && (
+                {job.status === JobStatus.Failed && (
                   <FiAlertTriangle color="red" size={20} />
                 )}
-                {job.status === "running" && job.isOld && (
+                {job.status === JobStatus.Running && job.isOld && (
                   <FiAlertTriangle color="yellow" size={20} />
                 )}
                 <div className="jobName">

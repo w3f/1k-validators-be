@@ -3,17 +3,9 @@
  *
  * @function RegisterHandler
  */
-import {
-  ApiHandler,
-  ChainData,
-  Config,
-  logger,
-  queries,
-  ScoreKeeper,
-} from "../index";
-import { scorekeeperLabel } from "./scorekeeper";
-import { jobStatusEmitter } from "../Events";
-import { Job, JobStatus } from "./jobs/JobsClass";
+import { ApiHandler, ChainData, Config, logger, queries } from "../index";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import ScoreKeeper, { scorekeeperLabel } from "./scorekeeper";
 
 export const registerAPIHandler = (
   handler: ApiHandler,
@@ -50,54 +42,5 @@ export const registerAPIHandler = (
   handler.on("newSession", async (data: { sessionIndex: string }) => {
     const { sessionIndex } = data;
     logger.info(`New Session Event: ${sessionIndex}`, scorekeeperLabel);
-  });
-};
-
-export const registerEventEmitterHandler = (scoreKeeper: ScoreKeeper) => {
-  logger.info(`Registering event emitter handler`, scorekeeperLabel);
-  jobStatusEmitter.on("jobStarted", (data) => {
-    // scoreKeeper.updateJobStarted(data);
-  });
-
-  jobStatusEmitter.on("jobRunning", (data) => {
-    // scoreKeeper.updateJobRunning(data);
-  });
-
-  jobStatusEmitter.on("jobFinished", (data) => {
-    // scoreKeeper.updateJobFinished(data);
-  });
-
-  jobStatusEmitter.on("jobErrored", (data) => {
-    // scoreKeeper.updateJobErrored(data);
-  });
-
-  jobStatusEmitter.on("jobProgress", (data) => {
-    // scoreKeeper.updateJobProgress(data);
-  });
-};
-
-export const registerJobStatusEventEmitterHandler = (job: Job) => {
-  logger.info(
-    `Registering event emitter handler for job: ${job.getName()}`,
-    scorekeeperLabel,
-  );
-  jobStatusEmitter.on("jobStarted", (data: JobStatus) => {
-    job.updateJobStatus(data);
-  });
-
-  jobStatusEmitter.on("jobRunning", (data: JobStatus) => {
-    job.updateJobStatus(data);
-  });
-
-  jobStatusEmitter.on("jobFinished", (data: JobStatus) => {
-    job.updateJobStatus(data);
-  });
-
-  jobStatusEmitter.on("jobErrored", (data: JobStatus) => {
-    job.updateJobStatus(data);
-  });
-
-  jobStatusEmitter.on("jobProgress", (data: JobStatus) => {
-    job.updateJobStatus(data);
   });
 };

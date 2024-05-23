@@ -1,26 +1,19 @@
 import { logger, queries, Score } from "../../../index";
-import { Job, JobConfig, JobRunnerMetadata, JobStatus } from "../JobsClass";
+import { JobEvent, JobRunnerMetadata, JobStatus } from "../types";
 import { jobStatusEmitter } from "../../../Events";
 import { withExecutionTimeLogging } from "../../../utils";
-import { JobNames } from "../JobConfigs";
+import { JobKey } from "../types";
 
 export const locationstatsLabel = { label: "LocationStatsJob" };
-
-export class LocationStatsJob extends Job {
-  constructor(jobConfig: JobConfig, jobRunnerMetadata: JobRunnerMetadata) {
-    super(jobConfig, jobRunnerMetadata);
-  }
-}
 
 export const locationStatsJob = async (metadata: JobRunnerMetadata) => {
   try {
     const { chaindata } = metadata;
     await queries.cleanBlankLocations();
 
-    jobStatusEmitter.emit("jobProgress", {
-      name: JobNames.LocationStats,
+    jobStatusEmitter.emit(JobEvent.Progress, {
+      name: JobKey.LocationStats,
       progress: 25,
-      updated: Date.now(),
     });
 
     let totalNodes = [];
@@ -36,10 +29,9 @@ export const locationStatsJob = async (metadata: JobRunnerMetadata) => {
     const locationMap = new Map();
     const locationArr = [];
 
-    jobStatusEmitter.emit("jobProgress", {
-      name: JobNames.LocationStats,
+    jobStatusEmitter.emit(JobEvent.Progress, {
+      name: JobKey.LocationStats,
       progress: 50,
-      updated: Date.now(),
     });
 
     // Add all candidate entries to the list of nodes
@@ -62,10 +54,9 @@ export const locationStatsJob = async (metadata: JobRunnerMetadata) => {
 
       // Emit progress update for each candidate processed
       const progressPercentage = ((index + 1) / candidates.length) * 100;
-      jobStatusEmitter.emit("jobProgress", {
-        name: JobNames.LocationStats,
+      jobStatusEmitter.emit(JobEvent.Progress, {
+        name: JobKey.LocationStats,
         progress: progressPercentage,
-        updated: Date.now(),
         iteration: `Processed candidate ${candidate.name}`,
       });
     }
@@ -107,10 +98,9 @@ export const locationStatsJob = async (metadata: JobRunnerMetadata) => {
         // Emit progress update for each validator processed
         const progressPercentage =
           ((index + 1) / validatorset.validators.length) * 100;
-        jobStatusEmitter.emit("jobProgress", {
-          name: JobNames.LocationStats,
+        jobStatusEmitter.emit(JobEvent.Progress, {
+          name: JobKey.LocationStats,
           progress: progressPercentage,
-          updated: Date.now(),
           iteration: `Processed validator ${validatorAddress}`,
         });
       }
@@ -131,10 +121,9 @@ export const locationStatsJob = async (metadata: JobRunnerMetadata) => {
       }
     });
 
-    jobStatusEmitter.emit("jobProgress", {
-      name: JobNames.LocationStats,
+    jobStatusEmitter.emit(JobEvent.Progress, {
+      name: JobKey.LocationStats,
       progress: 75,
-      updated: Date.now(),
     });
 
     // Iterate through all candidates and the active validator set
@@ -153,10 +142,9 @@ export const locationStatsJob = async (metadata: JobRunnerMetadata) => {
 
       // Emit progress update for each node processed
       const progressPercentage = ((index + 1) / totalNodes.length) * 100;
-      jobStatusEmitter.emit("jobProgress", {
-        name: JobNames.LocationStats,
+      jobStatusEmitter.emit(JobEvent.Progress, {
+        name: JobKey.LocationStats,
         progress: progressPercentage,
-        updated: Date.now(),
         iteration: `Processed node ${node.address}`,
       });
     }
@@ -166,10 +154,9 @@ export const locationStatsJob = async (metadata: JobRunnerMetadata) => {
 
       // Emit progress update for each location processed
       const progressPercentage = (locationArr.length / locationMap.size) * 100;
-      jobStatusEmitter.emit("jobProgress", {
-        name: JobNames.LocationStats,
+      jobStatusEmitter.emit(JobEvent.Progress, {
+        name: JobKey.LocationStats,
         progress: progressPercentage,
-        updated: Date.now(),
         iteration: `Processed location ${name}`,
       });
     }
@@ -202,10 +189,9 @@ export const locationStatsJob = async (metadata: JobRunnerMetadata) => {
 
       // Emit progress update for each region processed
       const progressPercentage = (regionArr.length / regionMap.size) * 100;
-      jobStatusEmitter.emit("jobProgress", {
-        name: JobNames.LocationStats,
+      jobStatusEmitter.emit(JobEvent.Progress, {
+        name: JobKey.LocationStats,
         progress: progressPercentage,
-        updated: Date.now(),
         iteration: `Processed region ${name}`,
       });
     }
@@ -238,10 +224,9 @@ export const locationStatsJob = async (metadata: JobRunnerMetadata) => {
 
       // Emit progress update for each country processed
       const progressPercentage = (countryArr.length / countryMap.size) * 100;
-      jobStatusEmitter.emit("jobProgress", {
-        name: JobNames.LocationStats,
+      jobStatusEmitter.emit(JobEvent.Progress, {
+        name: JobKey.LocationStats,
         progress: progressPercentage,
-        updated: Date.now(),
         iteration: `Processed country ${name}`,
       });
     }
@@ -274,10 +259,9 @@ export const locationStatsJob = async (metadata: JobRunnerMetadata) => {
 
       // Emit progress update for each provider processed
       const progressPercentage = (providerArr.length / providerMap.size) * 100;
-      jobStatusEmitter.emit("jobProgress", {
-        name: JobNames.LocationStats,
+      jobStatusEmitter.emit(JobEvent.Progress, {
+        name: JobKey.LocationStats,
         progress: progressPercentage,
-        updated: Date.now(),
         iteration: `Processed provider ${name}`,
       });
     }
@@ -307,7 +291,7 @@ export const locationStatsJob = async (metadata: JobRunnerMetadata) => {
       decentralization,
     );
 
-    jobStatusEmitter.emit("jobProgress", {
+    jobStatusEmitter.emit(JobEvent.Progress, {
       name: "Location Stats Job",
       progress: 100,
       updated: Date.now(),
@@ -316,14 +300,11 @@ export const locationStatsJob = async (metadata: JobRunnerMetadata) => {
     return true;
   } catch (e) {
     logger.error(`Error running location stats job: ${e}`, locationstatsLabel);
-    const errorStatus: JobStatus = {
-      status: "errored",
-      name: JobNames.LocationStats,
-      updated: Date.now(),
+    jobStatusEmitter.emit(JobEvent.Progress, {
+      status: JobStatus.Failed,
+      name: JobKey.LocationStats,
       error: JSON.stringify(e),
-    };
-
-    jobStatusEmitter.emit("jobErrored", errorStatus);
+    });
     return false;
   }
 };

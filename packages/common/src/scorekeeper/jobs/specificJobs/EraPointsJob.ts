@@ -1,16 +1,9 @@
 import { ChainData, Constants, logger, queries } from "../../../index";
-import { Job, JobConfig, JobRunnerMetadata, JobStatus } from "../JobsClass";
+import { JobEvent, JobKey, JobRunnerMetadata, JobStatus } from "../types";
 import { jobStatusEmitter } from "../../../Events";
 import { withExecutionTimeLogging } from "../../../utils";
-import { JobNames } from "../JobConfigs";
 
 export const erapointsLabel = { label: "EraPointsJob" };
-
-export class EraPointsJob extends Job {
-  constructor(jobConfig: JobConfig, jobRunnerMetadata: JobRunnerMetadata) {
-    super(jobConfig, jobRunnerMetadata);
-  }
-}
 
 // Gets and sets the total era points for a given era
 export const individualEraPointsJob = async (
@@ -74,10 +67,9 @@ export const eraPointsJob = async (
       const progress = (processedEras / Constants.ERAPOINTS_JOB_MAX_ERAS) * 100;
 
       // Emit progress update with active era as iteration
-      jobStatusEmitter.emit("jobProgress", {
-        name: JobNames.EraPoints,
+      jobStatusEmitter.emit(JobEvent.Progress, {
+        name: JobKey.EraPoints,
         progress,
-        updated: Date.now(),
         iteration: `Active era: ${i}`,
       });
 
@@ -89,13 +81,11 @@ export const eraPointsJob = async (
     return true;
   } catch (e) {
     logger.error(`Error running era points job: ${e}`, erapointsLabel);
-    const errorStatus: JobStatus = {
-      status: "errored",
-      name: JobNames.EraPoints,
-      updated: Date.now(),
+    jobStatusEmitter.emit(JobEvent.Failed, {
+      status: JobStatus.Failed,
+      name: JobKey.EraPoints,
       error: JSON.stringify(e),
-    };
-    jobStatusEmitter.emit("jobErrored", errorStatus);
+    });
     return false;
   }
 };

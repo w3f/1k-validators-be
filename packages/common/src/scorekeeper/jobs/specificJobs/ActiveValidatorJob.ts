@@ -1,16 +1,10 @@
 import { ChainData, logger, Models, queries } from "../../../index";
-import { Job, JobConfig, JobRunnerMetadata } from "../JobsClass";
+import { JobEvent, JobRunnerMetadata } from "../types";
 import { jobStatusEmitter } from "../../../Events";
 import { withExecutionTimeLogging } from "../../../utils";
-import { JobNames } from "../JobConfigs";
+import { JobKey } from "../types";
 
 export const activeLabel = { label: "ActiveValidatorJob" };
-
-export class ActiveValidatorJob extends Job {
-  constructor(jobConfig: JobConfig, jobRunnerMetadata: JobRunnerMetadata) {
-    super(jobConfig, jobRunnerMetadata);
-  }
-}
 
 export const individualActiveValidatorJob = async (
   chaindata: ChainData,
@@ -55,10 +49,9 @@ export const activeValidatorJob = async (
       const progress = (processedCandidates / totalCandidates) * 100;
 
       // Emit progress update with candidate name as the iteration
-      jobStatusEmitter.emit("jobProgress", {
-        name: JobNames.ActiveValidator,
+      jobStatusEmitter.emit(JobEvent.Progress, {
+        key: JobKey.ActiveValidator,
         progress,
-        updated: Date.now(),
         iteration: `${isActive ? "✅ " : "❌ "} ${candidate.name}`,
       });
     }

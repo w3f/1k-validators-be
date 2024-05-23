@@ -1,16 +1,10 @@
 import { jobStatusEmitter } from "../../../Events";
 import { logger, queries } from "../../../index";
-import { Job, JobConfig, JobRunnerMetadata, JobStatus } from "../JobsClass";
+import { JobEvent, JobRunnerMetadata, JobStatus } from "../types";
 import { withExecutionTimeLogging } from "../../../utils";
-import { JobNames } from "../JobConfigs";
+import { JobKey } from "../types";
 
 export const nominatorLabel = { label: "NominatorJob" };
-
-export class NominatorJob extends Job {
-  constructor(jobConfig: JobConfig, jobRunnerMetadata: JobRunnerMetadata) {
-    super(jobConfig, jobRunnerMetadata);
-  }
-}
 
 export const nominatorJob = async (
   metadata: JobRunnerMetadata,
@@ -63,10 +57,9 @@ export const nominatorJob = async (
       );
 
       // Emit progress update event with candidate's name
-      jobStatusEmitter.emit("jobProgress", {
-        name: JobNames.Nominator,
+      jobStatusEmitter.emit(JobEvent.Progress, {
+        name: JobKey.Nominator,
         progress,
-        updated: Date.now(),
         iteration: `Processed candidate ${candidate.name}`,
       });
     }
@@ -74,14 +67,11 @@ export const nominatorJob = async (
     return true;
   } catch (e) {
     logger.error(`Error running nominator job: ${e}`, nominatorLabel);
-    const errorStatus: JobStatus = {
-      status: "errored",
-      name: JobNames.Nominator,
-      updated: Date.now(),
+    jobStatusEmitter.emit(JobEvent.Failed, {
+      status: JobStatus.Failed,
+      name: JobKey.Nominator,
       error: JSON.stringify(e),
-    };
-
-    jobStatusEmitter.emit("jobErrored", errorStatus);
+    });
     return false;
   }
 };

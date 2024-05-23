@@ -14,7 +14,7 @@ import {
   SESSION_KEY_JOB,
   VALIDATOR_PREF_JOB,
 } from "./index";
-import { JobRunnerMetadata } from "../JobsClass";
+import { JobRunnerMetadata } from "../types";
 
 export const chaindataLabel = { label: "Chaindata" };
 

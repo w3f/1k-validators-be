@@ -1,12 +1,7 @@
-import { Job, JobConfig, JobRunnerMetadata } from "../JobsClass";
+import { JobRunnerMetadata } from "../types";
 import logger from "../../../logger";
-import { cronLabel } from "../cron/StartCronJobs";
 
-export class StaleNominationJob extends Job {
-  constructor(jobConfig: JobConfig, jobRunnerMetadata: JobRunnerMetadata) {
-    super(jobConfig, jobRunnerMetadata);
-  }
-}
+export const cronLabel = { label: "Cron" };
 
 export const staleNominationJob = async (
   metadata: JobRunnerMetadata,

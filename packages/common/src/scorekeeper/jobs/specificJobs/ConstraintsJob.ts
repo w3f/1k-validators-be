@@ -1,5 +1,5 @@
 import { SCORE_JOB, VALIDITY_JOB } from "./index";
-import { Job, JobConfig, JobRunnerMetadata, JobStatus } from "../JobsClass";
+import { JobEvent, JobInfo, JobRunnerMetadata, JobStatus } from "../types";
 import {
   allCandidates,
   getLatestValidatorScoreMetadata,
@@ -12,22 +12,9 @@ import {
 } from "../../../utils";
 import { jobStatusEmitter } from "../../../Events";
 import logger from "../../../logger";
-import { Constraints, queries } from "../../../index";
-import { JobNames } from "../JobConfigs";
+import { JobKey } from "../types";
 
 export const constraintsLabel = { label: "ConstraintsJob" };
-
-export class ValidityJob extends Job {
-  constructor(jobConfig: JobConfig, jobRunnerMetadata: JobRunnerMetadata) {
-    super(jobConfig, jobRunnerMetadata);
-  }
-}
-
-export class ScoreJob extends Job {
-  constructor(jobConfig: JobConfig, jobRunnerMetadata: JobRunnerMetadata) {
-    super(jobConfig, jobRunnerMetadata);
-  }
-}
 
 export const validityJob = async (
   metadata: JobRunnerMetadata,
@@ -51,10 +38,9 @@ export const validityJob = async (
       const progress = ((index + 1) / totalCandidates) * 100;
 
       // Emit progress update with candidate name in the iteration
-      jobStatusEmitter.emit("jobProgress", {
-        name: JobNames.Validity,
+      jobStatusEmitter.emit(JobEvent.Progress, {
+        name: JobKey.Validity,
         progress,
-        updated: Date.now(),
         iteration: `${isValid ? "✅ " : "❌ "} ${candidate.name}`,
       });
 
@@ -66,13 +52,11 @@ export const validityJob = async (
     return true;
   } catch (e) {
     logger.error(`Error running validity job: ${e}`, constraintsLabel);
-    const errorStatus: JobStatus = {
-      status: "errored",
-      name: JobNames.Validity,
-      updated: Date.now(),
+    jobStatusEmitter.emit(JobEvent.Failed, {
+      status: JobStatus.Failed,
+      name: JobKey.Validity,
       error: JSON.stringify(e),
-    };
-    jobStatusEmitter.emit("jobErrored", errorStatus);
+    });
     return false;
   }
 };
@@ -108,10 +92,9 @@ export const scoreJob = async (
       const progress = ((index + 1) / totalCandidates) * 100;
 
       // Emit progress update including the candidate name
-      jobStatusEmitter.emit("jobProgress", {
-        name: JobNames.Score,
+      jobStatusEmitter.emit(JobEvent.Progress, {
+        name: JobKey.Score,
         progress,
-        updated: Date.now(),
         iteration: `[${score?.toFixed(1)}]  ${candidate.name}`,
       });
 
@@ -125,13 +108,12 @@ export const scoreJob = async (
     return true;
   } catch (e) {
     logger.error(`Error running score job: ${e}`, constraintsLabel);
-    const errorStatus: JobStatus = {
-      status: "errored",
-      name: JobNames.Score,
-      updated: Date.now(),
+    const errorInfo: JobInfo = {
+      status: JobStatus.Failed,
+      name: JobKey.Score,
       error: JSON.stringify(e),
     };
-    jobStatusEmitter.emit("jobErrored", errorStatus);
+    jobStatusEmitter.emit(JobEvent.Failed, errorInfo);
     return false;
   }
 };

@@ -1,20 +1,13 @@
 import { logger, queries } from "../../../index";
-import { Job, JobConfig, JobRunnerMetadata, JobStatus } from "../JobsClass";
+import { JobEvent, JobKey, JobRunnerMetadata, JobStatus } from "../types";
 import { jobStatusEmitter } from "../../../Events";
 import {
   setAllIdentities,
   setValidatorRanks,
   withExecutionTimeLogging,
 } from "../../../utils";
-import { JobNames } from "../JobConfigs";
 
 export const erastatsLabel = { label: "EraStatsJob" };
-
-export class EraStatsJob extends Job {
-  constructor(jobConfig: JobConfig, jobRunnerMetadata: JobRunnerMetadata) {
-    super(jobConfig, jobRunnerMetadata);
-  }
-}
 
 export const eraStatsJob = async (
   metadata: JobRunnerMetadata,
@@ -37,10 +30,9 @@ export const eraStatsJob = async (
       return false;
     }
     // Emit progress update indicating the start of the job
-    jobStatusEmitter.emit("jobProgress", {
-      name: JobNames.EraStats,
+    jobStatusEmitter.emit(JobEvent.Progress, {
+      name: JobKey.EraStats,
       progress: 0,
-      updated: Date.now(),
     });
     const allCandidates = await queries.allCandidates();
     const valid = allCandidates.filter((candidate) => candidate.valid);
@@ -59,10 +51,9 @@ export const eraStatsJob = async (
     for (const [index, validator] of validators.entries()) {
       // Emit progress update for each validator processed
       const progressPercentage = ((index + 1) / validators.length) * 100;
-      jobStatusEmitter.emit("jobProgress", {
-        name: JobNames.EraStats,
+      jobStatusEmitter.emit(JobEvent.Progress, {
+        name: JobKey.EraStats,
         progress: progressPercentage,
-        updated: Date.now(),
         iteration: `Processed validator: ${validator}`,
       });
     }
@@ -70,10 +61,9 @@ export const eraStatsJob = async (
     await queries.setValidatorSet(currentSession, currentEra, validators);
 
     // Emit progress update after storing identities
-    jobStatusEmitter.emit("jobProgress", {
-      name: JobNames.EraStats,
+    jobStatusEmitter.emit(JobEvent.Progress, {
+      name: JobKey.EraStats,
       progress: 25,
-      updated: Date.now(),
     });
 
     for (let i = currentEra; i > currentEra - 20; i--) {
@@ -97,39 +87,32 @@ export const eraStatsJob = async (
 
       // Emit progress update for each era processed
       const progressPercentage = ((currentEra - i) / (currentEra - 20)) * 100;
-      jobStatusEmitter.emit("jobProgress", {
-        name: JobNames.EraStats,
+      jobStatusEmitter.emit(JobEvent.Progress, {
+        name: JobKey.EraStats,
         progress: progressPercentage,
-        updated: Date.now(),
         iteration: `Processed era: ${i}`,
       });
     }
 
     // Emit progress update after processing eras
-    jobStatusEmitter.emit("jobProgress", {
-      name: JobNames.EraStats,
+    jobStatusEmitter.emit(JobEvent.Progress, {
+      name: JobKey.EraStats,
       progress: 100,
-      updated: Date.now(),
     });
 
     await setValidatorRanks();
-
-    const finishedStatus: JobStatus = {
-      status: "finished",
-      name: JobNames.EraStats,
-      updated: Date.now(),
-    };
-    jobStatusEmitter.emit("jobFinished", finishedStatus);
+    jobStatusEmitter.emit(JobEvent.Finished, {
+      status: JobStatus.Finished,
+      name: JobKey.EraStats,
+    });
     return true;
   } catch (e) {
     logger.error(`Error running era stats job: ${e}`, erastatsLabel);
-    const errorStatus: JobStatus = {
-      status: "errored",
-      name: JobNames.EraStats,
-      updated: Date.now(),
+    jobStatusEmitter.emit(JobEvent.Failed, {
+      status: JobStatus.Failed,
+      name: JobKey.EraStats,
       error: JSON.stringify(e),
-    };
-    jobStatusEmitter.emit("jobErrored", errorStatus);
+    });
     return false;
   }
 };

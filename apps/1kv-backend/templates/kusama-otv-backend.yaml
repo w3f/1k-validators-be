@@ -52,7 +52,7 @@ spec:
                 },
                 "constraints": {
                   "skipConnectionTime": false,
-                  "skipIdentity": true,
+                  "skipIdentity": false,
                   "skipStakedDestination": true,
                   "skipClientUpgrade": false,
                   "skipUnclaimed": true,

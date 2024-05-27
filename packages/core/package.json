@@ -23,7 +23,7 @@
     "lint:fix": "../../node_modules/.bin/eslint 'src/**/*.{js,ts,tsx, json}' --quiet --fix",
     "start": "NODE_OPTIONS='--max-old-space-size=8096' ts-node src/index.ts start",
     "start:watch": "nodemon --watch build --exec  node  --max-old-space-size=8024 build/index.js",
-    "start:dev": "node esbuild.js --watch & nodemon --watch build --exec node --max-old-space-size=8024 build/index.mjs",
+    "start:dev": "node esbuild.js --watch & npx nodemon --watch build --exec node --max-old-space-size=8024 build/index.mjs",
     "js:start": "NODE_OPTIONS='--max-old-space-size=10096' node build/index.js start",
     "test": "yarn test:unit && yarn test:int",
     "test:unit": "jest --config=jest.unit.config.js --verbose",

@@ -2,6 +2,7 @@ import { Command } from "commander";
 
 import {
   ApiHandler,
+  Types,
   Config,
   Constants,
   Db,
@@ -10,9 +11,11 @@ import {
   queries,
   ScoreKeeper,
   Util,
+  ChainData,
 } from "@1kv/common";
 import { Server } from "@1kv/gateway";
 import { TelemetryClient } from "@1kv/telemetry";
+import { ConfigSchema } from "@1kv/common/build/config";
 
 const isCI = process.env.CI;
 
@@ -29,38 +32,23 @@ const catchAndQuit = async (fn: any) => {
   }
 };
 
-export const createAPIHandler = async (config, retries = 0) => {
-  try {
-    logger.info("Creating API Handler", winstonLabel);
-    // Determine the correct set of endpoints based on the network prefix.
-    const endpoints =
-      config.global.networkPrefix === 2 || config.global.networkPrefix === 0
-        ? config.global.apiEndpoints
-        : Constants.LocalEndpoints;
+export const createAPIHandlers = async (
+  config: ConfigSchema,
+): Promise<Types.ApiHandlers> => {
+  logger.info("Creating API Handler", winstonLabel);
+  // Determine the correct set of endpoints based on the network prefix.
+  const endpoints =
+    config.global.networkPrefix === 2 || config.global.networkPrefix === 0
+      ? config.global.apiEndpoints
+      : Constants.LocalEndpoints;
 
-    const handler = new ApiHandler(endpoints);
-    await handler.setAPI();
+  const relayHandler = new ApiHandler(endpoints);
 
-    // Check API health before proceeding.
-    let health = await handler.healthCheck();
-    while (!health) {
-      logger.info("Waiting for API to connect...", winstonLabel);
-      await Util.sleep(1000);
-      health = await handler.healthCheck();
-    }
+  const peopleHandler = config.global.apiPeopleEndpoints
+    ? new ApiHandler(config.global.apiPeopleEndpoints)
+    : relayHandler;
 
-    return handler;
-  } catch (e) {
-    logger.error(`Error: ${e.message || e.toString()}`, winstonLabel);
-
-    if (retries < 20) {
-      logger.info(`Retrying... attempt: ${retries}`, winstonLabel);
-      return await createAPIHandler(config, retries + 1);
-    } else {
-      logger.error("Retries exceeded", winstonLabel);
-      throw new Error("Unable to create API Handler after multiple retries.");
-    }
-  }
+  return { relay: relayHandler, people: peopleHandler };
 };
 
 export const createDB = async (config) => {
@@ -198,11 +186,15 @@ export const setChainMetadata = async (config) => {
   }
 };
 
-export const initScorekeeper = async (config, handler, maybeBot) => {
+export const initScorekeeper = async (
+  config: ConfigSchema,
+  chaindata: ChainData,
+  maybeBot: any,
+) => {
   try {
     logger.info(`Creating Scorekeeper`, winstonLabel);
     // Set up the nominators in the scorekeeper.
-    const scorekeeper = new ScoreKeeper(handler, config, maybeBot);
+    const scorekeeper = new ScoreKeeper(chaindata, config, maybeBot);
     for (const nominatorGroup of config.scorekeeper.nominators) {
       await scorekeeper.addNominatorGroup(nominatorGroup);
     }
@@ -221,7 +213,7 @@ const start = async (cmd: { config: string }) => {
     logger.info(`Starting the backend services. ${version}`, winstonLabel);
     logger.info(`Network prefix: ${config.global.networkPrefix}`, winstonLabel);
 
-    const handler = await createAPIHandler(config);
+    const apiHandlers = await createAPIHandlers(config);
 
     // Create the Database.
     await createDB(config);
@@ -232,14 +224,13 @@ const start = async (cmd: { config: string }) => {
     // Create the matrix bot if enabled.
     const maybeBot = await createMatrixBot(config);
 
-    const api = handler.getApi();
-    while (!api) {
-      logger.info(`Waiting for API to connect...`, winstonLabel);
-      await Util.sleep(1000);
-    }
+    await apiHandlers.relay.getApi();
+    await apiHandlers.people.getApi();
+
+    const chaindata = new ChainData(apiHandlers);
 
     // Create the scorekeeper.
-    const scorekeeper = await initScorekeeper(config, handler, maybeBot);
+    const scorekeeper = await initScorekeeper(config, chaindata, maybeBot);
 
     // Clean the DB.
     await clean(scorekeeper);
@@ -248,7 +239,7 @@ const start = async (cmd: { config: string }) => {
     await addCleanCandidates(config);
 
     // Start the API server.
-    await createServer(config, handler, scorekeeper);
+    await createServer(config, apiHandlers, scorekeeper);
 
     // Start the telemetry client.
     await createTelemetry(config);

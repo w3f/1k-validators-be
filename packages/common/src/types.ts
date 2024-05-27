@@ -1,3 +1,5 @@
+import ApiHandler from "./ApiHandler/ApiHandler";
+
 export type Address = string;
 export type Stash = string;
 
@@ -11,6 +13,11 @@ export type NominatorConfig = {
 export type EraReward = {
   stash: string;
   era: number;
+};
+
+export type ApiHandlers = {
+  relay: ApiHandler;
+  people: ApiHandler;
 };
 
 export type BooleanResult = [boolean, string | null];

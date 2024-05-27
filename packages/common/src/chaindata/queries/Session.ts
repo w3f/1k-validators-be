@@ -4,25 +4,22 @@
  * @function Sessio
  */
 
-import { ChainData, handleError } from "../chaindata";
+import { ChainData, handleError, HandlerType } from "../chaindata";
 import { ApiDecoration } from "@polkadot/api/types";
 
 export const getSession = async (
   chaindata: ChainData,
 ): Promise<number | null> => {
   try {
-    if (!(await chaindata.checkApiConnection())) {
-      return null;
-    }
-
-    const currentIndex = await chaindata?.api?.query.session.currentIndex();
+    const api = await chaindata.handler.getApi();
+    const currentIndex = await api.query.session.currentIndex();
     if (currentIndex !== undefined) {
       return Number(currentIndex.toString());
     } else {
       return null;
     }
   } catch (e) {
-    await handleError(chaindata, e, "getSession");
+    await handleError(chaindata, e, "getSession", HandlerType.RelayHandler);
     return null;
   }
 };
@@ -32,14 +29,10 @@ export const getSessionAt = async (
   apiAt: ApiDecoration<"promise">,
 ): Promise<number | null> => {
   try {
-    if (!(await chaindata.checkApiConnection())) {
-      return null;
-    }
-
     const session = (await apiAt.query.session.currentIndex()).toString();
     return parseInt(session.replace(/,/g, ""));
   } catch (e) {
-    await handleError(chaindata, e, "getSessionAt");
+    await handleError(chaindata, e, "getSessionAt", HandlerType.RelayHandler);
     return null;
   }
 };
@@ -49,9 +42,6 @@ export const getSessionAtEra = async (
   era: number,
 ): Promise<number | null> => {
   try {
-    if (!(await chaindata.checkApiConnection())) {
-      return null;
-    }
     const chainType = await chaindata.getChainType();
     if (chainType) {
       const [blockHash, err] = await chaindata.findEraBlockHash(era, chainType);
@@ -64,7 +54,12 @@ export const getSessionAtEra = async (
     }
     return null;
   } catch (e) {
-    await handleError(chaindata, e, "getSessionAtEra");
+    await handleError(
+      chaindata,
+      e,
+      "getSessionAtEra",
+      HandlerType.RelayHandler,
+    );
     return null;
   }
 };

@@ -1,5 +1,4 @@
 import { ChainData, Config, Constants } from "../index";
-import ApiHandler from "../ApiHandler/ApiHandler";
 import { setScoreMetadata } from "./ScoreMetadata";
 import { checkAllCandidates, checkCandidate } from "./CheckCandidates";
 import {
@@ -46,8 +45,8 @@ export class OTV implements Constraints {
     CLIENT_WEIGHT: Constants.CLIENT_WEIGHT,
   };
 
-  constructor(handler: ApiHandler, config: Config.ConfigSchema) {
-    this.chaindata = new ChainData(handler);
+  constructor(chaindata: ChainData, config: Config.ConfigSchema) {
+    this.chaindata = chaindata;
     this.config = config;
 
     // Constraints

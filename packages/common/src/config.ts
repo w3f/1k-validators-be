@@ -84,6 +84,7 @@ export type ConfigSchema = {
     dryRun: boolean;
     networkPrefix: 0 | 2 | 3;
     apiEndpoints: string[];
+    apiPeopleEndpoints?: string[];
     bootstrap: boolean;
     kusamaBootstrapEndpoint: string;
     polkadotBootstrapEndpoint: string;

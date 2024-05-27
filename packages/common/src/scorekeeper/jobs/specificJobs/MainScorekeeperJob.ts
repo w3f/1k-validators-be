@@ -17,15 +17,8 @@ const mainScoreKeeperLabel = { label: "MainScorekeeperJob" };
 export const mainScorekeeperJob = async (
   metadata: JobRunnerMetadata,
 ): Promise<void> => {
-  const {
-    constraints,
-    config,
-    chaindata,
-    nominatorGroups,
-    nominating,
-    bot,
-    handler,
-  } = metadata;
+  const { constraints, config, chaindata, nominatorGroups, nominating, bot } =
+    metadata;
   logger.info(`Running Main Scorekeeper`, mainScoreKeeperLabel);
 
   const [activeEra, err] = await chaindata.getActiveEraIndex();
@@ -118,7 +111,6 @@ export const mainScorekeeperJob = async (
       constraints,
       hasOld,
       chaindata,
-      handler,
       config,
       allCurrentTargets,
     );

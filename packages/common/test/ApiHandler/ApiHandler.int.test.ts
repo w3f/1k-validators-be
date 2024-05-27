@@ -1,21 +1,20 @@
 import { beforeAll, describe, expect, it } from "vitest";
-import { getKusamaHandler } from "../testUtils/apiHandler";
 import { ApiHandler } from "../../src";
+import { KusamaEndpoints } from "../../src/constants";
 
 const TIMEOUT_DURATION = 5200000; // 120 seconds
 describe("ApiHandler Integration Tests", () => {
   let handler: ApiHandler;
 
   beforeAll(async () => {
-    handler = await getKusamaHandler();
+    handler = new ApiHandler(KusamaEndpoints);
   }, TIMEOUT_DURATION);
 
   it(
-    "should check API connection",
+    "return functional api with getApi()",
     async () => {
-      console.log("waiting....");
-      const healthy = await handler.healthCheck();
-      expect(healthy).toBe(true);
+      const api = await handler.getApi();
+      expect(api.isConnected).toBe(true);
     },
     TIMEOUT_DURATION,
   );

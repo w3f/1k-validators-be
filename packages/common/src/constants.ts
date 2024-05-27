@@ -47,10 +47,6 @@ export const BALANCE_BUFFER_AMOUNT = 20;
 // Timeout threshold for polkadot js api - 360 seconds
 export const POLKADOT_API_TIMEOUT = 1000000;
 
-export const CHAINDATA_RETRIES = 20;
-
-export const CHAINDATA_SLEEP = 300;
-
 export const API_PROVIDER_TIMEOUT = 4000;
 
 // The number of eras a nominator should wait until making a next nomination
@@ -65,6 +61,8 @@ export const KusamaEndpoints = [
   "wss://rpc.dotters.network/kusama",
   "wss://ksm-rpc.stakeworld.io",
 ];
+
+export const KusamaPeopleEndpoints = ["wss://kusama-people-rpc.polkadot.io"];
 
 /// List of Polkadot endpoints we can switch between.
 export const PolkadotEndpoints = [

@@ -62,7 +62,11 @@ export const createDB = async (config) => {
   }
 };
 
-export const createServer = async (config, handler?, scorekeeper?) => {
+export const createServer = async (
+  config: ConfigSchema,
+  handler: ApiHandler,
+  scorekeeper?,
+) => {
   try {
     logger.info(`Creating Server`, winstonLabel);
     const server = new Server(config, handler, scorekeeper);
@@ -239,7 +243,7 @@ const start = async (cmd: { config: string }) => {
     await addCleanCandidates(config);
 
     // Start the API server.
-    await createServer(config, apiHandlers, scorekeeper);
+    await createServer(config, apiHandlers.relay, scorekeeper);
 
     // Start the telemetry client.
     await createTelemetry(config);

@@ -16,6 +16,7 @@ import {
   setUnclaimedInvalidity,
   setValidateIntentionValidity,
   setSanctionedGeoAreaValidity,
+  ReleaseSchema,
 } from "../db";
 import { ChainData, Config, Constants, queries, Util } from "../index";
 import axios from "axios";
@@ -64,87 +65,107 @@ export const checkValidateIntention = async (
   }
 };
 
+const _getLatestRelease = async (
+  config: Config.ConfigSchema,
+): Promise<ReleaseSchema> => {
+  if (config.constraints.clientUpgrade.forcedVersion) {
+    //i.e. useful in case of downgrade necessary
+    return {
+      name: config.constraints.clientUpgrade.forcedVersion,
+      publishedAt: 0,
+    };
+  }
+
+  // Get the latest release from the db or github
+  let latestRelease = await getLatestRelease();
+  if (!latestRelease) {
+    logger.info(
+      `No latest release found, fetching from GitHub`,
+      constraintsLabel,
+    );
+    // fetch from github and set in the db
+    await getLatestTaggedRelease(
+      config.constraints.clientUpgrade.releaseTagFormat,
+    );
+    // get the record from the db
+    latestRelease = await getLatestRelease();
+    logger.info(
+      `Latest release fetched from GitHub: ${latestRelease}`,
+      constraintsLabel,
+    );
+  }
+
+  return latestRelease;
+};
+
+const _checkLatestClientVersion = async (
+  config: Config.ConfigSchema,
+  latestRelease: ReleaseSchema,
+  candidate: Candidate,
+): Promise<boolean> => {
+  if (
+    config.constraints.clientUpgrade.skip ||
+    candidate?.implementation === "Kagome Node"
+  ) {
+    // Skip the check if the node is a Kagome Client or if skipping client upgrade is enabled
+    await setLatestClientReleaseValidity(candidate, true);
+    return true;
+  }
+
+  if (!latestRelease || !latestRelease.name || !latestRelease.publishedAt) {
+    logger.error(
+      `Latest release isn't properly set, defaulting the validity to true... `,
+    );
+    await setLatestClientReleaseValidity(candidate, true);
+    return true;
+  }
+
+  // Check if there is a latest release and if the current time is past the grace window
+  const isPastGraceWindow =
+    Date.now() > latestRelease.publishedAt + Constants.FORTY_EIGHT_HOURS;
+
+  if (isPastGraceWindow) {
+    const nodeVersion = semver.coerce(candidate.version);
+    const latestVersion = semver.clean(latestRelease.name);
+
+    logger.info(
+      `Past grace window of latest release, checking latest client version: ${nodeVersion} >= ${latestVersion}`,
+      constraintsLabel,
+    );
+
+    // If cannot parse the version, set the release as invalid
+    if (!nodeVersion || !latestVersion) {
+      await setLatestClientReleaseValidity(candidate, false);
+      return false;
+    }
+
+    const isUpgraded = semver.gte(nodeVersion, latestVersion);
+
+    // If they are not upgraded, set the validity as invalid
+    if (!isUpgraded) {
+      await setLatestClientReleaseValidity(candidate, false);
+      return false;
+    }
+
+    // If the current version is the latest release, set the release as valid
+    await setLatestClientReleaseValidity(candidate, true);
+    return true;
+  } else {
+    logger.info(`Still in grace window of latest release`, constraintsLabel);
+
+    await setLatestClientReleaseValidity(candidate, true);
+    return true;
+  }
+};
+
 // checks that the validator is on the latest client version
 export const checkLatestClientVersion = async (
   config: Config.ConfigSchema,
   candidate: Candidate,
 ): Promise<boolean> => {
   try {
-    const skipClientUpgrade = config.constraints?.skipClientUpgrade || false;
-    if (skipClientUpgrade || candidate?.implementation === "Kagome Node") {
-      // Skip the check if the node is a Kagome Client or if skipping client upgrade is enabled
-      await setLatestClientReleaseValidity(candidate, true);
-      return true;
-    }
-
-    // The latest release that is manually set in the config (set if there's reasons for people to downgrade)
-    const forceLatestRelease = config.constraints.forceClientVersion;
-
-    // Get the latest release from the db or github
-    let latestRelease = await getLatestRelease();
-    if (!latestRelease) {
-      logger.info(
-        `No latest release found, fetching from GitHub`,
-        constraintsLabel,
-      );
-      // fetch from github and set in the db
-      await getLatestTaggedRelease();
-      // get the record from the db
-      latestRelease = await getLatestRelease();
-      logger.info(
-        `Latest release fetched from GitHub: ${latestRelease}`,
-        constraintsLabel,
-      );
-    }
-
-    // Ensure latestRelease contains a valid name
-    if (!latestRelease || !latestRelease.name) {
-      logger.error(
-        `Latest release name is null or undefined: ${latestRelease}`,
-        constraintsLabel,
-      );
-      return false;
-    }
-
-    // Check if there is a latest release and if the current time is past the grace window
-    const isPastGraceWindow =
-      Date.now() > latestRelease.publishedAt + Constants.FORTY_EIGHT_HOURS;
-
-    if (isPastGraceWindow) {
-      const nodeVersion = semver.coerce(candidate.version);
-      const latestVersion = forceLatestRelease
-        ? semver.clean(forceLatestRelease)
-        : semver.clean(latestRelease.name);
-
-      logger.info(
-        `Past grace window of latest release, checking latest client version: ${nodeVersion} >= ${latestVersion}`,
-        constraintsLabel,
-      );
-
-      // If cannot parse the version, set the release as invalid
-      if (!nodeVersion || !latestVersion) {
-        await setLatestClientReleaseValidity(candidate, false);
-        return false;
-      }
-
-      const isUpgraded = semver.gte(nodeVersion, latestVersion);
-
-      // If they are not upgraded, set the validity as invalid
-      if (!isUpgraded) {
-        await setLatestClientReleaseValidity(candidate, false);
-        return false;
-      }
-
-      // If the current version is the latest release, set the release as valid
-      await setLatestClientReleaseValidity(candidate, true);
-      return true;
-    } else {
-      logger.info(`Still in grace window of latest release`, constraintsLabel);
-
-      // If not past the grace window, set the release as invalid
-      await setLatestClientReleaseValidity(candidate, true);
-      return true;
-    }
+    const latestRelease = await _getLatestRelease(config);
+    return await _checkLatestClientVersion(config, latestRelease, candidate);
   } catch (e) {
     logger.error(
       `Error checking latest client version: ${e}`,

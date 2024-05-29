@@ -87,6 +87,8 @@ export const defaultWsOptions = {
   debug: true,
 };
 
+export const defaultReleaseTagFormat = "polkadot-v\\d+\\.\\d+\\.\\d+"; // => /polkadot-v\d+\.\d+\.\d+/
+
 // 2 days in milliseconds
 export const STALE_TELEMETRY_THRESHOLD = 172800000;
 

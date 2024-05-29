@@ -24,10 +24,13 @@ export type ConfigSchema = {
   constraints: {
     skipConnectionTime: boolean;
     skipIdentity: boolean;
-    skipClientUpgrade: boolean;
     skipUnclaimed: boolean;
     skipClaiming: boolean;
-    forceClientVersion: string;
+    clientUpgrade: {
+      skip: boolean;
+      releaseTagFormat?: string;
+      forcedVersion?: string;
+    };
     minSelfStake: number;
     commission: number;
     unclaimedEraThreshold: number;

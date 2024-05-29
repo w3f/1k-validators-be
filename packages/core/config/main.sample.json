@@ -22,8 +22,10 @@
     "skipConnectionTime": true,
     "skipIdentity": false,
     "skipStakedDestination": true,
-    "skipClientUpgrade": true,
     "skipUnclaimed": true,
+    "clientUpgrade": {
+      "skip": false
+    },
     "minSelfStake": 100000,
     "commission": 150000000,
     "unclaimedEraThreshold": 4,

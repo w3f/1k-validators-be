@@ -95,14 +95,7 @@ const _getLatestRelease = async (
     );
   }
 
-  // Ensure latestRelease contains a valid name
-  if (!latestRelease || !latestRelease.name) {
-    logger.error(
-      `Latest release name is null or undefined: ${latestRelease}`,
-      constraintsLabel,
-    );
-    return null;
-  }
+  return latestRelease;
 };
 
 const _checkLatestClientVersion = async (
@@ -115,6 +108,14 @@ const _checkLatestClientVersion = async (
     candidate?.implementation === "Kagome Node"
   ) {
     // Skip the check if the node is a Kagome Client or if skipping client upgrade is enabled
+    await setLatestClientReleaseValidity(candidate, true);
+    return true;
+  }
+
+  if (!latestRelease || !latestRelease.name || !latestRelease.publishedAt) {
+    logger.error(
+      `Latest release isn't properly set, defaulting the validity to true... `,
+    );
     await setLatestClientReleaseValidity(candidate, true);
     return true;
   }

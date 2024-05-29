@@ -87,6 +87,8 @@ export const defaultWsOptions = {
   debug: true,
 };
 
+export const defaultReleaseTagFormat = "polkadot-v\\d+\\.\\d+\\.\\d+"; // => /polkadot-v\d+\.\d+\.\d+/
+
 // 2 days in milliseconds
 export const STALE_TELEMETRY_THRESHOLD = 172800000;
 
@@ -112,7 +114,7 @@ export const TIME_DELAY_BLOCKS = 10850;
 export const CANCEL_THRESHOLD = 21700;
 
 // Monitor Cron job for checking if clients have upgraded. This runs ever 3 minutes by default
-export const MONITOR_CRON = "0 */3 * * * *";
+export const MONITOR_CRON = "0 */1 * * * *";
 
 // Clear Offline Time Cron Job. This runs once every sunday  by default
 // export const CLEAR_OFFLINE_CRON = "0 0 0 * * 0";

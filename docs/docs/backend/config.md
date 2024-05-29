@@ -56,9 +56,10 @@ An example config may look something like:
   "constraints": {
     "skipConnectionTime": true,
     "skipIdentity": false,
-    "skipClientUpgrade": false,
     "skipUnclaimed": false,
-    "forceClientVersion": "v0.9.30",
+    "clientUpgrade": {
+      "skip": false
+    },
     "minSelfStake": 10000000000000,
     "commission": 150000000,
     "unclaimedEraThreshold": 4
@@ -69,9 +70,9 @@ The `constraints` section defines validity constraint parameters for validators,
 
 - `skipConnectionTime`: Boolean. Skips checking the 7 day required connection time if set to true. __optional__, defaults to `false`.
 - `skipIdentity`: Boolean. Skips the check for a verified identity. __optional__, defaults to `false`.
-- `skipClientUpgrade`: Boolean. Skips client version upgrade check. __optional__, defaults to `false`.
 - `skipUnclaimed`: Boolean. Skips the check for unclaimed rewards. __optional__, defaults to `false`.
-- `forceClientVersion`: String. Specific client version to be enforced. __optional__, if this is set, it will allow versions higher than what is specified. 
+- `clientUpgrade.skip`: Boolean. Skips client version upgrade check. __optional__, defaults to `false`.
+- `clientUpgrade.forceVersion`: String. Specific client version to be enforced. __optional__, if this is set, it will allow versions >= than what is specified. 
 - `minSelfStake`: Integer. Minimum self-stake required. **required**. This number needs to be specified in `Plancks` (1 DOT = 10^10 Plancks, 1 KSM = 10^12 Plancks).
 - `commission`: Integer. Max commission rate. **required**. This number needs to be specified in chain units that have 6 decimal places -  for example `150000000`  corresponds to 15% commission. 
 - `unclaimedEraThreshold`: Integer. Threshold for unclaimed eras. **required**. A validator having pending rewards for past eras longer than this threshold will be deemed invalid. This gets skipped if `skipUnclaimed` is set to `true`. This number is speciefied as number of eras, so `4` for example means validators are invalid if they have pending rewards older than 4 eras ago.
@@ -459,9 +460,10 @@ An example `core` config run as microservices may look something like:
   "constraints": {
     "skipConnectionTime": true,
     "skipIdentity": false,
-    "skipClientUpgrade": false,
     "skipUnclaimed": false,
-    "forceClientVersion": "v0.9.30",
+    "clientUpgrade": {
+      "skip": false
+    },
     "minSelfStake": 10000000000000,
     "commission": 150000000,
     "unclaimedEraThreshold": 4

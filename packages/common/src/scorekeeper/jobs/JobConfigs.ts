@@ -63,7 +63,9 @@ export const getJobConfigs = (
       jobKey: "monitor",
       defaultFrequency: Constants.MONITOR_CRON,
       jobFunction: async () => {
-        await getLatestTaggedRelease();
+        await getLatestTaggedRelease(
+          jobRunnerMetadata.config.constraints.clientUpgrade.releaseTagFormat,
+        );
       },
       name: JobNames.Monitor,
       preventOverlap: true,

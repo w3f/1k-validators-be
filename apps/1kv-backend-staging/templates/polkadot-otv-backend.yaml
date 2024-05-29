@@ -55,8 +55,10 @@ spec:
                 "constraints": {
                   "skipConnectionTime": false,
                   "skipIdentity": false,
-                  "skipClientUpgrade": false,
                   "skipUnclaimed": true,
+                  "clientUpgrade": {
+                    "skip": false
+                  },
                   "minSelfStake": 50000000000000,
                   "commission": 50000000,
                   "unclaimedEraThreshold": 1,
@@ -64,8 +66,7 @@ spec:
                     "skip": false,
                     "sanctionedCountries": ["RU", "IR", "CU", "KP", "SY"],
                     "sanctionedRegions": ["Crimea", "Autonomous Republic of Crimea", "Republic of Crimea", "Luhansk", "Luhanska Oblast", "Luhanska", "Luganskaya Oblast’", "Luganskaya", "Donetsk", "Donetska Oblast", "Donetskaya Oblast’", "Donetska", "Donetskaya", "Sevastopol City", "Sevastopol", "Gorod Sevastopol"]
-                  },
-                  "forceClientVersion": "v1.10.0"
+                  }
                 },
                 "cron": {
                   "monitor": "0 */15 * * * *",

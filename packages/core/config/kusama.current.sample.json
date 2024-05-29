@@ -37,9 +37,10 @@
   "constraints": {
     "skipConnectionTime": true,
     "skipIdentity": false,
-    "skipClientUpgrade": false,
     "skipUnclaimed": false,
-    "forceClientVersion": "v0.9.30",
+    "clientUpgrade": {
+      "skip": false
+    },
     "minSelfStake": 10000000000000,
     "commission": 150000000,
     "unclaimedEraThreshold": 4,

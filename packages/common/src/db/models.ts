@@ -943,6 +943,11 @@ export const ValidatorScoreMetadataModel = mongoose.model(
   ValidatorScoreMetadataSchema,
 );
 
+export interface ReleaseSchema {
+  name: string;
+  publishedAt: number;
+}
+
 export const ReleaseSchema = new Schema({
   name: String,
   publishedAt: Number,

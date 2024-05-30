@@ -199,9 +199,6 @@ An example config may look something like:
     "country": "10",
     "provider": "100",
     "nominations": "100",
-    "delegations": "60",
-    "openGov": "100",
-    "openGovDelegation": "100",
     "rpc": "100",
     "client": "100",
     "useInclusion": true,
@@ -217,9 +214,6 @@ An example config may look something like:
     "useCountry": true,
     "useProvider": true,
     "useNominations": true,
-    "useDelegations": true,
-    "useOpenGov": true,
-    "useOpenGovDelegation": true,
     "useRpc": true,
     "useClient": true
   },
@@ -497,12 +491,7 @@ An example `core` config run as microservices may look something like:
     "region": "10",
     "country": "10",
     "provider": "100",
-    "council": "50",
-    "democracy": "100",
-    "nominations": "100",
-    "delegations": "60",
-    "openGov": "100",
-    "openGovDelegation": "100"
+    "nominations": "100"
   },
   "scorekeeper": {
     "forceRound": false,
@@ -617,9 +606,6 @@ An example Worker config run as microservices may look something like:
     "country": "10",
     "provider": "100",
     "nominations": "100",
-    "delegations": "60",
-    "openGov": "100",
-    "openGovDelegation": "100",
     "rpc": "100",
     "client": "100",
     "useInclusion": true,
@@ -635,9 +621,6 @@ An example Worker config run as microservices may look something like:
     "useCountry": true,
     "useProvider": true,
     "useNominations": true,
-    "useDelegations": true,
-    "useOpenGov": true,
-    "useOpenGovDelegation": true,
     "useRpc": true,
     "useClient": true
   },

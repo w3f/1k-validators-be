@@ -47,8 +47,6 @@
     "unclaimedEras": "0 0-59/1 * * * *",
     "validatorPref": "0 0-59/1 * * * *",
     "nominator": "0 0-59/1 * * * *",
-    "delegation": "0 0-59/1 * * * *",
-    "democracy": "0 0-59/1 * * * *",
     "monitorEnabled": true,
     "clearOfflineEnabled": true,
     "validityEnabled": true,
@@ -113,9 +111,6 @@
     "useCountry": true,
     "useProvider": true,
     "useNominations": true,
-    "useDelegations": true,
-    "useOpenGov": true,
-    "useOpenGovDelegation": true,
     "useRpc": true,
     "useClient": true
   },

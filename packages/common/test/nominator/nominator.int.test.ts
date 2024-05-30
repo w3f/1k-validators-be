@@ -1,11 +1,14 @@
 import Nominator from "../../src/nominator/nominator";
 import ApiHandler from "../../src/ApiHandler/ApiHandler";
 import { NominatorConfig } from "../../src/types";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
+import { KusamaEndpoints, KusamaPeopleEndpoints } from "../../src/constants";
+import { ChainData } from "../../src";
+import { getKusamaChainData } from "../testUtils/chaindata";
 
 describe("Nominator Integration Test", () => {
   const nominators: Nominator[] = [];
-  let handler: ApiHandler;
+  let chaindata: ChainData;
 
   const nom1 = {
     stash: "G1rrUNQSk7CjjEmLSGcpNu72tVtyzbWdUvgmSer9eBitXWf",
@@ -177,14 +180,13 @@ describe("Nominator Integration Test", () => {
     },
   ];
 
-  beforeEach(async () => {
-    handler = new ApiHandler(["wss://kusama-rpc.polkadot.io"]);
-    await handler.setAPI();
+  beforeAll(async () => {
+    chaindata = await getKusamaChainData();
   });
 
   it("should have a status defined", async () => {
     for (const config of nominatorConfigs) {
-      nominators.push(new Nominator(handler, config, 2, null));
+      nominators.push(new Nominator(chaindata, config, 2, null));
     }
 
     for (const nominator of nominators) {

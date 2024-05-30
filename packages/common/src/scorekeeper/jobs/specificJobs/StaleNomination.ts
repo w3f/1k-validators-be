@@ -12,14 +12,7 @@ export const staleNominationJob = async (
   metadata: JobRunnerMetadata,
 ): Promise<boolean> => {
   try {
-    const { config, chaindata, nominatorGroups, bot, handler } = metadata;
-
-    const api = handler.getApi();
-
-    if (!api) {
-      logger.error(`api is null`, cronLabel);
-      return false;
-    }
+    const { config, chaindata, nominatorGroups, bot } = metadata;
 
     // threshold for a stale nomination - 8 eras for kusama, 2 eras for polkadot
     const threshold = config.global.networkPrefix == 2 ? 8 : 2;

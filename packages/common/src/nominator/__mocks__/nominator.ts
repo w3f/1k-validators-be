@@ -1,7 +1,7 @@
 import Keyring from "@polkadot/keyring";
 import { KeyringPair } from "@polkadot/keyring/types";
 import ApiHandler from "../../ApiHandler/ApiHandler";
-import { Types } from "../../index";
+import { ChainData, Types } from "../../index";
 
 type Stash = string; // Simplified for example purposes
 
@@ -17,7 +17,7 @@ class NominatorMock {
 
   private _bondedAddress: string;
   private bot: any;
-  private handler: ApiHandler;
+  public chaindata: ChainData;
   private signer: KeyringPair;
 
   // Use proxy of controller instead of controller directly.
@@ -34,12 +34,12 @@ class NominatorMock {
   private _nominationNum = 0;
 
   constructor(
-    handler: ApiHandler,
+    chaindata: ChainData,
     cfg: Types.NominatorConfig,
     networkPrefix = 2,
     bot: any,
   ) {
-    this.handler = handler;
+    this.chaindata = chaindata;
     this.bot = bot;
     this._isProxy = cfg.isProxy || false;
 

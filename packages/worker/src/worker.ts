@@ -22,11 +22,11 @@ class Worker {
     const endpoints = this.apiEndpoints.sort(() => Math.random() - 0.5);
     logger.info(`ApiHandler connecting to ${endpoints[0]}`, workerLabel);
     this.api = new ApiHandler(endpoints);
-    await this.api.setAPI();
+    await this.api.getApi();
   }
 
   async initializeConstraints(): Promise<any> {
-    this.constraints = new Constraints.OTV(this.api, this.config);
+    //this.constraints = new Constraints.OTV(this.api, this.config);
   }
 
   async startWorker(): Promise<any> {

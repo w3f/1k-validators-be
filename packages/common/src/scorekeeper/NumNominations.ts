@@ -19,7 +19,6 @@ import { NominatorState, NominatorStatus } from "../types";
  * buffer percentage and additional nominations desired. This function is chain-aware and adjusts its logic and limits
  * based on whether it's operating on Polkadot or another chain.
  *
- * @param {ApiPromise} api - An instance of the ApiPromise from Polkadot.js API, connected to the target chain.
  * @param {Nominator} nominator - An object representing the nominator, including methods to get the stash account and nominate validators.
  * @returns {Promise<Object>} A promise that resolves to an object containing:
  * - `nominationNum`: The number of validators the nominator should nominate.
@@ -33,7 +32,6 @@ import { NominatorState, NominatorStatus } from "../types";
  * console.log(`Nominator can nominate ${nominationInfo.nominationNum} validators.`);
  */
 export const autoNumNominations = async (
-  api: ApiPromise,
   nominator: Nominator,
 ): Promise<any> => {
   const nominatorStatus: NominatorStatus = {
@@ -44,11 +42,13 @@ export const autoNumNominations = async (
   };
   await nominator.updateNominatorStatus(nominatorStatus);
 
-  const denom = (await nominator?.chaindata?.getDenom()) || 0;
+  const denom = (await nominator.chaindata.getDenom()) || 0;
 
   // Get the full nominator stash balance (free + reserved)
   const stash = await nominator.stash();
   if (!stash) return 0;
+  // TODO: chain interaction should be performed exclusively in ChainData
+  const api = await nominator.chaindata.handler.getApi();
   const stashQuery = await api.query.system.account(stash);
 
   const stashBal =

@@ -2,7 +2,6 @@ import { SubmittableExtrinsic } from "@polkadot/api/types";
 import Keyring from "@polkadot/keyring";
 
 import { KeyringPair } from "@polkadot/keyring/types";
-import ApiHandler from "../ApiHandler/ApiHandler";
 import { ChainData, Constants, queries, Types } from "../index";
 import logger from "../logger";
 import EventEmitter from "eventemitter3";
@@ -17,7 +16,6 @@ export default class Nominator extends EventEmitter {
 
   private _bondedAddress: string;
   private bot: any;
-  private handler: ApiHandler;
   public chaindata: ChainData;
   private signer: KeyringPair;
 
@@ -50,15 +48,14 @@ export default class Nominator extends EventEmitter {
   };
 
   constructor(
-    handler: ApiHandler,
+    chaindata: ChainData,
     cfg: Types.NominatorConfig,
     networkPrefix = 2,
     bot?: any,
     dryRun = false,
   ) {
     super();
-    this.handler = handler;
-    this.chaindata = new ChainData(handler);
+    this.chaindata = chaindata;
     this.bot = bot;
     this._isProxy = cfg.isProxy || false;
     this._dryRun = dryRun || false;
@@ -200,8 +197,9 @@ export default class Nominator extends EventEmitter {
 
   public async stash(): Promise<string> {
     try {
-      const api = this.handler.getApi();
-      const ledger = await api?.query.staking.ledger(this.bondedAddress);
+      // TODO: chain interaction should be performed exclusively in ChainData
+      const api = await this.chaindata.handler.getApi();
+      const ledger = await api.query.staking.ledger(this.bondedAddress);
 
       if (ledger !== undefined && !ledger.isSome) {
         logger.warn(`Account ${this.bondedAddress} is not bonded!`);
@@ -226,11 +224,6 @@ export default class Nominator extends EventEmitter {
   }
 
   public async payee(): Promise<string> {
-    const api = this.handler.getApi();
-    if (!api) {
-      logger.error(`Error getting API in payee`, nominatorLabel);
-      return "";
-    }
     try {
       const stash = await this.stash();
       const isBonded = await this.chaindata.isBonded(stash);
@@ -294,14 +287,6 @@ export default class Nominator extends EventEmitter {
 
   public async nominate(targets: Types.Stash[]): Promise<boolean> {
     try {
-      const now = new Date().getTime();
-
-      const api = this.handler.getApi();
-      if (!api) {
-        logger.error(`Error getting API in nominate`, nominatorLabel);
-        return false;
-      }
-
       const currentEra = (await this.chaindata.getCurrentEra()) || 0;
       const nominatorStatus: NominatorStatus = {
         state: NominatorState.Nominating,
@@ -350,20 +335,22 @@ export default class Nominator extends EventEmitter {
           `Starting a delayed proxy tx for ${this.bondedAddress}`,
           nominatorLabel,
         );
-        await sendProxyDelayTx(this, targets, this.chaindata, api);
+        await sendProxyDelayTx(this, targets, this.chaindata);
       } else if (this._isProxy && this._proxyDelay == 0) {
         logger.info(
           `Starting a non delayed proxy tx for ${this.bondedAddress}`,
           nominatorLabel,
         );
         // Start a non delay proxy tx
-        await sendProxyTx(this, targets, this.chaindata, api, this.bot);
+        await sendProxyTx(this, targets, this.chaindata, this.bot);
       } else {
         logger.info(
           `Starting a non proxy tx for ${this.bondedAddress}`,
           nominatorLabel,
         );
         // Do a non-proxy tx
+        // TODO: chain interaction should be performed exclusively in ChainData
+        const api = await this.chaindata.handler.getApi();
         tx = api.tx.staking.nominate(targets);
         await this.sendStakingTx(tx, targets);
       }
@@ -380,11 +367,8 @@ export default class Nominator extends EventEmitter {
     callHash: string;
     height: number;
   }): Promise<boolean> {
-    const api = this.handler.getApi();
-    if (!api) {
-      logger.error(`Error getting API in cancelTx`, nominatorLabel);
-      return false;
-    }
+    // TODO: chain interaction should be performed exclusively in ChainData
+    const api = await this.chaindata.handler.getApi();
     const tx = api.tx.proxy.removeAnnouncement(
       announcement.real,
       announcement.callHash,
@@ -457,11 +441,6 @@ export default class Nominator extends EventEmitter {
         return [false, "dryRun"];
       }
       const now = new Date().getTime();
-      const api = this.handler.getApi();
-      if (!api) {
-        logger.error(`Error getting API in sendStakingTx`, nominatorLabel);
-        return [false, "error getting api to send staking tx"];
-      }
 
       let didSend = true;
       let finalizedBlockHash: string | undefined;
@@ -499,6 +478,8 @@ export default class Nominator extends EventEmitter {
               `{Nominator::nominate} tx is finalized in block ${finalizedBlockHash}`,
             );
 
+            // TODO: chain interaction should be performed exclusively in ChainData
+            const api = await this.chaindata.handler.getApi();
             for (const event of events) {
               if (
                 event.event &&

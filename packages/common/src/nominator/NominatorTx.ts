@@ -14,7 +14,6 @@ export const sendProxyDelayTx = async (
   nominator: Nominator,
   targets: string[],
   chaindata: ChainData,
-  api: ApiPromise,
 ): Promise<boolean> => {
   try {
     logger.info(
@@ -27,6 +26,9 @@ export const sendProxyDelayTx = async (
       updated: Date.now(),
       stale: false,
     });
+
+    // TODO: chain interaction should be performed exclusively in ChainData
+    const api = await chaindata.handler.getApi();
 
     const innerTx = api?.tx.staking.nominate(targets);
 
@@ -98,7 +100,6 @@ export const sendProxyTx = async (
   nominator: Nominator,
   targets: string[],
   chaindata: ChainData,
-  api: ApiPromise,
   bot?: MatrixBot,
 ): Promise<boolean> => {
   try {
@@ -107,6 +108,9 @@ export const sendProxyTx = async (
       `{Nominator::nominate::proxy} starting non delay tx for ${nominator.address} `,
       nominatorLabel,
     );
+
+    // TODO: chain interaction should be performed exclusively in ChainData
+    const api = await chaindata.handler.getApi();
 
     const innerTx = api?.tx.staking.nominate(targets);
     const callHash = innerTx.method.hash.toString();

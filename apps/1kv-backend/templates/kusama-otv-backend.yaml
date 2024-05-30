@@ -48,6 +48,7 @@ spec:
                     "wss://rpc.dotters.network/kusama",
                     "wss://ksm-rpc.stakeworld.io"
                   ],
+                  "apiPeopleEndpoints": ["wss://kusama-people-rpc.polkadot.io"],
                   "candidatesUrl": "https://raw.githubusercontent.com/w3f/1k-validators-be/master/candidates/kusama.json"
                 },
                 "constraints": {

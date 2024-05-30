@@ -2,7 +2,7 @@ import { ApiHandler, ChainData, logger } from "@1kv/common";
 
 export const createChainDataWorker = async (host, port, api: ApiHandler) => {
   logger.info(`Creating constraints worker...`);
-  const chaindata = new ChainData(api);
+  //const chaindata = new ChainData(api);
   // const worker = await new Worker(
   //   "chaindata",
   //   (job) => console.log(), //Jobs.processChainDataJob(job, chaindata),

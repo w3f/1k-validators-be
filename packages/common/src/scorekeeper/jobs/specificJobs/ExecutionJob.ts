@@ -16,7 +16,7 @@ export const executionJob = async (
   metadata: JobRunnerMetadata,
 ): Promise<boolean> => {
   try {
-    const { config, chaindata, nominatorGroups, bot, handler } = metadata;
+    const { config, chaindata, nominatorGroups, bot } = metadata;
 
     const isDryRun = config?.scorekeeper?.dryRun;
 
@@ -28,12 +28,6 @@ export const executionJob = async (
     const latestBlock = await chaindata.getLatestBlock();
     if (!latestBlock) {
       logger.error(`latest block is null`, cronLabel);
-      return false;
-    }
-    const api = handler.getApi();
-
-    if (!api) {
-      logger.error(`api is null`, cronLabel);
       return false;
     }
 
@@ -149,6 +143,8 @@ export const executionJob = async (
 
         // time to execute
 
+        // TODO: chain interaction should be performed exclusively in ChainData
+        const api = await chaindata.handler.getApi();
         const innerTx = api.tx.staking.nominate(targets);
         const tx = api.tx.proxy.proxyAnnounced(
           nominator.address,

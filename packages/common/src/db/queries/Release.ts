@@ -1,5 +1,5 @@
 import logger from "../../logger";
-import { ReleaseModel } from "../models";
+import { ReleaseModel, ReleaseSchema } from "../models";
 
 export const setRelease = async (
   name: string,
@@ -16,11 +16,11 @@ export const setRelease = async (
   return data;
 };
 
-export const getLatestRelease = async (): Promise<any> => {
+export const getLatestRelease = async (): Promise<ReleaseSchema | null> => {
   try {
     const latestRelease = await ReleaseModel.findOne({})
       .sort("-publishedAt")
-      .lean()
+      .lean<ReleaseSchema>()
       .limit(1);
     return latestRelease;
   } catch (error) {

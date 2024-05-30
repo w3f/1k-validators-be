@@ -1,5 +1,9 @@
 import { NumberResult } from "../../types";
-import ChainData, { chaindataLabel, handleError } from "../chaindata";
+import ChainData, {
+  chaindataLabel,
+  handleError,
+  HandlerType,
+} from "../chaindata";
 import logger from "../../logger";
 import { ApiDecoration } from "@polkadot/api/types";
 
@@ -8,16 +12,14 @@ export const getCommission = async (
   validator: string,
 ): Promise<NumberResult> => {
   try {
-    if (!(await chaindata.checkApiConnection())) {
-      return [0, "API not connected."];
-    }
-    const prefs = await chaindata?.api?.query.staking.validators(validator);
+    const api = await chaindata.handler.getApi();
+    const prefs = await api.query.staking.validators(validator);
     if (!prefs) {
       return [0, "No preferences found."];
     }
     return [prefs.commission.toNumber(), null];
   } catch (e) {
-    await handleError(chaindata, e, "getCommission");
+    await handleError(chaindata, e, "getCommission", HandlerType.RelayHandler);
     return [0, JSON.stringify(e)];
   }
 };
@@ -29,16 +31,18 @@ export const getCommissionInEra = async (
   validator: string,
 ): Promise<number | null> => {
   try {
-    if (!(await chaindata.checkApiConnection())) {
-      return null;
-    }
     const prefs = await apiAt?.query?.staking.erasValidatorPrefs(
       eraIndex,
       validator,
     );
     return prefs?.commission?.toNumber();
   } catch (e) {
-    await handleError(chaindata, e, "getCommissionInEra");
+    await handleError(
+      chaindata,
+      e,
+      "getCommissionInEra",
+      HandlerType.RelayHandler,
+    );
     return null;
   }
 };
@@ -48,13 +52,11 @@ export const getBlocked = async (
   validator: string,
 ): Promise<boolean> => {
   try {
-    if (!(await chaindata.checkApiConnection())) {
-      return false;
-    }
-    const rawPrefs = await chaindata?.api?.query.staking.validators(validator);
+    const api = await chaindata.handler.getApi();
+    const rawPrefs = await api.query.staking.validators(validator);
     return rawPrefs?.blocked?.toString() === "true";
   } catch (e) {
-    await handleError(chaindata, e, "getBlocked");
+    await handleError(chaindata, e, "getBlocked", HandlerType.RelayHandler);
     return false;
   }
 };
@@ -66,17 +68,15 @@ export const isBonded = async (
   stash: string,
 ): Promise<boolean> => {
   try {
-    if (!(await chaindata.checkApiConnection())) {
-      return false;
-    }
-    const bonded = await chaindata?.api?.query.staking.bonded(stash);
+    const api = await chaindata.handler.getApi();
+    const bonded = await api.query.staking.bonded(stash);
     if (bonded) {
       return bonded.isSome;
     } else {
       return false;
     }
   } catch (e) {
-    await handleError(chaindata, e, "isBonded");
+    await handleError(chaindata, e, "isBonded", HandlerType.RelayHandler);
     return false;
   }
 };
@@ -87,15 +87,13 @@ export const getDenomBondedAmount = async (
   stash: string,
 ): Promise<NumberResult> => {
   try {
-    if (!(await chaindata.checkApiConnection())) {
-      return [0, "API not connected."];
-    }
-    const bondedAddress = await chaindata?.api?.query.staking.bonded(stash);
+    const api = await chaindata.handler.getApi();
+    const bondedAddress = await api.query.staking.bonded(stash);
     if (!bondedAddress || bondedAddress.isNone) {
       return [0, "Not bonded to any account."];
     }
 
-    const ledger: any = await chaindata?.api?.query.staking.ledger(
+    const ledger: any = await api.query.staking.ledger(
       bondedAddress.toString(),
     );
     if (!ledger || ledger.isNone) {
@@ -110,7 +108,12 @@ export const getDenomBondedAmount = async (
       return [0, null];
     }
   } catch (e) {
-    await handleError(chaindata, e, "getDenomBondedAmount");
+    await handleError(
+      chaindata,
+      e,
+      "getDenomBondedAmount",
+      HandlerType.RelayHandler,
+    );
     return [0, JSON.stringify(e)];
   }
 };
@@ -120,15 +123,13 @@ export const getBondedAmount = async (
   stash: string,
 ): Promise<NumberResult> => {
   try {
-    if (!(await chaindata.checkApiConnection())) {
-      return [0, "API not connected."];
-    }
-    const bondedAddress = await chaindata?.api?.query.staking.bonded(stash);
+    const api = await chaindata.handler.getApi();
+    const bondedAddress = await api.query.staking.bonded(stash);
     if (!bondedAddress || bondedAddress.isNone) {
       return [0, "Not bonded to any account."];
     }
 
-    const ledger: any = await chaindata?.api?.query.staking.ledger(
+    const ledger: any = await api.query.staking.ledger(
       bondedAddress.toString(),
     );
     if (!ledger || ledger.isNone) {
@@ -147,16 +148,19 @@ export const getControllerFromStash = async (
   stash: string,
 ): Promise<string | null> => {
   try {
-    if (!(await chaindata.checkApiConnection())) {
-      return null;
-    }
-    const controller = await chaindata?.api?.query.staking.bonded(stash);
+    const api = await chaindata.handler.getApi();
+    const controller = await api.query.staking.bonded(stash);
     if (!controller) {
       return null;
     }
     return controller.toString();
   } catch (e) {
-    await handleError(chaindata, e, "getControllerFromStash");
+    await handleError(
+      chaindata,
+      e,
+      "getControllerFromStash",
+      HandlerType.RelayHandler,
+    );
     return null;
   }
 };
@@ -166,18 +170,20 @@ export const getRewardDestination = async (
   stash: string,
 ): Promise<string | null> => {
   try {
-    if (!(await chaindata.checkApiConnection())) {
-      return null;
-    }
-    const rewardDestination: any =
-      await chaindata.api?.query.staking.payee(stash);
+    const api = await chaindata.handler.getApi();
+    const rewardDestination: any = await api.query.staking.payee(stash);
     if (rewardDestination?.toJSON()?.account) {
       return rewardDestination?.toJSON()?.account;
     } else {
       return rewardDestination?.toString();
     }
   } catch (e) {
-    await handleError(chaindata, e, "getRewardDestination");
+    await handleError(
+      chaindata,
+      e,
+      "getRewardDestination",
+      HandlerType.RelayHandler,
+    );
     return null;
   }
 };
@@ -188,9 +194,6 @@ export const getRewardDestinationAt = async (
   stash: string,
 ): Promise<string | null> => {
   try {
-    if (!(await chaindata.checkApiConnection())) {
-      return null;
-    }
     const rewardDestination: any = await apiAt.query.staking.payee(stash);
     if (rewardDestination.toJSON().account) {
       return rewardDestination.toJSON().account;
@@ -212,10 +215,8 @@ export const getQueuedKeys = async (
   chaindata: ChainData,
 ): Promise<QueuedKey[]> => {
   try {
-    if (!(await chaindata.checkApiConnection())) {
-      return [];
-    }
-    const queuedKeys = await chaindata.api?.query.session.queuedKeys();
+    const api = await chaindata.handler.getApi();
+    const queuedKeys = await api.query.session.queuedKeys();
     if (!queuedKeys) {
       return [];
     }
@@ -227,7 +228,7 @@ export const getQueuedKeys = async (
     });
     return keys;
   } catch (e) {
-    await handleError(chaindata, e, "getQueuedKeys");
+    await handleError(chaindata, e, "getQueuedKeys", HandlerType.RelayHandler);
     return [];
   }
 };
@@ -249,10 +250,8 @@ export const getNextKeys = async (
   stash: string,
 ): Promise<NextKeys | null> => {
   try {
-    if (!(await chaindata.checkApiConnection())) {
-      return null;
-    }
-    const nextKeysRaw = await chaindata.api?.query.session.nextKeys(stash);
+    const api = await chaindata.handler.getApi();
+    const nextKeysRaw = await api.query.session.nextKeys(stash);
     if (!nextKeysRaw) {
       return null;
     }
@@ -267,7 +266,7 @@ export const getNextKeys = async (
       }
     }
   } catch (e) {
-    await handleError(chaindata, e, "getNextKeys");
+    await handleError(chaindata, e, "getNextKeys", HandlerType.RelayHandler);
   }
   return null;
 };
@@ -281,10 +280,8 @@ export const getBalance = async (
   address: string,
 ): Promise<Balance | null> => {
   try {
-    if (!(await chaindata.checkApiConnection())) {
-      return null;
-    }
-    const accountData = await chaindata.api?.query.system.account(address);
+    const api = await chaindata.handler.getApi();
+    const accountData = await api.query.system.account(address);
     if (!accountData) {
       return null;
     }
@@ -315,14 +312,9 @@ export const getExposure = async (
   validator: string,
 ): Promise<Exposure | null> => {
   try {
-    if (!(await chaindata.checkApiConnection())) {
-      return null;
-    }
+    const api = await chaindata.handler.getApi();
     const denom = await chaindata.getDenom();
-    const eraStakers = await chaindata.api?.query.staking.erasStakers(
-      eraIndex,
-      validator,
-    );
+    const eraStakers = await api.query.staking.erasStakers(eraIndex, validator);
     if (eraStakers && denom) {
       const total = parseFloat(eraStakers.total.toString()) / denom;
       const own = parseFloat(eraStakers.own.toString()) / denom;
@@ -346,7 +338,7 @@ export const getExposure = async (
 
     return null;
   } catch (e) {
-    await handleError(chaindata, e, "getExposure");
+    await handleError(chaindata, e, "getExposure", HandlerType.RelayHandler);
     return null;
   }
 };
@@ -358,9 +350,6 @@ export const getExposureAt = async (
   validator: string,
 ): Promise<Exposure | null> => {
   try {
-    if (!(await chaindata.checkApiConnection())) {
-      return null;
-    }
     const denom = await chaindata.getDenom();
     const eraStakers = await apiAt.query.staking.erasStakers(
       eraIndex,
@@ -384,7 +373,7 @@ export const getExposureAt = async (
     }
     return null;
   } catch (e) {
-    await handleError(chaindata, e, "getExposureAt");
+    await handleError(chaindata, e, "getExposureAt", HandlerType.RelayHandler);
     return null;
   }
 };

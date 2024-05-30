@@ -29,7 +29,6 @@ export const scorekeeperLabel = { label: "Scorekeeper" };
 
 // Scorekeeper is the main orchestrator of initiating jobs and kickstarting the workflow of nominations
 export default class ScoreKeeper {
-  public handler: ApiHandler;
   public bot: any;
   public chaindata: ChainData;
   public config: Config.ConfigSchema;
@@ -52,17 +51,16 @@ export default class ScoreKeeper {
 
   public isStarted = false;
 
-  constructor(handler: ApiHandler, config: Config.ConfigSchema, bot: any) {
-    this.handler = handler;
-    this.chaindata = new ChainData(this.handler);
+  constructor(chaindata: ChainData, config: Config.ConfigSchema, bot?: any) {
+    this.chaindata = chaindata;
     this.config = config;
     this.bot = bot || null;
-    this.constraints = new Constraints.OTV(this.handler, this.config);
+    this.constraints = new Constraints.OTV(chaindata, this.config);
     this.nominatorGroups = [];
     this._dryRun = this.config.scorekeeper.dryRun;
     this.upSince = Date.now();
 
-    registerAPIHandler(this.handler, this.config, this.chaindata, this.bot);
+    registerAPIHandler(this.chaindata, this.bot);
     registerEventEmitterHandler(this);
   }
   public getJobsStatusAsJson() {
@@ -105,7 +103,7 @@ export default class ScoreKeeper {
     networkPrefix = 2,
   ): Promise<Nominator> {
     const nominator = new Nominator(
-      this.handler,
+      this.chaindata,
       cfg,
       networkPrefix,
       this.bot,
@@ -124,14 +122,9 @@ export default class ScoreKeeper {
       const nom = await this._spawn(nomCfg, this.config.global.networkPrefix);
 
       // try and get the ledger for the nominator - this means it is bonded. If not then don't add it.
-      const api = this.handler.getApi();
-      if (!api) {
-        logger.error(
-          `Error getting API in addNominatorGroup`,
-          scorekeeperLabel,
-        );
-        return false;
-      }
+
+      // TODO: chain interaction should be performed exclusively in ChainData
+      const api = await this.chaindata.handler.getApi();
       const ledger = await api.query.staking.ledger(nom.bondedAddress);
       if (!ledger) {
         logger.warn(
@@ -275,7 +268,6 @@ export default class ScoreKeeper {
           this.constraints,
           filteredNominators,
           this.chaindata,
-          this.handler,
           this.config,
           this.currentTargets,
         );
@@ -290,7 +282,6 @@ export default class ScoreKeeper {
         // currentEra: this.currentEra,
         bot: this.bot,
         constraints: this.constraints,
-        handler: this.handler,
         currentTargets: this.currentTargets,
       };
 

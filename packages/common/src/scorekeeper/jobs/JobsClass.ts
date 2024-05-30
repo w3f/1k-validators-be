@@ -1,4 +1,4 @@
-import { ApiHandler, ChainData, Config, Constraints } from "../../index";
+import { ChainData, Config, Constraints } from "../../index";
 import MatrixBot from "../../matrix";
 import Nominator from "../../nominator/nominator";
 import { ConfigSchema } from "../../config";
@@ -16,7 +16,6 @@ export type JobRunnerMetadata = {
   // currentEra: number;
   bot: MatrixBot;
   constraints: Constraints.OTV;
-  handler: ApiHandler;
   currentTargets: { stash?: string; identity?: any }[];
 };
 

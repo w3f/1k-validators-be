@@ -7,7 +7,6 @@ import { autoNumNominations } from "./NumNominations";
 import { scorekeeperLabel } from "./scorekeeper";
 import logger from "../logger";
 import { ChainData, queries, Util } from "../index";
-import ApiHandler from "../ApiHandler/ApiHandler";
 import MatrixBot from "../matrix";
 import { ConfigSchema } from "../config";
 import Nominator from "../nominator/nominator";
@@ -18,7 +17,6 @@ export const doNominations = async (
   candidates: { name: string; stash: string; total: number }[],
   nominatorGroups: Nominator[],
   chaindata: ChainData,
-  handler: ApiHandler,
   bot: MatrixBot,
   config: ConfigSchema,
   currentTargets: { name?: string; stash?: string; identity?: any }[],
@@ -70,10 +68,9 @@ export const doNominations = async (
       // The number of nominations to do per nominator account
       // This is either hard coded, or set to "auto", meaning it will find a dynamic amount of validators
       //    to nominate based on the lowest staked validator in the validator set
-      const api = handler.getApi();
       const denom = await chaindata.getDenom();
-      if (!api || !denom) return null;
-      const autoNom = await autoNumNominations(api, nominator);
+      if (!denom) return null;
+      const autoNom = await autoNumNominations(nominator);
       const { nominationNum } = autoNom;
 
       logger.info(

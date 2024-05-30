@@ -1,29 +1,29 @@
 import { addProdKusamaCandidates } from "./candidate";
 import { getKusamaProdConfig } from "./config";
-import { ScoreKeeper } from "../../src";
+import { ChainData, ScoreKeeper } from "../../src";
 import ApiHandler from "../../src/ApiHandler/ApiHandler";
-import { KusamaEndpoints } from "../../src/constants";
+import { KusamaEndpoints, KusamaPeopleEndpoints } from "../../src/constants";
 
 export const getAndStartScorekeeper = async () => {
-  const apiHandler = new ApiHandler(KusamaEndpoints);
-  await apiHandler.setAPI();
-  await apiHandler.getApi()?.isReady;
-  let health = await apiHandler.healthCheck();
-  while (!health) {
-    await new Promise((resolve) => setTimeout(resolve, 5000));
-    health = await apiHandler.healthCheck();
-  }
+  const relayApiHandler = new ApiHandler(KusamaEndpoints);
+  const peopleApiHandler = new ApiHandler(KusamaPeopleEndpoints);
+  await Promise.all([relayApiHandler.getApi(), peopleApiHandler.getApi()]);
+
+  const chaindata = new ChainData({
+    relay: relayApiHandler,
+    people: peopleApiHandler,
+  });
 
   await addProdKusamaCandidates();
 
   const config = getKusamaProdConfig();
 
-  const scorekeeper = new ScoreKeeper(apiHandler, config);
+  const scorekeeper = new ScoreKeeper(chaindata, config);
   for (const nominatorGroup of config.scorekeeper.nominators) {
     await scorekeeper.addNominatorGroup(nominatorGroup);
   }
 
-  const didStart = await scorekeeper.begin();
+  await scorekeeper.begin();
 
   let isStarted = scorekeeper.isStarted;
   while (!isStarted) {

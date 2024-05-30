@@ -1,4 +1,4 @@
-import { ChainData, handleError } from "../chaindata";
+import { ChainData, handleError, HandlerType } from "../chaindata";
 
 export interface ProxyAnnouncement {
   real: string;
@@ -11,11 +11,8 @@ export const getProxyAnnouncements = async (
   address: string,
 ): Promise<ProxyAnnouncement[]> => {
   try {
-    if (!(await chaindata.checkApiConnection())) {
-      return [];
-    }
-    const announcements =
-      await chaindata.api?.query.proxy.announcements(address);
+    const api = await chaindata.handler.getApi();
+    const announcements = await api.query.proxy.announcements(address);
     if (!announcements) {
       return [];
     }
@@ -36,7 +33,12 @@ export const getProxyAnnouncements = async (
       return [];
     }
   } catch (e) {
-    await handleError(chaindata, e, "getProxyAnnouncements");
+    await handleError(
+      chaindata,
+      e,
+      "getProxyAnnouncements",
+      HandlerType.RelayHandler,
+    );
     return [];
   }
 };

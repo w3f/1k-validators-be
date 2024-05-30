@@ -15,7 +15,6 @@
     "src/index.ts",
     "src/logger.ts",
     "src/matrix.ts",
-    "src/monitor.ts",
 //    "src/nominator.ts",
 //    "src/scorekeeper.ts",
 //    "src/server.ts",

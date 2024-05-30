@@ -3,6 +3,7 @@ import { Octokit } from "@octokit/rest";
 import { Job, JobConfig, JobRunnerMetadata, JobStatus } from "../JobsClass";
 import { JobNames } from "../JobConfigs";
 import { jobStatusEmitter } from "../../../Events";
+import { defaultReleaseTagFormat } from "../../../constants";
 
 export const monitorLabel = { label: "Monitor" };
 
@@ -12,7 +13,7 @@ export class MonitorJob extends Job {
   }
 }
 
-export const getLatestTaggedRelease = async () => {
+export const getLatestTaggedRelease = async (releaseTagFormat: string) => {
   try {
     const start = Date.now();
 
@@ -22,11 +23,19 @@ export const getLatestTaggedRelease = async () => {
     const ghApi = new Octokit();
 
     try {
-      const release = await ghApi.repos.getLatestRelease({
+      const list = await ghApi.repos.listReleases({
         owner: "paritytech",
         repo: "polkadot-sdk",
       });
-      latestRelease = release?.data;
+      const filtered = list.data.filter((item) => {
+        // eslint-disable-next-line security/detect-non-literal-regexp
+        const regex = new RegExp(
+          releaseTagFormat ? releaseTagFormat : defaultReleaseTagFormat,
+        );
+        return regex.test(item.tag_name);
+      });
+
+      latestRelease = filtered[0];
     } catch {
       logger.warn("Could not get latest release.", monitorLabel);
     }
@@ -78,6 +87,6 @@ export const getLatestTaggedRelease = async () => {
 };
 
 // Called by worker to process Job
-export const processReleaseMonitorJob = async (job: any) => {
-  await getLatestTaggedRelease();
-};
+// export const processReleaseMonitorJob = async (job: any) => {
+//   await getLatestTaggedRelease();
+// };

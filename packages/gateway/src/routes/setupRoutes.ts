@@ -23,7 +23,7 @@ export const setupHealthCheckRoute = (
 ): boolean => {
   try {
     const version = packageJson.version;
-    const isConnected = handler?.isConnected();
+    const isConnected = handler?.isConnected;
     const currentEndpoint = handler?.currentEndpoint();
 
     const response = {
@@ -35,9 +35,8 @@ export const setupHealthCheckRoute = (
 
     routerInstance.get("/healthcheck", async (ctx) => {
       if (handler) {
-        const isConnected = handler.isConnected();
+        const isConnected = handler.isConnected;
         if (isConnected) {
-          const isHealthy = await handler.healthCheck();
           ctx.body = JSON.stringify(response);
           ctx.status = 200;
         } else {

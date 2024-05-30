@@ -13,7 +13,6 @@ import * as Score from "./constraints/score";
 import * as Models from "./db/models";
 import ScoreKeeper from "./scorekeeper/scorekeeper";
 import * as Jobs from "./scorekeeper/jobs/specificJobs";
-import Monitor from "./monitor";
 import MatrixBot from "./matrix";
 
 export {
@@ -32,5 +31,4 @@ export {
   ScoreKeeper,
   Jobs,
   MatrixBot,
-  Monitor,
 };

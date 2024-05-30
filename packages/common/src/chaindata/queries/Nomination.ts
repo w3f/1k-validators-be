@@ -1,13 +1,11 @@
-import Chaindata, { handleError } from "../chaindata";
+import Chaindata, { handleError, HandlerType } from "../chaindata";
 
 export const getNominatorAddresses = async (
   chaindata: Chaindata,
 ): Promise<string[]> => {
   try {
-    if (!(await chaindata.checkApiConnection())) {
-      return [];
-    }
-    const nominators = await chaindata.api?.query.staking.nominators.entries();
+    const api = await chaindata.handler.getApi();
+    const nominators = await api.query.staking.nominators.entries();
     const nominatorMap = nominators
       ?.map((nominator) => {
         const [key, targets] = nominator;
@@ -22,7 +20,12 @@ export const getNominatorAddresses = async (
       .filter((address) => address !== undefined) as string[];
     return nominatorMap;
   } catch (e) {
-    await handleError(chaindata, e, "getNominatorAddresses");
+    await handleError(
+      chaindata,
+      e,
+      "getNominatorAddresses",
+      HandlerType.RelayHandler,
+    );
     return [];
   }
 };
@@ -37,11 +40,8 @@ export const getNominators = async (
   chaindata: Chaindata,
 ): Promise<NominatorInfo[]> => {
   try {
-    if (!(await chaindata.checkApiConnection())) {
-      return [];
-    }
-    const nominatorEntries =
-      await chaindata.api?.query.staking.nominators.entries();
+    const api = await chaindata.handler.getApi();
+    const nominatorEntries = await api.query.staking.nominators.entries();
     if (!nominatorEntries) {
       return [];
     }
@@ -66,7 +66,7 @@ export const getNominators = async (
       }),
     );
   } catch (e) {
-    await handleError(chaindata, e, "getNominators");
+    await handleError(chaindata, e, "getNominators", HandlerType.RelayHandler);
     return [];
   }
 };
@@ -77,14 +77,16 @@ export const getNominatorLastNominationEra = async (
   address: string,
 ): Promise<number | null> => {
   try {
-    if (!(await chaindata.checkApiConnection())) {
-      return null;
-    }
-    const lastNominationEra =
-      await chaindata.api?.query.staking.nominators(address);
+    const api = await chaindata.handler.getApi();
+    const lastNominationEra = await api.query.staking.nominators(address);
     return lastNominationEra?.unwrapOrDefault().submittedIn.toNumber() || null;
   } catch (e) {
-    await handleError(chaindata, e, "getNominatorLastNominationEra");
+    await handleError(
+      chaindata,
+      e,
+      "getNominatorLastNominationEra",
+      HandlerType.RelayHandler,
+    );
     return null;
   }
 };
@@ -95,13 +97,16 @@ export const getNominatorCurrentTargets = async (
   address: string,
 ): Promise<string[] | null> => {
   try {
-    if (!(await chaindata.checkApiConnection())) {
-      return null;
-    }
-    const targets = await chaindata.api?.query.staking.nominators(address);
+    const api = await chaindata.handler.getApi();
+    const targets = await api.query.staking.nominators(address);
     return targets?.unwrapOrDefault().targets.toJSON() as string[];
   } catch (e) {
-    await handleError(chaindata, e, "getNominatorCurrentTargets");
+    await handleError(
+      chaindata,
+      e,
+      "getNominatorCurrentTargets",
+      HandlerType.RelayHandler,
+    );
     return null;
   }
 };

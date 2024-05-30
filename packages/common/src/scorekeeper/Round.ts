@@ -10,7 +10,6 @@ import { doNominations } from "./Nominating";
 import { OTV } from "../constraints/constraints";
 import { ConfigSchema } from "../config";
 import MatrixBot from "../matrix";
-import ApiHandler from "../ApiHandler/ApiHandler";
 import Nominator from "../nominator/nominator";
 import { jobStatusEmitter } from "../Events";
 import { JobNames } from "./jobs/JobConfigs";
@@ -27,7 +26,6 @@ export const startRound = async (
   constraints: OTV,
   nominatorGroups: Nominator[],
   chaindata: ChainData,
-  handler: ApiHandler,
   config: ConfigSchema,
   currentTargets: { stash?: string; identity?: any }[],
 ): Promise<{ stash?: string; identity?: any }[] | null> => {
@@ -150,7 +148,6 @@ export const startRound = async (
     sortedCandidates,
     nominatorGroups,
     chaindata,
-    handler,
     bot,
     config,
     currentTargets,

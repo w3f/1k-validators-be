@@ -2383,6 +2383,30 @@
       "kusamaStash": "EoUT1KcbyPJr5tDQkejjzHsF9p6EGP2c5Q8bYonvhZ7giY7",
       "riotHandle": "@frogstaking:matrix.org",
       "kyc": true
+    },    
+    {
+      "slotId": 291,
+      "name": "Staking4All 1KVP",
+      "stash": "16g43B7VPfTmpXQujSz3aKbqY9twSrDreHFWtwp4P7bLkQPp",
+      "kusamaStash": "GTUi6r2LEsf71zEQDnBvBvKskQcWvK66KRqcRbdmcczaadr",
+      "riotHandle": "@staking4all:matrix.org",
+      "kyc": true
+    },    
+    {
+      "slotId": 292,
+      "name": "tentbakers",
+      "stash": "16g5E5ic5phnFEnJnMnDYEM3dtqiXM8kJ7FjkaZPF3EZTb5",
+      "kusamaStash": "GfECgQybYBKTcSC5VYdnJmUftzvvrQHRGTbsaCQgKz9WFNe",
+      "riotHandle": "@tentbakers:matrix.org",
+      "kyc": true
+    },    
+    {
+      "slotId": 293,
+      "name": "Profit link",
+      "stash": "1UKhoRCN6R8XeE4c4vwaUdeuxGcdMfia6mYRaeEWtNybkZD",
+      "kusamaStash": "Hhx2EoL2J4UYFSdGQZhnX2MFjKcvV5VLHya4cvYEVVErTv4",
+      "riotHandle": "@garciaprod:matrix.org",
+      "kyc": true
     }
   ]
 }

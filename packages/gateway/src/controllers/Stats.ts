@@ -1,7 +1,7 @@
 import { logger } from "@1kv/common";
 import { response } from "./index";
 import * as StatsService from "../services/Stats";
-import { gatewayLabel } from "../run";
+import { gatewayLabel } from "../constants";
 
 export default class StatsController {
   public static async getLocationStats(context: any): Promise<void> {

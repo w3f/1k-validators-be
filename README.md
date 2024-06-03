@@ -26,16 +26,13 @@ The nominating backend will routinely change its nominations at every era. The b
 
 > A monorepo containing TypeScript microservices for the Thousand Validators Program.
 
-The following is a monorepo of packages for the Thousand Validators Program. Each package is a microservice that can be run independently or together with other microservices. 
+The following is a monorepo of packages for the Thousand Validators Program.  
 
 The monorepo is managed using Yarn workspaces, and contains the following packages:
 - [`packages/common`](packages/common): A package containing common code shared across all microservices.
 - [`packages/core`](packages/core): A package containing the core logic of the Thousand Validators Program.
 - [`packages/gateway`](packages/gateway): A package for an API gateway that exposes the backend with a REST API.
 - [`packages/telemetry`](packages/telemetry): A package for a telemetry client that monitors uptime
-- [`packages/worker`](packages/worker): A packages for job queue workers that perform background tasks.
-
-
 
 ## Installation & Setup
 
@@ -43,16 +40,9 @@ The monorepo is managed using Yarn workspaces, and contains the following packag
 
 There's a few ways of running the backend with docker containers, either in kubernetes, or with docker-compose.
 
-There is the `Current / Monolith` way of running instances, and the `Microservice` way of running instances.
+Current architecture:
 
-`Current / Monolith` Architecture:
-
-![Current / Monolith Architecture](./docs/architecture/monolith.png)
-
-
-`Microservice` Architecture:
-
-![Microservice Architecture](./docs/architecture/microservice.png)
+![Current Architecture](./docs/architecture/monolith.png)
 
 The following are different ways of running in either `Current` or `Microservice` architecture with either `Kusama` or `Polkadot`, and either `Development` or `Production`:
 
@@ -60,18 +50,6 @@ The following are different ways of running in either `Current` or `Microservice
   - Running as a monolith with production values
 - `Polkadot Current`
   - Running as a monolith with production values
-- `Kusama Microservice`
-  - Running as microservices with production values
-- `Polkadot Microservice`
-  - Running as microservices with production values
-- `Polkadot Current Dev`
-  - Running as a monolith with development values
-- `Kusama Current Dev`
-  - Running as a monolith with development values
-- `Kusama Microservice Dev`
-  - Running as microservices with development values
-- `Polkadot Microservice Dev`
-  - Running as microservices with development values
 
 Each package contains a `Dockerfile`, which is used for running in production,  and `Dockerfile-dev`, which is used for development. The development images will use run with `nodemon` so that each time files is saved/changed it will rebuild the image and restart the container. Any changes for the regular run `Dockerfile` will need a manual rebuilding of the docker image.
 
@@ -86,8 +64,7 @@ cd 1k-validators-be
 ### Installing System Dependencies
 
 Ensure the following are installed on your machine:
-- [Node.js](https://nodejs.org/en/) (v12 or higher)
-- [Yarn](https://yarnpkg.com/) (v1.22 or higher)
+- [Node.js](https://nodejs.org/en/) (v21 or higher)
 - [Docker](https://www.docker.com/) (v19 or higher)
 
 
@@ -121,30 +98,6 @@ Polkadot Current / Monolith Dev:
 yarn docker:polkadot-current-dev:start
 ```
 
-Kusama Microservice Production:
-
-```bash
-yarn docker:kusama-microscervice:start
-```
-
-Kusama Microservice Dev:
-
-```bash
-yarn docker:kusama-microservice-dev:start
-```
-
-Polkadot Microservice Production:
-
-```bash
-yarn docker:polkadot-current:start
-```
-
-Polkadot Microservice Dev:
-
-```bash
-yarn docker:polkadot-current-dev:start
-```
-
 ### Install Yarn Dependencies
 ```bash
 yarn install
@@ -169,50 +122,6 @@ This will create a configuration file for a Kusama instance that mirrors what is
 ```bash
 yarn create-config-polkadot-current
 ```
-
-Kusama Microservice Config:
-This will create configuration files for a Kusama instance for each microservice that runs with production values. This runs `core`, `gateway`, `telemetry`, and `worker` as separate processes in their own container - each one needs it's own configuration file.
-```bash
-yarn create-config-kusama-microservice
-```
-
-Polkadot Microservice Config:
-This will create configuration files for a Polkadot instance for each microservice that runs with production values. This runs `core`, `gateway`, `telemetry`, and `worker` as separate processes in their own container - each one needs it's own configuration file.
-```bash
-yarn create-config-polkadot-microservice
-```
-
-
-
-### Running the Microservices
-
-#### Running `Kusama Current` or `Polkadot Current`:
-
-Either is from the same `docker-compose.current.yml` file, and runs only the `core` container, `mongo` container, and `mongo-express` container.
-
-Build and run as detached daemon:
-```bash
-docker compose -f docker-compose.current.yml up -d --build
-```
-
-#### Running `Kusama Microservice` or `Polkadot Microservice`:
-
-Either is from the same `docker-compose.microservice.yml` file. This runs `core`, `gateway`, `telemetry`, and `worker` as separate processes in their own container - each one needs it's own configuration file. It additionally runs a `redis`, `mongo`, and `mongo-express` container.
-
-Build and run as detached daemon:
-```bash
-docker compose -f docker-compose.microservice.yml up -d --build
-```
-
-#### Running `Kusama Current Dev`, `Polkadot Current Dev`, `Kusama Microservice Dev`, or `Polkadot Microservice Dev`
-
-Either is from the same `docker-compose.yml` file.
-
-Build and run as detached daemon:
-```bash
-docker compose -f docker-compose.yml up -d --build
-```
-
 
 ### Viewing Logs
 

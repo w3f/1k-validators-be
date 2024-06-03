@@ -6,7 +6,6 @@
   "types": "build/index.d.ts",
   "scripts": {
     "build": "tsc --build tsconfig.json",
-    "build:prod": "node esbuild.js --prod",
     "docker": "docker-compose rm -f; docker-compose build --no-cache; docker-compose up -d",
     "lint": "../../node_modules/.bin/eslint 'src/**/*.{js,ts,tsx}' --quiet",
     "lint:fix": "../../node_modules/.bin/eslint 'src/**/*.{js,ts,tsx, json}' --quiet --fix",

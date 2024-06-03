@@ -6,13 +6,8 @@
   "types": "build/index.d.ts",
   "scripts": {
     "build": "tsc --build tsconfig.json",
-    "build:prod": "node esbuild.mjs --prod",
     "clean": "../../node_modules/.bin/rimraf ./build tsconfig.tsbuildinfo combined.log",
     "clean:build": "yarn clean && yarn build",
-    "create-config-kusama-microservice": "cp config/sample.json ./config/main.json",
-    "create-config-kusama-microservice-dev": "cp config/sample.json ./config/main.json",
-    "create-config-polkadot-microservice": "cp config/sample.json ./config/main.json",
-    "create-config-polkadot-microservice-dev": "cp config/sample.json ./config/main.json",
     "docker": "docker-compose rm -f; docker-compose build --no-cache; docker-compose up -d",
     "lint": "../../node_modules/.bin/eslint 'src/**/*.{js,ts,tsx}' --quiet",
     "lint:fix": "../../node_modules/.bin/eslint  'src/**/*.{js,ts,tsx}' --quiet --fix",

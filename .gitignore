@@ -28,8 +28,6 @@ dist
 **/config/main.json
 **/config/secret.json
 
-redis/
-
 docs/.DS_Store
 /packages/core/kusama-matrix.txt
 /packages/core/polkadot-matrix.txt

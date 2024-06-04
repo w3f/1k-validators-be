@@ -6445,6 +6445,20 @@
       "stash": "HX4G5u7MXFL5KZ3gzC9NuouhvZDf3ejNbxG2HbqK82gVmQu",
       "riotHandle": "@e1emre:matrix.org",
       "kyc": true
+    },    
+    {
+      "slotId": 945,
+      "name": "Encointer/KV1",
+      "stash": "HQGpmN3FNykmM131vDkuvukLq7g1bDud96H5vvGcUsF4WiU",
+      "riotHandle": "@brenzi:matrix.org",
+      "kyc": true
+    },    
+    {
+      "slotId": 946,
+      "name": "Encointer/KV2",
+      "stash": "D9EKgv21LBMMzkrLZWMrGLhQPsQhwEeV2tVhwwow6W9ZCbx",
+      "riotHandle": "@brenzi:matrix.org",
+      "kyc": true
     }
   ]
 }

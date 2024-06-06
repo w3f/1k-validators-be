@@ -63,6 +63,13 @@ describe("autoNumNominations", () => {
           }),
         },
       },
+      registry: {
+        getChainProperties: vi.fn().mockResolvedValue({
+          tokenDecimals: {
+            toJSON: vi.fn().mockImplementation(() => [10]),
+          },
+        }),
+      },
     });
 
     const relayApiHandler = new ApiHandler(KusamaEndpoints);

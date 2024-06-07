@@ -22,6 +22,8 @@ spec:
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}  
         checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
     spec:
+      nodeSelector:
+      {{ toYaml .Values.nodeSelector | indent 8 }}
       containers:
       - name: {{ .Release.Name }}
         image: {{ .Values.image.repo }}:{{ .Values.image.tag | default .Chart.AppVersion }}
@@ -73,6 +75,7 @@ spec:
       name: data
     spec:
       accessModes: [ "ReadWriteOnce" ]
+      storageClassName: {{ .Values.storageClassName }}
       resources:
         requests:
           storage: {{ .Values.storageSize }}

@@ -186,7 +186,10 @@
       "slotId": 29,
       "name": "KUSAMAPROPHET",
       "stash": "HKnRS3RryHjzTHGu42u6BtVp2cNuYoRVnrUJGeRAKqagsKY",
-      "riotHandle": ["@fbranciard:matrix.org", "@vladost:matrix.org"],
+      "riotHandle": [
+        "@fbranciard:matrix.org",
+        "@vladost:matrix.org"
+      ],
       "kyc": false
     },
     {
@@ -746,7 +749,10 @@
       "slotId": 111,
       "name": "PureStake_Kusama_03",
       "stash": "DVw4Zkfva2MPibAsr8vgoha1T2ow8zreoTWGyBDioQBdfMM",
-      "riotHandle": ["@artk:matrix.org", "@mitchell-g:matrix.org"],
+      "riotHandle": [
+        "@artk:matrix.org",
+        "@mitchell-g:matrix.org"
+      ],
       "kyc": false
     },
     {
@@ -795,7 +801,10 @@
       "slotId": 118,
       "name": "Dionysus-sv-validator-0",
       "stash": "FWz717J6ATaYSNy2tRHAskEC9SP4uKHNJYC9mvfvimkB8GT",
-      "riotHandle": ["@syed:web3.foundation", "@remohammdi:matrix.org"],
+      "riotHandle": [
+        "@syed:web3.foundation",
+        "@remohammdi:matrix.org"
+      ],
       "kyc": false
     },
     {
@@ -1387,7 +1396,10 @@
       "slotId": 202,
       "name": "postchain_io",
       "stash": "EHs5p1TR3SpQXvqAUq7pL4qKWRVNmrvtCT4izncvnk6Kh5W",
-      "riotHandle": ["@postchain_p:matrix.org", "@postchain_d:matrix.org"],
+      "riotHandle": [
+        "@postchain_p:matrix.org",
+        "@postchain_d:matrix.org"
+      ],
       "kyc": false
     },
     {
@@ -1798,15 +1810,15 @@
     },
     {
       "slotId": 261,
-      "name": "Amforc AG 6",
-      "stash": "J9KLy6nouPoj5rA2RWX8C9wrmrg84Mv3hpB7mZTN7Jvww7C",
+      "name": "Amforc AG 8",
+      "stash": "EEheVD6eUQg9jLdT1nyxzp3LwYD2CYKkrQE4j5nVSMbfzZd",
       "riotHandle": "@tugytur:matrix.org",
       "kyc": false
     },
     {
       "slotId": 262,
-      "name": "Amforc AG 7",
-      "stash": "Czy1KnZV1DqSPcHd6k1WL6fe4nsyhAuiJ9ALZtVvyomdc8y",
+      "name": "Amforc AG 9",
+      "stash": "EbR3TLayYRfTwzKvU7GgSdR8ucx7EiHEMWPYaaY4j7oYeck",
       "riotHandle": "@tugytur:matrix.org",
       "kyc": false
     },
@@ -3037,7 +3049,10 @@
       "slotId": 438,
       "name": "Texas Blockchain Node 2",
       "stash": "CwUhDjLKnvtjLM5Caxh4KFEeH5B4LezYM297TxnS7xQw7aB",
-      "riotHandle": ["@aharris:austin-harris.com", "@srivish:matrix.org"],
+      "riotHandle": [
+        "@aharris:austin-harris.com",
+        "@srivish:matrix.org"
+      ],
       "kyc": false
     },
     {
@@ -4437,7 +4452,10 @@
       "slotId": 644,
       "name": "enby-collective-dominique-1",
       "stash": "GZeiCMQMMU3yPV2GMwZoiNvC1cqMWx7HTSBXeJsd27b3Wnj",
-      "riotHandle": ["@dominique:parity.io", "@enby:matrix.org"],
+      "riotHandle": [
+        "@dominique:parity.io",
+        "@enby:matrix.org"
+      ],
       "kyc": false
     },
     {
@@ -4692,7 +4710,7 @@
       "stash": "GSHE7p88bE7pZQQvzqrDmwowAsnVB7hRsnTLc8casD25hCw",
       "riotHandle": "@havik:matrix.org",
       "kyc": false
-    }, 
+    },
     {
       "slotId": 682,
       "name": "Satoyama-1",
@@ -6067,7 +6085,7 @@
       "stash": "HPandpXxDEa4urwbJKuGtAP6sDymnea5ZqAFWbDszCMpnC2",
       "riotHandle": "@panda_warrior:matrix.org",
       "kyc": true
-    },    
+    },
     {
       "slotId": 891,
       "name": "Fialka",
@@ -6319,14 +6337,14 @@
       "stash": "G1udSPpAQj3RgH8LxMHnnSmqteTdsWn1tzfTYpzbbUTWhvr",
       "riotHandle": "@galofitzgerald:matrix.org",
       "kyc": true
-    },    
+    },
     {
       "slotId": 927,
       "name": "GEX44",
       "stash": "Hjc2QCxoE3GdbropvgcuVKwf4MvQD5HB7nouvACA68RrTAf",
       "riotHandle": "@gex44:matrix.org",
       "kyc": true
-    },    
+    },
     {
       "slotId": 928,
       "name": "GEX45",
@@ -6340,119 +6358,119 @@
       "stash": "DSBx2ve8Lh3j5FxXpDsyycnvpvcHuV74pVEYDxWvdm1NAjd",
       "riotHandle": "@overacrew:matrix.org",
       "kyc": true
-    },    
+    },
     {
       "slotId": 930,
       "name": "Petros",
       "stash": "FPJHrfYnhbTrZa9KKRggMhSRV3hRX1oyLp51qeGZSWGHRmB",
       "riotHandle": "@overacrew:matrix.org",
       "kyc": true
-    },    
+    },
     {
       "slotId": 931,
       "name": "WinUp",
       "stash": "J1ik6eW86sKKMQx4TtLTTdeN69m84iwQvr9sDbsHX21MXGh",
       "riotHandle": "@winupksm:matrix.org",
       "kyc": true
-    },    
+    },
     {
       "slotId": 932,
       "name": "WinUp1",
       "stash": "DGny2QLLYZkJmREaCv33QL1wY2NAcWn4Mf2wCE1R8DFfQQd",
       "riotHandle": "@winupksm:matrix.org",
       "kyc": true
-    },    
+    },
     {
       "slotId": 933,
       "name": "Mexcollection",
       "stash": "DDBSrN2FtSVKiLmgXt7XUu5K4SHt4VfRpp7p8XpR4EUKJE6",
       "riotHandle": "@larizzaazzie:matrix.org",
       "kyc": true
-    },    
+    },
     {
       "slotId": 934,
       "name": "Mexcollection#1 ",
       "stash": "FQCRYBDkhmDYnjfF8eHm532BTkPFHgjWmRZrnUBCw4pG4ws",
       "riotHandle": "@larizzaazzie:matrix.org",
       "kyc": true
-    },    
+    },
     {
       "slotId": 935,
       "name": "Shiftcore",
       "stash": "GcAD54XqHh3Nz1DrpJFRct4kxpyMBFj4BtvyVLur5N44zM3",
       "riotHandle": "@shiftcore:matrix.org",
       "kyc": true
-    },    
+    },
     {
       "slotId": 936,
       "name": "Altcore",
       "stash": "FcHMA5M1DY6tw5n9iNJubDrJnCkWPc6ZGHCGnFbNcJCe3PD",
       "riotHandle": "@shiftcore:matrix.org",
       "kyc": true
-    },    
+    },
     {
       "slotId": 937,
       "name": "NodeCheck",
       "stash": "HZMT7mkAozoPtuceaqw9RG4jUuj1W8WgUw9F5YvxwkgH9sE",
       "riotHandle": "@vigenkeshia:matrix.org",
       "kyc": true
-    },    
+    },
     {
       "slotId": 938,
       "name": "NodeCheck07",
       "stash": "EuAFmVdAYeygTZVSmwMwdcQYLLU9itPFcyvJZHgg1TrAUKb",
       "riotHandle": "@vigenkeshia:matrix.org",
       "kyc": true
-    },    
+    },
     {
       "slotId": 939,
       "name": "PITANTLON",
       "stash": "FktVjcvJCoirBjvPLJx8iZ8GBSs62VqzdUSYLRHsB4Y5n91",
       "riotHandle": "@pitantlon:matrix.org",
       "kyc": true
-    },    
+    },
     {
       "slotId": 940,
       "name": "PITANTLON2",
       "stash": "CitktuwxVD3k3qshMUX6PNLrJFUGeYUjzB7hiXaYvcFPZBc",
       "riotHandle": "@pitantlon:matrix.org",
       "kyc": true
-    },    
+    },
     {
       "slotId": 941,
       "name": "Swift power",
       "stash": "JBjZNho1mnewC2MddRX2KL13gzy86U1WdUwGqbXL5JSAuL2",
       "riotHandle": "@alextabster:matrix.org",
       "kyc": true
-    },    
+    },
     {
       "slotId": 942,
       "name": "Swift power2",
       "stash": "FAmQvSKvpvNiQFFZr6KiMJHmNu1pWpHeqDzKdkkbw98mPtj",
       "riotHandle": "@alextabster:matrix.org",
       "kyc": true
-    },    
+    },
     {
       "slotId": 943,
       "name": "Piconbello-1",
       "stash": "Hp13UECSWn7Rwaj6Peza9uzJybYWE4YUtgnuG5wjb17BG6d",
       "riotHandle": "@e1emre:matrix.org",
       "kyc": true
-    },    
+    },
     {
       "slotId": 944,
       "name": "Piconbello-2",
       "stash": "HX4G5u7MXFL5KZ3gzC9NuouhvZDf3ejNbxG2HbqK82gVmQu",
       "riotHandle": "@e1emre:matrix.org",
       "kyc": true
-    },    
+    },
     {
       "slotId": 945,
       "name": "Encointer/KV1",
       "stash": "HQGpmN3FNykmM131vDkuvukLq7g1bDud96H5vvGcUsF4WiU",
       "riotHandle": "@brenzi:matrix.org",
       "kyc": true
-    },    
+    },
     {
       "slotId": 946,
       "name": "Encointer/KV2",

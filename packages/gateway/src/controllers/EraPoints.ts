@@ -1,7 +1,7 @@
 import { response } from "./index";
 import * as EraPointsService from "../services/EraPoints";
 import { logger } from "@1kv/common";
-import { gatewayLabel } from "../run";
+import { gatewayLabel } from "../constants";
 import { requestEmitter } from "../events/requestEmitter";
 
 export default class EraPointsController {

@@ -100,11 +100,6 @@ export type ConfigSchema = {
     room: string;
     userId: string;
   };
-  redis: {
-    enable: boolean;
-    host: string;
-    port: number;
-  };
   proxy: {
     timeDelayBlocks: number;
     blacklistedAnnouncements: string[];

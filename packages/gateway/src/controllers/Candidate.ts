@@ -1,7 +1,7 @@
 import * as CandidateService from "../services/Candidate";
 import { response } from "./index";
 import { logger } from "@1kv/common";
-import { gatewayLabel } from "../run";
+import { gatewayLabel } from "../constants";
 import { requestEmitter } from "../events/requestEmitter";
 
 export default class CandidateController {

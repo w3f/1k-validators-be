@@ -3,7 +3,6 @@
   "exclude": ["test", "node_modules"],
   "include": ["src/**/*.ts", "src/**/*.yml"],
   "files": [
-    "src/run.ts",
     "src/index.ts",
     "src/server.ts",
   ],

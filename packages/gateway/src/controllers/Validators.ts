@@ -1,10 +1,8 @@
 import { response } from "./index";
 import * as ValidatorService from "../services/Validator";
 import { logger } from "@1kv/common";
-import { gatewayLabel } from "../run";
 import { requestEmitter } from "../events/requestEmitter";
-
-const label = { label: "Gateway" };
+import { gatewayLabel } from "../constants";
 
 export default class ValidatorController {
   public static async getLatestValidatorSet(context: any): Promise<void> {

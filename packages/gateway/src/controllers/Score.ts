@@ -1,7 +1,7 @@
 import { response } from "./index";
 import * as ScoreService from "../services/Score";
 import { logger } from "@1kv/common";
-import { gatewayLabel } from "../run";
+import { gatewayLabel } from "../constants";
 import { requestEmitter } from "../events/requestEmitter";
 
 export default class ScoreController {

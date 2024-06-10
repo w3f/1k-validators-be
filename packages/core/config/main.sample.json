@@ -123,10 +123,6 @@
     "enable": true,
     "port": 3300
   },
-  "redis": {
-    "host": "redis",
-    "port": 6379
-  },
   "telemetry": {
     "blacklistedProviders": [
       "Hetzner Online GmbH",

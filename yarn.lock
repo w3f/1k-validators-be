@@ -12,7 +12,6 @@ __metadata:
     "@1kv/common": "workspace:*"
     "@1kv/gateway": "workspace:*"
     "@1kv/telemetry": "workspace:*"
-    "@1kv/worker": "workspace:*"
     "@ava/typescript": ^4.1.0
     "@babel/preset-react": ^7.23.3
     "@bull-board/api": ^5.15.1
@@ -146,12 +145,6 @@ __metadata:
 "@1kv/telemetry@workspace:*, @1kv/telemetry@workspace:packages/telemetry":
   version: 0.0.0-use.local
   resolution: "@1kv/telemetry@workspace:packages/telemetry"
-  languageName: unknown
-  linkType: soft
-
-"@1kv/worker@workspace:*, @1kv/worker@workspace:packages/worker":
-  version: 0.0.0-use.local
-  resolution: "@1kv/worker@workspace:packages/worker"
   languageName: unknown
   linkType: soft
 

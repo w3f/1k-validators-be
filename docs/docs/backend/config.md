@@ -360,24 +360,6 @@ The format
 - `forceRound`: Boolean. upon `scorekeeper` starting, will initiate new nominations immediately, regardless of the time since the last nomination. **required**, defaults to `false`. This can be useful to do nominations when there are issues with proxy transations getting stuck for example.
 - `nominating`: Boolean. Indicates whether the nominator account will create and submit transactions or not. **required**. Nominators will only submit transactions when this is set to `true`, otherwise when a nomination is supposed to occur the process will not do anything when set to `false`.
 
-## Redis
-
-Configuration for Redis. Redis is used when run as microservices for messages queue passing. When run as a monolith it is not used and not required. When run as microservices, `core`, `gateway`, and `worker` will need to have their own redis parameters specified in their respective config files.
-
-An example config may look something like:
-
-```json
-  "redis": {
-    "enable": true,
-    "host": "redis",
-    "port": 6379
-  },
-```
-
-- `enable`: Boolean. Enables or disables Redis. **optional**. defaults to `false if not specified
-- `host`: String. Redis host. **required** if run as microservices, **optional** if not.
-- `port`: Integer. Redis port. **required** if run as microservices, **optional** if not.
-
 ## Server
 
 THe `gateway` package uses Koa to serve various db queries from specified endpoints. `gateway` may either be run as a monolith or as a microservice. If run as a microservice, the `gateway` service will need to have its own `server` parameters specified in its config file. 
@@ -508,11 +490,6 @@ An example `core` config run as microservices may look something like:
     "forceRound": false,
     "nominating": false
   },
-  "redis": {
-    "enable": true,
-    "host": "redis",
-    "port": 6379
-  },
   "server": {
     "enable": false,
     "port": 3300
@@ -543,11 +520,6 @@ An example gateway config run as microservices may look something like:
     "mongo": {
       "uri": "mongodb://mongo:27017"
     }
-  },
-  "redis": {
-    "enable": true,
-    "host": "redis",
-    "port": 6379
   },
   "server": {
     "enable": true,
@@ -640,11 +612,6 @@ An example Worker config run as microservices may look something like:
     "useOpenGovDelegation": true,
     "useRpc": true,
     "useClient": true
-  },
-  "redis": {
-    "enable": true,
-    "host": "redis",
-    "port": 6379
   }
 }
 

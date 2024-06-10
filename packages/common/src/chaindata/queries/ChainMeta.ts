@@ -31,13 +31,10 @@ export const getDenom = async (
   try {
     const api = await chaindata.handler.getApi();
 
-    const chainType = await api.rpc.system.chain();
-    if (!chainType) {
-      return null;
-    }
-    const denom =
-      chainType.toString() == "Polkadot" ? 10000000000 : 1000000000000;
-    return denom;
+    const chainProps = await api.registry.getChainProperties();
+    const decimals = chainProps.tokenDecimals.toJSON()[0];
+
+    return 10 ** decimals;
   } catch (e) {
     await handleError(chaindata, e, "getDenom", HandlerType.RelayHandler);
     return null;

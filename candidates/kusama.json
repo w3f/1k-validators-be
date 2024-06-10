@@ -6445,21 +6445,21 @@
       "stash": "HX4G5u7MXFL5KZ3gzC9NuouhvZDf3ejNbxG2HbqK82gVmQu",
       "riotHandle": "@e1emre:matrix.org",
       "kyc": true
-    },    
-    {
-      "slotId": 945,
-      "name": "cryptEgod",
-      "stash": "HhU4nGq5KLEvC6GMY7NKD1iVBqYHzqBNCDf5YfWDkGQZ2oG",
-      "riotHandle": "@cryptegod:matrix.org",
-      "kyc": true
     },
     {
-      "slotId": 946,
-      "name": "cryptEgod-2",
-      "stash": "DzqQc5RyvgFm6fQuQWsnQTbAmXg2uRaoyDuvLUpyMM7Xd3J",
-      "riotHandle": "@cryptegod:matrix.org",
+      "slotId": 945,
+      "name": "Encointer/KV1",
+      "stash": "HQGpmN3FNykmM131vDkuvukLq7g1bDud96H5vvGcUsF4WiU",
+      "riotHandle": "@brenzi:matrix.org",
       "kyc": true
     },    
+    {
+      "slotId": 946,
+      "name": "Encointer/KV2",
+      "stash": "D9EKgv21LBMMzkrLZWMrGLhQPsQhwEeV2tVhwwow6W9ZCbx",
+      "riotHandle": "@brenzi:matrix.org",
+      "kyc": true
+    },
     {
       "slotId": 947,
       "name": "alex",
@@ -6710,6 +6710,20 @@
       "name": "Yangex-lock",
       "stash": "GnPSmK11iGtkahPbpC89Pbw2jmsKw8vn7HWeryKLCwBDGzR",
       "riotHandle": "@viktorious13:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 983,
+      "name": "cryptEgod",
+      "stash": "HhU4nGq5KLEvC6GMY7NKD1iVBqYHzqBNCDf5YfWDkGQZ2oG",
+      "riotHandle": "@cryptegod:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 984,
+      "name": "cryptEgod-2",
+      "stash": "DzqQc5RyvgFm6fQuQWsnQTbAmXg2uRaoyDuvLUpyMM7Xd3J",
+      "riotHandle": "@cryptegod:matrix.org",
       "kyc": true
     }
   ]

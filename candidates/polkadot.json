@@ -2431,6 +2431,14 @@
       "kusamaStash": "HQGpmN3FNykmM131vDkuvukLq7g1bDud96H5vvGcUsF4WiU",
       "riotHandle": "@brenzi:matrix.org",
       "kyc": true
+    },
+    {
+      "slotId": 297,
+      "name": "grimface",
+      "stash": "14i61mrUnaYZZD19v9uZ7MPudxNGP84SNEitammFPNuFArkA",
+      "kusamaStash": "GFEdjfCTxTPEuyUh3BuTT3Gi6bnUJnvd1XA4Rp28AdRgS1Z",
+      "riotHandle": "@grimface:matrix.org",
+      "kyc": true
     }
   ]
 }

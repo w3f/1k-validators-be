@@ -402,7 +402,7 @@ export const checkKusamaRank = async (
       }
 
       if (Number(res.data.rank) < Constants.KUSAMA_RANK_VALID_THRESHOLD) {
-        const invalidityReason = `${candidate.name} has a Kusama stash with lower than 25 rank in the Kusama OTV programme: ${res.data.rank}.`;
+        const invalidityReason = `${candidate.name} has a Kusama stash with lower than 100 rank in the Kusama 1KV programme: ${res.data.rank}.`;
         await setKusamaRankInvalidity(candidate, false, invalidityReason);
         return false;
       }

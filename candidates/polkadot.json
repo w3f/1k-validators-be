@@ -2399,6 +2399,38 @@
       "kusamaStash": "Hhx2EoL2J4UYFSdGQZhnX2MFjKcvV5VLHya4cvYEVVErTv4",
       "riotHandle": "@garciaprod:matrix.org",
       "kyc": true
+    },    
+    {
+      "slotId": 293,
+      "name": "Powerlabs",
+      "stash": "13g3rtrqL6EHD2QixCxradk2XG7RkmTLKkXvMfLVUuChzFZX",
+      "kusamaStash": "GAEP1qFK5eSpqarfRwW7h4ekPffp5Ydy2wZMZSWynho1zAd",
+      "riotHandle": "@powerlabs:matrix.org",
+      "kyc": true
+    },    
+    {
+      "slotId": 294,
+      "name": "Currencyx",
+      "stash": "14iQfZCoj3uRcvau6Wxk9Gy9UXQZrChRZZNFVdBPMTJxmtuP",
+      "kusamaStash": "CfaUrAbVqqirEByiXFhgmS34dZq3nJpy6sKYtFHvSr3uQuG",
+      "riotHandle": "@ksmkvnode:matrix.org",
+      "kyc": true
+    },    
+    {
+      "slotId": 295,
+      "name": "Eagle",
+      "stash": "16MChrphfAjwMbvBQkaEPFG2zYsnicosf43TLPJbKh2LeQpv",
+      "kusamaStash": "Ez8y1UdrjnPxaXKCAARhwzZuATxLYvjKJZjibeFq9rXQSWX",
+      "riotHandle": "@eagle-node:matrix.org",
+      "kyc": true
+    },    
+    {
+      "slotId": 296,
+      "name": "ENCOINTER/PV1",
+      "stash": "165NJXk1HKxeFPbNK3ZEsgRPoGTkxMU9DyteK3cE7AGt7xrJ",
+      "kusamaStash": "HQGpmN3FNykmM131vDkuvukLq7g1bDud96H5vvGcUsF4WiU",
+      "riotHandle": "@brenzi:matrix.org",
+      "kyc": true
     }
   ]
 }

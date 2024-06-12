@@ -20,5 +20,8 @@
     "test:int:silent": "SKIP_MD5=true LOG_LEVEL=warn ../../node_modules/.bin/vitest --config vitest.int.config.mts --no-file-parallelism"
   },
   "author": "Web3 Foundation <teched@web3.foundation>",
-  "license": "GPL-3.0"
+  "license": "GPL-3.0",
+  "dependencies": {
+    "@1kv/common": "*"
+  }
 }

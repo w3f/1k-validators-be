@@ -25,5 +25,8 @@
     "writeMatrix": "ts-node test/candidatesMatrix.ts"
   },
   "author": "Web3 Foundation <teched@web3.foundation>",
-  "license": "GPL-3.0"
+  "license": "GPL-3.0",
+  "dependencies": {
+    "@1kv/common": "*"
+  }
 }

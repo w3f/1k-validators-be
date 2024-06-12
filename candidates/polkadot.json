@@ -2455,6 +2455,14 @@
       "kusamaStash": "H7YMaxGnf7gaTBwSL2LPFSs4YwmfXh9RjavjmduGnfmD14q",
       "riotHandle": "@connectify:matrix.org",
       "kyc": true
-    }
+    },   
+    {
+      "slotId": 300,
+      "name": "Carpediem",
+      "stash": "1Ca67ishxZSALwT22bdtEsev5UFnhqwoomnRpqGepUoDb73",
+      "kusamaStash": "DDdA9Zo4K6ey39nGPzuv3kzFMkyut2jQAQqoggLqQw71trB",
+      "riotHandle": "@jdiem:matrix.org",
+      "kyc": true
+    }    
   ]
 }

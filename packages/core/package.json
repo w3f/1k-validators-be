@@ -17,11 +17,6 @@
     "start:dev": "NODE_OPTIONS='--max-old-space-size=8096' ts-node src/index.ts start",
     "watch": "npx nodemon --watch src -x \"yarn start:dev\"",
     "js:start": "NODE_OPTIONS='--max-old-space-size=10096' node build/index.js start",
-    "test": "yarn test:unit && yarn test:int",
-    "test:unit": "jest --config=jest.unit.config.js --verbose",
-    "test:int": "jest --config=jest.int.config.js --verbose",
-    "test:watch": "jest --watch",
-    "test:candidates": "ts-node test/validateCandidates.ts",
     "writeMatrix": "ts-node test/candidatesMatrix.ts"
   },
   "author": "Web3 Foundation <teched@web3.foundation>",

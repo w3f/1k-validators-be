@@ -15,9 +15,9 @@
     "start:watch": "NODE_OPTIONS='--max-old-space-size=6096' nodemon --watch build --exec node build/run.js",
     "start:dev": "concurrently \"tsc -w\"  \"yarn start:watch\"",
     "js:start": "NODE_OPTIONS='--max-old-space-size=6096' node build/run.js start",
-    "test": "SKIP_MD5=true LOG_LEVEL=info ../../node_modules/.bin/vitest --config vitest.int.config.mts --no-file-parallelism",
-    "test:int": "SKIP_MD5=true LOG_LEVEL=info ../../node_modules/.bin/vitest --config vitest.int.config.mts --no-file-parallelism",
-    "test:int:silent": "SKIP_MD5=true LOG_LEVEL=warn ../../node_modules/.bin/vitest --config vitest.int.config.mts --no-file-parallelism"
+    "test": "SKIP_MD5=true LOG_LEVEL=info ../../node_modules/.bin/vitest --config vitest.int.config.mts --run --no-file-parallelism",
+    "test:int": "SKIP_MD5=true LOG_LEVEL=info ../../node_modules/.bin/vitest --config vitest.int.config.mts --run --no-file-parallelism",
+    "test:int:silent": "SKIP_MD5=true LOG_LEVEL=warn ../../node_modules/.bin/vitest --config vitest.int.config.mts --run --no-file-parallelism"
   },
   "author": "Web3 Foundation <teched@web3.foundation>",
   "license": "GPL-3.0",

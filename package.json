@@ -30,7 +30,6 @@
     "build:clean": "yarn workspaces foreach run clean:build",
     "start:dev:core": "yarn workspace @1kv/core run start:dev",
     "start:js:core": "NODE_OPTIONS='--max-old-space-size=10096' yarn workspace @1kv/core run js:start",
-    "test:core": "yarn workspace @1kv/core run test",
     "test:common:int": "yarn workspace @1kv/common run test:int",
     "test:common:unit": "yarn workspace @1kv/common run test:unit",
     "test:common:unit:ci": "circleci local execute CommonUnitTests",

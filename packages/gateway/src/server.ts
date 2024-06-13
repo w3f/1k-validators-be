@@ -6,7 +6,6 @@ import {
   logger,
   ScoreKeeper,
 } from "@1kv/common";
-import { Queue } from "bullmq";
 
 import { setupRoutes } from "./routes/setupRoutes";
 import { requestEmitter } from "./events/requestEmitter";
@@ -17,7 +16,6 @@ export default class Server {
   private enable = true;
   private cache = 180000;
   private config: Config.ConfigSchema;
-  private queues: Queue[] = [];
   private handler: ApiHandler | null;
   private scorekeeper: ScoreKeeper | null;
 
@@ -36,7 +34,6 @@ export default class Server {
     this.cache = config?.server?.cache || Constants.GATEWAY_CACHE_TTL;
     this.handler = handler || null;
     this.scorekeeper = scorekeeper || null;
-    this.queues = [];
 
     requestEmitter.on("requestReceived", this.updateRequestCounts.bind(this));
 
@@ -71,7 +68,6 @@ export default class Server {
         this.config,
         this.port,
         this.enable,
-        this.queues,
         this.cache,
         this.handler,
         this.scorekeeper,

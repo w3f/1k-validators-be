@@ -206,9 +206,6 @@ You can then query an endpoint like `/candidates` by going to `http://localhost:
 
 To view the Mongo Express GUI to interact with the MongoDB Database, go to `http://localhost:8888/` in your browser. Or run `yarn open:mongo-express` from the root directory.
 
-#### BullMQ Board (Job Queue GUI)
-
-To view the BullMQ Board GUI to interact with the Job Queue, go to `http://localhost:3301/bull` in your browser if running as microservices. Or run `yarn open:bull` from the root directory.
 
 ## :pencil: Contribute
 

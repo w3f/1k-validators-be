@@ -5,7 +5,6 @@ import path from "path";
 import mount from "koa-mount";
 import yamljs from "yamljs";
 import { koaSwagger } from "koa2-swagger-ui";
-import { Queue } from "bullmq";
 
 import Koa from "koa";
 
@@ -161,7 +160,6 @@ export const setupRoutes = async (
   config: Config.ConfigSchema,
   port: number,
   enable: boolean,
-  queues?: Queue[],
   cache?: number,
   handler?: ApiHandler,
   scorekeeper?: ScoreKeeper,

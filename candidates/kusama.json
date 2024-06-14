@@ -5044,7 +5044,7 @@
       "name": "PowerLabs",
       "stash": "GAEP1qFK5eSpqarfRwW7h4ekPffp5Ydy2wZMZSWynho1zAd",
       "riotHandle": "@powerlabs:matrix.org",
-      "kyc": false
+      "kyc": true
     },
     {
       "slotId": 734,

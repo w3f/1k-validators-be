@@ -56,7 +56,7 @@ export const NOMINATOR_SHOULD_NOMINATE_ERAS_THRESHOLD = 1;
 export const KusamaEndpoints = [
   "wss://kusama-rpc-tn.dwellir.com",
   "wss://kusama-rpc.dwellir.com",
-  "wss://kusama.public.curie.radiumblock.xyz/ws",
+  "wss://kusama.public.curie.radiumblock.co/ws",
   "wss://rpc.ibp.network/kusama",
   "wss://rpc.dotters.network/kusama",
   "wss://ksm-rpc.stakeworld.io",

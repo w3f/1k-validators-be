@@ -13,7 +13,7 @@ spec:
   # syncPolicy:
   #   automated:
   #     prune: true
-  #     selfHeal: true 
+  #     selfHeal: true
   source:
     repoURL: 'https://github.com/w3f/1k-validators-be.git'
     path: charts/otv-backend
@@ -46,7 +46,7 @@ spec:
                   "apiEndpoints": [
                     "wss://kusama-rpc-tn.dwellir.com",
                     "wss://kusama-rpc.dwellir.com",
-                    "wss://kusama.public.curie.radiumblock.xyz/ws",
+                    "wss://kusama.public.curie.radiumblock.co/ws",
                     "wss://rpc.ibp.network/kusama",
                     "wss://rpc.dotters.network/kusama",
                     "wss://ksm-rpc.stakeworld.io"

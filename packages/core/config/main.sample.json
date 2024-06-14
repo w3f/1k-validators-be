@@ -22,8 +22,10 @@
     "skipConnectionTime": true,
     "skipIdentity": false,
     "skipStakedDestination": true,
-    "skipClientUpgrade": true,
     "skipUnclaimed": true,
+    "clientUpgrade": {
+      "skip": false
+    },
     "minSelfStake": 100000,
     "commission": 150000000,
     "unclaimedEraThreshold": 4,
@@ -120,10 +122,6 @@
   "server": {
     "enable": true,
     "port": 3300
-  },
-  "redis": {
-    "host": "redis",
-    "port": 6379
   },
   "telemetry": {
     "blacklistedProviders": [

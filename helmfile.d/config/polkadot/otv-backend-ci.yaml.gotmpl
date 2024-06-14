@@ -32,9 +32,10 @@ config: |
       "skipConnectionTime": false,
       "skipIdentity": false,
       "skipStakedDestination": false,
-      "skipClientUpgrade": false,
       "skipUnclaimed": false,
-      "forceClientVersion": "v0.9.30",
+      "clientUpgrade": {
+        "skip": false
+      },
       "minSelfStake": 50000000000000,
       "commission": 50000000,
       "unclaimedEraThreshold": 1

@@ -10,8 +10,7 @@
     "paths": {
       "@1kv/common": ["../common/build"],
       "@1kv/gateway": ["../gateway/build"],
-      "@1kv/telemetry": ["../telemetry/build"],
-      "@1kv/worker": ["../worker/build"]
+      "@1kv/telemetry": ["../telemetry/build"]
     },
     /* Basic Options */
     "target": "es2015",                          /* Specify ECMAScript target version: 'ES3' (default), 'ES5', 'ES2015', 'ES2016', 'ES2017','ES2018' or 'ESNEXT'. */
@@ -74,7 +73,6 @@
   "references": [
     { "path": "../common" },
     { "path": "../gateway" },
-    { "path": "../telemetry" },
-    { "path": "../worker" }
+    { "path": "../telemetry" }
   ]
 }

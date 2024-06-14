@@ -4,11 +4,6 @@
       "uri": "mongodb://mongo:27017"
     }
   },
-  "redis": {
-    "host": "redis",
-    "port": 6379,
-    "cache": 180000
-  },
   "server": {
     "port": 3301
   }

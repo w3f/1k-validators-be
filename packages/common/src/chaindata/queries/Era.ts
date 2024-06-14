@@ -1,4 +1,4 @@
-import ChainData, { handleError } from "../chaindata";
+import ChainData, { handleError, HandlerType } from "../chaindata";
 import logger from "../../logger";
 import { NumberResult, StringResult } from "../../types";
 import {
@@ -13,14 +13,10 @@ export const getEraAt = async (
   apiAt: ApiDecoration<"promise">,
 ): Promise<number | null> => {
   try {
-    if (!(await chaindata.checkApiConnection())) {
-      return null;
-    }
-
     return ((await apiAt.query.staking.activeEra()).toJSON() as any)
       .index as number;
   } catch (e) {
-    await handleError(chaindata, e, "getEraAt");
+    await handleError(chaindata, e, "getEraAt", HandlerType.RelayHandler);
     return null;
   }
 };
@@ -34,14 +30,12 @@ export interface EraPointsInfo {
     eraPoints: number;
   }>;
 }
+
 export const getTotalEraPoints = async (
   chaindata: ChainData,
   era: number,
 ): Promise<EraPointsInfo> => {
   try {
-    if (!(await chaindata.checkApiConnection())) {
-      return {} as EraPointsInfo;
-    }
     const chainType = await chaindata.getChainType();
     if (!chainType) {
       return {} as EraPointsInfo;
@@ -52,7 +46,8 @@ export const getTotalEraPoints = async (
     );
 
     if (blockHash) {
-      const apiAt = await chaindata?.api?.at(blockHash);
+      const api = await chaindata.handler.getApi();
+      const apiAt = await api.at(blockHash);
 
       if (!apiAt) {
         return {} as EraPointsInfo;
@@ -77,7 +72,12 @@ export const getTotalEraPoints = async (
     }
     return {} as EraPointsInfo;
   } catch (e) {
-    await handleError(chaindata, e, "getTotalEraPoints");
+    await handleError(
+      chaindata,
+      e,
+      "getTotalEraPoints",
+      HandlerType.RelayHandler,
+    );
     return {} as EraPointsInfo;
   }
 };
@@ -88,10 +88,6 @@ export const getErasMinStakeAt = async (
   era: number,
 ): Promise<number | null> => {
   try {
-    if (!(await chaindata.checkApiConnection())) {
-      return null;
-    }
-
     const denom: number | null = await chaindata.getDenom();
     if (denom === null) {
       return null;
@@ -114,7 +110,12 @@ export const getErasMinStakeAt = async (
       return minStake[0]?.total;
     }
   } catch (e) {
-    await handleError(chaindata, e, "getErasMinStakeAt");
+    await handleError(
+      chaindata,
+      e,
+      "getErasMinStakeAt",
+      HandlerType.RelayHandler,
+    );
     return null;
   }
 };
@@ -123,10 +124,8 @@ export const getActiveEraIndex = async (
   chaindata: ChainData,
 ): Promise<NumberResult> => {
   try {
-    if (!(await chaindata.checkApiConnection())) {
-      return [0, "API not connected"];
-    }
-    const activeEra = await chaindata?.api?.query.staking.activeEra();
+    const api = await chaindata.handler.getApi();
+    const activeEra = await api.query.staking.activeEra();
     if (!activeEra || activeEra.isNone) {
       logger.info(`NO ACTIVE ERA:`);
       return [
@@ -137,7 +136,12 @@ export const getActiveEraIndex = async (
     const activeEraNumber = activeEra.unwrap().index.toNumber();
     return [activeEraNumber, null];
   } catch (e) {
-    await handleError(chaindata, e, "getActiveEraIndex");
+    await handleError(
+      chaindata,
+      e,
+      "getActiveEraIndex",
+      HandlerType.RelayHandler,
+    );
     return [0, JSON.stringify(e)];
   }
 };
@@ -146,13 +150,11 @@ export const getCurrentEra = async (
   chaindata: ChainData,
 ): Promise<number | null> => {
   try {
-    if (!(await chaindata.checkApiConnection())) {
-      return null;
-    }
-    const currentEra = await chaindata?.api?.query.staking.currentEra();
+    const api = await chaindata.handler.getApi();
+    const currentEra = await api.query.staking.currentEra();
     return Number(currentEra);
   } catch (e) {
-    await handleError(chaindata, e, "getCurrentEra");
+    await handleError(chaindata, e, "getCurrentEra", HandlerType.RelayHandler);
     return null;
   }
 };
@@ -163,17 +165,12 @@ export const findEraBlockHash = async (
   chainType: string,
 ): Promise<StringResult> => {
   try {
-    if (!(await chaindata.checkApiConnection())) {
-      return ["", "API not connected."];
-    }
     const eraBlockLength =
       chainType == "Kusama"
         ? KUSAMA_APPROX_ERA_LENGTH_IN_BLOCKS
         : chainType == "Polkadot"
           ? POLKADOT_APPROX_ERA_LENGTH_IN_BLOCKS
           : TESTNET_APPROX_ERA_LENGTH_IN_BLOCKS;
-
-    await chaindata.checkApiConnection();
 
     const [activeEraIndex, err] = await chaindata.getActiveEraIndex();
     if (err) {
@@ -184,7 +181,8 @@ export const findEraBlockHash = async (
       return ["", "Era has not happened."];
     }
 
-    const latestBlock = await chaindata?.api?.rpc.chain.getBlock();
+    const api = await chaindata.handler.getApi();
+    const latestBlock = await api.rpc.chain.getBlock();
     if (!latestBlock) {
       return ["", "Latest block is null"];
     }
@@ -202,7 +200,7 @@ export const findEraBlockHash = async (
       if (!blockHash) {
         return ["", "Block hash is null"];
       }
-      const apiAt = await chaindata?.api?.at(blockHash);
+      const apiAt = await api.at(blockHash);
       if (!apiAt) {
         return ["", "API at block hash is null"];
       }
@@ -227,7 +225,12 @@ export const findEraBlockHash = async (
     }
     return ["", "Not Found!"];
   } catch (e) {
-    await handleError(chaindata, e, "findEraBlockHash");
+    await handleError(
+      chaindata,
+      e,
+      "findEraBlockHash",
+      HandlerType.RelayHandler,
+    );
     return ["", JSON.stringify(e)];
   }
 };
@@ -238,17 +241,12 @@ export const findEraBlockNumber = async (
   chainType: string,
 ): Promise<NumberResult> => {
   try {
-    if (!(await chaindata.checkApiConnection())) {
-      return [0, "API not connected."];
-    }
     const eraBlockLength =
       chainType == "Kusama"
         ? KUSAMA_APPROX_ERA_LENGTH_IN_BLOCKS
         : chainType == "Polkadot"
           ? POLKADOT_APPROX_ERA_LENGTH_IN_BLOCKS
           : TESTNET_APPROX_ERA_LENGTH_IN_BLOCKS;
-
-    await chaindata.checkApiConnection();
 
     const [activeEraIndex, err] = await chaindata.getActiveEraIndex();
     if (err) {
@@ -281,9 +279,10 @@ export const findEraBlockNumber = async (
       if (!blockHash) {
         return [0, "Block hash is null"];
       }
+
+      const api = await chaindata.handler.getApi();
       const testEra =
-        (await chaindata?.api?.query.staking.activeEra.at(blockHash)) ||
-        undefined; // Handle possible undefined
+        (await api.query.staking.activeEra.at(blockHash)) || undefined; // Handle possible undefined
       if (!testEra || testEra.isNone) {
         logger.info(`Test era is none`);
         return [0, "Test era is none"];
@@ -303,7 +302,12 @@ export const findEraBlockNumber = async (
     }
     return [0, "Not Found!"];
   } catch (e) {
-    await handleError(chaindata, e, "findEraBlockNumber");
+    await handleError(
+      chaindata,
+      e,
+      "findEraBlockNumber",
+      HandlerType.RelayHandler,
+    );
     return [0, JSON.stringify(e)];
   }
 };

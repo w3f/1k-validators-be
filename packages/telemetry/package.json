@@ -1,18 +1,13 @@
 {
   "name": "@1kv/telemetry",
-  "version": "3.3.0",
+  "version": "3.3.1",
   "description": "Services for running the Thousand Validator Program.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
     "build": "tsc --build tsconfig.json",
-    "build:prod": "node esbuild.mjs --prod",
     "clean": "../../node_modules/.bin/rimraf ./build tsconfig.tsbuildinfo combined.log",
     "clean:build": "yarn clean && yarn build",
-    "create-config-kusama-microservice": "cp config/kusama.sample.json ./config/main.json",
-    "create-config-kusama-microservice-dev": "cp config/kusama.sample.json ./config/main.json",
-    "create-config-polkadot-microservice": "cp config/polkadot.sample.json ./config/main.json",
-    "create-config-polkadot-microservice-dev": "cp config/polkadot.sample.json ./config/main.json",
     "docker": "docker-compose rm -f; docker-compose build --no-cache; docker-compose up -d",
     "lint": "tsc --noEmit && eslint 'src/**/*.{js,ts,tsx}' --quiet",
     "lint:fix": "tsc --noEmit && eslint 'src/**/*.{js,ts,tsx}' --quiet --fix",
@@ -20,10 +15,13 @@
     "start:watch": "NODE_OPTIONS='--max-old-space-size=6096' nodemon --watch build --exec node build/run.js",
     "start:dev": "concurrently \"tsc -w\"  \"yarn start:watch\"",
     "js:start": "NODE_OPTIONS='--max-old-space-size=6096' node build/run.js start",
-    "test": "SKIP_MD5=true LOG_LEVEL=info ../../node_modules/.bin/vitest --config vitest.int.config.mts --no-file-parallelism",
-    "test:int": "SKIP_MD5=true LOG_LEVEL=info ../../node_modules/.bin/vitest --config vitest.int.config.mts --no-file-parallelism",
-    "test:int:silent": "SKIP_MD5=true LOG_LEVEL=warn ../../node_modules/.bin/vitest --config vitest.int.config.mts --no-file-parallelism"
+    "test": "SKIP_MD5=true LOG_LEVEL=info ../../node_modules/.bin/vitest --config vitest.int.config.mts --run --no-file-parallelism",
+    "test:int": "SKIP_MD5=true LOG_LEVEL=info ../../node_modules/.bin/vitest --config vitest.int.config.mts --run --no-file-parallelism",
+    "test:int:silent": "SKIP_MD5=true LOG_LEVEL=warn ../../node_modules/.bin/vitest --config vitest.int.config.mts --run --no-file-parallelism"
   },
   "author": "Web3 Foundation <teched@web3.foundation>",
-  "license": "GPL-3.0"
+  "license": "GPL-3.0",
+  "dependencies": {
+    "@1kv/common": "*"
+  }
 }

@@ -1,8 +1,9 @@
-import { ApiPromise } from "@polkadot/api";
 import Nominator from "../../src/nominator/nominator";
+import ChainData from "../../src/chaindata/chaindata";
 import { ApiHandler } from "../../src";
 import { autoNumNominations } from "../../src/scorekeeper/NumNominations";
 import { beforeEach, describe, expect, it, Mock, vi } from "vitest";
+import { KusamaEndpoints, KusamaPeopleEndpoints } from "../../src/constants";
 
 vi.mock("@polkadot/api", () => ({
   ApiPromise: {
@@ -20,12 +21,11 @@ const mockCompact = (value: bigint) => ({
 });
 
 describe("autoNumNominations", () => {
-  let api: ApiPromise;
+  let chaindata: ChainData;
   let nominator: Nominator;
-  let handler: ApiHandler;
 
   beforeEach(async () => {
-    (ApiPromise.create as Mock).mockResolvedValue({
+    vi.spyOn(ApiHandler.prototype, "getApi").mockResolvedValue({
       rpc: {
         system: {
           chain: vi.fn().mockResolvedValue("Polkadot"),
@@ -63,12 +63,25 @@ describe("autoNumNominations", () => {
           }),
         },
       },
+      registry: {
+        getChainProperties: vi.fn().mockResolvedValue({
+          tokenDecimals: {
+            toJSON: vi.fn().mockImplementation(() => [10]),
+          },
+        }),
+      },
     });
 
-    api = await ApiPromise.create();
-    handler = new ApiHandler(["wss://kusama-rpc.polkadot.io"]);
+    const relayApiHandler = new ApiHandler(KusamaEndpoints);
+    const peopleApiHandler = new ApiHandler(KusamaPeopleEndpoints);
+
+    chaindata = new ChainData({
+      relay: relayApiHandler,
+      people: peopleApiHandler,
+    });
+
     nominator = new Nominator(
-      handler,
+      chaindata,
       {
         seed: "word word word word word word word word word word word word",
         isProxy: false,
@@ -81,7 +94,7 @@ describe("autoNumNominations", () => {
   it("should calculate the number of nominations correctly", async () => {
     nominator.stash = vi.fn().mockResolvedValue("stashAddress");
 
-    const result = await autoNumNominations(api, nominator);
+    const result = await autoNumNominations(nominator);
 
     expect(result.nominationNum).toBeGreaterThan(0);
   });

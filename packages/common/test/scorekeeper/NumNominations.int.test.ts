@@ -1,15 +1,11 @@
 import { autoNumNominations } from "../../src/scorekeeper/NumNominations";
-import { KusamaEndpoints } from "../../src/constants";
 import Nominator from "../../src/nominator/nominator";
-import ApiHandler from "../../src/ApiHandler/ApiHandler";
 import { describe, expect, it } from "vitest";
+import { getKusamaChainData } from "../testUtils/chaindata";
 
 describe("autoNumNominations Integration Test", () => {
   it("queries the real API and retrieves data", async () => {
-    const handler = new ApiHandler(KusamaEndpoints);
-    await handler.setAPI();
-    await new Promise((resolve) => setTimeout(resolve, 5000));
-    const api = handler.getApi();
+    const chaindata = await getKusamaChainData();
 
     const nominatorConfig = {
       isProxy: false,
@@ -18,12 +14,10 @@ describe("autoNumNominations Integration Test", () => {
       proxyFor: "EX9uchmfeSqKTM7cMMg8DkH49XV8i4R7a7rqCn8btpZBHDP",
     };
 
-    const nominator = new Nominator(handler, nominatorConfig, 2, null);
+    const nominator = new Nominator(chaindata, nominatorConfig, 2, null);
 
-    const result = await autoNumNominations(api, nominator);
+    const result = await autoNumNominations(nominator);
 
     expect(result).toBeDefined();
-
-    await api.disconnect();
   }, 160000);
 });

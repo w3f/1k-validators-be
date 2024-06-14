@@ -5,7 +5,6 @@ import path from "path";
 import mount from "koa-mount";
 import yamljs from "yamljs";
 import { koaSwagger } from "koa2-swagger-ui";
-import { Queue } from "bullmq";
 
 import Koa from "koa";
 
@@ -23,7 +22,7 @@ export const setupHealthCheckRoute = (
 ): boolean => {
   try {
     const version = packageJson.version;
-    const isConnected = handler?.isConnected();
+    const isConnected = handler?.isConnected;
     const currentEndpoint = handler?.currentEndpoint();
 
     const response = {
@@ -35,9 +34,8 @@ export const setupHealthCheckRoute = (
 
     routerInstance.get("/healthcheck", async (ctx) => {
       if (handler) {
-        const isConnected = handler.isConnected();
+        const isConnected = handler.isConnected;
         if (isConnected) {
-          const isHealthy = await handler.healthCheck();
           ctx.body = JSON.stringify(response);
           ctx.status = 200;
         } else {
@@ -132,87 +130,6 @@ export const setupDocs = (app: Koa, config: Config.ConfigSchema): boolean => {
   }
 };
 
-// export const setupMicroserviceRoutes = async (
-//   app: Koa,
-//   config: Config.ConfigSchema,
-//   queues: Queue[],
-// ): Promise<boolean> => {
-//   try {
-//     if (config?.redis?.host && config?.redis?.port) {
-//       await addQueues(config, queues);
-//       setupBullBoard(app, queues);
-//     }
-//     return true;
-//   } catch (e) {
-//     logger.error(`Error setting up microservice routes: ${e}`, {
-//       label: "Gateway",
-//     });
-//     return false;
-//   }
-// };
-
-// Add BullMQ Queues for Microservice Jobs
-// export const addQueues = async (
-//   config: Config.ConfigSchema,
-//   queues: Queue[],
-// ): Promise<boolean> => {
-//   try {
-//     const releaseMonitorQueue = new Queue("releaseMonitor", {
-//       connection: {
-//         host: config?.redis?.host,
-//         port: config?.redis?.port,
-//       },
-//     });
-//     const constraintsQueue = new Queue("constraints", {
-//       connection: {
-//         host: config?.redis?.host,
-//         port: config?.redis?.port,
-//       },
-//     });
-//     const chaindataQueue = new Queue("chaindata", {
-//       connection: {
-//         host: config?.redis?.host,
-//         port: config?.redis?.port,
-//       },
-//     });
-//     const blockQueue = new Queue("block", {
-//       connection: {
-//         host: config?.redis?.host,
-//         port: config?.redis?.port,
-//       },
-//     });
-//
-//     queues.push(
-//       releaseMonitorQueue,
-//       constraintsQueue,
-//       chaindataQueue,
-//       blockQueue,
-//     );
-//     return true;
-//   } catch (e) {
-//     logger.error(`Error adding queues: ${e}`, { label: "Gateway" });
-//     return false;
-//   }
-// };
-
-// export const setupBullBoard = (app: Koa, queues: Queue[]): boolean => {
-//   try {
-//     const serverAdapter = new KoaAdapter();
-//     createBullBoard({
-//       queues: queues.map((queue) => {
-//         return new BullMQAdapter(queue);
-//       }),
-//       serverAdapter,
-//     });
-//     serverAdapter.setBasePath("/bull");
-//     app.use(serverAdapter.registerPlugin());
-//     return true;
-//   } catch (e) {
-//     logger.error(`Error setting up BullBoard: ${e}`, { label: "Gateway" });
-//     return false;
-//   }
-// };
-
 export const setupCache = (app: Koa, configCache: number): boolean => {
   try {
     logger.info(`Cache set to ${configCache}`, { label: "Gateway" });
@@ -243,7 +160,6 @@ export const setupRoutes = async (
   config: Config.ConfigSchema,
   port: number,
   enable: boolean,
-  queues?: Queue[],
   cache?: number,
   handler?: ApiHandler,
   scorekeeper?: ScoreKeeper,
@@ -273,9 +189,6 @@ export const setupRoutes = async (
         setupHealthCheckRoute(router, handler);
         setupScorekeeperRoutes(router, app, scorekeeper);
         setupDocs(app, config);
-
-        // Setup microservice routes if Redis is configured in config
-        // await setupMicroserviceRoutes(app, config, queues);
 
         // Serve all other routes
         app.use(router.routes());

@@ -1,12 +1,11 @@
 {
   "name": "@1kv/scorekeeper-status-ui",
   "private": true,
-  "version": "3.3.0",
+  "version": "3.3.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "build:prod": "vite build",
     "preview": "vite preview",
     "clean": "rm -rf dist"
   },

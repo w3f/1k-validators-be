@@ -2,7 +2,6 @@ import { ApiPromise, WsProvider } from "@polkadot/api";
 import EventEmitter from "eventemitter3";
 
 import logger from "../logger";
-import { sleep } from "../utils/util";
 import { API_PROVIDER_TIMEOUT, POLKADOT_API_TIMEOUT } from "../constants";
 
 export const apiLabel = { label: "ApiHandler" };
@@ -12,167 +11,147 @@ export const apiLabel = { label: "ApiHandler" };
  * to a different provider if one proves troublesome.
  */
 class ApiHandler extends EventEmitter {
-  private _wsProvider?: WsProvider;
-  private _api: ApiPromise | null = null;
-  private readonly _endpoints: string[] = [];
-  static isConnected = false;
-  private healthCheckInProgress = false;
-  private _currentEndpoint?: string;
-  public upSince: number = Date.now();
+  private wsProvider?: WsProvider;
+  private api: ApiPromise | null = null;
+  private readonly endpoints: string[] = [];
+
+  // If we're reconnecting right now, awaiting on this promise will block until connection succedes
+  private connectionAttempt: Promise<void> | null = null;
+
+  public upSince = -1;
+  public isConnected = false;
+
   constructor(endpoints: string[]) {
     super();
-    this._endpoints = endpoints.sort(() => Math.random() - 0.5);
-    this.upSince = Date.now();
+    this.endpoints = endpoints.sort(() => Math.random() - 0.5);
   }
 
-  async healthCheck(retries = 0): Promise<boolean> {
-    if (retries < 10) {
+  /**
+   * This copies connectWithRetry() logic from WsProvider
+   * The issue with original logic is that `autoConnectMs` is set to 0 when disconnect() is called, but we
+   * want to call it from nextEndpoint()
+   *
+   * This function can be called multiple times, and it'll wait on the same promise, without spamming reconnects.
+   * @see https://github.com/polkadot-js/api/blob/2ef84c5dcdbbff8aec9ba01e4f13a50130d1a6f3/packages/rpc-provider/src/ws/index.ts#L239-L271
+   */
+  private async connectWithRetry(): Promise<void> {
+    if (!this.wsProvider) {
+      throw new Error(
+        "connectWithRetry() is called before initializing WsProvider",
+      );
+    }
+
+    if (this.connectionAttempt instanceof Promise) {
+      await this.connectionAttempt;
+      return;
+    }
+
+    this.isConnected = false;
+    this.connectionAttempt = new Promise(async (resolve) => {
       try {
-        this.healthCheckInProgress = true;
-        let chain;
+        await this.wsProvider.connect();
 
-        const isConnected = this._wsProvider?.isConnected;
-        if (isConnected && !this._api?.isConnected) {
-          try {
-            chain = await this._api?.rpc.system.chain();
-          } catch (e) {
-            await sleep(API_PROVIDER_TIMEOUT);
-          }
-        }
-        chain = await this._api?.rpc.system.chain();
+        await new Promise<void>((resolve, reject) => {
+          const unsubConnect = this.wsProvider.on("connected", resolve);
+          const unsubDisconnect = this.wsProvider.on("disconnected", reject);
+          this.connectionAttempt.finally(() => {
+            unsubConnect();
+            unsubDisconnect();
+          });
+        });
 
-        if (isConnected && chain) {
-          this.healthCheckInProgress = false;
-          return true;
-        } else {
-          await sleep(API_PROVIDER_TIMEOUT);
-          logger.info(`api still disconnected, disconnecting.`, apiLabel);
-          await this._wsProvider?.disconnect();
-          await this.getProvider(this._endpoints);
-          await this.getAPI();
-          return false;
-        }
-      } catch (e: unknown) {
-        const errorMessage =
-          e instanceof Error ? e.message : "An unknown error occurred";
-        logger.error(
-          `Error in health check for WS Provider for rpc. ${errorMessage}`,
+        this.connectionAttempt = null;
+        this.upSince = Date.now();
+        this.isConnected = true;
+        logger.info(`Connected to ${this.currentEndpoint()}`, apiLabel);
+        resolve();
+      } catch (err) {
+        logger.warn(
+          `Connection attempt to ${this.currentEndpoint()} failed: ${JSON.stringify(err)}, trying next endpoint`,
           apiLabel,
         );
-        this.healthCheckInProgress = false;
-        return false;
+        setTimeout(() => {
+          this.connectionAttempt = null;
+          this.connectWithRetry().then(resolve);
+        }, API_PROVIDER_TIMEOUT);
       }
+    });
+
+    await this.connectionAttempt;
+  }
+
+  /**
+   * In case of errors like RPC rate limit, we might want to force endpoint change
+   * PJS handles endpoint rotation internally, changing the endpoint on every next connection attempt.
+   * We only disconnect here; reconnect happens inside `"disconnected"` event handler
+   */
+  async nextEndpoint() {
+    logger.info("Rotating API endpoint", apiLabel);
+    await this.wsProvider.disconnect();
+    await this.connectWithRetry();
+  }
+
+  currentEndpoint(): string | undefined {
+    return this.wsProvider?.endpoint;
+  }
+
+  private async healthCheck(): Promise<void> {
+    if (this.connectionAttempt instanceof Promise) {
+      return;
     }
-    return false;
+    try {
+      const api = await this.getApi();
+      await api.rpc.system.chain();
+    } catch (err) {
+      logger.warn(
+        `Healthcheck on ${this.currentEndpoint()} failed: ${JSON.stringify(err)}, trying next endpoint`,
+        apiLabel,
+      );
+      await this.nextEndpoint();
+    }
   }
 
-  public currentEndpoint() {
-    return this._currentEndpoint;
-  }
-
-  async getProvider(endpoints: string[]): Promise<WsProvider> {
-    return await new Promise<WsProvider>((resolve, reject) => {
-      const wsProvider = new WsProvider(
-        endpoints,
-        5000,
+  /**
+   * This function provides access to PJS api. While the ApiPromise instance never changes,
+   * the function will block if we're reconnecting.
+   * It's intended to be called every time instead of saving ApiPromise instance long-term.
+   */
+  async getApi(): Promise<ApiPromise> {
+    if (!this.wsProvider) {
+      this.wsProvider = new WsProvider(
+        this.endpoints,
+        false, // Do not autoconnect
         undefined,
         POLKADOT_API_TIMEOUT,
       );
-
-      wsProvider.on("disconnected", async () => {
-        try {
-          const isHealthy = await this.healthCheck();
-          logger.info(
-            `[Disconnection] ${this._currentEndpoint}} Health check result: ${isHealthy}`,
-            apiLabel,
-          );
-          resolve(wsProvider);
-        } catch (error: any) {
-          logger.warn(
-            `WS provider for rpc ${endpoints[0]} disconnected!`,
-            apiLabel,
-          );
-          reject(error);
-        }
+      await this.connectWithRetry();
+      this.wsProvider.on("disconnected", () => {
+        logger.warn(`WsProvider disconnected`, apiLabel);
+        this.connectWithRetry();
       });
-      wsProvider.on("connected", () => {
-        logger.info(`WS provider for rpc ${endpoints[0]} connected`, apiLabel);
-        this._currentEndpoint = endpoints[0];
-        resolve(wsProvider);
-      });
-      wsProvider.on("error", async () => {
-        try {
-          const isHealthy = await this.healthCheck();
-          logger.info(
-            `[Error] ${this._currentEndpoint} Health check result: ${isHealthy}`,
-            apiLabel,
-          );
-          resolve(wsProvider);
-        } catch (error: any) {
-          logger.error(`Error thrown for rpc ${this._endpoints[0]}`, apiLabel);
-          reject(error);
-        }
-      });
-    });
-  }
-
-  async getAPI(retries = 0): Promise<ApiPromise> {
-    if (this._wsProvider && this._api && this._api?.isConnected) {
-      return this._api;
     }
-    const endpoints = this._endpoints.sort(() => Math.random() - 0.5);
-
-    try {
-      logger.info(
-        `[getAPI]: try ${retries} creating provider with endpoint ${endpoints[0]}`,
-        apiLabel,
-      );
-      const provider = await this.getProvider(endpoints);
-      this._wsProvider = provider;
-      logger.info(
-        `[getAPI]: provider created with endpoint: ${endpoints[0]}`,
-        apiLabel,
-      );
-      const api = await ApiPromise.create({
-        provider: provider,
+    if (!this.api) {
+      this.api = await ApiPromise.create({
+        provider: this.wsProvider,
         noInitWarn: true,
       });
-      await api.isReadyOrError;
-      logger.info(`[getApi] Api is ready`, apiLabel);
-      return api;
-    } catch (e) {
-      if (retries < 15) {
-        return await this.getAPI(retries + 1);
-      } else {
-        const provider = await this.getProvider(endpoints);
-        return await ApiPromise.create({
-          provider: provider,
-          noInitWarn: true,
-        });
-      }
+      await this.api.isReady;
+      this.registerEventHandlers(this.api);
+
+      // healthcheck queries RPC, thus its interval can't be shorter than RPC timout
+      setInterval(() => {
+        void this.healthCheck();
+      }, POLKADOT_API_TIMEOUT);
     }
-  }
 
-  async setAPI() {
-    const api = await this.getAPI(0);
-    this._api = api;
-    this._registerEventHandlers(this._api);
-    return api;
-  }
-
-  isConnected(): boolean {
-    return this._wsProvider?.isConnected || false;
-  }
-
-  getApi(): ApiPromise | null {
-    if (!this._api) {
-      return null;
-    } else {
-      return this._api;
+    if (this.connectionAttempt instanceof Promise) {
+      await this.connectionAttempt;
     }
+
+    return this.api;
   }
 
-  _registerEventHandlers(api: ApiPromise): void {
+  private registerEventHandlers(api: ApiPromise): void {
     if (!api) {
       logger.warn(`API is null, cannot register event handlers.`, apiLabel);
       return;

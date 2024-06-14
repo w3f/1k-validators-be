@@ -2,25 +2,20 @@ import ApiHandler from "../../src/ApiHandler/ApiHandler";
 import { ChainData } from "../../src/chaindata/chaindata";
 import { Block } from "@polkadot/types/interfaces";
 import { beforeAll, describe, expect, it } from "vitest";
-import { getKusamaHandler } from "../testUtils/apiHandler";
+import { ApiHandlers } from "../../src/types";
+import { KusamaEndpoints, KusamaPeopleEndpoints } from "../../src/constants";
 
-const TIMEOUT_DURATION = 1200000; // 120 seconds
+const TIMEOUT_DURATION = 120_000; // 120 seconds
 describe("ChainData Integration Tests", () => {
-  let apiHandler: ApiHandler;
   let chainData: ChainData;
 
   beforeAll(async () => {
-    apiHandler = await getKusamaHandler();
-    chainData = new ChainData(apiHandler);
+    const apiHandlers: ApiHandlers = {
+      relay: new ApiHandler(KusamaEndpoints),
+      people: new ApiHandler(KusamaPeopleEndpoints),
+    };
+    chainData = new ChainData(apiHandlers);
   }, TIMEOUT_DURATION);
-
-  it(
-    "should check API connection",
-    async () => {
-      await chainData.checkApiConnection();
-    },
-    TIMEOUT_DURATION,
-  );
 
   it(
     "should fetch chain type",

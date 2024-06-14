@@ -15,7 +15,7 @@ describe("Nominator Mock Class Unit Tests", () => {
   const signerAddress = "DvDsrjvaJpXNW7XLvtFtEB3D9nnBKMqzvrijFffwpe7CCc6";
   beforeAll(async () => {
     handler = new ApiHandler(["Constants.KusamaEndpoints"]);
-    await handler.setAPI();
+    await handler.getApi();
 
     nominatorConfig = {
       isProxy: false,

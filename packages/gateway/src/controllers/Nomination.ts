@@ -1,7 +1,7 @@
 import { logger } from "@1kv/common";
 import { response } from "./index";
 import * as NominationService from "../services/Nomination";
-import { gatewayLabel } from "../run";
+import { gatewayLabel } from "../constants";
 import { requestEmitter } from "../events/requestEmitter";
 
 export default class NominationController {

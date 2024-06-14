@@ -24,10 +24,13 @@ export type ConfigSchema = {
   constraints: {
     skipConnectionTime: boolean;
     skipIdentity: boolean;
-    skipClientUpgrade: boolean;
     skipUnclaimed: boolean;
     skipClaiming: boolean;
-    forceClientVersion: string;
+    clientUpgrade: {
+      skip: boolean;
+      releaseTagFormat?: string;
+      forcedVersion?: string;
+    };
     minSelfStake: number;
     commission: number;
     unclaimedEraThreshold: number;
@@ -84,6 +87,7 @@ export type ConfigSchema = {
     dryRun: boolean;
     networkPrefix: 0 | 2 | 3;
     apiEndpoints: string[];
+    apiPeopleEndpoints?: string[];
     bootstrap: boolean;
     kusamaBootstrapEndpoint: string;
     polkadotBootstrapEndpoint: string;
@@ -95,11 +99,6 @@ export type ConfigSchema = {
     enabled: boolean;
     room: string;
     userId: string;
-  };
-  redis: {
-    enable: boolean;
-    host: string;
-    port: number;
   };
   proxy: {
     timeDelayBlocks: number;

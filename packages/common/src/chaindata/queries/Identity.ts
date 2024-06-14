@@ -1,4 +1,4 @@
-import Chaindata, { handleError } from "../chaindata";
+import Chaindata, { handleError, HandlerType } from "../chaindata";
 import { Identity } from "../../types";
 
 export const hasIdentity = async (
@@ -6,7 +6,7 @@ export const hasIdentity = async (
   account: string,
 ): Promise<[boolean, boolean]> => {
   try {
-    const api = chaindata.apiPeople ? chaindata.apiPeople : chaindata.api;
+    const api = await chaindata.peopleHandler.getApi();
 
     if (!api?.isConnected) {
       return [false, false];
@@ -33,7 +33,7 @@ export const hasIdentity = async (
 
     return [identity ? identity.isSome : false, verified];
   } catch (e) {
-    if (!chaindata.apiPeople) await handleError(chaindata, e, "hasIdentity");
+    await handleError(chaindata, e, "hasIdentity", HandlerType.PeopleHandler);
     return [false, true];
   }
 };
@@ -43,7 +43,8 @@ export const getFormattedIdentity = async (
   addr: string,
 ): Promise<Identity | null> => {
   try {
-    const api = chaindata.apiPeople ? chaindata.apiPeople : chaindata.api;
+    const api = await chaindata.peopleHandler.getApi();
+
     if (!api?.isConnected) {
       return null;
     }
@@ -155,8 +156,12 @@ export const getFormattedIdentity = async (
 
     return identity;
   } catch (e) {
-    if (!chaindata.apiPeople)
-      await handleError(chaindata, e, "getFormattedIdentity");
+    await handleError(
+      chaindata,
+      e,
+      "getFormattedIdentity",
+      HandlerType.PeopleHandler,
+    );
     return null;
   }
 };

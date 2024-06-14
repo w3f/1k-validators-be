@@ -4,11 +4,12 @@
     "apiEndpoints": [
       "wss://kusama-rpc-tn.dwellir.com",
       "wss://kusama-rpc.dwellir.com",
-      "wss://kusama.public.curie.radiumblock.xyz/ws",
+      "wss://kusama.public.curie.radiumblock.co/ws",
       "wss://rpc.ibp.network/kusama",
       "wss://rpc.dotters.network/kusama",
       "wss://ksm-rpc.stakeworld.io"
     ],
+    "apiPeopleEndpoints": ["wss://kusama-people-rpc.polkadot.io"],
     "kusamaBootstrapEndpoint": "https://kusama.w3f.community",
     "polkadotBootstrapEndpoint": "https://polkadot.w3f.community",
     "candidatesUrl": "https://raw.githubusercontent.com/w3f/1k-validators-be/master/candidates/kusama.json"
@@ -16,9 +17,10 @@
   "constraints": {
     "skipConnectionTime": true,
     "skipIdentity": false,
-    "skipClientUpgrade": false,
     "skipUnclaimed": false,
-    "forceClientVersion": "v0.9.30",
+    "clientUpgrade": {
+      "skip": false
+    },
     "minSelfStake": 10000000000000,
     "commission": 150000000,
     "unclaimedEraThreshold": 4,

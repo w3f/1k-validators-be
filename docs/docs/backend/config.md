@@ -42,7 +42,8 @@ An example config may look something like:
 
 - `dryRun`: Boolean (true/false). If set to true, the Nominator accounts that are added will calculate what a nomination would look like (how many and which validators), but not craft or submit any transactions. No nominations will be done when this flag is set. In the `nominate` function of the `Nominator` class, the `dryRun` flag is checked, and if it is set to true, the function will return after logging the validators it would nominate without doing anything. This flag is optional and set to `false` by default.
 - `networkPrefix`: Integer. Defines the network prefix. For Kusama, this is `2`, and for Polkadot, this is `0`. It can be set to `3` for running a local test network, although this isn't used much anymore. **This flag is required for `core` and `worker` services.**
-- `apiEndpoints`: Array of strings. Lists the RPC endpoints for the chain. When given a list of multiple, it will pick one at random to create a websocket connection to - this single connection is used throughout the entire service for any queries or submitting transactions. **This is required for `core` and `worker` services.
+- `apiEndpoints`: Array of strings. Lists the RPC endpoints for the chain. When given a list of multiple, it will pick one at random to create a websocket connection to - this single connection is used throughout the entire service for any queries or submitting transactions. **This is required for `core` and `worker` services.**
+- `apiPeopleEndpoints`: Optional array of strings. Lists the RPC endpoints for People parachain, if it's enabled on the network. 
 - `bootstrap`: Boolean. An **optional** flag that can be set to `true` to enable the bootstrap process. This can be used when running a instance of the backend and would query the main Kusama or Polkadot instances at the api endpoints specified below to populate the db with non-deterministic values like `rank` or `discoveredAt`. _This isn't currently used anywhere yet_
 - `kusamaBootstrapEndpoint`: String. URL for the Kusama bootstrap endpoint. **optional**. _This isn't currently used anywhere yet_. 
 - `polkadotBootstrapEndpoint`: String. URL for the Polkadot bootstrap endpoint. **optional**. _This isn't currently used anywhere yet_.
@@ -56,9 +57,10 @@ An example config may look something like:
   "constraints": {
     "skipConnectionTime": true,
     "skipIdentity": false,
-    "skipClientUpgrade": false,
     "skipUnclaimed": false,
-    "forceClientVersion": "v0.9.30",
+    "clientUpgrade": {
+      "skip": false
+    },
     "minSelfStake": 10000000000000,
     "commission": 150000000,
     "unclaimedEraThreshold": 4
@@ -69,9 +71,9 @@ The `constraints` section defines validity constraint parameters for validators,
 
 - `skipConnectionTime`: Boolean. Skips checking the 7 day required connection time if set to true. __optional__, defaults to `false`.
 - `skipIdentity`: Boolean. Skips the check for a verified identity. __optional__, defaults to `false`.
-- `skipClientUpgrade`: Boolean. Skips client version upgrade check. __optional__, defaults to `false`.
 - `skipUnclaimed`: Boolean. Skips the check for unclaimed rewards. __optional__, defaults to `false`.
-- `forceClientVersion`: String. Specific client version to be enforced. __optional__, if this is set, it will allow versions higher than what is specified. 
+- `clientUpgrade.skip`: Boolean. Skips client version upgrade check. __optional__, defaults to `false`.
+- `clientUpgrade.forceVersion`: String. Specific client version to be enforced. __optional__, if this is set, it will allow versions >= than what is specified. 
 - `minSelfStake`: Integer. Minimum self-stake required. **required**. This number needs to be specified in `Plancks` (1 DOT = 10^10 Plancks, 1 KSM = 10^12 Plancks).
 - `commission`: Integer. Max commission rate. **required**. This number needs to be specified in chain units that have 6 decimal places -  for example `150000000`  corresponds to 15% commission. 
 - `unclaimedEraThreshold`: Integer. Threshold for unclaimed eras. **required**. A validator having pending rewards for past eras longer than this threshold will be deemed invalid. This gets skipped if `skipUnclaimed` is set to `true`. This number is speciefied as number of eras, so `4` for example means validators are invalid if they have pending rewards older than 4 eras ago.
@@ -358,24 +360,6 @@ The format
 - `forceRound`: Boolean. upon `scorekeeper` starting, will initiate new nominations immediately, regardless of the time since the last nomination. **required**, defaults to `false`. This can be useful to do nominations when there are issues with proxy transations getting stuck for example.
 - `nominating`: Boolean. Indicates whether the nominator account will create and submit transactions or not. **required**. Nominators will only submit transactions when this is set to `true`, otherwise when a nomination is supposed to occur the process will not do anything when set to `false`.
 
-## Redis
-
-Configuration for Redis. Redis is used when run as microservices for messages queue passing. When run as a monolith it is not used and not required. When run as microservices, `core`, `gateway`, and `worker` will need to have their own redis parameters specified in their respective config files.
-
-An example config may look something like:
-
-```json
-  "redis": {
-    "enable": true,
-    "host": "redis",
-    "port": 6379
-  },
-```
-
-- `enable`: Boolean. Enables or disables Redis. **optional**. defaults to `false if not specified
-- `host`: String. Redis host. **required** if run as microservices, **optional** if not.
-- `port`: Integer. Redis port. **required** if run as microservices, **optional** if not.
-
 ## Server
 
 THe `gateway` package uses Koa to serve various db queries from specified endpoints. `gateway` may either be run as a monolith or as a microservice. If run as a microservice, the `gateway` service will need to have its own `server` parameters specified in its config file. 
@@ -459,9 +443,10 @@ An example `core` config run as microservices may look something like:
   "constraints": {
     "skipConnectionTime": true,
     "skipIdentity": false,
-    "skipClientUpgrade": false,
     "skipUnclaimed": false,
-    "forceClientVersion": "v0.9.30",
+    "clientUpgrade": {
+      "skip": false
+    },
     "minSelfStake": 10000000000000,
     "commission": 150000000,
     "unclaimedEraThreshold": 4
@@ -505,11 +490,6 @@ An example `core` config run as microservices may look something like:
     "forceRound": false,
     "nominating": false
   },
-  "redis": {
-    "enable": true,
-    "host": "redis",
-    "port": 6379
-  },
   "server": {
     "enable": false,
     "port": 3300
@@ -540,11 +520,6 @@ An example gateway config run as microservices may look something like:
     "mongo": {
       "uri": "mongodb://mongo:27017"
     }
-  },
-  "redis": {
-    "enable": true,
-    "host": "redis",
-    "port": 6379
   },
   "server": {
     "enable": true,
@@ -637,11 +612,6 @@ An example Worker config run as microservices may look something like:
     "useOpenGovDelegation": true,
     "useRpc": true,
     "useClient": true
-  },
-  "redis": {
-    "enable": true,
-    "host": "redis",
-    "port": 6379
   }
 }
 

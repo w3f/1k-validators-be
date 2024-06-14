@@ -4,7 +4,6 @@
   "include": ["src/**/*.ts"],
 
   "files": [
-    "src/run.ts",
     "src/index.ts",
   ],
   "compilerOptions": {

@@ -1,7 +1,6 @@
-import { ApiPromise, WsProvider } from "@polkadot/api";
 import ApiHandler, { apiLabel } from "../ApiHandler/ApiHandler";
 import logger from "../logger";
-import { NumberResult } from "../types";
+import { ApiHandlers, NumberResult } from "../types";
 import {
   getApiAt,
   getApiAtBlockHash,
@@ -59,85 +58,25 @@ import {
   getNominators,
   NominatorInfo,
 } from "./queries/Nomination";
-import { CHAINDATA_RETRIES } from "../constants";
 import { Identity } from "../db";
 import { Block } from "@polkadot/types/interfaces";
 import { ApiDecoration } from "@polkadot/api/types";
 
-type JSON = any;
-
 export const chaindataLabel = { label: "Chaindata" };
+
+export enum HandlerType {
+  RelayHandler,
+  PeopleHandler,
+}
 
 export class ChainData {
   public handler: ApiHandler;
-  public api: ApiPromise | null;
-  public apiPeople: ApiPromise | null;
+  public peopleHandler: ApiHandler;
 
-  constructor(handler: ApiHandler) {
-    this.handler = handler;
-    this.api = handler.getApi();
-    this.setApiPeople();
+  constructor(handlers: ApiHandlers) {
+    this.handler = handlers.relay;
+    this.peopleHandler = handlers.people;
   }
-
-  setApiPeople = async (): Promise<void> => {
-    if (!(await this.api.rpc.system.chain()).toLowerCase().includes("kusama"))
-      return;
-
-    const provider = new WsProvider("wss://kusama-people-rpc.polkadot.io");
-    this.apiPeople = await ApiPromise.create({ provider: provider });
-    if (this.apiPeople) {
-      this.apiPeople.on("error", (error) => {
-        if (
-          error.toString().includes("FATAL") ||
-          JSON.stringify(error).includes("FATAL")
-        ) {
-          logger.error("The API had a FATAL error... exiting!");
-          process.exit(1);
-        }
-      });
-    }
-    await this.apiPeople.isReadyOrError;
-
-    const [chain, nodeName, nodeVersion] = await Promise.all([
-      this.apiPeople.rpc.system.chain(),
-      this.apiPeople.rpc.system.name(),
-      this.apiPeople.rpc.system.version(),
-    ]);
-    logger.info(
-      `You are connected to chain ${chain} using ${nodeName} v${nodeVersion}`,
-      apiLabel,
-    );
-    return;
-  };
-
-  checkApiConnection = async (retries = 0): Promise<boolean> => {
-    // Check if the API is already connected
-    if (this.handler.getApi()?.isConnected) {
-      return true; // API is connected
-    }
-
-    // If not connected and retries are available
-    if (retries < CHAINDATA_RETRIES) {
-      await this.delay(1000); // Wait before retrying
-      return await this.checkApiConnection(retries + 1); // Recursive call with incremented retries
-    }
-
-    // If no retries left, perform health check
-    logger.warn("Performing health check on api...", chaindataLabel);
-    const api = this.handler.getApi();
-    if (api) {
-      await api.disconnect(); // Ensure disconnect is called on an existing API instance
-    }
-    const healthy = await this.handler.healthCheck();
-
-    if (healthy) {
-      this.api = this.handler.getApi();
-      return true; // Health check passed, API is healthy
-    }
-
-    // Exceeded retries without connecting and health check failed
-    return false;
-  };
 
   // Helper function to introduce delay
   delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -386,15 +325,25 @@ export class ChainData {
   };
 }
 
-export const handleError = async (chaindata, e, functionName: string) => {
+export const handleError = async (
+  chaindata,
+  e,
+  functionName: string,
+  handlerType: HandlerType,
+) => {
   const errorMessage = e instanceof Error ? e.message : String(e);
+
+  const handler =
+    handlerType === HandlerType.PeopleHandler
+      ? chaindata.peopleHandler
+      : chaindata.handler;
   if (errorMessage.includes("RPC rate limit exceeded")) {
     logger.warn(
-      `RPC rate limit exceeded from ${chaindata.handler.currentEndpoint()}. Switching to a different endpoint.`,
+      `RPC rate limit exceeded from ${handler.currentEndpoint()}. Switching to a different endpoint.`,
       apiLabel,
     );
     try {
-      await chaindata.handler.setAPI();
+      await handler.nextEndpoint();
     } catch (error) {
       logger.error(
         `Error while switching to a different endpoint: ${error}`,

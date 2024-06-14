@@ -13,7 +13,7 @@ spec:
   # syncPolicy:
   #   automated:
   #     prune: true
-  #     selfHeal: true 
+  #     selfHeal: true
   source:
     repoURL: 'https://github.com/w3f/1k-validators-be.git'
     path: charts/otv-backend
@@ -46,18 +46,21 @@ spec:
                   "apiEndpoints": [
                     "wss://kusama-rpc-tn.dwellir.com",
                     "wss://kusama-rpc.dwellir.com",
-                    "wss://kusama.public.curie.radiumblock.xyz/ws",
+                    "wss://kusama.public.curie.radiumblock.co/ws",
                     "wss://rpc.ibp.network/kusama",
                     "wss://rpc.dotters.network/kusama",
                     "wss://ksm-rpc.stakeworld.io"
                   ],
+                  "apiPeopleEndpoints": ["wss://kusama-people-rpc.polkadot.io"],
                   "candidatesUrl": "https://raw.githubusercontent.com/w3f/1k-validators-be/master/candidates/kusama.json"
                 },
                 "constraints": {
                   "skipConnectionTime": true,
                   "skipIdentity": false,
-                  "skipClientUpgrade": false,
                   "skipUnclaimed": true,
+                  "clientUpgrade": {
+                    "skip": false
+                  },
                   "minSelfStake": 10000000000000,
                   "commission": 150000000,
                   "unclaimedEraThreshold": 4,
@@ -65,8 +68,7 @@ spec:
                     "skip": false,
                     "sanctionedCountries": ["RU", "IR", "CU", "KP", "SY"],
                     "sanctionedRegions": ["Crimea", "Autonomous Republic of Crimea", "Republic of Crimea", "Luhansk", "Luhanska Oblast", "Luhanska", "Luganskaya Oblast’", "Luganskaya", "Donetsk", "Donetska Oblast", "Donetskaya Oblast’", "Donetska", "Donetskaya", "Sevastopol City", "Sevastopol", "Gorod Sevastopol"]
-                  },
-                  "forceClientVersion": "v1.12.0"
+                  }
                 },
                 "cron": {
                   "monitor": "0 */15 * * * *",

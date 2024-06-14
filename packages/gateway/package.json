@@ -17,5 +17,8 @@
     "js:start": "NODE_OPTIONS='--max-old-space-size=6096' node --es-module-specifier-resolution=node build/run.js start"
   },
   "author": "Web3 Foundation <teched@web3.foundation>",
-  "license": "GPL-3.0"
+  "license": "GPL-3.0",
+  "dependencies": {
+    "@1kv/common": "*"
+  }
 }

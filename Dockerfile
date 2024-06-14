@@ -1,4 +1,4 @@
-FROM node:21-slim AS builder
+FROM node:22-slim AS builder
 ARG MATRIX_TOKEN
 ARG PACKAGE
 ENV PACKAGE ${PACKAGE}

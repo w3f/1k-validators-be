@@ -34,6 +34,7 @@ __metadata:
     commander: ^12.0.0
     concurrently: ^8.2.2
     cron: ^3.1.6
+    date-fns: ^3.6.0
     eslint: 8.42.0
     eslint-config-prettier: ^8.8.0
     eslint-plugin-prettier: 5.0.0
@@ -4176,6 +4177,13 @@ __metadata:
   dependencies:
     "@babel/runtime": ^7.21.0
   checksum: f7be01523282e9bb06c0cd2693d34f245247a29098527d4420628966a2d9aad154bd0e90a6b1cf66d37adcb769cd108cf8a7bd49d76db0fb119af5cdd13644f4
+  languageName: node
+  linkType: hard
+
+"date-fns@npm:^3.6.0":
+  version: 3.6.0
+  resolution: "date-fns@npm:3.6.0"
+  checksum: 0daa1e9a436cf99f9f2ae9232b55e11f3dd46132bee10987164f3eebd29f245b2e066d7d7db40782627411ecf18551d8f4c9fcdf2226e48bb66545407d448ab7
   languageName: node
   linkType: hard
 

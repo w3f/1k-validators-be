@@ -29,8 +29,6 @@ spec:
         ports:
         - name: backend
           containerPort: {{ .Values.backendPort }}
-        - name: metrics
-          containerPort: {{ .Values.metricsPort }}
         livenessProbe:
           httpGet:
             path: /healthcheck

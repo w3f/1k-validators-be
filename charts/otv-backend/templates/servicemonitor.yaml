@@ -10,5 +10,5 @@ spec:
     matchLabels:
       app: {{ .Release.Name }}
   endpoints:
-  - port: metrics
+  - port: backend
 {{ end }}

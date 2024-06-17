@@ -1,4 +1,4 @@
-{{ if and .Values.serviceMonitor.enabled ( ne .Values.config.environment "ci" ) }}
+{{ if and .Values.serviceMonitor.enabled ( ne .Values.environment "ci" ) }}
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:

@@ -9,6 +9,6 @@ spec:
   - name: backend
     port: {{ .Values.backendPort }}
   - name: metrics
-    port: {{ .Values.backendPort }}
+    port: {{ .Values.metricsPort }}
   selector:
     app: {{ .Release.Name }}

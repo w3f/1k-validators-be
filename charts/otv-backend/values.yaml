@@ -19,6 +19,7 @@ ingress:
 
 dataPath: "/data"
 backendPort: 3300
+metricsPort: 3301
 
 storageSize: 20Gi
 # Uncomment the following resource to use

@@ -14,6 +14,7 @@ import * as Models from "./db/models";
 import ScoreKeeper from "./scorekeeper/scorekeeper";
 import * as Jobs from "./scorekeeper/jobs/specificJobs";
 import MatrixBot from "./matrix";
+import * as metrics from "./metrics";
 
 export {
   ApiHandler,
@@ -31,4 +32,5 @@ export {
   ScoreKeeper,
   Jobs,
   MatrixBot,
+  metrics,
 };

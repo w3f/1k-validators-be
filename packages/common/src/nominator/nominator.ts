@@ -8,6 +8,7 @@ import EventEmitter from "eventemitter3";
 import { sendProxyDelayTx, sendProxyTx } from "./NominatorTx";
 import { getNominatorChainInfo } from "./NominatorChainInfo";
 import { NominatorState, NominatorStatus } from "../types";
+import { registerNomination } from "../metrics";
 
 export const nominatorLabel = { label: "Nominator" };
 
@@ -354,6 +355,8 @@ export default class Nominator extends EventEmitter {
         tx = api.tx.staking.nominate(targets);
         await this.sendStakingTx(tx, targets);
       }
+      // TODO: verify that `this.bondedAddress` is what we want (should each proxy count separately?)
+      registerNomination(this.bondedAddress);
       await queries.setLastNominatedEraIndex(currentEra);
       return true;
     } catch (e) {

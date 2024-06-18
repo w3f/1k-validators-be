@@ -2399,6 +2399,70 @@
       "kusamaStash": "Hhx2EoL2J4UYFSdGQZhnX2MFjKcvV5VLHya4cvYEVVErTv4",
       "riotHandle": "@garciaprod:matrix.org",
       "kyc": true
-    }
+    },    
+    {
+      "slotId": 293,
+      "name": "Powerlabs",
+      "stash": "13g3rtrqL6EHD2QixCxradk2XG7RkmTLKkXvMfLVUuChzFZX",
+      "kusamaStash": "GAEP1qFK5eSpqarfRwW7h4ekPffp5Ydy2wZMZSWynho1zAd",
+      "riotHandle": "@powerlabs:matrix.org",
+      "kyc": true
+    },    
+    {
+      "slotId": 294,
+      "name": "Currencyx",
+      "stash": "14iQfZCoj3uRcvau6Wxk9Gy9UXQZrChRZZNFVdBPMTJxmtuP",
+      "kusamaStash": "CfaUrAbVqqirEByiXFhgmS34dZq3nJpy6sKYtFHvSr3uQuG",
+      "riotHandle": "@ksmkvnode:matrix.org",
+      "kyc": true
+    },    
+    {
+      "slotId": 295,
+      "name": "Eagle",
+      "stash": "16MChrphfAjwMbvBQkaEPFG2zYsnicosf43TLPJbKh2LeQpv",
+      "kusamaStash": "Ez8y1UdrjnPxaXKCAARhwzZuATxLYvjKJZjibeFq9rXQSWX",
+      "riotHandle": "@eagle-node:matrix.org",
+      "kyc": true
+    },    
+    {
+      "slotId": 296,
+      "name": "ENCOINTER/PV1",
+      "stash": "165NJXk1HKxeFPbNK3ZEsgRPoGTkxMU9DyteK3cE7AGt7xrJ",
+      "kusamaStash": "HQGpmN3FNykmM131vDkuvukLq7g1bDud96H5vvGcUsF4WiU",
+      "riotHandle": "@brenzi:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 297,
+      "name": "grimface",
+      "stash": "14i61mrUnaYZZD19v9uZ7MPudxNGP84SNEitammFPNuFArkA",
+      "kusamaStash": "GFEdjfCTxTPEuyUh3BuTT3Gi6bnUJnvd1XA4Rp28AdRgS1Z",
+      "riotHandle": "@grimface:matrix.org",
+      "kyc": true
+    },    
+    {
+      "slotId": 298,
+      "name": "VIXY",
+      "stash": "1NpQZhfKrc1no6JVWD2RQQ8bzCbqPt67mKqNBZJr4SsSF1c",
+      "kusamaStash": "FPkHYKqHUCUsn7JEzVdxwt6Lwsg8qMNKxqXb1ec1BYoJk1B",
+      "riotHandle": "@vixy:matrix.org",
+      "kyc": true
+    },    
+    {
+      "slotId": 299,
+      "name": "Connectify",
+      "stash": "16epBRV5x2amiaN5hjh634GuSEM2mjxBbnTFp6mNCfL4Fdfr",
+      "kusamaStash": "H7YMaxGnf7gaTBwSL2LPFSs4YwmfXh9RjavjmduGnfmD14q",
+      "riotHandle": "@connectify:matrix.org",
+      "kyc": true
+    },   
+    {
+      "slotId": 300,
+      "name": "Carpediem",
+      "stash": "1Ca67ishxZSALwT22bdtEsev5UFnhqwoomnRpqGepUoDb73",
+      "kusamaStash": "DDdA9Zo4K6ey39nGPzuv3kzFMkyut2jQAQqoggLqQw71trB",
+      "riotHandle": "@jdiem:matrix.org",
+      "kyc": true
+    }    
   ]
 }

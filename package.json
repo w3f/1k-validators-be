@@ -103,6 +103,7 @@
     "mongodb-memory-server": "^9.1.7",
     "mongoose": "^8.2.1",
     "prettier": "^3.2.4",
+    "prom-client": "^15.1.2",
     "semver": "^7.6.0",
     "swagger-jsdoc": "^6.2.8",
     "swagger2": "^4.0.3",

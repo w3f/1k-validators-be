@@ -92,6 +92,7 @@ export type ConfigSchema = {
     kusamaBootstrapEndpoint: string;
     polkadotBootstrapEndpoint: string;
     candidatesUrl: string;
+    prometheusPrefix?: string;
   };
   matrix: {
     accessToken: string;

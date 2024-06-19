@@ -72,8 +72,8 @@ describe("autoNumNominations", () => {
       },
     });
 
-    const relayApiHandler = new ApiHandler(KusamaEndpoints);
-    const peopleApiHandler = new ApiHandler(KusamaPeopleEndpoints);
+    const relayApiHandler = new ApiHandler("relay", KusamaEndpoints);
+    const peopleApiHandler = new ApiHandler("people", KusamaPeopleEndpoints);
 
     chaindata = new ChainData({
       relay: relayApiHandler,

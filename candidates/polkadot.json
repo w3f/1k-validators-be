@@ -2463,6 +2463,22 @@
       "kusamaStash": "DDdA9Zo4K6ey39nGPzuv3kzFMkyut2jQAQqoggLqQw71trB",
       "riotHandle": "@jdiem:matrix.org",
       "kyc": true
-    }    
+    },    
+    {
+      "slotId": 301,
+      "name": "Bendak",
+      "stash": "14BgbcrBWCnWEoxrSmT2WJNnYV8vZANsggipxCCC4jEyJoTD",
+      "kusamaStash": "HTyDz5Mn1wyzP7sNkzX8Easz8TfvvuU6qzsHvqWtwjWuq47",
+      "riotHandle": "@bendak:matrix.org",
+      "kyc": true
+    },    
+    {
+      "slotId": 302,
+      "name": "BitDash",
+      "stash": "13MTHo65Jwiee6rW7o3buGKoZ5kNJBJg3m4PTkHWKeaWtT86",
+      "kusamaStash": "HUJhxL8s4QxZebKS8VV9sMAJocVrUd1GnB6qHbfpmjmfKba",
+      "riotHandle": "@bitdash:matrix.org",
+      "kyc": true
+    }            
   ]
 }

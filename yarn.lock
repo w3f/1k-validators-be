@@ -20,7 +20,7 @@ __metadata:
     "@types/koa": ^2.15.0
     "@types/koa-bodyparser": ^4.3.12
     "@types/mongoose": ^5.11.97
-    "@types/node": ^20.11.5
+    "@types/node": ^20.14.8
     "@types/semver": ^7.5.8
     "@types/ws": ^8.5.10
     "@typescript-eslint/eslint-plugin": ^5.59.9
@@ -2481,12 +2481,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:^20.11.5":
+"@types/node@npm:*":
   version: 20.11.20
   resolution: "@types/node@npm:20.11.20"
   dependencies:
     undici-types: ~5.26.4
   checksum: 79d339622fed1c0e64297c8b9f558815a91edb9fea3acb69c1201b919d450e12915cf98b1a96b2d2c121bf86f30b62b6de3708f8894c5319f8dfb3a991e3ccdd
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^20.14.8":
+  version: 20.14.8
+  resolution: "@types/node@npm:20.14.8"
+  dependencies:
+    undici-types: ~5.26.4
+  checksum: a9128840005d4a0aba68826e22ac0fdd86bb9073f1d274217d3509b52f969d1aab83415c85a8461259f33cf34f9eee02fb13dca059865bed2ba2e728bc936a76
   languageName: node
   linkType: hard
 

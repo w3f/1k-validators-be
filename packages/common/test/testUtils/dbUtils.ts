@@ -2,7 +2,7 @@
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { Db } from "../../src";
 import mongoose from "mongoose";
-import { afterAll, afterEach, beforeAll, beforeEach } from "vitest";
+import { afterAll, afterEach, beforeAll, beforeEach, vi } from "vitest";
 import logger from "../../src/logger";
 import { deleteAllDb } from "./deleteAll";
 
@@ -12,6 +12,8 @@ interface ObjectWithId {
 }
 
 type ObjectOrArray<T> = T | T[];
+
+vi.mock("../../src/metrics");
 
 export const omitId = <T extends Record<string, any>>(
   obj: ObjectOrArray<T>,

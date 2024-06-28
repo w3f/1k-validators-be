@@ -8,6 +8,7 @@ import EventEmitter from "eventemitter3";
 import { sendProxyDelayTx, sendProxyTx } from "./NominatorTx";
 import { getNominatorChainInfo } from "./NominatorChainInfo";
 import { NominatorState, NominatorStatus } from "../types";
+import { registerNomination } from "../metrics";
 
 export const nominatorLabel = { label: "Nominator" };
 
@@ -354,6 +355,7 @@ export default class Nominator extends EventEmitter {
         tx = api.tx.staking.nominate(targets);
         await this.sendStakingTx(tx, targets);
       }
+      registerNomination(await this.stash());
       await queries.setLastNominatedEraIndex(currentEra);
       return true;
     } catch (e) {

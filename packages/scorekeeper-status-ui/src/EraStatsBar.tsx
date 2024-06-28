@@ -7,6 +7,7 @@ import {
   FiServer,
   FiUserCheck,
 } from "react-icons/fi";
+import { REFRESH_INTERVAL } from "./Constants";
 
 const EraStatsBar = ({ currentEndpoint }) => {
   const [eraStats, setEraStats] = useState({
@@ -29,7 +30,7 @@ const EraStatsBar = ({ currentEndpoint }) => {
       }
     };
 
-    const interval = setInterval(fetchEraStats, 500);
+    const interval = setInterval(fetchEraStats, REFRESH_INTERVAL);
     return () => clearInterval(interval);
   }, [currentEndpoint]);
 

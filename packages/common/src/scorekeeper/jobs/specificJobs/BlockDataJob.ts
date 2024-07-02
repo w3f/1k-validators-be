@@ -8,6 +8,7 @@ import { Block, EventRecord, Phase } from "@polkadot/types/interfaces";
 import type { FrameSystemEventRecord } from "@polkadot/types/lookup";
 import { Exposure } from "../../../chaindata/queries/ValidatorPref";
 import { JobNames } from "../JobConfigs";
+import { registerBlockScan } from "../../../metrics";
 
 export const blockdataLabel = { label: "Block" };
 
@@ -200,6 +201,7 @@ export const processBlock = async (
     await queries.setBlockIndex(blockNumber, blockIndex?.latest);
   }
   const end = Date.now();
+  registerBlockScan(blockNumber);
   logger.info(
     `Done processing block #${blockNumber} (${(end - start) / 1000}s)`,
     blockdataLabel,

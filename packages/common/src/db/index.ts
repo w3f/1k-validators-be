@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import logger from "../logger";
 
 import * as queries from "./queries";
+import { setDbConnectivity } from "../metrics";
 
 // [name, client, version, null, networkId]
 export type NodeDetails = [
@@ -37,6 +38,8 @@ export class Db {
         resolve(true);
       });
 
+      mongoose.connection.on("open", () => setDbConnectivity(true));
+      mongoose.connection.on("disconnected", () => setDbConnectivity(false));
       mongoose.connection.on("error", (err) => {
         logger.error(`MongoDB connection issue: ${err}`, dbLabel);
         reject(err);

@@ -19,9 +19,11 @@ const createMockApiPromise = (): any => ({
 class ApiHandlerMock extends EventEmitter {
   private endpoints: string[];
   private api: ApiPromise = createMockApiPromise as unknown as ApiPromise;
+  public chain: string;
 
-  constructor(endpoints: string[]) {
+  constructor(chain: string, endpoints: string[]) {
     super();
+    this.chain = chain;
     // Initialize with mock data or behavior as needed
     this.endpoints = endpoints.sort(() => Math.random() - 0.5);
     this.api = createMockApiPromise();

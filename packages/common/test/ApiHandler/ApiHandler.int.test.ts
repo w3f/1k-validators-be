@@ -7,7 +7,7 @@ describe("ApiHandler Integration Tests", () => {
   let handler: ApiHandler;
 
   beforeAll(async () => {
-    handler = new ApiHandler(KusamaEndpoints);
+    handler = new ApiHandler("relay", KusamaEndpoints);
   }, TIMEOUT_DURATION);
 
   it(

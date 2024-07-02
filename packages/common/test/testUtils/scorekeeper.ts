@@ -5,8 +5,8 @@ import ApiHandler from "../../src/ApiHandler/ApiHandler";
 import { KusamaEndpoints, KusamaPeopleEndpoints } from "../../src/constants";
 
 export const getAndStartScorekeeper = async () => {
-  const relayApiHandler = new ApiHandler(KusamaEndpoints);
-  const peopleApiHandler = new ApiHandler(KusamaPeopleEndpoints);
+  const relayApiHandler = new ApiHandler("relay", KusamaEndpoints);
+  const peopleApiHandler = new ApiHandler("people", KusamaPeopleEndpoints);
   await Promise.all([relayApiHandler.getApi(), peopleApiHandler.getApi()]);
 
   const chaindata = new ChainData({

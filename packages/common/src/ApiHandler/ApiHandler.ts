@@ -3,6 +3,7 @@ import EventEmitter from "eventemitter3";
 
 import logger from "../logger";
 import { API_PROVIDER_TIMEOUT, POLKADOT_API_TIMEOUT } from "../constants";
+import { setChainRpcConnectivity } from "../metrics";
 
 export const apiLabel = { label: "ApiHandler" };
 
@@ -20,9 +21,12 @@ class ApiHandler extends EventEmitter {
 
   public upSince = -1;
   public isConnected = false;
+  public chain: string;
 
-  constructor(endpoints: string[]) {
+  // chain is a name for type of chain: relay, people. Used for Prometheus metrics.
+  constructor(chain: string, endpoints: string[]) {
     super();
+    this.chain = chain;
     this.endpoints = endpoints.sort(() => Math.random() - 0.5);
   }
 
@@ -47,6 +51,7 @@ class ApiHandler extends EventEmitter {
     }
 
     this.isConnected = false;
+    setChainRpcConnectivity(this.chain, false);
     this.connectionAttempt = new Promise(async (resolve) => {
       try {
         await this.wsProvider.connect();
@@ -63,6 +68,7 @@ class ApiHandler extends EventEmitter {
         this.connectionAttempt = null;
         this.upSince = Date.now();
         this.isConnected = true;
+        setChainRpcConnectivity(this.chain, true);
         logger.info(`Connected to ${this.currentEndpoint()}`, apiLabel);
         resolve();
       } catch (err) {

@@ -32,6 +32,12 @@ storageSize: 20Gi
 #     memory: 400Mi
 resources: {}
 
+serviceMonitor:
+  enabled: true
+  labels:
+    group: w3f
+    release: prometheus-operator
+
 secret: |
   {
     "matrix": {

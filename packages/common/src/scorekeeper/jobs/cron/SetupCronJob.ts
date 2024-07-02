@@ -39,12 +39,14 @@ export const setupCronJob = async (
     }
 
     isRunning = true;
+    const executedAt = Date.now();
     logger.info(`Executing ${name}.`, loggerLabel);
     const runningStatus: JobStatus = {
       status: "running",
       name: name,
       runCount: jobRunCount,
       updated: Date.now(),
+      executedAt,
     };
     jobStatusEmitter.emit("jobRunning", runningStatus);
 
@@ -58,6 +60,7 @@ export const setupCronJob = async (
         runCount: jobRunCount,
         updated: Date.now(),
         error: JSON.stringify(e),
+        executedAt,
       };
 
       jobStatusEmitter.emit("jobErrored", errorStatus);
@@ -69,6 +72,7 @@ export const setupCronJob = async (
         name: name,
         runCount: jobRunCount,
         updated: Date.now(),
+        executedAt,
       };
       jobStatusEmitter.emit("jobFinished", finishedStatus);
     }

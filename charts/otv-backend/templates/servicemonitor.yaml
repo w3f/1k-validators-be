@@ -1,0 +1,14 @@
+{{ if and .Values.serviceMonitor.enabled ( ne .Values.environment "ci" ) }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+{{ toYaml .Values.serviceMonitor.labels | indent 4 }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  endpoints:
+  - port: backend
+{{ end }}

@@ -1,10 +1,21 @@
 import { MongoMemoryServer } from "mongodb-memory-server";
-import { Db, logger } from "@1kv/common";
+import { Config, Db, logger, metrics } from "@1kv/common";
 import { afterAll, afterEach, beforeAll, beforeEach } from "vitest";
 import mongoose from "mongoose";
+import path from "path";
+import fs from "fs";
 
 let mongoServer: MongoMemoryServer | null = null;
 let mongoUri: string | null = null;
+
+function getConfig(): Config.ConfigSchema {
+  const jsonPath = path.resolve(
+    __dirname,
+    "../../../packages/core/config/kusama.current.sample.json",
+  );
+  const jsonData = fs.readFileSync(jsonPath, "utf-8");
+  return JSON.parse(jsonData);
+}
 
 export const createTestServer = async () => {
   const isCI = process.env.CI === "true";
@@ -18,6 +29,7 @@ export const createTestServer = async () => {
     mongoUri = mongoServer.getUri();
   }
 
+  await metrics.setupMetrics(getConfig());
   logger.info("Connecting to MongoDB at URI:", mongoUri);
   await Db.create(mongoUri);
   logger.info("Connected to MongoDB");

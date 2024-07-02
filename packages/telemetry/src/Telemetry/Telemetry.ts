@@ -1,6 +1,6 @@
 import WebSocket from "ws";
 
-import { Config, Constants, logger, queries, Util } from "@1kv/common";
+import { Config, Constants, logger, queries, Util, metrics } from "@1kv/common";
 import { registerTelemetryWs } from "./TelemetryWS";
 
 export default class TelemetryClient {
@@ -21,7 +21,16 @@ export default class TelemetryClient {
 
   private _memNodes = {};
 
-  public isConnected = false;
+  private _isConnected = false;
+  get isConnected(): boolean {
+    return this._isConnected;
+  }
+
+  set isConnected(isConnected: boolean) {
+    this._isConnected = isConnected;
+    metrics.setTelemetryConnectivity(isConnected);
+  }
+
   constructor(config: Config.ConfigSchema) {
     this.config = config;
     this._host =

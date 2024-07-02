@@ -16,6 +16,7 @@ import {
 import { Server } from "@1kv/gateway";
 import { TelemetryClient } from "@1kv/telemetry";
 import { ConfigSchema } from "@1kv/common/build/config";
+import { registerBlockScan, setupMetrics } from "@1kv/common/build/metrics";
 
 const isCI = process.env.CI;
 
@@ -42,10 +43,10 @@ export const createAPIHandlers = async (
       ? config.global.apiEndpoints
       : Constants.LocalEndpoints;
 
-  const relayHandler = new ApiHandler(endpoints);
+  const relayHandler = new ApiHandler("relay", endpoints);
 
   const peopleHandler = config.global.apiPeopleEndpoints
-    ? new ApiHandler(config.global.apiPeopleEndpoints)
+    ? new ApiHandler("people", config.global.apiPeopleEndpoints)
     : relayHandler;
 
   return { relay: relayHandler, people: peopleHandler };
@@ -209,9 +210,17 @@ export const initScorekeeper = async (
   }
 };
 
+// If this gauge won't set, latest block metric would be zero
+async function setInitialLatestBlock() {
+  const index = await queries.getBlockIndex();
+  registerBlockScan(index.latest);
+}
+
 const start = async (cmd: { config: string }) => {
   try {
     const config = await Config.loadConfigDir(cmd.config);
+    setupMetrics(config);
+
     const winstonLabel = { label: "start" };
 
     logger.info(`Starting the backend services. ${version}`, winstonLabel);
@@ -221,6 +230,7 @@ const start = async (cmd: { config: string }) => {
 
     // Create the Database.
     await createDB(config);
+    await setInitialLatestBlock();
 
     // Set the chain metadata
     await setChainMetadata(config);

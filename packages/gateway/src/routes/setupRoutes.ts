@@ -1,10 +1,10 @@
 import Router from "@koa/router";
-import { ApiHandler, Config, logger, ScoreKeeper } from "@1kv/common";
-import { response } from "../controllers";
+import { ApiHandler, Config, logger, ScoreKeeper, metrics } from "@1kv/common";
 import path from "path";
 import mount from "koa-mount";
 import yamljs from "yamljs";
 import { koaSwagger } from "koa2-swagger-ui";
+import { response } from "../controllers";
 
 import Koa from "koa";
 
@@ -54,6 +54,16 @@ export const setupHealthCheckRoute = (
     });
     return false;
   }
+};
+
+export const setupMetricsRoute = async (
+  routerInstance: Router,
+): Promise<void> => {
+  routerInstance.get("/metrics", async (ctx) => {
+    ctx.status = 200;
+    ctx.body = await metrics.renderMetrics();
+    ctx.type = "text/plain";
+  });
 };
 
 export const setupScorekeeperRoutes = (
@@ -180,6 +190,7 @@ export const setupRoutes = async (
 
         // Set up the health check route on the healthRouter
         setupHealthCheckRoute(healthRouter, handler);
+        setupMetricsRoute(healthRouter);
         setupScorekeeperRoutes(healthRouter, app, scorekeeper);
 
         app.use(healthRouter.routes());
@@ -187,6 +198,7 @@ export const setupRoutes = async (
         logger.info(`Setting up all routes`, { label: "Gateway" });
         setupCache(app, cache);
         setupHealthCheckRoute(router, handler);
+        setupMetricsRoute(router);
         setupScorekeeperRoutes(router, app, scorekeeper);
         setupDocs(app, config);
 

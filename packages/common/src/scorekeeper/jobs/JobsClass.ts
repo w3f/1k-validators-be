@@ -30,6 +30,7 @@ export type JobConfig = {
 export interface JobStatus {
   name: string;
   updated: number;
+  executedAt?: number;
   enabled?: boolean;
   runCount?: number;
   status: string;

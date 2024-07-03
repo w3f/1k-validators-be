@@ -11,8 +11,8 @@ describe("ChainData Integration Tests", () => {
 
   beforeAll(async () => {
     const apiHandlers: ApiHandlers = {
-      relay: new ApiHandler(KusamaEndpoints),
-      people: new ApiHandler(KusamaPeopleEndpoints),
+      relay: new ApiHandler("relay", KusamaEndpoints),
+      people: new ApiHandler("people", KusamaPeopleEndpoints),
     };
     chainData = new ChainData(apiHandlers);
   }, TIMEOUT_DURATION);

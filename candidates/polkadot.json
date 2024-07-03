@@ -1900,8 +1900,8 @@
     },
     {
       "slotId": 232,
-      "name": "helixstreet",
-      "stash": "16WzVw5JDCXLiA3t5D4LL15S2sqSBtCsjVNXkwLCVxGdeQGj",
+      "name": "helixstreet/2",
+      "stash": "1HMQVknF2rGz2vBegqA9jU4NhZKQtW7nZTDQykgeSm8FgPa",
       "kusamaStash": "J6K1vA6ynGo2GrotGpP5ocHKr82JFTv7NUnzJcoRfTcCn8T",
       "riotHandle": "@helixstreet.io:matrix.org",
       "skipSelfStake": true,

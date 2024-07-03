@@ -69,7 +69,7 @@ __metadata:
     vite-tsconfig-paths: ^4.3.1
     vitest: ^1.3.1
     winston: ^3.12.0
-    ws: ^8.16.0
+    ws: ^8.17.1
     yamljs: ^0.3.0
   languageName: unknown
   linkType: soft
@@ -9835,7 +9835,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:^8.15.1, ws@npm:^8.16.0, ws@npm:^8.8.1":
+"ws@npm:^8.15.1, ws@npm:^8.8.1":
   version: 8.16.0
   resolution: "ws@npm:8.16.0"
   peerDependencies:
@@ -9847,6 +9847,21 @@ __metadata:
     utf-8-validate:
       optional: true
   checksum: feb3eecd2bae82fa8a8beef800290ce437d8b8063bdc69712725f21aef77c49cb2ff45c6e5e7fce622248f9c7abaee506bae0a9064067ffd6935460c7357321b
+  languageName: node
+  linkType: hard
+
+"ws@npm:^8.17.1":
+  version: 8.17.1
+  resolution: "ws@npm:8.17.1"
+  peerDependencies:
+    bufferutil: ^4.0.1
+    utf-8-validate: ">=5.0.2"
+  peerDependenciesMeta:
+    bufferutil:
+      optional: true
+    utf-8-validate:
+      optional: true
+  checksum: 442badcce1f1178ec87a0b5372ae2e9771e07c4929a3180321901f226127f252441e8689d765aa5cfba5f50ac60dd830954afc5aeae81609aefa11d3ddf5cecf
   languageName: node
   linkType: hard
 

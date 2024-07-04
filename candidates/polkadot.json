@@ -2479,6 +2479,13 @@
       "kusamaStash": "HUJhxL8s4QxZebKS8VV9sMAJocVrUd1GnB6qHbfpmjmfKba",
       "riotHandle": "@bitdash:matrix.org",
       "kyc": true
-    }            
+    },
+    {
+      "slotId": 303,
+      "name": "Hubnet",
+      "stash": "15XrjudEYzozJL7EQMsjkgynRXFmuQxjbxWSNZZuN6HS9PfW",
+      "kusamaStash": "EkXhD7y4gFeNJeLw5Wp3Y8xQGQPvS5Z1w24EvYwXEieMD6a",
+      "riotHandle": "@aukerinca:matrix.org",
+      "kyc": true
   ]
 }

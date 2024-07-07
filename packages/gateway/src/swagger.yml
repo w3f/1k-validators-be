@@ -1,23 +1,14 @@
 openapi: 3.0.0
 info:
-  title: Gateway API
-  description: This is a sample API to demonstrate Swagger documentation
+  title: Nomination Backend API
+  description: Unofficial API to interface with the nomination backend.
   version: "1.0.0"
 servers:
 
-  - url: https://kusama.w3f.community/
-    description: Kusama
-  - url: https://polkadot.w3f.community/
-    description: Polkadot
-  - url: https://kusama-staging.w3f.community/
-    description: Kusama Staging
-  - url: https://polkadot-staging.w3f.community/
-    description: Polkadot Staging
-  - url: http://localhost:3300
-    description: Local server
-  - url: http://localhost:3301
-    description: Local server
-
+  - url: https://nominations.testnet.analog.one
+    description: Analog Testnet
+  - url: https://nominations.staging.analog.one
+    description: Analog Staging
 
 tags:
   - name: Candidates

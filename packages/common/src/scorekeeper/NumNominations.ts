@@ -112,7 +112,7 @@ export const autoNumNominations = async (
   // How many additional validator to nominate above the amount to get in the set
   const additional = 1.05;
 
-  const maxNominations = 24;
+  const maxNominations = 16;
   // The total amount of validators to nominate
   const adjustedNominationAmount = Math.min(
     Math.ceil(amount * additional),

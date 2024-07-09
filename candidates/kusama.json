@@ -7159,6 +7159,62 @@
       "stash": "DSBKDPLDgSxmLr3mUQphzqW6qQu5M2b5Qgp1andppBBwZsJ",
       "riotHandle": "@nawawir:matrix.org",
       "kyc": true
+    },
+    {
+      "slotId": 1047,
+      "name": "Dynamicstratos#2",
+      "stash": "EfXyGhHri67WVX2Pjq2HpGGYp9yW9JjdLi3AZS7uBVRPvq5",
+      "riotHandle": "@dynami:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 1048,
+      "name": "Dynamicstratos",
+      "stash": "FydtR6wm5f9svLTXy6Cbs1TLaZ4cpfqaQparfkEYtZPMrC3",
+      "riotHandle": "@dynami:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 1049,
+      "name": "HPsnow01",
+      "stash": "DSBiJSAgu5b3sjmTsAc2QFH4efEXZTcis3WWWjmpsRQM3Zw",
+      "riotHandle": "@savchenkog:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 1050,
+      "name": "HPsnow",
+      "stash": "DSBKDPLDgSxmLr3mUQphzqW6qQu5M2b5Qgp1andppBBwZsJ",
+      "riotHandle": "@savchenkog:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 1051,
+      "name": "Jouber",
+      "stash": "EB66bz3marZhcY4BQKsghaiqNKoYCxLQM3dsfBHitAAhdY3",
+      "riotHandle": "@jouber:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 1052,
+      "name": "almaznode02",
+      "stash": "GcVLpJkqemr5BJu6WyiFagVB1fAU8RWX8GUHmobYFbphNa2",
+      "riotHandle": "@mr.almazzar:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 1053,
+      "name": "naVAL",
+      "stash": "J4Rfkxk6VURWphArMWGy7GBC9H1DeQKMHmqfbQZJzgWAgQQ",
+      "riotHandle": "@navall:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 1054,
+      "name": "ABIcrypto",
+      "stash": "GUBnnnYnkGVptvHwj8CJ9ybXLri3cphRpjSVpDnAzKu6VBX",
+      "riotHandle": "@abisaprudin:matrix.org",
+      "kyc": true
     }
   ]
 }

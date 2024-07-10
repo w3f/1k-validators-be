@@ -21,9 +21,19 @@ tags:
     description: Querying location data
   - name: Score
     description: Querying score data
+  - name: Leaderboard
+    description: Querying validator leaderboard
 
 paths:
 
+  /leaderboard:
+    get:
+      tags:
+        - Leaderboard
+      summary: Retrieve a list of candidates with their rewards
+      responses:
+        200:
+          description: Successful response with a list of candidates
 
   /candidate/{candidateStash}:
     get:

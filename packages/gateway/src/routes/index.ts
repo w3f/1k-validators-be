@@ -9,6 +9,7 @@ import Location from "../controllers/Location";
 import Validator from "../controllers/Validators";
 import Rewards from "../controllers/Rewards";
 import Block from "../controllers/Block";
+import Leaderboard from "../controllers/Leaderboard";
 import { response } from "../controllers";
 import { queries } from "@1kv/common";
 
@@ -67,6 +68,7 @@ const API = {
   BlockIndex: "/blockindex",
   StatsTotalReqeusts: "/stats/totalRequests",
   StatsEndpointCounts: "/stats/endpointCounts",
+  Leaderboard: "/leaderboard"
 };
 
 router.get(API.Candidate, Candidate.getCandidate);
@@ -132,5 +134,7 @@ router.get(API.StatsEndpointCounts, Stats.getEndpointCounts);
 router.get(API.Release, async (ctx: any) => {
   response(ctx, 200, await queries.getLatestRelease());
 });
+
+router.get(API.Leaderboard, Leaderboard.getCandidatesWithRewards)
 
 export default router;

@@ -68,7 +68,8 @@ const API = {
   BlockIndex: "/blockindex",
   StatsTotalReqeusts: "/stats/totalRequests",
   StatsEndpointCounts: "/stats/endpointCounts",
-  Leaderboard: "/leaderboard"
+  Leaderboard: "/leaderboard",
+  SearchSuggestion: "/searchSuggestion/:searchTerm",
 };
 
 router.get(API.Candidate, Candidate.getCandidate);
@@ -135,6 +136,7 @@ router.get(API.Release, async (ctx: any) => {
   response(ctx, 200, await queries.getLatestRelease());
 });
 
-router.get(API.Leaderboard, Leaderboard.getCandidatesWithRewards)
+router.get(API.Leaderboard, Leaderboard.getCandidatesWithRewards);
+router.get(API.SearchSuggestion, Leaderboard.getCandidateSearchSuggestion);
 
 export default router;

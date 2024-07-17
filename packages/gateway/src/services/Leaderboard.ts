@@ -8,7 +8,7 @@ export const getCandidateData = async (candidate: any): Promise<any> => {
     queries.getLatestValidatorScore(candidate.stash),
     queries.getLatestNominatorStake(candidate.stash),
     queries.getCandidateLocation(candidate.slotId),
-    queries.getTotalValidatorRewards(candidate.stash)
+    queries.getTotalValidatorRewards(candidate.stash),
   ]);
 
   const denom = Math.pow(10, metadata.decimals);
@@ -60,15 +60,29 @@ export const getCandidateData = async (candidate: any): Promise<any> => {
   };
 };
 
-export const getCandidatesWithRewards = async (): Promise<any> => {
-  const allCandidates = await queries.allCandidates();
+export const getCandidatesWithRewards = async (
+  stash?: string,
+  page?: string,
+  limit?: string,
+): Promise<any> => {
+  const allCandidates = await queries.allCandidates(
+    stash as string,
+    Number(page),
+    Number(limit),
+  );
   const candidatesWithAdditionalFields = await Promise.all(
     allCandidates.map(async (candidate) => {
       return await getCandidateData(candidate);
     }),
   );
-  
+
   return candidatesWithAdditionalFields.sort((a, b) => {
     return b.total - a.total;
   });
+};
+
+export const getCandidatesSearchSuggestion = async (
+  searchTerm: string,
+): Promise<any> => {
+  return await queries.getCandidateSearchSuggestion(searchTerm);
 };

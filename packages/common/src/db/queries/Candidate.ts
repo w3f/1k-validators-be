@@ -650,8 +650,37 @@ export const allCandidatesWithAnyFields = async (): Promise<Candidate[]> => {
 };
 
 // Retrieve all candidates that have a stash and slotId set
-export const allCandidates = async (): Promise<Candidate[]> => {
-  return CandidateModel.find({ stash: /.*/ }).lean<Candidate[]>();
+export const allCandidates = async (
+  stash?: string,
+  page = 1,
+  limit = 0,
+): Promise<Candidate[]> => {
+  const skip = (page - 1) * limit;
+
+  const query = CandidateModel.find({
+    stash: stash || /.*/,
+  }).skip(skip);
+
+  // Only apply limit if it is greater than 0
+  if (limit > 0) {
+    query.limit(limit);
+  }
+
+  return query.lean<Candidate[]>().exec();
+};
+
+export const getCandidateSearchSuggestion = async (
+  searchTerm: string,
+): Promise<Candidate[]> => {
+  return CandidateModel.find({
+    $or: [
+      { name: { $regex: searchTerm, $options: "i" } },
+      { stash: searchTerm },
+    ],
+  })
+    .select("name stash")
+    .limit(10)
+    .lean<Candidate[]>();
 };
 
 export const validCandidates = async (): Promise<Candidate[]> => {

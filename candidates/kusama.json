@@ -3948,7 +3948,7 @@
       "name": "landeros",
       "stash": "H6q7Z9t3vuezyoicdKPHTYxVzrCU3JPKJWk3wGyxuEFaB9m",
       "riotHandle": "@landeros:matrix.org",
-      "kyc": false
+      "kyc": true
     },
     {
       "slotId": 575,

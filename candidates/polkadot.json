@@ -2039,7 +2039,7 @@
       "stash": "13uifUNALuwqiHZADQb2hrpwnL8kmawjqykx4yN661Tv7mR",
       "kusamaStash": "H6q7Z9t3vuezyoicdKPHTYxVzrCU3JPKJWk3wGyxuEFaB9m",
       "riotHandle": "@landeros:matrix.org",
-      "kyc": false
+      "kyc": true
     },
     {
       "slotId": 249,

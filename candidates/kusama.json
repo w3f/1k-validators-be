@@ -5464,7 +5464,7 @@
       "name": "Zuka",
       "stash": "F3AHXUCQ31dZ6vZ1PsJvUQSoonXUMS93qM6dRMK4T11uBp4",
       "riotHandle": "@zuka_116:matrix.org",
-      "kyc": false
+      "kyc": true
     },
     {
       "slotId": 796,

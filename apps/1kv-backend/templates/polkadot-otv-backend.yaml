@@ -47,6 +47,7 @@ spec:
                     "wss://rpc.ibp.network/polkadot",
                     "wss://polkadot-rpc-tn.dwellir.com"
                   ],
+                  "apiPeopleEndpoints": ["wss://polkadot-people-rpc.polkadot.io"],
                   "candidatesUrl": "https://raw.githubusercontent.com/w3f/1k-validators-be/master/candidates/polkadot.json"
                 },
                 "constraints": {

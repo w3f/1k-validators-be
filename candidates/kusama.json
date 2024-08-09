@@ -7656,6 +7656,13 @@
       "stash": "HeoiAwXghqvrynKuAJdDbqrfz36xwLjp2sgb7kQezNyCKz5",
       "riotHandle": "@aj0r:matrix.org",
       "kyc": true
+    },
+    {
+      "slotId": 1118,
+      "name": "bright-side-01",
+      "stash": "EXbgum1Y94wQrf5KW6ZhYWzBnAkS1FAXyWfPGXitiRqjXhB",
+      "riotHandle": "@oleg-plakida:matrix.org",
+      "kyc": true
     }
   ]
 }

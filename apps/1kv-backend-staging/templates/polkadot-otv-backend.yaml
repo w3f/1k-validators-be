@@ -58,7 +58,8 @@ spec:
                   "skipIdentity": false,
                   "skipUnclaimed": true,
                   "clientUpgrade": {
-                    "skip": false
+                    "skip": false,
+                    "forcedVersion": "1.15.1"
                   },
                   "minSelfStake": 50000000000000,
                   "commission": 50000000,

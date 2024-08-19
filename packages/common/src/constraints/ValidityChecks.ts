@@ -72,7 +72,7 @@ const _getLatestRelease = async (
     //i.e. useful in case of downgrade necessary
     return {
       name: config.constraints.clientUpgrade.forcedVersion,
-      publishedAt: 0,
+      publishedAt: -1,
     };
   }
 

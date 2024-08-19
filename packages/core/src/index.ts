@@ -213,7 +213,8 @@ export const initScorekeeper = async (
 // If this gauge won't set, latest block metric would be zero
 async function setInitialLatestBlock() {
   const index = await queries.getBlockIndex();
-  registerBlockScan(index.latest);
+  const tmp = index?.latest ? index.latest : 0;
+  registerBlockScan(tmp);
 }
 
 const start = async (cmd: { config: string }) => {

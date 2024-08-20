@@ -1975,8 +1975,8 @@
     },
     {
       "slotId": 241,
-      "name": "gurustaking_gplk_01",
-      "stash": "138tCNoHg9QbhjqanRS7R8ZC8547A6CdaSmrCtJCRLpjQk6r",
+      "name": "gurustaking_gplk_02",
+      "stash": "1ja8qGypM5HT9Rqq6AGQ9z58bSi2kfkrqsGuB84zxdp1SZH",
       "kusamaStash": "F5j1j9TJ7xWePJmYh64Bf2b97pmer3mX1BsonCUpx3CJZpu",
       "riotHandle": "@gurustaking:matrix.org",
       "skipSelfStake": true,

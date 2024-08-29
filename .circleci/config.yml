@@ -50,7 +50,7 @@ jobs:
     description: "Common Unit Tests"
     docker:
       - image: node:22-bullseye
-      - image: mongo:6.0.9
+      - image: mongo:7.0.12
         name: mongodb
     resource_class: xlarge
     steps:
@@ -68,7 +68,7 @@ jobs:
     description: "Chaindata Integration Tests"
     docker:
       - image: node:22-bullseye
-      - image: mongo:6.0.9
+      - image: mongo:7.0.12
         name: mongodb
     resource_class: xlarge
     steps:
@@ -86,7 +86,7 @@ jobs:
     description: "ApiHandler Integration Tests"
     docker:
       - image: node:22-bullseye
-      - image: mongo:6.0.9
+      - image: mongo:7.0.12
         name: mongodb
     resource_class: xlarge
     steps:
@@ -104,7 +104,7 @@ jobs:
     description: "Nominator Integration Tests"
     docker:
       - image: node:22-bullseye
-      - image: mongo:6.0.9
+      - image: mongo:7.0.12
         name: mongodb
     resource_class: xlarge
     steps:
@@ -122,7 +122,7 @@ jobs:
     description: "Scorekeeper Integration Tests"
     docker:
       - image: node:22-bullseye
-      - image: mongo:6.0.9
+      - image: mongo:7.0.12
         name: mongodb
 
     resource_class: xlarge

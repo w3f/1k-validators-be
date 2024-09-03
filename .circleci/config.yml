@@ -49,7 +49,7 @@ jobs:
   CommonUnitTests:
     description: "Common Unit Tests"
     docker:
-      - image: node:22-bullseye
+      - image: node:22.5-bullseye
       - image: mongo:6.0.9
         name: mongodb
     resource_class: xlarge

@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   checkDependencies:
     docker:
-      - image: node:slim
+      - image: node:22-slim
     steps:
       - checkout
       - run:
@@ -12,7 +12,7 @@ jobs:
 
   checkCandidatesFile:
     docker:
-      - image: node:22
+      - image: node:22-slim
     resource_class: large
     steps:
       - checkout
@@ -24,7 +24,7 @@ jobs:
 
   checkCoreESLint:
     docker:
-      - image: node:22
+      - image: node:22-slim
     resource_class: large
     steps:
       - checkout
@@ -36,7 +36,7 @@ jobs:
 
   checkCommonESLint:
     docker:
-      - image: node:22
+      - image: node:22-slim
     resource_class: large
     steps:
       - checkout
@@ -49,7 +49,7 @@ jobs:
   CommonUnitTests:
     description: "Common Unit Tests"
     docker:
-      - image: node:22-bullseye
+      - image: node:22-slim
       - image: mongo:6.0.9
         name: mongodb
     resource_class: xlarge
@@ -67,7 +67,7 @@ jobs:
   ChaindataIntegrationTests:
     description: "Chaindata Integration Tests"
     docker:
-      - image: node:22-bullseye
+      - image: node:22-slim
       - image: mongo:6.0.9
         name: mongodb
     resource_class: xlarge
@@ -85,7 +85,7 @@ jobs:
   ApiHandlerIntegrationTests:
     description: "ApiHandler Integration Tests"
     docker:
-      - image: node:22-bullseye
+      - image: node:22-slim
       - image: mongo:6.0.9
         name: mongodb
     resource_class: xlarge
@@ -103,7 +103,7 @@ jobs:
   NominatorIntegrationTests:
     description: "Nominator Integration Tests"
     docker:
-      - image: node:22-bullseye
+      - image: node:22-slim
       - image: mongo:6.0.9
         name: mongodb
     resource_class: xlarge
@@ -121,7 +121,7 @@ jobs:
   ScorekeeperIntegrationTests:
     description: "Scorekeeper Integration Tests"
     docker:
-      - image: node:22-bullseye
+      - image: node:22-slim
       - image: mongo:6.0.9
         name: mongodb
 
@@ -140,7 +140,7 @@ jobs:
   TelemetryIntegrationTests:
     description: "Telemetry Integration Tests"
     docker:
-      - image: node:22-bullseye
+      - image: node:22-slim
       - image: mongo:6.0.9
         name: mongodb
 

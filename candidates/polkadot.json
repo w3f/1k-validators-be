@@ -2535,6 +2535,22 @@
       "kusamaStash": "HngY6Xx5TtsGcLWYC4N16gTVttH9p8pCpehrHUS9T1aaLia",
       "riotHandle": "@mileruno:matrix.org",
       "kyc": true
+    },
+        {
+      "slotId": 310,
+      "name": "EchoStake-DOT-01",
+      "stash": "126cWhehuBFhQvbDqt26dWBNgELfkpc72WvJV3sx82qRogkT",
+      "kusamaStash": "Dfw2gjWfm19j3Q9ewn9PJiDyCdFsBs9QQ2ZiRAZ3k2QNVar",
+      "riotHandle": "@ech0.re:matrix.org",
+      "kyc": true
+    },
+        {
+      "slotId": 311,
+      "name": "bright-side-3",
+      "stash": "12xHAvgCmZKV6jr9WSLWwjz8totAKdz8A6QQ9uF7y1EsAkRb",
+      "kusamaStash": "EXbgum1Y94wQrf5KW6ZhYWzBnAkS1FAXyWfPGXitiRqjXhB",
+      "riotHandle": "@oleg-plakida:matrix.org",
+      "kyc": true
     }
   ]
 }

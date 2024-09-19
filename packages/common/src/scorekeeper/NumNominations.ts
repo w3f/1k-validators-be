@@ -6,7 +6,7 @@
 import { ApiPromise } from "@polkadot/api";
 import { scorekeeperLabel } from "./scorekeeper";
 import Nominator from "../nominator/nominator";
-import { Constants } from "../index";
+import { Constants, queries } from "../index";
 import logger from "../logger";
 import { NominatorState, NominatorStatus } from "../types";
 
@@ -112,7 +112,11 @@ export const autoNumNominations = async (
   // How many additional validator to nominate above the amount to get in the set
   const additional = 1.05;
 
-  const maxNominations = 24;
+  //Kusama max 24; Polkadot max 16
+  const maxNominations =
+    (await queries.getChainMetadata())?.name.toLowerCase() == "kusama"
+      ? 24
+      : 16;
   // The total amount of validators to nominate
   const adjustedNominationAmount = Math.min(
     Math.ceil(amount * additional),

@@ -44,10 +44,10 @@ export const individualEraPointsJob = async (
     }
     return true;
   } catch (e) {
-    logger.error(
-      `Error running individual era points job: ${JSON.stringify(e)}`,
-      erapointsLabel,
-    );
+    logger.error(e, {
+      message: "Error running individual era points job",
+      ...erapointsLabel,
+    });
     return false;
   }
 };
@@ -93,7 +93,7 @@ export const eraPointsJob = async (
       status: "errored",
       name: JobNames.EraPoints,
       updated: Date.now(),
-      error: JSON.stringify(e),
+      error: String(e),
     };
     jobStatusEmitter.emit("jobErrored", errorStatus);
     return false;

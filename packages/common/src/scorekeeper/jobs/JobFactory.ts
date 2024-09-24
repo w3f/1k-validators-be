@@ -93,7 +93,6 @@ export class JobFactory {
       return jobs;
     } catch (e) {
       logger.error(`Error making jobs: ${e}`, jobsLabel);
-      logger.error(JSON.stringify(e), jobsLabel);
       return [];
     }
   };

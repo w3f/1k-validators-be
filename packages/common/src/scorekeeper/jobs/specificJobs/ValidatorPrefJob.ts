@@ -108,7 +108,7 @@ export const validatorPrefJob = async (
       status: "errored",
       name: JobNames.ValidatorPref,
       updated: Date.now(),
-      error: JSON.stringify(e),
+      error: String(e),
     };
 
     jobStatusEmitter.emit("jobErrored", errorStatus);

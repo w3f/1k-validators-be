@@ -23,7 +23,7 @@ export default class MatrixBot {
         userId,
       });
     } catch (e) {
-      logger.error(JSON.stringify(e));
+      logger.error(e);
       logger.error("MatrixBot failed to start", label);
     }
   }

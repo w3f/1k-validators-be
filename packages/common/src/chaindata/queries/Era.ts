@@ -142,7 +142,7 @@ export const getActiveEraIndex = async (
       "getActiveEraIndex",
       HandlerType.RelayHandler,
     );
-    return [0, JSON.stringify(e)];
+    return [0, String(e)];
   }
 };
 
@@ -231,7 +231,7 @@ export const findEraBlockHash = async (
       "findEraBlockHash",
       HandlerType.RelayHandler,
     );
-    return ["", JSON.stringify(e)];
+    return ["", String(e)];
   }
 };
 
@@ -308,6 +308,6 @@ export const findEraBlockNumber = async (
       "findEraBlockNumber",
       HandlerType.RelayHandler,
     );
-    return [0, JSON.stringify(e)];
+    return [0, String(e)];
   }
 };

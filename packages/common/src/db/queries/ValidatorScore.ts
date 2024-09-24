@@ -1,5 +1,7 @@
 import { ValidatorScore, ValidatorScoreModel } from "../models";
 import { TWO_DAYS_IN_MS } from "../../constants";
+import logger from "../../logger";
+import { dbLabel } from "../index";
 
 export const setValidatorScore = async (
   address: string,
@@ -91,7 +93,10 @@ export const setValidatorScore = async (
     ).exec();
     return true;
   } catch (e) {
-    console.error(`Error setting validator score: ${JSON.stringify(e)}`);
+    logger.error(e, {
+      message: "Error setting validator score",
+      ...dbLabel,
+    });
     return false;
   }
 };

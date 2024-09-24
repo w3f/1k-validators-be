@@ -20,7 +20,7 @@ export const getCommission = async (
     return [prefs.commission.toNumber(), null];
   } catch (e) {
     await handleError(chaindata, e, "getCommission", HandlerType.RelayHandler);
-    return [0, JSON.stringify(e)];
+    return [0, String(e)];
   }
 };
 
@@ -114,7 +114,7 @@ export const getDenomBondedAmount = async (
       "getDenomBondedAmount",
       HandlerType.RelayHandler,
     );
-    return [0, JSON.stringify(e)];
+    return [0, String(e)];
   }
 };
 
@@ -139,7 +139,7 @@ export const getBondedAmount = async (
     return [ledger.toJSON().active, null];
   } catch (e) {
     logger.error(`Error getting bonded amount: ${e}`, chaindataLabel);
-    return [0, JSON.stringify(e)];
+    return [0, String(e)];
   }
 };
 

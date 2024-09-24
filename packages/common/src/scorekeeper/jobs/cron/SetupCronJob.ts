@@ -59,7 +59,7 @@ export const setupCronJob = async (
         name: name,
         runCount: jobRunCount,
         updated: Date.now(),
-        error: JSON.stringify(e),
+        error: String(e),
         executedAt,
       };
 

@@ -127,7 +127,7 @@ export const eraStatsJob = async (
       status: "errored",
       name: JobNames.EraStats,
       updated: Date.now(),
-      error: JSON.stringify(e),
+      error: String(e),
     };
     jobStatusEmitter.emit("jobErrored", errorStatus);
     return false;

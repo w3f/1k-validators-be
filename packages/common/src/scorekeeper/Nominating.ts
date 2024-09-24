@@ -181,10 +181,7 @@ export const doNominations = async (
 
     return counter;
   } catch (e) {
-    logger.error(
-      `Error in doNominations: ${JSON.stringify(e)}`,
-      scorekeeperLabel,
-    );
+    logger.error(e, { message: "Error in doNominations", ...scorekeeperLabel });
     return null;
   }
 };

@@ -29,8 +29,7 @@ const loadLoggerConfig = (): ConfigSchema["logger"] => {
 
     return mainConf.logger;
   } catch (e) {
-    console.log(`Error loading config: ${JSON.stringify(e)}`);
-    // logger.error(`Error loading config: ${JSON.stringify(e)}`);
+    console.log(`Error loading config: ${e.stack ?? String(e)}`);
   }
 };
 

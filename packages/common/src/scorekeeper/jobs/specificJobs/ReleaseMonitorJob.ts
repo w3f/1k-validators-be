@@ -79,7 +79,7 @@ export const getLatestTaggedRelease = async (releaseTagFormat: string) => {
       status: "errored",
       name: JobNames.Monitor,
       updated: Date.now(),
-      error: JSON.stringify(e),
+      error: String(e),
     };
 
     jobStatusEmitter.emit("jobErrored", errorStatus);

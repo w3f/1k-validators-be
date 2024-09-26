@@ -1,6 +1,4 @@
 import { Nomination, NominationModel } from "../models";
-import { logger } from "../../index";
-import { dbLabel } from "../index";
 
 export const setNomination = async (
   address: string,
@@ -40,7 +38,7 @@ export const setNomination = async (
     }).exec();
     return true;
   } catch (e) {
-    logger.error(e, { message: "Error setting nomination", ...dbLabel });
+    console.error(`Error setting nomination: ${JSON.stringify(e)}`);
     return false;
   }
 };

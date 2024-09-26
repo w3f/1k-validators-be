@@ -208,8 +208,6 @@ export const loadConfigDir = async (configDir: string) => {
 
     return mainConf;
   } catch (e) {
-    logger.error(e, {
-      message: "Error loading config",
-    });
+    logger.error(`Error loading config: ${JSON.stringify(e)}`);
   }
 };

@@ -72,10 +72,10 @@ class ApiHandler extends EventEmitter {
         logger.info(`Connected to ${this.currentEndpoint()}`, apiLabel);
         resolve();
       } catch (err) {
-        logger.warn(err, {
-          message: `Connection attempt to ${this.currentEndpoint()} failed, trying next endpoint`,
-          ...apiLabel,
-        });
+        logger.warn(
+          `Connection attempt to ${this.currentEndpoint()} failed: ${JSON.stringify(err)}, trying next endpoint`,
+          apiLabel,
+        );
         setTimeout(() => {
           this.connectionAttempt = null;
           this.connectWithRetry().then(resolve);
@@ -109,10 +109,10 @@ class ApiHandler extends EventEmitter {
       const api = await this.getApi();
       await api.rpc.system.chain();
     } catch (err) {
-      logger.warn(err, {
-        message: `Healthcheck on ${this.currentEndpoint()} failed, trying next endpoint`,
-        ...apiLabel,
-      });
+      logger.warn(
+        `Healthcheck on ${this.currentEndpoint()} failed: ${JSON.stringify(err)}, trying next endpoint`,
+        apiLabel,
+      );
       await this.nextEndpoint();
     }
   }

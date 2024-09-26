@@ -215,11 +215,11 @@ export default class Nominator extends EventEmitter {
         return this.bondedAddress;
       }
     } catch (e) {
-      logger.error(e, {
-        message: `Error getting stash for ${this.bondedAddress}`,
-        ...nominatorLabel,
-      });
-
+      logger.error(
+        `Error getting stash for ${this.bondedAddress}: ${e}`,
+        nominatorLabel,
+      );
+      logger.error(JSON.stringify(e), nominatorLabel);
       return this.bondedAddress;
     }
   }
@@ -240,10 +240,11 @@ export default class Nominator extends EventEmitter {
         return "";
       }
     } catch (e) {
-      logger.error(e, {
-        message: `Error getting payee for ${this.bondedAddress}`,
-        ...nominatorLabel,
-      });
+      logger.error(
+        `Error getting payee for ${this.bondedAddress}: ${e}`,
+        nominatorLabel,
+      );
+      logger.error(JSON.stringify(e), nominatorLabel);
       return "";
     }
   }
@@ -274,13 +275,10 @@ export default class Nominator extends EventEmitter {
 
       return true;
     } catch (e) {
-      logger.error(e, {
-        message: "Error sending tx",
-        ...nominatorLabel,
-      });
-
+      logger.error(`Error sending tx: `, nominatorLabel);
+      logger.error(JSON.stringify(e), nominatorLabel);
       await this.updateNominatorStatus({
-        status: `[signAndSend] Error signing and sending tx: ${String(e)}`,
+        status: `[signAndSend] Error signing and sending tx: ${JSON.stringify(e)}`,
         updated: Date.now(),
         stale: false,
       });
@@ -603,12 +601,8 @@ export default class Nominator extends EventEmitter {
       await this.updateNominatorStatus(nominatorStatus);
       return [didSend, finalizedBlockHash || null]; // Change to return undefined
     } catch (e) {
-      logger.error(e, {
-        message: "Error sending tx",
-        ...nominatorLabel,
-      });
-
-      return [false, String(e)];
+      logger.error(`Error sending tx: ${JSON.stringify(e)}`, nominatorLabel);
+      return [false, JSON.stringify(e)];
     }
   };
 }

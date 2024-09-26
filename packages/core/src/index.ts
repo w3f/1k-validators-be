@@ -28,7 +28,7 @@ const catchAndQuit = async (fn: any) => {
   try {
     await fn;
   } catch (e) {
-    logger.error(e);
+    logger.error(JSON.stringify(e));
     process.exit(1);
   }
 };
@@ -58,7 +58,7 @@ export const createDB = async (config) => {
     await Db.create(config.db.mongo.uri);
     logger.info(`Connected to ${config.db.mongo.uri}`, winstonLabel);
   } catch (e) {
-    logger.error(e);
+    logger.error(JSON.stringify(e));
     process.exit(1);
   }
 };
@@ -79,7 +79,7 @@ export const createServer = async (
       );
     }
   } catch (e) {
-    logger.error(e);
+    logger.error(JSON.stringify(e));
     process.exit(1);
   }
 };
@@ -92,7 +92,7 @@ export const createTelemetry = async (config) => {
     await telemetry.start();
     logger.info(`Telemetry client started.`, winstonLabel);
   } catch (e) {
-    logger.error(e);
+    logger.error(JSON.stringify(e));
     process.exit(1);
   }
 };
@@ -112,7 +112,7 @@ export const createMatrixBot = async (config) => {
     logger.info(`matrix client started.`, winstonLabel);
     return maybeBot;
   } catch (e) {
-    logger.error(e);
+    logger.error(JSON.stringify(e));
     process.exit(1);
   }
 };
@@ -124,7 +124,7 @@ export const clean = async (scorekeeper: ScoreKeeper) => {
 
     logger.info(`Cleaning finished`, winstonLabel);
   } catch (e) {
-    logger.error(e);
+    logger.error(JSON.stringify(e));
     process.exit(1);
   }
 };
@@ -176,7 +176,7 @@ export const addCleanCandidates = async (config: Config.ConfigSchema) => {
     // Remove any candidate in the db that doesn't have a stash or slotId
     await queries.deleteCandidatesWithMissingFields();
   } catch (e) {
-    logger.error(e);
+    logger.error(JSON.stringify(e));
     process.exit(1);
   }
 };
@@ -186,7 +186,7 @@ export const setChainMetadata = async (config) => {
     logger.info(`Setting chain metadata`, winstonLabel);
     await queries.setChainMetadata(config.global.networkPrefix);
   } catch (e) {
-    logger.error(e);
+    logger.error(JSON.stringify(e));
     process.exit(1);
   }
 };
@@ -205,7 +205,7 @@ export const initScorekeeper = async (
     }
     return scorekeeper;
   } catch (e) {
-    logger.error(e);
+    logger.error(JSON.stringify(e));
     process.exit(1);
   }
 };
@@ -219,7 +219,6 @@ async function setInitialLatestBlock() {
 
 const start = async (cmd: { config: string }) => {
   try {
-    throw new Error("sdfsdfs");
     const config = await Config.loadConfigDir(cmd.config);
     setupMetrics(config);
 
@@ -263,10 +262,8 @@ const start = async (cmd: { config: string }) => {
     // Start the scorekeeper
     await scorekeeper.begin();
   } catch (e) {
-    logger.error(e, {
-      message: "Error starting backend services",
-      ...winstonLabel,
-    });
+    logger.error(`Error starting backend services`, winstonLabel);
+    logger.error(JSON.stringify(e));
     process.exit(1);
   }
 };

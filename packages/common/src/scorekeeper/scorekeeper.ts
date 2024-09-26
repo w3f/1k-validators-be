@@ -63,7 +63,6 @@ export default class ScoreKeeper {
     registerAPIHandler(this.chaindata, this.bot);
     registerEventEmitterHandler(this);
   }
-
   public getJobsStatusAsJson() {
     const statuses: Record<string, JobStatus> = {};
     for (const job of this._jobs) {
@@ -152,10 +151,11 @@ export default class ScoreKeeper {
         try {
           await queries.addNominator(nominator);
         } catch (e) {
-          logger.error(e, {
-            message: `Scorekeeper add nominator: ${JSON.stringify(nominator)} failed`,
-            ...scorekeeperLabel,
-          });
+          logger.error(JSON.stringify(e), scorekeeperLabel);
+          logger.error(
+            `Scorekeeper add nominator: ${JSON.stringify(nominator)} failed`,
+            scorekeeperLabel,
+          );
         }
 
         group.push(nom);
@@ -291,7 +291,7 @@ export default class ScoreKeeper {
       this.isStarted = true;
       return true;
     } catch (e) {
-      logger.error(e, scorekeeperLabel);
+      logger.error(JSON.stringify(e), scorekeeperLabel);
       return false;
     }
   }

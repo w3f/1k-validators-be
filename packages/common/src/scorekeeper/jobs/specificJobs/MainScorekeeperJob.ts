@@ -28,7 +28,7 @@ export const mainScorekeeperJob = async (
       status: "errored",
       name: JobNames.MainScorekeeper,
       updated: Date.now(),
-      error: String(err),
+      error: JSON.stringify(err),
     };
 
     jobStatusEmitter.emit("jobErrored", errorStatus);

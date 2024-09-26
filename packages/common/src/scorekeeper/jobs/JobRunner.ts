@@ -30,11 +30,8 @@ export const startMonolithJobs = async (
     }
     return jobs;
   } catch (e) {
-    logger.error(e, {
-      message: "Error starting monolith jobs",
-      ...scorekeeperLabel,
-    });
-
+    logger.error(JSON.stringify(e), scorekeeperLabel);
+    logger.error("Error starting monolith jobs", scorekeeperLabel);
     return [];
   }
 };

@@ -122,10 +122,8 @@ export const setLocation = async (
     }
     return true;
   } catch (e) {
-    logger.error(e, {
-      message: "Error setting location",
-      ...dbLabel,
-    });
+    logger.error(JSON.stringify(e));
+    logger.error(`Error setting location`, dbLabel);
     return false;
   }
 };
@@ -144,10 +142,10 @@ export const cleanOldLocations = async (): Promise<boolean> => {
     await LocationModel.deleteMany({ updated: { $lt: twoDaysAgo } }).exec();
     return true;
   } catch (error) {
-    logger.info(error, {
-      message: "Error cleaning old locations",
-      ...dbLabel,
-    });
+    logger.info(
+      `Error cleaning old locations: ${JSON.stringify(error)}`,
+      dbLabel,
+    );
     return false;
   }
 };
@@ -157,10 +155,10 @@ export const cleanLocationsWithoutSlotId = async (): Promise<boolean> => {
     await LocationModel.deleteMany({ slotId: { $exists: false } }).exec();
     return true;
   } catch (error) {
-    logger.error(error, {
-      message: "Error deleting locations without 'slotId'",
-      ...dbLabel,
-    });
+    logger.error(
+      `Error deleting locations without 'slotId': ${JSON.stringify(error)}`,
+      dbLabel,
+    );
     return false;
   }
 };
@@ -192,10 +190,8 @@ export const removeIIT = async (): Promise<any> => {
   try {
     return IITModel.deleteOne({}).exec();
   } catch (e) {
-    logger.error(e, {
-      message: "Error deleting IIT",
-      ...dbLabel,
-    });
+    logger.error(JSON.stringify(e));
+    logger.error(`Error deleting IIT`, dbLabel);
     return false;
   }
 };
@@ -217,11 +213,8 @@ export const updateIITRequestCount = async (): Promise<any> => {
 
     return updateResult;
   } catch (e) {
-    logger.error(e, {
-      message: "Error updating IIT request count",
-      ...dbLabel,
-    });
-
+    logger.error(JSON.stringify(e));
+    logger.error("Error updating IIT request count", dbLabel);
     return false;
   }
 };

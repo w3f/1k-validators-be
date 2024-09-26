@@ -52,10 +52,7 @@ export const setEraStats = async (
     ).exec();
     return true;
   } catch (e) {
-    logger.error(e, {
-      message: "Error setting era stats",
-      ...dbLabel,
-    });
+    logger.error(`Error setting era stats: ${JSON.stringify(e)}`, dbLabel);
     return false;
   }
 };

@@ -74,7 +74,7 @@ export default class Server {
       );
       return true;
     } catch (e) {
-      logger.error(e, { label: "Gateway" });
+      logger.error(JSON.stringify(e), { label: "Gateway" });
       return false;
     }
   }

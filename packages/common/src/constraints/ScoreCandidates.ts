@@ -272,17 +272,16 @@ export const scoreCandidate = async (
     try {
       await setValidatorScore(candidate.stash, session, score);
     } catch (e) {
-      logger.info(e, {
-        message: "Can't set validator score....",
-        ...constraintsLabel,
-      });
+      logger.info(`Can't set validator score....`);
+      logger.info(JSON.stringify(e));
     }
     return total;
   } catch (e) {
-    logger.error(e, {
-      message: `Error scoring candidate ${candidate.name}`,
-      ...constraintsLabel,
-    });
+    logger.error(
+      `Error scoring candidate ${candidate.name}`,
+      e,
+      constraintsLabel,
+    );
     return null;
   }
 };

@@ -80,13 +80,13 @@ export const sendProxyDelayTx = async (
 
     return true;
   } catch (e) {
-    logger.error(e, {
-      message: "{Nominator::nominate} there was an error sending the tx",
-      ...nominatorLabel,
-    });
-
+    logger.error(
+      `{Nominator::nominate} there was an error sending the tx`,
+      nominatorLabel,
+    );
+    logger.error(JSON.stringify(e), nominatorLabel);
     await nominator.updateNominatorStatus({
-      status: `Proxy Delay Error: ${e?.message ?? String(e)}`,
+      status: `Proxy Delay Error: ${JSON.stringify(e)}`,
       updated: Date.now(),
     });
     return false;
@@ -186,13 +186,13 @@ export const sendProxyTx = async (
     if (bot) await bot?.sendMessage(nominateMsg);
     return true;
   } catch (e) {
-    logger.error(e, {
-      message: `{Nominator::nominate} there was an error sending the tx`,
-      ...nominatorLabel,
-    });
-
+    logger.error(
+      `{Nominator::nominate} there was an error sending the tx`,
+      nominatorLabel,
+    );
+    logger.error(JSON.stringify(e), nominatorLabel);
     await nominator.updateNominatorStatus({
-      status: `Proxy Error: ${String(e)}`,
+      status: `Proxy Error: ${JSON.stringify(e)}`,
       updated: Date.now(),
     });
     return false;

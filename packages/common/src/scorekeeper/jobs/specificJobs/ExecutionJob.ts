@@ -252,9 +252,8 @@ export const executionJob = async (
     });
     return true;
   } catch (e) {
-    logger.error(e, {
-      message: "Error executing executionJob",
-    });
+    logger.error(`Error executing executionJob:`);
+    logger.error(JSON.stringify(e));
     return false;
   }
 };

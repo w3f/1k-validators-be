@@ -70,7 +70,7 @@ export const validityJob = async (
       status: "errored",
       name: JobNames.Validity,
       updated: Date.now(),
-      error: String(e),
+      error: JSON.stringify(e),
     };
     jobStatusEmitter.emit("jobErrored", errorStatus);
     return false;
@@ -129,7 +129,7 @@ export const scoreJob = async (
       status: "errored",
       name: JobNames.Score,
       updated: Date.now(),
-      error: String(e),
+      error: JSON.stringify(e),
     };
     jobStatusEmitter.emit("jobErrored", errorStatus);
     return false;

@@ -78,7 +78,7 @@ export const nominatorJob = async (
       status: "errored",
       name: JobNames.Nominator,
       updated: Date.now(),
-      error: String(e),
+      error: JSON.stringify(e),
     };
 
     jobStatusEmitter.emit("jobErrored", errorStatus);

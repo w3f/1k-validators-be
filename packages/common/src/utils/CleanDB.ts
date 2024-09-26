@@ -45,8 +45,8 @@ export const cleanDB = async (scorekeeper?: ScoreKeeper): Promise<boolean> => {
     }
 
     return true;
-  } catch (e) {
-    logger.error(e, { message: "Error cleaning DB", ...dbLabel });
+  } catch (error) {
+    logger.error(`Error cleaning DB: ${JSON.stringify(error)}`, dbLabel);
     return false;
   }
 };

@@ -52,10 +52,7 @@ export const setNominatorStake = async (
     ).exec();
     return true;
   } catch (e) {
-    logger.error(e, {
-      message: "Error setting nominator stake",
-      ...dbLabel,
-    });
+    console.error(`Error setting nominator stake: ${JSON.stringify(e)}`);
     return false;
   }
 };
@@ -99,11 +96,11 @@ export const cleanOldNominatorStakes = async (): Promise<boolean> => {
       updated: { $lt: twoDaysAgo },
     }).exec();
     return true;
-  } catch (e) {
-    logger.info(e, {
-      message: "Error cleaning old nominator stakes",
-      ...dbLabel,
-    });
+  } catch (error) {
+    logger.info(
+      `Error cleaning old nominator stakes: ${JSON.stringify(error)}`,
+      dbLabel,
+    );
     return false;
   }
 };

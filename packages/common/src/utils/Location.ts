@@ -94,9 +94,10 @@ export const nodeDetailsFromTelemetryMessage = (
       networkId: networkId,
     };
   } catch (e) {
-    logger.error(JSON.stringify(e));
-    logger.error(JSON.stringify(payload));
-    logger.error(`Error parsing telemetry message`, { label: "Telemetry" });
+    logger.error(e, {
+      message: `Error parsing telemetry message: ${JSON.stringify(payload)}`,
+      label: "Telemetry",
+    });
     return null;
   }
 };
@@ -171,8 +172,7 @@ export const initIIT = async (ipinfoToken: string): Promise<boolean> => {
     }
     return true;
   } catch (e) {
-    logger.error(JSON.stringify(e));
-    logger.error(`Error initializing IIT`, { label: "Telemetry" });
+    logger.error(e, { label: "Telemetry", message: `Error initializing IIT` });
     return false;
   }
 };

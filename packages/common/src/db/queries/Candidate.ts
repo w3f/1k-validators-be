@@ -88,8 +88,10 @@ export const addCandidate = async (
     ).exec();
     return true;
   } catch (e) {
-    logger.error(JSON.stringify(e));
-    logger.error(`Error adding candidate ${name}`, dbLabel);
+    logger.error(e, {
+      message: `Error adding candidate ${name}`,
+      ...dbLabel,
+    });
     return false;
   }
 };
@@ -262,8 +264,10 @@ export const setCandidateIdentity = async (
     }
     return true;
   } catch (e) {
-    logger.error(JSON.stringify(e));
-    logger.error(`Error setting identity for ${stash}`, dbLabel);
+    logger.error(e, {
+      message: `Error setting identity for ${stash}`,
+      ...dbLabel,
+    });
     return false;
   }
 };
@@ -411,12 +415,11 @@ export const updateCandidateOnlineTelemetryDetails = async (
     );
     return true;
   } catch (e) {
-    logger.error(JSON.stringify(e));
     // Correctly reference telemetryNodeDetails.name in the logging statement
-    logger.error(
-      `Error updating online validity for ${telemetryNodeDetails.name}`,
-      dbLabel,
-    );
+    logger.error(e, {
+      message: `Error updating online validity for ${telemetryNodeDetails.name}`,
+      ...dbLabel,
+    });
     return false;
   }
 };
@@ -442,8 +445,10 @@ export const updateCandidateOfflineTime = async (
     }
     return true;
   } catch (e) {
-    logger.error(JSON.stringify(e));
-    logger.error(`Error updating offline time for ${name}`, dbLabel);
+    logger.error(e, {
+      message: `Error updating offline time for ${name}`,
+      ...dbLabel,
+    });
     return false;
   }
 };
@@ -476,12 +481,10 @@ export const reportOnline = async (
     }
     return true;
   } catch (e) {
-    logger.error(JSON.stringify(e));
-    logger.error(JSON.stringify(telemetryNodeDetails));
-    logger.error(
-      `Error reporting telemetry node online ${telemetryNodeDetails?.name}`,
-      dbLabel,
-    );
+    logger.error(e, {
+      message: `Error reporting telemetry node online ${telemetryNodeDetails?.name}; telemetryNodeDetails: ${JSON.stringify(telemetryNodeDetails)}`,
+      ...dbLabel,
+    });
     return false;
   }
 };
@@ -508,11 +511,10 @@ export const reportOffline = async (name: string): Promise<void> => {
       }
     }
   } catch (e) {
-    logger.error(JSON.stringify(e));
-    logger.error(
-      `Error reporting candidate or telemetry node offline ${name}`,
-      dbLabel,
-    );
+    logger.error(e, {
+      message: `Error reporting candidate or telemetry node offline ${name}`,
+      ...dbLabel,
+    });
   }
 };
 

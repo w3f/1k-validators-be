@@ -42,7 +42,7 @@ export const getActiveValidatorsInPeriod = async (
       "getActiveValidatorsInPeriod",
       HandlerType.RelayHandler,
     );
-    return [[], JSON.stringify(e)];
+    return [[], String(e)];
   }
 };
 

@@ -1,5 +1,6 @@
 import { CandidateModel, Nominator, NominatorModel } from "../models";
 import logger from "../../logger";
+import { dbLabel } from "../index";
 import { getCandidateByStash } from "./Candidate";
 
 /**
@@ -67,8 +68,11 @@ export const addNominator = async (nominator: Nominator): Promise<boolean> => {
     );
     return true;
   } catch (e) {
-    logger.info(JSON.stringify(e));
-    logger.error(`Could not add nominator: ${JSON.stringify(nominator)}`);
+    logger.error(e, {
+      message: `Could not add nominator: ${JSON.stringify(nominator)}`,
+      ...dbLabel,
+    });
+
     return false;
   }
 };
@@ -157,7 +161,7 @@ export const getCurrentTargets = async (
       return [];
     }
   } catch (e) {
-    logger.error(JSON.stringify(e));
+    logger.error(e, dbLabel);
     return [];
   }
 };

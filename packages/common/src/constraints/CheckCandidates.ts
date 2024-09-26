@@ -163,7 +163,7 @@ export const checkCandidate = async (
     }
     return valid;
   } catch (e) {
-    logger.error(JSON.stringify(e));
+    logger.error(e);
     return false;
   }
 };
@@ -196,7 +196,7 @@ export const checkAllCandidates = async (
     }
     return true;
   } catch (e) {
-    logger.error(JSON.stringify(e));
+    logger.error(e);
     return false;
   }
 };

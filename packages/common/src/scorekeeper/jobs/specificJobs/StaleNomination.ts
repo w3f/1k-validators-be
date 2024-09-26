@@ -43,8 +43,10 @@ export const staleNominationJob = async (
     }
     return true;
   } catch (e) {
-    logger.error(`Error in staleNominationJob:`, cronLabel);
-    logger.error(JSON.stringify(e), cronLabel);
+    logger.error(e, {
+      message: "Error in staleNominationJob",
+      ...cronLabel,
+    });
     return false;
   }
 };

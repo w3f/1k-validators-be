@@ -252,8 +252,10 @@ export const getJobConfigs = (
       staleNominationJobConfig,
     ];
   } catch (e) {
-    logger.error(`Error getting job configs:`, jobsLabel);
-    logger.error(JSON.stringify(e));
+    logger.error(e, {
+      message: "Error getting job configs",
+      ...jobsLabel,
+    });
     return [];
   }
 };

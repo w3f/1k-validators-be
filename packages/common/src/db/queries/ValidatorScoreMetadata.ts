@@ -86,7 +86,7 @@ export const setValidatorScoreMetadata = async (
         await validatorScoreMetadata.save();
         return true;
       } catch (e) {
-        logger.error(JSON.stringify(e));
+        logger.error(e);
         return false;
       }
     }
@@ -131,7 +131,7 @@ export const setValidatorScoreMetadata = async (
     ).exec();
     return true;
   } catch (e) {
-    logger.error(JSON.stringify(e));
+    logger.error(e);
     return false;
   }
 };

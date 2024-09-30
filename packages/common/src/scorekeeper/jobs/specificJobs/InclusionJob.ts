@@ -80,7 +80,7 @@ export const inclusionJob = async (
       status: "errored",
       name: JobNames.Inclusion,
       updated: Date.now(),
-      error: JSON.stringify(e),
+      error: String(e),
     };
 
     jobStatusEmitter.emit("jobErrored", errorStatus);

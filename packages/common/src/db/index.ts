@@ -41,7 +41,7 @@ export class Db {
       mongoose.connection.on("open", () => setDbConnectivity(true));
       mongoose.connection.on("disconnected", () => setDbConnectivity(false));
       mongoose.connection.on("error", (err) => {
-        logger.error(`MongoDB connection issue: ${err}`, dbLabel);
+        logger.error(err, { message: "MongoDB connection issue", ...dbLabel });
         reject(err);
       });
     });

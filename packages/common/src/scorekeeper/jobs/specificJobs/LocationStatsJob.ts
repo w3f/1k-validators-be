@@ -320,7 +320,7 @@ export const locationStatsJob = async (metadata: JobRunnerMetadata) => {
       status: "errored",
       name: JobNames.LocationStats,
       updated: Date.now(),
-      error: JSON.stringify(e),
+      error: String(e),
     };
 
     jobStatusEmitter.emit("jobErrored", errorStatus);

@@ -1,5 +1,6 @@
 import { Era, EraModel } from "../models";
 import logger from "../../logger";
+import { dbLabel } from "../index";
 
 export const setLastNominatedEraIndex = async (
   index: number,
@@ -27,9 +28,10 @@ export const setLastNominatedEraIndex = async (
     ).exec();
     return true;
   } catch (e) {
-    logger.error(
-      `Error setting last nominated era index: ${JSON.stringify(e)}`,
-    );
+    logger.error(e, {
+      message: "Error setting last nominated era index",
+      ...dbLabel,
+    });
     return false;
   }
 };

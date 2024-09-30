@@ -59,7 +59,7 @@ export const sessionKeyJob = async (metadata: JobRunnerMetadata) => {
       status: "errored",
       name: JobNames.SessionKey,
       updated: Date.now(),
-      error: JSON.stringify(e),
+      error: String(e),
     };
 
     jobStatusEmitter.emit("jobErrored", errorStatus);

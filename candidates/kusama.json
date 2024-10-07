@@ -4669,8 +4669,8 @@
       "slotId": 677,
       "name": "lidertabores",
       "stash": "G83zrjcqZ5TAM7d4TXsWS8CPuxFHBj3nj5ZUogySfDeYqyJ",
-      "riotHandle": "@lidertabores:matrix.org",
-      "kyc": false
+      "riotHandle": "@ubmrel1a-eco:matrix.org",
+      "kyc": true
     },
     {
       "slotId": 678,
@@ -5519,8 +5519,8 @@
       "slotId": 803,
       "name": "dalmaDOT",
       "stash": "DDiisoLVB3MC9Z2vXkuupXPdkM3KzPbyBhydrenG3TFJYVh",
-      "riotHandle": "@dalmaDOT:matrix.org",
-      "kyc": false
+      "riotHandle": "@dalmast:matrix.org",
+      "kyc": true
     },
     {
       "slotId": 804,
@@ -7809,6 +7809,125 @@
       "name": "bright-side-2",
       "stash": "GdiNhohirsuV9ZNpNUTAXX16h9bybDddx57buu9V3mRd997",
       "riotHandle": "@oleg-plakida:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 1140,
+      "name": "xiciu",
+      "stash": "EGdea4UGhKAYjHAMxpzpeqabg1WxdMoppNzvruDATSrg1Ks",
+      "riotHandle": "@xiciu:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 1141,
+      "name": "poupadmin",
+      "stash": "CdYBc1FXHueEZv5p6CTibmZMT3n8dKfAFMeyjVzX2JyAiUe",
+      "riotHandle": "@poupadmin:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 1142,
+      "name": "Thunderhawk 7",
+      "stash": "JL2MHXkTt7MU6TmS321HaJpdjEMGEZd6vTAZn2PLgQc783g",
+      "riotHandle": "@hawkers:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 1143,
+      "name": "Thunderhawk 8",
+      "stash": "EoR3ppUHD7eG2czJaSM54R5SabHuoKh9ftJjiEhGawL1761",
+      "riotHandle": "@hawkers:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 1144,
+      "name": "Brightpath",
+      "stash": "GLYfJern93gqgtqRgQKV5r4TCP45xpqvgvtkT8x5iky9aZr",
+      "riotHandle": "@aureliot:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 1145,
+      "name": "Brightpath1",
+      "stash": "CiZfXo2sz8rCHBPjiumXLSjNfeC7aAa1pESodPt1WSoGBo6",
+      "riotHandle": "@aureliot:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 1146,
+      "name": "Starlight",
+      "stash": "FDeiWedjzSFbbkn9UCbLsL3xqyZQ6kbrAGrfxZY1Nf7G6Jb",
+      "riotHandle": "@stardm:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 1147,
+      "name": "Starlight Kusama",
+      "stash": "EcRruv1J3KSxmPPZi7vgmH7Y4H1XFmyzwt8XpHdXA97ma81",
+      "riotHandle": "@stardm:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 1148,
+      "name": "nyatinode",
+      "stash": "DzBZcSt3U3cgA3zvd1qswKd882CTADd3Au7c7QpvVcdQJqL",
+      "riotHandle": "@vkerubo:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 1149,
+      "name": "Spantos",
+      "stash": "E8PAMadxPB4Au3KvdstN41y6APPWy8dLriiNUDvVw9X2s9Y",
+      "riotHandle": "@wirzes:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 1150,
+      "name": "Spanto3",
+      "stash": "EBNf3Aay5Ewy5j5PxQENpHJ3JAXUECt6rJ24tjUz4sx19Mv",
+      "riotHandle": "@wirzes:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 1151,
+      "name": "Nautica#2",
+      "stash": "J9Y3GQnA1GYTsU5335dhK7xfnCgQujdBStSbkGYMSPgjCQB",
+      "riotHandle": "@nauticaferz:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 1152,
+      "name": "Nautica",
+      "stash": "EMZE3bE5iDtBieVa53udLoNhbCFVksjr8rQEvwcgWg3inK6",
+      "riotHandle": "@nauticaferz:matrix.org",
+      "kyc": true
+    },    
+    {
+      "slotId": 1153,
+      "name": "Strikeforce",
+      "stash": "FdJMyFvpE2AMaAKZxBS3R3Cyx3bmahtTRPjMfkSAkQxa5kr",
+      "riotHandle": "@werncurt:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 1154,
+      "name": "Strikeforce*2",
+      "stash": "CgmXZoUoTjqTqzCZLo6a7rovWT5uMin6ALFW3q2k2LHodau",
+      "riotHandle": "@werncurt:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 1155,
+      "name": "Mintvault",
+      "stash": "CgoPWhfBEYcuHRhRyEcG1qurjuVLTRdgs38DRqHZfJuALge",
+      "riotHandle": "@gsmart:matrix.org",
+      "kyc": true
+    },
+    {
+      "slotId": 1156,
+      "name": "Mintvault-1",
+      "stash": "HHhQn8Z2s9HTYheBhZRzh8SEEkF2WBYVvd3pjR5YMPfUwfM",
+      "riotHandle": "@gsmart:matrix.org",
       "kyc": true
     }
   ]

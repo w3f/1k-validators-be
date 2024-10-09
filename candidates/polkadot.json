@@ -2489,14 +2489,6 @@
       "kyc": true
     },
     {
-      "slotId": 304,
-      "name": "Tokengear",
-      "stash": "1WzQswunuAn7sTBDioEde8CyEmpDvshG5YzgY2XEaGyoB3f",
-      "kusamaStash": "HEz8XSfuhcZ4u8XPqGYqodRfrix6EAsas24iRyvaMNE3uX6",
-      "riotHandle": "@geronimoboulanger:matrix.org",
-      "kyc": true
-    },
-    {
       "slotId": 305,
       "name": "Edge",
       "stash": "123UH9bz6B6J9txBwoQigu347M3rrY8cE5iu1Dhni4DyJ7ax",

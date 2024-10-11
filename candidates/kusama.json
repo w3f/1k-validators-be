@@ -3993,13 +3993,6 @@
       "kyc": false
     },
     {
-      "slotId": 582,
-      "name": "Blockchain Side",
-      "stash": "G2Q8mTftjxrrVzkUTuRh1mSemdw7vQSFdxx55gneNc9ptem",
-      "riotHandle": "@sideblockchain:matrix.org",
-      "kyc": false
-    },
-    {
       "slotId": 583,
       "name": "Fireblade",
       "stash": "GoBAekE8tyzp52LB1SsduACVSAgoTGY69N2q9evgWcmYpuF",
@@ -5303,13 +5296,6 @@
       "name": "rainbow-axolotl",
       "stash": "HFdj9BdtXMXNKuheqq98Nxt1GtS4dTSBuE8houEc9EGmBkP",
       "riotHandle": "@kokenaki:matrix.org",
-      "kyc": false
-    },
-    {
-      "slotId": 772,
-      "name": "Blockchain Side1",
-      "stash": "DQjtLa5eGpPVn1wUPFTUfQmuYmyvzffTde2JX65m4egeYin",
-      "riotHandle": "@sideblockchain:matrix.org",
       "kyc": false
     },
     {

@@ -1882,14 +1882,6 @@
       "kyc": false
     },
     {
-      "slotId": 230,
-      "name": "Blockchain side",
-      "stash": "12eVBx2xjVFzHyyGVHCqEQMp2yntKiSzE2JuGYM1kQAjVKzu",
-      "kusamaStash": "G2Q8mTftjxrrVzkUTuRh1mSemdw7vQSFdxx55gneNc9ptem",
-      "riotHandle": "@sideblockchain:matrix.org",
-      "kyc": false
-    },
-    {
       "slotId": 231,
       "name": "GameTheory-01",
       "stash": "13Srw7dVtGJnZrV3o6RCAJ97MaGbSKShQQiSYjbGp4Jvu4Cs",

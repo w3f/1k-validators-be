@@ -65,7 +65,7 @@ After setting up an on chain identity, it must get verifiec by a registrar. This
 
 ## Setting up sub-identities
 
-If setting up more than one validator node, it is best to set these addtional identities as sub-identities, as each account does not need to be verified by a registrar. More information on sub-identities and how to set them up can be found here.
+If setting up more than one validator node, it is best to set these additional identities as sub-identities, as each account does not need to be verified by a registrar. More information on sub-identities and how to set them up can be found here.
 
 # Validator Nodes
 

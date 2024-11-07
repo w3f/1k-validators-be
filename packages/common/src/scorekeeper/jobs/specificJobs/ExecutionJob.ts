@@ -228,7 +228,7 @@ export const executionJob = async (
           const message = `${Util.addressUrl(
             nominator?.address || "",
             config,
-          )} executed announcement in finalized block #${finalizedBlockHash} annouced at #${dataNum} \n Validators Nominated:\n ${validatorsMessage}`;
+          )} executed announcement in finalized block #${finalizedBlockHash} announced at #${dataNum} \n Validators Nominated:\n ${validatorsMessage}`;
           logger.info(message);
           if (bot) {
             await bot.sendMessage(

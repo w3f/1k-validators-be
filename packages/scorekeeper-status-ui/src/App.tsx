@@ -23,6 +23,7 @@ import HealthCheckBar from "./HealthCheckBar";
 import { Identicon } from "@polkadot/react-identicon";
 import EraStatsBar from "./EraStatsBar";
 import { debounce } from "lodash";
+import { REFRESH_INTERVAL } from "./Constants";
 
 interface Job {
   name: string;
@@ -50,7 +51,7 @@ const App = () => {
   const [jobs, setJobs] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
-  const [refreshInterval, setRefreshInterval] = useState(500); // Default refresh interval
+  const [refreshInterval, setRefreshInterval] = useState(REFRESH_INTERVAL); // Default refresh interval
   const [nominators, setNominators] = useState([]);
 
   const fetchData = useCallback(async () => {
@@ -66,17 +67,17 @@ const App = () => {
           })),
         );
         setHasError(false);
-        setRefreshInterval(800); // Reset to faster refresh rate on success
+        setRefreshInterval(5000); // Reset to faster refresh rate on success
       } else {
         // Handle empty response
         console.log("Received empty response");
         setHasError(true);
-        setRefreshInterval(5000); // Slow down the refresh rate
+        setRefreshInterval(REFRESH_INTERVAL); // Slow down the refresh rate
       }
     } catch (error) {
       console.error("Error fetching job data:", error);
       setHasError(true);
-      setRefreshInterval(5000); // Slow down the refresh rate on error
+      setRefreshInterval(REFRESH_INTERVAL); // Slow down the refresh rate on error
 
       // Provide more specific error handling
       if (error.response) {
@@ -122,12 +123,12 @@ const App = () => {
   }, [currentEndpoint]);
 
   useEffect(() => {
-    const interval = setInterval(fetchData, 500);
+    const interval = setInterval(fetchData, REFRESH_INTERVAL);
     return () => clearInterval(interval);
   }, [fetchData]);
 
   useEffect(() => {
-    const interval = setInterval(fetchNominatorsData, 500);
+    const interval = setInterval(fetchNominatorsData, REFRESH_INTERVAL);
     return () => clearInterval(interval);
   }, [fetchNominatorsData]);
 

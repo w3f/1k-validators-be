@@ -279,7 +279,7 @@ const processPayoutStakers = async (
   };
   payoutTxs.push(payoutTx);
 
-  // Go through each of the blocks events and find the ones that corresopnd to the payoutStakers extrinsic
+  // Go through each of the blocks events and find the ones that correspond to the payoutStakers extrinsic
   const rewardEvents = blockEvents
     .filter(({ phase }: FrameSystemEventRecord) => {
       const p: Phase = phase;
